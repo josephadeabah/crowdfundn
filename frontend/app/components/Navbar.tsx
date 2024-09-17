@@ -1,9 +1,37 @@
+'use client';
+import React, { useEffect, useState } from 'react';
 import DarkModeBtn from './DarkModeBtn';
 
 const Navbar = () => {
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY && window.scrollY > 100) {
+        // Scrolling down
+        setIsVisible(false);
+      } else {
+        // Scrolling up
+        setIsVisible(true);
+      }
+      setLastScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [lastScrollY]);
+
   return (
-    <header className="bg-white dark:bg-gray-950">
-      <nav className="p-6 w-full">
+    <header
+      className={`sticky top-0 z-50 transition-transform duration-300 ease-in-out ${
+        isVisible ? 'translate-y-0' : '-translate-y-full'
+      }`}
+    >
+      <nav className="p-6 w-full bg-white dark:bg-gray-950">
         <div className="relative flex items-center gap-x-4">
           <div className="flex items-center group peer lg:hidden">
             <input type="checkbox" id="menu" className="hidden" />
@@ -39,13 +67,14 @@ const Navbar = () => {
           </a>
           <div className="absolute top-11 left-0 w-full hidden peer-has-[:checked]:flex flex-col gap-2 bg-white dark:bg-gray-950 ring-1 ring-inset ring-gray-100 dark:ring-gray-900 shadow-md rounded-lg px-6 py-4 lg:relative lg:top-0 lg:w-auto lg:flex lg:flex-row lg:ring-0 lg:p-0 lg:shadow-none *:flex *:items-center *:gap-x-1.5 *:py-1.5 *:text-sm *:text-gray-950 dark:*:text-gray-50 *:font-medium lg:*:px-2">
             <a href=".">
-              Features
+              Explore Campaigns
               <span className="bg-blue-50 dark:bg-blue-900 flex px-1.5 py-0.5 rounded-full text-xs text-blue-600 dark:text-white font-medium">
                 NEW
               </span>
             </a>
-            <a href=".">Pricing</a>
-            <a href=".">Contact</a>
+            <a href=".">How It Works</a>
+            <a href=".">Success Stories</a>
+            <a href=".">For Diaspora</a>
             <div className="bg-blue-600 hover:bg-blue-700 text-white p-4 lg:hidden md:hidden">
               <a href="." className=" text-white text-center py-2 px-4">
                 Start Campaign
