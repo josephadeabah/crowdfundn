@@ -46,15 +46,23 @@ const Navbar = () => {
             </a>
             <a href=".">Pricing</a>
             <a href=".">Contact</a>
+            <div className="bg-blue-600 hover:bg-blue-700 text-white p-4 lg:hidden md:hidden">
+              <a href="." className=" text-white text-center py-2 px-4">
+                Start raising funds
+              </a>
+            </div>
           </div>
-          <div className="flex grow basis-0 items-center justify-end gap-x-3 *:rounded-lg *:px-3 *:py-1.5 *:text-sm *:font-medium *:transition *:duration-[250ms] *:ease-in-out">
+          <div className="flex grow basis-0 items-center justify-end gap-x-3 *:px-3 *:py-1.5 *:text-sm *:font-medium *:transition *:duration-[250ms] *:ease-in-out">
             <DarkModeBtn />
-            <a href="." className="bg-blue-600 hover:bg-blue-700 text-white">
+            <a
+              href="."
+              className="bg-blue-600 hover:bg-blue-700 text-white hidden lg:inline-block py-2 px-4"
+            >
               Start raising funds
             </a>
             <a
               href="."
-              className="bg-white dark:bg-gray-950 hover:bg-gray-50 dark:hover:bg-gray-900 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 text-gray-950 dark:text-gray-50"
+              className="bg-white dark:bg-gray-950 hover:bg-gray-50 dark:hover:bg-gray-900 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 text-gray-950 dark:text-gray-50 lg:inline-block py-2 px-4"
             >
               Login
             </a>
@@ -64,4 +72,5 @@ const Navbar = () => {
     </header>
   );
 };
+
 export default Navbar;
