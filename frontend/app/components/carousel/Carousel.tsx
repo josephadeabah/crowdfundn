@@ -5,6 +5,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from '@radix-ui/react-icons';
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
 
 import { twMerge } from 'tailwind-merge';
 import { Button } from '../../components/button/Button';
@@ -58,12 +59,18 @@ const Carousel = React.forwardRef<
     },
     ref,
   ) => {
+    const plugin = React.useRef(
+      Autoplay({ delay: 5000, stopOnInteraction: true }),
+    );
+    const mergedPlugins = plugins
+      ? [...plugins, plugin.current]
+      : [plugin.current];
     const [carouselRef, api] = useEmblaCarousel(
       {
         ...opts,
         axis: orientation === 'horizontal' ? 'x' : 'y',
       },
-      plugins,
+      mergedPlugins,
     );
     const [canScrollPrev, setCanScrollPrev] = React.useState(false);
     const [canScrollNext, setCanScrollNext] = React.useState(false);
