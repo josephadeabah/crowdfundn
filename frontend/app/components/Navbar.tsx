@@ -66,17 +66,26 @@ const Navbar = () => {
             </svg>
           </a>
           <div className="absolute top-11 left-0 w-full hidden peer-has-[:checked]:flex flex-col gap-2 bg-white dark:bg-gray-950 ring-1 ring-inset ring-gray-100 dark:ring-gray-900 shadow-md rounded-lg px-6 py-4 lg:relative lg:top-0 lg:w-auto lg:flex lg:flex-row lg:ring-0 lg:p-0 lg:shadow-none *:flex *:items-center *:gap-x-1.5 *:py-1.5 *:text-sm *:text-gray-950 dark:*:text-gray-50 *:font-medium lg:*:px-2">
-            <a href=".">
-              Explore Campaigns
+            <a href="." className="font-popins">
+              For Diaspora
               <span className="bg-blue-50 dark:bg-blue-900 flex px-1.5 py-0.5 rounded-full text-xs text-blue-600 dark:text-white font-medium">
                 NEW
               </span>
             </a>
-            <a href=".">How It Works</a>
-            <a href=".">Success Stories</a>
-            <a href=".">For Diaspora</a>
+            <a href="." className="font-popins">
+              How It Works
+            </a>
+            <a href="." className="font-popins">
+              Success Stories
+            </a>
+            <a href="." className="font-popins">
+              Explore Campaigns
+            </a>
             <div className="bg-blue-600 hover:bg-blue-700 text-white p-4 lg:hidden md:hidden">
-              <a href="." className=" text-white text-center py-2 px-4">
+              <a
+                href="."
+                className=" text-white text-center py-2 px-4 rounded-sm font-popins"
+              >
                 Start Campaign
               </a>
             </div>
@@ -85,13 +94,13 @@ const Navbar = () => {
             <DarkModeBtn />
             <a
               href="."
-              className="bg-blue-600 hover:bg-blue-700 text-white hidden lg:inline-block py-2 px-4"
+              className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-900 font-popins text-white hidden lg:inline-block py-2 px-4 rounded-sm"
             >
               Start Campaign
             </a>
             <a
               href="."
-              className="bg-white dark:bg-gray-950 hover:bg-gray-50 dark:hover:bg-gray-900 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 text-gray-950 dark:text-gray-50 lg:inline-block py-2 px-4"
+              className="bg-white dark:bg-gray-950 hover:bg-gray-50 dark:hover:bg-gray-900 ring-1 ring-inset font-popins rounded-sm ring-gray-200 dark:ring-gray-800 text-gray-950 dark:text-gray-50 lg:inline-block py-2 px-4"
             >
               Login
             </a>
