@@ -1,13 +1,14 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
-import { MoonIcon, SunIcon } from '@heroicons/react/24/solid';
+import MoonIcon from './icons/MoonIcon';
+import SunIcon from './icons/SunIcon';
 import useSound from 'use-sound';
 
 const DarkModeBtn = () => {
   const [mounted, setMounted] = useState(false);
   const { systemTheme, theme, setTheme } = useTheme();
-  const [play, { stop }] = useSound('./sound/bubble-sound.mp3');
+  const [play] = useSound('/sound/bubble-sound.mp3', { volume: 0.5 });
 
   useEffect(() => {
     setMounted(true);
@@ -32,6 +33,7 @@ const DarkModeBtn = () => {
             setTheme('light');
             handlePlay();
           }}
+          aria-label="Switch to light mode"
         />
       ) : (
         <MoonIcon
@@ -40,9 +42,11 @@ const DarkModeBtn = () => {
             setTheme('dark');
             handlePlay();
           }}
+          aria-label="Switch to dark mode"
         />
       )}
     </div>
   );
 };
+
 export default DarkModeBtn;
