@@ -1,15 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	reactStrictMode: true,
-	experimental: {
-		appDir: true,
-		fontLoaders: [
-			{ loader: "@next/font/google", options: { subsets: ["latin"] } },
-		],
-	},
-	images: {
-		domains: ["pbs.twimg.com"],
-	},
-}
+  reactStrictMode: true,
+  experimental: {
+    appDir: true,
+    fontLoaders: [
+      { loader: '@next/font/google', options: { subsets: ['latin'] } },
+    ],
+  },
+  images: {
+    domains: ['pbs.twimg.com'],
+  },
+};
 
-export default nextConfig
+export default nextConfig;

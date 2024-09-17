@@ -1,4 +1,4 @@
-import DarkModeBtn from "./DarkModeBtn";
+import DarkModeBtn from './DarkModeBtn';
 
 const Navbar = () => {
   return (
@@ -50,7 +50,7 @@ const Navbar = () => {
           <div className="flex grow basis-0 items-center justify-end gap-x-3 *:rounded-lg *:px-3 *:py-1.5 *:text-sm *:font-medium *:transition *:duration-[250ms] *:ease-in-out">
             <DarkModeBtn />
             <a href="." className="bg-blue-600 hover:bg-blue-700 text-white">
-              Start you raise
+              Start raising funds
             </a>
             <a
               href="."

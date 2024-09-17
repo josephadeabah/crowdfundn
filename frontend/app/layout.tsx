@@ -1,21 +1,21 @@
-import "../styles/globals.css";
-import { Oswald, Poppins } from "@next/font/google";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import Providers from "./Providers";
+import '../styles/globals.css';
+import { Oswald, Poppins } from '@next/font/google';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import Providers from './Providers';
 
 const oswald = Oswald({
-  weight: ["400", "600"],
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-oswald",
+  weight: ['400', '600'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-oswald',
 });
 
 const popins = Poppins({
-  weight: ["100", "300", "400", "500", "700", "900"],
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-popins",
+  weight: ['100', '300', '400', '500', '700', '900'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-popins',
 });
 
 export default function RootLayout({
