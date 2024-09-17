@@ -22,9 +22,9 @@ const HomePage = () => {
               <Image
                 alt={data.name}
                 src="https://images.pexels.com/photos/4968393/pexels-photo-4968393.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                width={500}
+                width={1056}
                 height={96}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             </CarouselItem>
             <CarouselItem className="bg-blue-500 text-white flex justify-center items-center">
