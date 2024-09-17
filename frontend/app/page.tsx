@@ -10,14 +10,14 @@ import Image from 'next/image';
 
 const HomePage = () => {
   return (
-    <div className="flex justify-center items-center flex-col mx-auto w-full pt-12 px-8">
+    <div className="flex justify-center items-center flex-col mx-auto w-full pt-1 px-8">
       <div className="w-full h-full">
         <Carousel
           opts={{ loop: true }} // Pass any options here
           orientation="horizontal" // or "vertical"
           className="mx-auto"
         >
-          <CarouselContent className="w-full h-40">
+          <CarouselContent className="w-full h-64">
             <CarouselItem className="bg-indigo-500 text-white  flex justify-center items-center">
               <Image
                 alt={data.name}
