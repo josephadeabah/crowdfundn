@@ -48,7 +48,7 @@ const Navbar = () => {
             <a href=".">Contact</a>
             <div className="bg-blue-600 hover:bg-blue-700 text-white p-4 lg:hidden md:hidden">
               <a href="." className=" text-white text-center py-2 px-4">
-                Start raising funds
+                Start campaign
               </a>
             </div>
           </div>
@@ -58,7 +58,7 @@ const Navbar = () => {
               href="."
               className="bg-blue-600 hover:bg-blue-700 text-white hidden lg:inline-block py-2 px-4"
             >
-              Start raising funds
+              Start campaign
             </a>
             <a
               href="."
