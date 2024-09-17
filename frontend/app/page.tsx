@@ -1,18 +1,49 @@
 import data from '../data.json';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from './components/carousel/Carousel';
+import Image from 'next/image';
 
 const HomePage = () => {
   return (
     <div className="flex justify-center items-center flex-col mx-auto w-full pt-12 px-8">
-      {/* <Image
-        alt={data.name}
-        src={data.avatar}
-        width={96}
-        height={96}
-        className="rounded-full"
-      /> */}
+      <div className="w-full h-full">
+        <Carousel
+          opts={{ loop: true }} // Pass any options here
+          orientation="horizontal" // or "vertical"
+          className="mx-auto"
+        >
+          <CarouselContent className="w-full h-40">
+            <CarouselItem className="bg-indigo-500 text-white  flex justify-center items-center">
+              <Image
+                alt={data.name}
+                src="https://images.pexels.com/photos/4968393/pexels-photo-4968393.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                width={500}
+                height={96}
+                className="w-full h-full object-cover"
+              />
+            </CarouselItem>
+            <CarouselItem className="bg-blue-500 text-white flex justify-center items-center">
+              Slide 2
+            </CarouselItem>
+            <CarouselItem className="bg-green-500 text-white flex justify-center items-center">
+              Slide 3
+            </CarouselItem>
+            <CarouselItem className="bg-red-500 text-white flex justify-center items-center">
+              Slide 4
+            </CarouselItem>
+          </CarouselContent>
+          <CarouselPrevious className="left-4 text-white" />
+          <CarouselNext className="right-4 text-white" />
+        </Carousel>
+      </div>
 
-      <h1 className="my-4 text-2xl font-semibold font-oswald">@{data.name}</h1>
-      <p className="mb-8 text-gray-500 font-medium text-center font-popins text-sm sm:text-base">
+      <h1 className="my-4 text-2xl font-semibold">@{data.name}</h1>
+      <p className="mb-8 text-gray-500 font-medium text-center text-sm sm:text-base">
         {data.bio}
       </p>
     </div>
