@@ -39,7 +39,7 @@ const HomePage = () => {
           </div>
         </CardBanner>
         {/* recommended campaigns */}
-        {/* <CardBanner title="Recommended Campaigns" description="Check these out">
+        <CardBanner title="Recommended Campaigns" description="Check these out">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {data.recommendedFundraisers.map((campaign) => (
               <div key={campaign.id} className="flex flex-col h-full">
@@ -53,7 +53,7 @@ const HomePage = () => {
                   <p className="text-sm">{campaign.description}</p>
                 </div>
                 <div className="mt-2">
-                  <Progress value={33} className="bg-gray-200 h-1" />
+                  <Progress value={Number(33)} className="bg-gray-200 h-1" />
                 </div>
                 <p className="flex justify-between items-center text-sm font-semibold mt-2">
                   {campaign.amountRaised}{' '}
@@ -62,7 +62,7 @@ const HomePage = () => {
               </div>
             ))}
           </div>
-        </CardBanner> */}
+        </CardBanner>
       </div>
       {/* CTA */}
       <div className="w-full flex flex-col sm:flex-row gap-2">
