@@ -40,7 +40,19 @@ const HomePage = () => {
           description="Check these out"
           footer="Read more"
         >
-          <p>{data.name}</p>
+          <div className="grid grid-cols-2 gap-4">
+            {data.recommendedFundraisers.map((campaign) => (
+              <div key={campaign.id}>
+                <img
+                  src={campaign.image}
+                  alt={campaign.name}
+                  className="mb-2"
+                />
+                <h3 className="text-lg font-bold">{campaign.name}</h3>
+                <p className="text-sm">{campaign.description}</p>
+              </div>
+            ))}
+          </div>
         </CardBanner>
       </div>
 
@@ -124,14 +136,38 @@ const HomePage = () => {
           description="Discover more"
           footer="Read more"
         >
-          <p>{data.name}</p>
+          <div className="grid grid-cols-2 gap-4">
+            {data.recommendedFundraisers.map((campaign) => (
+              <div key={campaign.id}>
+                <img
+                  src={campaign.image}
+                  alt={campaign.name}
+                  className="mb-2"
+                />
+                <h3 className="text-lg font-bold">{campaign.name}</h3>
+                <p className="text-sm">{campaign.description}</p>
+              </div>
+            ))}
+          </div>
         </CardBanner>
         <CardBanner
           title="Call to Action"
           description="Join us"
           footer="Get involved"
         >
-          <p>{data.name}</p>
+          <div className="grid grid-cols-2 gap-4">
+            {data.recommendedFundraisers.map((campaign) => (
+              <div key={campaign.id}>
+                <img
+                  src={campaign.image}
+                  alt={campaign.name}
+                  className="mb-2"
+                />
+                <h3 className="text-lg font-bold">{campaign.name}</h3>
+                <p className="text-sm">{campaign.description}</p>
+              </div>
+            ))}
+          </div>
         </CardBanner>
       </div>
 

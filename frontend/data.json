@@ -1,4 +1,30 @@
 {
   "name": "CrowdFundAfrica",
-  "bio": "CrowdFundAfrica is a new crowdfunding platform designed to support African innovators, entrepreneurs, and social causes. We aim to empower projects across the continent through secure, accessible, and affordable funding solutions."
+  "bio": "CrowdFundAfrica is a new crowdfunding platform designed to support African innovators, entrepreneurs, and social causes. We aim to empower projects across the continent through secure, accessible, and affordable funding solutions.",
+  "recommendedFundraisers": [
+    {
+      "id": 1,
+      "name": "Help Save the Rainforest",
+      "description": "Join us in protecting the Amazon.",
+      "image": "https://gmsrgfdbn9g2iagv.public.blob.vercel-storage.com/img/placeholder/graphic/screenshot.svg"
+    },
+    {
+      "id": 2,
+      "name": "Support Local Families",
+      "description": "Donate to help families in need.",
+      "image": "https://gmsrgfdbn9g2iagv.public.blob.vercel-storage.com/img/placeholder/graphic/screenshot.svg"
+    },
+    {
+      "id": 3,
+      "name": "School Supplies for Kids",
+      "description": "Provide essential supplies for children.",
+      "image": "https://gmsrgfdbn9g2iagv.public.blob.vercel-storage.com/img/placeholder/graphic/screenshot.svg"
+    },
+    {
+      "id": 4,
+      "name": "Clean Water Initiative",
+      "description": "Help provide clean drinking water.",
+      "image": "https://gmsrgfdbn9g2iagv.public.blob.vercel-storage.com/img/placeholder/graphic/screenshot.svg"
+    }
+  ]
 }
