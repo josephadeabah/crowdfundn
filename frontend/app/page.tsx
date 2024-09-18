@@ -28,11 +28,7 @@ const HomePage = () => {
         <CardBanner title="Categories" description="Explore categories">
           <div className="flex flex-wrap gap-2 mb-4 justify-start">
             {data.categories.map((category, index) => (
-              <Badge
-                key={index}
-                className="m-1 text-gray-500"
-                variant="default"
-              >
+              <Badge key={index} className="text-gray-500" variant="default">
                 {category}
               </Badge>
             ))}
