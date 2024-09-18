@@ -52,9 +52,9 @@ const HomePage = () => {
                   <h3 className="text-lg font-bold">{campaign?.name}</h3>
                   <p className="text-sm">{campaign?.description}</p>
                 </div>
-                <div className="mt-2">
+                {/* <div className="mt-2">
                   <Progress value={33} className="bg-gray-200 h-1" />
-                </div>
+                </div> */}
                 <p className="flex justify-between items-center text-sm font-semibold mt-2">
                   {campaign?.amountRaised}{' '}
                   <span className="font-normal">raised</span>
@@ -133,7 +133,7 @@ const HomePage = () => {
 
       {/* More random campaigns */}
       <div className="w-full flex flex-col sm:flex-row gap-2">
-        {/* <CardBanner
+        <CardBanner
           title="More Campaigns"
           description="Discover fundraisers inspired by what you care about"
         >
@@ -149,9 +149,9 @@ const HomePage = () => {
                   <h3 className="text-lg font-bold">{campaign.name}</h3>
                   <p className="text-sm">{campaign.description}</p>
                 </div>
-                <div className="mt-2">
+                {/* <div className="mt-2">
                   <Progress value={58} className="bg-gray-200 h-1" />
-                </div>
+                </div> */}
                 <p className="flex justify-between items-center text-sm font-semibold mt-2">
                   {campaign.amountRaised}{' '}
                   <span className="font-normal">raised</span>
@@ -159,8 +159,8 @@ const HomePage = () => {
               </div>
             ))}
           </div>
-        </CardBanner> */}
-        {/* <CardBanner
+        </CardBanner>
+        <CardBanner
           title="Ask and it shall be given"
           description="Join the million people who have already made big impact"
         >
@@ -176,9 +176,9 @@ const HomePage = () => {
                   <h3 className="text-lg font-bold">{campaign.name}</h3>
                   <p className="text-sm">{campaign.description}</p>
                 </div>
-                <div className="mt-2">
+                {/* <div className="mt-2">
                   <Progress value={80} className="bg-gray-200 h-1" />
-                </div>
+                </div> */}
                 <p className="flex justify-between items-center text-sm font-semibold mt-2">
                   {campaign.amountRaised}{' '}
                   <span className="font-normal">raised</span>
@@ -186,7 +186,7 @@ const HomePage = () => {
               </div>
             ))}
           </div>
-        </CardBanner> */}
+        </CardBanner>
       </div>
 
       {/* Fundraising tips */}
