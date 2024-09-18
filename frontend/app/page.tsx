@@ -39,7 +39,7 @@ const HomePage = () => {
           </div>
         </CardBanner>
         {/* recommended campaigns */}
-        <CardBanner title="Recommended Campaigns" description="Check these out">
+        {/* <CardBanner title="Recommended Campaigns" description="Check these out">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {data.recommendedFundraisers.map((campaign) => (
               <div key={campaign.id} className="flex flex-col h-full">
@@ -62,7 +62,7 @@ const HomePage = () => {
               </div>
             ))}
           </div>
-        </CardBanner>
+        </CardBanner> */}
       </div>
       {/* CTA */}
       <div className="w-full flex flex-col sm:flex-row gap-2">
@@ -133,7 +133,7 @@ const HomePage = () => {
 
       {/* More random campaigns */}
       <div className="w-full flex flex-col sm:flex-row gap-2">
-        <CardBanner
+        {/* <CardBanner
           title="More Campaigns"
           description="Discover fundraisers inspired by what you care about"
         >
@@ -159,8 +159,8 @@ const HomePage = () => {
               </div>
             ))}
           </div>
-        </CardBanner>
-        <CardBanner
+        </CardBanner> */}
+        {/* <CardBanner
           title="Ask and it shall be given"
           description="Join the million people who have already made big impact"
         >
@@ -186,7 +186,7 @@ const HomePage = () => {
               </div>
             ))}
           </div>
-        </CardBanner>
+        </CardBanner> */}
       </div>
 
       {/* Fundraising tips */}
