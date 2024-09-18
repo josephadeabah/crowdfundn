@@ -6,37 +6,43 @@
       "id": 1,
       "name": "Help Save the Rainforest",
       "description": "Join us in protecting the Amazon.",
-      "image": "https://images.pexels.com/photos/4909267/pexels-photo-4909267.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+      "image": "https://images.pexels.com/photos/4909267/pexels-photo-4909267.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "amountRaised": "₦500,000"
     },
     {
       "id": 2,
       "name": "Support Local Families",
       "description": "Donate to help families in need.",
-      "image": "https://images.pexels.com/photos/5094417/pexels-photo-5094417.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+      "image": "https://images.pexels.com/photos/5094417/pexels-photo-5094417.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "amountRaised": "KSh 300,000"
     },
     {
       "id": 3,
       "name": "School Supplies for Kids",
       "description": "Provide essential supplies for children.",
-      "image": "https://images.pexels.com/photos/2862070/pexels-photo-2862070.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+      "image": "https://images.pexels.com/photos/2862070/pexels-photo-2862070.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "amountRaised": "R 2,000"
     },
     {
       "id": 4,
       "name": "Clean Water Initiative",
       "description": "Help provide clean drinking water.",
-      "image": "https://images.pexels.com/photos/15487479/pexels-photo-15487479/free-photo-of-man-using-his-smartphone.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+      "image": "https://images.pexels.com/photos/15487479/pexels-photo-15487479/free-photo-of-man-using-his-smartphone.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "amountRaised": "TZS 1,000,000"
     },
     {
       "id": 5,
       "name": "Making Roads Accessible",
       "description": "Help provide good road accessibility.",
-      "image": "https://plus.unsplash.com/premium_photo-1690417699736-0b55f5bb6617?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      "image": "https://plus.unsplash.com/premium_photo-1690417699736-0b55f5bb6617?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "amountRaised": "₦800,000"
     },
     {
       "id": 6,
       "name": "Clean Water Initiative",
       "description": "Help provide clean drinking water.",
-      "image": "https://plus.unsplash.com/premium_photo-1681738777245-6fb34243e769?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      "image": "https://plus.unsplash.com/premium_photo-1681738777245-6fb34243e769?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "amountRaised": "KSh 500,000"
     }
   ],
   "categories": [
