@@ -32,7 +32,7 @@ export default function RootLayout({
       <body className="bg-gradient-to-r from-green-50 to-green-200 dark:bg-gradient-to-t dark:from-[#242933] dark:to-[#2A303C] mx-auto transition-all duration-150">
         <Providers>
           <Navbar />
-          <div className="max-w-7xl mx-auto h-screen">
+          <div className="w-full h-screen">
             <div>
               <main>{children}</main>
             </div>
