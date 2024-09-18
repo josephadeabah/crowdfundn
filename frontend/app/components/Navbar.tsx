@@ -96,11 +96,15 @@ const Navbar = () => {
             <Button
               variant="outline"
               size="sm"
-              className="shadow-none hidden lg:inline-block py-2 px-4"
+              className="shadow-none hidden lg:inline-block py-2 px-4 hover:bg-slate-50"
             >
               Start Campaign
             </Button>
-            <Button variant="outline" size="sm" className="shadow-none">
+            <Button
+              variant="outline"
+              size="sm"
+              className="shadow-none hover:bg-slate-50"
+            >
               Login
             </Button>
           </div>
