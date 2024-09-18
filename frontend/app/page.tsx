@@ -19,8 +19,8 @@ const HomePage = () => {
           </div>
         </div>
 
-        <h1 className="my-4 text-2xl font-semibold">@{data.name}</h1>
-        <p className="mb-8 text-gray-500 font-medium text-center text-sm sm:text-base">
+        <h1 className="my-4 text-3xl font-semibold">@{data.name}</h1>
+        <p className="mb-8 text-gray-700 font-medium text-center text-md sm:text-base">
           {data.bio}
         </p>
       </div>

@@ -29,7 +29,7 @@ export default function RootLayout({
       className={`h-full scroll-smooth ${oswald.variable} ${popins.variable}`}
     >
       <head />
-      <body className="bg-gradient-to-r from-green-50 to-green-200 dark:bg-gradient-to-t dark:from-[#242933] dark:to-[#2A303C] mx-auto transition-all duration-150">
+      <body className=" dark:from-[#242933] dark:to-[#2A303C] mx-auto transition-all duration-150">
         <Providers>
           <Navbar />
           <div className="w-full">
