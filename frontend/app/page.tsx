@@ -64,7 +64,6 @@ const HomePage = () => {
           </div>
         </CardBanner>
       </div>
-
       {/* CTA */}
       <div className="w-full flex flex-col sm:flex-row gap-2">
         <CardBanner>
