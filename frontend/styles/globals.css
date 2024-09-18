@@ -2,9 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Set global default font */
+/* Global font settings */
 html {
-  font-family: var(--font-popins);
+  font-family: var(--font-roboto);
 }
 
 html,
@@ -25,5 +25,37 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-oswald);
+  font-family: var(--font-ubuntu);
+}
+
+/* Responsive font sizes */
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.75rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+}
+
+h5,
+h6 {
+  font-size: 1.25rem;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
 }

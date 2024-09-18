@@ -19,16 +19,12 @@ const HomePage = () => {
             <CarouselPlugin />
           </div>
         </div>
-        <h1 className="my-4 text-3xl font-semibold">@{data.name}</h1>
+        <h1 className="m-4 text-3xl font-semibold">{data.name}</h1>
       </div>
 
       <div className="w-full flex flex-col sm:flex-row gap-2">
         {/* categories */}
-        <CardBanner
-          title="Categories"
-          description="Explore categories"
-          footer="Read more"
-        >
+        <CardBanner title="Categories" description="Explore categories">
           <div className="flex flex-wrap gap-2 mb-4 justify-start">
             {data.categories.map((category, index) => (
               <Badge
@@ -42,11 +38,7 @@ const HomePage = () => {
           </div>
         </CardBanner>
         {/* recommended campaigns */}
-        <CardBanner
-          title="Recommended Campaigns"
-          description="Check these out"
-          footer="Read more"
-        >
+        <CardBanner title="Recommended Campaigns" description="Check these out">
           <div className="grid grid-cols-2 gap-4">
             {data.recommendedFundraisers.map((campaign) => (
               <div key={campaign.id}>
@@ -138,11 +130,7 @@ const HomePage = () => {
 
       {/* More random campaigns */}
       <div className="w-full flex flex-col sm:flex-row gap-2">
-        <CardBanner
-          title="More Campaigns"
-          description="Discover more"
-          footer="Read more"
-        >
+        <CardBanner title="More Campaigns" description="Discover more">
           <div className="grid grid-cols-2 gap-4">
             {data.recommendedFundraisers.map((campaign) => (
               <div key={campaign.id}>
@@ -158,9 +146,8 @@ const HomePage = () => {
           </div>
         </CardBanner>
         <CardBanner
-          title="Call to Action"
-          description="Join us"
-          footer="Get involved"
+          title="Ask and it shall be given"
+          description="Join the million people who have already made big impact"
         >
           <div className="grid grid-cols-2 gap-4">
             {data.recommendedFundraisers.map((campaign) => (

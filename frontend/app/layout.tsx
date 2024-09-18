@@ -1,42 +1,40 @@
 import '../styles/globals.css';
-import { Oswald, Poppins } from '@next/font/google';
+import { Roboto, Ubuntu } from '@next/font/google';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Providers from './Providers';
 
-const oswald = Oswald({
-  weight: ['400', '600'],
+const roboto = Roboto({
+  weight: ['400', '500', '700'],
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-oswald',
+  variable: '--font-roboto',
 });
 
-const popins = Poppins({
-  weight: ['100', '300', '400', '500', '700', '900'],
+const ubuntu = Ubuntu({
+  weight: ['400', '500', '700'],
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-popins',
+  variable: '--font-ubuntu',
 });
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+import { ReactNode } from 'react';
+
+interface RootLayoutProps {
+  children: ReactNode;
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html
       lang="en"
-      className={`h-full scroll-smooth ${oswald.variable} ${popins.variable}`}
+      className={`h-full scroll-smooth ${roboto.variable} ${ubuntu.variable}`}
     >
       <head />
-      <body className=" dark:from-[#242933] dark:to-[#2A303C] mx-auto transition-all duration-150">
+      <body className="dark:from-[#242933] dark:to-[#2A303C] mx-auto transition-all duration-150">
         <Providers>
           <Navbar />
-          <div className="w-full">
-            <div>
-              <main>{children}</main>
-            </div>
-          </div>
+          <main className="w-full">{children}</main>
           <Footer />
         </Providers>
       </body>

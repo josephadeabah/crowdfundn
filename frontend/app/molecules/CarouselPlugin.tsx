@@ -25,12 +25,12 @@ export function CarouselPlugin() {
         {data.recommendedFundraisers.map((fundraiser) => (
           <CarouselItem key={fundraiser.id}>
             <div className="p-1">
-              <Card className="rounded-none shadow-none border-0">
+              <Card className="rounded-none bg-gray-100 shadow-none border-0">
                 <CardContent className="w-full flex aspect-square items-center justify-center h-96">
                   <img
                     src={fundraiser.image}
                     alt={fundraiser.name}
-                    className="object-cover h-full w-full rounded-md"
+                    className="object-cover h-full w-full"
                   />
                 </CardContent>
               </Card>
