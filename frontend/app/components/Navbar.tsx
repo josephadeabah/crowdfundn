@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import DarkModeBtn from './DarkModeBtn';
+import { Button } from './button/Button';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -68,9 +69,9 @@ const Navbar = () => {
           <div className="absolute top-11 left-0 w-full hidden peer-has-[:checked]:flex flex-col gap-2 bg-white dark:bg-gray-950 ring-1 ring-inset ring-gray-100 dark:ring-gray-900 shadow-md rounded-lg px-6 py-4 lg:relative lg:top-0 lg:w-auto lg:flex lg:flex-row lg:ring-0 lg:p-0 lg:shadow-none *:flex *:items-center *:gap-x-1.5 *:py-1.5 *:text-sm *:text-gray-950 dark:*:text-gray-50 *:font-medium lg:*:px-2">
             <a href="." className="font-popins">
               For Diaspora
-              <span className="bg-blue-50 dark:bg-blue-900 flex px-1.5 py-0.5 rounded-full text-xs text-blue-600 dark:text-white font-medium">
+              <p className="bg-blue-50 dark:bg-blue-900 flex px-1.5 py-0.5 rounded-full text-xs text-blue-600 dark:text-white font-medium">
                 NEW
-              </span>
+              </p>
             </a>
             <a href="." className="font-popins">
               How It Works
@@ -92,18 +93,16 @@ const Navbar = () => {
           </div>
           <div className="flex grow basis-0 items-center justify-end gap-x-3 *:px-3 *:py-1.5 *:text-sm *:font-medium *:transition *:duration-[250ms] *:ease-in-out">
             <DarkModeBtn />
-            <a
-              href="."
-              className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-900 font-popins text-white hidden lg:inline-block py-2 px-4 rounded-sm"
+            <Button
+              variant="outline"
+              size="sm"
+              className="shadow-none hidden lg:inline-block py-2 px-4"
             >
               Start Campaign
-            </a>
-            <a
-              href="."
-              className="bg-white dark:bg-gray-950 hover:bg-gray-50 dark:hover:bg-gray-900 ring-1 ring-inset font-popins rounded-sm ring-gray-200 dark:ring-gray-800 text-gray-950 dark:text-gray-50 lg:inline-block py-2 px-4"
-            >
+            </Button>
+            <Button variant="outline" size="sm" className="shadow-none">
               Login
-            </a>
+            </Button>
           </div>
         </div>
       </nav>

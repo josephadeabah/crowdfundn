@@ -21,7 +21,7 @@ const CardBanner = ({ children, ...props }: CardBannerProps) => {
   return (
     <Card
       onClick={props.onClick}
-      className="w-full sm:w-1/2 rounded-none shadow-none bg-white border-0"
+      className="w-full sm:w-1/2 rounded-none shadow-none bg-white dark:bg-gray-950 border-0"
     >
       <CardHeader>
         <CardTitle>{props.title}</CardTitle>

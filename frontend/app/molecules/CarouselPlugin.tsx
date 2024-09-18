@@ -16,7 +16,7 @@ export function CarouselPlugin() {
   return (
     <Carousel
       plugins={[plugin.current]}
-      className="w-full bg-white"
+      className="w-full bg-white dark:bg-gray-950"
       onMouseEnter={plugin.current.stop}
       onMouseLeave={plugin.current.reset}
     >
@@ -25,7 +25,7 @@ export function CarouselPlugin() {
           <CarouselItem key={index}>
             <div className="p-1">
               <Card className="rounded-none shadow-none border-0">
-                <CardContent className="w-full flex aspect-square items-center justify-center p-4 h-96">
+                <CardContent className="w-full flex aspect-square items-center justify-center h-96">
                   {' '}
                   {/* Adjusted height and padding */}
                   <span className="text-4xl font-semibold">{index + 1}</span>
