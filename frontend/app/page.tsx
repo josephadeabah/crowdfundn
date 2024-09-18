@@ -85,31 +85,34 @@ const HomePage = () => {
                 </div>
                 <div>
                   <h4 className="mt-4 mb-2 text-gray-950 dark:text-gray-50 text-lg font-bold lg:text-xl">
-                    Join the Movement
+                    Flexible Payment Options
                   </h4>
                   <p className="text-base text-gray-950 dark:text-gray-50">
-                    Be part of a community that is making a difference across
-                    Africa. Together, we can create impactful change.
+                    Support projects using a variety of payment methods: mobile
+                    money (like M-Pesa, Airtel Money, MTN Mobile Money and
+                    Orange Money), bank transfers, and PayPal. We ensure a
+                    seamless experience for all donors.
                   </p>
                 </div>
               </div>
               <div className="max-w-[49.5rem] grid mx-auto gap-6 sm:grid-cols-2 w-full col-span-1 p-6 bg-white dark:bg-gray-950 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 rounded-lg text-left">
                 <div>
                   <h4 className="mt-4 mb-2 text-gray-950 dark:text-gray-50 text-lg font-bold lg:text-xl">
-                    Empowering Change
-                  </h4>
-                  <p className="text-base text-gray-950 dark:text-gray-50">
-                    We empower African projects by providing secure, accessible,
-                    and affordable funding solutions.
-                  </p>
-                </div>
-                <div>
-                  <h4 className="mt-4 mb-2 text-gray-950 dark:text-gray-50 text-lg font-bold lg:text-xl">
                     Join the Movement
                   </h4>
                   <p className="text-base text-gray-950 dark:text-gray-50">
                     Be part of a community that is making a difference across
                     Africa. Together, we can create impactful change.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="mt-4 mb-2 text-gray-950 dark:text-gray-50 text-lg font-bold lg:text-xl">
+                    Rewards & Gamification
+                  </h4>
+                  <p className="text-base text-gray-950 dark:text-gray-50">
+                    Enjoy rewards for your donations and participate in engaging
+                    gamification features that enhance your crowdfunding
+                    experience. Together, we can make every contribution count!
                   </p>
                 </div>
               </div>
@@ -119,7 +122,7 @@ const HomePage = () => {
 
         <CardBanner>
           <section className="dark:bg-gray-950">
-            <div className="flex flex-col items-center mx-auto max-w-[52.5rem]">
+            <div className="flex flex-col items-center mx-auto">
               <img
                 src="https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 alt="#"
