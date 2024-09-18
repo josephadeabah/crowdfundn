@@ -41,10 +41,13 @@ const HomePage = () => {
         {/* recommended campaigns */}
         <CardBanner title="Recommended Campaigns" description="Check these out">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {data.recommendedFundraisers?.map((campaign) => (
+            {data?.recommendedFundraisers?.map((campaign) => (
               <div key={campaign.id} className="flex flex-col h-full">
                 <img
-                  src={campaign?.image}
+                  src={
+                    campaign.image ||
+                    'https://plus.unsplash.com/premium_photo-1690417699736-0b55f5bb6617?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+                  }
                   alt={campaign?.name}
                   className="mb-2 object-cover h-32 w-full rounded-md"
                 />
