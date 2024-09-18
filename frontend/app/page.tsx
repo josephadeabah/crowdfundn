@@ -6,8 +6,19 @@ import { CarouselPlugin } from './molecules/CarouselPlugin';
 import CardBanner from './molecules/CardBanner';
 import { Badge } from './components/badge/Badge';
 import Progress from './components/progressbar/ProgressBar';
+import HomePageLoader from './loaders/HomeLoader';
 
 const HomePage = () => {
+  const [loading, setLoading] = React.useState(true);
+  React.useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+  }, []);
+
+  if (loading) {
+    return <HomePageLoader />;
+  }
   return (
     <div className="w-full flex flex-col gap-16 min-h-screen mb-24">
       <div className="flex-grow flex flex-col justify-center items-center mx-auto w-full pt-1 sm:px-8">
