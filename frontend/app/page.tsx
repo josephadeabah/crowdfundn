@@ -44,10 +44,7 @@ const HomePage = () => {
             {data?.recommendedFundraisers?.map((campaign) => (
               <div key={campaign.id} className="flex flex-col h-full">
                 <img
-                  src={
-                    campaign.image ||
-                    'https://plus.unsplash.com/premium_photo-1690417699736-0b55f5bb6617?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-                  }
+                  src={campaign?.image}
                   alt={campaign?.name}
                   className="mb-2 object-cover h-32 w-full rounded-md"
                 />
@@ -56,7 +53,7 @@ const HomePage = () => {
                   <p className="text-sm">{campaign?.description}</p>
                 </div>
                 <div className="mt-2">
-                  <Progress value={33} className="bg-gray-200 h-1" />
+                  {/* <Progress value={33} className="bg-gray-200 h-1" /> */}
                 </div>
                 <p className="flex justify-between items-center text-sm font-semibold mt-2">
                   {campaign?.amountRaised}{' '}
