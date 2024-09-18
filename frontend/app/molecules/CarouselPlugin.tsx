@@ -8,6 +8,7 @@ import {
 } from '../components/carousel/Carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import { Card, CardContent } from '../components/card/Card';
+import data from '../../data.json';
 export function CarouselPlugin() {
   const plugin = React.useRef(
     Autoplay({ delay: 4000, stopOnInteraction: true }),
@@ -21,14 +22,16 @@ export function CarouselPlugin() {
       onMouseLeave={plugin.current.reset}
     >
       <CarouselContent>
-        {Array.from({ length: 5 }).map((_, index) => (
-          <CarouselItem key={index}>
+        {data.recommendedFundraisers.map((fundraiser) => (
+          <CarouselItem key={fundraiser.id}>
             <div className="p-1">
               <Card className="rounded-none shadow-none border-0">
                 <CardContent className="w-full flex aspect-square items-center justify-center h-96">
-                  {' '}
-                  {/* Adjusted height and padding */}
-                  <span className="text-4xl font-semibold">{index + 1}</span>
+                  <img
+                    src={fundraiser.image}
+                    alt={fundraiser.name}
+                    className="object-cover h-full w-full rounded-md"
+                  />
                 </CardContent>
               </Card>
             </div>

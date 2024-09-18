@@ -4,25 +4,22 @@ import * as React from 'react';
 
 import { CarouselPlugin } from './molecules/CarouselPlugin';
 import CardBanner from './molecules/CardBanner';
+import { Badge } from './components/badge/Badge';
 
 const HomePage = () => {
   return (
     <div className="w-full flex flex-col gap-10 min-h-screen mb-12">
       <div className="flex-grow flex flex-col justify-center items-center mx-auto w-full pt-1 sm:px-8">
         <div className="w-full flex flex-col sm:flex-row gap-2">
-          <CardBanner title="About" description="About me">
-            <p>{data.name}</p>
+          <CardBanner title="Donate to support any cause.">
+            <p>{data.bio}</p>
           </CardBanner>
 
           <div className="w-full max-w-full sm:w-1/2">
             <CarouselPlugin />
           </div>
         </div>
-
         <h1 className="my-4 text-3xl font-semibold">@{data.name}</h1>
-        <p className="mb-8 text-gray-700 font-medium text-center text-md sm:text-base">
-          {data.bio}
-        </p>
       </div>
 
       <div className="w-full flex flex-col sm:flex-row gap-2">
@@ -32,7 +29,17 @@ const HomePage = () => {
           description="Explore categories"
           footer="Read more"
         >
-          <p>{data.name}</p>
+          <div className="flex flex-wrap gap-2 mb-4 justify-start">
+            {data.categories.map((category, index) => (
+              <Badge
+                key={index}
+                className="m-1 text-gray-500"
+                variant="default"
+              >
+                {category}
+              </Badge>
+            ))}
+          </div>
         </CardBanner>
         {/* recommended campaigns */}
         <CardBanner
