@@ -73,15 +73,9 @@ const Navbar = () => {
                 NEW
               </p>
             </a>
-            <a href="." className="font-popins">
-              How It Works
-            </a>
-            <a href="." className="font-popins">
-              Success Stories
-            </a>
-            <a href="." className="font-popins">
-              Donate
-            </a>
+            <a href=".">How It Works</a>
+            <a href=".">Success Stories</a>
+            <a href=".">Donate</a>
             <div className="bg-blue-600 hover:bg-blue-700 text-white p-4 lg:hidden md:hidden">
               <a
                 href="."
