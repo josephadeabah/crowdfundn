@@ -53,7 +53,7 @@ const HomePage = () => {
                   <p className="text-sm">{campaign?.description}</p>
                 </div>
                 <div className="mt-2">
-                  <Progress value={33} className="h-1" />
+                  <Progress value={33} className="bg-gray-200 h-1" />
                 </div>
                 <p className="flex justify-between items-center text-sm font-semibold mt-2">
                   {campaign?.amountRaised}{' '}
