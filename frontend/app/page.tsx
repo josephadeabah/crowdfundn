@@ -41,22 +41,22 @@ const HomePage = () => {
         {/* recommended campaigns */}
         <CardBanner title="Recommended Campaigns" description="Check these out">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {data.recommendedFundraisers.map((campaign) => (
+            {data.recommendedFundraisers?.map((campaign) => (
               <div key={campaign.id} className="flex flex-col h-full">
                 <img
-                  src={campaign.image}
-                  alt={campaign.name}
+                  src={campaign?.image}
+                  alt={campaign?.name}
                   className="mb-2 object-cover h-32 w-full rounded-md"
                 />
                 <div className="flex-grow">
-                  <h3 className="text-lg font-bold">{campaign.name}</h3>
-                  <p className="text-sm">{campaign.description}</p>
+                  <h3 className="text-lg font-bold">{campaign?.name}</h3>
+                  <p className="text-sm">{campaign?.description}</p>
                 </div>
                 <div className="mt-2">
-                  <Progress value={Number(33)} className="bg-gray-200 h-1" />
+                  <Progress value={33} className="bg-gray-200 h-1" />
                 </div>
                 <p className="flex justify-between items-center text-sm font-semibold mt-2">
-                  {campaign.amountRaised}{' '}
+                  {campaign?.amountRaised}{' '}
                   <span className="font-normal">raised</span>
                 </p>
               </div>
