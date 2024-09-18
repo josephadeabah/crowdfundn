@@ -6,25 +6,25 @@
       "id": 1,
       "name": "Help Save the Rainforest",
       "description": "Join us in protecting the Amazon.",
-      "image": "https://gmsrgfdbn9g2iagv.public.blob.vercel-storage.com/img/placeholder/graphic/screenshot.svg"
+      "image": "https://images.pexels.com/photos/4909267/pexels-photo-4909267.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
     },
     {
       "id": 2,
       "name": "Support Local Families",
       "description": "Donate to help families in need.",
-      "image": "https://gmsrgfdbn9g2iagv.public.blob.vercel-storage.com/img/placeholder/graphic/screenshot.svg"
+      "image": "https://images.pexels.com/photos/5094417/pexels-photo-5094417.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
     },
     {
       "id": 3,
       "name": "School Supplies for Kids",
       "description": "Provide essential supplies for children.",
-      "image": "https://gmsrgfdbn9g2iagv.public.blob.vercel-storage.com/img/placeholder/graphic/screenshot.svg"
+      "image": "https://images.pexels.com/photos/2862070/pexels-photo-2862070.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
     },
     {
       "id": 4,
       "name": "Clean Water Initiative",
       "description": "Help provide clean drinking water.",
-      "image": "https://gmsrgfdbn9g2iagv.public.blob.vercel-storage.com/img/placeholder/graphic/screenshot.svg"
+      "image": "https://images.pexels.com/photos/15487479/pexels-photo-15487479/free-photo-of-man-using-his-smartphone.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
     }
   ],
   "categories": [
@@ -88,5 +88,31 @@
     "Transportation",
     "Cultural Preservation",
     "Innovation and Research"
+  ],
+  "blogPosts": [
+    {
+      "id": 1,
+      "title": "The Importance of Community Fundraising",
+      "excerpt": "Discover why community fundraising is vital for local projects.",
+      "image": "https://images.pexels.com/photos/6894104/pexels-photo-6894104.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+    },
+    {
+      "id": 2,
+      "title": "Top Tips for Effective Crowdfunding",
+      "excerpt": "Learn the best practices for successful crowdfunding campaigns.",
+      "image": "https://images.pexels.com/photos/5727775/pexels-photo-5727775.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+    },
+    {
+      "id": 3,
+      "title": "How to Engage Your Donors",
+      "excerpt": "Strategies to keep your donors engaged and informed.",
+      "image": "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"
+    },
+    {
+      "id": 4,
+      "title": "The Future of Fundraising Technology",
+      "excerpt": "Explore how technology is shaping the future of fundraising.",
+      "image": "https://images.pexels.com/photos/7114420/pexels-photo-7114420.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+    }
   ]
 }

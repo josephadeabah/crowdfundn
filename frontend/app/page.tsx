@@ -119,7 +119,7 @@ const HomePage = () => {
           <section className="dark:bg-gray-950">
             <div className="flex flex-col items-center mx-auto max-w-[52.5rem]">
               <img
-                src="https://gmsrgfdbn9g2iagv.public.blob.vercel-storage.com/img/placeholder/graphic/screenshot.svg"
+                src="https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 alt="#"
                 className="w-full h-auto object-cover rounded-t-3xl max-h-[30rem] lg:max-h-[40rem]"
               />
@@ -168,18 +168,46 @@ const HomePage = () => {
       {/* Fundraising tips */}
       <div className="w-full flex flex-col sm:flex-row gap-2">
         <CardBanner
-          title="Fundraising Tips"
-          description="Learn how to fundraise"
+          title="Latest Blog Posts"
+          description="Check out our latest articles"
           footer="Read more"
         >
-          <p>{data.name}</p>
+          <div className="grid grid-cols-2 gap-4">
+            {data.blogPosts.map((post) => (
+              <div key={post.id}>
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="">
+                  <h3 className="text-lg font-bold">{post.title}</h3>
+                  <p className="text-gray-600">{post.excerpt}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </CardBanner>
         <CardBanner
-          title="Call to Action"
+          title="Get the Best tips from our community"
           description="Join us"
           footer="Get involved"
         >
-          <p>{data.name}</p>
+          <div className="grid grid-cols-2 gap-4">
+            {data.blogPosts.map((post) => (
+              <div key={post.id}>
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="">
+                  <h3 className="text-lg font-bold">{post.title}</h3>
+                  <p className="text-gray-600">{post.excerpt}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </CardBanner>
       </div>
     </div>
