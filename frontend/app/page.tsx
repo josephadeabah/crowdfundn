@@ -39,7 +39,7 @@ const HomePage = () => {
         </CardBanner>
         {/* recommended campaigns */}
         <CardBanner title="Recommended Campaigns" description="Check these out">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {data.recommendedFundraisers.map((campaign) => (
               <div key={campaign.id}>
                 <img
@@ -131,7 +131,7 @@ const HomePage = () => {
       {/* More random campaigns */}
       <div className="w-full flex flex-col sm:flex-row gap-2">
         <CardBanner title="More Campaigns" description="Discover more">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {data.recommendedFundraisers.map((campaign) => (
               <div key={campaign.id}>
                 <img
@@ -149,7 +149,7 @@ const HomePage = () => {
           title="Ask and it shall be given"
           description="Join the million people who have already made big impact"
         >
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3  gap-4">
             {data.recommendedFundraisers.map((campaign) => (
               <div key={campaign.id}>
                 <img
