@@ -80,7 +80,7 @@ const Navbar = () => {
               Success Stories
             </a>
             <a href="." className="font-popins">
-              Explore Campaigns
+              Donate
             </a>
             <div className="bg-blue-600 hover:bg-blue-700 text-white p-4 lg:hidden md:hidden">
               <a
