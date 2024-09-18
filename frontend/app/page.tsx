@@ -9,7 +9,7 @@ import { Progress } from './components/progressbar/ProgressBar';
 
 const HomePage = () => {
   return (
-    <div className="w-full flex flex-col gap-10 min-h-screen mb-12">
+    <div className="w-full flex flex-col gap-24 min-h-screen mb-24">
       <div className="flex-grow flex flex-col justify-center items-center mx-auto w-full pt-1 sm:px-8">
         <div className="w-full flex flex-col sm:flex-row gap-2">
           <CardBanner title="Donate to support any cause.">
