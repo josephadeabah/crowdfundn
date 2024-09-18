@@ -202,7 +202,7 @@ const HomePage = () => {
                 <img
                   src={post.image}
                   alt={post.title}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-48 object-cover rounded-sm"
                 />
                 <div className="">
                   <h3 className="text-lg font-bold">{post.title}</h3>
@@ -223,7 +223,7 @@ const HomePage = () => {
                 <img
                   src={post.image}
                   alt={post.title}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-48 object-cover rounded-sm"
                 />
                 <div className="">
                   <h3 className="text-lg font-bold">{post.title}</h3>
