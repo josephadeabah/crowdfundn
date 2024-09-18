@@ -20,7 +20,7 @@ const HomePage = () => {
             <CarouselPlugin />
           </div>
         </div>
-        <h1 className="m-4 text-3xl font-semibold">{data.name}</h1>
+        <h1 className="m-4 text-3xl py-6 font-semibold">{data.name}</h1>
       </div>
 
       <div className="w-full flex flex-col sm:flex-row gap-2">

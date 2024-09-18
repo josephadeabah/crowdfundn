@@ -46,7 +46,7 @@ const Progress: React.FC<ProgressBarProps> = ({
       </div>
 
       {/* Combined Progress bar */}
-      <div className="flex h-1 w-full overflow-hidden rounded-full bg-gray-200">
+      <div className="flex h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
         <div
           className="h-full bg-red-600"
           style={{ width: `${firstProgress}%` }}
