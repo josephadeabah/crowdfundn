@@ -90,14 +90,14 @@ const Navbar = () => {
             <Button
               variant="outline"
               size="sm"
-              className="shadow-none hidden lg:inline-block py-2 px-4 hover:bg-slate-50"
+              className="shadow-none hidden lg:inline-block py-2 px-4 hover:bg-slate-50 hover:text-slate-900 dark:hover:text-slate-800"
             >
               Start Campaign
             </Button>
             <Button
               variant="outline"
               size="sm"
-              className="shadow-none hover:bg-slate-50"
+              className="shadow-none hover:bg-slate-50 hover:text-slate-900 dark:hover:text-slate-800"
             >
               Login
             </Button>
