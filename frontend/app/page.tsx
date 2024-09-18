@@ -5,7 +5,7 @@ import * as React from 'react';
 import { CarouselPlugin } from './molecules/CarouselPlugin';
 import CardBanner from './molecules/CardBanner';
 import { Badge } from './components/badge/Badge';
-import { Progress } from './components/progressbar/ProgressBar';
+import Progress from './components/progressbar/ProgressBar';
 
 const HomePage = () => {
   return (
@@ -48,9 +48,12 @@ const HomePage = () => {
                   <h3 className="text-lg font-bold">{campaign?.name}</h3>
                   <p className="text-sm">{campaign?.description}</p>
                 </div>
-                {/* <div className="mt-2">
-                  <Progress value={33} className="bg-gray-200 h-1" />
-                </div> */}
+                <div className="w-full text-xs">
+                  <Progress
+                    firstProgress={33}
+                    firstTooltipContent={`Performance: ${33}%`}
+                  />
+                </div>
                 <p className="flex justify-between items-center text-sm font-semibold mt-2">
                   {campaign?.amountRaised}{' '}
                   <span className="font-normal">raised</span>
@@ -145,9 +148,12 @@ const HomePage = () => {
                   <h3 className="text-lg font-bold">{campaign.name}</h3>
                   <p className="text-sm">{campaign.description}</p>
                 </div>
-                {/* <div className="mt-2">
-                  <Progress value={58} className="bg-gray-200 h-1" />
-                </div> */}
+                <div className="w-full text-xs">
+                  <Progress
+                    firstProgress={73}
+                    firstTooltipContent={`Performance: ${73}%`}
+                  />
+                </div>
                 <p className="flex justify-between items-center text-sm font-semibold mt-2">
                   {campaign.amountRaised}{' '}
                   <span className="font-normal">raised</span>
@@ -172,9 +178,12 @@ const HomePage = () => {
                   <h3 className="text-lg font-bold">{campaign.name}</h3>
                   <p className="text-sm">{campaign.description}</p>
                 </div>
-                {/* <div className="mt-2">
-                  <Progress value={80} className="bg-gray-200 h-1" />
-                </div> */}
+                <div className="w-full text-xs">
+                  <Progress
+                    firstProgress={13}
+                    firstTooltipContent={`Performance: ${13}%`}
+                  />
+                </div>
                 <p className="flex justify-between items-center text-sm font-semibold mt-2">
                   {campaign.amountRaised}{' '}
                   <span className="font-normal">raised</span>
