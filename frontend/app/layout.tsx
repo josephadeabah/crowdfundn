@@ -31,7 +31,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       className={`h-full scroll-smooth ${roboto.variable} ${ubuntu.variable}`}
     >
       <head />
-      <body className="dark:from-[#242933] dark:to-[#2A303C] mx-auto transition-all duration-150">
+      <body className="dark:bg-gray-900 mx-auto transition-all duration-150">
         <Providers>
           <Navbar />
           <main className="w-full">{children}</main>
