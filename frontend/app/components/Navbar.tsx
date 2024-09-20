@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import DarkModeBtn from './DarkModeBtn';
 import { Button } from './button/Button';
+import Link from 'next/link';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -61,7 +62,7 @@ const Navbar = () => {
           <a href=".">
             <svg fill="none" viewBox="0 0 28 28" height="28" width="28">
               <path
-                className="fill-blue-600"
+                className="fill-red-600"
                 d="M2.333 0A2.333 2.333 0 0 0 0 2.333V14c0 7.732 6.268 14 14 14 1.059 0 2.09-.117 3.082-.34.965-.217 1.585-1.118 1.585-2.107v-2.22a4.667 4.667 0 0 1 4.666-4.666h2.334A2.333 2.333 0 0 0 28 16.333v-14A2.333 2.333 0 0 0 25.667 0H21a2.333 2.333 0 0 0-2.333 2.333V14a4.667 4.667 0 0 1-9.334 0V2.333A2.333 2.333 0 0 0 7 0H2.333Z"
               />
             </svg>
@@ -69,16 +70,16 @@ const Navbar = () => {
           <div className="absolute top-11 left-0 w-full hidden peer-has-[:checked]:flex flex-col gap-2 bg-white dark:bg-gray-950 ring-1 ring-inset ring-gray-100 dark:ring-gray-900 shadow-md rounded-lg px-6 py-4 lg:relative lg:top-0 lg:w-auto lg:flex lg:flex-row lg:ring-0 lg:p-0 lg:shadow-none *:flex *:items-center *:gap-x-1.5 *:py-1.5 *:text-sm *:text-gray-950 dark:*:text-gray-50 *:font-medium lg:*:px-2">
             <a href="." className="font-popins">
               For Diaspora
-              <p className="bg-blue-50 dark:bg-blue-900 flex px-1.5 py-0.5 rounded-full text-xs text-blue-600 dark:text-white font-medium">
+              <p className="bg-red-50 dark:bg-red-900 flex px-1.5 py-0.5 rounded-full text-xs text-red-600 dark:text-white font-medium">
                 NEW
               </p>
             </a>
             <a href=".">How It Works</a>
             <a href=".">Success Stories</a>
             <a href=".">Donate</a>
-            <div className="bg-blue-600 hover:bg-blue-700 text-white p-4 lg:hidden md:hidden">
+            <div className="bg-red-600 hover:bg-red-700 text-white p-4 lg:hidden md:hidden">
               <a
-                href="."
+                href="/auth/register"
                 className=" text-white text-center py-2 px-4 rounded-sm font-popins"
               >
                 Start Campaign
@@ -92,14 +93,14 @@ const Navbar = () => {
               size="sm"
               className="shadow-none hidden lg:inline-block py-2 px-4 hover:bg-slate-50 hover:text-slate-900 dark:hover:text-slate-800"
             >
-              Start Campaign
+              <Link href="/auth/register">Start Campaign</Link>
             </Button>
             <Button
               variant="outline"
               size="sm"
               className="shadow-none hover:bg-slate-50 hover:text-slate-900 dark:hover:text-slate-800"
             >
-              Login
+              <Link href="/auth/login">Login</Link>
             </Button>
           </div>
         </div>

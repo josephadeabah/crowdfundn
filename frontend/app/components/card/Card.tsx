@@ -23,7 +23,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={twMerge('flex flex-col space-y-1.5 p-6', className)}
+    className={twMerge('flex flex-col space-y-1.5', className)}
     {...props}
   />
 ));
@@ -57,7 +57,7 @@ const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={twMerge('p-6 pt-0', className)} {...props} />
+  <div ref={ref} className={twMerge('pt-0', className)} {...props} />
 ));
 CardContent.displayName = 'CardContent';
 

@@ -7,7 +7,7 @@ const Footer = () => {
             <a href=".">
               <svg fill="none" viewBox="0 0 28 28" height="28" width="28">
                 <path
-                  className="fill-blue-600"
+                  className="fill-red-600"
                   d="M2.333 0A2.333 2.333 0 0 0 0 2.333V14c0 7.732 6.268 14 14 14 1.059 0 2.09-.117 3.082-.34.965-.217 1.585-1.118 1.585-2.107v-2.22a4.667 4.667 0 0 1 4.666-4.666h2.334A2.333 2.333 0 0 0 28 16.333v-14A2.333 2.333 0 0 0 25.667 0H21a2.333 2.333 0 0 0-2.333 2.333V14a4.667 4.667 0 0 1-9.334 0V2.333A2.333 2.333 0 0 0 7 0H2.333Z"
                 />
               </svg>
@@ -16,7 +16,7 @@ const Footer = () => {
           <div className="flex-col gap-2 lg:flex-row *:flex *:items-center *:gap-x-1.5 *:px-2 *:py-1.5 *:text-sm *:text-gray-950 dark:*:text-gray-50 *:font-medium">
             <a href=".">
               Features
-              <div className="bg-blue-50 dark:bg-blue-900 flex px-1.5 py-0.5 rounded-full text-xs text-blue-600 dark:text-white font-medium">
+              <div className="bg-red-50 dark:bg-red-900 flex px-1.5 py-0.5 rounded-full text-xs text-red-600 dark:text-white font-medium">
                 NEW
               </div>
             </a>

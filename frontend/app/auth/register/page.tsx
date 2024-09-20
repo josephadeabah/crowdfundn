@@ -1,6 +1,8 @@
 'use client';
 
+import { Button } from '@/app/components/button/Button';
 import Stepper from '@/app/components/stepper/Stepper';
+import CardBanner from '@/app/molecules/CardBanner';
 import React, { useState } from 'react';
 
 export default function Register() {
@@ -13,93 +15,56 @@ export default function Register() {
     e.preventDefault();
   };
 
+  const [currentStep, setCurrentStep] = useState(0);
+
   const steps = [
     {
-      title: 'Step 1',
-      description: 'Description of Step 1',
+      label: 'Select location',
       content: (
-        <>
-          {' '}
-          <div className="mx-auto flex w-full flex-col items-center justify-center">
-            <form className="md:space-y-6" onSubmit={handleSubmit}>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Your email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                  placeholder="name@company.com"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="password"
-                  className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full rounded-lg bg-primary-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                disabled={loading} // Disable button when loading
-              >
-                {loading ? (
-                  <svg
-                    className="inline h-5 w-5 animate-spin text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8v8H4z"
-                    />
-                  </svg>
-                ) : (
-                  'Sign up'
-                )}
-              </button>
-            </form>
-          </div>
-        </>
+        <div>
+          <CardBanner
+            title="Hello 1"
+            description="Description"
+            className="text-start p-0 m-0 h-96"
+          >
+            Hello my very eyes may just see under nine planet Hello my very eyes
+            may just see under nine planet Hello my very eyes may just see under
+            nine planet
+          </CardBanner>
+        </div>
       ),
     },
     {
-      title: 'Step 2',
-      description: 'Description of Step 2',
-      content: 'Content for Step 2',
+      label: 'Select category',
+      content: (
+        <div>
+          <CardBanner
+            title="Hello 2"
+            description="Description"
+            className="text-start h-96 p-0"
+          >
+            Hello my very eyes may just see under nine planet Hello my very eyes
+            may just see under nine planet Hello my very eyes may just see under
+            nine planet
+          </CardBanner>
+        </div>
+      ),
     },
     {
-      title: 'Step 3',
-      description: 'Description of Step 3',
-      content: 'Content for Step 3',
+      label: 'Choose payment',
+      content: (
+        <div>
+          <CardBanner
+            title="Hello 3"
+            description="Description"
+            className="text-start h-96"
+          >
+            Hello my very eyes may just see under nine planet Hello my very eyes
+            may just see under nine planet Hello my very eyes may just see under
+            nine planet
+          </CardBanner>
+        </div>
+      ),
     },
   ];
 
@@ -158,8 +123,27 @@ export default function Register() {
       </div>
 
       {/* Right container */}
-      <div className="flex w-full items-center justify-center lg:w-1/2">
-        <Stepper steps={steps} />
+      <div className="w-full lg:w-1/2">
+        <div className="p-4">
+          <Stepper steps={steps} currentStep={currentStep} />
+          <div className="flex justify-between gap-8 mt-4">
+            <Button
+              onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
+              className="w-full bg-gray-300 text-white py-2 px-4 rounded"
+              disabled={currentStep === 0}
+            >
+              Previous
+            </Button>
+            <Button
+              onClick={() =>
+                setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1))
+              }
+              className="w-full bg-red-600 text-white py-2 px-4 rounded"
+            >
+              {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
+            </Button>
+          </div>
+        </div>
       </div>
     </section>
   );

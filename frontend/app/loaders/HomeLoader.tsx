@@ -10,16 +10,20 @@ const HomePageLoader = () => {
           <div className="w-full max-w-full sm:w-1/2">
             <Skeleton height={200} />
           </div>
-          <CardBanner title="Donate to support any cause.">
+          <CardBanner title="Donate to support any cause." className="p-4">
             <Skeleton count={3} height={20} />
           </CardBanner>
         </div>
         <Skeleton height={40} width={200} className="m-4 py-6" />
       </div>
 
-      <div className="w-full flex flex-col sm:flex-row gap-2">
-        <CardBanner title="Categories" description="Explore categories">
-          <div className="flex flex-wrap gap-2 mb-4 justify-start">
+      <div className="w-full flex flex-col mx-auto sm:flex-row gap-2">
+        <CardBanner
+          title="Categories"
+          description="Explore categories"
+          className="p-4"
+        >
+          <div className="flex flex-wrap gap-2 mb-4 justify-center">
             {Array(60)
               .fill(null)
               .map((_, index) => (
@@ -32,7 +36,11 @@ const HomePageLoader = () => {
               ))}
           </div>
         </CardBanner>
-        <CardBanner title="Recommended Campaigns" description="Check these out">
+        <CardBanner
+          title="Recommended Campaigns"
+          description="Check these out"
+          className="p-4"
+        >
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {Array(6)
               .fill(null)
@@ -55,7 +63,7 @@ const HomePageLoader = () => {
 
       {/* CTA */}
       <div className="w-full flex flex-col sm:flex-row gap-2">
-        <CardBanner>
+        <CardBanner className="p-4">
           <section className="bg-white dark:bg-gray-950">
             <div className="flex flex-col items-center mx-auto gap-y-8">
               <div className="mx-auto w-full text-center">
@@ -85,7 +93,7 @@ const HomePageLoader = () => {
           </section>
         </CardBanner>
 
-        <CardBanner>
+        <CardBanner className="p-4">
           <section className="dark:bg-gray-950">
             <div className="flex flex-col items-center mx-auto">
               <Skeleton
@@ -102,6 +110,7 @@ const HomePageLoader = () => {
         <CardBanner
           title="More Campaigns"
           description="Discover fundraisers inspired by what you care about"
+          className="p-4"
         >
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {Array(6)
@@ -125,6 +134,7 @@ const HomePageLoader = () => {
         <CardBanner
           title="Ask and it shall be given"
           description="Join the million people who have already made big impact"
+          className="p-4"
         >
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {Array(6)
@@ -152,6 +162,7 @@ const HomePageLoader = () => {
           title="Latest Blog Posts"
           description="Check out our latest articles"
           footer="Read more"
+          className="p-4"
         >
           <div className="grid grid-cols-2 gap-4">
             {Array(4)
@@ -173,6 +184,7 @@ const HomePageLoader = () => {
           title="Get the Best tips from our community"
           description="Join us"
           footer="Get involved"
+          className="p-4"
         >
           <div className="grid grid-cols-2 gap-4">
             {Array(4)
