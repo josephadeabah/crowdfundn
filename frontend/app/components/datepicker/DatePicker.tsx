@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button } from '../button/Button';
 
 type DatePickerProps = {
   selectedDate: Date;
@@ -61,15 +62,17 @@ const DatePicker = ({
   };
 
   return (
-    <div className="p-3 space-y-0.5">
+    <div className="space-y-0.5">
       {/* Month & Year Controls */}
       <div className="grid grid-cols-5 items-center gap-x-3 mx-1.5 pb-3">
         {/* Prev Button */}
         <div className="col-span-1">
-          <button
+          <Button
             type="button"
             onClick={handlePrevMonth}
-            className="size-8 flex justify-center items-center text-gray-800 hover:bg-gray-100 rounded-full dark:text-neutral-400 dark:hover:bg-neutral-800"
+            variant="default"
+            size="icon"
+            className="flex justify-center items-center rounded-full"
             aria-label="Previous"
           >
             <svg
@@ -84,9 +87,8 @@ const DatePicker = ({
             >
               <path d="m15 18-6-6 6-6" />
             </svg>
-          </button>
+          </Button>
         </div>
-
         {/* Month / Year Display */}
         <div className="col-span-3 flex justify-center items-center gap-x-1">
           <select
@@ -110,7 +112,11 @@ const DatePicker = ({
               { length: maxYear - minYear + 1 },
               (_, i) => minYear + i,
             ).map((year) => (
-              <option key={year} value={year}>
+              <option
+                key={year}
+                value={year}
+                className="border border-gray-400 "
+              >
                 {year}
               </option>
             ))}
@@ -119,10 +125,11 @@ const DatePicker = ({
 
         {/* Next Button */}
         <div className="col-span-1 flex justify-end">
-          <button
-            type="button"
+          <Button
+            variant="default"
+            size="icon"
             onClick={handleNextMonth}
-            className="size-8 flex justify-center items-center text-gray-800 hover:bg-gray-100 rounded-full dark:text-neutral-400 dark:hover:bg-neutral-800"
+            className="flex justify-center items-center rounded-full"
             aria-label="Next"
           >
             <svg
@@ -136,7 +143,7 @@ const DatePicker = ({
             >
               <path d="m9 18 6-6-6-6" />
             </svg>
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -160,9 +167,9 @@ const DatePicker = ({
           <div key={index} className="m-px size-10" />
         ))}
         {Array.from({ length: daysInMonth }).map((_, day) => (
-          <button
+          <Button
             key={day + 1}
-            type="button"
+            variant="secondary"
             className={`m-px size-10 flex justify-center items-center border border-transparent text-sm text-gray-800 rounded-full hover:border-red-600 hover:text-red-600 dark:text-neutral-200 ${
               selectedDate.getDate() === day + 1 &&
               selectedDate.getMonth() === currentMonth &&
@@ -173,7 +180,7 @@ const DatePicker = ({
             onClick={() => handleDateSelect(day + 1)}
           >
             {day + 1}
-          </button>
+          </Button>
         ))}
       </div>
     </div>
