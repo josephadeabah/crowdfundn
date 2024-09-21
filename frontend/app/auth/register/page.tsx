@@ -208,7 +208,7 @@ export default function Register() {
                 onValueChange={(value) => setSelectedPaymentMethod(value)}
                 required
               >
-                {paymentMethods.map((method) => (
+                {paymentMethods?.map((method) => (
                   <div key={method.value} className="mt-2">
                     <label className="flex justify-start items-center">
                       <RadioGroupItem
@@ -253,12 +253,6 @@ export default function Register() {
             {selectedPaymentMethod && (
               <div className="col-span-full sm:col-span-1">
                 <div className="mt-2">
-                  <label
-                    htmlFor="currency"
-                    className="block text-base text-gray-950 dark:text-gray-50"
-                  >
-                    Choose Currency
-                  </label>
                   <select
                     id="currency"
                     name="currency"
