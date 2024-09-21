@@ -74,8 +74,8 @@ const Navbar = () => {
                 NEW
               </p>
             </a>
-            <a href=".">How It Works</a>
-            <a href=".">Success Stories</a>
+            <a href=".">For Individuals</a>
+            <a href=".">For Charities</a>
             <a href=".">Donate</a>
             <div className="bg-red-600 hover:bg-red-700 text-white p-4 lg:hidden md:hidden">
               <a

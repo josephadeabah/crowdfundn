@@ -41,11 +41,7 @@ const HomePage = () => {
 
       <div className="w-full flex flex-col sm:flex-row gap-2">
         {/* categories */}
-        <CardBanner
-          title="Categories"
-          description="Explore categories"
-          className="p-4"
-        >
+        <CardBanner title="Categories" className="p-4">
           <div className="flex flex-wrap gap-2 mb-4 justify-start">
             {data.categories.map((category) => (
               <Badge
@@ -64,11 +60,7 @@ const HomePage = () => {
           </div>
         </CardBanner>
         {/* recommended campaigns */}
-        <CardBanner
-          title="Recommended Campaigns"
-          description="Check these out"
-          className="p-4"
-        >
+        <CardBanner title="Recommended Campaigns" className="p-4">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {data?.recommendedFundraisers?.map((campaign) => (
               <div key={campaign.id} className="flex flex-col h-full">

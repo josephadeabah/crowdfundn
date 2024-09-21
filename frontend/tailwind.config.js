@@ -1,14 +1,18 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./components/**/*.{js,ts,jsx,tsx}', './app/**/*.{js,ts,jsx,tsx}'],
+  content: [
+    './components/**/*.{js,ts,jsx,tsx}',
+    'node_modules/preline/dist/*.js',
+    './app/**/*.{js,ts,jsx,tsx}',
+  ],
   darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
-        oswald: 'var(--font-oswald)',
-        popins: 'var(--font-popins)',
+        roboto: 'var(--font-roboto)',
+        ubuntu: 'var(--font-ubuntu)',
       },
     },
   },
-  plugins: [],
+  plugins: [require('preline/plugin')],
 };

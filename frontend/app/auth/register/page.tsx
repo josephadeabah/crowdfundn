@@ -30,6 +30,23 @@ export default function Register() {
   const [selectedCurrency, setSelectedCurrency] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [value, setValue] = useState(1); // State for storing the number value
+
+  // Function to handle increment
+  const increment = () => {
+    setValue((prevValue) => Math.min(prevValue + 1, 60)); // Maximum value is 10
+  };
+
+  // Function to handle decrement
+  const decrement = () => {
+    setValue((prevValue) => Math.max(prevValue - 1, 1)); // Minimum value is 1
+  };
+
+  // Handle input change
+  const handleChange = (e: { target: { value: any } }) => {
+    const newValue = Math.max(1, Math.min(10, Number(e.target.value)));
+    setValue(newValue);
+  };
 
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -84,14 +101,73 @@ export default function Register() {
 
             {/* Duration */}
             <div className="col-span-full sm:col-span-1">
-              <input
-                type="number"
-                id="duration"
-                name="duration"
-                className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
-                placeholder="Duration (in days)"
-                required
-              />
+              <div className="py-2 px-3 bg-white border border-gray-200 rounded-lg dark:bg-neutral-900 dark:border-neutral-700">
+                <div className="w-full flex justify-between items-center gap-x-3">
+                  <div>
+                    <span className="block text-gray-500 dark:text-white">
+                      Duration in days
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-x-1.5">
+                    {/* Decrease Button */}
+                    <button
+                      type="button"
+                      onClick={decrement}
+                      className="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-md border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+                      aria-label="Decrease"
+                    >
+                      <svg
+                        className="shrink-0 size-3.5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M5 12h14"></path>
+                      </svg>
+                    </button>
+
+                    {/* Input field */}
+                    <input
+                      className="p-0 w-6 bg-transparent border-0 text-gray-800 text-center focus:ring-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none dark:text-white"
+                      style={{ MozAppearance: 'textfield' }}
+                      type="number"
+                      aria-roledescription="Number field"
+                      value={value}
+                      onChange={handleChange}
+                    />
+
+                    {/* Increase Button */}
+                    <button
+                      type="button"
+                      onClick={increment}
+                      className="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-md border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+                      aria-label="Increase"
+                    >
+                      <svg
+                        className="shrink-0 size-3.5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M5 12h14"></path>
+                        <path d="M12 5v14"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Target Amount */}
