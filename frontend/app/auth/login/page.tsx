@@ -18,8 +18,8 @@ export default function Login() {
       {/* Left container */}
       <div className="hidden w-full items-center justify-center bg-primary-600 dark:bg-gray-950 lg:flex lg:w-1/2">
         <section className="bg-primary-600 text-gray-700 dark:bg-gray-950 dark:text-gray-50">
-          <div className="mx-auto flex max-w-[52.5rem] flex-col items-center gap-y-16 px-6 py-32 lg:max-w-[78rem]">
-            <div className="mx-auto max-w-[36.75rem] text-center">
+          <div className="mx-auto flex flex-col items-center gap-y-16 px-6 py-32">
+            <div className="mx-auto text-center">
               <h2 className="mb-3 text-3xl font-bold lg:text-4xl">
                 Explore Africa's leading Crowdfunding platform
               </h2>
