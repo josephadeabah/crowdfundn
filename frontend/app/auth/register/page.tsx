@@ -317,13 +317,15 @@ export default function Register() {
         <div className="p-4">
           <Stepper steps={steps} currentStep={currentStep} />
           <div className="w-full flex justify-between gap-8 h-full mt-4">
-            <Button
-              onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
-              className="w-full bg-gray-300 text-white py-2 px-4 rounded"
-              disabled={currentStep === 0}
-            >
-              Previous
-            </Button>
+            {currentStep > 0 && (
+              <Button
+                onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
+                className="w-full bg-gray-300 text-white py-2 px-4 rounded"
+                disabled={currentStep === 0}
+              >
+                Previous
+              </Button>
+            )}
             <Button
               onClick={() => {
                 if (currentStep === steps.length - 1) {
