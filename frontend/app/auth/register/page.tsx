@@ -188,7 +188,7 @@ export default function Register() {
           {data.categories.map((category) => (
             <Badge
               key={category.value}
-              className="text-gray-500"
+              className="text-gray-500 cursor-pointer"
               variant="default"
             >
               {category.label}
