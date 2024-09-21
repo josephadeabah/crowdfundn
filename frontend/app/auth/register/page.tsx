@@ -176,7 +176,7 @@ export default function Register() {
                   className={`cursor-pointer ${
                     selectedCategory === category.value
                       ? 'bg-red-600 text-white'
-                      : 'bg-slate-50 text-gray-500'
+                      : 'bg-slate-50 dark:bg-slate-950 dark:text-gray-50 text-gray-500'
                   }`}
                   onClick={() => setSelectedCategory(category.value)}
                   variant="secondary"

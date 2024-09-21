@@ -52,7 +52,7 @@ const HomePage = () => {
                 className={`cursor-pointer ${
                   selectedCategory === category.value
                     ? 'bg-red-600 text-white'
-                    : 'text-gray-500'
+                    : 'text-gray-500 dark:bg-slate-950 dark:text-gray-50'
                 }`}
                 onClick={() => setSelectedCategory(category.value)}
                 variant="default"
