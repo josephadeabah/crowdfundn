@@ -42,9 +42,13 @@ const HomePage = () => {
           className="p-4"
         >
           <div className="flex flex-wrap gap-2 mb-4 justify-start">
-            {data.categories.map((category, index) => (
-              <Badge key={index} className="text-gray-500" variant="default">
-                {category}
+            {data.categories.map((category) => (
+              <Badge
+                key={category.value}
+                className="text-gray-500"
+                variant="default"
+              >
+                {category.label}
               </Badge>
             ))}
           </div>

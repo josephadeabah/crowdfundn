@@ -2,14 +2,29 @@
 
 import { Button } from '@/app/components/button/Button';
 import Stepper from '@/app/components/stepper/Stepper';
-import CardBanner from '@/app/molecules/CardBanner';
 import React, { useState } from 'react';
+import data from '../../../data.json';
+import { Badge } from '@/app/components/badge/Badge';
+import { RadioGroup, RadioGroupItem } from '@/app/components/radio/RadioGroup';
+
+const paymentMethods = data.paymentOptions.methods;
+const mobileMoneyMethod = paymentMethods.find(
+  (method) => method.value === 'mobile-money',
+);
+const mobileMoneyProviders = mobileMoneyMethod
+  ? mobileMoneyMethod.providers
+  : [];
+const currencies = data.paymentOptions.currencies;
 
 export default function Register() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>('');
-  const [loading, setLoading] = useState(false); // Loading state
+  const [loading, setLoading] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
+  const [selectedMobileMoneyProvider, setSelectedMobileMoneyProvider] =
+    useState('');
+  const [selectedCurrency, setSelectedCurrency] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,50 +34,252 @@ export default function Register() {
 
   const steps = [
     {
-      label: 'Select location',
+      label: 'Add Personal Information',
       content: (
         <div>
-          <CardBanner
-            title="Hello 1"
-            description="Description"
-            className="text-start p-0 m-0 h-96"
-          >
-            Hello my very eyes may just see under nine planet Hello my very eyes
-            may just see under nine planet Hello my very eyes may just see under
-            nine planet
-          </CardBanner>
+          <form className="w-full grid grid-cols-1 gap-y-5 bg-white dark:bg-gray-950 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 rounded-sm p-4 sm:grid-cols-2 sm:gap-x-4">
+            {/* Email Address */}
+            <div className="col-span-full sm:col-span-1">
+              <div className="mt-2">
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
+                  placeholder="Email Address"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Fundraiser Name */}
+            <div className="col-span-full sm:col-span-1">
+              <div className="mt-2">
+                <input
+                  type="text"
+                  id="fundraiser-name"
+                  name="fundraiser-name"
+                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
+                  placeholder="Fundraiser Name"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Category */}
+            <div className="col-span-full">
+              <div className="relative bg-white dark:bg-gray-950 rounded-lg mt-2">
+                <select
+                  id="year-of-birth"
+                  name="year-of-birth"
+                  className="appearance-none relative block w-full bg-transparent z-10 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 transition ease-in-out duration-[250ms]"
+                  required
+                >
+                  <option value="" disabled selected>
+                    Year of Birth
+                  </option>
+                  <option value="medical">Medical</option>
+                  <option value="education">Education</option>
+                  <option value="community">Community</option>
+                  <option value="other">Other</option>
+                </select>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 256 256"
+                  className="absolute top-3 right-4 fill-gray-500"
+                >
+                  <path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"></path>
+                </svg>
+              </div>
+            </div>
+
+            {/* Duration */}
+            <div className="col-span-full sm:col-span-1">
+              <div className="mt-2">
+                <input
+                  type="number"
+                  id="duration"
+                  name="duration"
+                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
+                  placeholder="Duration (in days)"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Target Amount */}
+            <div className="col-span-full sm:col-span-1">
+              <div className="mt-2">
+                <input
+                  type="number"
+                  id="target-amount"
+                  name="target-amount"
+                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
+                  placeholder="Target Amount"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Referral Code (Optional) */}
+            <div className="col-span-full sm:col-span-1">
+              <div className="mt-2">
+                <input
+                  type="text"
+                  id="referral-code"
+                  name="referral-code"
+                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
+                  placeholder="Referral Code (Optional)"
+                />
+              </div>
+            </div>
+
+            {/* Your Name */}
+            <div className="col-span-full sm:col-span-1">
+              <div className="mt-2">
+                <input
+                  type="text"
+                  id="your-name"
+                  name="your-name"
+                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
+                  placeholder="Your Name"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* National ID */}
+            <div className="col-span-full sm:col-span-1">
+              <div className="mt-2">
+                <input
+                  type="text"
+                  id="national-id"
+                  name="national-id"
+                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
+                  placeholder="National ID"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Mobile Phone */}
+            <div className="col-span-full sm:col-span-1">
+              <div className="mt-2">
+                <input
+                  type="tel"
+                  id="mobile-phone"
+                  name="mobile-phone"
+                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
+                  placeholder="Mobile Phone"
+                  required
+                />
+              </div>
+            </div>
+          </form>
         </div>
       ),
     },
     {
-      label: 'Select category',
+      label: 'Select Fundraising Category',
       content: (
-        <div>
-          <CardBanner
-            title="Hello 2"
-            description="Description"
-            className="text-start h-96 p-0"
-          >
-            Hello my very eyes may just see under nine planet Hello my very eyes
-            may just see under nine planet Hello my very eyes may just see under
-            nine planet
-          </CardBanner>
+        <div className="w-full flex flex-wrap gap-2 mb-4 justify-start">
+          {data.categories.map((category) => (
+            <Badge
+              key={category.value}
+              className="text-gray-500"
+              variant="default"
+            >
+              {category.label}
+            </Badge>
+          ))}
         </div>
       ),
     },
     {
-      label: 'Choose payment',
+      label: 'Choose payment Method',
       content: (
         <div>
-          <CardBanner
-            title="Hello 3"
-            description="Description"
-            className="text-start h-96"
-          >
-            Hello my very eyes may just see under nine planet Hello my very eyes
-            may just see under nine planet Hello my very eyes may just see under
-            nine planet
-          </CardBanner>
+          <form className="w-full grid grid-cols-1 gap-y-5 bg-white dark:bg-gray-950 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 rounded-sm p-4 sm:grid-cols-2 sm:gap-x-4">
+            {/* Payment Method Selection */}
+            <div className="col-span-full">
+              <RadioGroup
+                onValueChange={(value) => setSelectedPaymentMethod(value)}
+                required
+              >
+                {paymentMethods.map((method) => (
+                  <div key={method.value} className="mt-2">
+                    <label className="flex justify-start items-center">
+                      <RadioGroupItem
+                        value={method.value}
+                        className="form-radio text-gray-950 dark:text-gray-50"
+                      />
+                      <span className="ml-2 text-base text-gray-950 dark:text-gray-50">
+                        {method.label}
+                      </span>
+                    </label>
+                    {/* Show sublist if Mobile Money is selected */}
+                    {method.value === 'mobile-money' &&
+                      selectedPaymentMethod === 'mobile-money' && (
+                        <div className="ml-6 mt-2">
+                          <select
+                            name="mobile-money-provider"
+                            className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 focus:outline-none"
+                            onChange={(e) =>
+                              setSelectedMobileMoneyProvider(e.target.value)
+                            }
+                            required
+                          >
+                            <option value="" disabled selected>
+                              Select Provider
+                            </option>
+                            {mobileMoneyProviders?.map((provider) => (
+                              <option
+                                key={provider.value}
+                                value={provider.value}
+                              >
+                                {provider.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+            {/* Currency Selection */}
+            {selectedPaymentMethod && (
+              <div className="col-span-full sm:col-span-1">
+                <div className="mt-2">
+                  <label
+                    htmlFor="currency"
+                    className="block text-base text-gray-950 dark:text-gray-50"
+                  >
+                    Choose Currency
+                  </label>
+                  <select
+                    id="currency"
+                    name="currency"
+                    className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 focus:outline-none"
+                    value={selectedCurrency}
+                    onChange={(e) => setSelectedCurrency(e.target.value)}
+                    required
+                  >
+                    <option value="" disabled selected>
+                      Select Currency
+                    </option>
+                    {currencies?.map((currency) => (
+                      <option key={currency.value} value={currency.value}>
+                        {currency.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+          </form>
         </div>
       ),
     },

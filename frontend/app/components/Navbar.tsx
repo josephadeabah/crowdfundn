@@ -59,7 +59,7 @@ const Navbar = () => {
               </svg>
             </label>
           </div>
-          <a href=".">
+          <a href="/">
             <svg fill="none" viewBox="0 0 28 28" height="28" width="28">
               <path
                 className="fill-red-600"
