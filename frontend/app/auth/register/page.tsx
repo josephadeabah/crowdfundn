@@ -29,6 +29,7 @@ export default function Register() {
     useState('');
   const [selectedCurrency, setSelectedCurrency] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -161,17 +162,24 @@ export default function Register() {
     {
       label: 'Select Fundraising Category',
       content: (
-        <div className="overflow-y-auto max-h-[calc(100vh-380px)] h-full [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-2 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
-          <div className="w-full flex flex-wrap gap-2 mb-8 justify-start">
-            {data.categories.map((category) => (
-              <Badge
-                key={category.value}
-                className="text-gray-500 bg-gray-50 cursor-pointer"
-                variant="secondary"
-              >
-                {category.label}
-              </Badge>
-            ))}
+        <div className="w-full">
+          <div className="overflow-y-auto max-h-[calc(100vh-380px)] h-full [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-2 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
+            <div className="w-full flex flex-wrap gap-2 mb-8 justify-start">
+              {data.categories.map((category) => (
+                <Badge
+                  key={category.value}
+                  className={`cursor-pointer ${
+                    selectedCategory === category.value
+                      ? 'bg-red-600 text-white'
+                      : 'bg-gray-50 text-gray-500'
+                  }`}
+                  onClick={() => setSelectedCategory(category.value)}
+                  variant="secondary"
+                >
+                  {category.label}
+                </Badge>
+              ))}
+            </div>
           </div>
         </div>
       ),
