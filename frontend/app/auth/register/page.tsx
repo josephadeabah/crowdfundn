@@ -184,16 +184,18 @@ export default function Register() {
     {
       label: 'Select Fundraising Category',
       content: (
-        <div className="w-full flex flex-wrap gap-2 mb-4 justify-start">
-          {data.categories.map((category) => (
-            <Badge
-              key={category.value}
-              className="text-gray-500 cursor-pointer"
-              variant="default"
-            >
-              {category.label}
-            </Badge>
-          ))}
+        <div className="overflow-y-auto max-h-[calc(100vh-400px)] h-full md:overflow-y-visible">
+          <div className="w-full flex flex-wrap gap-2 mb-8 justify-start">
+            {data.categories.map((category) => (
+              <Badge
+                key={category.value}
+                className="text-gray-500 bg-gray-50 cursor-pointer"
+                variant="secondary"
+              >
+                {category.label}
+              </Badge>
+            ))}
+          </div>
         </div>
       ),
     },
@@ -280,7 +282,7 @@ export default function Register() {
   ];
 
   return (
-    <section className="flex h-screen bg-white dark:bg-gray-900">
+    <section className="flex bg-white dark:bg-gray-900">
       {/* Left container */}
       <div className="hidden w-full items-center justify-center bg-primary-600 dark:bg-gray-950 lg:flex lg:w-1/2">
         <section className="bg-primary-600 text-gray-700 dark:bg-gray-950 dark:text-gray-50">
@@ -337,7 +339,7 @@ export default function Register() {
       <div className="w-full lg:w-1/2">
         <div className="p-4">
           <Stepper steps={steps} currentStep={currentStep} />
-          <div className="flex justify-between gap-8 mt-4">
+          <div className="w-full flex justify-between gap-8 h-full mt-4">
             <Button
               onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
               className="w-full bg-gray-300 text-white py-2 px-4 rounded"
