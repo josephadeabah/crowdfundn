@@ -27,7 +27,8 @@ const HomePage = () => {
     <div className="w-full flex flex-col gap-16 min-h-screen mb-24">
       <div className="flex-grow flex flex-col justify-center items-center mx-auto w-full pt-1 sm:px-8">
         <div className="w-full flex flex-col sm:flex-row gap-2">
-          <CardBanner title="Donate to support any cause." className="p-4">
+          <CardBanner className="p-4">
+            <h1>Donate to support any cause.</h1>
             <p>{data.bio}</p>
           </CardBanner>
 
