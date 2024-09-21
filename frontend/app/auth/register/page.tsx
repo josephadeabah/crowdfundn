@@ -1,12 +1,13 @@
 'use client';
 
-import { Button } from '@/app/components/button/Button';
 import Stepper from '@/app/components/stepper/Stepper';
 import React, { useState } from 'react';
 import data from '../../../data.json';
 import { Badge } from '@/app/components/badge/Badge';
 import { RadioGroup, RadioGroupItem } from '@/app/components/radio/RadioGroup';
 import { useRouter } from 'next/navigation';
+import { Button } from '../../components/button/Button';
+import DatePicker from '@/app/components/datepicker/DatePicker';
 
 const paymentMethods = data.paymentOptions.methods;
 const mobileMoneyMethod = paymentMethods.find(
@@ -27,10 +28,7 @@ export default function Register() {
   const [selectedMobileMoneyProvider, setSelectedMobileMoneyProvider] =
     useState('');
   const [selectedCurrency, setSelectedCurrency] = useState('');
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-  };
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -70,59 +68,36 @@ export default function Register() {
 
             {/* Category */}
             <div className="col-span-full">
-              <div className="relative bg-white dark:bg-gray-950 rounded-lg mt-2">
-                <select
-                  id="year-of-birth"
-                  name="year-of-birth"
-                  className="appearance-none relative block w-full bg-transparent z-10 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 transition ease-in-out duration-[250ms]"
-                  required
-                >
-                  <option value="" disabled selected>
-                    Year of Birth
-                  </option>
-                  <option value="medical">Medical</option>
-                  <option value="education">Education</option>
-                  <option value="community">Community</option>
-                  <option value="other">Other</option>
-                </select>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 256 256"
-                  className="absolute top-3 right-4 fill-gray-500"
-                >
-                  <path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"></path>
-                </svg>
-              </div>
+              <DatePicker
+                selectedDate={selectedDate}
+                onDateChange={(date) => setSelectedDate(date)}
+                minYear={1940}
+                maxYear={2030}
+              />
             </div>
 
             {/* Duration */}
             <div className="col-span-full sm:col-span-1">
-              <div className="mt-2">
-                <input
-                  type="number"
-                  id="duration"
-                  name="duration"
-                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
-                  placeholder="Duration (in days)"
-                  required
-                />
-              </div>
+              <input
+                type="number"
+                id="duration"
+                name="duration"
+                className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
+                placeholder="Duration (in days)"
+                required
+              />
             </div>
 
             {/* Target Amount */}
             <div className="col-span-full sm:col-span-1">
-              <div className="mt-2">
-                <input
-                  type="number"
-                  id="target-amount"
-                  name="target-amount"
-                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
-                  placeholder="Target Amount"
-                  required
-                />
-              </div>
+              <input
+                type="number"
+                id="target-amount"
+                name="target-amount"
+                className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
+                placeholder="Target Amount"
+                required
+              />
             </div>
 
             {/* Referral Code (Optional) */}
@@ -143,10 +118,10 @@ export default function Register() {
               <div className="mt-2">
                 <input
                   type="text"
-                  id="your-name"
-                  name="your-name"
+                  id="your-full-name"
+                  name="your-full-name"
                   className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
-                  placeholder="Your Name"
+                  placeholder="Your Full Name"
                   required
                 />
               </div>
