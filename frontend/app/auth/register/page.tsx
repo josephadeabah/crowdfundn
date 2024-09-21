@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import data from '../../../data.json';
 import { Badge } from '@/app/components/badge/Badge';
 import { RadioGroup, RadioGroupItem } from '@/app/components/radio/RadioGroup';
+import { useRouter } from 'next/navigation';
 
 const paymentMethods = data.paymentOptions.methods;
 const mobileMoneyMethod = paymentMethods.find(
@@ -17,6 +18,7 @@ const mobileMoneyProviders = mobileMoneyMethod
 const currencies = data.paymentOptions.currencies;
 
 export default function Register() {
+  const router = useRouter(); // Initialize the router
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>('');
@@ -348,9 +350,16 @@ export default function Register() {
               Previous
             </Button>
             <Button
-              onClick={() =>
-                setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1))
-              }
+              onClick={() => {
+                if (currentStep === steps.length - 1) {
+                  // Redirect to /auth/login when Finish is clicked
+                  router.push('/auth/login');
+                } else {
+                  setCurrentStep((prev) =>
+                    Math.min(prev + 1, steps.length - 1),
+                  );
+                }
+              }}
               className="w-full bg-red-600 text-white py-2 px-4 rounded"
             >
               {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
