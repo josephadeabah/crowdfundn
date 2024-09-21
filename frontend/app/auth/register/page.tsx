@@ -39,6 +39,21 @@ export default function Register() {
       content: (
         <div>
           <form className="w-full grid grid-cols-1 gap-y-5 bg-white dark:bg-gray-950 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 rounded-sm p-4 sm:grid-cols-2 sm:gap-x-4">
+            {/* Birthdate */}
+            <label
+              htmlFor="birthdate"
+              className="col-span-full text-left sm:col-span-1 text-gray-600 dark:text-gray-100"
+            >
+              Select birth date
+            </label>
+            <div className="col-span-full">
+              <DatePicker
+                selectedDate={selectedDate}
+                onDateChange={(date) => setSelectedDate(date)}
+                minYear={1940}
+                maxYear={2030}
+              />
+            </div>
             {/* Email Address */}
             <div className="col-span-full sm:col-span-1">
               <div className="mt-2">
@@ -65,16 +80,6 @@ export default function Register() {
                   required
                 />
               </div>
-            </div>
-
-            {/* Category */}
-            <div className="col-span-full">
-              <DatePicker
-                selectedDate={selectedDate}
-                onDateChange={(date) => setSelectedDate(date)}
-                minYear={1940}
-                maxYear={2030}
-              />
             </div>
 
             {/* Duration */}
@@ -171,7 +176,7 @@ export default function Register() {
                   className={`cursor-pointer ${
                     selectedCategory === category.value
                       ? 'bg-red-600 text-white'
-                      : 'bg-gray-50 text-gray-500'
+                      : 'bg-slate-50 text-gray-500'
                   }`}
                   onClick={() => setSelectedCategory(category.value)}
                   variant="secondary"
@@ -267,7 +272,7 @@ export default function Register() {
   ];
 
   return (
-    <section className="flex bg-white dark:bg-gray-900">
+    <div className="flex bg-white dark:bg-gray-900">
       {/* Left container */}
       <div className="hidden w-full items-center justify-center dark:bg-gray-950 lg:flex lg:w-1/2">
         <section className="text-gray-700 dark:bg-gray-950 dark:text-gray-50">
@@ -355,6 +360,6 @@ export default function Register() {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
