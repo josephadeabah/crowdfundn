@@ -10,6 +10,10 @@ import HomePageLoader from './loaders/HomeLoader';
 
 const HomePage = () => {
   const [loading, setLoading] = React.useState(true);
+  const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
+    null,
+  );
+
   React.useEffect(() => {
     setTimeout(() => {
       setLoading(false);
@@ -45,7 +49,12 @@ const HomePage = () => {
             {data.categories.map((category) => (
               <Badge
                 key={category.value}
-                className="text-gray-500"
+                className={`cursor-pointer ${
+                  selectedCategory === category.value
+                    ? 'bg-red-600 text-white'
+                    : 'text-gray-500'
+                }`}
+                onClick={() => setSelectedCategory(category.value)}
                 variant="default"
               >
                 {category.label}
