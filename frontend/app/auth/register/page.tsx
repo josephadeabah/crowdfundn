@@ -326,6 +326,9 @@ export default function Register() {
                 Previous
               </Button>
             )}
+            {currentStep === 0 && (
+              <div className="w-full text-white py-2 px-4 rounded"></div>
+            )}
             <Button
               onClick={() => {
                 if (currentStep === steps.length - 1) {
