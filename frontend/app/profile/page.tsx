@@ -1,5 +1,11 @@
 'use client';
 import { useState } from 'react';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '../components/card/Card';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState('Dashboard');
@@ -13,26 +19,36 @@ const ProfileTabs = () => {
               Dashboard Overview
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold text-gray-700 dark:text-white">
-                  Active Campaigns
-                </h3>
-                <p className="text-gray-500 dark:text-neutral-400">
-                  3 Campaigns
-                </p>
-              </div>
-              <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold text-gray-700 dark:text-white">
-                  Total Donations
-                </h3>
-                <p className="text-gray-500 dark:text-neutral-400">$12,300</p>
-              </div>
-              <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold text-gray-700 dark:text-white">
-                  Pending Withdrawals
-                </h3>
-                <p className="text-gray-500 dark:text-neutral-400">$2,400</p>
-              </div>
+              <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-700 dark:text-white">
+                    Active Campaigns
+                  </CardTitle>
+                  <CardDescription className="text-gray-500 dark:text-neutral-400">
+                    3 Campaigns
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+              <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-700 dark:text-white">
+                    Total Donations
+                  </CardTitle>
+                  <CardDescription className="text-gray-500 dark:text-neutral-400">
+                    $12,300
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+              <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-700 dark:text-white">
+                    Pending Withdrawals
+                  </CardTitle>
+                  <CardDescription className="text-gray-500 dark:text-neutral-400">
+                    $2,400
+                  </CardDescription>
+                </CardHeader>
+              </Card>
             </div>
           </div>
         );
