@@ -19,7 +19,7 @@ const ProfileTabs = () => {
               Dashboard Overview
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+              <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-md">
                 <CardHeader>
                   <CardTitle className="text-lg font-semibold text-gray-700 dark:text-white">
                     Active Campaigns
@@ -29,7 +29,7 @@ const ProfileTabs = () => {
                   </CardDescription>
                 </CardHeader>
               </Card>
-              <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+              <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-md">
                 <CardHeader>
                   <CardTitle className="text-lg font-semibold text-gray-700 dark:text-white">
                     Total Donations
@@ -39,7 +39,7 @@ const ProfileTabs = () => {
                   </CardDescription>
                 </CardHeader>
               </Card>
-              <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+              <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-md">
                 <CardHeader>
                   <CardTitle className="text-lg font-semibold text-gray-700 dark:text-white">
                     Pending Withdrawals
