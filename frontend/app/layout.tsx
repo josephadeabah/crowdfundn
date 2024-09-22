@@ -19,7 +19,6 @@ const ubuntu = Ubuntu({
 });
 
 import { ReactNode } from 'react';
-import PrelineScript from './components/PrelineScript';
 
 interface RootLayoutProps {
   children: ReactNode;
@@ -31,9 +30,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       lang="en"
       className={`h-full scroll-smooth ${roboto.variable} ${ubuntu.variable}`}
     >
-      <head>
-        <PrelineScript />
-      </head>
+      <head></head>
       <body className="dark:bg-gray-900 mx-auto transition-all duration-150">
         <Providers>
           <Navbar />
