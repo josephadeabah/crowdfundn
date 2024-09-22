@@ -569,8 +569,12 @@ const ProfileTabs = () => {
       </div>
 
       {/* Tab Content */}
-      <div className="w-full p-4 md:m-3">
-        <div role="tabpanel" id={`vertical-tab-${activeTab}`}>
+      <div className="w-full p-4 md:m-3 overflow-auto flex-1">
+        <div
+          role="tabpanel"
+          id={`vertical-tab-${activeTab}`}
+          className="h-full"
+        >
           {renderTabContent()}
         </div>
       </div>
