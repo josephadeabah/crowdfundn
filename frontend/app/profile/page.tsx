@@ -6,6 +6,7 @@ import {
   CardTitle,
   CardDescription,
 } from '../components/card/Card';
+import { HiOutlinePlus } from 'react-icons/hi';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState('Dashboard');
@@ -48,6 +49,15 @@ const ProfileTabs = () => {
                     $2,400
                   </CardDescription>
                 </CardHeader>
+              </Card>
+              <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-md flex flex-col items-center justify-center">
+                <CardHeader className="text-center"></CardHeader>
+                <div className="mt-4 flex flex-col items-center">
+                  <HiOutlinePlus className="text-4xl text-gray-400 dark:text-gray-300 mb-2" />
+                  <span className="text-lg font-semibold text-gray-700 dark:text-white">
+                    Add Fundraising
+                  </span>
+                </div>
               </Card>
             </div>
           </div>
@@ -146,22 +156,107 @@ const ProfileTabs = () => {
         return (
           <div>
             <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              Rewards
+              Rewards & Gamification
             </h2>
-            <p className="text-gray-500 dark:text-neutral-400 mb-4">
-              Manage rewards offered in your campaigns.
+            <p className="text-gray-500 dark:text-neutral-400 mb-6">
+              Enjoy rewards for your donations and participate in engaging
+              gamification features that enhance your crowdfunding experience.
             </p>
-            <ul className="space-y-3">
-              <li className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+              Manage Rewards
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+                <h4 className="text-md font-semibold text-gray-800 dark:text-white">
                   Exclusive T-shirt
-                </h3>
+                </h4>
                 <p className="text-gray-500 dark:text-neutral-400">
                   For donations over $50
                 </p>
-              </li>
-              {/* Add more rewards */}
-            </ul>
+                <p className="text-gray-600 dark:text-neutral-300">
+                  Get an exclusive T-shirt designed for our campaign supporters!
+                </p>
+              </div>
+              <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+                <h4 className="text-md font-semibold text-gray-800 dark:text-white">
+                  VIP Access
+                </h4>
+                <p className="text-gray-500 dark:text-neutral-400">
+                  For donations over $100
+                </p>
+                <p className="text-gray-600 dark:text-neutral-300">
+                  Enjoy VIP access to our events and exclusive updates.
+                </p>
+              </div>
+              <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+                <h4 className="text-md font-semibold text-gray-800 dark:text-white">
+                  Early Bird Discounts
+                </h4>
+                <p className="text-gray-500 dark:text-neutral-400">
+                  For donations over $150
+                </p>
+                <p className="text-gray-600 dark:text-neutral-300">
+                  Receive early bird discounts on future campaigns and products.
+                </p>
+              </div>
+              <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+                <h4 className="text-md font-semibold text-gray-800 dark:text-white">
+                  Gamification Badge
+                </h4>
+                <p className="text-gray-500 dark:text-neutral-400">
+                  For any donation
+                </p>
+                <p className="text-gray-600 dark:text-neutral-300">
+                  Earn a digital badge for each contribution to showcase your
+                  support.
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      case 'Campaigns':
+        return (
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
+              Campaigns
+            </h2>
+            <p className="text-gray-500 dark:text-neutral-400 mb-4">
+              Manage your active and past campaigns.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                  Active Campaign 1
+                </h3>
+                <p className="text-gray-500 dark:text-neutral-400">
+                  Ongoing fundraising for community development.
+                </p>
+              </div>
+              <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                  Active Campaign 2
+                </h3>
+                <p className="text-gray-500 dark:text-neutral-400">
+                  Fundraising for educational supplies.
+                </p>
+              </div>
+              <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                  Past Campaign 1
+                </h3>
+                <p className="text-gray-500 dark:text-neutral-400">
+                  Successfully funded school supplies.
+                </p>
+              </div>
+              <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                  Past Campaign 2
+                </h3>
+                <p className="text-gray-500 dark:text-neutral-400">
+                  Community park renovation completed.
+                </p>
+              </div>
+            </div>
           </div>
         );
       case 'Updates':
@@ -197,21 +292,26 @@ const ProfileTabs = () => {
           aria-label="Tabs"
           role="tablist"
         >
-          {['Dashboard', 'Donations', 'Transfers', 'Rewards', 'Updates'].map(
-            (tab) => (
-              <button
-                key={tab}
-                type="button"
-                className={`py-2 px-2 whitespace-nowrap text-sm md:text-base ${activeTab === tab ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-4 md:border-r-0 border-red-200 text-red-600 dark:text-red-600' : 'border-transparent text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-red-600 dark:text-neutral-400 dark:hover:text-red-500'} flex items-center focus:outline-none`}
-                onClick={() => setActiveTab(tab)}
-                aria-selected={activeTab === tab}
-                aria-controls={`vertical-tab-${tab}`}
-                role="tab"
-              >
-                {tab}
-              </button>
-            ),
-          )}
+          {[
+            'Dashboard',
+            'Donations',
+            'Transfers',
+            'Rewards',
+            'Campaigns',
+            'Updates',
+          ].map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              className={`py-2 px-3 whitespace-nowrap text-sm font-medium md:text-base ${activeTab === tab ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-4 md:border-r-0 border-red-200 text-red-600 dark:text-red-600' : 'border-transparent text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-red-600 dark:text-neutral-400 dark:hover:text-red-500'} flex items-center focus:outline-none`}
+              onClick={() => setActiveTab(tab)}
+              aria-selected={activeTab === tab}
+              aria-controls={`vertical-tab-${tab}`}
+              role="tab"
+            >
+              {tab}
+            </button>
+          ))}
         </nav>
       </div>
 

@@ -107,6 +107,9 @@ export default function Login() {
             variant="default"
             size="lg"
             className="w-full dark:bg-gray-950"
+            onClick={() => {
+              router.push('/profile');
+            }}
           >
             Login
           </Button>
