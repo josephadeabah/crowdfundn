@@ -171,5 +171,37 @@
       { "value": "rwf", "label": "RWF (Rwandan Franc)" },
       { "value": "cve", "label": "CVE (Cape Verdean Escudo)" }
     ]
-  }
+  },
+  "pastCampaigns": [
+    {
+      "id": 1,
+      "title": "Community Garden Fundraiser",
+      "date": "March 15, 2023",
+      "description": "Raised funds to create a community garden in the local park."
+    },
+    {
+      "id": 2,
+      "title": "Animal Shelter Renovation",
+      "date": "January 10, 2023",
+      "description": "Helped renovate the local animal shelter to improve living conditions."
+    },
+    {
+      "id": 3,
+      "title": "School Supplies Drive",
+      "date": "November 5, 2022",
+      "description": "Collected donations to provide school supplies for underprivileged students."
+    },
+    {
+      "id": 4,
+      "title": "Local Art Project",
+      "date": "July 20, 2022",
+      "description": "Funded a mural project to beautify the community and support local artists."
+    },
+    {
+      "id": 5,
+      "title": "Food Pantry Support",
+      "date": "April 12, 2022",
+      "description": "Raised funds to keep the local food pantry stocked and operational."
+    }
+  ]
 }
