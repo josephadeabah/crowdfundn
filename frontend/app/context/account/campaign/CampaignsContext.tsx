@@ -4,6 +4,8 @@ import React, {
   useContext,
   ReactNode,
   useMemo,
+  useCallback,
+  useEffect,
 } from 'react';
 
 interface Campaign {
@@ -12,6 +14,7 @@ interface Campaign {
   description: string;
   goal: number;
   raised: number;
+  body: string;
 }
 
 interface CampaignState {
@@ -28,27 +31,41 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCampaigns = async (): Promise<void> => {
+  const fetchCampaigns = useCallback((): void => {
     setLoading(true);
     setError(null);
-    try {
-      // Mock API call - replace this with your actual API call
-      const response = await fetch('/api/campaigns'); // Replace with your actual endpoint
-      if (!response.ok) {
-        throw new Error('Failed to fetch campaigns');
+    // Use setTimeout to delay the fetch
+    setTimeout(async () => {
+      try {
+        const response = await fetch(
+          'https://jsonplaceholder.typicode.com/posts',
+        );
+        if (!response.ok) {
+          throw new Error('Failed to fetch campaigns');
+        }
+        const data = await response.json();
+        setCampaigns(data);
+      } catch (err: any) {
+        setError(err.message || 'Error fetching campaigns');
+      } finally {
+        setLoading(false);
       }
-      const data = await response.json();
-      setCampaigns(data.campaigns); // Assuming response contains a `campaigns` field
-    } catch (err: any) {
-      setError(err.message || 'Error fetching campaigns');
-    } finally {
-      setLoading(false);
-    }
-  };
+    }, 2000);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(fetchCampaigns, 2000);
+    return () => clearTimeout(timer);
+  }, [fetchCampaigns]);
+
+  // Call fetchCampaigns only on component mount
+  useEffect(() => {
+    fetchCampaigns();
+  }, [fetchCampaigns]);
 
   const contextValue = useMemo(
     () => ({ campaigns, loading, error, fetchCampaigns }),
-    [campaigns, loading, error],
+    [campaigns, loading, error, fetchCampaigns],
   );
 
   return (

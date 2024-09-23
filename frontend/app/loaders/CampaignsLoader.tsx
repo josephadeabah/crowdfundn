@@ -1,7 +1,8 @@
 import React from 'react';
 import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
-export const CampaignsLoader = () => {
+const CampaignsLoader = () => {
   return (
     <div>
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
@@ -11,7 +12,7 @@ export const CampaignsLoader = () => {
         Manage your active and past campaigns.
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {Array(4)
+        {Array(10)
           .fill(null)
           .map((_, index) => (
             <div
@@ -30,3 +31,5 @@ export const CampaignsLoader = () => {
     </div>
   );
 };
+
+export default CampaignsLoader;

@@ -54,7 +54,7 @@ const HomePageLoader = () => {
                   <div className="w-full text-xs">
                     <Skeleton height={10} />
                   </div>
-                  <Skeleton width="50%" height={20} className="mt-2" />
+                  <Skeleton width={200} height={20} className="mt-2" />
                 </div>
               ))}
           </div>
