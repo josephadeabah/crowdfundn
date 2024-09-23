@@ -1,11 +1,11 @@
 // context/GlobalProvider.tsx
 'use client';
 import { ReactNode } from 'react';
-import { UserProvider } from './UserContext';
-import { DonationsProvider } from './DonationsContext';
-import { RewardProvider } from './RewardsContext';
-import { CampaignProvider } from './CampaignsContext';
-import { TransferProvider } from './TransfersContext';
+import { UserProvider } from './users/UserContext';
+import { DonationsProvider } from './account/donations/DonationsContext';
+import { RewardProvider } from './account/rewards/RewardsContext';
+import { CampaignProvider } from './account/campaign/CampaignsContext';
+import { TransferProvider } from './account/transfers/TransfersContext';
 
 export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   return (

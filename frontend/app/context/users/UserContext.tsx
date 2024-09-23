@@ -21,8 +21,23 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchUser = async (): Promise<void> => {
-    // fetch user data from an API
+  // Function to fetch user data
+  const fetchUser = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/user'); // Example API endpoint
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+      const data: User = await response.json();
+      setUser(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const contextValue = React.useMemo(
