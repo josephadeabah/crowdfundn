@@ -8,7 +8,7 @@ export default function Donations() {
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Sample Donation Cards */}
-        <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-sm hover:bg-gray-100 transition-shadow duration-200">
+        <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 transition-shadow duration-200">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
             John Doe
           </h3>
@@ -39,7 +39,7 @@ export default function Donations() {
         </div>
 
         {/* Additional Donation Cards */}
-        <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-sm hover:bg-gray-100 transition-shadow duration-200">
+        <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 transition-shadow duration-200">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
             Jane Smith
           </h3>
@@ -69,7 +69,7 @@ export default function Donations() {
           </button>
         </div>
 
-        <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-sm hover:bg-gray-100 transition-shadow duration-200">
+        <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 transition-shadow duration-200">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
             Jane Smith
           </h3>

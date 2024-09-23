@@ -14,7 +14,7 @@ export default function Dashboard() {
         Dashboard Overview
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-sm hover:bg-gray-100">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-700 dark:text-white">
               Active Campaigns

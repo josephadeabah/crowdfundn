@@ -24,7 +24,7 @@ export default function Campaigns() {
         {campaigns?.map((campaign) => (
           <div
             key={campaign.id}
-            className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-sm hover:bg-gray-100"
+            className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100"
           >
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
               {campaign.title}

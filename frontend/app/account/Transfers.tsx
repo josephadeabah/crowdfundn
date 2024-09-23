@@ -15,7 +15,7 @@ export default function Transfers() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Payout Card */}
-        <div className="p-4 bg-offwhite rounded-lg shadow-sm hover:bg-gray-100 transition-shadow duration-200">
+        <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow hover:bg-gray-100 transition-shadow duration-200">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
             Payout
           </h3>
@@ -27,7 +27,7 @@ export default function Transfers() {
         </div>
 
         {/* Activity Card */}
-        <div className="p-4 bg-offwhite rounded-lg shadow-sm hover:bg-gray-100 transition-shadow duration-200">
+        <div className="p-4 rounded-lg shadow bg-white dark:bg-gray-900 hover:bg-gray-100 transition-shadow duration-200">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
             Activity
           </h3>
@@ -48,7 +48,7 @@ export default function Transfers() {
         </div>
 
         {/* Breakdown Card */}
-        <div className="p-4 bg-offwhite rounded-lg shadow-sm hover:bg-gray-100 transition-shadow duration-200">
+        <div className="p-4 rounded-lg shadow bg-white dark:bg-gray-900 hover:bg-gray-100 transition-shadow duration-200">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
             Breakdown
           </h3>
@@ -80,34 +80,34 @@ export default function Transfers() {
               <th className="px-4 py-2 text-left text-gray-600 dark:text-white">
                 Amount
               </th>
-              <th className="px-4 py-2 text-left text-gray-600 dark:text-white">
+              <th className="px-4 py-2 text-left text-gray-600 dark:text-white hover:bg-gray-100">
                 Date
               </th>
-              <th className="px-4 py-2 text-left text-gray-600 dark:text-white">
+              <th className="px-4 py-2 text-left text-gray-600 dark:text-white hover:bg-gray-100">
                 Status
               </th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td className="px-4 py-2 text-gray-800 dark:text-white">
+              <td className="px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100">
                 $1,200
               </td>
-              <td className="px-4 py-2 text-gray-800 dark:text-white">
+              <td className="px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100">
                 Aug 15, 2024
               </td>
-              <td className="px-4 py-2 text-yellow-500 dark:text-yellow-400">
+              <td className="px-4 py-2 text-yellow-500 dark:text-yellow-400 hover:bg-gray-100">
                 Pending
               </td>
             </tr>
             <tr>
-              <td className="px-4 py-2 text-gray-800 dark:text-white">
+              <td className="px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100">
                 $1,500
               </td>
-              <td className="px-4 py-2 text-gray-800 dark:text-white">
+              <td className="px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100">
                 Aug 10, 2024
               </td>
-              <td className="px-4 py-2 text-green-500 dark:text-green-400">
+              <td className="px-4 py-2 text-green-500 dark:text-green-400 hover:bg-gray-100">
                 Completed
               </td>
             </tr>
