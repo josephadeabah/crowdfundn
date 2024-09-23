@@ -108,7 +108,7 @@ export default function Login() {
             size="lg"
             className="w-full dark:bg-gray-950"
             onClick={() => {
-              router.push('/profile');
+              router.push('/account');
             }}
           >
             Login

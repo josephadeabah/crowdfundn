@@ -8,24 +8,12 @@ import Archive from './Archive';
 import Dashboard from './Dashboard';
 
 const ProfileTabs = () => {
-  // Default to 'Dashboard', then update in useEffect
-  const [activeTab, setActiveTab] = useState('');
+  const savedTab =
+    typeof window !== 'undefined' ? localStorage.getItem('activeTab') : null;
+  const [activeTab, setActiveTab] = useState(savedTab ?? 'Dashboard');
 
   useEffect(() => {
-    // Check localStorage for saved tab when the component mounts
-    if (typeof window !== 'undefined') {
-      const savedTab = localStorage.getItem('activeTab');
-      if (savedTab) {
-        setActiveTab(savedTab);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    // Save the active tab to localStorage whenever it changes
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('activeTab', activeTab);
-    }
+    localStorage.setItem('activeTab', activeTab);
   }, [activeTab]);
 
   const renderTabContent = () => {
