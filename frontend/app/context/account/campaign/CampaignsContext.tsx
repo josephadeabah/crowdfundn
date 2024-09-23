@@ -31,34 +31,25 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCampaigns = useCallback((): void => {
+  const fetchCampaigns = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
-    // Use setTimeout to delay the fetch
-    setTimeout(async () => {
-      try {
-        const response = await fetch(
-          'https://jsonplaceholder.typicode.com/posts',
-        );
-        if (!response.ok) {
-          throw new Error('Failed to fetch campaigns');
-        }
-        const data = await response.json();
-        setCampaigns(data);
-      } catch (err: any) {
-        setError(err.message || 'Error fetching campaigns');
-      } finally {
-        setLoading(false);
+    try {
+      const response = await fetch(
+        'https://jsonplaceholder.typicode.com/posts',
+      );
+      if (!response.ok) {
+        throw new Error('Failed to fetch campaigns');
       }
-    }, 2000);
+      const data = await response.json();
+      setCampaigns(data);
+    } catch (err: any) {
+      setError(err.message || 'Error fetching campaigns');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  useEffect(() => {
-    const timer = setTimeout(fetchCampaigns, 2000);
-    return () => clearTimeout(timer);
-  }, [fetchCampaigns]);
-
-  // Call fetchCampaigns only on component mount
   useEffect(() => {
     fetchCampaigns();
   }, [fetchCampaigns]);
