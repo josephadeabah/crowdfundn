@@ -8,9 +8,14 @@ import Archive from './Archive';
 import Dashboard from './Dashboard';
 
 const ProfileTabs = () => {
-  const savedTab =
-    typeof window !== 'undefined' ? localStorage.getItem('activeTab') : null;
-  const [activeTab, setActiveTab] = useState(savedTab ?? 'Dashboard');
+  const [activeTab, setActiveTab] = useState('');
+
+  useEffect(() => {
+    const savedTab = localStorage.getItem('activeTab');
+    if (savedTab) {
+      setActiveTab(savedTab);
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('activeTab', activeTab);
@@ -55,7 +60,11 @@ const ProfileTabs = () => {
             <button
               key={tab}
               type="button"
-              className={`py-2 px-1 whitespace-nowrap text-sm font-medium md:text-base ${activeTab === tab ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-4 md:border-r-0 border-red-200 text-red-600 dark:text-red-600' : 'border-transparent text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-red-600 dark:text-neutral-400 dark:hover:text-red-500'} flex items-center focus:outline-none`}
+              className={`py-2 px-1 whitespace-nowrap text-sm font-medium md:text-base ${
+                activeTab === tab
+                  ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-4 md:border-r-0 border-red-200 text-red-600 dark:text-red-600'
+                  : 'border-transparent text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-red-600 dark:text-neutral-400 dark:hover:text-red-500'
+              } flex items-center focus:outline-none`}
               onClick={() => setActiveTab(tab)}
               aria-selected={activeTab === tab}
               aria-controls={`vertical-tab-${tab}`}
