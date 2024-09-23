@@ -1,8 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
-import MoonIcon from './icons/MoonIcon';
-import SunIcon from './icons/SunIcon';
+import { Switch } from '../components/switch/Switch';
 import useSound from 'use-sound';
 
 const DarkModeBtn = () => {
@@ -24,27 +23,21 @@ const DarkModeBtn = () => {
 
   const currentTheme = theme === 'system' ? systemTheme : theme;
 
+  const isDarkMode = currentTheme === 'dark';
+
+  const handleToggle = () => {
+    setTheme(isDarkMode ? 'light' : 'dark');
+    handlePlay();
+  };
+
   return (
     <div>
-      {currentTheme === 'dark' ? (
-        <SunIcon
-          className="h-6 w-6 cursor-pointer text-yellow-400"
-          onClick={() => {
-            setTheme('light');
-            handlePlay();
-          }}
-          aria-label="Switch to light mode"
-        />
-      ) : (
-        <MoonIcon
-          className="h-6 w-6 cursor-pointer text-slate-700"
-          onClick={() => {
-            setTheme('dark');
-            handlePlay();
-          }}
-          aria-label="Switch to dark mode"
-        />
-      )}
+      <Switch
+        checked={isDarkMode}
+        onCheckedChange={handleToggle}
+        aria-label="Toggle dark mode"
+        className="dark:bg-slate-800"
+      />
     </div>
   );
 };
