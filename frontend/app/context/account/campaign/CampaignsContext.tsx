@@ -14,7 +14,7 @@ interface Campaign {
   description: string;
   goal: number;
   raised: number;
-  body: string;
+  category: string;
 }
 
 interface CampaignState {
@@ -35,9 +35,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(
-        'https://jsonplaceholder.typicode.com/posts',
-      );
+      const response = await fetch('https://fakestoreapi.com/products');
       if (!response.ok) {
         throw new Error('Failed to fetch campaigns');
       }
