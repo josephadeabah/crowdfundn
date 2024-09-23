@@ -3,6 +3,8 @@ import { Roboto, Ubuntu } from '@next/font/google';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Providers from './Providers';
+import { ReactNode } from 'react';
+import { GlobalProvider } from './context/GlobalProvider';
 
 const roboto = Roboto({
   weight: ['400', '500', '700'],
@@ -18,9 +20,6 @@ const ubuntu = Ubuntu({
   variable: '--font-ubuntu',
 });
 
-import { ReactNode } from 'react';
-import { GlobalProvider } from './context/GlobalProvider';
-
 interface RootLayoutProps {
   children: ReactNode;
 }
@@ -31,7 +30,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       lang="en"
       className={`h-full scroll-smooth ${roboto.variable} ${ubuntu.variable}`}
     >
-      <head></head>
+      <head />
       <body className="dark:bg-gray-900 mx-auto transition-all duration-150">
         <Providers>
           <Navbar />
