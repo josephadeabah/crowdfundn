@@ -1,6 +1,7 @@
 import React from 'react';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
 import CampaignsLoader from '../loaders/CampaignsLoader';
+import { Button } from '../components/button/Button';
 
 export default function Campaigns() {
   const { campaigns, loading, error } = useCampaignContext();
@@ -32,10 +33,14 @@ export default function Campaigns() {
               {campaign.body}
             </p>
             <div className="mt-4 flex justify-between items-center">
-              <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500 dark:hover:bg-red-700">
+              <Button
+                className="px-4 py-2 text-green-500 rounded-full"
+                variant="secondary"
+                size="default"
+              >
                 Promote
-              </button>
-              <span className="text-xs text-green-400 font-semibold">
+              </Button>
+              <span className="text-xs text-red-500 font-semibold">
                 Active campaign
               </span>
             </div>
