@@ -19,6 +19,7 @@ const ubuntu = Ubuntu({
 });
 
 import { ReactNode } from 'react';
+import { GlobalProvider } from './context/GlobalProvider';
 
 interface RootLayoutProps {
   children: ReactNode;
@@ -34,7 +35,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body className="dark:bg-gray-900 mx-auto transition-all duration-150">
         <Providers>
           <Navbar />
-          <main className="w-full">{children}</main>
+          <main className="w-full">
+            <GlobalProvider>{children}</GlobalProvider>
+          </main>
           <Footer />
         </Providers>
         <script src="./node_modules/preline/dist/preline.js"></script>
