@@ -5,7 +5,7 @@ export default function Archive() {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <div className="p-6 bg-gray-100 dark:bg-neutral-900 rounded-lg shadow">
+    <div className="p-6 bg-white dark:bg-neutral-900 rounded-lg shadow">
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
         Archive
       </h2>
