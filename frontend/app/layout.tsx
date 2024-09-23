@@ -39,7 +39,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
           </main>
           <Footer />
         </Providers>
-        <script src="./node_modules/preline/dist/preline.js"></script>
       </body>
     </html>
   );
