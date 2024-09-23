@@ -36,7 +36,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     try {
       const response = await fetch(
-        'https://jsonplaceholder.typicode.com/posts/10',
+        'https://jsonplaceholder.typicode.com/posts',
       );
       if (!response.ok) {
         throw new Error('Failed to fetch campaigns');
