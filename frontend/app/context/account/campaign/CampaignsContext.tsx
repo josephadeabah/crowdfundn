@@ -31,6 +31,19 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const fetchCampaigns = async (): Promise<void> => {
     setLoading(true);
     setError(null);
+    try {
+      // Mock API call - replace this with your actual API call
+      const response = await fetch('/api/campaigns'); // Replace with your actual endpoint
+      if (!response.ok) {
+        throw new Error('Failed to fetch campaigns');
+      }
+      const data = await response.json();
+      setCampaigns(data.campaigns); // Assuming response contains a `campaigns` field
+    } catch (err: any) {
+      setError(err.message || 'Error fetching campaigns');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const contextValue = useMemo(

@@ -7,7 +7,11 @@ import { RewardProvider } from './account/rewards/RewardsContext';
 import { CampaignProvider } from './account/campaign/CampaignsContext';
 import { TransferProvider } from './account/transfers/TransfersContext';
 
-export const GlobalProvider = ({ children }: { children: ReactNode }) => {
+export const GlobalContextProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
   return (
     <UserProvider>
       <DonationsProvider>

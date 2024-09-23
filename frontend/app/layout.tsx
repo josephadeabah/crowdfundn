@@ -4,7 +4,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Providers from './Providers';
 import { ReactNode } from 'react';
-import { GlobalProvider } from './context/GlobalProvider';
+import { GlobalContextProvider } from './context/GlobalContextProvider';
 
 const roboto = Roboto({
   weight: ['400', '500', '700'],
@@ -35,7 +35,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <Providers>
           <Navbar />
           <main className="w-full">
-            <GlobalProvider>{children}</GlobalProvider>
+            <GlobalContextProvider>{children}</GlobalContextProvider>
           </main>
           <Footer />
         </Providers>
