@@ -93,6 +93,8 @@ export default function Campaigns() {
           </div>
         ))}
       </div>
+      {/* Space Below the Page */}
+      <div className="h-20"></div> {/* Adjust the height as needed */}
     </div>
   );
 }
