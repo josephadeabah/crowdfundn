@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from '../components/button/Button';
 import { HiShieldCheck } from 'react-icons/hi'; // Secure icon
+import Progress from '../components/progressbar/ProgressBar';
 
 export default function Transfers() {
   return (
@@ -53,13 +54,23 @@ export default function Transfers() {
             Breakdown
           </h3>
           {/* Total Donated - Full Width */}
-          <div className="p-4 hover:bg-gray-50 dark:bg-neutral-800 rounded-lg shadow mb-4">
-            <h4 className="text-md font-semibold text-gray-800 dark:text-white">
-              Total Donated
-            </h4>
-            <p className="text-green-500 dark:text-neutral-400">$10,500</p>
+          <div className="flex items-center gap-8 p-4 hover:bg-gray-50 dark:bg-neutral-800 rounded-lg shadow mb-4">
+            <div>
+              <h4 className="text-md font-semibold text-gray-800 dark:text-white">
+                Total
+              </h4>
+              <p className="text-green-500 dark:text-neutral-400">$10,500</p>
+            </div>
+            <Progress
+              firstProgress={50}
+              secondProgress={30}
+              thirdProgress={20}
+              firstTooltipContent="Pending Payment"
+              secondTooltipContent="Processing Payment"
+              thirdTooltipContent="Donated"
+              className="h-3"
+            />
           </div>
-
           {/* Flexed Sub-Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="p-4 hover:bg-gray-50 dark:bg-neutral-800 rounded-lg shadow">

@@ -8,6 +8,7 @@ interface ProgressBarProps {
   firstTooltipContent: string;
   secondTooltipContent?: string;
   thirdTooltipContent?: string;
+  className?: string; // New prop for custom height and styles
 }
 
 const Progress: React.FC<ProgressBarProps> = ({
@@ -17,6 +18,7 @@ const Progress: React.FC<ProgressBarProps> = ({
   firstTooltipContent,
   secondTooltipContent,
   thirdTooltipContent,
+  className = 'h-1', // Default className for height
 }) => {
   return (
     <div className="w-full">
@@ -46,7 +48,9 @@ const Progress: React.FC<ProgressBarProps> = ({
       </div>
 
       {/* Combined Progress bar */}
-      <div className="flex h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+      <div
+        className={`flex ${className} w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700`}
+      >
         <div
           className="h-full bg-red-600"
           style={{ width: `${firstProgress}%` }}
