@@ -44,7 +44,7 @@ export default function Transfers() {
             Breakdown
           </h3>
           {/* Total Donated - Full Width */}
-          <div className="p-4 bg-gray-50 dark:bg-neutral-800 rounded-lg shadow hover:shadow-md mb-4">
+          <div className="p-4 hover:bg-gray-50 dark:bg-neutral-800 rounded-lg shadow mb-4">
             <h4 className="text-md font-semibold text-gray-800 dark:text-white">
               Total Donated
             </h4>
@@ -54,7 +54,7 @@ export default function Transfers() {
           {/* Flexed Sub-Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Current Balance */}
-            <div className="p-4 bg-gray-50 dark:bg-neutral-800 rounded-lg shadow hover:shadow-md">
+            <div className="p-4 hover:bg-gray-50 dark:bg-neutral-800 rounded-lg shadow">
               <h4 className="text-md font-semibold text-gray-800 dark:text-white">
                 Current Balance
               </h4>
@@ -62,7 +62,7 @@ export default function Transfers() {
             </div>
 
             {/* Being Processed */}
-            <div className="p-4 bg-gray-50 dark:bg-neutral-800 rounded-lg shadow hover:shadow-md">
+            <div className="p-4 hover:bg-gray-50 dark:bg-neutral-800 rounded-lg shadow">
               <h4 className="text-md font-semibold text-gray-800 dark:text-white">
                 Being Processed
               </h4>
@@ -70,7 +70,7 @@ export default function Transfers() {
             </div>
 
             {/* Transaction Fees */}
-            <div className="p-4 bg-gray-50 dark:bg-neutral-800 rounded-lg shadow hover:shadow-md">
+            <div className="p-4 hover:bg-gray-50 dark:bg-neutral-800 rounded-lg shadow">
               <h4 className="text-md font-semibold text-gray-800 dark:text-white">
                 Transaction Fees
               </h4>
