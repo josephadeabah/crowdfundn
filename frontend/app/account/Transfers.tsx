@@ -67,7 +67,7 @@ export default function Transfers() {
               thirdProgress={20}
               firstTooltipContent="Pending Payment"
               secondTooltipContent="Processing Payment"
-              thirdTooltipContent="Donated"
+              thirdTooltipContent="Transferred"
               className="h-3"
             />
           </div>
