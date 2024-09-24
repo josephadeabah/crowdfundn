@@ -79,7 +79,7 @@ export default function Donations() {
                   key={idx}
                   id={idx}
                   donorName={`Donor ${idx + 1}`}
-                  amount={Math.floor(Math.random() * 1000) + 100}
+                  amount={Math.floor(Math.random() * 100) + 10}
                   date={`Aug ${20 - idx}, 2024`}
                   status="Completed"
                   filter={filter}
