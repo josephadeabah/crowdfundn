@@ -6,6 +6,23 @@ const donorList = [
   { id: 1, name: 'John Doe' },
   { id: 2, name: 'Jane Smith' },
   { id: 3, name: 'Sam Wilson' },
+  { id: 4, name: 'Emily Johnson' },
+  { id: 5, name: 'Michael Brown' },
+  { id: 6, name: 'Sarah Davis' },
+  { id: 7, name: 'David Wilson' },
+  { id: 8, name: 'Olivia Taylor' },
+  { id: 9, name: 'Daniel Anderson' },
+  { id: 10, name: 'Sophia Martinez' },
+  { id: 11, name: 'Matthew Harris' },
+  { id: 12, name: 'Ava Thompson' },
+  { id: 13, name: 'Ethan Jackson' },
+  { id: 14, name: 'Isabella Anderson' },
+  { id: 15, name: 'Alexander White' },
+  { id: 16, name: 'Mia Hall' },
+  { id: 17, name: 'Alexander White' },
+  { id: 18, name: 'Mia Hall' },
+  { id: 19, name: 'Alexander White' },
+  { id: 20, name: 'Mia Hall' },
 ];
 
 // Sample rewards data
@@ -80,7 +97,7 @@ export default function Rewards() {
       <h3 className="text-lg font-semibold text-gray-800 dark:text-white mt-2 mb-4">
         Donor List
       </h3>
-      <div className="bg-white dark:bg-neutral-800 rounded-lg shadow p-4 overflow-x-auto">
+      <div className="bg-white dark:bg-neutral-800 rounded-lg shadow p-4 h-96 overflow-x-auto overflow-y-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
           <thead>
             <tr>
