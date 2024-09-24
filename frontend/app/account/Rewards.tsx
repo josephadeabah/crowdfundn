@@ -243,14 +243,14 @@ const RewardOption = ({
 
   return (
     <div
-      className={`p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 dark:hover:bg-neutral-700 cursor-pointer ${
+      className={`px-4 py-2 w-fit bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 dark:hover:bg-neutral-700 cursor-pointer ${
         isSelected ? 'border-2 border-red-500' : ''
       }`}
       onClick={() => setSelectedReward(title)}
     >
-      <h4 className="text-md font-medium text-gray-800 dark:text-white">
+      <p className="text-sm font-medium text-gray-800 dark:text-white">
         {title}
-      </h4>
+      </p>
     </div>
   );
 };
