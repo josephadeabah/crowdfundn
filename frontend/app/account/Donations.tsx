@@ -3,7 +3,7 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from '../components/popover/Popover'; // Assuming you have a Popover component
+} from '../components/popover/Popover';
 import { RadioGroup, RadioGroupItem } from '../components/radio/RadioGroup';
 import { Checkbox } from '../components/checkbox/Checkbox';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
@@ -13,14 +13,17 @@ export default function Donations() {
   const [filter, setFilter] = useState<'all' | 'specific'>('all');
   const [selectedDonors, setSelectedDonors] = useState<number[]>([]);
 
-  // Handle checkbox toggle for donors
   const toggleDonorSelection = (id: number) => {
-    if (selectedDonors.includes(id)) {
-      setSelectedDonors(selectedDonors.filter((donorId) => donorId !== id));
-    } else {
-      setSelectedDonors([...selectedDonors, id]);
+    if (filter === 'specific') {
+      if (selectedDonors.includes(id)) {
+        setSelectedDonors(selectedDonors.filter((donorId) => donorId !== id));
+      } else {
+        setSelectedDonors([...selectedDonors, id]);
+      }
     }
   };
+
+  const isThankYouButtonEnabled = filter === 'all' || selectedDonors.length > 0;
 
   return (
     <div className="container mx-auto p-4">
@@ -93,6 +96,17 @@ export default function Donations() {
               ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Thank You Button */}
+      <div className="mt-4">
+        <Button
+          onClick={() => console.log('Sending Thank You emails')}
+          disabled={!isThankYouButtonEnabled}
+          className="w-full"
+        >
+          {filter === 'all' ? 'Send Thank You to All' : 'Send Thank You'}
+        </Button>
       </div>
     </div>
   );

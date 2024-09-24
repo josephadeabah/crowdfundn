@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '../components/button/Button';
-import { HiShieldCheck } from 'react-icons/hi'; // Secure icon
+import { HiShieldCheck } from 'react-icons/hi';
 import Progress from '../components/progressbar/ProgressBar';
 
 export default function Transfers() {
@@ -137,12 +137,46 @@ export default function Transfers() {
                   Completed
                 </td>
               </tr>
+              {/* Additional Transaction Rows */}
+              <tr>
+                <td className="px-4 py-2 text-gray-800 dark:text-white">
+                  $2,000
+                </td>
+                <td className="px-4 py-2 text-gray-800 dark:text-white">
+                  Aug 5, 2024
+                </td>
+                <td className="px-4 py-2 text-green-500 dark:text-green-400">
+                  Completed
+                </td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2 text-gray-800 dark:text-white">
+                  $750
+                </td>
+                <td className="px-4 py-2 text-gray-800 dark:text-white">
+                  Jul 30, 2024
+                </td>
+                <td className="px-4 py-2 text-red-500 dark:text-red-400">
+                  Failed
+                </td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2 text-gray-800 dark:text-white">
+                  $1,800
+                </td>
+                <td className="px-4 py-2 text-gray-800 dark:text-white">
+                  Jul 25, 2024
+                </td>
+                <td className="px-4 py-2 text-yellow-500 dark:text-yellow-400">
+                  Pending
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
       {/* Space Below the Page */}
-      <div className="h-20"></div> {/* Adjust the height as needed */}
+      <div className="h-20"></div>
     </div>
   );
 }
