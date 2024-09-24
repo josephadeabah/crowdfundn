@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '../components/button/Button';
+import { HiShieldCheck } from 'react-icons/hi'; // Secure icon
 
 export default function Transfers() {
   return (
@@ -11,6 +12,14 @@ export default function Transfers() {
       <p className="text-gray-500 dark:text-neutral-400 mb-4">
         Review your transfer history or request new transfers.
       </p>
+      {/* Secure Transfers Button */}
+      <Button
+        variant="ghost"
+        className="flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full mb-6"
+      >
+        <HiShieldCheck className="mr-2 w-5 h-5" />
+        Transfers are secure on our platform
+      </Button>
       {/* Request Transfer Button */}
       <Button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500 dark:hover:bg-red-700 mb-6">
         Request Transfer
@@ -39,7 +48,7 @@ export default function Transfers() {
         </div>
 
         {/* Breakdown Card */}
-        <div className=" bg-white dark:bg-gray-900 rounded-lg duration-200">
+        <div className="bg-white dark:bg-gray-900 rounded-lg duration-200">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
             Breakdown
           </h3>
@@ -53,23 +62,18 @@ export default function Transfers() {
 
           {/* Flexed Sub-Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Current Balance */}
             <div className="p-4 hover:bg-gray-50 dark:bg-neutral-800 rounded-lg shadow">
               <h4 className="text-md font-semibold text-gray-800 dark:text-white">
                 Current Balance
               </h4>
               <p className="text-yellow-600 dark:text-neutral-400">$4,200</p>
             </div>
-
-            {/* Being Processed */}
             <div className="p-4 hover:bg-gray-50 dark:bg-neutral-800 rounded-lg shadow">
               <h4 className="text-md font-semibold text-gray-800 dark:text-white">
                 Being Processed
               </h4>
               <p className="text-gray-500 dark:text-neutral-400">$1,500</p>
             </div>
-
-            {/* Transaction Fees */}
             <div className="p-4 hover:bg-gray-50 dark:bg-neutral-800 rounded-lg shadow">
               <h4 className="text-md font-semibold text-gray-800 dark:text-white">
                 Transaction Fees
