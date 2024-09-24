@@ -40,7 +40,8 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         throw new Error('Failed to fetch campaigns');
       }
       const data = await response.json();
-      setCampaigns(data);
+      // Only set the first three campaigns
+      setCampaigns(data.slice(0, 2));
     } catch (err: any) {
       setError(err.message || 'Error fetching campaigns');
     } finally {

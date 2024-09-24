@@ -12,7 +12,7 @@ const CampaignsLoader = () => {
         Manage your active and past campaigns.
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {Array(10)
+        {Array(2)
           .fill(null)
           .map((_, index) => (
             <div
