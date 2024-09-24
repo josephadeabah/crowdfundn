@@ -27,6 +27,10 @@ export default function Donations() {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
           Donations
+          <p className="text-gray-500 dark:text-neutral-400 text-xs font-medium">
+            {' '}
+            Send Thank You to your Donors{' '}
+          </p>
         </h2>
         <Popover>
           <PopoverTrigger>
