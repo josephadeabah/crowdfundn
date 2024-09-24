@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '../components/button/Button';
+import { HiOutlinePlus } from 'react-icons/hi';
 
 // Sample donor data
 const donorList = [
@@ -19,10 +20,6 @@ const donorList = [
   { id: 14, name: 'Isabella Anderson' },
   { id: 15, name: 'Alexander White' },
   { id: 16, name: 'Mia Hall' },
-  { id: 17, name: 'Alexander White' },
-  { id: 18, name: 'Mia Hall' },
-  { id: 19, name: 'Alexander White' },
-  { id: 20, name: 'Mia Hall' },
 ];
 
 // Sample rewards data
@@ -75,10 +72,12 @@ const rewardCategories = {
   ],
 };
 
+// Component
 export default function Rewards() {
   const [selectedDonor, setSelectedDonor] = useState<string | null>(null);
   const [selectedReward, setSelectedReward] = useState<string | null>(null);
   const [donorRewards, setDonorRewards] = useState<Record<string, string>>({});
+  const [votes, setVotes] = useState<Record<string, number>>({});
 
   // Apply reward to selected donor
   const applyRewardToDonor = () => {
@@ -91,13 +90,21 @@ export default function Rewards() {
     }
   };
 
+  // Handle voting for a consistent donor
+  const handleVote = (donor: string) => {
+    setVotes((prevVotes) => ({
+      ...prevVotes,
+      [donor]: (prevVotes[donor] || 0) + 1,
+    }));
+  };
+
   return (
     <div className="h-full">
       {/* Donor List Section */}
       <h3 className="text-lg font-semibold text-gray-800 dark:text-white mt-2 mb-4">
         Donor List
       </h3>
-      <div className="bg-white dark:bg-neutral-800 rounded-lg shadow p-4 h-96 overflow-x-auto overflow-y-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
+      <div className="bg-white dark:bg-neutral-800 rounded-lg shadow p-4 h-96 overflow-x-auto overflow-y-auto">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
           <thead>
             <tr>
@@ -144,7 +151,6 @@ export default function Rewards() {
 
           {/* Reward Categories */}
           <div className="space-y-8">
-            {/* Gift Cards */}
             <div>
               <h6 className="text-md text-gray-800 dark:text-white mb-2">
                 Gift Cards
@@ -213,23 +219,6 @@ export default function Rewards() {
             </div>
           </div>
 
-          {/* Material Gifts */}
-          <div>
-            <h6 className="text-md text-gray-800 dark:text-white mb-2 mt-5">
-              Material Gifts
-            </h6>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {rewardCategories.materialGifts.map((reward) => (
-                <RewardOption
-                  key={reward}
-                  title={reward}
-                  selectedReward={selectedReward}
-                  setSelectedReward={setSelectedReward}
-                />
-              ))}
-            </div>
-          </div>
-
           {/* Confirm Reward Button */}
           <Button
             className="mt-6 mb-12 px-4 py-2 bg-green-800 dark:bg-green-400 text-white dark:text-gray-100 rounded-full hover:bg-green-200 hover:text-gray-700"
@@ -242,6 +231,51 @@ export default function Rewards() {
           </Button>
         </div>
       )}
+
+      {/* Voting Section */}
+      <div className="mt-12">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+          Vote for Consistent Donors
+        </h3>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
+            <thead>
+              <tr>
+                <th className="py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider">
+                  Donor Name
+                </th>
+                <th className="py-3 text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider text-center">
+                  Vote
+                </th>
+                <th className="py-3 text-right text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider">
+                  Votes Count
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white dark:bg-neutral-800 divide-y divide-gray-200 dark:divide-neutral-700">
+              {donorList.map((donor) => (
+                <tr key={donor.id}>
+                  <td className="py-4 text-sm text-gray-800 dark:text-white whitespace-nowrap">
+                    {donor.name}
+                  </td>
+                  <td className="py-4 flex justify-center">
+                    <Button
+                      onClick={() => handleVote(donor.name)}
+                      className="dark:bg-gray-400 rounded-full"
+                      size="icon"
+                    >
+                      <HiOutlinePlus className="w-4 h-4" />
+                    </Button>
+                  </td>
+                  <td className="py-4 text-right text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                    Votes: {votes[donor.name] || 0}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
@@ -265,9 +299,7 @@ const RewardOption = ({
       }`}
       onClick={() => setSelectedReward(title)}
     >
-      <p className="text-sm font-medium text-gray-800 dark:text-white">
-        {title}
-      </p>
+      <p className="text-gray-800 dark:text-white">{title}</p>
     </div>
   );
 };
