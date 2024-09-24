@@ -11,6 +11,7 @@ const donorList = [
 // Sample rewards data
 const rewardCategories = {
   giftCards: [
+    'Trerwendous Gift Card',
     'Amazon.com Gift Card',
     'Target Gift Card',
     'Best Buy Gift Card',
@@ -25,6 +26,7 @@ const rewardCategories = {
     'Virtual Visa',
     'Virtual Visa International',
     'Virtual MasterCard',
+    'Tremendous Prepaid Card',
     'Water Bill Cover',
     'Electricity Bill Cover',
     'Gas Bill Cover',
@@ -37,6 +39,7 @@ const rewardCategories = {
     'Paystack',
     'Wise',
     'Payoneer',
+    'Tremendous',
     'Bank Transfer',
     'Mobile Money',
   ],
