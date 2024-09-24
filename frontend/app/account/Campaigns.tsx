@@ -39,7 +39,7 @@ export default function Campaigns() {
                   <DotsVerticalIcon className="h-6 w-6" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-48">
+              <PopoverContent className="w-fit">
                 <ul className="space-y-2">
                   <li>
                     <button

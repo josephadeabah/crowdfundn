@@ -1,106 +1,144 @@
-import React from 'react';
+import React, { useState } from 'react';
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '../components/popover/Popover'; // Assuming you have a Popover component
+import { RadioGroup, RadioGroupItem } from '../components/radio/RadioGroup';
+import { Checkbox } from '../components/checkbox/Checkbox';
+import { DotsVerticalIcon } from '@radix-ui/react-icons';
+import { Button } from '../components/button/Button';
 
 export default function Donations() {
+  const [filter, setFilter] = useState<'all' | 'specific'>('all');
+  const [selectedDonors, setSelectedDonors] = useState<number[]>([]);
+
+  // Handle checkbox toggle for donors
+  const toggleDonorSelection = (id: number) => {
+    if (selectedDonors.includes(id)) {
+      setSelectedDonors(selectedDonors.filter((donorId) => donorId !== id));
+    } else {
+      setSelectedDonors([...selectedDonors, id]);
+    }
+  };
+
   return (
-    <div>
-      <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
-        Donations
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Sample Donation Cards */}
-        <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 transition-shadow duration-200">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-            John Doe
-          </h3>
-          <p className="text-gray-600 dark:text-neutral-300">Amount: $500</p>
-          <p className="text-gray-500 dark:text-neutral-400">
-            Date: Aug 20, 2024
-          </p>
-          <p className="text-green-500 dark:text-green-400">
-            Status: Completed
-          </p>
-          <button className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md flex items-center justify-center hover:bg-red-500 dark:hover:bg-red-700 transition duration-200">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-              />
-            </svg>
-            Thank You
-          </button>
-        </div>
+    <div className="container mx-auto p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
+          Donations
+        </h2>
+        <Popover>
+          <PopoverTrigger>
+            <Button size="icon" variant="outline" className="rounded-full">
+              <DotsVerticalIcon />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-fit">
+            <div className="p-4">
+              <p className="mb-2 font-semibold">Filter Donors:</p>
+              <RadioGroup
+                className="flex flex-col gap-2"
+                value={filter}
+                onValueChange={(value) =>
+                  setFilter(value as 'all' | 'specific')
+                }
+              >
+                <label className="flex items-center space-x-2">
+                  <RadioGroupItem value="all" />
+                  <span>All</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <RadioGroupItem value="specific" />
+                  <span>Specific People</span>
+                </label>
+              </RadioGroup>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
 
-        {/* Additional Donation Cards */}
-        <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 transition-shadow duration-200">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-            Jane Smith
-          </h3>
-          <p className="text-gray-600 dark:text-neutral-300">Amount: $300</p>
-          <p className="text-gray-500 dark:text-neutral-400">
-            Date: Aug 18, 2024
-          </p>
-          <p className="text-green-500 dark:text-green-400">
-            Status: Completed
-          </p>
-          <button className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md flex items-center justify-center hover:bg-red-500 dark:hover:bg-red-700 transition duration-200">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-              />
-            </svg>
-            Thank You
-          </button>
-        </div>
-
-        <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 transition-shadow duration-200">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-            Jane Smith
-          </h3>
-          <p className="text-gray-600 dark:text-neutral-300">Amount: $300</p>
-          <p className="text-gray-500 dark:text-neutral-400">
-            Date: Aug 18, 2024
-          </p>
-          <p className="text-green-500 dark:text-green-400">
-            Status: Completed
-          </p>
-          <button className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md flex items-center justify-center hover:bg-red-500 dark:hover:bg-red-700 transition duration-200">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-              />
-            </svg>
-            Thank You
-          </button>
-        </div>
-
-        {/* Add more donation cards as needed */}
+      {/* Responsive Table */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+          <thead>
+            <tr className="text-left bg-gray-200 dark:bg-neutral-700 text-gray-800 dark:text-white">
+              {filter === 'specific' && <th className="py-3 px-4">Select</th>}
+              <th className="py-3 px-4">Donor Name</th>
+              <th className="py-3 px-4">Amount</th>
+              <th className="py-3 px-4">Date</th>
+              <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array(10)
+              .fill(0)
+              .map((_, idx) => (
+                <DonationRow
+                  key={idx}
+                  id={idx}
+                  donorName={`Donor ${idx + 1}`}
+                  amount={Math.floor(Math.random() * 1000) + 100}
+                  date={`Aug ${20 - idx}, 2024`}
+                  status="Completed"
+                  filter={filter}
+                  isSelected={selectedDonors.includes(idx)}
+                  onToggle={() => toggleDonorSelection(idx)}
+                />
+              ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
 }
+
+// Donation Row Component for reusability
+const DonationRow = ({
+  id,
+  donorName,
+  amount,
+  date,
+  status,
+  filter,
+  isSelected,
+  onToggle,
+}: {
+  id: number;
+  donorName: string;
+  amount: number;
+  date: string;
+  status: string;
+  filter: 'all' | 'specific';
+  isSelected: boolean;
+  onToggle: () => void;
+}) => {
+  return (
+    <tr className="border-b hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors duration-200">
+      {filter === 'specific' && (
+        <td className="py-3 px-4">
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={onToggle}
+            className="h-5 w-5"
+          />
+        </td>
+      )}
+      <td className="py-3 px-4 text-gray-800 dark:text-white">{donorName}</td>
+      <td className="py-3 px-4 text-gray-600 dark:text-neutral-300">
+        ${amount}
+      </td>
+      <td className="py-3 px-4 text-gray-500 dark:text-neutral-400">{date}</td>
+      <td className="py-3 px-4 text-green-500 dark:text-green-400">{status}</td>
+      <td className="py-3 px-4">
+        <Button
+          variant="outline"
+          className="px-3 py-1 text-sm rounded-full hover:bg-gray-100 dark:hover:bg-gray-100 transition duration-200"
+        >
+          Thank You
+        </Button>
+      </td>
+    </tr>
+  );
+};
