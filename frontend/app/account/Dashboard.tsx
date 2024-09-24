@@ -14,7 +14,7 @@ export default function Dashboard() {
         Dashboard Overview
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-700 dark:text-white">
               Active Campaigns
@@ -25,7 +25,7 @@ export default function Dashboard() {
           </CardHeader>
         </Card>
 
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-sm hover:bg-gray-100">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-700 dark:text-white">
               Total Donations
@@ -36,7 +36,7 @@ export default function Dashboard() {
           </CardHeader>
         </Card>
 
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-sm hover:bg-gray-100">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-700 dark:text-white">
               Pending Withdrawals
@@ -47,7 +47,7 @@ export default function Dashboard() {
           </CardHeader>
         </Card>
 
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none hover:bg-gray-100 shadow-sm flex flex-col items-center justify-center">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 flex flex-col items-center justify-center">
           <CardHeader className="text-center"></CardHeader>
           <div className="mt-4 flex flex-col items-center">
             <HiOutlinePlus className="text-4xl text-gray-400 dark:text-gray-300 mb-2" />
@@ -58,7 +58,7 @@ export default function Dashboard() {
         </Card>
 
         {/* New Cards for Additional Features */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-sm hover:bg-gray-100">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-700 dark:text-white">
               Total Backers
@@ -69,7 +69,7 @@ export default function Dashboard() {
           </CardHeader>
         </Card>
 
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-sm hover:bg-gray-100">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-700 dark:text-white">
               Fundraising Goal
@@ -80,7 +80,7 @@ export default function Dashboard() {
           </CardHeader>
         </Card>
 
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-sm hover:bg-gray-100">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-700 dark:text-white">
               Recent Activity
@@ -91,7 +91,7 @@ export default function Dashboard() {
           </CardHeader>
         </Card>
 
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-sm hover:bg-gray-100">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-700 dark:text-white">
               Campaign Performance
@@ -103,13 +103,13 @@ export default function Dashboard() {
         </Card>
 
         {/* Boost Campaign Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-sm hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-700 dark:text-white">
               Boost Your Campaign
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-neutral-400">
-              Reach more people with targeted promotions.{' '}
+              Reach more people with targeted promotions.
             </CardDescription>
           </CardHeader>
         </Card>
