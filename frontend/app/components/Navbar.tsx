@@ -77,7 +77,7 @@ const Navbar = () => {
         href: '/how-to/fundraising-ideas-africa',
       },
     ],
-    'african Diaspora': [
+    'for Diaspora': [
       { label: 'Cultural Events', href: '/african-diaspora/cultural-events' },
       { label: 'Diaspora Support', href: '/african-diaspora/diaspora-support' },
       {
@@ -138,7 +138,7 @@ const Navbar = () => {
                 >
                   <ul
                     className={
-                      key === 'donate' || key === 'african Diaspora'
+                      key === 'donate' || key === 'for Diaspora'
                         ? 'grid grid-cols-2 gap-x-8 gap-y-2 p-3'
                         : 'p-2'
                     }

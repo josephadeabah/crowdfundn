@@ -8,7 +8,7 @@ const nextConfig = {
     ],
   },
   images: {
-    domains: ['pbs.twimg.com', 'images.pexels.com'],
+    domains: ['pbs.twimg.com', 'images.pexels.com', 'plus.unsplash.com'],
   },
 };
 

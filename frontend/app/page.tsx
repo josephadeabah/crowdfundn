@@ -96,7 +96,7 @@ const HomePage = () => {
             <div className="flex flex-col items-center mx-auto gap-y-8">
               <div className="mx-auto w-full text-center text-gray-950 dark:text-gray-50">
                 <h2 className="text-3xl font-bold mb-3 lg:text-4xl">
-                  Discover CrowdFundAfrica
+                  Discover BantuHive
                 </h2>
               </div>
               <div className="max-w-[49.5rem] grid mx-auto gap-6 sm:grid-cols-2 w-full col-span-1 p-6 bg-white dark:bg-gray-950 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 rounded-lg text-left">
@@ -150,7 +150,7 @@ const HomePage = () => {
           <section className="dark:bg-gray-950">
             <div className="flex flex-col items-center mx-auto">
               <img
-                src="https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                src="https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
                 alt="#"
                 className="w-full h-auto object-cover rounded-t-3xl max-h-[30rem] lg:max-h-[40rem]"
               />

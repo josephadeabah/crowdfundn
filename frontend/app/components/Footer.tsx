@@ -57,7 +57,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="gap-y-6 py-8 lg:flex-row lg:justify-between *:text-sm *:text-gray-500">
-          <p>&copy; Crowdfundn</p>
+          <p>&copy; BantuHive</p>
           <div className="flex items-center gap-x-6 hover:*:text-gray-950 dark:hover:*:text-gray-50 *:transition *:duration-[250ms] *:ease-in-out">
             <a href=".">Privacy</a>
             <a href=".">Terms</a>
