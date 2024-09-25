@@ -244,10 +244,10 @@ export default function Rewards() {
                 <th className="py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider">
                   Donor Name
                 </th>
-                <th className="py-3 text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider text-center">
+                <th className="py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider">
                   Vote
                 </th>
-                <th className="py-3 text-right text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider">
+                <th className="py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider">
                   Votes Count
                 </th>
               </tr>
@@ -258,7 +258,7 @@ export default function Rewards() {
                   <td className="py-4 text-sm text-gray-800 dark:text-white whitespace-nowrap">
                     {donor.name}
                   </td>
-                  <td className="py-4 flex justify-center">
+                  <td className="py-4 text-left">
                     <Button
                       onClick={() => handleVote(donor.name)}
                       className="dark:bg-gray-400 rounded-full"
@@ -267,7 +267,7 @@ export default function Rewards() {
                       <HiOutlinePlus className="w-4 h-4" />
                     </Button>
                   </td>
-                  <td className="py-4 text-right text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                  <td className="py-4 text-left text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
                     Votes: {votes[donor.name] || 0}
                   </td>
                 </tr>
