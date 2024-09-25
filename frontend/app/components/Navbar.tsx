@@ -1,64 +1,94 @@
 'use client';
+
 import React, { useEffect, useState } from 'react';
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '../components/popover/Popover';
 import DarkModeBtn from './DarkModeBtn';
 import { Button } from './button/Button';
 import Link from 'next/link';
+import {
+  Bars3Icon,
+  XMarkIcon,
+  ChevronDownIcon,
+} from '@heroicons/react/24/outline';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activePopover, setActivePopover] = useState<string | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > lastScrollY && window.scrollY > 100) {
-        // Scrolling down
-        setIsVisible(false);
-      } else {
-        // Scrolling up
-        setIsVisible(true);
-      }
+      setIsVisible(window.scrollY <= lastScrollY || window.scrollY <= 100);
       setLastScrollY(window.scrollY);
     };
 
     window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
+
+  const handleMenuToggle = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const dropdownLinks = {
+    individuals: [
+      { label: 'Start Your Campaign', href: '/individuals/start-campaign' },
+      {
+        label: 'Personal Fundraising',
+        href: '/individuals/personal-fundraising',
+      },
+      { label: 'Support Local Businesses', href: '/individuals/support-local' },
+    ],
+    charities: [
+      {
+        label: 'Non-Profit Initiatives',
+        href: '/charities/non-profit-initiatives',
+      },
+      {
+        label: 'Community Development Projects',
+        href: '/charities/community-development',
+      },
+      {
+        label: 'Education & Health Funding',
+        href: '/charities/education-health',
+      },
+    ],
+    donate: [
+      { label: 'One-Time Donation', href: '/donate/one-time' },
+      { label: 'Monthly Support', href: '/donate/monthly' },
+      {
+        label: 'Sponsor an Entrepreneur',
+        href: '/donate/sponsor-entrepreneur',
+      },
+      { label: 'Crisis Relief Fund', href: '/donate/crisis-relief' },
+      { label: 'Impact Investing', href: '/donate/impact-investing' },
+      {
+        label: 'Support Community Projects',
+        href: '/donate/community-projects',
+      },
+      {
+        label: 'Fundraising Tips for NGOs',
+        href: '/how-to/fundraising-tips-ngos',
+      },
+      { label: 'Corporate Giving Programs', href: '/how-to/corporate-giving' },
+      {
+        label: 'Fundraising Ideas for Africa',
+        href: '/how-to/fundraising-ideas-africa',
+      },
+    ],
+  };
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-transform duration-300 ease-in-out ${
-        isVisible ? 'translate-y-0' : '-translate-y-full'
-      }`}
+      className={`sticky top-0 z-50 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
     >
       <nav className="p-6 w-full bg-white dark:bg-gray-950">
-        <div className="relative flex items-center gap-x-4">
-          <div className="flex items-center group peer lg:hidden">
-            <input type="checkbox" id="menu" className="hidden" />
-            <label
-              htmlFor="menu"
-              className="bg-white dark:bg-gray-950 hover:bg-gray-50 dark:hover:bg-gray-900 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 rounded-lg p-2 cursor-pointer"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 256 256"
-                className="group-has-[input:checked]:hidden fill-gray-950 dark:fill-white"
-              >
-                <path d="M228 128a12 12 0 0 1-12 12H40a12 12 0 0 1 0-24h176a12 12 0 0 1 12 12ZM40 76h176a12 12 0 0 0 0-24H40a12 12 0 0 0 0 24Zm176 104H40a12 12 0 0 0 0 24h176a12 12 0 0 0 0-24Z" />
-              </svg>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 256 256"
-                className="hidden group-has-[input:checked]:block fill-gray-950 dark:fill-white"
-              >
-                <path d="M208.49 191.51a12 12 0 0 1-17 17L128 145l-63.51 63.49a12 12 0 0 1-17-17L111 128 47.51 64.49a12 12 0 0 1 17-17L128 111l63.51-63.52a12 12 0 0 1 17 17L145 128Z" />
-              </svg>
-            </label>
-          </div>
+        <div className="relative flex items-center justify-between">
           <a href="/">
             <svg fill="none" viewBox="0 0 28 28" height="28" width="28">
               <path
@@ -67,39 +97,121 @@ const Navbar = () => {
               />
             </svg>
           </a>
-          <div className="absolute top-11 left-0 w-full hidden peer-has-[:checked]:flex flex-col gap-2 bg-white dark:bg-gray-950 ring-1 ring-inset ring-gray-100 dark:ring-gray-900 shadow-md rounded-lg px-6 py-4 lg:relative lg:top-0 lg:w-auto lg:flex lg:flex-row lg:ring-0 lg:p-0 lg:shadow-none *:flex *:items-center *:gap-x-1.5 *:py-1.5 *:text-sm *:text-gray-950 dark:*:text-gray-50 *:font-medium lg:*:px-2">
-            <a href="." className="font-popins">
-              For Diaspora
-              <p className="bg-red-50 dark:bg-red-900 flex px-1.5 py-0.5 rounded-full text-xs text-red-600 dark:text-white font-medium">
-                NEW
-              </p>
-            </a>
-            <a href="/">For Individuals</a>
-            <a href=".">For Charities</a>
-            <a href=".">Donate</a>
-            <div className="bg-red-600 hover:bg-red-700 text-white p-4 lg:hidden md:hidden">
-              <a
-                href="/auth/register"
-                className=" text-white text-center py-2 px-4 rounded-sm font-popins"
-              >
-                Start Campaign
-              </a>
-            </div>
+
+          <div className="hidden lg:flex items-center gap-x-2 mx-6">
+            {Object.entries(dropdownLinks).map(([key, links]) => (
+              <Popover key={key} open={activePopover === key}>
+                <PopoverTrigger
+                  asChild
+                  onMouseEnter={() => setActivePopover(key)}
+                  onMouseLeave={() => setActivePopover(null)}
+                >
+                  <Button variant="ghost" className="flex items-center group">
+                    {`${key.charAt(0).toUpperCase() + key.slice(1)}`}
+                    <ChevronDownIcon className="ml-2 h-4 w-4 transition-transform duration-200 ease-in-out transform group-hover:rotate-180" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  side="bottom"
+                  align="start"
+                  sideOffset={10}
+                  onMouseEnter={() => setActivePopover(key)}
+                  onMouseLeave={() => setActivePopover(null)}
+                  className="w-full"
+                >
+                  <ul
+                    className={
+                      key === 'donate'
+                        ? 'grid grid-cols-2 gap-x-8 gap-y-2 p-3'
+                        : 'p-2'
+                    }
+                  >
+                    {links.map((link) => (
+                      <li
+                        key={link.href}
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      >
+                        <Link href={link.href}>{link.label}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                </PopoverContent>
+              </Popover>
+            ))}
           </div>
-          <div className="flex grow basis-0 items-center justify-end gap-x-3 *:px-3 *:py-1.5 *:text-sm *:font-medium *:transition *:duration-[250ms] *:ease-in-out">
-            <DarkModeBtn />
-            <Button
-              variant="outline"
-              size="sm"
-              className="shadow-none hidden lg:inline-block py-2 px-4 hover:bg-slate-50 hover:text-slate-900 dark:hover:text-slate-800"
+
+          <div className="lg:hidden">
+            <button
+              onClick={handleMenuToggle}
+              className="text-gray-700 dark:text-gray-300"
             >
+              {isMenuOpen ? (
+                <XMarkIcon className="h-6 w-6" />
+              ) : (
+                <Bars3Icon className="h-6 w-6" />
+              )}
+            </button>
+          </div>
+
+          {isMenuOpen && (
+            <div className="absolute top-16 left-0 w-full bg-white dark:bg-gray-900 lg:hidden">
+              <ul className="flex flex-col items-start p-4 space-y-4">
+                <li>
+                  <Link href="/auth/register" className="block">
+                    Start Campaign
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/auth/login" className="block">
+                    Login
+                  </Link>
+                </li>
+                {Object.entries(dropdownLinks).map(([key, links]) => (
+                  <li key={key}>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          className="flex items-center group"
+                        >
+                          {`${key.charAt(0).toUpperCase() + key.slice(1)}`}
+                          <ChevronDownIcon className="ml-2 h-4 w-4 transition-transform duration-200 ease-in-out transform group-hover:rotate-180" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        side="bottom"
+                        align="start"
+                        sideOffset={10}
+                      >
+                        <ul
+                          className={
+                            key === 'donate' ? 'grid grid-cols-2 gap-2' : ''
+                          }
+                        >
+                          {links.map((link) => (
+                            <li
+                              key={link.href}
+                              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                            >
+                              <Link href={link.href}>{link.label}</Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </PopoverContent>
+                    </Popover>
+                  </li>
+                ))}
+                <DarkModeBtn />
+              </ul>
+            </div>
+          )}
+
+          <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-3">
+            <DarkModeBtn />
+            <Button variant="outline" size="sm" className="py-2 px-4">
               <Link href="/auth/register">Start Campaign</Link>
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="shadow-none hover:bg-slate-50 hover:text-slate-900 dark:hover:text-slate-800"
-            >
+            <Button variant="outline" size="sm" className="py-2 px-4">
               <Link href="/auth/login">Login</Link>
             </Button>
           </div>

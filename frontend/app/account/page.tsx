@@ -36,7 +36,7 @@ const ProfileTabs = () => {
       case 'Archive':
         return <Archive />;
       default:
-        return null;
+        return <Dashboard />;
     }
   };
 
