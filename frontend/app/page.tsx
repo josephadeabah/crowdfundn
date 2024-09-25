@@ -111,9 +111,9 @@ const HomePage = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="flex justify-center items-center mx-auto rounded-full border border-gray-800"
+                  className="flex justify-center items-center mx-auto rounded-full border border-green-500"
                 >
-                  <GlobeIcon className="w-5 h-5 text-gray-950" />
+                  <GlobeIcon className="w-5 h-5 text-green-500" />
                 </Button>
                 <div>
                   <h4 className="mt-4 mb-2 text-gray-500 dark:text-gray-50 text-lg font-bold lg:text-xl">
@@ -129,9 +129,9 @@ const HomePage = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="flex justify-center items-center mx-auto rounded-full border border-gray-800"
+                  className="flex justify-center items-center mx-auto rounded-full border border-yellow-500"
                 >
-                  <PersonIcon className="w-5 h-5 text-gray-950" />
+                  <PersonIcon className="w-5 h-5 text-yellow-500" />
                 </Button>
                 <div>
                   <h4 className="mt-4 mb-2 text-gray-500 dark:text-gray-50 text-lg font-bold lg:text-xl">
@@ -147,9 +147,9 @@ const HomePage = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="flex justify-center items-center mx-auto rounded-full border border-gray-800"
+                  className="flex justify-center items-center mx-auto rounded-full border border-blue-600"
                 >
-                  <LockClosedIcon className="w-5 h-5 text-gray-950" />
+                  <LockClosedIcon className="w-5 h-5 text-blue-400" />
                 </Button>
                 <div>
                   <h4 className="mt-4 mb-2 text-gray-500 dark:text-gray-50 text-lg font-bold lg:text-xl">
@@ -165,9 +165,9 @@ const HomePage = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="flex justify-center items-center mx-auto rounded-full border border-gray-800"
+                  className="flex justify-center items-center mx-auto rounded-full border border-amber-700"
                 >
-                  <StarIcon className="w-5 h-5 text-gray-950" />
+                  <StarIcon className="w-5 h-5 text-amber-700" />
                 </Button>
                 <div>
                   <h4 className="mt-4 mb-2 text-gray-500 dark:text-gray-50 text-lg font-bold lg:text-xl">
@@ -183,9 +183,9 @@ const HomePage = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="flex justify-center items-center mx-auto rounded-full border border-gray-800"
+                  className="flex justify-center items-center mx-auto rounded-full border border-zinc-500"
                 >
-                  <StackIcon className="w-5 h-5 text-gray-950" />
+                  <StackIcon className="w-5 h-5 text-zinc-500" />
                 </Button>
                 <div>
                   <h4 className="mt-4 mb-2 text-gray-500 dark:text-gray-50 text-lg font-bold lg:text-xl">
