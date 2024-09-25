@@ -33,15 +33,14 @@ const Navbar = () => {
   };
 
   const dropdownLinks = {
-    individuals: [
+    fundraise: [
+      // New combined category
       { label: 'Start Your Campaign', href: '/individuals/start-campaign' },
       {
         label: 'Personal Fundraising',
         href: '/individuals/personal-fundraising',
       },
       { label: 'Support Local Businesses', href: '/individuals/support-local' },
-    ],
-    charities: [
       {
         label: 'Non-Profit Initiatives',
         href: '/charities/non-profit-initiatives',
@@ -209,7 +208,7 @@ const Navbar = () => {
                       >
                         <ul
                           className={
-                            key === 'donate' || key === 'african Diaspora'
+                            key === 'donate' || key === 'africanDiaspora'
                               ? 'grid grid-cols-2 gap-2'
                               : ''
                           }
