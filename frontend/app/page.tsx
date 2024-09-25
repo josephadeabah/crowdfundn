@@ -138,8 +138,8 @@ const HomePage = () => {
                     Community-Centric Approach
                   </h4>
                   <p className="text-base text-gray-950 dark:text-gray-50">
-                    We believe that every donation counts. Our platform is built
-                    to be inclusive and accessible to all.
+                    Creating a hive where communities can support each other and
+                    see tangible results.
                   </p>
                 </div>
               </div>
