@@ -9,11 +9,8 @@ import {
 import DarkModeBtn from './DarkModeBtn';
 import { Button } from './button/Button';
 import Link from 'next/link';
-import {
-  Bars3Icon,
-  XMarkIcon,
-  ChevronDownIcon,
-} from '@heroicons/react/24/outline';
+import { XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -151,7 +148,7 @@ const Navbar = () => {
               {isMenuOpen ? (
                 <XMarkIcon className="h-6 w-6" />
               ) : (
-                <Bars3Icon className="h-6 w-6" />
+                <HamburgerMenuIcon className="h-6 w-6" />
               )}
             </button>
           </div>
