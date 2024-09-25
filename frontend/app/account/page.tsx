@@ -14,7 +14,6 @@ import Transfers from './Transfers';
 import Donations from './Donations';
 import Archive from './Archive';
 import Dashboard from './Dashboard';
-import { Button } from '../components/button/Button';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState('');
@@ -61,75 +60,27 @@ const ProfileTabs = () => {
           {[
             {
               label: 'Dashboard',
-              icon: (
-                <Button
-                  className="hover:bg-gray-100 rounded-full bg-white dark:bg-neutral-800 dark:hover:bg-neutral-700"
-                  size="icon"
-                  variant="ghost"
-                >
-                  <DashboardIcon />
-                </Button>
-              ),
+              icon: <DashboardIcon />,
             },
             {
               label: 'Donations',
-              icon: (
-                <Button
-                  className="hover:bg-gray-100 rounded-full bg-white dark:bg-neutral-800 dark:hover:bg-neutral-700"
-                  size="icon"
-                  variant="ghost"
-                >
-                  <HandIcon />{' '}
-                </Button>
-              ),
+              icon: <HandIcon />,
             },
             {
               label: 'Transfers',
-              icon: (
-                <Button
-                  className="hover:bg-gray-100 rounded-full bg-white dark:bg-neutral-800 dark:hover:bg-neutral-700"
-                  size="icon"
-                  variant="ghost"
-                >
-                  <SymbolIcon />
-                </Button>
-              ),
+              icon: <SymbolIcon />,
             },
             {
               label: 'Rewards',
-              icon: (
-                <Button
-                  className="hover:bg-gray-100 rounded-full bg-white dark:bg-neutral-800 dark:hover:bg-neutral-700"
-                  size="icon"
-                  variant="ghost"
-                >
-                  <IconJarLogoIcon />{' '}
-                </Button>
-              ),
+              icon: <IconJarLogoIcon />,
             },
             {
               label: 'Campaigns',
-              icon: (
-                <Button
-                  className="hover:bg-gray-100 rounded-full bg-white dark:bg-neutral-800 dark:hover:bg-neutral-700"
-                  size="icon"
-                  variant="ghost"
-                >
-                  <RocketIcon />
-                </Button>
-              ),
+              icon: <RocketIcon />,
             },
             {
               label: 'Archive',
-              icon: (
-                <Button
-                  className="hover:bg-gray-100 rounded-full bg-white dark:bg-neutral-800 dark:hover:bg-neutral-700"
-                  size="icon"
-                  variant="ghost"
-                >
-                  <ArchiveIcon />
-                </Button>
-              ),
+              icon: <ArchiveIcon />,
             },
           ].map(({ label, icon }) => (
             <button
