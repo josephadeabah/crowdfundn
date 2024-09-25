@@ -218,15 +218,13 @@ const Navbar = () => {
           <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-3">
             <DarkModeBtn />
             <Button
-              variant="outline"
-              size="sm"
+              variant="ghost"
               className="py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <Link href="/auth/register">Start Campaign</Link>
             </Button>
             <Button
-              variant="outline"
-              size="sm"
+              variant="ghost"
               className="py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <Link href="/auth/login">Login</Link>
