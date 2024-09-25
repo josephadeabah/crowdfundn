@@ -25,7 +25,7 @@ const chunkArray = <T,>(array: T[], chunkSize: number): T[][] => {
 
 export function BrandsLogoSlider() {
   const autoplayPlugin = useRef(
-    Autoplay({ delay: 2000, stopOnInteraction: true }),
+    Autoplay({ delay: 3000, stopOnInteraction: true }),
   );
 
   // Trusted brands data in the desired format
