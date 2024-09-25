@@ -78,6 +78,24 @@ const Navbar = () => {
         href: '/how-to/fundraising-ideas-africa',
       },
     ],
+    'african Diaspora': [
+      { label: 'Cultural Events', href: '/african-diaspora/cultural-events' },
+      { label: 'Diaspora Support', href: '/african-diaspora/diaspora-support' },
+      {
+        label: 'Networking Opportunities',
+        href: '/african-diaspora/networking',
+      },
+      {
+        label: 'Fundraising Campaigns',
+        href: '/african-diaspora/fundraising-campaigns',
+      },
+      { label: 'Donation Drives', href: '/african-diaspora/donation-drives' },
+      {
+        label: 'Community Projects',
+        href: '/african-diaspora/community-projects',
+      },
+      { label: 'Volunteer Opportunities', href: '/african-diaspora/volunteer' },
+    ],
   };
 
   return (
@@ -121,7 +139,7 @@ const Navbar = () => {
                 >
                   <ul
                     className={
-                      key === 'donate'
+                      key === 'donate' || key === 'african Diaspora'
                         ? 'grid grid-cols-2 gap-x-8 gap-y-2 p-3'
                         : 'p-2'
                     }
@@ -191,7 +209,9 @@ const Navbar = () => {
                       >
                         <ul
                           className={
-                            key === 'donate' ? 'grid grid-cols-2 gap-2' : ''
+                            key === 'donate' || key === 'african Diaspora'
+                              ? 'grid grid-cols-2 gap-2'
+                              : ''
                           }
                         >
                           {links.map((link) => (
