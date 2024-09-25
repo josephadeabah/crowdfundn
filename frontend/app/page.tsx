@@ -107,7 +107,7 @@ const HomePage = () => {
             </div>
 
             <div className="grid mx-auto gap-3 sm:grid-cols-2 lg:grid-cols-2 w-full px-3 bg-white dark:bg-gray-950 dark:ring-gray-800 text-left">
-              <div className="flex items-start">
+              <div className="flex items-start gap-2">
                 <Button
                   variant="outline"
                   size="icon"
@@ -125,7 +125,7 @@ const HomePage = () => {
                   </p>
                 </div>
               </div>
-              <div className="flex items-start">
+              <div className="flex items-start gap-2">
                 <Button
                   variant="outline"
                   size="icon"
@@ -143,7 +143,7 @@ const HomePage = () => {
                   </p>
                 </div>
               </div>
-              <div className="flex items-start">
+              <div className="flex items-start gap-2">
                 <Button
                   variant="outline"
                   size="icon"
@@ -161,7 +161,7 @@ const HomePage = () => {
                   </p>
                 </div>
               </div>
-              <div className="flex items-start">
+              <div className="flex items-start gap-2">
                 <Button
                   variant="outline"
                   size="icon"
@@ -179,7 +179,7 @@ const HomePage = () => {
                   </p>
                 </div>
               </div>
-              <div className="flex items-start col-span-2 sm:col-span-1 lg:col-span-1 mb-5">
+              <div className="flex items-start gap-2 col-span-2 sm:col-span-1 lg:col-span-1 mb-5">
                 <Button
                   variant="outline"
                   size="icon"
