@@ -8,16 +8,6 @@ import Progress from './components/progressbar/ProgressBar';
 import HomePageLoader from './loaders/HomeLoader';
 import { BrandsLogoSlider } from './molecules/BrandsLogoSlider';
 import {
-  GlobeAltIcon,
-  UsersIcon,
-  ShieldCheckIcon,
-  ChevronRightIcon,
-  RectangleStackIcon,
-} from '@heroicons/react/24/outline';
-import {
-  FaceIcon,
-  ImageIcon,
-  SunIcon,
   GlobeIcon,
   LockClosedIcon,
   PersonIcon,
