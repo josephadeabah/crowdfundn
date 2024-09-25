@@ -111,7 +111,7 @@ const HomePage = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="flex justify-center items-center mx-0 rounded-full border border-gray-800"
+                  className="flex justify-center items-center mx-auto rounded-full border border-gray-800"
                 >
                   <GlobeIcon className="w-5 h-5 text-gray-950" />
                 </Button>
@@ -121,7 +121,7 @@ const HomePage = () => {
                   </h4>
                   <p className="text-base text-gray-950 dark:text-gray-50">
                     Empowering Africans abroad to invest back into their home
-                    communities.
+                    communities and support local businesses.
                   </p>
                 </div>
               </div>
