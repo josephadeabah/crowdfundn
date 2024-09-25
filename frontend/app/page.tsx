@@ -226,7 +226,7 @@ const HomePage = () => {
       </div>
 
       {/* Trusted by Brands Section */}
-      <div className="w-full flex flex-col items-center">
+      <div className="w-full flex flex-col items-center gap-8">
         <h1 className="font-bold mb-4">Trusted by Brands</h1>
         <BrandsLogoSlider />
       </div>
