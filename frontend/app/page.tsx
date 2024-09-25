@@ -106,7 +106,7 @@ const HomePage = () => {
               </h2>
             </div>
 
-            <div className="max-w-[49.5rem] grid mx-auto gap-3 sm:grid-cols-2 lg:grid-cols-2 w-full px-3 bg-white dark:bg-gray-950 dark:ring-gray-800 text-left">
+            <div className="grid mx-auto gap-3 sm:grid-cols-2 lg:grid-cols-2 w-full px-3 bg-white dark:bg-gray-950 dark:ring-gray-800 text-left">
               <div className="flex items-start">
                 <Button
                   variant="outline"
