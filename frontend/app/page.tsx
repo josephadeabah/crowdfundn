@@ -7,6 +7,7 @@ import CardBanner from './molecules/CardBanner';
 import { Badge } from './components/badge/Badge';
 import Progress from './components/progressbar/ProgressBar';
 import HomePageLoader from './loaders/HomeLoader';
+import { BrandsLogoSlider } from './molecules/BrandsLogoSlider';
 
 const HomePage = () => {
   const [loading, setLoading] = React.useState(true);
@@ -224,52 +225,10 @@ const HomePage = () => {
         </CardBanner>
       </div>
 
-      {/* Fundraising tips */}
-      <div className="w-full flex flex-col sm:flex-row gap-2">
-        <CardBanner
-          title="Latest Blog Posts"
-          description="Check out our latest articles"
-          footer="Read more"
-          className="p-4"
-        >
-          <div className="grid grid-cols-2 gap-4">
-            {data.blogPosts.map((post) => (
-              <div key={post.id}>
-                <img
-                  src={post.image}
-                  alt={post.title}
-                  className="w-full h-48 object-cover rounded-sm"
-                />
-                <div className="">
-                  <h3 className="text-lg font-bold">{post.title}</h3>
-                  <p className="text-gray-600">{post.excerpt}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardBanner>
-        <CardBanner
-          title="Get the Best tips from our community"
-          description="Join us"
-          footer="Get involved"
-          className="p-4"
-        >
-          <div className="grid grid-cols-2 gap-4">
-            {data.blogPosts.map((post) => (
-              <div key={post.id}>
-                <img
-                  src={post.image}
-                  alt={post.title}
-                  className="w-full h-48 object-cover rounded-sm"
-                />
-                <div className="">
-                  <h3 className="text-lg font-bold">{post.title}</h3>
-                  <p className="text-gray-600">{post.excerpt}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardBanner>
+      {/* Trusted by Brands Section */}
+      <div className="w-full flex flex-col items-center">
+        <h2 className="text-2xl font-bold mb-4">Trusted by Brands</h2>
+        <BrandsLogoSlider />
       </div>
     </div>
   );
