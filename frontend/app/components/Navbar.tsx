@@ -106,7 +106,10 @@ const Navbar = () => {
                   onMouseEnter={() => setActivePopover(key)}
                   onMouseLeave={() => setActivePopover(null)}
                 >
-                  <Button variant="ghost" className="flex items-center group">
+                  <Button
+                    variant="ghost"
+                    className="flex items-center group focus:outline-none focus:ring-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  >
                     {`${key.charAt(0).toUpperCase() + key.slice(1)}`}
                     <ChevronDownIcon className="ml-2 h-4 w-4 transition-transform duration-200 ease-in-out transform group-hover:rotate-180" />
                   </Button>
@@ -157,12 +160,18 @@ const Navbar = () => {
             <div className="absolute top-16 left-0 w-full bg-white dark:bg-gray-900 lg:hidden">
               <ul className="flex flex-col items-start p-4 space-y-4">
                 <li>
-                  <Link href="/auth/register" className="block">
+                  <Link
+                    href="/auth/register"
+                    className="block focus:bg-gray-100 dark:focus:bg-gray-800"
+                  >
                     Start Campaign
                   </Link>
                 </li>
                 <li>
-                  <Link href="/auth/login" className="block">
+                  <Link
+                    href="/auth/login"
+                    className="block focus:bg-gray-100 dark:focus:bg-gray-800"
+                  >
                     Login
                   </Link>
                 </li>
@@ -172,7 +181,7 @@ const Navbar = () => {
                       <PopoverTrigger asChild>
                         <Button
                           variant="ghost"
-                          className="flex items-center group"
+                          className="flex items-center group focus:outline-none focus:ring-0 hover:bg-gray-100 dark:hover:bg-gray-800"
                         >
                           {`${key.charAt(0).toUpperCase() + key.slice(1)}`}
                           <ChevronDownIcon className="ml-2 h-4 w-4 transition-transform duration-200 ease-in-out transform group-hover:rotate-180" />
@@ -191,7 +200,7 @@ const Navbar = () => {
                           {links.map((link) => (
                             <li
                               key={link.href}
-                              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 focus:bg-gray-100 dark:focus:bg-gray-800"
                             >
                               <Link href={link.href}>{link.label}</Link>
                             </li>
@@ -208,10 +217,18 @@ const Navbar = () => {
 
           <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-3">
             <DarkModeBtn />
-            <Button variant="outline" size="sm" className="py-2 px-4">
+            <Button
+              variant="outline"
+              size="sm"
+              className="py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
               <Link href="/auth/register">Start Campaign</Link>
             </Button>
-            <Button variant="outline" size="sm" className="py-2 px-4">
+            <Button
+              variant="outline"
+              size="sm"
+              className="py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
               <Link href="/auth/login">Login</Link>
             </Button>
           </div>
