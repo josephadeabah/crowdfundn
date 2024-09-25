@@ -64,7 +64,7 @@ export function BrandsLogoSlider() {
             {chunk.map((brand) => (
               <div
                 key={brand.id}
-                className="flex flex-col items-center gap-y-2 rounded-lg bg-white p-4 md:p-6 dark:bg-gray-900"
+                className="flex flex-col items-center gap-y-2 bg-white p-4 md:p-6 dark:bg-gray-900"
               >
                 <img
                   src={`https://img.logo.dev/${brand.id}.com?token=pk_EoYVBqzrSFeSm5-xN9WT9Q`}
