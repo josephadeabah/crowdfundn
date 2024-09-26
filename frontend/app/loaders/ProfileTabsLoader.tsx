@@ -21,12 +21,30 @@ const ProfileTabsLoader = () => {
 
       {/* Tab Content Skeleton */}
       <div className="w-full bg-white dark:bg-gray-900 px-4 overflow-auto flex-1 h-full md:h-screen">
-        <div className="h-full space-y-4 p-4">
+        <div className="h-full space-y-6 p-4">
+          {/* Simulating grid sections */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Skeleton height={150} />
+            <Skeleton height={150} />
+            <Skeleton height={150} />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Skeleton height={200} />
+            <Skeleton height={200} />
+            <Skeleton height={200} />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Skeleton height={120} />
+            <Skeleton height={120} />
+            <Skeleton height={120} />
+            <Skeleton height={120} />
+          </div>
+
           {/* Simulating different content sections */}
           <Skeleton height={40} />
-          <Skeleton height={200} />
           <Skeleton height={40} />
-          <Skeleton height={150} />
         </div>
       </div>
     </div>
