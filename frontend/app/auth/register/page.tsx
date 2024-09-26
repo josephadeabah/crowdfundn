@@ -12,6 +12,9 @@ import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { FaInfoCircle } from 'react-icons/fa';
 import ToastComponent from '@/app/components/toast/Toast';
+import SearchableSelect, {
+  SelectOption,
+} from '@/app/components/select/SearchableSelect ';
 
 const paymentMethods = data.paymentOptions.methods;
 const mobileMoneyMethod = paymentMethods.find(
@@ -29,8 +32,7 @@ export default function Register() {
   const [fullName, setFullName] = useState<string>('');
   const [nationalId, setNationalId] = useState<string>('');
   const [phoneNumber, setPhoneNumber] = useState<string>('');
-  const [countryCode, setCountryCode] = useState<string>('');
-  const [referralCode, setReferralCode] = useState<string>('');
+  const [country, setCountry] = useState<string>('');
   const [durationInDays, setDurationInDays] = useState<string>('');
   const [targetAmount, setTargetAmount] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -47,6 +49,7 @@ export default function Register() {
   const [showToast, setShowToast] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<SelectOption[]>([]);
 
   const steps = [
     {
@@ -97,7 +100,7 @@ export default function Register() {
                   type="email"
                   id="email"
                   name="email"
-                  className={`block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms] pl-10 ${
+                  className={`block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms] ${
                     errors.email ? 'ring-red-500' : ''
                   }`}
                   placeholder="Your Email Address"
@@ -245,18 +248,78 @@ export default function Register() {
               )}
             </div>
 
-            {/* Referral Code (Optional) */}
-            <div className="col-span-full sm:col-span-1">
-              <div className="mt-2">
-                <input
-                  type="text"
-                  id="referral-code"
-                  name="referral-code"
-                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
-                  placeholder="Referral Code (Optional)"
-                  value={referralCode}
-                  onChange={(e) => setReferralCode(e.target.value)}
+            {/* Country */}
+            <div className="col-span-full sm:col-span-1 relative">
+              <span>
+                <FaInfoCircle
+                  data-tooltip-id="country-info"
+                  data-tooltip-content="Enter your country of origin."
+                  className="absolute top-0 left-0 text-gray-500 z-10"
                 />
+                <Tooltip id="country-info" />
+              </span>
+              <div className="mt-2">
+                <SearchableSelect
+                  options={data.countries}
+                  onChange={(selected) =>
+                    setSelectedCountry(selected as SelectOption[])
+                  }
+                  styles={{
+                    control: (provided, state) => ({
+                      ...provided,
+                      width: '100%',
+                      backgroundColor: state.isFocused ? 'white' : 'white', // Default background
+                      borderRadius: '0.5rem', // rounded-lg
+                      border: '1px solid #D9D9D9', // border-0
+                      textAlign: 'left', // text-left
+                      fontSize: '1rem', // text-base
+                      color: state.isFocused ? '#3A3A3A' : '#3A3A3A', // text-gray-950
+                      transition: 'all 250ms ease-in-out', // transition duration
+                      boxShadow: state.isFocused
+                        ? '0 0 0 1px rgba(156, 163, 175, 1)' // ring-1 ring-inset ring-gray-200
+                        : 'none',
+                      outline: state.isFocused
+                        ? '2px solid rgba(156, 163, 175, 1)'
+                        : 'none', // focus:ring-2 focus:ring-inset focus:ring-gray-500
+                      '&:hover': {
+                        boxShadow: '0 0 0 1px rgba(156, 163, 175, 1)', // hover:ring-gray-500
+                      },
+                    }),
+                    multiValue: (provided) => ({
+                      ...provided,
+                      backgroundColor: '#D13415',
+                    }),
+                    multiValueLabel: (provided) => ({
+                      ...provided,
+                      color: 'white',
+                    }),
+                    multiValueRemove: (provided) => ({
+                      ...provided,
+                      color: 'white',
+                      ':hover': {
+                        backgroundColor: '#FFF7F7',
+                        color: 'white',
+                      },
+                    }),
+                    option: (provided, state) => {
+                      const backgroundColor = state.isSelected
+                        ? '#CE2C31'
+                        : state.isFocused
+                          ? '#FFF7F7'
+                          : 'white';
+
+                      return {
+                        ...provided,
+                        backgroundColor,
+                        color: state.isSelected ? 'white' : '#000000',
+                        textAlign: 'left',
+                      };
+                    },
+                  }}
+                />
+                {errors.country && (
+                  <p className="text-red-500 text-sm">{errors.country}</p>
+                )}
               </div>
             </div>
 
@@ -457,6 +520,7 @@ export default function Register() {
     if (!durationInDays)
       newErrors.durationInDays = 'Duration in days is required.';
     if (!nationalId) newErrors.nationalId = 'National ID is required.';
+    if (!country) newErrors.country = 'Country is required.';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -477,7 +541,7 @@ export default function Register() {
       password,
       fullName,
       phoneNumber,
-      countryCode,
+      country,
       passwordConfirmation,
       selectedPaymentMethod,
       selectedMobileMoneyProvider,
@@ -486,7 +550,7 @@ export default function Register() {
       selectedCategory,
       targetAmount,
       durationInDays,
-      referralCode,
+      nationalId,
     };
 
     try {
@@ -512,6 +576,7 @@ export default function Register() {
       setShowToast(true);
     } finally {
       setLoading(false);
+      setShowToast(true);
     }
   };
 
