@@ -8,6 +8,10 @@ import { RadioGroup, RadioGroupItem } from '@/app/components/radio/RadioGroup';
 import { useRouter } from 'next/navigation';
 import { Button } from '../../components/button/Button';
 import DatePicker from '@/app/components/datepicker/DatePicker';
+import RegisterLeftPage from './RegisterLeftPage';
+import { Tooltip } from 'react-tooltip';
+import 'react-tooltip/dist/react-tooltip.css';
+import { FaInfoCircle } from 'react-icons/fa';
 
 const paymentMethods = data.paymentOptions.methods;
 const mobileMoneyMethod = paymentMethods.find(
@@ -19,8 +23,16 @@ const mobileMoneyProviders = mobileMoneyMethod
 const currencies = data.paymentOptions.currencies;
 
 export default function Register() {
-  const router = useRouter(); // Initialize the router
+  const router = useRouter();
   const [email, setEmail] = useState<string>('');
+  const [fundraiserName, setFundraiserName] = useState<string>('');
+  const [fullName, setFullName] = useState<string>('');
+  const [nationalId, setNationalId] = useState<string>('');
+  const [phoneNumber, setPhoneNumber] = useState<string>('');
+  const [countryCode, setCountryCode] = useState<string>('');
+  const [referralCode, setReferralCode] = useState<string>('');
+  const [durationInDays, setDurationInDays] = useState<string>('');
+  const [targetAmount, setTargetAmount] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>('');
   const [loading, setLoading] = useState(false);
@@ -30,25 +42,8 @@ export default function Register() {
   const [selectedCurrency, setSelectedCurrency] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [value, setValue] = useState(1); // State for storing the number value
-
-  // Function to handle increment
-  const increment = () => {
-    setValue((prevValue) => Math.min(prevValue + 1, 60)); // Maximum value is 10
-  };
-
-  // Function to handle decrement
-  const decrement = () => {
-    setValue((prevValue) => Math.max(prevValue - 1, 1)); // Minimum value is 1
-  };
-
-  // Handle input change
-  const handleChange = (e: { target: { value: any } }) => {
-    const newValue = Math.max(1, Math.min(10, Number(e.target.value)));
-    setValue(newValue);
-  };
-
   const [currentStep, setCurrentStep] = useState(0);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const steps = [
     {
@@ -62,31 +57,95 @@ export default function Register() {
               className="col-span-full text-left sm:col-span-1 text-gray-600 dark:text-gray-100"
             >
               Select birth date
+              <FaInfoCircle
+                data-tooltip-id="birthdate-info"
+                data-tooltip-content="Your birthdate is required for eligibility verification."
+                className="ml-2 text-gray-500 inline-block"
+              />
+              <Tooltip id="birthdate-info" />
             </label>
-            <div className="col-span-full">
+            <div
+              className={`col-span-full ${
+                errors.birthdate ? 'ring-red-500' : ''
+              }`}
+            >
               <DatePicker
                 selectedDate={selectedDate}
                 onDateChange={(date) => setSelectedDate(date)}
                 minYear={1940}
                 maxYear={2030}
               />
+              {errors.birthdate && (
+                <span className="text-red-500">{errors.birthdate}</span>
+              )}
             </div>
             {/* Email Address */}
-            <div className="col-span-full sm:col-span-1">
+            <div className="col-span-full sm:col-span-1 relative">
+              <span>
+                <FaInfoCircle
+                  data-tooltip-id="email-info"
+                  data-tooltip-content="Please provide a valid email for account creation and notifications."
+                  className="absolute top-0 left-0 text-gray-500"
+                />
+                <Tooltip id="email-info" />
+              </span>
               <div className="mt-2">
                 <input
                   type="email"
                   id="email"
                   name="email"
-                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
-                  placeholder="Email Address"
+                  className={`block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms] pl-10 ${
+                    errors.email ? 'ring-red-500' : ''
+                  }`}
+                  placeholder="Your Email Address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
+                {errors.email && (
+                  <p className="text-red-500 text-sm">{errors.email}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Password */}
+            <div className="col-span-full sm:col-span-1 relative">
+              <span>
+                <FaInfoCircle
+                  data-tooltip-id="password-info"
+                  data-tooltip-content="Your password must be at least 8 characters long."
+                  className="absolute top-0 left-0 text-gray-500"
+                />
+                <Tooltip id="password-info" />
+              </span>
+              <div className="mt-2">
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className={`block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms] ${
+                    errors.password ? 'ring-red-500' : ''
+                  }`}
+                  required
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-sm">{errors.password}</p>
+                )}
               </div>
             </div>
 
             {/* Fundraiser Name */}
-            <div className="col-span-full sm:col-span-1">
+            <div className="col-span-full sm:col-span-1 relative">
+              <span>
+                <FaInfoCircle
+                  data-tooltip-id="fundraiser-name-info"
+                  data-tooltip-content="Enter the name of your fundraiser. If you're the one raising, you can leave it blank."
+                  className="absolute top-0 left-0 text-gray-500"
+                />
+                <Tooltip id="fundraiser-name-info" />
+              </span>
               <div className="mt-2">
                 <input
                   type="text"
@@ -94,92 +153,93 @@ export default function Register() {
                   name="fundraiser-name"
                   className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
                   placeholder="Fundraiser Name"
-                  required
+                  value={fundraiserName}
+                  onChange={(e) => setFundraiserName(e.target.value)}
                 />
               </div>
             </div>
 
-            {/* Duration */}
-            <div className="col-span-full sm:col-span-1">
-              <div className="py-2 px-3 bg-white border border-gray-200 rounded-lg dark:bg-neutral-900 dark:border-neutral-700">
-                <div className="w-full flex justify-between items-center gap-x-3">
-                  <div>
-                    <span className="block text-gray-500 dark:text-white">
-                      Duration in days
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-x-1.5">
-                    {/* Decrease Button */}
-                    <button
-                      type="button"
-                      onClick={decrement}
-                      className="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-md border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-                      aria-label="Decrease"
-                    >
-                      <svg
-                        className="shrink-0 size-3.5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M5 12h14"></path>
-                      </svg>
-                    </button>
-
-                    {/* Input field */}
-                    <input
-                      className="p-0 w-6 bg-transparent border-0 text-gray-800 text-center focus:ring-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none dark:text-white"
-                      style={{ MozAppearance: 'textfield' }}
-                      type="number"
-                      aria-roledescription="Number field"
-                      value={value}
-                      onChange={handleChange}
-                    />
-
-                    {/* Increase Button */}
-                    <button
-                      type="button"
-                      onClick={increment}
-                      className="size-6 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-md border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-                      aria-label="Increase"
-                    >
-                      <svg
-                        className="shrink-0 size-3.5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M5 12h14"></path>
-                        <path d="M12 5v14"></path>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
+            {/* Password Confirmation */}
+            <div className="col-span-full sm:col-span-1 relative">
+              <span>
+                <FaInfoCircle
+                  data-tooltip-id="confirm-password-info"
+                  data-tooltip-content="Please confirm your password."
+                  className="absolute top-0 left-0 text-gray-500"
+                />
+                <Tooltip id="confirm-password-info" />
+              </span>
+              <div className="mt-2">
+                <input
+                  type="password"
+                  id="confirm-password"
+                  value={passwordConfirmation}
+                  onChange={(e) => setPasswordConfirmation(e.target.value)}
+                  placeholder="••••••••"
+                  className={`block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms] ${
+                    errors.passwordConfirmation ? 'ring-red-500' : ''
+                  }`}
+                  required
+                />
+                {errors.passwordConfirmation && (
+                  <p className="text-red-500 text-sm">
+                    {errors.passwordConfirmation}
+                  </p>
+                )}
               </div>
+            </div>
+            {/* Duration */}
+            <div className="col-span-full sm:col-span-1 relative">
+              <span>
+                <FaInfoCircle
+                  data-tooltip-id="duration-info"
+                  data-tooltip-content="Enter the duration of your fundraiser in number of days."
+                  className="absolute top-0 left-0 text-gray-500"
+                />
+                <Tooltip id="duration-info" />
+              </span>
+              <input
+                type="number"
+                id="duration"
+                name="duration"
+                className={`block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms] ${
+                  errors.durationInDays ? 'ring-red-500' : ''
+                }`}
+                placeholder="Duration in Days"
+                value={durationInDays}
+                onChange={(e) => setDurationInDays(e.target.value)}
+                required
+              />
+              {errors.durationInDays && (
+                <p className="text-red-500 text-sm">{errors.durationInDays}</p>
+              )}
             </div>
 
             {/* Target Amount */}
-            <div className="col-span-full sm:col-span-1">
+            <div className="col-span-full sm:col-span-1 relative">
+              <span>
+                <FaInfoCircle
+                  data-tooltip-id="target-amount-info"
+                  data-tooltip-content="Enter the target amount without the currency."
+                  className="absolute top-0 left-0 text-gray-500"
+                />
+                <Tooltip id="target-amount-info" />
+              </span>
               <input
                 type="number"
                 id="target-amount"
                 name="target-amount"
-                className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
+                className={`block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms] ${
+                  errors.targetAmount ? 'ring-red-500' : ''
+                }`}
                 placeholder="Target Amount"
+                value={targetAmount}
+                onChange={(e) => setTargetAmount(e.target.value)}
                 required
               />
+              {errors.targetAmount && (
+                <p className="text-red-500 text-sm">{errors.targetAmount}</p>
+              )}
             </div>
 
             {/* Referral Code (Optional) */}
@@ -191,6 +251,8 @@ export default function Register() {
                   name="referral-code"
                   className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
                   placeholder="Referral Code (Optional)"
+                  value={referralCode}
+                  onChange={(e) => setReferralCode(e.target.value)}
                 />
               </div>
             </div>
@@ -202,24 +264,46 @@ export default function Register() {
                   type="text"
                   id="your-full-name"
                   name="your-full-name"
-                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
+                  className={`block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms] ${
+                    errors.fullName ? 'ring-red-500' : ''
+                  }`}
                   placeholder="Your Full Name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   required
                 />
+                {errors.fullName && (
+                  <p className="text-red-500 text-sm">{errors.fullName}</p>
+                )}
               </div>
             </div>
 
             {/* National ID */}
-            <div className="col-span-full sm:col-span-1">
+            <div className="col-span-full sm:col-span-1 relative">
+              <span>
+                <FaInfoCircle
+                  data-tooltip-id="nationalId-info"
+                  data-tooltip-content="Enter your National ID. Passport is preferred."
+                  className="absolute top-0 left-0 text-gray-500"
+                />
+                <Tooltip id="nationalId-info" />
+              </span>
               <div className="mt-2">
                 <input
                   type="text"
                   id="national-id"
                   name="national-id"
-                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
+                  className={`block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms] ${
+                    errors.nationalId ? 'ring-red-500' : ''
+                  }`}
                   placeholder="National ID"
+                  value={nationalId}
+                  onChange={(e) => setNationalId(e.target.value)}
                   required
                 />
+                {errors.nationalId && (
+                  <p className="text-red-500 text-sm">{errors.nationalId}</p>
+                )}
               </div>
             </div>
 
@@ -230,10 +314,17 @@ export default function Register() {
                   type="tel"
                   id="mobile-phone"
                   name="mobile-phone"
-                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
+                  className={`block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms] ${
+                    errors.phoneNumber ? 'ring-red-500' : ''
+                  }`}
                   placeholder="Mobile Phone"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                   required
                 />
+                {errors.phoneNumber && (
+                  <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
+                )}
               </div>
             </div>
           </form>
@@ -347,94 +438,89 @@ export default function Register() {
     },
   ];
 
+  const handleValidation = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!email) newErrors.email = 'Email is required.';
+    if (!password) newErrors.password = 'Password is required.';
+    if (!passwordConfirmation)
+      newErrors.passwordConfirmation = 'Password confirmation is required.';
+    else if (password !== passwordConfirmation)
+      newErrors.passwordConfirmation = 'Passwords do not match.';
+    if (!fullName) newErrors.fullName = 'Full name is required.';
+    if (!phoneNumber) newErrors.phoneNumber = 'Phone number is required.';
+    if (!selectedDate) newErrors.selectedDate = 'Date is required.';
+    if (!targetAmount) newErrors.targetAmount = 'Target amount is required.';
+    if (!durationInDays)
+      newErrors.durationInDays = 'Duration in days is required.';
+    if (!nationalId) newErrors.nationalId = 'National ID is required.';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Function to handle form submission
+  const handleSubmit = async () => {
+    if (!handleValidation()) {
+      return;
+    }
+    setLoading(true);
+
+    const formData = {
+      email,
+      password,
+      fullName,
+      phoneNumber,
+      countryCode,
+      passwordConfirmation,
+      selectedPaymentMethod,
+      selectedMobileMoneyProvider,
+      selectedCurrency,
+      selectedDate,
+      selectedCategory,
+      targetAmount,
+      durationInDays,
+      referralCode,
+    };
+
+    try {
+      console.log('Form data:', formData);
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        router.push('/auth/login');
+      } else {
+        console.error(result.message);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex bg-white dark:bg-gray-900">
       {/* Left container */}
       <div className="hidden w-full items-center justify-center dark:bg-gray-950 lg:flex lg:w-1/2">
-        <section className="text-gray-700 dark:bg-gray-950 dark:text-gray-50">
-          <div className="mx-auto flex flex-col items-center gap-y-16 px-6 py-32">
-            <div className="mx-auto text-center">
-              <h2 className="mb-3 text-3xl font-bold lg:text-4xl">
-                Explore Africa's leading Crowdfunding platform
-              </h2>
-              <p className="text-base">
-                Our platform provides you with the tools you need to raise
-                funds. We have helped over 1,000,000 people to achieve their
-                goals.
-              </p>
-            </div>
-            <div className="flex w-full flex-col items-center gap-12 rounded-lg bg-gray-50 px-6 py-12 dark:bg-gray-900 lg:flex-row lg:justify-center lg:gap-6 lg:px-12">
-              <div>
-                <h4 className="mb-2 text-2xl font-bold text-red-600 lg:text-3xl">
-                  500k+
-                </h4>
-                <p className="text-base font-medium text-gray-950 dark:text-gray-50">
-                  Monthly Visitors
-                </p>
-              </div>
-              <div>
-                <h4 className="mb-2 text-2xl font-bold text-red-600 lg:text-3xl">
-                  250k+
-                </h4>
-                <p className="text-base font-medium text-gray-950 dark:text-gray-50">
-                  Registered Users
-                </p>
-              </div>
-              <div>
-                <h4 className="mb-2 text-2xl font-bold text-red-600 lg:text-3xl">
-                  175M+
-                </h4>
-                <p className="text-base font-medium text-gray-950 dark:text-gray-50">
-                  Money Raised
-                </p>
-              </div>
-              <div>
-                <h4 className="mb-2 text-2xl font-bold text-red-600 lg:text-3xl">
-                  5M+
-                </h4>
-                <p className="text-base font-medium text-gray-950 dark:text-gray-50">
-                  Happy Donors
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+        <RegisterLeftPage />
       </div>
-
       {/* Right container */}
       <div className="w-full lg:w-1/2">
-        <div className="p-4">
-          <Stepper steps={steps} currentStep={currentStep} />
-          <div className="w-full flex justify-between gap-8 h-full mt-4">
-            {currentStep > 0 && (
-              <Button
-                onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
-                className="w-full bg-gray-300 text-white py-2 px-4 rounded"
-                disabled={currentStep === 0}
-              >
-                Previous
-              </Button>
-            )}
-            {currentStep === 0 && (
-              <div className="w-full text-white py-2 px-4 rounded"></div>
-            )}
-            <Button
-              onClick={() => {
-                if (currentStep === steps.length - 1) {
-                  // Redirect to /auth/login when Finish is clicked
-                  router.push('/auth/login');
-                } else {
-                  setCurrentStep((prev) =>
-                    Math.min(prev + 1, steps.length - 1),
-                  );
-                }
-              }}
-              className="w-full bg-red-600 text-white py-2 px-4 rounded"
-            >
-              {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
-            </Button>
-          </div>
-        </div>
+        <Stepper
+          steps={steps}
+          currentStep={currentStep}
+          onStepChange={(step) => setCurrentStep(step)}
+          onSubmit={handleSubmit}
+          loading={loading}
+        />
       </div>
     </div>
   );

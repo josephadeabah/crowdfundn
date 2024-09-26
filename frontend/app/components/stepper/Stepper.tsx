@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Button } from '../button/Button';
 
 interface Step {
   label: string;
@@ -10,9 +11,34 @@ interface Step {
 interface StepperProps {
   steps: Step[];
   currentStep: number;
+  onStepChange: (step: number) => void; // Function to handle step changes
+  onSubmit: () => void; // Function to handle final form submission
+  loading?: boolean; // Optional loading state
 }
 
-const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
+const Stepper: React.FC<StepperProps> = ({
+  steps,
+  currentStep,
+  onStepChange,
+  onSubmit,
+  loading,
+}) => {
+  // Handler for moving to the next step
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) {
+      onStepChange(currentStep + 1);
+    } else {
+      onSubmit(); // Call onSubmit if it's the last step
+    }
+  };
+
+  // Handler for moving to the previous step
+  const handlePrevious = () => {
+    if (currentStep > 0) {
+      onStepChange(currentStep - 1);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-3 items-center mx-auto w-full">
       {steps.map((step, index) => (
@@ -70,9 +96,45 @@ const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
           )}
         </div>
       ))}
+
       {/* Render content for the current step */}
       <div className="mt-4 w-full text-center">
         {steps[currentStep]?.content}
+      </div>
+
+      {/* Step navigation buttons */}
+      <div className="w-full flex justify-between gap-8 h-full mt-4">
+        {/* Previous Button */}
+        <Button
+          onClick={handlePrevious}
+          disabled={currentStep === 0}
+          className={`w-full px-6 py-2 text-sm font-semibold rounded-md transition-all duration-150 ${
+            currentStep === 0
+              ? 'bg-gray-300 cursor-not-allowed'
+              : 'bg-gray-500 hover:bg-gray-600 text-white'
+          }`}
+        >
+          Previous
+        </Button>
+
+        {/* Next or Submit Button */}
+        <Button
+          onClick={handleNext}
+          disabled={loading}
+          className={`w-full px-6 py-2 text-sm font-semibold rounded-md transition-all duration-150 ${
+            loading
+              ? 'bg-gray-300 cursor-not-allowed'
+              : currentStep === steps.length - 1
+                ? 'bg-red-600 hover:bg-red-700 text-white'
+                : 'bg-red-600 hover:bg-red-700 text-white'
+          }`}
+        >
+          {loading
+            ? 'Loading...'
+            : currentStep === steps.length - 1
+              ? 'Finish'
+              : 'Next'}
+        </Button>
       </div>
     </div>
   );
