@@ -9,8 +9,8 @@ import {
 import DarkModeBtn from './DarkModeBtn';
 import { Button } from './button/Button';
 import Link from 'next/link';
-import { XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import { HamburgerMenuIcon } from '@radix-ui/react-icons';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import { HamburgerMenuIcon, TriangleDownIcon } from '@radix-ui/react-icons';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -125,7 +125,7 @@ const Navbar = () => {
                     className="flex items-center group focus:outline-none focus:ring-0 hover:bg-gray-100 dark:hover:bg-gray-800"
                   >
                     {`${key.charAt(0).toUpperCase() + key.slice(1)}`}
-                    <ChevronDownIcon className="ml-2 h-4 w-4 transition-transform duration-200 ease-in-out transform group-hover:rotate-180" />
+                    <TriangleDownIcon className="ml-2 h-4 w-4 transition-transform duration-200 ease-in-out transform group-hover:rotate-180" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
@@ -198,7 +198,7 @@ const Navbar = () => {
                           className="flex items-center group focus:outline-none focus:ring-0 hover:bg-gray-100 dark:hover:bg-gray-800"
                         >
                           {`${key.charAt(0).toUpperCase() + key.slice(1)}`}
-                          <ChevronDownIcon className="ml-2 h-4 w-4 transition-transform duration-200 ease-in-out transform group-hover:rotate-180" />
+                          <TriangleDownIcon className="ml-2 h-4 w-4 transition-transform duration-200 ease-in-out transform group-hover:rotate-180" />
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent
