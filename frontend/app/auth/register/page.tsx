@@ -32,7 +32,6 @@ export default function Register() {
   const [fullName, setFullName] = useState<string>('');
   const [nationalId, setNationalId] = useState<string>('');
   const [phoneNumber, setPhoneNumber] = useState<string>('');
-  const [country, setCountry] = useState<string>('');
   const [durationInDays, setDurationInDays] = useState<string>('');
   const [targetAmount, setTargetAmount] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -49,7 +48,9 @@ export default function Register() {
   const [showToast, setShowToast] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [selectedCountry, setSelectedCountry] = useState<SelectOption[]>([]);
+  const [selectedCountry, setSelectedCountry] = useState<SelectOption | null>(
+    null,
+  );
 
   const steps = [
     {
@@ -261,28 +262,29 @@ export default function Register() {
               <div className="mt-2">
                 <SearchableSelect
                   options={data.countries}
-                  onChange={(selected) =>
-                    setSelectedCountry(selected as SelectOption[])
-                  }
+                  onChange={(selected) => {
+                    console.log('Selected country:', selected);
+                    setSelectedCountry(selected as SelectOption);
+                  }}
                   styles={{
                     control: (provided, state) => ({
                       ...provided,
                       width: '100%',
-                      backgroundColor: state.isFocused ? 'white' : 'white', // Default background
-                      borderRadius: '0.5rem', // rounded-lg
-                      border: '1px solid #D9D9D9', // border-0
-                      textAlign: 'left', // text-left
-                      fontSize: '1rem', // text-base
-                      color: state.isFocused ? '#3A3A3A' : '#3A3A3A', // text-gray-950
-                      transition: 'all 250ms ease-in-out', // transition duration
+                      backgroundColor: state.isFocused ? 'white' : '',
+                      borderRadius: '0.5rem',
+                      border: errors.selectedCountry ? '1px solid red' : '',
+                      textAlign: 'left',
+                      fontSize: '1rem',
+                      color: state.isFocused ? '#3A3A3A' : '',
+                      transition: 'all 250ms ease-in-out',
                       boxShadow: state.isFocused
                         ? '0 0 0 1px rgba(156, 163, 175, 1)' // ring-1 ring-inset ring-gray-200
                         : 'none',
                       outline: state.isFocused
                         ? '2px solid rgba(156, 163, 175, 1)'
-                        : 'none', // focus:ring-2 focus:ring-inset focus:ring-gray-500
+                        : 'none',
                       '&:hover': {
-                        boxShadow: '0 0 0 1px rgba(156, 163, 175, 1)', // hover:ring-gray-500
+                        boxShadow: '0 0 0 1px rgba(156, 163, 175, 1)',
                       },
                     }),
                     multiValue: (provided) => ({
@@ -317,8 +319,10 @@ export default function Register() {
                     },
                   }}
                 />
-                {errors.country && (
-                  <p className="text-red-500 text-sm">{errors.country}</p>
+                {errors.selectedCountry && (
+                  <p className="text-red-500 text-sm">
+                    {errors.selectedCountry}
+                  </p>
                 )}
               </div>
             </div>
@@ -520,7 +524,7 @@ export default function Register() {
     if (!durationInDays)
       newErrors.durationInDays = 'Duration in days is required.';
     if (!nationalId) newErrors.nationalId = 'National ID is required.';
-    if (!country) newErrors.country = 'Country is required.';
+    if (!selectedCountry) newErrors.selectedCountry = 'Country is required.';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -541,7 +545,7 @@ export default function Register() {
       password,
       fullName,
       phoneNumber,
-      country,
+      selectedCountry,
       passwordConfirmation,
       selectedPaymentMethod,
       selectedMobileMoneyProvider,
