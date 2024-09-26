@@ -263,7 +263,6 @@ export default function Register() {
                 <SearchableSelect
                   options={data.countries}
                   onChange={(selected) => {
-                    console.log('Selected country:', selected);
                     setSelectedCountry(selected as SelectOption);
                   }}
                   styles={{
