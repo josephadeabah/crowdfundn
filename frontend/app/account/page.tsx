@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import {
   DashboardIcon,
   HandIcon,
@@ -14,20 +14,44 @@ import Transfers from './Transfers';
 import Donations from './Donations';
 import Archive from './Archive';
 import Dashboard from './Dashboard';
+import ProfileTabsLoader from '../loaders/ProfileTabsLoader';
 
 const ProfileTabs = () => {
-  const [activeTab, setActiveTab] = useState(''); // Set default to Dashboard
+  const [activeTab, setActiveTab] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // On initial load, simulate loading for 2 seconds or replace with actual data fetching logic
     const savedTab = localStorage.getItem('activeTab');
     if (savedTab) {
       setActiveTab(savedTab);
     }
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000); // Simulate loading time
+
+    return () => clearTimeout(timer); // Clean up the timer
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('activeTab', activeTab);
+    if (activeTab) {
+      localStorage.setItem('activeTab', activeTab);
+    }
   }, [activeTab]);
+
+  const handleTabClick = (tab: SetStateAction<string>) => {
+    // Set loading to true and then switch the active tab after data is "loaded"
+    setLoading(true);
+    setActiveTab(tab);
+
+    // Simulate a loading delay (replace with actual data fetching)
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000); // Simulate data loading for 1 second
+
+    return () => clearTimeout(timer);
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -47,6 +71,11 @@ const ProfileTabs = () => {
         return <Dashboard />;
     }
   };
+
+  // Show loader while loading is true
+  if (loading) {
+    return <ProfileTabsLoader />;
+  }
 
   return (
     <div className="max-w-7xl mx-auto flex flex-col md:flex-row h-screen">
@@ -73,7 +102,7 @@ const ProfileTabs = () => {
                   ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-4 md:border-r-0 border-red-200 text-red-600 dark:text-red-600'
                   : 'border-transparent text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-red-600 dark:text-neutral-400 dark:hover:text-red-500'
               } flex items-center focus:outline-none`}
-              onClick={() => setActiveTab(label)}
+              onClick={() => handleTabClick(label)}
               aria-selected={activeTab === label}
               aria-controls={`vertical-tab-${label}`}
               role="tab"
