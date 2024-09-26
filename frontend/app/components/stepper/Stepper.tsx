@@ -11,9 +11,9 @@ interface Step {
 interface StepperProps {
   steps: Step[];
   currentStep: number;
-  onStepChange: (step: number) => void; // Function to handle step changes
-  onSubmit: () => void; // Function to handle final form submission
-  loading?: boolean; // Optional loading state
+  onStepChange: (step: number) => void;
+  onSubmit: () => void;
+  loading?: boolean;
 }
 
 const Stepper: React.FC<StepperProps> = ({
@@ -28,7 +28,7 @@ const Stepper: React.FC<StepperProps> = ({
     if (currentStep < steps.length - 1) {
       onStepChange(currentStep + 1);
     } else {
-      onSubmit(); // Call onSubmit if it's the last step
+      onSubmit();
     }
   };
 
@@ -44,7 +44,7 @@ const Stepper: React.FC<StepperProps> = ({
       {steps.map((step, index) => (
         <div className="flex items-center w-full" key={index}>
           <div
-            className={`w-8 h-8 shrink-0 mx-[-1px] p-1.5 flex items-center justify-center rounded-full ${
+            className={`w-8 h-8 shrink-0 m-2 p-1.5 flex items-center justify-center rounded-full ${
               index < currentStep || index === currentStep
                 ? 'bg-red-600'
                 : 'bg-gray-300'
@@ -103,15 +103,15 @@ const Stepper: React.FC<StepperProps> = ({
       </div>
 
       {/* Step navigation buttons */}
-      <div className="w-full flex justify-between gap-8 h-full mt-4">
+      <div className="w-full flex justify-between gap-4 h-full mt-4">
         {/* Previous Button */}
         <Button
           onClick={handlePrevious}
           disabled={currentStep === 0}
-          className={`w-full px-6 py-2 text-sm font-semibold rounded-md transition-all duration-150 ${
+          className={`w-full px-6 py-2 text-sm mx-2 font-semibold rounded-md transition-all duration-150 ${
             currentStep === 0
               ? 'bg-gray-300 cursor-not-allowed'
-              : 'bg-gray-500 hover:bg-gray-600 text-white'
+              : 'bg-gray-400 hover:bg-gray-600 text-white'
           }`}
         >
           Previous
@@ -121,7 +121,7 @@ const Stepper: React.FC<StepperProps> = ({
         <Button
           onClick={handleNext}
           disabled={loading}
-          className={`w-full px-6 py-2 text-sm font-semibold rounded-md transition-all duration-150 ${
+          className={`w-full px-6 py-2 text-sm mx-2 font-semibold rounded-md transition-all duration-150 ${
             loading
               ? 'bg-gray-300 cursor-not-allowed'
               : currentStep === steps.length - 1

@@ -6,7 +6,6 @@ import data from '../../../data.json';
 import { Badge } from '@/app/components/badge/Badge';
 import { RadioGroup, RadioGroupItem } from '@/app/components/radio/RadioGroup';
 import { useRouter } from 'next/navigation';
-import { Button } from '../../components/button/Button';
 import DatePicker from '@/app/components/datepicker/DatePicker';
 import RegisterLeftPage from './RegisterLeftPage';
 import { Tooltip } from 'react-tooltip';
