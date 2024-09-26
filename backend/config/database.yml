@@ -24,7 +24,7 @@ default: &default
 
 development:
   <<: *default
-  database: backend_development
+  database: bantuhive_backend
   password: <%= ENV['DB_PASSWORD'] %>
 
   # The specified database role being used to connect to PostgreSQL.
