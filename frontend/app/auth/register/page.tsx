@@ -11,6 +11,7 @@ import RegisterLeftPage from './RegisterLeftPage';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { FaInfoCircle } from 'react-icons/fa';
+import ToastComponent from '@/app/components/toast/Toast';
 
 const paymentMethods = data.paymentOptions.methods;
 const mobileMoneyMethod = paymentMethods.find(
@@ -43,6 +44,9 @@ export default function Register() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [showToast, setShowToast] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const steps = [
     {
@@ -464,6 +468,9 @@ export default function Register() {
       return;
     }
     setLoading(true);
+    setShowToast(false);
+    setError(null);
+    setSuccess(null);
 
     const formData = {
       email,
@@ -497,30 +504,51 @@ export default function Register() {
         router.push('/auth/login');
       } else {
         console.error(result.message);
+        setError(result.message);
+        setShowToast(true);
       }
     } catch (error) {
       console.error('Error submitting form:', error);
+      setShowToast(true);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex bg-white dark:bg-gray-900">
-      {/* Left container */}
-      <div className="hidden w-full items-center justify-center dark:bg-gray-950 lg:flex lg:w-1/2">
-        <RegisterLeftPage />
-      </div>
-      {/* Right container */}
-      <div className="w-full lg:w-1/2">
-        <Stepper
-          steps={steps}
-          currentStep={currentStep}
-          onStepChange={(step) => setCurrentStep(step)}
-          onSubmit={handleSubmit}
-          loading={loading}
+    <>
+      {showToast && error && (
+        <ToastComponent
+          type="error"
+          isOpen={showToast}
+          onClose={() => setShowToast(false)}
+          description={error}
         />
+      )}
+      {showToast && success && (
+        <ToastComponent
+          type="success"
+          isOpen={showToast}
+          onClose={() => setShowToast(false)}
+          description={success}
+        />
+      )}
+      <div className="flex bg-white dark:bg-gray-900">
+        {/* Left container */}
+        <div className="hidden w-full items-center justify-center dark:bg-gray-950 lg:flex lg:w-1/2">
+          <RegisterLeftPage />
+        </div>
+        {/* Right container */}
+        <div className="w-full lg:w-1/2">
+          <Stepper
+            steps={steps}
+            currentStep={currentStep}
+            onStepChange={(step) => setCurrentStep(step)}
+            onSubmit={handleSubmit}
+            loading={loading}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
