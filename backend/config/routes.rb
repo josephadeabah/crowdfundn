@@ -13,7 +13,6 @@ Rails.application.routes.draw do
         get 'users/:id', to: 'users#show_by_id' # Route to get user by ID
         put 'users/:id/make_admin', to: 'users#make_admin'  # Route to make user an admin
       end
-
       namespace :fundraisers do
         resources :campaigns do
           resources :updates, only: [:create, :update, :destroy]
