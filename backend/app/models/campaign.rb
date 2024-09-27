@@ -3,6 +3,7 @@ class Campaign < ApplicationRecord
   has_many :updates, dependent: :destroy
   has_many :comments, dependent: :destroy
   has_many :backers, through: :donations  # assuming a Backer model related to donations
+  has_rich_text :description
 
   validates :title, :description, :goal_amount, :start_date, :end_date, :currency, presence: true
   validates :goal_amount, numericality: { greater_than: 0 }
