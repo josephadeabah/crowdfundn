@@ -1,0 +1,31 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  description: MyText
+  goal_amount: 9.99
+  current_amount: 9.99
+  start_date: 2024-09-27 12:50:33
+  end_date: 2024-09-27 12:50:33
+  category: MyString
+  location: MyString
+  currency: MyString
+  currency_code: MyString
+  currency_symbol: MyString
+  status: 1
+  fundraiser: one
+
+two:
+  title: MyString
+  description: MyText
+  goal_amount: 9.99
+  current_amount: 9.99
+  start_date: 2024-09-27 12:50:33
+  end_date: 2024-09-27 12:50:33
+  category: MyString
+  location: MyString
+  currency: MyString
+  currency_code: MyString
+  currency_symbol: MyString
+  status: 1
+  fundraiser: two

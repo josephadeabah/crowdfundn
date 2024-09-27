@@ -13,8 +13,16 @@ Rails.application.routes.draw do
         get 'users/:id', to: 'users#show_by_id' # Route to get user by ID
         put 'users/:id/make_admin', to: 'users#make_admin'  # Route to make user an admin
       end
-    end
-  end
+
+      namespace :fundraisers do
+        resources :campaigns do
+          resources :updates, only: [:create, :update, :destroy]
+          resources :comments, only: [:create, :index, :destroy]
+        end
+      end  # Closing namespace for fundraisers
+    end  # Closing namespace for v1
+  end  # Closing namespace for api
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
