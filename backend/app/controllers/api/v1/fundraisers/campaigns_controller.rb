@@ -18,7 +18,7 @@ module Api
         def create
           @campaign = @current_user.campaigns.new(campaign_params)
           if @campaign.save
-            render json: @campaign.as_json.merge(media: @campaign.media), status: :created
+            render json: @campaign.as_json(include: [:updates, :comments]).merge(media: @campaign.media), status: :created
           else
             render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity
           end
@@ -27,7 +27,7 @@ module Api
         # PUT /api/v1/fundraisers/campaigns/:id
         def update
           if @campaign.update(campaign_params)
-            render json: @campaign.as_json.merge(media: @campaign.media), status: :ok
+            render json: @campaign.as_json(include: [:updates, :comments]).merge(media: @campaign.media), status: :ok
           else
             render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity
           end
