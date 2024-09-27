@@ -7,22 +7,22 @@ module Api
         before_action :set_user, only: [:make_admin, :show_by_id]
 
         def index
-          @users = User.includes(:profiles).all
-          render json: @users.to_json(include: :profiles), status: :ok
+          @users = User.includes(:profile).all
+          render json: @users.to_json(include: :profile), status: :ok
         end
 
         def show
-          render json: @current_user.as_json(include: :profiles), status: :ok
+          render json: @current_user.as_json(include: :profile), status: :ok
         end
 
         def show_by_id
-          render json: @user.as_json(include: :profiles), status: :ok
+          render json: @user.as_json(include: :profile), status: :ok
         end
 
         def make_admin
           admin_status = params[:admin] == "true"
           if @user.update(admin: admin_status)
-            render json: @user.as_json(include: :profiles), status: :ok
+            render json: @user.as_json(include: :profile), status: :ok
           else
             render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
           end
@@ -30,7 +30,7 @@ module Api
 
         def update
           if @current_user.update(user_params)
-            render json: @current_user.as_json(include: :profiles), status: :ok
+            render json: @current_user.as_json(include: :profile), status: :ok
           else
             render json: { errors: @current_user.errors.full_messages }, status: :unprocessable_entity
           end
@@ -47,7 +47,7 @@ module Api
         private
 
         def set_user
-          @user = User.includes(:profiles).find(params[:id])
+          @user = User.includes(:profile).find(params[:id])
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'User not found' }, status: :not_found
         end
@@ -69,7 +69,7 @@ module Api
             :target_amount,
             :duration_in_days,
             :national_id,
-            profiles_attributes: [
+            profile_attributes: [
               :name,
               :description,
               :funding_goal,
