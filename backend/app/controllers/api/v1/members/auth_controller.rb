@@ -1,6 +1,6 @@
 module Api
   module V1
-    module Users
+    module Members
       class AuthController < ApplicationController
 
         def signup

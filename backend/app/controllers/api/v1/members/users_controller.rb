@@ -1,6 +1,6 @@
 module Api
   module V1
-    module Users
+    module Members
       class UsersController < ApplicationController
         before_action :authenticate_request, except: [:index]  # Skip authentication for index action
         before_action :authorize_admin, only: [:make_admin]
