@@ -13,12 +13,16 @@ class Campaign < ApplicationRecord
 
   # Attachments for images/videos, you can use ActiveStorage or another service
   # has_many_attached :media
-  has_many_attached :media_files
+  # has_many_attached :media_files
 
-    # Method to return media file URLs
-  def media_urls
-    media_files.map { |file| Rails.application.routes.url_helpers.url_for(file) }
+  # Method to return media as a string
+  def media_string
+    media.present? ? media.split(",").map(&:strip) : []
   end
+    # Method to return media file URLs
+  # def media_urls
+  #   media_files.map { |file| Rails.application.routes.url_helpers.url_for(file) }
+  # end
 end
 
 class Update < ApplicationRecord

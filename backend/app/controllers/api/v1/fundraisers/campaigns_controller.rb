@@ -11,15 +11,14 @@ module Api
         end
 
         def show
-          render json: @campaign, include: [:updates, :comments], status: :ok
+          render json: @campaign.as_json(include: [:updates, :comments]).merge(media: @campaign.media), status: :ok
         end
 
         # POST /api/v1/fundraisers/campaigns
         def create
           @campaign = @current_user.campaigns.new(campaign_params)
           if @campaign.save
-            attach_media_files  # Handle media file attachments
-            render json: @campaign, status: :created
+            render json: @campaign.as_json.merge(media: @campaign.media), status: :created
           else
             render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity
           end
@@ -28,8 +27,7 @@ module Api
         # PUT /api/v1/fundraisers/campaigns/:id
         def update
           if @campaign.update(campaign_params)
-            attach_media_files  # Handle media file attachments
-            render json: @campaign, status: :ok
+            render json: @campaign.as_json.merge(media: @campaign.media), status: :ok
           else
             render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity
           end
@@ -51,17 +49,8 @@ module Api
         def campaign_params
           params.require(:campaign).permit(
             :title, :description, :goal_amount, :current_amount, :start_date, :end_date,
-            :category, :location, :currency, :currency_code, :currency_symbol, :status,
-            media_files: []  # Accept multiple media files
+            :category, :location, :currency, :currency_code, :currency_symbol, :status, :media,
           )
-        end
-
-        def attach_media_files
-          if params[:campaign][:media_files].present?
-            params[:campaign][:media_files].each do |media|
-              @campaign.media_files.attach(media)
-            end
-          end
         end
       end
     end
