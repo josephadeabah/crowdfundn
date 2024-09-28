@@ -96,10 +96,7 @@ const HomePageLoader = () => {
         <CardBanner className="p-4">
           <section className="dark:bg-gray-950">
             <div className="flex flex-col items-center mx-auto">
-              <Skeleton
-                height={300}
-                className="w-full object-cover rounded-t-3xl"
-              />
+              <Skeleton height={300} width={600} />
             </div>
           </section>
         </CardBanner>
