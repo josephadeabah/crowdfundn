@@ -8,7 +8,7 @@ import {
 } from '@radix-ui/react-icons';
 import { Button } from '../components/button/Button';
 
-const CTA = () => {
+const Cta = () => {
   return (
     <div className="w-full flex flex-col sm:flex-row">
       <div className="bg-white dark:bg-gray-950 flex-grow p-4 rounded-l-3xl">
@@ -93,4 +93,4 @@ const CTA = () => {
   );
 };
 
-export default CTA;
+export default Cta;

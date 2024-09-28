@@ -717,6 +717,13 @@
   dependencies:
     mini-svg-data-uri "^1.2.3"
 
+"@types/jquery@^3.5.31":
+  version "3.5.31"
+  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.5.31.tgz#3605df86427f6c4e6b5b5a470ba180f74107cffa"
+  integrity sha512-rf/iB+cPJ/YZfMwr+FVuQbm7IaWC4y3FVYfVDxRGqmUCFjjPII0HWaP0vTPJGp6m4o13AXySCcMbWfrWtBFAKw==
+  dependencies:
+    "@types/sizzle" "*"
+
 "@types/node@18.14.0":
   version "18.14.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.14.0.tgz#94c47b9217bbac49d4a67a967fdcdeed89ebb7d0"
@@ -767,6 +774,11 @@
   version "0.23.0"
   resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.23.0.tgz#0a6655b3e2708eaabca00b7372fafd7a792a7b09"
   integrity sha512-YIoDCTH3Af6XM5VuwGG/QL/CJqga1Zm3NkU3HZ4ZHK2fRMPYP1VczsTUqtsf43PH/iJNVlPHAo2oWX7BSdB2Hw==
+
+"@types/sizzle@*":
+  version "2.3.8"
+  resolved "https://registry.yarnpkg.com/@types/sizzle/-/sizzle-2.3.8.tgz#518609aefb797da19bf222feb199e8f653ff7627"
+  integrity sha512-0vWLNK2D5MT9dg0iOo8GlKguPAU02QjmZitPEsXRuJXU/OGIOt9vT9Fc26wtYuavLxtO45v9PGleoL9Z0k1LHg==
 
 acorn-jsx@^5.3.2:
   version "5.3.2"

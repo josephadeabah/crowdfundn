@@ -7,18 +7,72 @@ import { Badge } from './components/badge/Badge';
 import Progress from './components/progressbar/ProgressBar';
 import HomePageLoader from './loaders/HomeLoader';
 import { BrandsLogoSlider } from './molecules/BrandsLogoSlider';
-import CTA from './molecules/CTA';
+import Cta from './molecules/CTA';
 
 const HomePage = () => {
   const [loading, setLoading] = React.useState(true);
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
     null,
   );
-
+  const wordRef = React.useRef<HTMLDivElement | null>(null);
   React.useEffect(() => {
     setTimeout(() => {
       setLoading(false);
     }, 3000);
+
+    const words = [
+      "Empowering Africa's Next Generation of Innovators",
+      'Crowdfunding Solutions for Global Impact',
+      'Uniting Communities Through Social Change',
+      'Transforming Ideas into Action Across Continents',
+      'Championing Local Causes with Global Support',
+    ];
+
+    let part = '';
+    let i = 0;
+    let offset = 0;
+    const len = words.length;
+    let forwards = true;
+    let skip_count = 0;
+    const skip_delay = 15;
+    const speed = 70;
+    const updateWord = () => {
+      if (forwards) {
+        if (offset >= words[i].length) {
+          skip_count++;
+          if (skip_count === skip_delay) {
+            forwards = false;
+            skip_count = 0;
+          }
+        }
+      } else {
+        if (offset === 0) {
+          forwards = true;
+          i++;
+          offset = 0;
+          if (i >= len) {
+            i = 0;
+          }
+        }
+      }
+    };
+    const updatePart = () => {
+      part = words[i].substring(0, offset);
+      if (skip_count === 0) {
+        offset += forwards ? 1 : -1;
+      }
+      if (wordRef.current) {
+        wordRef.current.textContent = part;
+      }
+    };
+    const wordflick = () => {
+      setInterval(() => {
+        updateWord();
+        updatePart();
+      }, speed);
+    };
+
+    wordflick();
   }, []);
 
   if (loading) {
@@ -31,16 +85,26 @@ const HomePage = () => {
         <div className="w-full flex flex-col sm:flex-row gap-2">
           <div className="p-4">
             <h1 className="text-4xl md:text-7xl">
-              Donate to support any cause.
+              <div
+                className="anim-words flex justify-center items-center w-full p-4 md:p-8"
+                style={{ height: '250px' }}
+              >
+                <h1
+                  className="word text-center text-2xl md:text-4xl lg:text-5xl font-bold"
+                  ref={wordRef}
+                >
+                  .
+                </h1>
+              </div>
             </h1>
-            <p>{data.bio}</p>
+            <p className="text-gray-500">{data.bio}</p>
           </div>
 
           <div className="sm:w-1/2">
             <CarouselPlugin />
           </div>
         </div>
-        <h1 className="m-4 text-4xl md:text-5xl py-6 font-semibold">
+        <h1 className="m-4 text-4xl md:text-5xl text-gray-500 py-6 font-semibold">
           {data.name}
         </h1>
       </div>
@@ -94,7 +158,7 @@ const HomePage = () => {
         </CardBanner>
       </div>
       {/* CTA */}
-      <CTA />
+      <Cta />
 
       {/* More random campaigns */}
       <div className="w-full flex flex-col sm:flex-row">
