@@ -64,7 +64,7 @@ const TeamCarousel = () => {
       id: 3,
       name: 'Team Member 3',
       position: 'Team Member',
-      description: 'Lorem ipsum dolor sit amet',
+      description: 'Lorem ipsum dolor sit amet.',
       image:
         'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541',
       fullDescription:
