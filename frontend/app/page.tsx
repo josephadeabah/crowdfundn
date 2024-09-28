@@ -34,23 +34,25 @@ const HomePage = () => {
 
   return (
     <div className="w-full flex flex-col gap-16 min-h-screen mb-24">
-      <div className="flex-grow flex flex-col justify-center items-center mx-auto w-full pt-1">
+      <div className="flex-grow flex flex-col justify-center items-center text-gray-800 rounded-b-3xl dark:text-gray-50 bg-white dark:bg-gray-800 mx-auto w-full pt-1">
         <div className="w-full flex flex-col sm:flex-row gap-2">
-          <CardBanner className="p-4">
+          <div className="p-4">
             <h1 className="text-4xl md:text-7xl">
               Donate to support any cause.
             </h1>
             <p>{data.bio}</p>
-          </CardBanner>
+          </div>
 
           <div className="sm:w-1/2">
             <CarouselPlugin />
           </div>
         </div>
-        <h1 className="m-4 text-3xl py-6 font-semibold">{data.name}</h1>
+        <h1 className="m-4 text-4xl md:text-5xl py-6 font-semibold">
+          {data.name}
+        </h1>
       </div>
 
-      <div className="w-full flex flex-col sm:flex-row gap-2">
+      <div className="w-full flex flex-col sm:flex-row">
         <CardBanner title="Categories" className="p-4">
           <div className="flex flex-wrap gap-2 mb-4 justify-start">
             {data.categories.map((category) => (
@@ -71,7 +73,7 @@ const HomePage = () => {
         </CardBanner>
 
         <CardBanner title="Recommended Campaigns" className="p-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             {data?.recommendedFundraisers?.map((campaign) => (
               <div key={campaign.id} className="flex flex-col h-full">
                 <img
@@ -99,8 +101,8 @@ const HomePage = () => {
         </CardBanner>
       </div>
       {/* CTA */}
-      <div className="w-full flex flex-col sm:flex-row gap-2">
-        <div className="bg-white dark:bg-gray-950 flex-grow p-4 rounded-3xl">
+      <div className="w-full flex flex-col sm:flex-row">
+        <div className="bg-white dark:bg-gray-950 flex-grow p-4 rounded-l-3xl">
           <div className="flex flex-col items-center mx-auto gap-y-8">
             <div className="text-center text-gray-950 dark:text-gray-50">
               <h2 className="text-3xl font-bold lg:text-4xl">
@@ -179,20 +181,20 @@ const HomePage = () => {
             <img
               src="https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
               alt="#"
-              className="w-full h-auto object-cover rounded-t-3xl rounded-r-none max-h-[30rem] lg:max-h-[40rem]"
+              className="w-full h-auto object-cover rounded-t-3xl rounded-l-none rounded-r-none max-h-[30rem] lg:max-h-[40rem]"
             />
           </div>
         </div>
       </div>
 
       {/* More random campaigns */}
-      <div className="w-full flex flex-col sm:flex-row gap-2">
+      <div className="w-full flex flex-col sm:flex-row">
         <CardBanner
           title="More Campaigns"
           description="Discover fundraisers inspired by what you care about"
           className="p-4"
         >
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             {data.recommendedFundraisers.map((campaign) => (
               <div key={campaign.id} className="flex flex-col h-full">
                 <img
@@ -224,7 +226,7 @@ const HomePage = () => {
           description="Join the million people who have already made a big impact"
           className="p-4"
         >
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             {data.recommendedFundraisers.map((campaign) => (
               <div key={campaign.id} className="flex flex-col h-full">
                 <img
