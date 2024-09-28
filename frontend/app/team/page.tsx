@@ -66,7 +66,7 @@ const TeamCarousel = () => {
       position: 'Team Member',
       description: 'Lorem ipsum dolor sit amet.',
       image:
-        'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541',
+        'https://st2.depositphotos.com/9998432/48284/v/600/depositphotos_482842120-stock-illustration-default-avatar-photo-placeholder-grey.jpg',
       fullDescription:
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
       socialLinks: {
