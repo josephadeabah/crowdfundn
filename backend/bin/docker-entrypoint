@@ -1,8 +1,17 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 
-# If running the rails server then create or migrate existing database
-if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
-  ./bin/rails db:prepare
-fi
+# Go to the app directory
+cd /rails
 
-exec "${@}"
+# Create the Rails production DB on first run
+RAILS_ENV=production bundle exec rake db:create
+
+# Migrate database schema
+RAILS_ENV=production bundle exec rake db:migrate
+
+# Clean up old logs and pids
+> log/production.log
+rm -f tmp/pids/server.pid
+
+# Start the Rails server
+bundle exec rails server -e production -p 8080

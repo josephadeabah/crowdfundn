@@ -1,0 +1,59 @@
+steps:
+  # Fetch secrets and set them as environment variables
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: "fetch-secrets"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        echo "Fetching secrets..."
+        echo "DB_PASSWORD=$(gcloud secrets versions access latest --secret=DB_PASSWORD)" > /workspace/env_vars.sh
+        echo "SECRET_KEY_BASE=$(gcloud secrets versions access latest --secret=SECRET_KEY_BASE)" >> /workspace/env_vars.sh
+        source /workspace/env_vars.sh
+        echo "Secrets fetched."
+
+  # Decrypt Rails Master key file
+  - name: gcr.io/cloud-builders/gcloud
+    args:
+      [
+        "kms",
+        "decrypt",
+        "--ciphertext-file=./config/master.key.enc",
+        "--plaintext-file=./config/master.key",
+        "--location=us-central1",
+        "--keyring=paysight-gcp-key",
+        "--key=rails_master_key",
+      ]
+
+  # Decrypt Photo Album service account credentials
+  - name: gcr.io/cloud-builders/gcloud
+    args:
+      [
+        "kms",
+        "decrypt",
+        "--ciphertext-file=./config/credentials.yml.enc.enc",
+        "--plaintext-file=./config/credentials.yml.enc",
+        "--location=us-central1",
+        "--keyring=paysight-gcp-key",
+        "--key=paysight_runner_key",
+      ]
+
+  # Build image with tag 'latest' and pass decrypted Rails DB password and secret key as arguments
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "--platform",
+        "linux/amd64",
+        "--tag",
+        "gcr.io/paysight-backend/atall:latest",
+        "--build-arg",
+        "DB_PASSWORD=$(cat /workspace/env_vars.sh | grep DB_PASSWORD | cut -d '=' -f2)",
+        "--build-arg",
+        "SECRET_KEY_BASE=$(cat /workspace/env_vars.sh | grep SECRET_KEY_BASE | cut -d '=' -f2)",
+        ".",
+      ]
+
+  # Push new image to Google Container Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/paysight-backend/atall:latest"]
