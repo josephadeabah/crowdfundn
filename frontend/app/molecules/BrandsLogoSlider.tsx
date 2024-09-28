@@ -77,8 +77,8 @@ export function BrandsLogoSlider() {
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious className="left-4" />
-      <CarouselNext className="right-4" />
+      <CarouselPrevious className="left-4 hidden" />
+      <CarouselNext className="right-4 hidden" />
     </Carousel>
   );
 }
