@@ -101,7 +101,7 @@ const Navbar = () => {
     <header
       className={`sticky top-0 z-50 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
     >
-      <nav className="p-6 w-full bg-white dark:bg-gray-950">
+      <nav className="p-6 md:py-6 md:px-1 w-full bg-white dark:bg-gray-950">
         <div className="relative flex items-center justify-between">
           <a href="/">
             <svg fill="none" viewBox="0 0 28 28" height="28" width="28">
