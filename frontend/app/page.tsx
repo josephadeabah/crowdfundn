@@ -21,8 +21,8 @@ const HomePage = () => {
     }, 3000);
 
     const words = [
-      "Empowering Africa's Next Generation of Innovators",
-      'Crowdfunding Solutions for Global Impact',
+      "Empowering Africa's Next Generation of Thinkers",
+      'Crowdfunding Solutions for Africa Innovators',
       'Uniting Communities Through Social Change',
       'Transforming Ideas into Action Across Continents',
       'Championing Local Causes with Global Support',

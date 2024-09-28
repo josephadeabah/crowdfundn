@@ -40,7 +40,7 @@ const Footer = () => {
               </div>
             </a>
             <a href=".">Pricing</a>
-            <a href=".">Contact</a>
+            <a href="/team">Team</a>
           </div>
           <div className="gap-x-1 lg:w-full lg:justify-end lg:gap-x-6 *:p-2 lg:*:px-0">
             <a href=".">
