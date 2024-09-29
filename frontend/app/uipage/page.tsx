@@ -15,11 +15,17 @@ import NewsletterComponent from './NewsLetterComponent';
 import Pagination from './Pagination';
 import PermissionSetting from './PermissionSettings';
 import MultiSelectSkills, { MultiSelect } from './MultiSelect';
-import SaveReminderPanel from './SaveReminderPanel';
+// import SaveReminderPanel from './SaveReminderPanel';
 import AlertPopup from './AlertComponent';
 import { LoaderInner, LoaderOuter } from './Loader';
 import SingleProductPage, { SingleItemPage } from './SingleItemPage';
 import TrustedBrandSlider from './FullwidthSlider';
+import TestimonialCarousel, { TestimonialsCarousel } from './Testimonials';
+import DataTable from './DataTable';
+import OrderDetailsPage from './OrderDetails';
+import PasswordResetComponent from './PasswordReset';
+import LoginComponent from './LoginComponent';
+import WalkthroughComponent, { Walkthrough } from './WalkthroughComponent';
 
 const TestPage = () => {
   return (
@@ -46,6 +52,14 @@ const TestPage = () => {
       <SingleProductPage />
       <SingleItemPage />
       <TrustedBrandSlider />
+      <TestimonialCarousel />
+      <TestimonialsCarousel />
+      <DataTable />
+      <OrderDetailsPage />
+      <PasswordResetComponent />
+      <LoginComponent />
+      <WalkthroughComponent />
+      <Walkthrough />
     </div>
   );
 };

@@ -19,7 +19,7 @@ const ParallaxCard: React.FC<ParallaxCardProps> = ({
   title,
   description,
 }) => (
-  <div className="bg-gray-50 dark:bg-gray-700 dark:text-gray-50 rounded-lg p-2 mb-8 transform hover:scale-105 transition-transform duration-300">
+  <div className="bg-white dark:bg-gray-700 dark:text-gray-50 rounded-lg p-2 mb-8 transform hover:scale-105 transition-transform duration-300">
     <Icon className="text-4xl text-orange-600 mb-4" />
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
     <p className="text-gray-600">{description}</p>
@@ -57,52 +57,25 @@ const Cta = () => {
     {
       icon: FaTrophy,
       title: 'Gamified Donor Engagement',
-      description: (
-        <div>
-          Keep donors engaged with leaderboards, badges, rewards, and
-          recognition for recurring support.
-          <img
-            src="https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-            alt="#"
-            className="w-full h-fit object-cover rounded-t-3xl rounded-l-none rounded-r-none"
-          />
-        </div>
-      ),
+      description:
+        'Keep donors engaged with leaderboards, badges, rewards, and recognition for recurring support.',
     },
     {
       icon: FaRecycle,
       title: 'Recurring Revenue & Subscription Features',
-      description: (
-        <div>
-          Unique subscription-based features that allow for recurring donations
-          to support ongoing causes or businesses.
-          <img
-            src="https://images.unsplash.com/photo-1621290558526-c65419de6279?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt="#"
-            className="w-full h-fit object-cover rounded-t-3xl rounded-l-none rounded-r-none"
-          />
-        </div>
-      ),
+      description:
+        'Unique subscription-based features that allow for recurring donations to support ongoing causes or businesses.',
     },
     {
       icon: FaHandHoldingUsd,
       title: 'Dedicated Support Team',
-      description: (
-        <div>
-          Keep donors engaged with leaderboards, badges, rewards, and
-          recognition for recurring support.
-          <img
-            src="https://images.unsplash.com/photo-1630673618876-be46d2722d85?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt="#"
-            className="w-full h-fit object-cover rounded-t-3xl rounded-l-none rounded-r-none"
-          />
-        </div>
-      ),
+      description:
+        'Keep donors engaged with leaderboards, badges, rewards, and recognition for recurring support.',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 dark:text-gray-50 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-950 dark:text-gray-50 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto">
         <div
           className="text-center mb-3 px-4 sm:px-6 lg:px-8"
@@ -113,7 +86,7 @@ const Cta = () => {
           <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-600 mb-4">
             Discover BantuHive
           </h1>
-          <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl italics text-gray-700 max-w-3xl mx-auto">
             Empowering African communities through innovative donation and
             fundraising
           </p>

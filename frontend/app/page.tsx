@@ -136,7 +136,7 @@ const HomePage = () => {
                 <img
                   src={campaign?.image}
                   alt={campaign?.name}
-                  className="mb-2 object-cover h-32 w-full rounded-md"
+                  className="mb-2 object-cover h-32 w-full"
                 />
                 <div className="flex-grow">
                   <h3 className="text-lg font-bold">{campaign?.name}</h3>
@@ -173,7 +173,7 @@ const HomePage = () => {
                 <img
                   src={campaign.image}
                   alt={campaign.name}
-                  className="mb-2 object-cover h-32 w-full rounded-md"
+                  className="mb-2 object-cover h-32 w-full"
                 />
                 <div className="flex-grow">
                   <h3 className="text-lg font-bold">{campaign.name}</h3>
@@ -205,7 +205,7 @@ const HomePage = () => {
                 <img
                   src={campaign.image}
                   alt={campaign.name}
-                  className="mb-2 object-cover h-32 w-full rounded-md"
+                  className="mb-2 object-cover h-32 w-full"
                 />
                 <div className="flex-grow">
                   <h3 className="text-lg font-bold">{campaign.name}</h3>
