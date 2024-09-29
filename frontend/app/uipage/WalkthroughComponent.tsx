@@ -46,8 +46,9 @@ const WalkthroughComponent = () => {
   }, []);
 
   useEffect(() => {
-    if (stepRefs.current[currentStep]) {
-      stepRefs.current[currentStep].focus();
+    const currentRef = stepRefs.current[currentStep];
+    if (currentRef) {
+      currentRef.focus();
     }
   }, [currentStep]);
 

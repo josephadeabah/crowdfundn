@@ -8,6 +8,7 @@ import Progress from './components/progressbar/ProgressBar';
 import HomePageLoader from './loaders/HomeLoader';
 import { BrandsLogoSlider } from './molecules/BrandsLogoSlider';
 import Cta from './molecules/CTA';
+import FAQsPage from './molecules/faqs';
 
 const HomePage = () => {
   const [loading, setLoading] = React.useState(true);
@@ -226,6 +227,8 @@ const HomePage = () => {
           </div>
         </CardBanner>
       </div>
+
+      <FAQsPage />
 
       {/* Trusted by Brands Section */}
       <div className="w-full flex flex-col items-center gap-8">
