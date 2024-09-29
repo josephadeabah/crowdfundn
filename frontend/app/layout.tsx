@@ -1,5 +1,5 @@
 import '../styles/globals.css';
-import { Roboto, Ubuntu } from '@next/font/google';
+import { Roboto, Ubuntu } from 'next/font/google';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Providers from './Providers';
@@ -26,12 +26,11 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html
-      lang="en"
-      className={`h-full scroll-smooth ${roboto.variable} ${ubuntu.variable}`}
-    >
+    <html lang="en" className="h-full scroll-smooth">
       <head />
-      <body className="max-w-7xl bg-white opacity-2 dark:bg-gray-900 mx-auto transition-all duration-150">
+      <body
+        className={`max-w-7xl bg-white opacity-2 dark:bg-gray-900 mx-auto transition-all duration-150 ${roboto.variable} ${ubuntu.variable}`}
+      >
         <Providers>
           <Navbar />
           <main className="w-full">
