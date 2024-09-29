@@ -101,7 +101,7 @@ const Navbar = () => {
     <header
       className={`sticky top-0 z-50 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
     >
-      <nav className="p-6 md:py-6 md:px-1 w-full bg-white dark:bg-gray-950">
+      <nav className="p-3 md:py-6 md:px-1 w-full bg-white dark:bg-gray-950">
         <div className="relative flex items-center justify-between">
           <a href="/">
             <svg
@@ -112,7 +112,7 @@ const Navbar = () => {
               xmlns="http://www.w3.org/2000/svg"
             >
               <g
-                transform="translate(0.000000,512.000000) scale(0.125,-0.125)"
+                transform="translate(0.000000,512.000000) scale(0.10,-0.10)"
                 fill="#C7253E"
                 stroke="none"
               >
@@ -182,9 +182,9 @@ const Navbar = () => {
               className="text-gray-700 dark:text-gray-300"
             >
               {isMenuOpen ? (
-                <XMarkIcon className="h-6 w-6" />
+                <XMarkIcon className="h-8 w-8" />
               ) : (
-                <HamburgerMenuIcon className="h-6 w-6" />
+                <HamburgerMenuIcon className="h-8 w-8" />
               )}
             </button>
           </div>

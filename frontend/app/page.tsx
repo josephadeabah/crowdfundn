@@ -113,7 +113,7 @@ const HomePage = () => {
             {data.categories.map((category) => (
               <Badge
                 key={category.value}
-                className={`cursor-pointer ${
+                className={`cursor-pointer transform hover:scale-105 transition-transform duration-300 ${
                   selectedCategory === category.value
                     ? 'bg-red-600 text-white'
                     : 'text-gray-500 dark:bg-slate-950 dark:text-gray-50'
@@ -130,26 +130,31 @@ const HomePage = () => {
         <CardBanner title="Recommended Campaigns" className="p-4">
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             {data?.recommendedFundraisers?.map((campaign) => (
-              <div key={campaign.id} className="flex flex-col h-full">
+              <div
+                key={campaign.id}
+                className="flex flex-col h-full hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 hover:shadow-md"
+              >
                 <img
                   src={campaign?.image}
                   alt={campaign?.name}
                   className="mb-2 object-cover h-32 w-full"
                 />
-                <div className="flex-grow">
-                  <h3 className="text-lg font-bold">{campaign?.name}</h3>
-                  <p className="text-sm">{campaign?.description}</p>
+                <div className="px-1">
+                  <div className="flex-grow">
+                    <h3 className="text-lg font-bold">{campaign?.name}</h3>
+                    <p className="text-sm">{campaign?.description}</p>
+                  </div>
+                  <div className="w-full text-xs">
+                    <Progress
+                      firstProgress={33}
+                      firstTooltipContent={`Performance: ${33}%`}
+                    />
+                  </div>
+                  <p className="flex justify-between items-center text-sm font-semibold mt-2">
+                    {campaign?.amountRaised}{' '}
+                    <span className="font-normal">raised</span>
+                  </p>
                 </div>
-                <div className="w-full text-xs">
-                  <Progress
-                    firstProgress={33}
-                    firstTooltipContent={`Performance: ${33}%`}
-                  />
-                </div>
-                <p className="flex justify-between items-center text-sm font-semibold mt-2">
-                  {campaign?.amountRaised}{' '}
-                  <span className="font-normal">raised</span>
-                </p>
               </div>
             ))}
           </div>
@@ -167,26 +172,31 @@ const HomePage = () => {
         >
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             {data.recommendedFundraisers.map((campaign) => (
-              <div key={campaign.id} className="flex flex-col h-full">
+              <div
+                key={campaign.id}
+                className="flex flex-col h-full hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 hover:shadow-md"
+              >
                 <img
                   src={campaign.image}
                   alt={campaign.name}
                   className="mb-2 object-cover h-32 w-full"
                 />
-                <div className="flex-grow">
-                  <h3 className="text-lg font-bold">{campaign.name}</h3>
-                  <p className="text-sm">{campaign.description}</p>
+                <div className="px-1">
+                  <div className="flex-grow">
+                    <h3 className="text-lg font-bold">{campaign.name}</h3>
+                    <p className="text-sm">{campaign.description}</p>
+                  </div>
+                  <div className="w-full text-xs">
+                    <Progress
+                      firstProgress={73}
+                      firstTooltipContent={`Performance: ${73}%`}
+                    />
+                  </div>
+                  <p className="flex justify-between items-center text-sm font-semibold mt-2">
+                    {campaign.amountRaised}{' '}
+                    <span className="font-normal">raised</span>
+                  </p>
                 </div>
-                <div className="w-full text-xs">
-                  <Progress
-                    firstProgress={73}
-                    firstTooltipContent={`Performance: ${73}%`}
-                  />
-                </div>
-                <p className="flex justify-between items-center text-sm font-semibold mt-2">
-                  {campaign.amountRaised}{' '}
-                  <span className="font-normal">raised</span>
-                </p>
               </div>
             ))}
           </div>
@@ -199,26 +209,31 @@ const HomePage = () => {
         >
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             {data.recommendedFundraisers.map((campaign) => (
-              <div key={campaign.id} className="flex flex-col h-full">
+              <div
+                key={campaign.id}
+                className="flex flex-col h-full hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 hover:shadow-md"
+              >
                 <img
                   src={campaign.image}
                   alt={campaign.name}
                   className="mb-2 object-cover h-32 w-full"
                 />
-                <div className="flex-grow">
-                  <h3 className="text-lg font-bold">{campaign.name}</h3>
-                  <p className="text-sm">{campaign.description}</p>
+                <div className="px-1">
+                  <div className="flex-grow">
+                    <h3 className="text-lg font-bold">{campaign.name}</h3>
+                    <p className="text-sm">{campaign.description}</p>
+                  </div>
+                  <div className="w-full text-xs">
+                    <Progress
+                      firstProgress={13}
+                      firstTooltipContent={`Performance: ${13}%`}
+                    />
+                  </div>
+                  <p className="flex justify-between items-center text-sm font-semibold mt-2">
+                    {campaign.amountRaised}{' '}
+                    <span className="font-normal">raised</span>
+                  </p>
                 </div>
-                <div className="w-full text-xs">
-                  <Progress
-                    firstProgress={13}
-                    firstTooltipContent={`Performance: ${13}%`}
-                  />
-                </div>
-                <p className="flex justify-between items-center text-sm font-semibold mt-2">
-                  {campaign.amountRaised}{' '}
-                  <span className="font-normal">raised</span>
-                </p>
               </div>
             ))}
           </div>

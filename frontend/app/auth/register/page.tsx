@@ -601,13 +601,13 @@ export default function Register() {
           description={success}
         />
       )}
-      <div className="flex bg-white dark:bg-gray-900">
+      <div className="flex bg-white dark:bg-gray-900 px-6 md:p-0 mb-5">
         {/* Left container */}
         <div className="hidden w-full items-center justify-center dark:bg-gray-950 lg:flex lg:w-1/2">
           <RegisterLeftPage />
         </div>
         {/* Right container */}
-        <div className="w-full lg:w-1/2">
+        <div className="w-full lg:w-1/2 mb-4">
           <Stepper
             steps={steps}
             currentStep={currentStep}
