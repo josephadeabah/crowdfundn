@@ -7,6 +7,7 @@ import {
   FaRecycle,
   FaHandHoldingUsd,
 } from 'react-icons/fa';
+import data from '../../data.json';
 
 interface ParallaxCardProps {
   icon: React.ComponentType<{ className?: string }>;
@@ -90,6 +91,9 @@ const Cta = () => {
             Empowering African communities through innovative donation and
             fundraising
           </p>
+          <h1 className="m-4 text-4xl md:text-5xl text-gray-500 py-6 font-semibold">
+            {data.name}
+          </h1>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

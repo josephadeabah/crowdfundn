@@ -105,9 +105,6 @@ const HomePage = () => {
             <CarouselPlugin />
           </div>
         </div>
-        <h1 className="m-4 text-4xl md:text-5xl text-gray-500 py-6 font-semibold">
-          {data.name}
-        </h1>
       </div>
 
       <div className="w-full flex flex-col sm:flex-row">
