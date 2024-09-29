@@ -1,5 +1,6 @@
 'use client';
 import { SetStateAction, useEffect, useState } from 'react';
+import Joyride, { CallBackProps, Step, STATUS } from 'react-joyride';
 import {
   DashboardIcon,
   HandIcon,
@@ -19,12 +20,21 @@ import ProfileTabsLoader from '../loaders/ProfileTabsLoader';
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState('');
   const [loading, setLoading] = useState(true);
+  const [runWalkthrough, setRunWalkthrough] = useState(false);
 
   useEffect(() => {
     const savedTab = localStorage.getItem('activeTab');
+    const hasSeenWalkthrough = localStorage.getItem('hasSeenWalkthrough');
+
     if (savedTab) {
       setActiveTab(savedTab);
     }
+
+    // Trigger walkthrough if it's the user's first time
+    if (!hasSeenWalkthrough) {
+      setRunWalkthrough(true);
+    }
+
     setLoading(true);
     const timer = setTimeout(() => {
       setLoading(false);
@@ -39,6 +49,14 @@ const ProfileTabs = () => {
     }
   }, [activeTab]);
 
+  const handleJoyrideCallback = (data: CallBackProps) => {
+    const { status } = data;
+    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
+      setRunWalkthrough(false);
+      localStorage.setItem('hasSeenWalkthrough', 'true'); // Mark walkthrough as seen
+    }
+  };
+
   const handleTabClick = (tab: SetStateAction<string>) => {
     setLoading(true);
     setActiveTab(tab);
@@ -48,6 +66,34 @@ const ProfileTabs = () => {
 
     return () => clearTimeout(timer);
   };
+
+  const steps: Step[] = [
+    {
+      target: '#dashboard-tab',
+      content:
+        'This is your dashboard where you can see an overview of activities.',
+    },
+    {
+      target: '#donations-tab',
+      content: 'View all your donations in this tab.',
+    },
+    {
+      target: '#transfers-tab',
+      content: 'Manage your transfers in this tab.',
+    },
+    {
+      target: '#rewards-tab',
+      content: 'Give rewards to your backers and view your rewards from here.',
+    },
+    {
+      target: '#campaigns-tab',
+      content: 'Check your campaigns in this tab.',
+    },
+    {
+      target: '#archive-tab',
+      content: 'Your archived campaigns can be found here.',
+    },
+  ];
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -74,6 +120,23 @@ const ProfileTabs = () => {
 
   return (
     <div className="mx-auto flex flex-col md:flex-row h-screen">
+      <Joyride
+        steps={steps}
+        run={runWalkthrough}
+        continuous
+        showSkipButton
+        callback={handleJoyrideCallback}
+        styles={{
+          options: {
+            arrowColor: '#e3ffeb',
+            backgroundColor: '#e3ffeb',
+            overlayColor: 'rgba(79, 26, 0, 0.4)',
+            primaryColor: '#000',
+            textColor: '#000',
+            spotlightShadow: '0 0 15px rgba(0, 0, 0, 0.5)',
+          },
+        }}
+      />
       {/* Tabs Menu */}
       <div className="md:w-1/6 border-b h-auto md:h-screen md:border-b-0 md:border-r-2 border-dashed border-red-200 dark:border-neutral-700">
         <nav
@@ -82,14 +145,19 @@ const ProfileTabs = () => {
           role="tablist"
         >
           {[
-            { label: 'Dashboard', icon: <DashboardIcon /> },
-            { label: 'Donations', icon: <HandIcon /> },
-            { label: 'Transfers', icon: <SymbolIcon /> },
-            { label: 'Rewards', icon: <IconJarLogoIcon /> },
-            { label: 'Campaigns', icon: <RocketIcon /> },
-            { label: 'Archive', icon: <ArchiveIcon /> },
-          ].map(({ label, icon }) => (
+            {
+              label: 'Dashboard',
+              icon: <DashboardIcon />,
+              id: 'dashboard-tab',
+            },
+            { label: 'Donations', icon: <HandIcon />, id: 'donations-tab' },
+            { label: 'Transfers', icon: <SymbolIcon />, id: 'transfers-tab' },
+            { label: 'Rewards', icon: <IconJarLogoIcon />, id: 'rewards-tab' },
+            { label: 'Campaigns', icon: <RocketIcon />, id: 'campaigns-tab' },
+            { label: 'Archive', icon: <ArchiveIcon />, id: 'archive-tab' },
+          ].map(({ label, icon, id }) => (
             <button
+              id={id}
               key={label}
               type="button"
               className={`py-2 px-4 whitespace-nowrap text-sm font-medium md:text-base ${
