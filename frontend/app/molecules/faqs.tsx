@@ -62,7 +62,7 @@ const FAQsPage = () => {
                     {faq.question}
                   </span>
                   {expandedFAQ === index ? (
-                    <FiChevronUp className="h-6 w-6 text-blue-500" />
+                    <FiChevronUp className="h-6 w-6 text-red-500" />
                   ) : (
                     <FiChevronDown className="h-6 w-6 text-gray-400" />
                   )}

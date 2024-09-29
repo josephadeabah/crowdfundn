@@ -67,7 +67,7 @@ export default function Login() {
         </section>
       </div>
       {/* Right container */}
-      <div className="w-full lg:w-1/2">
+      <div className="w-full lg:w-1/2 dark:bg-gray-950 ">
         <div className="p-4 w-full">
           <div className="mx-auto max-w-[36.75rem] text-center">
             <h2 className="mb-3 text-3xl font-semibold text-red-600 lg:text-4xl">
