@@ -130,7 +130,7 @@ const ProfileTabs = () => {
           options: {
             arrowColor: '#e3ffeb',
             backgroundColor: '#e3ffeb',
-            overlayColor: 'rgba(79, 26, 0, 0.4)',
+            overlayColor: '#2F3645',
             primaryColor: '#000',
             textColor: '#000',
             spotlightShadow: '0 0 15px rgba(0, 0, 0, 0.5)',
