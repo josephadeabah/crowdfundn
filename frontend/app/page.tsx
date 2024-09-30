@@ -24,6 +24,7 @@ const HomePage = () => {
 
     const words = [
       'Fundraise Like a Boss',
+      'Donate Like the World is Ending',
       'Crowdfunding Solutions for Africa Innovators',
       'Uniting Communities Through Social Change',
       'Transforming Ideas into Action Across Continents',
