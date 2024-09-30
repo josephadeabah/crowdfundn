@@ -1,14 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  FiMail,
-  FiBell,
-  FiLock,
-  FiSettings,
-  FiSave,
-  FiAlertCircle,
-} from 'react-icons/fi';
-import { HiColorSwatch } from 'react-icons/hi';
-import { BsCalendarDate } from 'react-icons/bs';
+import { FiMail, FiBell, FiLock, FiSave, FiAlertCircle } from 'react-icons/fi';
+import { Checkbox } from '@/app/components/checkbox/Checkbox';
+import { Switch } from '@/app/components/switch/Switch';
 
 const SystemSettingsPage = () => {
   interface Settings {
@@ -23,10 +16,6 @@ const SystemSettingsPage = () => {
     permissions: {
       dataSharing: boolean;
       locationAccess: boolean;
-    };
-    system: {
-      theme: string;
-      updateFrequency: string;
     };
   }
 
@@ -43,26 +32,15 @@ const SystemSettingsPage = () => {
       dataSharing: false,
       locationAccess: true,
     },
-    system: {
-      theme: '#3366cc',
-      updateFrequency: 'weekly',
-    },
   });
 
   interface Errors {
     emailFrequency?: string;
   }
 
-  type SettingKeys = {
-    email: keyof Settings['email'];
-    subscriptions: keyof Settings['subscriptions'];
-    permissions: keyof Settings['permissions'];
-    system: keyof Settings['system'];
-  };
-
   const [errors, setErrors] = useState<Errors>({});
   const [saveStatus, setSaveStatus] = useState('');
-  const isMounted = useRef(false); // Track if the component is mounted
+  const isMounted = useRef(false);
 
   useEffect(() => {
     if (isMounted.current) {
@@ -72,13 +50,13 @@ const SystemSettingsPage = () => {
 
       return () => clearTimeout(timer);
     } else {
-      isMounted.current = true; // Set to true on first render
+      isMounted.current = true;
     }
   }, [settings]);
 
-  const handleChange = <T extends keyof SettingKeys>(
+  const handleChange = <T extends keyof Settings>(
     section: T,
-    key: SettingKeys[T],
+    key: keyof Settings[T],
     value: any,
   ) => {
     setSettings((prevSettings) => ({
@@ -92,7 +70,11 @@ const SystemSettingsPage = () => {
     validateField(section, key, value);
   };
 
-  const validateField = (section: string, key: string, value: any) => {
+  const validateField = <T extends keyof Settings>(
+    section: T,
+    key: keyof Settings[T],
+    value: any,
+  ) => {
     let newErrors = { ...errors };
 
     if (section === 'email' && key === 'frequency') {
@@ -107,7 +89,6 @@ const SystemSettingsPage = () => {
   };
 
   const saveSettings = () => {
-    // Simulating an API call
     setSaveStatus('Saving...');
     setTimeout(() => {
       setSaveStatus('Settings saved successfully');
@@ -116,7 +97,7 @@ const SystemSettingsPage = () => {
   };
 
   return (
-    <div className="mx-auto h-full bg-white dark:bg-gray-900 p-2">
+    <div className="mx-auto bg-white dark:bg-gray-900 p-2">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">Settings</h1>
 
       <div className="space-y-8">
@@ -130,24 +111,12 @@ const SystemSettingsPage = () => {
               <label htmlFor="toggle-notifications" className="text-gray-600">
                 Receive notifications
               </label>
-              <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                <input
-                  type="checkbox"
-                  name="toggle"
-                  id="toggle-notifications"
-                  className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
-                  checked={settings.email.notifications}
-                  onChange={(e) =>
-                    handleChange('email', 'notifications', e.target.checked)
-                  }
-                />
-                <label
-                  htmlFor="toggle-notifications"
-                  className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
-                >
-                  <span className="sr-only">Toggle Notifications</span>
-                </label>
-              </div>
+              <Switch
+                checked={settings.email.notifications}
+                onCheckedChange={(checked) =>
+                  handleChange('email', 'notifications', checked)
+                }
+              />
             </div>
             <div>
               <label
@@ -189,13 +158,10 @@ const SystemSettingsPage = () => {
               <label htmlFor="newsletter-checkbox" className="text-gray-600">
                 Newsletter
               </label>
-              <input
-                id="newsletter-checkbox"
-                type="checkbox"
-                className="form-checkbox h-5 w-5 text-gray-600"
+              <Checkbox
                 checked={settings.subscriptions.newsletter}
-                onChange={(e) =>
-                  handleChange('subscriptions', 'newsletter', e.target.checked)
+                onCheckedChange={(checked) =>
+                  handleChange('subscriptions', 'newsletter', checked)
                 }
               />
             </div>
@@ -203,13 +169,10 @@ const SystemSettingsPage = () => {
               <label htmlFor="promotions-checkbox" className="text-gray-600">
                 Promotions
               </label>
-              <input
-                id="promotions-checkbox"
-                type="checkbox"
-                className="form-checkbox h-5 w-5 text-gray-600"
+              <Checkbox
                 checked={settings.subscriptions.promotions}
-                onChange={(e) =>
-                  handleChange('subscriptions', 'promotions', e.target.checked)
+                onCheckedChange={(checked) =>
+                  handleChange('subscriptions', 'promotions', checked)
                 }
               />
             </div>
@@ -226,105 +189,108 @@ const SystemSettingsPage = () => {
               <label htmlFor="toggle-data-sharing" className="text-gray-600">
                 Data Sharing
               </label>
-              <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                <input
-                  type="checkbox"
-                  name="toggle"
-                  id="toggle-data-sharing"
-                  className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
-                  checked={settings.permissions.dataSharing}
-                  onChange={(e) =>
-                    handleChange('permissions', 'dataSharing', e.target.checked)
-                  }
-                />
-                <label
-                  htmlFor="toggle-data-sharing"
-                  className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
-                ></label>
-              </div>
+              <Switch
+                checked={settings.permissions.dataSharing}
+                onCheckedChange={(checked) =>
+                  handleChange('permissions', 'dataSharing', checked)
+                }
+              />
             </div>
             <div className="flex items-center justify-between">
-              <label className="text-gray-600">Location Access</label>
-              <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                <input
-                  type="checkbox"
-                  name="toggle"
-                  id="toggle-location-access"
-                  className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
-                  checked={settings.permissions.locationAccess}
-                  onChange={(e) =>
-                    handleChange(
-                      'permissions',
-                      'locationAccess',
-                      e.target.checked,
-                    )
-                  }
-                />
-                <label
-                  htmlFor="toggle-location-access"
-                  className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
-                ></label>
-              </div>
+              <label htmlFor="toggle-location-access" className="text-gray-600">
+                Location Access
+              </label>
+              <Switch
+                checked={settings.permissions.locationAccess}
+                onCheckedChange={(checked) =>
+                  handleChange('permissions', 'locationAccess', checked)
+                }
+              />
             </div>
           </div>
         </div>
 
-        {/* System Settings Section */}
+        {/* Fundraiser Update Emails Section */}
         <div>
           <h2 className="text-2xl font-semibold mb-4 flex items-center text-gray-700">
-            <FiSettings className="mr-2" /> System Settings
+            <FiAlertCircle className="mr-2" /> Fundraiser Update Emails
           </h2>
-          <div className="space-y-6">
-            <div>
-              <label className="block text-gray-600 mb-2  items-center">
-                <HiColorSwatch className="mr-2" /> Theme Color
+          <p className="text-gray-600 mb-4">
+            Once you’ve made a donation to a fundraiser, you’ll be able to view
+            and update your notification settings here.
+          </p>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="toggle-fundraiser-updates"
+                className="text-gray-600"
+              >
+                Receive fundraiser update emails
               </label>
-              <input
-                type="color"
-                className="h-10 w-full"
-                value={settings.system.theme}
-                onChange={(e) =>
-                  handleChange('system', 'theme', e.target.value)
+              <Switch
+                checked={settings.email.notifications}
+                onCheckedChange={(checked) =>
+                  handleChange('email', 'notifications', checked)
                 }
-                aria-label="Theme color picker"
               />
             </div>
             <div>
-              <label className="block text-gray-600 mb-2  items-center">
-                <BsCalendarDate className="mr-2" /> Update Frequency
+              <label
+                htmlFor="email-frequency"
+                className="block text-gray-600 mb-2"
+              >
+                Update Frequency
               </label>
               <select
+                id="fundraiser-email-frequency"
                 className="w-full p-2 border rounded-md"
-                value={settings.system.updateFrequency}
+                value={settings.email.frequency}
                 onChange={(e) =>
-                  handleChange('system', 'updateFrequency', e.target.value)
+                  handleChange('email', 'frequency', e.target.value)
                 }
-                aria-label="Update frequency"
+                aria-label="Fundraiser email update frequency"
               >
+                <option value="">Select frequency</option>
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
                 <option value="monthly">Monthly</option>
               </select>
+              {errors.emailFrequency && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.emailFrequency}
+                </p>
+              )}
             </div>
           </div>
         </div>
-      </div>
+        {/* Save Button & Save Status Section */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 space-y-4 sm:space-y-0">
+          {/* Save Button */}
+          <div className="flex justify-end sm:justify-start">
+            <button
+              className="w-full sm:w-auto px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none"
+              onClick={saveSettings}
+            >
+              Save
+            </button>
+          </div>
 
-      {/* Save Status */}
-      {saveStatus && (
-        <div
-          className={`fixed bottom-4 right-4 px-4 py-2 rounded-md ${
-            saveStatus.includes('successfully') ? 'bg-green-500' : 'bg-gray-500'
-          } text-white flex items-center transition-opacity duration-300`}
-        >
-          {saveStatus.includes('successfully') ? (
-            <FiSave className="mr-2" />
-          ) : (
-            <FiAlertCircle className="mr-2" />
+          {/* Save Status */}
+          {saveStatus && (
+            <div className="flex justify-center sm:justify-start">
+              <p
+                className={`text-sm ${
+                  saveStatus.includes('error')
+                    ? 'text-red-500'
+                    : 'text-green-500'
+                }`}
+              >
+                {saveStatus}
+              </p>
+            </div>
           )}
-          {saveStatus}
         </div>
-      )}
+      </div>
     </div>
   );
 };

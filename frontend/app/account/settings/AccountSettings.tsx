@@ -8,6 +8,7 @@ import SystemSettingsPage from './systemsettings/SystemSettings';
 
 const AccountSettings = () => {
   const [activeTab, setActiveTab] = useState('payment');
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'payment':
@@ -22,7 +23,7 @@ const AccountSettings = () => {
   };
 
   return (
-    <div className="mx-auto h-full">
+    <div className="mx-auto min-h-screen">
       <h1 className="text-3xl font-bold text-gray-900 mb-6">Settings</h1>
       <div className="flex border-b border-gray-200 mb-6">
         <button
@@ -47,16 +48,10 @@ const AccountSettings = () => {
           System
         </button>
       </div>
-      <div className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-50 p-3 shadow">
+
+      {/* Content container with enough bottom padding to prevent overlapping */}
+      <div className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-50 p-3 shadow min-h-[calc(100vh-150px)] pb-16">
         {renderTabContent()}
-      </div>
-      <div className="mt-6 flex justify-end">
-        <button
-          type="submit"
-          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-        >
-          Save Changes
-        </button>
       </div>
     </div>
   );
