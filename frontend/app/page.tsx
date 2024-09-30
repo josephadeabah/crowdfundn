@@ -9,6 +9,7 @@ import HomePageLoader from './loaders/HomeLoader';
 import { BrandsLogoSlider } from './molecules/BrandsLogoSlider';
 import Cta from './molecules/CTA';
 import FAQsPage from './molecules/faqs';
+import OnBoard from './components/onboard/OnBoard';
 
 const HomePage = () => {
   const [loading, setLoading] = React.useState(true);
@@ -106,7 +107,7 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-
+      <OnBoard />
       <div className="w-full flex flex-col sm:flex-row">
         <CardBanner title="Categories" className="p-4">
           <div className="flex flex-wrap gap-2 mb-4 justify-start">
@@ -132,7 +133,7 @@ const HomePage = () => {
             {data?.recommendedFundraisers?.map((campaign) => (
               <div
                 key={campaign.id}
-                className="flex flex-col h-full hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 hover:shadow-md"
+                className="flex flex-col h-full hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
               >
                 <img
                   src={campaign?.image}
@@ -162,7 +163,6 @@ const HomePage = () => {
       </div>
       {/* CTA */}
       <Cta />
-
       {/* More random campaigns */}
       <div className="w-full flex flex-col sm:flex-row">
         <CardBanner
@@ -174,7 +174,7 @@ const HomePage = () => {
             {data.recommendedFundraisers.map((campaign) => (
               <div
                 key={campaign.id}
-                className="flex flex-col h-full hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 hover:shadow-md"
+                className="flex flex-col h-full hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
               >
                 <img
                   src={campaign.image}
@@ -211,7 +211,7 @@ const HomePage = () => {
             {data.recommendedFundraisers.map((campaign) => (
               <div
                 key={campaign.id}
-                className="flex flex-col h-full hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 hover:shadow-md"
+                className="flex flex-col h-full hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
               >
                 <img
                   src={campaign.image}

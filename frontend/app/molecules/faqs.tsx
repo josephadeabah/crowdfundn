@@ -18,12 +18,12 @@ const FAQsPage = () => {
     {
       question: 'What fees does BantuHive charge?',
       answer:
-        'BantuHive charges a platform fee of 5% on the total funds raised, plus payment processing fees. These fees help us maintain the platform and ensure secure transactions.',
+        'BantuHive charges a platform fee of 2% on the total funds raised, plus payment processing fees of 1.9% for each transaction. These fees help us maintain the platform and ensure secure transactions.',
     },
     {
       question: 'How do I withdraw the funds I raise?',
       answer:
-        'You can withdraw your funds by linking your bank account or digital wallet to your BantuHive account. Once your campaign ends, funds will be transferred to you after processing, which can take up to 7 business days.',
+        'You can withdraw your funds by linking your bank account or digital wallet to your BantuHive account. Once your campaign ends, funds will be transferred to you after processing, which can take up to 4 business days.',
     },
     {
       question: 'What types of projects can I fundraise for?',
@@ -33,7 +33,7 @@ const FAQsPage = () => {
     {
       question: 'How do backers support my campaign?',
       answer:
-        'Backers can support your campaign by donating directly through BantuHive’s secure payment gateway. They can also share your campaign with others to increase visibility and attract more donations.',
+        'Backers can support your campaign by donating directly through BantuHive’s secure payment gateway. You can also promote your campaign with our promotion tools. Your supporters can also share your campaign with others to increase visibility and attract more donations.',
     },
   ];
 
@@ -47,7 +47,7 @@ const FAQsPage = () => {
       <div id="faqs" className="py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-            BantuHive Crowdfunding FAQs
+            BantuHive FAQs
           </h2>
           <div className="mx-auto">
             {faqs.map((faq, index) => (

@@ -25,7 +25,6 @@ import DataTable from './DataTable';
 import OrderDetailsPage from './OrderDetails';
 import PasswordResetComponent from './PasswordReset';
 import LoginComponent from './LoginComponent';
-import WalkthroughComponent, { Walkthrough } from './WalkthroughComponent';
 
 const TestPage = () => {
   return (
@@ -58,8 +57,6 @@ const TestPage = () => {
       <OrderDetailsPage />
       <PasswordResetComponent />
       <LoginComponent />
-      <WalkthroughComponent />
-      <Walkthrough />
     </div>
   );
 };
