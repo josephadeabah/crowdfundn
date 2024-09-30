@@ -75,7 +75,7 @@ const ProfileTabs = () => {
     },
     {
       target: '#donations-tab',
-      content: 'View all your donations in this tab.',
+      content: 'View all your donations and say thank you in this tab.',
     },
     {
       target: '#transfers-tab',
@@ -87,7 +87,7 @@ const ProfileTabs = () => {
     },
     {
       target: '#campaigns-tab',
-      content: 'Check your campaigns in this tab.',
+      content: 'Check your active campaigns in this tab.',
     },
     {
       target: '#archive-tab',
