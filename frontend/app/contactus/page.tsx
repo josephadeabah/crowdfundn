@@ -216,16 +216,30 @@ const ContactUs = () => {
           <h2 className="text-xl font-semibold text-theme-color-primary mb-4 dark:text-white">
             Our Office
           </h2>
-          <div className="flex items-start space-x-4">
-            <FiMapPin className="text-theme-color-primary text-xl flex-shrink-0 mt-1" />
-            <p className="text-neutral-600 dark:text-gray-300">
-              123 Rivonia Road, Suite 200
-              <br />
-              Sandton, 2196
-              <br />
-              South Africa
-            </p>
+          <div className="flex flex-row flex-wrap gap-y-12 justify-between items-start">
+            <div className="flex items-start space-x-4">
+              <FiMapPin className="text-theme-color-primary text-xl flex-shrink-0 mt-1" />
+              <p className="text-neutral-600 dark:text-gray-300">
+                123 Mbabane Road
+                <br />
+                Manzini, H100
+                <br />
+                Eswatini
+              </p>
+            </div>
+
+            <div className="flex items-start space-x-4">
+              <FiMapPin className="text-theme-color-primary text-xl flex-shrink-0 mt-1" />
+              <p className="text-neutral-600 dark:text-gray-300">
+                456 Independence Avenue
+                <br />
+                Accra, Greater Accra Region
+                <br />
+                Ghana
+              </p>
+            </div>
           </div>
+
           <div className="mt-4 flex items-center space-x-4">
             <FiPhone className="text-theme-color-primary text-xl" />
             <p className="text-neutral-600 dark:text-gray-300">
