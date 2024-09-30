@@ -23,7 +23,7 @@ const HomePage = () => {
     }, 3000);
 
     const words = [
-      "Empowering Africa's Next Generation of Thinkers",
+      'Fundraise Like a Boss',
       'Crowdfunding Solutions for Africa Innovators',
       'Uniting Communities Through Social Change',
       'Transforming Ideas into Action Across Continents',

@@ -44,7 +44,9 @@ export default function Campaigns() {
                   <li>
                     <button
                       className="w-full text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700 p-2 rounded-md"
-                      onClick={() => console.log('Edit Campaign')}
+                      onClick={() =>
+                        (window.location.href = `/account/dashboard/create`)
+                      }
                     >
                       Edit Campaign
                     </button>

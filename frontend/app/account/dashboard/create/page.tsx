@@ -2,8 +2,9 @@
 
 import CreateCampaign from './AddCampaign';
 import React, { useState } from 'react';
-import { FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft, FaEdit } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import CampaignPermissionSetting from './settings/PermissionSettings';
 
 const FundraiserPage = () => {
   const [activeTab, setActiveTab] = useState('Details');
@@ -20,16 +21,57 @@ const FundraiserPage = () => {
     switch (activeTab) {
       case 'Details':
         return (
-          <div className="p-4">
-            <h2 className="text-xl font-semibold mb-4">Fundraiser Details</h2>
-            <p>Edit your fundraiser details here.</p>
+          <div className="py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
+              <button className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                <FaEdit />
+              </button>
+              <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
+                Campaign Title
+              </h3>
+              <p className="text-gray-700 dark:text-gray-400">
+                Your fundraiser title goes here
+              </p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
+              <button className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                <FaEdit />
+              </button>
+              <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
+                Fundraising Goal
+              </h3>
+              <p className="text-gray-700 dark:text-gray-400">$10,000</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
+              <button className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                <FaEdit />
+              </button>
+              <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
+                Campaign Description
+              </h3>
+              <p className="text-gray-700 dark:text-gray-400">
+                Your fundraiser description goes here...
+              </p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
+              <button className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                <FaEdit />
+              </button>
+              <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
+                Campaign Image
+              </h3>
+              <img
+                src="https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?auto=format&fit=crop&w=500&q=60"
+                alt="Campaign"
+                className="w-full h-40 object-cover rounded"
+              />
+            </div>
           </div>
         );
       case 'Settings':
         return (
-          <div className="p-4">
-            <h2 className="text-xl font-semibold mb-4">Fundraiser Settings</h2>
-            <p>Manage your fundraiser settings here.</p>
+          <div>
+            <CampaignPermissionSetting />
           </div>
         );
       case 'Team':
@@ -45,7 +87,7 @@ const FundraiserPage = () => {
   };
 
   return (
-    <div className="p-4 h-screen">
+    <div className="p-4">
       <CreateCampaign />
 
       <div className="mb-6">
@@ -58,7 +100,7 @@ const FundraiserPage = () => {
         </button>
       </div>
 
-      <h1 className="text-3xl font-bold mb-8">Edit Fundraiser</h1>
+      <h1 className="text-3xl font-bold mb-8">Edit Campaign</h1>
 
       <div className="mb-6">
         <nav className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
@@ -96,7 +138,7 @@ const FundraiserPage = () => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.3 }}
-        className="bg-white"
+        className="h-screen"
       >
         {renderTabContent()}
       </motion.div>
