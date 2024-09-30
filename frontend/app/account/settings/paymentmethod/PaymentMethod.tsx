@@ -1,18 +1,10 @@
 import React, { useState } from 'react';
-import {
-  FaCreditCard,
-  FaPaypal,
-  FaPlus,
-  FaTimes,
-  FaEdit,
-} from 'react-icons/fa';
+import { FaCreditCard, FaPlus, FaTimes, FaEdit } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
+import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 
 const PaymentMethod = () => {
-  const [paymentMethods, setPaymentMethods] = useState([
-    { id: 1, type: 'Credit Card', last4: '1234', icon: FaCreditCard },
-    { id: 2, type: 'PayPal', email: 'user@example.com', icon: FaPaypal },
-  ]);
+  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newPayment, setNewPayment] = useState({
     cardNumber: '',
@@ -31,6 +23,9 @@ const PaymentMethod = () => {
     country?: string;
   }>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [paymentToRemove, setPaymentToRemove] = useState<number | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -114,15 +109,27 @@ const PaymentMethod = () => {
     setIsLoading(false);
   };
 
-  const handleRemovePayment = async (id: number) => {
-    if (
-      window.confirm('Are you sure you want to remove this payment method?')
-    ) {
+  const handleRemovePayment = (id: number) => {
+    setPaymentToRemove(id); // Store the ID of the payment method to remove
+    setIsAlertOpen(true); // Open the AlertPopup
+  };
+
+  const confirmRemovePayment = async () => {
+    if (paymentToRemove !== null) {
       setIsLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      setPaymentMethods(paymentMethods.filter((method) => method.id !== id));
+      setPaymentMethods(
+        paymentMethods.filter((method) => method.id !== paymentToRemove),
+      );
       setIsLoading(false);
     }
+    setIsAlertOpen(false); // Close the AlertPopup
+    setPaymentToRemove(null); // Reset the ID
+  };
+
+  const cancelRemovePayment = () => {
+    setIsAlertOpen(false); // Close the AlertPopup without action
+    setPaymentToRemove(null); // Reset the ID
   };
 
   const handleEditPayment = (method: any) => {
@@ -140,7 +147,7 @@ const PaymentMethod = () => {
 
   return (
     <div className="mx-auto bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-50">
-      <div className="rounded-lg  mb-6">
+      <div className="rounded-lg mb-6">
         <h2 className="text-xl font-semibold mb-4 text-theme-color-primary-content">
           Payment Information
         </h2>
@@ -150,46 +157,61 @@ const PaymentMethod = () => {
         <p className="mb-4">
           <span className="font-medium">Account ID:</span> 123456789
         </p>
-        <h3 className="text-lg font-semibold mb-3 text-theme-color-primary-content">
-          Payment Methods
-        </h3>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {paymentMethods.map((method) => (
-            <motion.div
-              key={method.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="bg-theme-color-base rounded-md p-4 flex items-center justify-between shadow-md"
-            >
-              <div className="flex items-center">
-                <method.icon className="text-2xl mr-3 text-theme-color-primary" />
-                <div>
-                  <p className="font-medium">{method.type}</p>
-                  <p className="text-sm text-gray-600">
-                    {method.last4 ? `**** ${method.last4}` : method.email}
-                  </p>
-                </div>
-              </div>
-              <div className="flex">
-                <button
-                  onClick={() => handleEditPayment(method)}
-                  className="text-theme-color-primary hover:text-theme-color-primary-dark transition-colors mr-3"
-                  aria-label={`Edit ${method.type}`}
+
+        {paymentMethods.length === 0 ? (
+          <p>No payment method found. Please add one.</p>
+        ) : (
+          <>
+            <h3 className="text-lg font-semibold mb-3 text-theme-color-primary-content">
+              Payment Methods
+            </h3>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {paymentMethods.map((method) => (
+                <motion.div
+                  key={method.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="bg-theme-color-base rounded-md p-4 flex items-center justify-between shadow-md"
                 >
-                  <FaEdit />
-                </button>
-                <button
-                  onClick={() => handleRemovePayment(method.id)}
-                  className="text-theme-color-primary hover:text-theme-color-primary-dark transition-colors"
-                  aria-label={`Remove ${method.type}`}
-                >
-                  <FaTimes />
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                  <div className="flex items-center">
+                    <method.icon className="text-2xl mr-3 text-theme-color-primary" />
+                    <div>
+                      <p className="font-medium">{method.type}</p>
+                      <p className="text-sm text-gray-600">
+                        {method.last4 ? `**** ${method.last4}` : method.email}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex">
+                    <button
+                      onClick={() => handleEditPayment(method)}
+                      className="text-theme-color-primary hover:text-theme-color-primary-dark transition-colors mr-3"
+                      aria-label={`Edit ${method.type}`}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      onClick={() => handleRemovePayment(method.id)} // Call the updated function
+                      aria-label={`Remove ${method.type}`}
+                    >
+                      <FaTimes />
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            <AlertPopup
+              title="Confirm Removal"
+              message="Are you sure you want to remove this payment method?"
+              isOpen={isAlertOpen}
+              setIsOpen={setIsAlertOpen}
+              onConfirm={confirmRemovePayment}
+              onCancel={cancelRemovePayment}
+            />
+          </>
+        )}
+
         <button
           onClick={() => {
             setIsModalOpen(true);
@@ -205,7 +227,8 @@ const PaymentMethod = () => {
           className="mt-6 bg-theme-color-primary text-gray-800 px-4 py-2 rounded-md hover:bg-theme-color-primary-dark transition-colors flex items-center"
           aria-label="Add Payment Method"
         >
-          <FaPlus className="mr-2" /> Add Payment
+          <FaPlus className="mr-2" />{' '}
+          {isEditing ? 'Edit Payment Method' : 'Add Payment'}
         </button>
       </div>
 
