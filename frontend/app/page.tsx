@@ -10,6 +10,7 @@ import { BrandsLogoSlider } from './molecules/BrandsLogoSlider';
 import Cta from './molecules/CTA';
 import FAQsPage from './molecules/faqs';
 import OnBoard from './components/onboard/OnBoard';
+import DownloadApp from './molecules/DownloadApp';
 
 const HomePage = () => {
   const [loading, setLoading] = React.useState(true);
@@ -257,6 +258,8 @@ const HomePage = () => {
       </div>
 
       <FAQsPage />
+
+      <DownloadApp />
 
       {/* Trusted by Brands Section */}
       <div className="w-full flex flex-col items-center gap-8">
