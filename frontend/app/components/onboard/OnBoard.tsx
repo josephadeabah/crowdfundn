@@ -20,7 +20,7 @@ const OnBoard = () => {
     {
       title: 'Welcome to Bantuhive',
       description:
-        'Easy onboarding and fun to get started and manage your campaigns and supporters.',
+        'BantuHive connects communities and entrepreneurs with the funding they need, leveraging the power of Africa’s people and its diaspora to create lasting impact.',
       icon: <FiPieChart size={80} />,
     },
     {
