@@ -100,7 +100,6 @@ const HomePage = () => {
                 </h1>
               </div>
             </h1>
-            {/* <p className="text-gray-500">{data.bio}</p> */}
             <div className="w-full flex flex-col items-center gap-4 lg:flex-row lg:justify-start *:w-full *:px-5 *:py-3 *:text-base *:font-medium *:text-center *:transition *:duration-[250ms] *:ease-in-out lg:*:w-auto">
               <a
                 href="/auth/register"
@@ -122,7 +121,9 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-      <OnBoard />
+      <div className="p-4">
+        <OnBoard />
+      </div>
       <div className="w-full flex flex-col sm:flex-row">
         <CardBanner title="Categories" className="p-4">
           <div className="flex flex-wrap gap-2 mb-4 justify-start">
