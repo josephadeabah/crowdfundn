@@ -6,6 +6,7 @@ import {
   CardDescription,
 } from '../components/card/Card';
 import { HiOutlinePlus } from 'react-icons/hi';
+import Link from 'next/link';
 
 export default function Dashboard() {
   return (
@@ -17,12 +18,15 @@ export default function Dashboard() {
         {/* Add Campaign Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 flex flex-col items-center justify-center">
           <CardHeader className="text-center"></CardHeader>
-          <div className="mt-4 flex flex-col items-center">
-            <HiOutlinePlus className="text-4xl text-green-500 dark:text-green-300 mb-2" />
-            <span className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+          <Link
+            href="/account/dashboard/create"
+            className="text-lg font-semibold text-gray-600 dark:text-gray-400 cursor-pointer"
+          >
+            <div className="mt-4 flex flex-col items-center">
+              <HiOutlinePlus className="text-4xl text-green-500 dark:text-green-300 mb-2" />
               Add Campaign
-            </span>
-          </div>
+            </div>
+          </Link>
         </Card>
 
         {/* Total Backers Card */}
