@@ -7,6 +7,7 @@ import {
   SymbolIcon,
   ArchiveIcon,
   IconJarLogoIcon,
+  GearIcon,
   RocketIcon,
 } from '@radix-ui/react-icons';
 import Rewards from './Rewards';
@@ -16,6 +17,7 @@ import Donations from './Donations';
 import Archive from './Archive';
 import Dashboard from './Dashboard';
 import ProfileTabsLoader from '../loaders/ProfileTabsLoader';
+import AccountSettings from './settings/AccountSettings';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState('');
@@ -93,6 +95,10 @@ const ProfileTabs = () => {
       target: '#archive-tab',
       content: 'Your archived campaigns can be found here.',
     },
+    {
+      target: '#settings-tab',
+      content: 'Manage your account settings in this tab.',
+    },
   ];
 
   const renderTabContent = () => {
@@ -109,6 +115,8 @@ const ProfileTabs = () => {
         return <Campaigns />;
       case 'Archive':
         return <Archive />;
+      case 'Settings':
+        return <AccountSettings />;
       default:
         return <Dashboard />;
     }
@@ -155,6 +163,11 @@ const ProfileTabs = () => {
             { label: 'Rewards', icon: <IconJarLogoIcon />, id: 'rewards-tab' },
             { label: 'Campaigns', icon: <RocketIcon />, id: 'campaigns-tab' },
             { label: 'Archive', icon: <ArchiveIcon />, id: 'archive-tab' },
+            {
+              label: 'Settings',
+              icon: <GearIcon />,
+              id: 'settings-tab',
+            },
           ].map(({ label, icon, id }) => (
             <button
               id={id}
