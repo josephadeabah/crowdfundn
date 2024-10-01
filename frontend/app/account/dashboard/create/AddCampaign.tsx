@@ -1,6 +1,6 @@
 'use client';
 import dynamic from 'next/dynamic';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { FiX, FiEdit, FiUpload } from 'react-icons/fi';
 import { Switch } from '@headlessui/react';
 import { Button } from '@/app/components/button/Button';
@@ -99,7 +99,12 @@ const CreateCampaign = () => {
         <FiEdit className="w-6 h-6" />
       </button>
 
-      <Modal isOpen={isOpen} onClose={handleCancel} size="xxxlarge">
+      <Modal
+        isOpen={isOpen}
+        onClose={handleCancel}
+        size="xxxlarge"
+        closeOnBackdropClick={false}
+      >
         <div className="space-y-4">
           <div>
             <label
