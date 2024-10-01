@@ -6,7 +6,14 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  size?: 'small' | 'medium' | 'large';
+  size?:
+    | 'small'
+    | 'medium'
+    | 'large'
+    | 'xlarge'
+    | 'xxlarge'
+    | 'xxxlarge'
+    | 'full';
   isDraggable?: boolean;
   closeOnBackdropClick?: boolean;
   customStyles?: React.CSSProperties;
@@ -60,6 +67,10 @@ const Modal: React.FC<ModalProps> = ({
     small: 'max-w-sm',
     medium: 'max-w-md',
     large: 'max-w-lg',
+    xlarge: 'max-w-xl',
+    xxlarge: 'max-w-2xl',
+    xxxlarge: 'max-w-3xl',
+    full: 'max-w-full',
   };
 
   return (

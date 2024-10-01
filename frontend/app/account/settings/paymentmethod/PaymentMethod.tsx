@@ -79,6 +79,10 @@ const PaymentMethod = () => {
                 ...method,
                 last4: newPayment.cardNumber.slice(-4),
                 email: undefined,
+                cvv: newPayment.cvv,
+                expirationDate: newPayment.expirationDate,
+                billingAddress: newPayment.billingAddress,
+                country: newPayment.country,
               }
             : method,
         ),
@@ -349,7 +353,7 @@ const PaymentMethod = () => {
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="mr-4 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md transition-colors"
+              className="mr-4 bg-gray-100 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md transition-colors"
             >
               Cancel
             </button>
