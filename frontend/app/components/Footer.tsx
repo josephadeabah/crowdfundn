@@ -26,17 +26,8 @@ const Footer = () => {
 
   return (
     <footer className="bg-white mb-0 dark:bg-gray-950">
-      <div className="flex flex-col items-center px-6 w-full *:w-full *:flex *:flex-col *:items-center">
-        <div className="gap-y-6 py-8 lg:flex-row lg:justify-between *:text-sm *:text-gray-500">
-          <h1 className="font-bold">@BantuHive</h1>
-          <div className="flex items-center gap-x-6 hover:*:text-gray-950 dark:hover:*:text-gray-50 *:transition *:duration-[250ms] *:ease-in-out">
-            <a href=".">Privacy</a>
-            <a href=".">Terms</a>
-            <a href=".">Cookies</a>
-          </div>
-        </div>
-      </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="flex flex-col items-center px-6 w-full *:w-full *:flex *:flex-col *:items-center"></div>
+      <div className="mx-auto px-4 lg:px-2 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           <div className="col-span-1 md:col-span-2">
             <svg
@@ -245,6 +236,29 @@ const Footer = () => {
               </svg>
             </a>
           </div>
+
+          {/* Links for Cookies, Privacy, and Terms */}
+          <div className="flex space-x-4 mb-4 md:mb-0">
+            <a
+              href="/cookies"
+              className="text-sm hover:text-red-300 transition duration-300"
+            >
+              Cookies
+            </a>
+            <a
+              href="/privacy"
+              className="text-sm hover:text-red-300 transition duration-300"
+            >
+              Privacy
+            </a>
+            <a
+              href="/terms"
+              className="text-sm hover:text-red-300 transition duration-300"
+            >
+              Terms
+            </a>
+          </div>
+
           <p className="text-sm">&copy; 2024 BantuHive. All rights reserved.</p>
         </div>
       </div>
