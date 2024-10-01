@@ -1,24 +1,47 @@
 'use client';
 import dynamic from 'next/dynamic';
 import React, { useState, useCallback } from 'react';
-import { FiX, FiEdit, FiUpload } from 'react-icons/fi';
+import { FiX, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { Switch } from '@headlessui/react';
 import { Button } from '@/app/components/button/Button';
 import { useDropzone } from 'react-dropzone';
-import Modal from '@/app/components/modal/Modal'; // Ensure Modal is imported
+import Modal from '@/app/components/modal/Modal';
+import CampaignPermissionSetting from '@/app/account/dashboard/create/settings/PermissionSettings';
+import { FaEdit } from 'react-icons/fa';
 
 const RichTextEditor = dynamic(() => import('@mantine/rte'), { ssr: false });
 
 const CreateCampaign = () => {
-  const [isOpen, setIsOpen] = useState(false); // Initially false since modal is closed
+  const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isPublic, setIsPublic] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false); // Dropdown state
+
+  // Define permissions structure
+  const initialPermissions = {
+    acceptDonations: false,
+    leaveWordsOfSupport: false,
+    appearInSearchResults: false,
+    suggestedFundraiserLists: false,
+    receiveDonationEmail: false,
+    receiveDailySummary: false,
+  };
+
+  // State for permissions and promotion settings
+  const [permissions, setPermissions] = useState(initialPermissions);
+
+  const [promotionSettings, setPromotionSettings] = useState({
+    enablePromotions: false,
+    schedulePromotion: false,
+    promotionFrequency: 'daily',
+    promotionDuration: 1,
+  });
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles && acceptedFiles.length > 0) {
+    if (acceptedFiles.length > 0) {
       setSelectedImage(acceptedFiles[0]);
       setError(null);
     }
@@ -35,20 +58,11 @@ const CreateCampaign = () => {
     setError(null);
   };
 
-  interface FormErrors {
-    title?: string;
-    content?: string;
-    image?: string;
-  }
-
-  const [errors, setErrors] = useState<FormErrors>({});
-
   const validateForm = () => {
-    let formErrors: FormErrors = {};
+    let formErrors: { [key: string]: string } = {};
     if (!title.trim()) formErrors.title = 'Title is required';
     if (!content.trim()) formErrors.content = 'Content is required';
     if (!selectedImage) formErrors.image = 'Image is required';
-    setErrors(formErrors);
     return Object.keys(formErrors).length === 0;
   };
 
@@ -58,13 +72,13 @@ const CreateCampaign = () => {
       formData.append('title', title);
       formData.append('content', content);
       formData.append('isPublic', JSON.stringify(isPublic));
+      formData.append('permissions', JSON.stringify(permissions));
+      formData.append('promotionSettings', JSON.stringify(promotionSettings));
+
       if (selectedImage) {
         formData.append('image', selectedImage);
       }
 
-      console.log('Form data:', formData);
-
-      // Submit the form using formData
       fetch('/api/campaigns', {
         method: 'POST',
         body: formData,
@@ -85,7 +99,13 @@ const CreateCampaign = () => {
     setTitle('');
     setContent('');
     setIsPublic(false);
-    setErrors({});
+    setPermissions(initialPermissions);
+    setPromotionSettings({
+      enablePromotions: false,
+      schedulePromotion: false,
+      promotionFrequency: 'daily',
+      promotionDuration: 1,
+    });
     setSelectedImage(null);
   };
 
@@ -93,10 +113,10 @@ const CreateCampaign = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 right-4 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition-colors duration-300"
-        aria-label="Open blog post modal"
+        className="fixed flex items-center gap-2 bottom-4 right-4 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition-colors duration-300"
       >
-        <FiEdit className="w-6 h-6" />
+        Create Your Story
+        <FaEdit />
       </button>
 
       <Modal
@@ -105,125 +125,111 @@ const CreateCampaign = () => {
         size="xxxlarge"
         closeOnBackdropClick={false}
       >
-        <div className="space-y-4">
-          <div>
-            <label
-              htmlFor="title"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Title
-            </label>
-            <input
-              type="text"
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${
-                errors.title ? 'border-red-500' : ''
-              }`}
-              placeholder="Enter Campaign title"
-            />
-            {errors.title && (
-              <p className="mt-1 text-sm text-red-500">{errors.title}</p>
-            )}
-          </div>
-
-          <div className="mx-auto">
-            <div
-              {...getRootProps()}
-              className={`border-2 border-dashed rounded-md p-4 mb-4 text-center cursor-pointer transition duration-300 ${
-                isDragActive
-                  ? 'border-red-500 bg-blue-50'
-                  : 'border-gray-300 hover:border-red-500 hover:bg-blue-50'
-              }`}
-            >
-              <input {...getInputProps()} />
-              <FiUpload className="mx-auto text-4xl mb-2 text-gray-400" />
-              <p className="text-gray-600">
-                {isDragActive
-                  ? 'Drop the file here...'
-                  : "Drag 'n' drop an image here, or click to select a file"}
-              </p>
+        <div className="overflow-y-auto max-h-[80vh] p-2 [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
+          {' '}
+          {/* Add this wrapper */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold mb-4">Create a New Campaign</h2>
+            <div className="mb-4">
+              <label htmlFor="campaign-title" className="block text-sm mb-1">
+                Title:
+              </label>
+              <input
+                id="campaign-title"
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white "
+              />
             </div>
-            {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 flex items-center">
-                <FiX className="mr-2" />
-                <span>{error}</span>
-              </div>
-            )}
-            {selectedImage && (
-              <div className="mb-4">
-                <div className="relative rounded-lg overflow-hidden">
-                  <img
-                    src={URL.createObjectURL(selectedImage)}
-                    alt="Selected"
-                    className="w-full h-40 object-cover"
-                  />
-                  <div className="absolute top-2 right-2">
+
+            <div className="mb-4">
+              <label htmlFor="campaign-content" className="block text-sm mb-1">
+                Content:
+              </label>
+              <RichTextEditor
+                id="campaign-content"
+                value={content}
+                onChange={setContent}
+                placeholder="Write your campaign content here..."
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="campaign-image" className="block text-sm mb-1">
+                Image:
+              </label>
+              <div
+                {...getRootProps()}
+                className={`border-2 border-dashed p-4 rounded ${isDragActive ? 'border-gray-400' : 'border-gray-300'}`}
+              >
+                <input id="campaign-image" {...getInputProps()} />
+                {selectedImage ? (
+                  <div className="flex justify-between items-center">
+                    <span>{selectedImage.name}</span>
                     <button
                       onClick={handleRemoveImage}
-                      className="bg-gray-300 hover:bg-red-600 text-white rounded-full p-1 transition duration-300"
+                      className="text-red-500"
                     >
-                      <FiX className="text-xl" />
+                      <FiX />
                     </button>
                   </div>
-                </div>
-                <p className="mt-2 text-sm text-gray-600">
-                  {selectedImage.name}
-                </p>
+                ) : (
+                  <p>Drag 'n' drop some files here, or click to select files</p>
+                )}
               </div>
-            )}
-            {errors.image && (
-              <p className="mt-1 text-sm text-red-500">{errors.image}</p>
-            )}
-          </div>
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+            </div>
 
-          <div>
-            <label
-              htmlFor="content"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Story
-            </label>
-            <RichTextEditor
-              id="content"
-              value={content}
-              onChange={setContent}
-              className={`mt-1 ${errors.content ? 'border-red-500' : ''}`}
-            />
-            {errors.content && (
-              <p className="mt-1 text-sm text-red-500">{errors.content}</p>
-            )}
-          </div>
+            {/* Public Switch */}
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm">Public Campaign</span>
+              <Switch
+                checked={isPublic}
+                onChange={setIsPublic}
+                className={`${isPublic ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
+              >
+                <span
+                  className={`${isPublic ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                />
+              </Switch>
+            </div>
 
-          <div className="flex items-center">
-            <Switch
-              checked={isPublic}
-              onChange={setIsPublic}
-              className={`${
-                isPublic ? 'bg-red-600' : 'bg-gray-200'
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2`}
-            >
-              <span className="sr-only">Make post public</span>
-              <span
-                className={`${
-                  isPublic ? 'translate-x-6' : 'translate-x-1'
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-              />
-            </Switch>
-            <span className="ml-3 text-sm font-medium text-gray-700">
-              {isPublic ? 'Public' : 'Private'} post
-            </span>
-          </div>
-        </div>
+            {/* Dropdown for Campaign Permissions and Promotion Settings */}
+            <div className="mb-4">
+              <button
+                onClick={() => setSettingsOpen((prev) => !prev)}
+                className="flex items-center justify-between w-full p-2 bg-gray-100 rounded-lg text-left focus:outline-none"
+              >
+                <span className="text-lg font-semibold">Campaign Settings</span>
+                {settingsOpen ? <FiChevronUp /> : <FiChevronDown />}
+              </button>
 
-        <div className="flex justify-end space-x-2 mt-4">
-          <Button variant="secondary" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button variant="destructive" onClick={handleSubmit}>
-            Publish Campaign
-          </Button>
+              {settingsOpen && (
+                <div className="mt-2 p-4 border rounded-lg bg-gray-50">
+                  <CampaignPermissionSetting
+                    permissions={permissions as { [key: string]: boolean }}
+                    setPermissions={
+                      setPermissions as React.Dispatch<
+                        React.SetStateAction<{ [key: string]: boolean }>
+                      >
+                    }
+                    promotionSettings={promotionSettings}
+                    setPromotionSettings={setPromotionSettings}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end space-x-2 mt-4">
+              <Button variant="secondary" onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={handleSubmit}>
+                Publish Campaign
+              </Button>
+            </div>
+          </div>
         </div>
       </Modal>
     </>

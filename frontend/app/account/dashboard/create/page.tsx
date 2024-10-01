@@ -3,14 +3,13 @@
 import CreateCampaign from './AddCampaign';
 import React, { useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
-import CampaignPermissionSetting from './settings/PermissionSettings';
 import EditCampaign from './EditCampaign';
 
 const FundraiserPage = () => {
   const [activeTab, setActiveTab] = useState('Details');
   const [error, setError] = useState('');
 
-  const tabs = ['Details', 'Settings', 'Team'];
+  const tabs = ['Details', 'Team'];
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
@@ -21,8 +20,6 @@ const FundraiserPage = () => {
     switch (activeTab) {
       case 'Details':
         return <EditCampaign />;
-      case 'Settings':
-        return <CampaignPermissionSetting />;
       case 'Team':
         return (
           <div className="p-4">

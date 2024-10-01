@@ -1,112 +1,149 @@
-import React, { useState } from 'react';
-import { FiInfo } from 'react-icons/fi';
+import React from 'react';
 import { Switch } from '@headlessui/react';
 import { Button } from '@/app/components/button/Button';
 
-const CampaignPermissionSetting = () => {
-  const [permissions, setPermissions] = useState({
-    admin: false,
-    editor: false,
-    viewer: false,
-  });
+interface CampaignPermissionSettingProps {
+  permissions: { [key: string]: boolean };
+  setPermissions: React.Dispatch<
+    React.SetStateAction<{ [key: string]: boolean }>
+  >;
+  promotionSettings: {
+    enablePromotions: boolean;
+    promotionFrequency: string;
+    promotionDuration: number;
+    schedulePromotion: boolean;
+  };
+  setPromotionSettings: React.Dispatch<
+    React.SetStateAction<{
+      enablePromotions: boolean;
+      promotionFrequency: string;
+      promotionDuration: number;
+      schedulePromotion: boolean;
+    }>
+  >;
+}
 
-  const [checkboxes, setCheckboxes] = useState({
-    admin: { create: false, delete: false, modify: false },
-    editor: { edit: false, publish: false },
-    viewer: { read: false, download: false },
-  });
-
-  const handleSwitchChange = (permission: keyof typeof permissions) => {
+const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
+  permissions,
+  setPermissions,
+  promotionSettings,
+  setPromotionSettings,
+}) => {
+  const handleSwitchChange = (permission: string) => {
     setPermissions((prev) => ({
       ...prev,
       [permission]: !prev[permission],
     }));
   };
 
-  const handleCheckboxChange = <T extends keyof typeof checkboxes>(
-    permission: T,
-    option: keyof (typeof checkboxes)[T],
-  ) => {
-    setCheckboxes((prev) => ({
+  const handlePromotionChange = (setting: keyof typeof promotionSettings) => {
+    setPromotionSettings((prev) => ({
       ...prev,
-      [permission]: {
-        ...prev[permission],
-        [option]: !prev[permission][option],
-      },
+      [setting]: !prev[setting],
     }));
   };
 
-  const renderPermissionSection = <T extends keyof typeof checkboxes>(
-    permission: T,
-    options: (typeof checkboxes)[T],
-  ) => (
-    <div className="mb-6 p-4 h-full bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 hover:shadow">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 capitalize">
-          {permission}
-        </h3>
-        <Switch
-          checked={permissions[permission]}
-          onChange={() => handleSwitchChange(permission)}
-          className={`${
-            permissions[permission]
-              ? 'bg-gray-900'
-              : 'bg-gray-200 dark:bg-gray-600'
-          } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
-        >
-          <span
-            className={`${
-              permissions[permission] ? 'translate-x-6' : 'translate-x-1'
-            } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-          />
-        </Switch>
-      </div>
-      <div className="mt-2 space-y-2">
-        {Object.entries(options).map(([option, checked]) => (
-          <label key={option} className="flex items-center space-x-3 text-sm">
-            <input
-              type="checkbox"
-              checked={checked}
-              onChange={() =>
-                handleCheckboxChange(
-                  permission,
-                  option as keyof (typeof checkboxes)[T],
-                )
-              }
-              disabled={!permissions[permission]}
-              className="form-checkbox h-5 w-5 text-theme-color-primary rounded focus:ring-theme-color-primary disabled:opacity-50"
-            />
-            <span
-              className={`${!permissions[permission] && 'text-gray-400 dark:text-gray-500'}`}
-            >
-              {option.charAt(0).toUpperCase() + option.slice(1)}
-            </span>
-          </label>
-        ))}
-      </div>
-    </div>
-  );
+  const handleFrequencyChange = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    setPromotionSettings((prev) => ({
+      ...prev,
+      promotionFrequency: event.target.value,
+    }));
+  };
+
+  const handleDurationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPromotionSettings((prev) => ({
+      ...prev,
+      promotionDuration: Number(event.target.value),
+    }));
+  };
 
   return (
     <div className="p-2 bg-gray-50 dark:bg-gray-900 h-fit">
       <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">
-        Permission Settings
+        Fundraiser Settings
       </h2>
-      {renderPermissionSection('admin', checkboxes.admin)}
-      {renderPermissionSection('editor', checkboxes.editor)}
-      {renderPermissionSection('viewer', checkboxes.viewer)}
-      <div className="mt-8 flex justify-end">
-        <Button
-          className="px-4 py-2 text-gray-800 dark:text-white rounded-full border border-gray-700 focus:outline-none focus:ring-2 focus:ring-theme-color-primary focus:ring-offset-2 transition-colors duration-300"
-          onClick={() => {
-            // Handle save permissions logic here
-            console.log('Permissions saved:', { permissions, checkboxes });
-          }}
-          size="lg"
-          variant="outline"
-        >
-          Save Permissions
-        </Button>
+
+      <div className="mb-6 p-4 h-full bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 hover:shadow">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+          Fundraiser Permissions
+        </h3>
+        {Object.entries(permissions).map(([key, value]) => (
+          <div key={key} className="flex items-center justify-between mb-4">
+            <span className="text-sm">{key.replace(/([A-Z])/g, ' $1')}</span>
+            <Switch
+              checked={value}
+              onChange={() => handleSwitchChange(key)}
+              className={`${value ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
+            >
+              <span
+                className={`${value ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+              />
+            </Switch>
+          </div>
+        ))}
+      </div>
+
+      <div className="mb-6 p-4 h-full bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 hover:shadow">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
+          Promotion Settings
+        </h3>
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-sm">Enable Promotions</span>
+          <Switch
+            checked={promotionSettings.enablePromotions}
+            onChange={() => handlePromotionChange('enablePromotions')}
+            className={`${promotionSettings.enablePromotions ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
+          >
+            <span
+              className={`${promotionSettings.enablePromotions ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+            />
+          </Switch>
+        </div>
+
+        {promotionSettings.enablePromotions && (
+          <>
+            <div className="mb-4">
+              <label className="block text-sm mb-1">Promotion Frequency:</label>
+              <select
+                value={promotionSettings.promotionFrequency}
+                onChange={handleFrequencyChange}
+                className="form-select block w-full rounded-md border-gray-300 focus:ring-theme-color-primary"
+              >
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm mb-1">
+                Promotion Duration (days):
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={promotionSettings.promotionDuration}
+                onChange={handleDurationChange}
+                className="form-input block w-full rounded-md border-gray-300 focus:ring-theme-color-primary"
+              />
+            </div>
+
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm">Schedule Promotion</span>
+              <Switch
+                checked={promotionSettings.schedulePromotion}
+                onChange={() => handlePromotionChange('schedulePromotion')}
+                className={`${promotionSettings.schedulePromotion ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
+              >
+                <span
+                  className={`${promotionSettings.schedulePromotion ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                />
+              </Switch>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
