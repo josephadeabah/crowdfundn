@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
-import { FaCreditCard, FaPlus, FaTimes, FaEdit } from 'react-icons/fa';
+import {
+  FaCreditCard,
+  FaPlus,
+  FaTimes,
+  FaEdit,
+  FaPaypal,
+  FaStripe,
+} from 'react-icons/fa';
 import Modal from '@/app/components/modal/Modal';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
+import { SiFlutter } from 'react-icons/si';
+import PaystackIcon from '@/app/components/icons/PaystackIcon';
 
 const PaymentMethod = () => {
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
@@ -12,6 +21,9 @@ const PaymentMethod = () => {
     cvv: '',
     billingAddress: '',
     country: '',
+    first_name: '',
+    last_name: '',
+    phone: '',
     email: '',
     type: '',
   });
@@ -22,9 +34,15 @@ const PaymentMethod = () => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [paymentToRemove, setPaymentToRemove] = useState<number | null>(null);
 
-  const [userDetails, setUserDetails] = useState({ name: '', accountId: '' });
+  const [userDetails, setUserDetails] = useState({
+    accountId: '',
+    name: '',
+    userEmail: '',
+  });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
     setNewPayment({ ...newPayment, [name]: value });
     validateField(name, value);
@@ -60,6 +78,27 @@ const PaymentMethod = () => {
     setErrors(newErrors);
   };
 
+  const renderPayentMethodIcons = (type: string) => {
+    switch (type) {
+      case 'Credit Card':
+        return (
+          <FaCreditCard className="text-2xl mr-3 text-theme-color-primary" />
+        );
+      case 'PayPal':
+        return <FaPaypal className="text-2xl mr-3 text-theme-color-primary" />;
+      case 'Stripe':
+        return <FaStripe className="text-2xl mr-3 text-theme-color-primary" />;
+      case 'Flutterwave':
+        return <SiFlutter className="text-2xl mr-3 text-theme-color-primary" />;
+      case 'Paystack':
+        return (
+          <PaystackIcon className="text-2xl mr-3 text-theme-color-primary" />
+        );
+      default:
+        return null;
+    }
+  };
+
   const handleAddPayment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (Object.values(errors).some((error) => error)) {
@@ -80,6 +119,11 @@ const PaymentMethod = () => {
                 expirationDate: newPayment.expirationDate,
                 billingAddress: newPayment.billingAddress,
                 country: newPayment.country,
+                type: newPayment.type,
+                cardNumber: newPayment.cardNumber,
+                first_name: newPayment.first_name,
+                last_name: newPayment.last_name,
+                phone: newPayment.phone,
               }
             : method,
         ),
@@ -87,15 +131,18 @@ const PaymentMethod = () => {
     } else {
       const newMethod = {
         id: paymentMethods.length + 1,
-        type: 'Credit Card',
+        type: newPayment.type, // Use the type from newPayment
         last4: newPayment.cardNumber.slice(-4),
         email: newPayment.email,
+        first_name: newPayment.first_name,
+        last_name: newPayment.last_name,
       };
       setPaymentMethods([...paymentMethods, newMethod]);
 
       // Set user details to display
       setUserDetails({
-        name: newMethod.email, // or any other name field you might have
+        name: newMethod.first_name + ' ' + newMethod.last_name,
+        userEmail: newMethod.email, // or any other name field you might have
         accountId: newMethod.id.toString(), // using ID as account ID for demo
       });
     }
@@ -107,6 +154,9 @@ const PaymentMethod = () => {
       cvv: '',
       billingAddress: '',
       country: '',
+      first_name: '',
+      last_name: '',
+      phone: '',
       email: '',
       type: '',
     });
@@ -145,6 +195,9 @@ const PaymentMethod = () => {
       cvv: '',
       billingAddress: '',
       country: '',
+      first_name: method.first_name,
+      last_name: method.last_name,
+      phone: method.phone,
       email: method.email,
       type: method.type,
     });
@@ -186,11 +239,13 @@ const PaymentMethod = () => {
                   className="bg-theme-color-base rounded-md p-4 flex items-center justify-between shadow-md"
                 >
                   <div className="flex items-center">
-                    <FaCreditCard className="text-2xl mr-3 text-theme-color-primary" />
+                    {renderPayentMethodIcons(method.type)}
                     <div>
                       <p className="font-medium">{method.type}</p>
                       <p className="text-sm text-gray-600">
-                        {method.last4 ? `**** ${method.last4}` : method.email}
+                        {method.type === 'Credit Card'
+                          ? `**** ${method.last4}`
+                          : method.email}
                       </p>
                     </div>
                   </div>
@@ -226,6 +281,9 @@ const PaymentMethod = () => {
               cvv: '',
               billingAddress: '',
               country: '',
+              first_name: '',
+              last_name: '',
+              phone: '',
               email: '',
               type: '',
             });
@@ -255,6 +313,28 @@ const PaymentMethod = () => {
         <h2 className="text-2xl font-bold mb-4 text-theme-color-primary">
           {isEditing ? 'Edit Payment Method' : 'Add Payment Method'}
         </h2>
+
+        <div className="mb-4">
+          <label htmlFor="type" className="block mb-1 font-medium">
+            Payment Type
+          </label>
+          <select
+            id="type"
+            name="type"
+            value={newPayment.type}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded-md border-gray-300"
+            required
+          >
+            <option value="">Select Payment Method</option>
+            <option value="Credit Card">Credit Card</option>
+            <option value="PayPal">PayPal</option>
+            <option value="Stripe">Stripe</option>
+            <option value="Flutterwave">Flutterwave</option>
+            <option value="Paystack">Paystack</option>
+          </select>
+        </div>
+
         <form onSubmit={handleAddPayment}>
           {/* Conditional Fields Rendering */}
           {newPayment.type === 'Credit Card' ? (
@@ -366,21 +446,81 @@ const PaymentMethod = () => {
             </>
           ) : (
             // Render only the email field for other payment methods
-            <div className="mb-6">
-              <label htmlFor="email" className="block mb-1 font-medium">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={newPayment.email}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded-md border-gray-300"
-                placeholder="example@example.com"
-                required
-              />
-            </div>
+            <>
+              <div className="mb-6">
+                <label htmlFor="first_name" className="block mb-1 font-medium">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  id="first_name"
+                  name="first_name"
+                  value={newPayment.first_name}
+                  onChange={handleInputChange}
+                  className={`w-full p-2 border rounded-md ${errors.first_name ? 'border-red-500' : 'border-gray-300'}`}
+                  placeholder="John"
+                  required
+                />
+                {errors.first_name && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.first_name}
+                  </p>
+                )}
+              </div>
+              <div className="mb-6">
+                <label htmlFor="last_name" className="block mb-1 font-medium">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  id="last_name"
+                  name="last_name"
+                  value={newPayment.last_name}
+                  onChange={handleInputChange}
+                  className={`w-full p-2 border rounded-md ${errors.last_name ? 'border-red-500' : 'border-gray-300'}`}
+                  placeholder="Doe"
+                  required
+                />
+                {errors.last_name && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.last_name}
+                  </p>
+                )}
+              </div>
+              <div className="mb-6">
+                <label htmlFor="phone" className="block mb-1 font-medium">
+                  Phone Number
+                </label>
+                <input
+                  type="text"
+                  id="phone"
+                  name="phone"
+                  value={newPayment.phone}
+                  onChange={handleInputChange}
+                  className={`w-full p-2 border rounded-md ${errors.phone ? 'border-red-500' : 'border-gray-300'}`}
+                  placeholder="(123) 456-7890"
+                  required
+                />
+                {errors.phone && (
+                  <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
+                )}
+              </div>
+              <div className="mb-6">
+                <label htmlFor="email" className="block mb-1 font-medium">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={newPayment.email}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border rounded-md border-gray-300"
+                  placeholder="example@example.com"
+                  required
+                />
+              </div>
+            </>
           )}
 
           <div className="flex justify-end">
