@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, ReactNode } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { useEffect, useRef, ReactNode } from 'react';
 import { FaExclamationTriangle } from 'react-icons/fa';
 
 interface AlertPopupProps {
@@ -51,25 +52,20 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
   }, [setIsOpen]);
 
   return (
-    <>
+    <AnimatePresence>
       {isOpen && (
-        <div
-          className="fixed inset-0 z-10 overflow-y-auto"
-          aria-labelledby="modal-title"
-          role="dialog"
-          aria-modal="true"
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
         >
-          <div className="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div
-              className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
-              aria-hidden="true"
-            ></div>
-            <span
-              className="hidden sm:inline-block sm:align-middle sm:h-screen"
-              aria-hidden="true"
-            >
-              &#8203;
-            </span>
+          <motion.div
+            initial={{ scale: 0.9, y: 50 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.9, y: 50 }}
+            className="rounded-lg p-6 w-full max-w-md"
+          >
             <div
               ref={popupRef}
               className="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
@@ -117,10 +113,10 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
                 </button>
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
-    </>
+    </AnimatePresence>
   );
 };
 

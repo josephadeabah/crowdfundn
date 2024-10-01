@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import {
-  FaUser,
-  FaPhone,
-  FaEnvelope,
-  FaLanguage,
-  FaTrash,
-} from 'react-icons/fa';
+import { FaUser, FaTrash } from 'react-icons/fa';
+import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 
 const UserSettings = () => {
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
@@ -15,6 +10,7 @@ const UserSettings = () => {
   const [email, setEmail] = useState('');
   const [language, setLanguage] = useState('');
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
@@ -43,12 +39,14 @@ const UserSettings = () => {
 
   const handleDeleteAccount = () => {
     setDeleteConfirmation(true);
+    setIsAlertOpen(true);
   };
 
   const confirmDeleteAccount = () => {
     // Implement account deletion logic here
     console.log('Account deleted');
     setDeleteConfirmation(false);
+    setIsAlertOpen(true);
   };
 
   useEffect(() => {
@@ -61,13 +59,13 @@ const UserSettings = () => {
     }, 1000);
   }, []);
 
+  const cancelAccountDelete = () => {
+    setIsAlertOpen(false); // Close the AlertPopup without action
+    setDeleteConfirmation(false); // Reset the ID
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className=" bg-gray-100 dark:bg-gray-800"
-    >
+    <div className=" mx-auto bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-50">
       <div className="mx-auto bg-white dark:bg-gray-700">
         <div className="px-4 py-5 sm:p-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 dark:text-white">
@@ -138,7 +136,7 @@ const UserSettings = () => {
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 flex-grow px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                  className="max-w-lg block w-full shadow-sm focus:ring-gray-500 focus:border-gray-500 sm:max-w-xs sm:text-sm border-gray-300 flex-grow px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                   aria-label="Full name"
                 />
               </div>
@@ -163,7 +161,7 @@ const UserSettings = () => {
                   id="phone"
                   value={phone}
                   onChange={handlePhoneChange}
-                  className="max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 flex-grow px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                  className="max-w-lg block w-full shadow-sm focus:ring-gray-500 focus:border-gray-500 sm:max-w-xs sm:text-sm border-gray-300 flex-grow px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                   aria-label="Phone number"
                 />
               </div>
@@ -188,7 +186,7 @@ const UserSettings = () => {
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 flex-grow px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${!validateEmail(email) && email ? 'border-red-500' : ''}`}
+                  className={`max-w-lg block w-full shadow-sm focus:ring-gray-500 focus:border-gray-500 sm:max-w-xs sm:text-sm border-gray-300 flex-grow px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${!validateEmail(email) && email ? 'border-red-500' : ''}`}
                   aria-label="Email address"
                 />
                 {!validateEmail(email) && email && (
@@ -217,7 +215,7 @@ const UserSettings = () => {
                   name="language"
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="max-w-lg block focus:ring-indigo-500 focus:border-indigo-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 flex-grow px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                  className="max-w-lg block focus:ring-gray-500 focus:border-gray-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 flex-grow px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                   aria-label="Preferred language"
                 >
                   <option>English</option>
@@ -242,76 +240,15 @@ const UserSettings = () => {
           </motion.button>
         </div>
       </div>
-
-      {deleteConfirmation && (
-        <div
-          className="fixed z-10 inset-0 overflow-y-auto"
-          aria-labelledby="modal-title"
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div
-              className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-              aria-hidden="true"
-            ></div>
-            <span
-              className="hidden sm:inline-block sm:align-middle sm:h-screen"
-              aria-hidden="true"
-            >
-              &#8203;
-            </span>
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="sm:flex sm:items-start">
-                  <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                    <FaTrash
-                      className="h-6 w-6 text-red-600"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3
-                      className="text-lg leading-6 font-medium text-gray-900"
-                      id="modal-title"
-                    >
-                      Delete account
-                    </h3>
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-500">
-                        Are you sure you want to delete your account? All of
-                        your data will be permanently removed. This action
-                        cannot be undone.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  type="button"
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-                  onClick={confirmDeleteAccount}
-                >
-                  Delete
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  type="button"
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                  onClick={() => setDeleteConfirmation(false)}
-                >
-                  Cancel
-                </motion.button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </motion.div>
+      <AlertPopup
+        title="Delete Account"
+        message="Are you sure you want to delete your account? All of your data will be permanently removed. This action cannot be undone."
+        isOpen={isAlertOpen}
+        setIsOpen={setIsAlertOpen}
+        onConfirm={confirmDeleteAccount}
+        onCancel={cancelAccountDelete}
+      />
+    </div>
   );
 };
 
