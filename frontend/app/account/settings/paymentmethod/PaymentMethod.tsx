@@ -12,19 +12,17 @@ const PaymentMethod = () => {
     cvv: '',
     billingAddress: '',
     country: '',
+    email: '',
+    type: '',
   });
   const [isEditing, setIsEditing] = useState(false);
   const [editingPaymentId, setEditingPaymentId] = useState<number | null>(null);
-  const [errors, setErrors] = useState<{
-    cardNumber?: string;
-    expirationDate?: string;
-    cvv?: string;
-    billingAddress?: string;
-    country?: string;
-  }>({});
+  const [errors, setErrors] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [paymentToRemove, setPaymentToRemove] = useState<number | null>(null);
+
+  const [userDetails, setUserDetails] = useState({ name: '', accountId: '' });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -78,8 +76,7 @@ const PaymentMethod = () => {
             ? {
                 ...method,
                 last4: newPayment.cardNumber.slice(-4),
-                email: undefined,
-                cvv: newPayment.cvv,
+                email: newPayment.email,
                 expirationDate: newPayment.expirationDate,
                 billingAddress: newPayment.billingAddress,
                 country: newPayment.country,
@@ -92,9 +89,15 @@ const PaymentMethod = () => {
         id: paymentMethods.length + 1,
         type: 'Credit Card',
         last4: newPayment.cardNumber.slice(-4),
-        icon: FaCreditCard,
+        email: newPayment.email,
       };
       setPaymentMethods([...paymentMethods, newMethod]);
+
+      // Set user details to display
+      setUserDetails({
+        name: newMethod.email, // or any other name field you might have
+        accountId: newMethod.id.toString(), // using ID as account ID for demo
+      });
     }
 
     setIsModalOpen(false);
@@ -104,6 +107,8 @@ const PaymentMethod = () => {
       cvv: '',
       billingAddress: '',
       country: '',
+      email: '',
+      type: '',
     });
     setIsEditing(false);
     setEditingPaymentId(null);
@@ -140,6 +145,8 @@ const PaymentMethod = () => {
       cvv: '',
       billingAddress: '',
       country: '',
+      email: method.email,
+      type: method.type,
     });
     setIsEditing(true);
     setEditingPaymentId(method.id);
@@ -152,16 +159,22 @@ const PaymentMethod = () => {
         <h2 className="text-xl font-semibold mb-4 text-theme-color-primary-content">
           Payment Information
         </h2>
-        <p className="mb-2">
-          <span className="font-medium">Name:</span> John Doe
-        </p>
-        <p className="mb-4">
-          <span className="font-medium">Account ID:</span> 123456789
-        </p>
 
-        {paymentMethods.length === 0 ? (
-          <p>No payment method found. Please add one.</p>
+        {userDetails.name && userDetails.accountId ? (
+          <>
+            <p className="mb-2">
+              <span className="font-medium">Name:</span> {userDetails.name}
+            </p>
+            <p className="mb-4">
+              <span className="font-medium">Account ID:</span>{' '}
+              {userDetails.accountId}
+            </p>
+          </>
         ) : (
+          <p>No payment method found. Please add one.</p>
+        )}
+
+        {paymentMethods.length > 0 && (
           <>
             <h3 className="text-lg font-semibold mb-3 text-theme-color-primary-content">
               Payment Methods
@@ -173,7 +186,7 @@ const PaymentMethod = () => {
                   className="bg-theme-color-base rounded-md p-4 flex items-center justify-between shadow-md"
                 >
                   <div className="flex items-center">
-                    <method.icon className="text-2xl mr-3 text-theme-color-primary" />
+                    <FaCreditCard className="text-2xl mr-3 text-theme-color-primary" />
                     <div>
                       <p className="font-medium">{method.type}</p>
                       <p className="text-sm text-gray-600">
@@ -199,17 +212,10 @@ const PaymentMethod = () => {
                 </div>
               ))}
             </div>
-            <AlertPopup
-              title="Confirm Removal"
-              message="Are you sure you want to remove this payment method?"
-              isOpen={isAlertOpen}
-              setIsOpen={setIsAlertOpen}
-              onConfirm={confirmRemovePayment}
-              onCancel={cancelRemovePayment}
-            />
           </>
         )}
 
+        {/* Button to add a new payment method */}
         <button
           onClick={() => {
             setIsModalOpen(true);
@@ -220,14 +226,25 @@ const PaymentMethod = () => {
               cvv: '',
               billingAddress: '',
               country: '',
+              email: '',
+              type: '',
             });
           }}
           className="mt-6 bg-theme-color-primary text-gray-800 px-4 py-2 rounded-md hover:bg-theme-color-primary-dark transition-colors flex items-center"
           aria-label="Add Payment Method"
         >
-          <FaPlus className="mr-2" />{' '}
-          {isEditing ? 'Edit Payment Method' : 'Add Payment'}
+          <FaPlus className="mr-2" />
+          Add Payment
         </button>
+
+        <AlertPopup
+          title="Confirm Removal"
+          message="Are you sure you want to remove this payment method?"
+          isOpen={isAlertOpen}
+          setIsOpen={setIsAlertOpen}
+          onConfirm={confirmRemovePayment}
+          onCancel={cancelRemovePayment}
+        />
       </div>
 
       <Modal
@@ -239,116 +256,133 @@ const PaymentMethod = () => {
           {isEditing ? 'Edit Payment Method' : 'Add Payment Method'}
         </h2>
         <form onSubmit={handleAddPayment}>
-          {/* Card Number Field */}
-          <div className="mb-4">
-            <label htmlFor="cardNumber" className="block mb-1 font-medium">
-              Card Number
-            </label>
-            <input
-              type="text"
-              id="cardNumber"
-              name="cardNumber"
-              value={newPayment.cardNumber}
-              onChange={handleInputChange}
-              className={`w-full p-2 border rounded-md ${
-                errors.cardNumber ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="1234 5678 9012 3456"
-              required
-            />
-            {errors.cardNumber && (
-              <p className="text-red-500 text-sm mt-1">{errors.cardNumber}</p>
-            )}
-          </div>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label
-                htmlFor="expirationDate"
-                className="block mb-1 font-medium"
-              >
-                Expiration Date
+          {/* Conditional Fields Rendering */}
+          {newPayment.type === 'Credit Card' ? (
+            <>
+              <div className="mb-4">
+                <label htmlFor="cardNumber" className="block mb-1 font-medium">
+                  Card Number
+                </label>
+                <input
+                  type="text"
+                  id="cardNumber"
+                  name="cardNumber"
+                  value={newPayment.cardNumber}
+                  onChange={handleInputChange}
+                  className={`w-full p-2 border rounded-md ${errors.cardNumber ? 'border-red-500' : 'border-gray-300'}`}
+                  placeholder="1234 5678 9012 3456"
+                  required
+                />
+                {errors.cardNumber && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.cardNumber}
+                  </p>
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label
+                    htmlFor="expirationDate"
+                    className="block mb-1 font-medium"
+                  >
+                    Expiration Date
+                  </label>
+                  <input
+                    type="text"
+                    id="expirationDate"
+                    name="expirationDate"
+                    value={newPayment.expirationDate}
+                    onChange={handleInputChange}
+                    className={`w-full p-2 border rounded-md ${errors.expirationDate ? 'border-red-500' : 'border-gray-300'}`}
+                    placeholder="MM/YY"
+                    required
+                  />
+                  {errors.expirationDate && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.expirationDate}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="cvv" className="block mb-1 font-medium">
+                    CVV
+                  </label>
+                  <input
+                    type="text"
+                    id="cvv"
+                    name="cvv"
+                    value={newPayment.cvv}
+                    onChange={handleInputChange}
+                    className={`w-full p-2 border rounded-md ${errors.cvv ? 'border-red-500' : 'border-gray-300'}`}
+                    placeholder="123"
+                    required
+                  />
+                  {errors.cvv && (
+                    <p className="text-red-500 text-sm mt-1">{errors.cvv}</p>
+                  )}
+                </div>
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="billingAddress"
+                  className="block mb-1 font-medium"
+                >
+                  Billing Address
+                </label>
+                <input
+                  type="text"
+                  id="billingAddress"
+                  name="billingAddress"
+                  value={newPayment.billingAddress}
+                  onChange={handleInputChange}
+                  className={`w-full p-2 border rounded-md ${errors.billingAddress ? 'border-red-500' : 'border-gray-300'}`}
+                  placeholder="123 Main St, City, State, ZIP"
+                  required
+                />
+                {errors.billingAddress && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.billingAddress}
+                  </p>
+                )}
+              </div>
+              <div className="mb-6">
+                <label htmlFor="country" className="block mb-1 font-medium">
+                  Country
+                </label>
+                <input
+                  type="text"
+                  id="country"
+                  name="country"
+                  value={newPayment.country}
+                  onChange={handleInputChange}
+                  className={`w-full p-2 border rounded-md ${errors.country ? 'border-red-500' : 'border-gray-300'}`}
+                  placeholder="United States"
+                  required
+                />
+                {errors.country && (
+                  <p className="text-red-500 text-sm mt-1">{errors.country}</p>
+                )}
+              </div>
+            </>
+          ) : (
+            // Render only the email field for other payment methods
+            <div className="mb-6">
+              <label htmlFor="email" className="block mb-1 font-medium">
+                Email
               </label>
               <input
-                type="text"
-                id="expirationDate"
-                name="expirationDate"
-                value={newPayment.expirationDate}
+                type="email"
+                id="email"
+                name="email"
+                value={newPayment.email}
                 onChange={handleInputChange}
-                className={`w-full p-2 border rounded-md ${
-                  errors.expirationDate ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="MM/YY"
+                className="w-full p-2 border rounded-md border-gray-300"
+                placeholder="example@example.com"
                 required
               />
-              {errors.expirationDate && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.expirationDate}
-                </p>
-              )}
             </div>
-            <div>
-              <label htmlFor="cvv" className="block mb-1 font-medium">
-                CVV
-              </label>
-              <input
-                type="text"
-                id="cvv"
-                name="cvv"
-                value={newPayment.cvv}
-                onChange={handleInputChange}
-                className={`w-full p-2 border rounded-md ${
-                  errors.cvv ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="123"
-                required
-              />
-              {errors.cvv && (
-                <p className="text-red-500 text-sm mt-1">{errors.cvv}</p>
-              )}
-            </div>
-          </div>
-          <div className="mb-4">
-            <label htmlFor="billingAddress" className="block mb-1 font-medium">
-              Billing Address
-            </label>
-            <input
-              type="text"
-              id="billingAddress"
-              name="billingAddress"
-              value={newPayment.billingAddress}
-              onChange={handleInputChange}
-              className={`w-full p-2 border rounded-md ${
-                errors.billingAddress ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="123 Main St, City, State, ZIP"
-              required
-            />
-            {errors.billingAddress && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.billingAddress}
-              </p>
-            )}
-          </div>
-          <div className="mb-6">
-            <label htmlFor="country" className="block mb-1 font-medium">
-              Country
-            </label>
-            <input
-              type="text"
-              id="country"
-              name="country"
-              value={newPayment.country}
-              onChange={handleInputChange}
-              className={`w-full p-2 border rounded-md ${
-                errors.country ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="United States"
-              required
-            />
-            {errors.country && (
-              <p className="text-red-500 text-sm mt-1">{errors.country}</p>
-            )}
-          </div>
+          )}
+
           <div className="flex justify-end">
             <button
               type="button"
