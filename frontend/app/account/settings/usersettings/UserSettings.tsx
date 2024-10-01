@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FaUser, FaTrash } from 'react-icons/fa';
+import { FaUser } from 'react-icons/fa';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 
 const UserSettings = () => {
