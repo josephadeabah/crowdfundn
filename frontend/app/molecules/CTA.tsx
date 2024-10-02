@@ -20,7 +20,7 @@ const ParallaxCard: React.FC<ParallaxCardProps> = ({
   title,
   description,
 }) => (
-  <div className="bg-white dark:bg-gray-700 dark:text-gray-50 rounded-lg p-2 mb-8 transform hover:scale-105 transition-transform duration-300">
+  <div className="bg-black text-gray-50 dark:bg-gray-700 dark:text-gray-50 rounded-lg p-4 mt-5 mb-8 transform hover:scale-105 transition-transform duration-300">
     <Icon className="text-4xl text-orange-600 mb-4" />
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
     <p className="text-gray-600">{description}</p>
@@ -76,14 +76,9 @@ const Cta = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-gray-950 dark:text-gray-50 px-4 sm:px-6 lg:px-8">
+    <div className="w-full rounded-3xl my-8 from-black to-red-950 text-gray-50 dark:bg-gray-950 dark:text-gray-50 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto">
-        <div
-          className="text-center mb-3 px-4 sm:px-6 lg:px-8"
-          style={{
-            transform: `translateY(${scrollY * (window.innerWidth < 640 ? 0 : -0.06)}px)`,
-          }}
-        >
+        <div className="text-center mb-3 px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-600 mb-4">
             Discover BantuHive
           </h1>

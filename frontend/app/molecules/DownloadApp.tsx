@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const DownloadApp = () => {
   return (
-    <section className="relative w-full bg-gradient-to-r from-red-700 to-orange-400 py-16 overflow-hidden">
+    <section className="relative w-full bg-gradient-to-br bg-black py-16 overflow-hidden">
       <div className="mx-auto px-4 flex flex-col lg:flex-row items-center justify-between">
         <motion.div
           initial={{ opacity: 0, y: 50 }}

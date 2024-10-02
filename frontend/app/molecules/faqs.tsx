@@ -42,13 +42,18 @@ const FAQsPage = () => {
   };
 
   return (
-    <div className="bg-slate-50 dark:bg-gray-800 text-gray-800 dark:text-gray-50">
+    <div className="p-3 md:p-0 bg-gradient-to-b from-red-900 to-black text-gray-50 dark:bg-gray-800 dark:text-gray-50">
       {/* FAQs Section */}
-      <div id="faqs" className="py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
+      <div id="faqs" className="py-20 max-w-7xl mx-auto mb-10">
+        <div className="">
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-50">
             BantuHive FAQs
           </h2>
+          <div className="text-center text-lg py-8">
+            BantuHive connects communities and entrepreneurs with the funding
+            they need, leveraging the power of Africa’s people and its diaspora
+            to create lasting impact.
+          </div>
           <div className="mx-auto">
             {faqs.map((faq, index) => (
               <div key={index} className="mb-4 border-b border-gray-200 pb-4">
@@ -58,19 +63,19 @@ const FAQsPage = () => {
                   aria-expanded={expandedFAQ === index}
                   aria-controls={`faq-answer-${index}`}
                 >
-                  <span className="text-lg font-semibold text-gray-700 dark:text-gray-100">
+                  <span className="text-lg font-semibold text-gray-50 dark:text-gray-100">
                     {faq.question}
                   </span>
                   {expandedFAQ === index ? (
-                    <FiChevronUp className="h-6 w-6 text-red-500" />
+                    <FiChevronUp className="h-6 w-6 text-gray-50" />
                   ) : (
-                    <FiChevronDown className="h-6 w-6 text-gray-400" />
+                    <FiChevronDown className="h-6 w-6 text-gray-50" />
                   )}
                 </button>
                 {expandedFAQ === index && (
                   <div
                     id={`faq-answer-${index}`}
-                    className="mt-2 text-gray-600 dark:text-gray-100 animate-fadeIn"
+                    className="mt-2 text-gray-50 dark:text-gray-100 animate-fadeIn"
                   >
                     {faq.answer}
                   </div>

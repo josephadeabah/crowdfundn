@@ -29,7 +29,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en" className="h-full scroll-smooth">
       <head />
       <body
-        className={`max-w-7xl bg-white opacity-2 dark:bg-gray-900 mx-auto transition-all duration-150 ${roboto.variable} ${ubuntu.variable}`}
+        className={`max-w-full bg-white opacity-2 dark:bg-gray-900 mx-auto transition-all duration-150 ${roboto.variable} ${ubuntu.variable}`}
       >
         <Providers>
           <Navbar />

@@ -1,31 +1,9 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 const Footer = () => {
-  const [email, setEmail] = useState('');
-  const [isValidEmail, setIsValidEmail] = useState(true);
-
-  const validateEmail = (email: string) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputEmail = e.target.value;
-    setEmail(inputEmail);
-    setIsValidEmail(validateEmail(inputEmail));
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (isValidEmail && email) {
-      console.log('Subscribed with email:', email);
-      setEmail('');
-    }
-  };
-
   return (
-    <footer className="bg-white mb-0 dark:bg-gray-950">
+    <footer className="bg-black dark:text-gray-50 text-white mb-0 dark:bg-gray-950">
       <div className="flex flex-col items-center px-6 w-full *:w-full *:flex *:flex-col *:items-center"></div>
       <div className="mx-auto px-4 lg:px-2 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
@@ -58,34 +36,6 @@ const Footer = () => {
             <p className="text-lg font-semibold mb-4">
               Causing Change and Transforming Lives
             </p>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <h3 className="text-xl font-bold">Subscribe to our newsletter</h3>
-              <p className="text-sm">
-                Stay updated with our latest news and offers!
-              </p>
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={handleEmailChange}
-                  placeholder="Enter your email"
-                  aria-label="Email for newsletter"
-                  className={`flex-grow px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${!isValidEmail && email ? 'border-red-500' : 'border-gray-300'}`}
-                />
-                <button
-                  type="submit"
-                  className="bg-red-600 text-white dark:text-gray-50 px-6 py-2 rounded-md hover:bg-red-300 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
-                  disabled={!isValidEmail || !email}
-                >
-                  Subscribe
-                </button>
-              </div>
-              {!isValidEmail && email && (
-                <p className="text-red-300 text-sm">
-                  Please enter a valid email address.
-                </p>
-              )}
-            </form>
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4">Product</h3>
@@ -209,7 +159,7 @@ const Footer = () => {
                 width="24"
                 height="24"
                 viewBox="0 0 256 256"
-                className="fill-gray-950 dark:fill-white"
+                className="fill-gray-50 dark:fill-white"
               >
                 <path d="M216 20H40a20 20 0 0 0-20 20v176a20 20 0 0 0 20 20h176a20 20 0 0 0 20-20V40a20 20 0 0 0-20-20Zm-4 192H44V44h168Zm-100-36v-56a12 12 0 0 1 21.43-7.41A40 40 0 0 1 192 148v28a12 12 0 0 1-24 0v-28a16 16 0 0 0-32 0v28a12 12 0 0 1-24 0Zm-16-56v56a12 12 0 0 1-24 0v-56a12 12 0 0 1 24 0ZM68 80a16 16 0 1 1 16 16 16 16 0 0 1-16-16Z" />
               </svg>
@@ -230,7 +180,7 @@ const Footer = () => {
                 width="24"
                 height="24"
                 viewBox="0 0 256 256"
-                className="fill-gray-950 dark:fill-white"
+                className="fill-gray-50 dark:fill-white"
               >
                 <path d="m218.12 209.56-61-95.8 59.72-65.69a12 12 0 0 0-17.76-16.14l-55.27 60.84-37.69-59.21A12 12 0 0 0 96 28H48a12 12 0 0 0-10.12 18.44l61 95.8-59.76 65.69a12 12 0 1 0 17.76 16.14l55.31-60.84 37.69 59.21A12 12 0 0 0 160 228h48a12 12 0 0 0 10.12-18.44ZM166.59 204 69.86 52h19.55l96.73 152Z" />
               </svg>
