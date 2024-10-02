@@ -172,7 +172,7 @@ const ProfileTabs = () => {
               id={id}
               key={label}
               type="button"
-              className={`py-4 px-4 h-full whitespace-nowrap text-sm font-medium md:text-base transform hover:scale-105 transition-transform duration-300 ${
+              className={`py-4 px-4 h-full whitespace-nowrap text-sm font-medium md:text-base transform transition-transform duration-300 ${
                 activeTab === label
                   ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-4 md:border-r-0 border-red-200 text-red-600 dark:text-red-600'
                   : 'border-transparent text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-red-600 dark:text-neutral-400 dark:hover:text-red-500'

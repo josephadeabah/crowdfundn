@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FiMail, FiBell, FiLock, FiSave, FiAlertCircle } from 'react-icons/fi';
 import { Checkbox } from '@/app/components/checkbox/Checkbox';
 import { Switch } from '@/app/components/switch/Switch';
+import CurrentDeviceDetailsSection from './CurrentDeviceDetails';
+import { Button } from '@/app/components/button/Button';
 
 const SystemSettingsPage = () => {
   interface Settings {
@@ -97,7 +99,7 @@ const SystemSettingsPage = () => {
   };
 
   return (
-    <div className="mx-auto bg-white dark:bg-gray-900 p-2">
+    <div className="mx-auto bg-white dark:bg-gray-900">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">Settings</h1>
 
       <div className="space-y-8">
@@ -263,17 +265,19 @@ const SystemSettingsPage = () => {
             </div>
           </div>
         </div>
+        {/* Current Device Details*/}
+        <CurrentDeviceDetailsSection />
         {/* Save Button & Save Status Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 space-y-4 sm:space-y-0">
+        <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 space-y-4 sm:space-y-0">
           {/* Save Button */}
-          <div className="flex justify-end sm:justify-start">
-            <button
-              className="w-full sm:w-auto px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none"
-              onClick={saveSettings}
-            >
-              Save
-            </button>
-          </div>
+          <Button
+            className="w-full md:w-1/2 rounded-full hover:bg-gray-700 hover:text-gray-50 focus:outline-none"
+            onClick={saveSettings}
+            size="lg"
+            variant="default"
+          >
+            Save
+          </Button>
 
           {/* Save Status */}
           {saveStatus && (
