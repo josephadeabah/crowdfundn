@@ -10,14 +10,14 @@ import {
   GearIcon,
   RocketIcon,
 } from '@radix-ui/react-icons';
-import Rewards from './Rewards';
-import Campaigns from './Campaigns';
-import Transfers from './Transfers';
-import Donations from './Donations';
-import Archive from './Archive';
-import Dashboard from './Dashboard';
-import ProfileTabsLoader from '../loaders/ProfileTabsLoader';
-import AccountSettings from './settings/AccountSettings';
+import Rewards from '@/app/account/Rewards';
+import Campaigns from '@/app/account/Campaigns';
+import Transfers from '@/app/account/Transfers';
+import Donations from '@/app/account/Donations';
+import Archive from '@/app/account/Archive';
+import Dashboard from '@/app/account/Dashboard';
+import ProfileTabsLoader from '@/app/loaders/ProfileTabsLoader';
+import AccountSettings from '@/app/account/settings/AccountSettings';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState('');
@@ -150,7 +150,6 @@ const ProfileTabs = () => {
         <nav
           className="flex md:flex-col w-full space-x-2 md:space-x-0 md:space-y-2 overflow-x-auto md:overflow-visible"
           aria-label="Tabs"
-          role="tablist"
         >
           {[
             {
@@ -173,7 +172,7 @@ const ProfileTabs = () => {
               id={id}
               key={label}
               type="button"
-              className={`py-2 px-4 whitespace-nowrap text-sm font-medium md:text-base ${
+              className={`py-4 px-4 h-full whitespace-nowrap text-sm font-medium md:text-base transform hover:scale-105 transition-transform duration-300 ${
                 activeTab === label
                   ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-4 md:border-r-0 border-red-200 text-red-600 dark:text-red-600'
                   : 'border-transparent text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-red-600 dark:text-neutral-400 dark:hover:text-red-500'
@@ -191,7 +190,7 @@ const ProfileTabs = () => {
       </div>
 
       {/* Tab Content */}
-      <div className="flex-1 bg-white dark:bg-gray-900 px-4 overflow-auto h-full md:h-screen [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
+      <div className="flex-1 bg-white dark:bg-gray-900 px-4 py-4 overflow-auto h-full md:h-screen [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
         <div
           role="tabpanel"
           id={`vertical-tab-${activeTab}`}
