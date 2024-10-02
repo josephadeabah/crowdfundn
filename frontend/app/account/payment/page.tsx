@@ -1,11 +1,11 @@
 'use client';
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { FaCreditCard, FaPaypal } from 'react-icons/fa';
 import { SiFlutter, SiStripe } from 'react-icons/si';
 import PaystackIcon from '@/app/components/icons/PaystackIcon';
 
-const PaymentPage = () => {
+const PaymentPageContent = () => {
   const searchParams = useSearchParams();
   const method = searchParams.get('method');
 
@@ -62,6 +62,14 @@ const PaymentPage = () => {
         <p className="text-gray-600">No payment method selected.</p>
       )}
     </div>
+  );
+};
+
+const PaymentPage = () => {
+  return (
+    <Suspense fallback={<p>Loading payment details...</p>}>
+      <PaymentPageContent />
+    </Suspense>
   );
 };
 
