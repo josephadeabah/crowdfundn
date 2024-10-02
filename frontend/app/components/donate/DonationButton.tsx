@@ -84,10 +84,25 @@ const DonationButton = () => {
       <Modal
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
-        size="medium"
+        size="large"
         closeOnBackdropClick={true}
       >
-        <h2 className="text-2xl font-bold mb-4">Select Payment Method</h2>
+        <h2 className="text-2xl font-bold mb-4">Select Payment Type</h2>
+        <div className="text-gray-400 text-xs">
+          Your payment information is saved in a payments profile, which is
+          associated with your Bantuhive Account and shared across Bantuhive
+          services.
+        </div>
+        <div className="text-xs">
+          If you want to change your payment method, you can do so from your
+          account settings otherwise proceed to enter manually.
+          <span>
+            <a href="/account" className="ml-1 text-red-500">
+              Account
+            </a>
+          </span>
+        </div>
+        <hr className="my-4" />
         <form onSubmit={handlePaymentSubmit}>
           <div className="space-y-4 mb-6">
             {paymentMethods.map((method) => (

@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { FaCreditCard, FaPaypal } from 'react-icons/fa';
 import { SiFlutter, SiStripe } from 'react-icons/si';
 import PaystackIcon from '@/app/components/icons/PaystackIcon';
+import FullscreenLoader from '@/app/loaders/FullscreenLoader';
 
 const PaymentPageContent = () => {
   const searchParams = useSearchParams();
@@ -67,7 +68,7 @@ const PaymentPageContent = () => {
 
 const PaymentPage = () => {
   return (
-    <Suspense fallback={<p>Loading payment details...</p>}>
+    <Suspense fallback={<FullscreenLoader />}>
       <PaymentPageContent />
     </Suspense>
   );
