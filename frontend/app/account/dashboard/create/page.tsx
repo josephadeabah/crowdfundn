@@ -33,7 +33,7 @@ const FundraiserPage = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="max-w-7xl mx-auto p-4">
       <CreateCampaign />
 
       <div className="mb-6">

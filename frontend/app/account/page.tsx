@@ -127,7 +127,7 @@ const ProfileTabs = () => {
   }
 
   return (
-    <div className="mx-auto flex flex-col md:flex-row h-screen">
+    <div className="max-w-7xl mx-auto flex flex-col md:flex-row h-screen">
       <Joyride
         steps={steps}
         run={runWalkthrough}

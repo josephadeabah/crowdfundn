@@ -14,7 +14,7 @@ export default function Login() {
   };
 
   return (
-    <section className="flex bg-white dark:bg-gray-900">
+    <section className="max-w-7xl mx-auto flex bg-white dark:bg-gray-900">
       {/* Left container */}
       <div className="hidden w-full items-center justify-center bg-primary-600 dark:bg-gray-950 lg:flex lg:w-1/2">
         <section className="bg-primary-600 text-gray-700 dark:bg-gray-950 dark:text-gray-50">
