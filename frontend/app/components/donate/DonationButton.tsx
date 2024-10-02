@@ -87,20 +87,14 @@ const DonationButton = () => {
         size="large"
         closeOnBackdropClick={true}
       >
-        <h2 className="text-2xl font-bold mb-4">Select Payment Type</h2>
+        <h2 className="text-2xl font-bold mb-1">Select Payment Type</h2>
         <div className="text-gray-400 text-xs">
           Your payment information is saved in a payments profile, which is
-          associated with your Bantuhive Account and shared across Bantuhive
-          services.
-        </div>
-        <div className="text-xs">
-          If you want to change your payment method, you can do so from your
-          account
-          <span>
-            <a href="/account" className="ml-1 text-red-500">
-              settings
-            </a>
-          </span>{' '}
+          associated with your Bantuhive Account. If you want to change your
+          payment method, you can do so from your account
+          <a href="/account" className="ml-1 mr-1 text-red-500">
+            settings
+          </a>
           otherwise proceed to enter manually
         </div>
         <hr className="my-4" />
