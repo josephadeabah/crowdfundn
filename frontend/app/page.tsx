@@ -258,7 +258,7 @@ const HomePage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Categories Section */}
               <div className="w-full flex flex-col">
-                <div className="flex flex-wrap gap-2 mb-4 justify-start">
+                <div className="flex flex-wrap gap-2 mb-4 p-2 justify-start">
                   {data.categories.map((category) => (
                     <Badge
                       key={category.value}
@@ -277,46 +277,48 @@ const HomePage = () => {
               </div>
 
               {/* Recommended Fundraisers Section */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {data?.recommendedFundraisers?.map((campaign, index) => (
-                  <motion.div
-                    key={campaign.id}
-                    variants={fadeInUp}
-                    initial="hidden"
-                    animate={controls}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="bg-gray-800 flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
-                  >
-                    <div
+              <div className="w-full flex flex-col gap-4 sm:flex-row">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 p-2 md:p-0">
+                  {data?.recommendedFundraisers?.map((campaign, index) => (
+                    <motion.div
                       key={campaign.id}
-                      className="flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+                      variants={fadeInUp}
+                      initial="hidden"
+                      animate={controls}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="bg-gray-800 flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
                     >
-                      <img
-                        src={campaign?.image}
-                        alt={campaign?.name}
-                        className="mb-2 object-cover h-32 w-full"
-                      />
-                      <div className="px-1">
-                        <div className="flex-grow">
-                          <h3 className="text-lg font-bold">
-                            {campaign?.name}
-                          </h3>
-                          <p className="text-sm">{campaign?.description}</p>
+                      <div
+                        key={campaign.id}
+                        className="flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+                      >
+                        <img
+                          src={campaign?.image}
+                          alt={campaign?.name}
+                          className="mb-2 object-cover h-32 w-full"
+                        />
+                        <div className="px-1">
+                          <div className="flex-grow">
+                            <h3 className="text-lg font-bold">
+                              {campaign?.name}
+                            </h3>
+                            <p className="text-sm">{campaign?.description}</p>
+                          </div>
+                          <div className="w-full text-xs">
+                            <Progress
+                              firstProgress={33}
+                              firstTooltipContent={`Performance: ${33}%`}
+                            />
+                          </div>
+                          <p className="flex justify-between items-center text-sm font-semibold mt-2">
+                            {campaign?.amountRaised}{' '}
+                            <span className="font-normal">raised</span>
+                          </p>
                         </div>
-                        <div className="w-full text-xs">
-                          <Progress
-                            firstProgress={33}
-                            firstTooltipContent={`Performance: ${33}%`}
-                          />
-                        </div>
-                        <p className="flex justify-between items-center text-sm font-semibold mt-2">
-                          {campaign?.amountRaised}{' '}
-                          <span className="font-normal">raised</span>
-                        </p>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -335,7 +337,7 @@ const HomePage = () => {
                 Featured Projects
               </h2>
               <div className="w-full flex flex-col gap-4 sm:flex-row">
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 p-2 md:p-0">
                   {data.recommendedFundraisers.map((campaign, index) => (
                     <motion.div
                       key={campaign.id}
@@ -376,7 +378,7 @@ const HomePage = () => {
                   ))}
                 </div>
 
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 p-2 md:p-0">
                   {data.recommendedFundraisers.map((campaign) => (
                     <motion.div
                       key={campaign.id}
