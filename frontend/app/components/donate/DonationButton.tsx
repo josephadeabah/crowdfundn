@@ -75,7 +75,7 @@ const DonationButton = () => {
     <div className="flex items-center">
       <button
         onClick={handleDonateClick}
-        className="px-6 py-3 text-white font-semibold rounded-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-pink-600 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 transform hover:scale-105 transition-all duration-200 shadow-lg"
+        className="w-full md:w-1/2 px-6 py-3 text-white font-semibold rounded-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-pink-600 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 transform hover:scale-105 transition-all duration-200 shadow-lg"
         aria-label="Donate Now"
       >
         Donate Now
