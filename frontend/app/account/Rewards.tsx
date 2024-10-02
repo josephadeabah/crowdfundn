@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '../components/button/Button';
 import { HiOutlinePlus } from 'react-icons/hi';
+import RewardComponent from '../components/rewards/Rewards';
 
 // Sample donor data
 const donorList = [
@@ -231,6 +232,8 @@ export default function Rewards() {
           </Button>
         </div>
       )}
+
+      <RewardComponent />
 
       {/* Voting Section */}
       <div className="mt-12">

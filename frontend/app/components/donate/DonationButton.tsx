@@ -21,7 +21,7 @@ const DonationButton = () => {
     first_name: 'John',
     last_name: 'Doe',
     phone: '1234567890',
-    email: 'h7S7H@example.com',
+    email: 'test@example.com',
     type: 'Credit Card',
   });
 
