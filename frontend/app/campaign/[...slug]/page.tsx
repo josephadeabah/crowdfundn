@@ -40,8 +40,8 @@ const SingleCampaignPage = () => {
   };
 
   return (
-    <div>
-      <div className="mx-auto py-8 px-4 md:px-0">
+    <div className="max-w-7xl mx-auto">
+      <div className="py-8 px-4 md:px-0">
         <div className="flex flex-col md:flex-row items-center md:items-start">
           {/* Left Column - Image */}
           <div className="w-full md:w-1/2 mb-6 md:mb-0">
