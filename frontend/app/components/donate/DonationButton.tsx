@@ -95,12 +95,13 @@ const DonationButton = () => {
         </div>
         <div className="text-xs">
           If you want to change your payment method, you can do so from your
-          account settings otherwise proceed to enter manually.
+          account
           <span>
             <a href="/account" className="ml-1 text-red-500">
-              Account
+              settings
             </a>
-          </span>
+          </span>{' '}
+          otherwise proceed to enter manually
         </div>
         <hr className="my-4" />
         <form onSubmit={handlePaymentSubmit}>

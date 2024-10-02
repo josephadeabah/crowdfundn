@@ -101,7 +101,7 @@ const PaymentPageContent = () => {
 
         <div className="max-w-md flex flex-col items-center justify-center">
           {selectedMethod ? (
-            <div className="w-full p-6 shadow-sm max-w-md text-center mb-2">
+            <div className="w-full flex items-center gap-6 p-6 shadow-sm max-w-md text-center mb-2">
               <div className="text-4xl mb-4">{selectedMethod.icon}</div>
               <h2 className="text-2xl font-semibold mb-2">
                 {selectedMethod.name}
