@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { FaHeart, FaShare, FaStar } from 'react-icons/fa';
 import { useParams } from 'next/navigation';
 import { Button } from '@/app/components/button/Button';
+import DonationButton from '../../components/donate/DonationButton';
 
 const SingleCampaignPage = () => {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -79,13 +80,7 @@ const SingleCampaignPage = () => {
             </div>
 
             {/* Call to Action */}
-            <Button
-              className="px-6 py-3 w-1/2 focus:ring-2 focus:ring-gray-800 rounded-full text-gray-700 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
-              size="lg"
-              variant="outline"
-            >
-              Donate Now
-            </Button>
+            <DonationButton />
           </div>
         </div>
       </div>
