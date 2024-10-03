@@ -4,6 +4,7 @@ import { SiFlutter, SiStripe } from 'react-icons/si';
 import Modal from '@/app/components/modal/Modal';
 import PaystackIcon from '@/app/components/icons/PaystackIcon';
 import ProcessingPayment from '@/app/components/donate/ProcessingPayment';
+import { Button } from '../button/Button';
 
 const DonationButton = () => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -105,8 +106,8 @@ const DonationButton = () => {
                 key={method.id}
                 className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 ${
                   selectedPaymentMethod === method.id
-                    ? 'border-red-500 bg-red-50'
-                    : 'border-gray-200 hover:border-red-300'
+                    ? 'border-black bg-gray-100'
+                    : 'border-gray-200 hover:border-gray-800'
                 }`}
               >
                 <input
@@ -124,7 +125,7 @@ const DonationButton = () => {
                 <span
                   className={`ml-auto w-5 h-5 border-2 rounded-full ${
                     selectedPaymentMethod === method.id
-                      ? 'border-red-500 bg-red-500'
+                      ? 'border-black bg-black'
                       : 'border-gray-300'
                   }`}
                 ></span>
@@ -137,20 +138,24 @@ const DonationButton = () => {
             </p>
           )}
           <div className="flex justify-end space-x-3">
-            <button
+            <Button
               type="button"
+              size="lg"
+              variant="default"
               onClick={() => setIsPaymentModalOpen(false)}
-              className="px-4 py-2 text-gray-600 bg-gray-200 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              className="px-4 py-2 text-gray-600 bg-gray-200 rounded-full hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex items-center"
+              className="px-4 py-2 text-gray-800 dark:text-gray-50 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex items-center"
               disabled={isProcessing}
+              size="lg"
+              variant="default"
             >
               {isProcessing ? 'Processing...' : 'Proceed to Payment'}
-            </button>
+            </Button>
           </div>
         </form>
       </Modal>
