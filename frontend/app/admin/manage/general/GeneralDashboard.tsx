@@ -102,7 +102,7 @@ const GeneralDashboard = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Crowdfunding Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-8">General Dashboard</h1>
 
       <div className="mb-6 flex flex-wrap items-center justify-between">
         <div className="w-full md:w-auto mb-4 md:mb-0">

@@ -14,7 +14,9 @@ import {
   FiX,
 } from 'react-icons/fi';
 import { HiExternalLink } from 'react-icons/hi';
-import { FaChessBoard, FaDashcube } from 'react-icons/fa';
+import { FaChessBoard, FaDashcube, FaBoxes } from 'react-icons/fa';
+import { BiSolidLayout } from 'react-icons/bi';
+import { MdOutlineSupportAgent } from 'react-icons/md';
 import {
   BarChart,
   Bar,
@@ -42,15 +44,6 @@ const AdminDashboard = () => {
   const selectTab = (tabName: string) => {
     setActiveTab(tabName);
   };
-
-  const dummyChartData = [
-    { name: 'Jan', Funding: 4000, Users: 2400 },
-    { name: 'Feb', Funding: 3000, Users: 1398 },
-    { name: 'Mar', Funding: 2000, Users: 9800 },
-    { name: 'Apr', Funding: 2780, Users: 3908 },
-    { name: 'May', Funding: 1890, Users: 4800 },
-    { name: 'Jun', Funding: 2390, Users: 3800 },
-  ];
 
   return (
     <div className="flex h-screen  bg-white text-gray-800">
@@ -102,19 +95,39 @@ const AdminDashboard = () => {
             onClick={() => selectTab('moneyTransfers')}
           >
             <FiDollarSign className="w-6 h-6 mr-3" />
-            <span>Transfers</span>
+            <span>Transactions</span>
           </button>
 
           <button
             className={`w-full max-w-xl flex items-center px-4 py-2 mt-4 text-gray-100 hover:bg-gray-700 hover:bg-opacity-25 ${
-              activeTab === 'platformActivities'
+              activeTab === 'campaignsManager'
                 ? 'bg-gray-700 bg-opacity-25'
                 : ''
             }`}
-            onClick={() => selectTab('platformActivities')}
+            onClick={() => selectTab('campaignsManager')}
+          >
+            <BiSolidLayout className="w-6 h-6 mr-3" />
+            <span>Campaigns</span>
+          </button>
+
+          <button
+            className={`w-full max-w-xl flex items-center px-4 py-2 mt-4 text-gray-100 hover:bg-gray-700 hover:bg-opacity-25 ${
+              activeTab === 'contentManager' ? 'bg-gray-700 bg-opacity-25' : ''
+            }`}
+            onClick={() => selectTab('contentManager')}
+          >
+            <FaBoxes className="w-6 h-6 mr-3" />
+            <span>Content Manager</span>
+          </button>
+
+          <button
+            className={`w-full max-w-xl flex items-center px-4 py-2 mt-4 text-gray-100 hover:bg-gray-700 hover:bg-opacity-25 ${
+              activeTab === 'promotions' ? 'bg-gray-700 bg-opacity-25' : ''
+            }`}
+            onClick={() => selectTab('promotions')}
           >
             <FiActivity className="w-6 h-6 mr-3" />
-            <span> Activity</span>
+            <span> Promotions</span>
           </button>
 
           <button
@@ -125,6 +138,16 @@ const AdminDashboard = () => {
           >
             <FiPieChart className="w-6 h-6 mr-3" />
             <span>Analytics</span>
+          </button>
+
+          <button
+            className={`w-full max-w-xl flex items-center px-4 py-2 mt-4 text-gray-100 hover:bg-gray-700 hover:bg-opacity-25 ${
+              activeTab === 'support' ? 'bg-gray-700 bg-opacity-25' : ''
+            }`}
+            onClick={() => selectTab('support')}
+          >
+            <MdOutlineSupportAgent className="w-6 h-6 mr-3" />
+            <span>Support</span>
           </button>
 
           <button
@@ -154,15 +177,29 @@ const AdminDashboard = () => {
                 <TransfersManager />
               </div>
             )}
-            {activeTab === 'platformActivities' && (
+            {activeTab === 'campaignsManager' && (
               <div>
-                <h2>Platform Activities</h2>
-                {/* Add platform activities content here */}
+                <h2>Campaigns Manager</h2>
+              </div>
+            )}
+            {activeTab === 'contentManager' && (
+              <div>
+                <h2>Content Manager</h2>
+              </div>
+            )}
+            {activeTab === 'promotions' && (
+              <div>
+                <h2>Promotions</h2>
               </div>
             )}
             {activeTab === 'analytics' && (
               <div>
                 <AnalyticsComponent />
+              </div>
+            )}
+            {activeTab === 'support' && (
+              <div>
+                <h2>Support</h2>
               </div>
             )}
             {activeTab === 'settings' && (
