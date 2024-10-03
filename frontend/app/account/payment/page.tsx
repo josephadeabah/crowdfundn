@@ -26,14 +26,14 @@ const PaymentPageContent = () => {
     const cvvParam = searchParams.get('cvv') ?? '';
     const firstName = searchParams.get('firstName') ?? '';
     const lastName = searchParams.get('lastName') ?? '';
-    const paypalEmailParam = searchParams.get('email') ?? '';
+    const paymentEmailParam = searchParams.get('email') ?? '';
 
     if (method) setPaymentMethod(method);
     if (cardNumberParam) setCardNumber(cardNumberParam);
     if (expiryDateParam) setExpiryDate(expiryDateParam);
     if (cvvParam) setCvv(cvvParam);
     if (firstName || lastName) setCardholderName(`${firstName} ${lastName}`);
-    if (paypalEmailParam) setPaymentEmail(paypalEmailParam);
+    if (paymentEmailParam) setPaymentEmail(paymentEmailParam);
   }, [searchParams]);
 
   const paymentMethods: {
