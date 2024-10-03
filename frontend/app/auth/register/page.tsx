@@ -512,13 +512,13 @@ const RegisterComponent = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 h-screen mt-8 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto px-4 h-full mb-12 mt-8 dark:bg-gray-900 sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row">
         <div className="hidden md:block md:w-1/2 pr-8">
           <RegisterLeftPage />
         </div>
         <div className="md:w-1/2">
-          <div className="bg-white rounded-sm shadow p-6">
+          <div className="rounded-sm shadow p-6">
             <div className="mb-8">
               <div className="flex items-center justify-between">
                 {[1, 2, 3].map((num) => (
@@ -542,7 +542,7 @@ const RegisterComponent = () => {
                 <button
                   type="button"
                   onClick={handlePrevious}
-                  className={`px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 ${step === 1 ? 'invisible' : ''}`}
+                  className={`px-4 py-2 bg-gray-200 dark:bg-gray-950 dark:text-gray-50 text-gray-800 rounded-md hover:bg-gray-300 ${step === 1 ? 'invisible' : ''}`}
                 >
                   <FaChevronLeft className="inline mr-2" /> Previous
                 </button>
@@ -550,14 +550,14 @@ const RegisterComponent = () => {
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="px-4 py-2 bg-gray-100 text-gray-800 border border-black  rounded-md hover:bg-gray-50"
+                    className="px-4 py-2 bg-gray-200 dark:bg-gray-950 dark:text-gray-50 text-gray-800  rounded-md hover:bg-gray-50"
                   >
                     Next <FaChevronRight className="inline ml-2" />
                   </button>
                 ) : (
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-green-600 text-white dark:bg-gray-950 dark:text-gray-50 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? 'Registering...' : 'Finish'}
