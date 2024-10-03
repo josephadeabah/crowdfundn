@@ -157,19 +157,19 @@ const HomePage = () => {
                       </h1>
                     </div>
                   </h1>
-                  <div className="w-full flex flex-col items-center gap-4 lg:flex-row lg:justify-start *:w-full *:px-5 *:py-3 *:text-base *:font-medium *:text-center *:transition *:duration-[250ms] *:ease-in-out lg:*:w-auto">
+                  <div className="w-full flex flex-row justify-center items-center gap-4  lg:justify-start *:w-full *:px-5 *:py-3 *:text-base *:font-medium *:text-center *:transition *:duration-[250ms] *:ease-in-out lg:*:w-auto">
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="bg-red-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-red-600 transition-colors duration-300"
+                      className="bg-red-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-red-600 hover:scale-105 transition-transform duration-300 "
                     >
-                      <a href="/auth/register">Start a Project Now</a>
+                      <a href="/auth/register">Fundraise Now</a>
                     </motion.button>
 
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="bg-gray-700 text-white dark:text-gray-50 px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-200 transition-colors duration-300"
+                      className="bg-gray-700 text-white dark:text-gray-50 px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-800 hover:scale-105 transition-transform duration-300 "
                     >
                       <a href="/faqs">Learn More</a>
                     </motion.button>

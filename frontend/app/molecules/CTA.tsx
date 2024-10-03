@@ -23,7 +23,7 @@ const ParallaxCard: React.FC<ParallaxCardProps> = ({
   <div className="bg-black text-gray-50 dark:bg-gray-700 dark:text-gray-50 rounded-lg p-4 mt-5 mb-8 transform hover:scale-105 transition-transform duration-300">
     <Icon className="text-4xl text-orange-600 mb-4" />
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
-    <p className="text-gray-600">{description}</p>
+    <p className="text-gray-500">{description}</p>
   </div>
 );
 
