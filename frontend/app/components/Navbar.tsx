@@ -102,7 +102,7 @@ const Navbar = () => {
     <header
       className={`sticky top-0 z-50 transition-transform duration-300 ease-in-out  hover:text-gray-50 focus:ring-0 hover:bg-gray-950 dark:hover:bg-gray-800 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
     >
-      <nav className="md:py-6 px-2 w-full shadow-sm bg-black text-white dark:bg-gray-950 dark:text-gray-50">
+      <nav className="md:py-6 px-2 w-full shadow-sm bg-gradient-to-b from-black to-gray-950 text-white dark:bg-gray-950 dark:text-gray-50">
         <div className="relative flex items-center justify-between">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
