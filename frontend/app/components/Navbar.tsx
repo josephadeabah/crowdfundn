@@ -267,7 +267,7 @@ const Navbar = () => {
               variant="ghost"
               className="py-2 px-4 dark:hover:bg-gray-800"
             >
-              <Link href="/auth/register">Start Project</Link>
+              <Link href="/auth/register">Start A Project</Link>
             </Button>
             <Button
               variant="ghost"

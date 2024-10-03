@@ -512,59 +512,61 @@ const RegisterComponent = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 h-full mb-12 mt-8 dark:bg-gray-900 sm:px-6 lg:px-8">
-      <div className="flex flex-col md:flex-row">
-        <div className="hidden md:block md:w-1/2 pr-8">
-          <RegisterLeftPage />
-        </div>
-        <div className="md:w-1/2">
-          <div className="rounded-sm shadow p-6">
-            <div className="mb-8">
-              <div className="flex items-center justify-between">
-                {[1, 2, 3].map((num) => (
-                  <div
-                    key={num}
-                    className={`w-1/3 h-2 ${num <= step ? 'bg-red-600' : 'bg-gray-200'}`}
-                  />
-                ))}
+    <div className="h-full flex items-center justify-center p-2">
+      <div className="max-w-7xl w-full bg-white rounded-sm shadow">
+        <div className="flex flex-col md:flex-row">
+          <div className="hidden md:block md:w-1/2 pr-8">
+            <RegisterLeftPage />
+          </div>
+          <div className="md:w-1/2">
+            <div className="rounded-sm shadow p-6">
+              <div className="mb-8">
+                <div className="flex items-center justify-between">
+                  {[1, 2, 3].map((num) => (
+                    <div
+                      key={num}
+                      className={`w-1/3 h-2 ${num <= step ? 'bg-red-600' : 'bg-gray-200'}`}
+                    />
+                  ))}
+                </div>
+                <div className="flex justify-between mt-2">
+                  <span className="text-xs font-medium">User Details</span>
+                  <span className="text-xs font-medium">Category</span>
+                  <span className="text-xs font-medium">Payment & Review</span>
+                </div>
               </div>
-              <div className="flex justify-between mt-2">
-                <span className="text-xs font-medium">User Details</span>
-                <span className="text-xs font-medium">Category</span>
-                <span className="text-xs font-medium">Payment & Review</span>
-              </div>
-            </div>
-            <form onSubmit={handleSubmit}>
-              {step === 1 && renderStep1()}
-              {step === 2 && renderStep2()}
-              {step === 3 && renderStep3()}
-              <div className="mt-8 flex justify-between">
-                <button
-                  type="button"
-                  onClick={handlePrevious}
-                  className={`px-4 py-2 bg-gray-200 dark:bg-gray-950 dark:text-gray-50 text-gray-800 rounded-md hover:bg-gray-300 ${step === 1 ? 'invisible' : ''}`}
-                >
-                  <FaChevronLeft className="inline mr-2" /> Previous
-                </button>
-                {step < 3 ? (
+              <form onSubmit={handleSubmit}>
+                {step === 1 && renderStep1()}
+                {step === 2 && renderStep2()}
+                {step === 3 && renderStep3()}
+                <div className="mt-8 flex justify-between">
                   <button
                     type="button"
-                    onClick={handleNext}
-                    className="px-4 py-2 bg-gray-200 dark:bg-gray-950 dark:text-gray-50 text-gray-800  rounded-md hover:bg-gray-50"
+                    onClick={handlePrevious}
+                    className={`px-4 py-2 bg-gray-200 dark:bg-gray-950 dark:text-gray-50 text-gray-800 rounded-md hover:bg-gray-300 ${step === 1 ? 'invisible' : ''}`}
                   >
-                    Next <FaChevronRight className="inline ml-2" />
+                    <FaChevronLeft className="inline mr-2" /> Previous
                   </button>
-                ) : (
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-green-600 text-white dark:bg-gray-950 dark:text-gray-50 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? 'Registering...' : 'Finish'}
-                  </button>
-                )}
-              </div>
-            </form>
+                  {step < 3 ? (
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      className="px-4 py-2 bg-gray-200 dark:bg-gray-950 dark:text-gray-50 text-gray-800  rounded-md hover:bg-gray-50"
+                    >
+                      Next <FaChevronRight className="inline ml-2" />
+                    </button>
+                  ) : (
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-green-600 text-white dark:bg-gray-950 dark:text-gray-50 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? 'Registering...' : 'Finish'}
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>

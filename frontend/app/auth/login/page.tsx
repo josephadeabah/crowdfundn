@@ -1,120 +1,166 @@
 'use client';
-
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/app/components/button/Button';
+import {
+  FaGoogle,
+  FaApple,
+  FaFacebook,
+  FaMicrosoft,
+  FaEye,
+  FaEyeSlash,
+} from 'react-icons/fa';
+import RegisterLeftPage from '../register/RegisterLeftPage';
 
-export default function Login() {
-  const router = useRouter(); // Initialize the router
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
+    // Simulating login process
+    setTimeout(() => {
+      setIsLoading(false);
+      alert('Login attempted');
+    }, 2000);
+  };
+
+  const handleSocialLogin = (provider: string) => {
+    alert(`Redirecting to ${provider} login...`);
   };
 
   return (
-    <section className="max-w-7xl mx-auto flex bg-white dark:bg-gray-900">
-      {/* Left container */}
-      <div className="hidden w-full items-center justify-center bg-primary-600 dark:bg-gray-950 lg:flex lg:w-1/2">
-        <section className="bg-primary-600 text-gray-700 dark:bg-gray-950 dark:text-gray-50">
-          <div className="mx-auto flex flex-col items-center gap-y-16 px-6 py-32">
-            <div className="mx-auto text-center">
-              <h2 className="mb-3 text-3xl font-bold lg:text-4xl">
-                Explore Africa's leading Crowdfunding platform
-              </h2>
-              <p className="text-base">
-                Our platform provides you with the tools you need to raise
-                funds. We have helped over 1,000,000 people to achieve their
-                goals.
-              </p>
-            </div>
-            <div className="flex w-full flex-col items-center gap-12 rounded-lg bg-gray-50 px-6 py-12 dark:bg-gray-900 lg:flex-row lg:justify-center lg:gap-6 lg:px-12">
-              <div>
-                <h4 className="mb-2 text-2xl font-bold text-red-600 lg:text-3xl">
-                  500k+
-                </h4>
-                <p className="text-base font-medium text-gray-950 dark:text-gray-50">
-                  Monthly Visitors
-                </p>
-              </div>
-              <div>
-                <h4 className="mb-2 text-2xl font-bold text-red-600 lg:text-3xl">
-                  250k+
-                </h4>
-                <p className="text-base font-medium text-gray-950 dark:text-gray-50">
-                  Registered Users
-                </p>
-              </div>
-              <div>
-                <h4 className="mb-2 text-2xl font-bold text-red-600 lg:text-3xl">
-                  175M+
-                </h4>
-                <p className="text-base font-medium text-gray-950 dark:text-gray-50">
-                  Money Raised
-                </p>
-              </div>
-              <div>
-                <h4 className="mb-2 text-2xl font-bold text-red-600 lg:text-3xl">
-                  5M+
-                </h4>
-                <p className="text-base font-medium text-gray-950 dark:text-gray-50">
-                  Happy Donors
-                </p>
-              </div>
-            </div>
+    <div className="h-full flex items-center justify-center p-2">
+      <div className="max-w-7xl w-full bg-white rounded-sm shadow">
+        <div className="flex flex-col md:flex-row">
+          <div className="hidden md:block w-1/2">
+            <RegisterLeftPage />
           </div>
-        </section>
-      </div>
-      {/* Right container */}
-      <div className="w-full lg:w-1/2 dark:bg-gray-950 ">
-        <div className="p-4 w-full">
-          <div className="mx-auto max-w-[36.75rem] text-center">
-            <h2 className="mb-3 text-3xl font-semibold text-red-600 lg:text-4xl">
-              Login to your account.
-            </h2>
-          </div>
-          <form className="w-full grid grid-cols-1 gap-y-5 mb-5 bg-white dark:bg-gray-950 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 rounded-sm p-4 sm:grid-cols-2 sm:gap-x-4">
-            {/* Email Address */}
-            <div className="col-span-full sm:col-span-1">
-              <div className="mt-2">
+          <div className="w-full md:w-1/2 p-8">
+            <h2 className="text-3xl font-bold mb-6 text-center">Login</h2>
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Email Address
+                </label>
                 <input
-                  type="email"
                   id="email"
-                  name="email"
-                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
-                  placeholder="Email Address"
+                  type="email"
                   required
+                  className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  aria-label="Email Address"
                 />
               </div>
-            </div>
-            {/* Password */}
-            <div className="col-span-full sm:col-span-1">
-              <div className="mt-2">
+              <div className="relative">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Password
+                </label>
                 <input
-                  type="password"
                   id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="block w-full bg-white dark:bg-gray-950 rounded-lg border-0 px-4 py-2 text-base text-gray-950 dark:text-gray-50 ring-1 ring-inset ring-gray-200 dark:ring-gray-800 hover:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 placeholder:text-gray-500 transition ease-in-out duration-[250ms]"
-                  required
+                  aria-label="Password"
                 />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 mt-6"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? (
+                    <FaEyeSlash className="text-gray-500" />
+                  ) : (
+                    <FaEye className="text-gray-500" />
+                  )}
+                </button>
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-red-600 to-black hover:from-red-700 hover:via-orange-600 hover:to-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                  ) : null}
+                  {isLoading ? 'Logging in...' : 'Login'}
+                </button>
+              </div>
+            </form>
+            <div className="mt-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => handleSocialLogin('Google')}
+                  className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition duration-150 ease-in-out"
+                >
+                  <FaGoogle className="mr-2" /> Google
+                </button>
+                <button
+                  onClick={() => handleSocialLogin('Apple')}
+                  className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition duration-150 ease-in-out"
+                >
+                  <FaApple className="mr-2" /> Apple
+                </button>
+                <button
+                  onClick={() => handleSocialLogin('Facebook')}
+                  className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition duration-150 ease-in-out"
+                >
+                  <FaFacebook className="mr-2" /> Facebook
+                </button>
+                <button
+                  onClick={() => handleSocialLogin('Microsoft')}
+                  className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition duration-150 ease-in-out"
+                >
+                  <FaMicrosoft className="mr-2" /> Microsoft
+                </button>
               </div>
             </div>
-          </form>
-          <Button
-            variant="default"
-            size="lg"
-            className="w-full dark:bg-gray-950"
-            onClick={() => {
-              router.push('/account');
-            }}
-          >
-            Login
-          </Button>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
   );
-}
+};
+
+export default LoginPage;
