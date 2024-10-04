@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FiUser,
   FiDollarSign,
@@ -22,26 +22,70 @@ import ContentManagerAdminPage from './content/ContentManager';
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  type TabNames =
+    | 'dashboard'
+    | 'userManagement'
+    | 'moneyTransfers'
+    | 'campaignsManager'
+    | 'contentManager'
+    | 'promotions'
+    | 'analytics'
+    | 'support'
+    | 'settings';
+
+  // Retrieve the saved tab from localStorage or default to 'dashboard'
+  const [activeTab, setActiveTab] = useState<TabNames>(
+    (localStorage.getItem('activeTab') as TabNames) || 'dashboard',
+  );
+
+  useEffect(() => {
+    // Save the active tab in localStorage whenever it changes
+    localStorage.setItem('activeTab', activeTab);
+  }, [activeTab]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  const selectTab = (tabName: string) => {
+  const selectTab = (tabName: TabNames) => {
     setActiveTab(tabName);
   };
 
+  // Navigation items
+  const navItems = [
+    { name: 'dashboard', label: 'Dashboard', icon: <FaDashcube /> },
+    { name: 'userManagement', label: 'User Manager', icon: <FiUser /> },
+    { name: 'moneyTransfers', label: 'Transactions', icon: <FiDollarSign /> },
+    { name: 'campaignsManager', label: 'Campaigns', icon: <BiSolidLayout /> },
+    { name: 'contentManager', label: 'Content', icon: <FaBoxes /> },
+    { name: 'promotions', label: 'Promotions', icon: <FiActivity /> },
+    { name: 'analytics', label: 'Analytics', icon: <FiPieChart /> },
+    { name: 'support', label: 'Support', icon: <MdOutlineSupportAgent /> },
+    { name: 'settings', label: 'Settings', icon: <FiSettings /> },
+  ];
+
+  const tabContent: Record<TabNames, JSX.Element> = {
+    dashboard: <GeneralDashboard />,
+    userManagement: <UserManagement />,
+    moneyTransfers: <TransfersManager />,
+    campaignsManager: <CampaignManager />,
+    contentManager: <ContentManagerAdminPage />,
+    promotions: <PromotionScheduler />,
+    analytics: <AnalyticsComponent />,
+    support: <h2>Support</h2>,
+    settings: <AdminSettings />,
+  };
+
   return (
-    <div className="flex h-screen  bg-white text-gray-800">
+    <div className="flex h-screen bg-white text-gray-800">
       {/* Sidebar */}
       <div
         className={`${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } fixed inset-y-0 left-0 z-30 w-56 overflow-y-auto transition duration-300 ease-in-out transform bg-black  lg:translate-x-0 lg:static lg:inset-0`}
+        } fixed inset-y-0 left-0 z-30 w-56 overflow-y-auto transition duration-300 ease-in-out transform bg-black lg:translate-x-0 lg:static lg:inset-0`}
       >
-        <div className="flex items-center justify-between px-2 py-4 mt-4">
-          <div className="flex items-center py-8 md:py-0">
+        <div className="flex items-center justify-between px-2 py-4">
+          <div className="flex items-center py-4 md:py-0">
             <span className="text-2xl font-semibold text-gray-50">
               Bantuhive Admin
             </span>
@@ -55,142 +99,25 @@ const AdminDashboard = () => {
           </button>
         </div>
         <nav className="flex flex-col items-center">
-          <button
-            className={`w-full max-w-xl flex items-center px-4 py-2 mt-4 text-gray-100 hover:bg-gray-700 hover:bg-opacity-25 ${
-              activeTab === 'dashboard' ? 'bg-gray-700 bg-opacity-25' : ''
-            }`}
-            onClick={() => selectTab('dashboard')}
-          >
-            <FaDashcube className="w-6 h-6 mr-3" />
-            <span>Dashboard</span>
-          </button>
-
-          <button
-            className={`w-full max-w-xl flex items-center px-4 py-2 mt-4 text-gray-100 hover:bg-gray-700 hover:bg-opacity-25 ${
-              activeTab === 'userManagement' ? 'bg-gray-700 bg-opacity-25' : ''
-            }`}
-            onClick={() => selectTab('userManagement')}
-          >
-            <FiUser className="w-6 h-6 mr-3" />
-            <span>User Manager</span>
-          </button>
-
-          <button
-            className={`w-full max-w-xl flex items-center px-4 py-2 mt-4 text-gray-100 hover:bg-gray-700 hover:bg-opacity-25 ${
-              activeTab === 'moneyTransfers' ? 'bg-gray-700 bg-opacity-25' : ''
-            }`}
-            onClick={() => selectTab('moneyTransfers')}
-          >
-            <FiDollarSign className="w-6 h-6 mr-3" />
-            <span>Transactions</span>
-          </button>
-
-          <button
-            className={`w-full max-w-xl flex items-center px-4 py-2 mt-4 text-gray-100 hover:bg-gray-700 hover:bg-opacity-25 ${
-              activeTab === 'campaignsManager'
-                ? 'bg-gray-700 bg-opacity-25'
-                : ''
-            }`}
-            onClick={() => selectTab('campaignsManager')}
-          >
-            <BiSolidLayout className="w-6 h-6 mr-3" />
-            <span>Campaigns</span>
-          </button>
-
-          <button
-            className={`w-full max-w-xl flex items-center px-4 py-2 mt-4 text-gray-100 hover:bg-gray-700 hover:bg-opacity-25 ${
-              activeTab === 'contentManager' ? 'bg-gray-700 bg-opacity-25' : ''
-            }`}
-            onClick={() => selectTab('contentManager')}
-          >
-            <FaBoxes className="w-6 h-6 mr-3" />
-            <span>Content</span>
-          </button>
-
-          <button
-            className={`w-full max-w-xl flex items-center px-4 py-2 mt-4 text-gray-100 hover:bg-gray-700 hover:bg-opacity-25 ${
-              activeTab === 'promotions' ? 'bg-gray-700 bg-opacity-25' : ''
-            }`}
-            onClick={() => selectTab('promotions')}
-          >
-            <FiActivity className="w-6 h-6 mr-3" />
-            <span> Promotions</span>
-          </button>
-
-          <button
-            className={`w-full max-w-xl flex items-center px-4 py-2 mt-4 text-gray-100 hover:bg-gray-700 hover:bg-opacity-25 ${
-              activeTab === 'analytics' ? 'bg-gray-700 bg-opacity-25' : ''
-            }`}
-            onClick={() => selectTab('analytics')}
-          >
-            <FiPieChart className="w-6 h-6 mr-3" />
-            <span>Analytics</span>
-          </button>
-
-          <button
-            className={`w-full max-w-xl flex items-center px-4 py-2 mt-4 text-gray-100 hover:bg-gray-700 hover:bg-opacity-25 ${
-              activeTab === 'support' ? 'bg-gray-700 bg-opacity-25' : ''
-            }`}
-            onClick={() => selectTab('support')}
-          >
-            <MdOutlineSupportAgent className="w-6 h-6 mr-3" />
-            <span>Support</span>
-          </button>
-
-          <button
-            className={`w-full max-w-xl flex items-center px-4 py-2 mt-4 text-gray-100 hover:bg-gray-700 hover:bg-opacity-25 ${
-              activeTab === 'settings' ? 'bg-gray-700 bg-opacity-25' : ''
-            }`}
-            onClick={() => selectTab('settings')}
-          >
-            <FiSettings className="w-6 h-6 mr-3" />
-            <span>Settings</span>
-          </button>
+          {navItems.map((item) => (
+            <button
+              key={item.name}
+              className={`w-full max-w-xl flex items-center px-4 py-2 mt-4 text-gray-100 hover:bg-gray-700 hover:bg-opacity-25 ${
+                activeTab === item.name ? 'bg-gray-700 bg-opacity-25' : ''
+              }`}
+              onClick={() => selectTab(item.name as TabNames)}
+            >
+              <span className="w-6 h-6 mr-3">{item.icon}</span>
+              <span>{item.label}</span>
+            </button>
+          ))}
         </nav>
       </div>
 
       {/* Tab Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-x-hidden overflow-y-auto">
-          <div className="mx-auto px-2 py-8">
-            {activeTab === 'dashboard' && <GeneralDashboard />}
-            {activeTab === 'userManagement' && (
-              <div>
-                <UserManagement />
-              </div>
-            )}
-            {activeTab === 'moneyTransfers' && (
-              <div>
-                <TransfersManager />
-              </div>
-            )}
-            {activeTab === 'campaignsManager' && (
-              <div>
-                <CampaignManager />
-              </div>
-            )}
-            {activeTab === 'contentManager' && <ContentManagerAdminPage />}
-            {activeTab === 'promotions' && (
-              <div>
-                <PromotionScheduler />
-              </div>
-            )}
-            {activeTab === 'analytics' && (
-              <div>
-                <AnalyticsComponent />
-              </div>
-            )}
-            {activeTab === 'support' && (
-              <div>
-                <h2>Support</h2>
-              </div>
-            )}
-            {activeTab === 'settings' && (
-              <div>
-                <AdminSettings />
-              </div>
-            )}
-          </div>
+          <div className="mx-auto px-2 py-8">{tabContent[activeTab]}</div>
         </main>
       </div>
     </div>
