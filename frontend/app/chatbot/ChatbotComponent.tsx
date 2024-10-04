@@ -10,29 +10,122 @@ import {
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Mock API response data
+const apiData = {
+  welcome: {
+    message:
+      'Welcome to Bantuhive! How can I assist you with our crowdfunding platform today?',
+    options: [
+      'Tell me about fundraising',
+      'How do donations work?',
+      'What are the rewards?',
+      'Explain transfers',
+      'Pricing information',
+      'FAQ',
+    ],
+  },
+  fundraising: {
+    message:
+      'Bantuhive provides a platform for individuals and organizations to raise funds for various causes. You can create a campaign, share your story, and receive support from donors worldwide. What specific aspect of fundraising would you like to know more about?',
+    options: [
+      'How to start a campaign',
+      'Campaign promotion tips',
+      'Fundraising best practices',
+    ],
+  },
+  donations: {
+    message:
+      'Donations on Bantuhive are easy and secure. Donors can contribute to campaigns using various payment methods. We ensure that the funds reach the campaign creators efficiently. Would you like to know about donation processes or donor benefits?',
+    options: ['Donation process', 'Donor benefits', 'Tax deductions'],
+  },
+  rewards: {
+    message:
+      'Bantuhive allows campaign creators to offer rewards to donors as a token of appreciation. These can range from thank-you notes to exclusive merchandise. What would you like to know about our reward system?',
+    options: ['Types of rewards', 'Setting up rewards', 'Reward fulfillment'],
+  },
+  transfers: {
+    message:
+      "Fund transfers on Bantuhive are handled securely. Once a campaign reaches its goal or a specified time, funds are transferred to the creator's account after deducting our service fee. Do you need more information about the transfer process?",
+    options: [
+      'Transfer timeline',
+      'Required documentation',
+      'International transfers',
+    ],
+  },
+  pricing: {
+    message:
+      'Bantuhive charges a small percentage fee on the funds raised. This fee helps us maintain and improve our platform. The exact percentage may vary based on the type of campaign. Would you like to know more about our pricing structure?',
+    options: [
+      'Fee percentages',
+      'Additional costs',
+      'Compare with other platforms',
+    ],
+  },
+  faq: {
+    message:
+      'Our FAQ section covers a wide range of topics. What specific area would you like to explore?',
+    options: [
+      'Account-related FAQs',
+      'Campaign-related FAQs',
+      'Donation-related FAQs',
+    ],
+  },
+  default: {
+    message:
+      "I'm sorry, I didn't quite understand that. Could you please choose one of the following options?",
+    options: [
+      'Tell me about fundraising',
+      'How do donations work?',
+      'What are the rewards?',
+      'Explain transfers',
+      'Pricing information',
+      'FAQ',
+    ],
+  },
+};
+
+// Mock API call function
+const fetchApiResponse = (userMessage: string) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const lowerCaseMessage = userMessage.toLowerCase();
+      let response = apiData.default;
+
+      if (lowerCaseMessage.includes('fundraising')) {
+        response = apiData.fundraising;
+      } else if (lowerCaseMessage.includes('donations')) {
+        response = apiData.donations;
+      } else if (lowerCaseMessage.includes('rewards')) {
+        response = apiData.rewards;
+      } else if (lowerCaseMessage.includes('transfers')) {
+        response = apiData.transfers;
+      } else if (lowerCaseMessage.includes('pricing')) {
+        response = apiData.pricing;
+      } else if (lowerCaseMessage.includes('faq')) {
+        response = apiData.faq;
+      }
+
+      resolve(response);
+    }, 1000); // Simulating API delay
+  });
+};
+
 const ChatbotComponent = () => {
-  const [messages, setMessages] = useState<{ type: string; text: string }[]>(
-    [],
-  );
+  interface Message {
+    type: 'user' | 'bot';
+    text: string;
+  }
+
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [options, setOptions] = useState<Array<string>>([]);
-  const chatWindowRef = useRef<HTMLDivElement>(null);
+  const [options, setOptions] = useState<string[]>([]);
+  const chatWindowRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (isExpanded) {
-      addBotMessage(
-        'Welcome to Bantuhive! How can I assist you with our crowdfunding platform today?',
-        [
-          'Tell me about fundraising',
-          'How do donations work?',
-          'What are the rewards?',
-          'Explain transfers',
-          'Pricing information',
-          'FAQ',
-        ],
-      );
+      handleBotResponse('welcome');
     }
   }, [isExpanded]);
 
@@ -69,79 +162,21 @@ const ChatbotComponent = () => {
     handleBotResponse(option);
   };
 
-  const handleBotResponse = (userMessage: string) => {
+  const handleBotResponse = async (userMessage: string) => {
     setIsTyping(true);
-    setTimeout(() => {
+    try {
+      const response = (await fetchApiResponse(userMessage)) as {
+        message: string;
+        options: string[];
+      };
       setIsTyping(false);
-      const response = generateBotResponse(userMessage);
-      addBotMessage(response.text, response.options);
-    }, 1500);
-  };
-
-  const generateBotResponse = (userMessage: string) => {
-    const lowerCaseMessage = userMessage.toLowerCase();
-    if (lowerCaseMessage.includes('fundraising')) {
-      return {
-        text: 'Bantuhive provides a platform for individuals and organizations to raise funds for various causes. You can create a campaign, share your story, and receive support from donors worldwide. What specific aspect of fundraising would you like to know more about?',
-        options: [
-          'How to start a campaign',
-          'Campaign promotion tips',
-          'Fundraising best practices',
-        ],
-      };
-    } else if (lowerCaseMessage.includes('donations')) {
-      return {
-        text: 'Donations on Bantuhive are easy and secure. Donors can contribute to campaigns using various payment methods. We ensure that the funds reach the campaign creators efficiently. Would you like to know about donation processes or donor benefits?',
-        options: ['Donation process', 'Donor benefits', 'Tax deductions'],
-      };
-    } else if (lowerCaseMessage.includes('rewards')) {
-      return {
-        text: 'Bantuhive allows campaign creators to offer rewards to donors as a token of appreciation. These can range from thank-you notes to exclusive merchandise. What would you like to know about our reward system?',
-        options: [
-          'Types of rewards',
-          'Setting up rewards',
-          'Reward fulfillment',
-        ],
-      };
-    } else if (lowerCaseMessage.includes('transfers')) {
-      return {
-        text: "Fund transfers on Bantuhive are handled securely. Once a campaign reaches its goal or a specified time, funds are transferred to the creator's account after deducting our service fee. Do you need more information about the transfer process?",
-        options: [
-          'Transfer timeline',
-          'Required documentation',
-          'International transfers',
-        ],
-      };
-    } else if (lowerCaseMessage.includes('pricing')) {
-      return {
-        text: 'Bantuhive charges a small percentage fee on the funds raised. This fee helps us maintain and improve our platform. The exact percentage may vary based on the type of campaign. Would you like to know more about our pricing structure?',
-        options: [
-          'Fee percentages',
-          'Additional costs',
-          'Compare with other platforms',
-        ],
-      };
-    } else if (lowerCaseMessage.includes('faq')) {
-      return {
-        text: 'Our FAQ section covers a wide range of topics. What specific area would you like to explore?',
-        options: [
-          'Account-related FAQs',
-          'Campaign-related FAQs',
-          'Donation-related FAQs',
-        ],
-      };
-    } else {
-      return {
-        text: "I'm sorry, I didn't quite understand that. Could you please choose one of the following options?",
-        options: [
-          'Tell me about fundraising',
-          'How do donations work?',
-          'What are the rewards?',
-          'Explain transfers',
-          'Pricing information',
-          'FAQ',
-        ],
-      };
+      addBotMessage(response.message, response.options);
+    } catch (error) {
+      console.error('Error fetching API response:', error);
+      setIsTyping(false);
+      addBotMessage(
+        "I'm sorry, but I'm having trouble processing your request right now. Please try again later.",
+      );
     }
   };
 
@@ -151,7 +186,7 @@ const ChatbotComponent = () => {
 
   return (
     <div
-      className={`fixed bottom-4 right-4 ${isExpanded ? 'w-96 h-[500px]' : 'w-8 h-8 rounded-full bg-transparent'} bg-white rounded-lg shadow-lg transition-all duration-300 ease-in-out overflow-hidden`}
+      className={`fixed bottom-4 right-4 ${isExpanded ? 'w-96 h-[500px] rounded-lg shadow-lg' : 'w-8 h-8 rounded-full'} bg-white transition-all duration-300 ease-in-out overflow-hidden`}
     >
       {isExpanded ? (
         <>
@@ -193,7 +228,7 @@ const ChatbotComponent = () => {
                   className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
                 >
                   <div
-                    className={`max-w-[70%] p-3 rounded-lg ${message.type === 'user' ? 'bg-gradient-to-r from-red-600 to-red-800 text-white' : 'bg-gray-900 text-gray-50'}`}
+                    className={`max-w-[70%] p-3 rounded-lg ${message.type === 'user' ? 'bg-gradient-to-r from-red-600 to-red-800 text-white' : 'bg-gray-800 text-gray-50'}`}
                   >
                     <div className="flex items-center mb-1">
                       {message.type === 'user' ? (
@@ -219,7 +254,7 @@ const ChatbotComponent = () => {
                 exit={{ opacity: 0, y: -20 }}
                 className="flex justify-start mb-4"
               >
-                <div className=" text-gray-800 p-3 rounded-lg">
+                <div className="bg-gray-200 text-gray-800 p-3 rounded-lg">
                   <div className="flex items-center">
                     <FaRobot className="mr-2" />
                     <span className="font-semibold">Bantuhive Assistant</span>
