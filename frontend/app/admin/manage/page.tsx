@@ -33,6 +33,7 @@ import UserManagement from './users/UserManager';
 import AnalyticsComponent from './analytics/Analytics';
 import AdminSettings from './settings/Settings';
 import PromotionScheduler from './promotions/Promotions';
+import CampaignManager from './campaigns/CampaignsManager';
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -180,14 +181,10 @@ const AdminDashboard = () => {
             )}
             {activeTab === 'campaignsManager' && (
               <div>
-                <h2>Campaigns Manager</h2>
+                <CampaignManager />
               </div>
             )}
-            {activeTab === 'contentManager' && (
-              <div>
-                <h2>Content Manager</h2>
-              </div>
-            )}
+            {activeTab === 'contentManager' && <div>Content Manager</div>}
             {activeTab === 'promotions' && (
               <div>
                 <PromotionScheduler />
