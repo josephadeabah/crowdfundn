@@ -108,7 +108,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <a
-                  href="#"
+                  href="/helpcenter"
                   className="hover:text-red-300 transition duration-300"
                 >
                   Help Center
