@@ -185,22 +185,22 @@ const UserManagement = () => {
         </select>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full table-auto">
+        <table className="w-full table-fixed border-collapse">
           <thead>
             <tr className="bg-gray-200">
-              <th className="p-2">Name</th>
-              <th className="p-2">Email</th>
-              <th className="p-2">Role</th>
-              <th className="p-2">Status</th>
-              <th className="p-2">Actions</th>
+              <th className="p-2 w-1/5 text-left">Name</th>
+              <th className="p-2 w-1/5 text-left">Email</th>
+              <th className="p-2 w-1/5 text-left">Role</th>
+              <th className="p-2 w-1/5 text-left">Status</th>
+              <th className="p-2 w-1/5 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
             {sortedUsers.map((user) => (
               <tr key={user.id} className="border-b hover:bg-gray-100">
-                <td className="p-2">{user.name}</td>
-                <td className="p-2">{user.email}</td>
-                <td className="p-2">{user.role}</td>
+                <td className="p-2 truncate">{user.name}</td>
+                <td className="p-2 truncate">{user.email}</td>
+                <td className="p-2 truncate">{user.role}</td>
                 <td className="p-2">
                   <span
                     className={`px-2 py-1 rounded ${user.status === 'active' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}
@@ -208,17 +208,21 @@ const UserManagement = () => {
                     {user.status}
                   </span>
                 </td>
-                <td className="p-2">
+                <td className="p-2 flex items-center gap-4 space-x-2">
                   <button
                     onClick={() => handleEditUser(user)}
-                    className="mr-2 text-blue-500 hover:text-blue-700"
+                    className="text-blue-500 hover:text-blue-700"
                     aria-label="Edit user"
                   >
                     <FaEdit />
                   </button>
                   <button
                     onClick={() => handleBlockUser(user.id)}
-                    className={`mr-2 ${user.status === 'active' ? 'text-red-500 hover:text-red-700' : 'text-green-500 hover:text-green-700'}`}
+                    className={`${
+                      user.status === 'active'
+                        ? 'text-red-500 hover:text-red-700'
+                        : 'text-green-500 hover:text-green-700'
+                    }`}
                     aria-label={`${user.status === 'active' ? 'Block' : 'Unblock'} user`}
                   >
                     {user.status === 'active' ? <FaLock /> : <FaUnlock />}
@@ -236,6 +240,7 @@ const UserManagement = () => {
           </tbody>
         </table>
       </div>
+
       {editMode && selectedUser && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
