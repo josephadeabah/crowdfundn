@@ -10,8 +10,19 @@ import {
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Mock API response data
-const apiData = {
+// Define types for the API response
+interface ApiResponse {
+  message: string;
+  options: string[];
+}
+
+// Define a mapping for the API data
+interface ApiData {
+  [key: string]: ApiResponse;
+}
+
+// Mock API response data with stricter types
+const apiData: ApiData = {
   welcome: {
     message:
       'Welcome to Bantuhive! How can I assist you with our crowdfunding platform today?',
@@ -85,7 +96,7 @@ const apiData = {
 };
 
 // Mock API call function
-const fetchApiResponse = (userMessage: string) => {
+const fetchApiResponse = async (userMessage: string): Promise<ApiResponse> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       const lowerCaseMessage = userMessage.toLowerCase();
@@ -110,7 +121,7 @@ const fetchApiResponse = (userMessage: string) => {
   });
 };
 
-const ChatbotComponent = () => {
+const ChatbotComponent: React.FC = () => {
   interface Message {
     type: 'user' | 'bot';
     text: string;
@@ -165,10 +176,7 @@ const ChatbotComponent = () => {
   const handleBotResponse = async (userMessage: string) => {
     setIsTyping(true);
     try {
-      const response = (await fetchApiResponse(userMessage)) as {
-        message: string;
-        options: string[];
-      };
+      const response = await fetchApiResponse(userMessage);
       setIsTyping(false);
       addBotMessage(response.message, response.options);
     } catch (error) {
@@ -181,12 +189,16 @@ const ChatbotComponent = () => {
   };
 
   const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
+    setIsExpanded((prev) => !prev);
   };
 
   return (
     <div
-      className={`fixed bottom-4 right-4 ${isExpanded ? 'w-96 h-[500px] rounded-lg shadow-lg' : 'w-8 h-8 rounded-full'} bg-white transition-all duration-300 ease-in-out overflow-hidden`}
+      className={`fixed bottom-4 right-4 ${
+        isExpanded
+          ? 'w-96 h-[500px] rounded-lg shadow-lg'
+          : 'w-8 h-8 rounded-full'
+      } bg-white transition-all duration-300 ease-in-out overflow-hidden`}
     >
       {isExpanded ? (
         <>
@@ -228,7 +240,11 @@ const ChatbotComponent = () => {
                   className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
                 >
                   <div
-                    className={`max-w-[70%] p-3 rounded-lg ${message.type === 'user' ? 'bg-gradient-to-r from-red-600 to-red-800 text-white' : 'bg-gray-800 text-gray-50'}`}
+                    className={`max-w-[70%] p-3 rounded-lg ${
+                      message.type === 'user'
+                        ? 'bg-gradient-to-r from-red-600 to-red-800 text-white'
+                        : 'bg-gray-800 text-gray-50'
+                    }`}
                   >
                     <div className="flex items-center mb-1">
                       {message.type === 'user' ? (
@@ -260,18 +276,13 @@ const ChatbotComponent = () => {
                     <span className="font-semibold">Bantuhive Assistant</span>
                   </div>
                   <div className="mt-2 flex space-x-1">
-                    <div
-                      className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
-                      style={{ animationDelay: '0s' }}
-                    />
-                    <div
-                      className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
-                      style={{ animationDelay: '0.2s' }}
-                    />
-                    <div
-                      className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
-                      style={{ animationDelay: '0.4s' }}
-                    />
+                    {[0, 1, 2].map((i) => (
+                      <div
+                        key={i}
+                        className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                        style={{ animationDelay: `${i * 0.2}s` }}
+                      />
+                    ))}
                   </div>
                 </div>
               </motion.div>
@@ -321,7 +332,7 @@ const ChatbotComponent = () => {
           className="w-8 h-8 flex items-center justify-center bg-gradient-to-r from-red-800 to-black text-white rounded-full p-1 hover:from-red-900 hover:to-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500"
           aria-label="Open chat window"
         >
-          <FaComments className="text-xl" onClick={toggleExpand} />
+          <FaComments className="text-xl" />
         </button>
       )}
     </div>

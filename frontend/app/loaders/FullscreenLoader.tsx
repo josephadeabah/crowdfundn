@@ -58,7 +58,7 @@ const FullscreenLoader = () => {
           {[...Array(3)].map((_, index) => (
             <div
               key={index}
-              className="w-4 h-4 bg-gradient-to-r from-gray-200 to-gray-500 rounded-full animate-pulse"
+              className="w-4 h-4 bg-gradient-to-r from-gray-200 to-gray-500 rounded-full animate-bounce"
               style={{
                 animationDelay: `${index * 0.15}s`,
                 boxShadow: '0 0 10px rgba(59, 130, 246, 0.5)',
