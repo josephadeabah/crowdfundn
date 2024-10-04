@@ -158,7 +158,7 @@ const ChatbotComponent = () => {
           <div className="flex items-center justify-between bg-gradient-to-r from-red-800 to-black text-white p-4">
             <div className="flex items-center">
               <FaRobot className="mr-2" />
-              <h2 className="font-semibold">Bantuhive Assistant</h2>
+              <h6 className="font-semibold">Bantuhive Assistant</h6>
             </div>
             <div className="flex items-center">
               <button

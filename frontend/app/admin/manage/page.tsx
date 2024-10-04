@@ -22,6 +22,7 @@ import ContentManagerAdminPage from './content/ContentManager';
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
   type TabNames =
     | 'dashboard'
     | 'userManagement'
@@ -33,14 +34,22 @@ const AdminDashboard = () => {
     | 'support'
     | 'settings';
 
-  // Retrieve the saved tab from localStorage or default to 'dashboard'
-  const [activeTab, setActiveTab] = useState<TabNames>(
-    (localStorage.getItem('activeTab') as TabNames) || 'dashboard',
-  );
+  // Initialize state for activeTab with default value
+  const [activeTab, setActiveTab] = useState<TabNames>('dashboard');
+
+  // Use useEffect to access localStorage only on the client
+  useEffect(() => {
+    const storedTab = localStorage.getItem('activeTab');
+    if (storedTab) {
+      setActiveTab(storedTab as TabNames);
+    }
+  }, []);
 
   useEffect(() => {
     // Save the active tab in localStorage whenever it changes
-    localStorage.setItem('activeTab', activeTab);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('activeTab', activeTab);
+    }
   }, [activeTab]);
 
   const toggleSidebar = () => {
