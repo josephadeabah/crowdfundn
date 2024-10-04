@@ -12,6 +12,7 @@ import { BrandsLogoSlider } from './molecules/BrandsLogoSlider';
 import FAQsPage from './molecules/faqs';
 import DownloadApp from './molecules/DownloadApp';
 import CTa from './molecules/CTA';
+import ChatbotComponent from './chatbot/ChatbotComponent';
 
 const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
@@ -428,16 +429,19 @@ const HomePage = () => {
           <BrandsLogoSlider />
         </div>
 
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isVisible ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
-          className="fixed bottom-8 right-8 bg-orange-500 text-white p-3 rounded-full shadow-lg hover:bg-orange-600 transition duration-300"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          aria-label="Scroll to top"
-        >
-          ↑
-        </motion.button>
+        <div>
+          <ChatbotComponent />
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isVisible ? 1 : 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed bottom-8 right-8 bg-orange-500 text-white p-3 rounded-full shadow-lg hover:bg-orange-600 transition duration-300"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            aria-label="Scroll to top"
+          >
+            ↑
+          </motion.button>
+        </div>
       </div>
     </div>
   );

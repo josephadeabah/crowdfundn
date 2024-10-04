@@ -1,0 +1,296 @@
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  FaRobot,
+  FaUser,
+  FaPaperPlane,
+  FaTimes,
+  FaExpand,
+  FaCompress,
+  FaComments,
+} from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const ChatbotComponent = () => {
+  const [messages, setMessages] = useState<{ type: string; text: string }[]>(
+    [],
+  );
+  const [inputMessage, setInputMessage] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [options, setOptions] = useState<Array<string>>([]);
+  const chatWindowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isExpanded) {
+      addBotMessage(
+        'Welcome to Bantuhive! How can I assist you with our crowdfunding platform today?',
+        [
+          'Tell me about fundraising',
+          'How do donations work?',
+          'What are the rewards?',
+          'Explain transfers',
+          'Pricing information',
+          'FAQ',
+        ],
+      );
+    }
+  }, [isExpanded]);
+
+  useEffect(() => {
+    if (chatWindowRef.current) {
+      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const addUserMessage = (text: string) => {
+    setMessages((prevMessages) => [...prevMessages, { type: 'user', text }]);
+  };
+
+  const addBotMessage = (text: string, responseOptions: string[] = []) => {
+    setMessages((prevMessages) => [...prevMessages, { type: 'bot', text }]);
+    setOptions(responseOptions);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputMessage(e.target.value);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (inputMessage.trim()) {
+      addUserMessage(inputMessage);
+      setInputMessage('');
+      handleBotResponse(inputMessage);
+    }
+  };
+
+  const handleOptionClick = (option: string) => {
+    addUserMessage(option);
+    handleBotResponse(option);
+  };
+
+  const handleBotResponse = (userMessage: string) => {
+    setIsTyping(true);
+    setTimeout(() => {
+      setIsTyping(false);
+      const response = generateBotResponse(userMessage);
+      addBotMessage(response.text, response.options);
+    }, 1500);
+  };
+
+  const generateBotResponse = (userMessage: string) => {
+    const lowerCaseMessage = userMessage.toLowerCase();
+    if (lowerCaseMessage.includes('fundraising')) {
+      return {
+        text: 'Bantuhive provides a platform for individuals and organizations to raise funds for various causes. You can create a campaign, share your story, and receive support from donors worldwide. What specific aspect of fundraising would you like to know more about?',
+        options: [
+          'How to start a campaign',
+          'Campaign promotion tips',
+          'Fundraising best practices',
+        ],
+      };
+    } else if (lowerCaseMessage.includes('donations')) {
+      return {
+        text: 'Donations on Bantuhive are easy and secure. Donors can contribute to campaigns using various payment methods. We ensure that the funds reach the campaign creators efficiently. Would you like to know about donation processes or donor benefits?',
+        options: ['Donation process', 'Donor benefits', 'Tax deductions'],
+      };
+    } else if (lowerCaseMessage.includes('rewards')) {
+      return {
+        text: 'Bantuhive allows campaign creators to offer rewards to donors as a token of appreciation. These can range from thank-you notes to exclusive merchandise. What would you like to know about our reward system?',
+        options: [
+          'Types of rewards',
+          'Setting up rewards',
+          'Reward fulfillment',
+        ],
+      };
+    } else if (lowerCaseMessage.includes('transfers')) {
+      return {
+        text: "Fund transfers on Bantuhive are handled securely. Once a campaign reaches its goal or a specified time, funds are transferred to the creator's account after deducting our service fee. Do you need more information about the transfer process?",
+        options: [
+          'Transfer timeline',
+          'Required documentation',
+          'International transfers',
+        ],
+      };
+    } else if (lowerCaseMessage.includes('pricing')) {
+      return {
+        text: 'Bantuhive charges a small percentage fee on the funds raised. This fee helps us maintain and improve our platform. The exact percentage may vary based on the type of campaign. Would you like to know more about our pricing structure?',
+        options: [
+          'Fee percentages',
+          'Additional costs',
+          'Compare with other platforms',
+        ],
+      };
+    } else if (lowerCaseMessage.includes('faq')) {
+      return {
+        text: 'Our FAQ section covers a wide range of topics. What specific area would you like to explore?',
+        options: [
+          'Account-related FAQs',
+          'Campaign-related FAQs',
+          'Donation-related FAQs',
+        ],
+      };
+    } else {
+      return {
+        text: "I'm sorry, I didn't quite understand that. Could you please choose one of the following options?",
+        options: [
+          'Tell me about fundraising',
+          'How do donations work?',
+          'What are the rewards?',
+          'Explain transfers',
+          'Pricing information',
+          'FAQ',
+        ],
+      };
+    }
+  };
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  return (
+    <div
+      className={`fixed bottom-4 right-4 ${isExpanded ? 'w-96 h-[500px]' : 'w-16 h-16'} bg-white rounded-lg shadow-lg transition-all duration-300 ease-in-out overflow-hidden`}
+    >
+      {isExpanded ? (
+        <>
+          <div className="flex items-center justify-between bg-gradient-to-r from-red-800 to-black text-white p-4">
+            <div className="flex items-center">
+              <FaRobot className="mr-2" />
+              <h2 className="font-semibold">Bantuhive Assistant</h2>
+            </div>
+            <div className="flex items-center">
+              <button
+                onClick={toggleExpand}
+                className="mr-2 focus:outline-none"
+                aria-label="Minimize chat window"
+              >
+                <FaCompress />
+              </button>
+              <button
+                onClick={() => setMessages([])}
+                className="focus:outline-none"
+                aria-label="Close chat window"
+              >
+                <FaTimes />
+              </button>
+            </div>
+          </div>
+          <div
+            ref={chatWindowRef}
+            className="h-[calc(100%-120px)] overflow-y-auto p-4"
+            role="log"
+            aria-live="polite"
+          >
+            <AnimatePresence>
+              {messages.map((message, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
+                >
+                  <div
+                    className={`max-w-[70%] p-3 rounded-lg ${message.type === 'user' ? 'bg-gradient-to-r from-red-600 to-red-800 text-white' : 'bg-gray-200 text-gray-800'}`}
+                  >
+                    <div className="flex items-center mb-1">
+                      {message.type === 'user' ? (
+                        <FaUser className="mr-2" />
+                      ) : (
+                        <FaRobot className="mr-2" />
+                      )}
+                      <span className="font-semibold">
+                        {message.type === 'user'
+                          ? 'You'
+                          : 'Bantuhive Assistant'}
+                      </span>
+                    </div>
+                    <p>{message.text}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            {isTyping && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="flex justify-start mb-4"
+              >
+                <div className="bg-gray-200 text-gray-800 p-3 rounded-lg">
+                  <div className="flex items-center">
+                    <FaRobot className="mr-2" />
+                    <span className="font-semibold">Bantuhive Assistant</span>
+                  </div>
+                  <div className="mt-2 flex space-x-1">
+                    <div
+                      className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                      style={{ animationDelay: '0s' }}
+                    />
+                    <div
+                      className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                      style={{ animationDelay: '0.2s' }}
+                    />
+                    <div
+                      className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                      style={{ animationDelay: '0.4s' }}
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+            {options.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="flex flex-col space-y-2 mt-4"
+              >
+                {options.map((option, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleOptionClick(option)}
+                    className="bg-red-100 text-red-700 p-2 rounded-lg hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500"
+                  >
+                    {option}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </div>
+          <form onSubmit={handleSubmit} className="bg-gray-100 p-4">
+            <div className="flex items-center">
+              <input
+                type="text"
+                value={inputMessage}
+                onChange={handleInputChange}
+                placeholder="Type your message..."
+                className="flex-grow mr-2 p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                aria-label="Type your message"
+              />
+              <button
+                type="submit"
+                className="bg-gradient-to-r from-red-600 to-red-800 text-white p-2 rounded-lg hover:from-red-700 hover:to-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
+                aria-label="Send message"
+              >
+                <FaPaperPlane />
+              </button>
+            </div>
+          </form>
+        </>
+      ) : (
+        <button
+          onClick={toggleExpand}
+          className="w-full h-full flex items-center justify-center bg-gradient-to-r from-red-800 to-black text-white rounded-lg hover:from-red-900 hover:to-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500"
+          aria-label="Open chat window"
+        >
+          <FaComments className="text-2xl" />
+        </button>
+      )}
+    </div>
+  );
+};
+
+export default ChatbotComponent;
