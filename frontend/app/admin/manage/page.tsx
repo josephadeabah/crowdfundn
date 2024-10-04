@@ -1,32 +1,16 @@
 'use client';
 import React, { useState } from 'react';
 import {
-  FiMenu,
   FiUser,
   FiDollarSign,
-  FiXSquare,
-  FiSliders,
   FiActivity,
   FiPieChart,
   FiSettings,
-  FiSearch,
-  FiDownload,
   FiX,
 } from 'react-icons/fi';
-import { HiExternalLink } from 'react-icons/hi';
-import { FaChessBoard, FaDashcube, FaBoxes } from 'react-icons/fa';
+import { FaDashcube, FaBoxes } from 'react-icons/fa';
 import { BiSolidLayout } from 'react-icons/bi';
 import { MdOutlineSupportAgent } from 'react-icons/md';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
 import TransfersManager from './transfers/TransfersManager';
 import GeneralDashboard from './general/GeneralDashboard';
 import UserManagement from './users/UserManager';
@@ -34,6 +18,7 @@ import AnalyticsComponent from './analytics/Analytics';
 import AdminSettings from './settings/Settings';
 import PromotionScheduler from './promotions/Promotions';
 import CampaignManager from './campaigns/CampaignsManager';
+import ContentManagerAdminPage from './content/ContentManager';
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -119,7 +104,7 @@ const AdminDashboard = () => {
             onClick={() => selectTab('contentManager')}
           >
             <FaBoxes className="w-6 h-6 mr-3" />
-            <span>Content Manager</span>
+            <span>Content</span>
           </button>
 
           <button
@@ -184,7 +169,7 @@ const AdminDashboard = () => {
                 <CampaignManager />
               </div>
             )}
-            {activeTab === 'contentManager' && <div>Content Manager</div>}
+            {activeTab === 'contentManager' && <ContentManagerAdminPage />}
             {activeTab === 'promotions' && (
               <div>
                 <PromotionScheduler />
