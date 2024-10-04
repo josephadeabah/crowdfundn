@@ -13,7 +13,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import Modal from '@/app/components/modal/Modal'; // Importing the Modal component
+import Modal from '@/app/components/modal/Modal';
 
 const TransferManager = () => {
   interface Transaction {
@@ -24,7 +24,6 @@ const TransferManager = () => {
     status: string;
     paymentMethod: string;
     donorName: string;
-    receiverName: string;
   }
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -58,7 +57,6 @@ const TransferManager = () => {
     const status = 'pending';
     const paymentMethod = Math.random() > 0.5 ? 'Credit Card' : 'PayPal';
     const donorName = `Donor${Math.floor(Math.random() * 1000)}`;
-    const receiverName = `Receiver${Math.floor(Math.random() * 1000)}`;
 
     return {
       id,
@@ -68,7 +66,6 @@ const TransferManager = () => {
       status,
       paymentMethod,
       donorName,
-      receiverName,
     };
   };
 
@@ -285,7 +282,7 @@ const TransferManager = () => {
                     </span>
                   </td>
 
-                  <td className="px-4 py-2 flex space-x-2">
+                  <td className="px-4 py-2 flex gap-4 items-center space-x-2">
                     {transaction.status === 'pending' && (
                       <button
                         className="text-blue-500"
@@ -303,16 +300,16 @@ const TransferManager = () => {
                       </button>
                     )}
                     <button
-                      className="text-red-500"
-                      onClick={() => handleCancel(transaction.id)}
-                    >
-                      <FaBan />
-                    </button>
-                    <button
                       className="text-gray-500"
                       onClick={() => handleView(transaction)}
                     >
                       <FaEye />
+                    </button>
+                    <button
+                      className="text-red-500"
+                      onClick={() => handleCancel(transaction.id)}
+                    >
+                      <FaBan />
                     </button>
                   </td>
                 </motion.tr>
@@ -338,6 +335,9 @@ const TransferManager = () => {
           </p>
           <p>
             <strong>Timestamp:</strong> {selectedTransaction.timestamp}
+          </p>
+          <p>
+            <strong>Payment Method:</strong> {selectedTransaction.paymentMethod}
           </p>
           <p>
             <strong>Fundraiser:</strong> {selectedTransaction.fundraiserName}
