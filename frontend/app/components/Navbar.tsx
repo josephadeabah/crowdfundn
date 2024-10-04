@@ -149,10 +149,10 @@ const Navbar = () => {
                 >
                   <Button
                     variant="ghost"
-                    className="flex items-center text-gray-50 group focus:outline-none hover:text-gray-50 focus:ring-0 hover:bg-gray-950 dark:hover:bg-gray-800"
+                    className="flex items-center text-gray-50 group focus:outline-none focus-visible:outline-none  focus:ring-0 focus-visible:ring-0 hover:text-gray-50 hover:outline-none hover:bg-gray-950 dark:hover:bg-gray-800"
                   >
                     {`${key.charAt(0).toUpperCase() + key.slice(1)}`}
-                    <TriangleDownIcon className="ml-2 h-4 w-4 transition-transform duration-200 ease-in-out transform group-hover:rotate-180" />
+                    <TriangleDownIcon className="ml-2 h-4 w-4 transition-transform duration-100 ease-in-out transform group-hover:rotate-180" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
@@ -164,9 +164,9 @@ const Navbar = () => {
                   className="w-full p-0"
                 >
                   <motion.ul
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: 3 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ duration: 0.2 }}
                     className={
                       key === 'donate' || key === 'for Diaspora'
                         ? 'grid grid-cols-2 gap-x-8 gap-y-2 p-3 bg-gray-800 text-gray-50'
@@ -176,7 +176,7 @@ const Navbar = () => {
                     {links.map((link) => (
                       <li
                         key={link.href}
-                        className="p-2 hover:bg-gray-950 hover:text-gray-50 dark:hover:bg-gray-800"
+                        className="p-2 hover:bg-gray-950 hover:text-gray-50 hover:outline-none dark:hover:bg-gray-800"
                       >
                         <Link href={link.href}>{link.label}</Link>
                       </li>

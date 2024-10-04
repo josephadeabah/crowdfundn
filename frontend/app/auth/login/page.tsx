@@ -9,6 +9,7 @@ import {
   FaEyeSlash,
 } from 'react-icons/fa';
 import RegisterLeftPage from '../register/RegisterLeftPage';
+import { Button } from '@/app/components/button/Button';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -31,13 +32,13 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="h-full flex items-center justify-center p-2">
-      <div className="max-w-7xl w-full bg-white rounded-sm shadow">
+    <div className="h-full flex items-center justify-center p-2 mt-10 mb-10">
+      <div className="max-w-7xl w-full bg-white dark:bg-gray-800 dark:text-gray-50 rounded-sm">
         <div className="flex flex-col md:flex-row">
           <div className="hidden md:block w-1/2">
             <RegisterLeftPage />
           </div>
-          <div className="w-full md:w-1/2 p-8">
+          <div className="w-full md:w-1/2 p-8 shadow">
             <h2 className="text-3xl font-bold mb-6 text-center">Login</h2>
             <form onSubmit={handleLogin} className="space-y-6">
               <div>
@@ -86,10 +87,10 @@ const LoginPage = () => {
                   )}
                 </button>
               </div>
-              <div>
-                <button
+              <div className="flex items-center justify-end">
+                <Button
                   type="submit"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-red-600 to-black hover:from-red-700 hover:via-orange-600 hover:to-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out"
+                  className="w-full md:w-1/2 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-red-600 to-black hover:from-red-700 hover:via-orange-600 hover:to-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -115,10 +116,10 @@ const LoginPage = () => {
                     </svg>
                   ) : null}
                   {isLoading ? 'Logging in...' : 'Login'}
-                </button>
+                </Button>
               </div>
             </form>
-            <div className="mt-6">
+            {/* <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300"></div>
@@ -155,7 +156,7 @@ const LoginPage = () => {
                   <FaMicrosoft className="mr-2" /> Microsoft
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
