@@ -313,7 +313,7 @@ const ChatbotComponent: React.FC = () => {
                 value={inputMessage}
                 onChange={handleInputChange}
                 placeholder="Type your message..."
-                className="flex-grow p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-100"
+                className="flex-grow p-2 rounded-lg border text-gray-800 border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-100"
                 aria-label="Type your message"
               />
               <button
