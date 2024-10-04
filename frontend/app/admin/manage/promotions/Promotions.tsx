@@ -165,8 +165,8 @@ const PromotionScheduler = () => {
           <button
             className={`py-2 px-4 ${
               activeTab === 'scheduled'
-                ? 'border-b-2 border-blue-500 text-blue-500'
-                : 'text-gray-500 hover:text-blue-500'
+                ? 'border-b-2 border-gray-500 text-black'
+                : 'text-gray-500 hover:text-gray-500'
             }`}
             onClick={() => setActiveTab('scheduled')}
           >
@@ -175,8 +175,8 @@ const PromotionScheduler = () => {
           <button
             className={`py-2 px-4 ${
               activeTab === 'active'
-                ? 'border-b-2 border-blue-500 text-blue-500'
-                : 'text-gray-500 hover:text-blue-500'
+                ? 'border-b-2 border-gray-500 text-black'
+                : 'text-gray-500 hover:text-gray-500'
             }`}
             onClick={() => setActiveTab('active')}
           >
@@ -185,8 +185,8 @@ const PromotionScheduler = () => {
           <button
             className={`py-2 px-4 ${
               activeTab === 'completed'
-                ? 'border-b-2 border-blue-500 text-blue-500'
-                : 'text-gray-500 hover:text-blue-500'
+                ? 'border-b-2 border-gray-500 text-black'
+                : 'text-gray-500 hover:text-gray-500'
             }`}
             onClick={() => setActiveTab('completed')}
           >
@@ -195,8 +195,8 @@ const PromotionScheduler = () => {
           <button
             className={`py-2 px-4 ${
               activeTab === 'cancelled'
-                ? 'border-b-2 border-blue-500 text-blue-500'
-                : 'text-gray-500 hover:text-blue-500'
+                ? 'border-b-2 border-gray-500 text-black'
+                : 'text-gray-500 hover:text-gray-500'
             }`}
             onClick={() => setActiveTab('cancelled')}
           >
@@ -288,26 +288,22 @@ const PromotionScheduler = () => {
                   transition={{ duration: 0.3 }}
                   className="border-b"
                 >
-                  <td className="px-4 py-2 text-center">{promotion.title}</td>
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-4 py-2">{promotion.title}</td>
+                  <td className="px-4 py-2">
                     {new Date(promotion.startDate).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-4 py-2">
                     {new Date(promotion.endDate).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-2 text-center">
-                    {promotion.fundraiserName}
-                  </td>
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-4 py-2">{promotion.fundraiserName}</td>
+                  <td className="px-4 py-2">
                     ${promotion.goal.toLocaleString()}
                   </td>
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-4 py-2">
                     ${promotion.currentAmount.toLocaleString()}
                   </td>
-                  <td className="px-4 py-2 text-center">
-                    {promotion.participants}
-                  </td>
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-4 py-2">{promotion.participants}</td>
+                  <td className="px-4 py-2">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-semibold ${
                         promotion.status === 'scheduled'
@@ -327,7 +323,7 @@ const PromotionScheduler = () => {
                     <div className="flex justify-center space-x-2">
                       <button
                         onClick={() => handleView(promotion)}
-                        className="text-blue-600 hover:text-blue-900 p-1"
+                        className="text-gray-600 hover:text-bgraylue-900 p-1"
                       >
                         <FaEye />
                       </button>

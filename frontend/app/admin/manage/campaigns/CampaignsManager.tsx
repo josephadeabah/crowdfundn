@@ -185,8 +185,8 @@ const CampaignManager = () => {
           <button
             className={`py-2 px-4 ${
               activeTab === 'active'
-                ? 'border-b-2 border-blue-500 text-blue-500'
-                : 'text-gray-500 hover:text-blue-500'
+                ? 'border-b-2 border-gray-500 text-black'
+                : 'text-gray-500 hover:text-gray-500'
             }`}
             onClick={() => setActiveTab('active')}
           >
@@ -195,8 +195,8 @@ const CampaignManager = () => {
           <button
             className={`py-2 px-4 ${
               activeTab === 'pending'
-                ? 'border-b-2 border-blue-500 text-blue-500'
-                : 'text-gray-500 hover:text-blue-500'
+                ? 'border-b-2 border-gray-500 text-black'
+                : 'text-gray-500 hover:text-gray-500'
             }`}
             onClick={() => setActiveTab('pending')}
           >
@@ -205,8 +205,8 @@ const CampaignManager = () => {
           <button
             className={`py-2 px-4 ${
               activeTab === 'blocked'
-                ? 'border-b-2 border-blue-500 text-blue-500'
-                : 'text-gray-500 hover:text-blue-500'
+                ? 'border-b-2 border-gray-500 text-black'
+                : 'text-gray-500 hover:text-gray-500'
             }`}
             onClick={() => setActiveTab('blocked')}
           >
@@ -234,7 +234,7 @@ const CampaignManager = () => {
       </div>
       <div className="overflow-x-auto">
         <table className="w-full bg-white shadow-md rounded-lg overflow-hidden">
-          <thead className="bg-gray-200">
+          <thead className="w-full text-left bg-gray-200">
             <tr>
               <th
                 className="px-4 py-2 cursor-pointer"
@@ -298,26 +298,22 @@ const CampaignManager = () => {
                   transition={{ duration: 0.3 }}
                   className="border-b"
                 >
-                  <td className="px-4 py-2 text-center">{campaign.title}</td>
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-4 py-2">{campaign.title}</td>
+                  <td className="px-4 py-2">
                     {new Date(campaign.startDate).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-4 py-2">
                     {new Date(campaign.endDate).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-2 text-center">
-                    {campaign.organizer}
-                  </td>
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-4 py-2">{campaign.organizer}</td>
+                  <td className="px-4 py-2">
                     ${campaign.goal.toLocaleString()}
                   </td>
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-4 py-2">
                     ${campaign.currentAmount.toLocaleString()}
                   </td>
-                  <td className="px-4 py-2 text-center">
-                    {campaign.participants}
-                  </td>
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-4 py-2">{campaign.participants}</td>
+                  <td className="px-4 py-2">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-semibold ${
                         campaign.status === 'active'
@@ -335,7 +331,7 @@ const CampaignManager = () => {
                     <div className="flex justify-center space-x-2">
                       <button
                         onClick={() => handleView(campaign)}
-                        className="text-blue-600 hover:text-blue-900 p-1"
+                        className="text-gray-600 hover:text-gray-900 p-1"
                         title="View"
                       >
                         <FaEye />
@@ -471,7 +467,7 @@ const CampaignManager = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <button
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                      className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                       type="submit"
                     >
                       Update
