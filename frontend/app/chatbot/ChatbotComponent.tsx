@@ -151,7 +151,7 @@ const ChatbotComponent = () => {
 
   return (
     <div
-      className={`fixed bottom-4 right-4 ${isExpanded ? 'w-96 h-[500px]' : 'w-16 h-16'} bg-white rounded-lg shadow-lg transition-all duration-300 ease-in-out overflow-hidden`}
+      className={`fixed bottom-4 right-4 ${isExpanded ? 'w-96 h-[500px]' : 'w-8 h-8 rounded-full bg-transparent'} bg-white rounded-lg shadow-lg transition-all duration-300 ease-in-out overflow-hidden`}
     >
       {isExpanded ? (
         <>
@@ -193,7 +193,7 @@ const ChatbotComponent = () => {
                   className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
                 >
                   <div
-                    className={`max-w-[70%] p-3 rounded-lg ${message.type === 'user' ? 'bg-gradient-to-r from-red-600 to-red-800 text-white' : 'bg-gray-200 text-gray-800'}`}
+                    className={`max-w-[70%] p-3 rounded-lg ${message.type === 'user' ? 'bg-gradient-to-r from-red-600 to-red-800 text-white' : 'bg-gray-900 text-gray-50'}`}
                   >
                     <div className="flex items-center mb-1">
                       {message.type === 'user' ? (
@@ -219,7 +219,7 @@ const ChatbotComponent = () => {
                 exit={{ opacity: 0, y: -20 }}
                 className="flex justify-start mb-4"
               >
-                <div className="bg-gray-200 text-gray-800 p-3 rounded-lg">
+                <div className=" text-gray-800 p-3 rounded-lg">
                   <div className="flex items-center">
                     <FaRobot className="mr-2" />
                     <span className="font-semibold">Bantuhive Assistant</span>
@@ -252,7 +252,7 @@ const ChatbotComponent = () => {
                   <button
                     key={index}
                     onClick={() => handleOptionClick(option)}
-                    className="bg-red-100 text-red-700 p-2 rounded-lg hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="bg-gray-100 text-gray-700 p-2 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
                   >
                     {option}
                   </button>
@@ -260,14 +260,14 @@ const ChatbotComponent = () => {
               </motion.div>
             )}
           </div>
-          <form onSubmit={handleSubmit} className="bg-gray-100 p-4">
-            <div className="flex items-center">
+          <form onSubmit={handleSubmit} className="pt-2">
+            <div className="flex items-center gap-2 px-4">
               <input
                 type="text"
                 value={inputMessage}
                 onChange={handleInputChange}
                 placeholder="Type your message..."
-                className="flex-grow mr-2 p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="flex-grow p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-100"
                 aria-label="Type your message"
               />
               <button
@@ -283,10 +283,10 @@ const ChatbotComponent = () => {
       ) : (
         <button
           onClick={toggleExpand}
-          className="w-full h-full flex items-center justify-center bg-gradient-to-r from-red-800 to-black text-white rounded-lg hover:from-red-900 hover:to-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500"
+          className="w-8 h-8 flex items-center justify-center bg-gradient-to-r from-red-800 to-black text-white rounded-full p-1 hover:from-red-900 hover:to-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500"
           aria-label="Open chat window"
         >
-          <FaComments className="text-2xl" onClick={toggleExpand} />
+          <FaComments className="text-xl" onClick={toggleExpand} />
         </button>
       )}
     </div>
