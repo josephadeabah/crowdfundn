@@ -286,7 +286,7 @@ const ChatbotComponent = () => {
           className="w-full h-full flex items-center justify-center bg-gradient-to-r from-red-800 to-black text-white rounded-lg hover:from-red-900 hover:to-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500"
           aria-label="Open chat window"
         >
-          <FaComments className="text-2xl" />
+          <FaComments className="text-2xl" onClick={toggleExpand} />
         </button>
       )}
     </div>
