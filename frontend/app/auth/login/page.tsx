@@ -20,6 +20,7 @@ const LoginPage = () => {
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    window.location.href = '/account';
     // Simulating login process
     setTimeout(() => {
       setIsLoading(false);
