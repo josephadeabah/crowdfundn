@@ -32,6 +32,7 @@ import GeneralDashboard from './general/GeneralDashboard';
 import UserManagement from './users/UserManager';
 import AnalyticsComponent from './analytics/Analytics';
 import AdminSettings from './settings/Settings';
+import PromotionScheduler from './promotions/Promotions';
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -189,7 +190,7 @@ const AdminDashboard = () => {
             )}
             {activeTab === 'promotions' && (
               <div>
-                <h2>Promotions</h2>
+                <PromotionScheduler />
               </div>
             )}
             {activeTab === 'analytics' && (
