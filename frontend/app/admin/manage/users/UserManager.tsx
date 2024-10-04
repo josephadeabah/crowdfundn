@@ -162,7 +162,7 @@ const UserManagement = () => {
   });
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">User Management</h1>
       <div className="mb-4 flex items-center">
         <div className="relative flex-grow">

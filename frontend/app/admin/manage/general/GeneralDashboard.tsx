@@ -101,7 +101,7 @@ const GeneralDashboard = () => {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">General Dashboard</h1>
 
       <div className="mb-6 flex flex-wrap items-center justify-between">
