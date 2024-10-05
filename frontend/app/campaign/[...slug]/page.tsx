@@ -1,402 +1,347 @@
 'use client';
-import React, { useState } from 'react';
-import { FaHeart, FaShare, FaStar } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import DonationButton from '@/app/components/donate/DonationButton';
 import { useParams } from 'next/navigation';
-import { Button } from '@/app/components/button/Button';
-import DonationButton from '../../components/donate/DonationButton';
 
-const SingleCampaignPage = () => {
-  const [selectedImage, setSelectedImage] = useState(0);
+interface Reward {
+  id: number;
+  title: string;
+  description: string;
+  amount: number;
+}
+
+interface Update {
+  id: number;
+  date: string;
+  content: string;
+}
+
+interface Comment {
+  id: number;
+  user: string;
+  content: string;
+}
+
+interface CampaignData {
+  title: string;
+  description: string;
+  goal: number;
+  raised: number;
+  backers: number;
+  daysLeft: number;
+  rewards: Reward[];
+  updates: Update[];
+  comments: Comment[];
+}
+
+const SingleCampaignPage: React.FC = () => {
+  const [selectedTier, setSelectedTier] = useState<number | null>(null);
+  const [pledgeAmount, setPledgeAmount] = useState<string>('');
+  const [comment, setComment] = useState<string>('');
+  const [isRecurring, setIsRecurring] = useState<boolean>(false);
+  const [currentUrl, setCurrentUrl] = useState<string>('');
+  const [shortenedCurrentUrl, setShortenedCurrentUrl] = useState<string>('');
+  const [copyButtonText, setCopyButtonText] = useState<string>('Copy');
+  const [areCommentsVisible, setAreCommentsVisible] = useState<boolean>(false);
   const params = useParams();
   const { slug } = params; // slug will be an array of the URL segments
 
-  console.log('Campaign slug:', slug);
-
-  const product = {
-    name: 'Clean Water for Rural Communities',
-    price: '$50,000 Goal',
-    rating: 4.9,
-    reviews: 254, // Number of supporters/donors
+  const campaignData: CampaignData = {
+    title: 'Revolutionary Eco-Friendly Water Bottle',
     description:
-      'Help bring clean, safe drinking water to rural communities. This campaign focuses on providing access to water through the construction of wells, water tanks, and distribution systems to improve health and reduce water-borne diseases.',
-    features: [
-      'Construction of 10 wells',
-      'Training for local maintenance teams',
-      'Access to clean water for over 5,000 people',
-      'Reduction in waterborne diseases by 80%',
-      'Long-term sustainability plan',
+      "Help us create a sustainable future with our innovative, plastic-free water bottle that's good for you and the planet.",
+    goal: 50000,
+    raised: 32500,
+    backers: 650,
+    daysLeft: 15,
+    rewards: [
+      {
+        id: 1,
+        title: 'Early Bird',
+        description: 'Get one eco-bottle',
+        amount: 25,
+      },
+      {
+        id: 2,
+        title: 'Double Impact',
+        description: 'Get two eco-bottles',
+        amount: 45,
+      },
+      {
+        id: 3,
+        title: 'Family Pack',
+        description: 'Get four eco-bottles',
+        amount: 80,
+      },
+      {
+        id: 4,
+        title: 'Eco Warrior',
+        description: 'Get six eco-bottles and a branded tote bag',
+        amount: 120,
+      },
+      {
+        id: 5,
+        title: 'Sustainability Champion',
+        description:
+          'Get ten eco-bottles, a branded tote bag, and a personalized thank you note',
+        amount: 200,
+      },
     ],
-    specifications: [
-      { name: 'Project Duration', value: '12 months' },
-      { name: 'Cost per Well', value: '$5,000' },
-      { name: 'Total Population Served', value: '5,000+ people' },
-      { name: 'Region', value: 'Rural Africa' },
+    updates: [
+      {
+        id: 1,
+        date: '2023-06-15',
+        content:
+          "We've reached 50% of our goal! Thank you all for your support!",
+      },
+      {
+        id: 2,
+        date: '2023-06-10',
+        content: 'New stretch goal announced: Customizable bottle colors!',
+      },
     ],
-    images: [
-      'https://images.unsplash.com/photo-1501594907352-04cda38ebc29',
-      'https://images.unsplash.com/photo-1517638851339-4ae9f8f52ee9',
-      'https://images.unsplash.com/photo-1559696784-4e4d40d327cc',
+    comments: [
+      {
+        id: 1,
+        user: 'EcoWarrior',
+        content: 'This is exactly what we need to reduce plastic waste!',
+      },
+      {
+        id: 2,
+        user: 'HydrationFan',
+        content: "Can't wait to get my hands on one of these bottles!",
+      },
+      {
+        id: 3,
+        user: 'GreenLiving',
+        content: 'I love the concept! How long does each bottle last?',
+      },
+      {
+        id: 4,
+        user: 'ZeroWaste',
+        content: 'This is a game-changer for reducing single-use plastics!',
+      },
+      {
+        id: 5,
+        user: 'EarthFirst',
+        content: 'Kudos to the team for this innovative solution!',
+      },
     ],
   };
 
+  const handleTierSelect = (tierId: number) => {
+    setSelectedTier(tierId);
+    const selectedReward = campaignData.rewards.find(
+      (reward) => reward.id === tierId,
+    );
+    if (selectedReward) {
+      setPledgeAmount(selectedReward.amount.toString());
+    }
+  };
+
+  const handlePledgeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Pledge submitted:', {
+      selectedTier,
+      pledgeAmount,
+      isRecurring,
+    });
+  };
+
+  const handleCommentSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Comment submitted:', comment);
+    setComment('');
+  };
+
+  const toggleCommentsVisibility = () => {
+    setAreCommentsVisible(!areCommentsVisible); // Toggle comments visibility
+  };
+
+  useEffect(() => {
+    const url = window.location.href; // Current URL to share
+    setCurrentUrl(url);
+    setShortenedCurrentUrl(shortenUrl(url));
+  }, []);
+
+  const shortenUrl = (url: string): string => {
+    return url.length > 80 ? `${url.substring(0, 75)}...` : url;
+  };
+
+  const copyShareableUrl = async () => {
+    await navigator.clipboard.writeText(currentUrl);
+    setCopyButtonText('Copied');
+    setTimeout(() => setCopyButtonText('Copy'), 2000); // Reset text after 2 seconds
+  };
+
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="py-8 px-4 md:px-0">
-        <div className="flex flex-col md:flex-row items-center md:items-start">
-          {/* Left Column - Image */}
-          <div className="w-full md:w-1/2 mb-6 md:mb-0">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 h-full lg:px-8 py-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          <h1 className="text-4xl font-bold mb-4">{campaignData.title}</h1>
+          <p className="text-gray-600 mb-6">{campaignData.description}</p>
+
+          <div className="mb-8 relative">
             <img
-              src={product.images[0]}
-              alt="Fundraiser Image"
-              className="w-full h-auto"
+              src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+              alt="Eco-Friendly Water Bottle"
+              className="w-full h-auto rounded-lg shadow-lg cursor-pointer"
             />
           </div>
 
-          {/* Right Column - Fundraiser Details */}
-          <div className="w-full md:w-1/2 md:pl-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Fundraiser Title
-            </h2>
-            <p className="text-lg text-gray-700 mb-6">
-              This is a brief description of the fundraiser, highlighting the
-              key points and objectives of the campaign. It's a great way to
-              provide an overview of what the fundraiser is about.
-            </p>
-
-            {/* Details */}
-            <div className="text-gray-800 mb-6">
-              <p className="mb-2">
-                <strong>Goal:</strong> $10,000
-              </p>
-              <p className="mb-2">
-                <strong>Raised:</strong> $7,500
-              </p>
-              <p className="mb-2">
-                <strong>Donors:</strong> 150
-              </p>
-              <p>
-                <strong>Location:</strong> City, Country
-              </p>
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <span className="text-3xl font-bold">
+                  ${campaignData.raised.toLocaleString()}
+                </span>
+                <span className="text-gray-600 ml-2">
+                  {' '}
+                  raised of ${campaignData.goal.toLocaleString()} goal
+                </span>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold">{campaignData.backers}</div>
+                <div className="text-gray-600">backers</div>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold">
+                  {campaignData.daysLeft}
+                </div>
+                <div className="text-gray-600">days left</div>
+              </div>
             </div>
-
-            {/* Call to Action */}
-            <DonationButton />
-          </div>
-        </div>
-      </div>
-
-      <div className="flex flex-col lg:flex-row min-h-screen">
-        {/* Left Column */}
-        <div className="lg:w-1/4 px-4 md:px-1 py-4 lg:sticky lg:top-0 lg:h-screen overflow-y-auto">
-          <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
-          <p className="text-2xl font-semibold text-green-600 mb-4">
-            {product.price}
-          </p>
-          <p>Slug: {Array.isArray(slug) ? slug.join('/') : slug}</p>
-          <div className="flex items-center mb-4">
-            <div className="flex text-yellow-400 mr-2">
-              {[...Array(5)].map((_, i) => (
-                <FaStar
-                  key={i}
-                  className={
-                    i < Math.floor(product.rating)
-                      ? 'text-yellow-400'
-                      : 'text-gray-300'
-                  }
-                />
-              ))}
-            </div>
-            <span className="text-gray-600">
-              {product.rating} ({product.reviews} reviews)
-            </span>
-          </div>
-          <p className="text-gray-700 mb-6">{product.description}</p>
-          <div className="grid grid-cols-2 gap-4">
-            {product.features.map((feature, index) => (
+            <div className="w-full bg-gray-200 rounded-full h-2.5">
               <div
-                key={index}
-                className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                className="bg-green-600 h-2.5 rounded-full"
+                style={{
+                  width: `${(campaignData.raised / campaignData.goal) * 100}%`,
+                }}
+              ></div>
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-4">Campaign Updates</h2>
+            {campaignData.updates.map((update) => (
+              <div
+                key={update.id}
+                className="bg-white rounded-sm shadow p-4 mb-4"
               >
-                <p className="text-sm font-medium text-gray-800">{feature}</p>
+                <div className="font-semibold text-gray-600 mb-2">
+                  {update.date}
+                </div>
+                <p>{update.content}</p>
               </div>
             ))}
           </div>
-        </div>
 
-        {/* Middle Column */}
-        <div className="lg:w-1/2 p-4">
-          <div className="mb-8">
-            <img
-              src={product.images[selectedImage]}
-              alt={`Product image ${selectedImage + 1}`}
-              className="w-full h-96 object-cover"
-            />
-          </div>
-          <div className="prose max-w-none">
-            <h2 className="text-2xl font-bold mb-4">Product Details</h2>
-            <p>
-              Our Premium Wireless Headphones are designed to deliver an
-              exceptional audio experience. With advanced noise-cancellation
-              technology, you can immerse yourself in your favorite music
-              without any distractions.
-            </p>
-            <p>
-              The over-ear design ensures comfort during long listening
-              sessions, while the 40-hour battery life means you can enjoy your
-              music for days without needing to recharge. Whether you're
-              commuting, working, or relaxing at home, these headphones are the
-              perfect companion.
-            </p>
-            <h3 className="text-xl font-semibold mt-6 mb-3">Key Features</h3>
-            <ul>
-              <li>Active noise cancellation for immersive listening</li>
-              <li>
-                Bluetooth 5.0 for stable and long-range wireless connectivity
-              </li>
-              <li>40mm drivers for rich, detailed sound</li>
-              <li>Comfortable over-ear design with premium materials</li>
-              <li>Voice assistant support for hands-free control</li>
-            </ul>
-          </div>
-          <div className="prose max-w-none">
-            <h2 className="text-2xl font-bold mb-4">Product Details</h2>
-            <p>
-              Our Premium Wireless Headphones are designed to deliver an
-              exceptional audio experience. With advanced noise-cancellation
-              technology, you can immerse yourself in your favorite music
-              without any distractions.
-            </p>
-            <p>
-              The over-ear design ensures comfort during long listening
-              sessions, while the 40-hour battery life means you can enjoy your
-              music for days without needing to recharge. Whether you're
-              commuting, working, or relaxing at home, these headphones are the
-              perfect companion.
-            </p>
-            <h3 className="text-xl font-semibold mt-6 mb-3">Key Features</h3>
-            <ul>
-              <li>Active noise cancellation for immersive listening</li>
-              <li>
-                Bluetooth 5.0 for stable and long-range wireless connectivity
-              </li>
-              <li>40mm drivers for rich, detailed sound</li>
-              <li>Comfortable over-ear design with premium materials</li>
-              <li>Voice assistant support for hands-free control</li>
-            </ul>
-          </div>
-          <div className="prose max-w-none">
-            <h2 className="text-2xl font-bold mb-4">Product Details</h2>
-            <p>
-              Our Premium Wireless Headphones are designed to deliver an
-              exceptional audio experience. With advanced noise-cancellation
-              technology, you can immerse yourself in your favorite music
-              without any distractions.
-            </p>
-            <p>
-              The over-ear design ensures comfort during long listening
-              sessions, while the 40-hour battery life means you can enjoy your
-              music for days without needing to recharge. Whether you're
-              commuting, working, or relaxing at home, these headphones are the
-              perfect companion.
-            </p>
-            <h3 className="text-xl font-semibold mt-6 mb-3">Key Features</h3>
-            <ul>
-              <li>Active noise cancellation for immersive listening</li>
-              <li>
-                Bluetooth 5.0 for stable and long-range wireless connectivity
-              </li>
-              <li>40mm drivers for rich, detailed sound</li>
-              <li>Comfortable over-ear design with premium materials</li>
-              <li>Voice assistant support for hands-free control</li>
-            </ul>
-          </div>
-          <div className="prose max-w-none">
-            <h2 className="text-2xl font-bold mb-4">Product Details</h2>
-            <p>
-              Our Premium Wireless Headphones are designed to deliver an
-              exceptional audio experience. With advanced noise-cancellation
-              technology, you can immerse yourself in your favorite music
-              without any distractions.
-            </p>
-            <p>
-              The over-ear design ensures comfort during long listening
-              sessions, while the 40-hour battery life means you can enjoy your
-              music for days without needing to recharge. Whether you're
-              commuting, working, or relaxing at home, these headphones are the
-              perfect companion.
-            </p>
-            <h3 className="text-xl font-semibold mt-6 mb-3">Key Features</h3>
-            <ul>
-              <li>Active noise cancellation for immersive listening</li>
-              <li>
-                Bluetooth 5.0 for stable and long-range wireless connectivity
-              </li>
-              <li>40mm drivers for rich, detailed sound</li>
-              <li>Comfortable over-ear design with premium materials</li>
-              <li>Voice assistant support for hands-free control</li>
-            </ul>
-          </div>
-          <div className="prose max-w-none">
-            <h2 className="text-2xl font-bold mb-4">Product Details</h2>
-            <p>
-              Our Premium Wireless Headphones are designed to deliver an
-              exceptional audio experience. With advanced noise-cancellation
-              technology, you can immerse yourself in your favorite music
-              without any distractions.
-            </p>
-            <p>
-              The over-ear design ensures comfort during long listening
-              sessions, while the 40-hour battery life means you can enjoy your
-              music for days without needing to recharge. Whether you're
-              commuting, working, or relaxing at home, these headphones are the
-              perfect companion.
-            </p>
-            <h3 className="text-xl font-semibold mt-6 mb-3">Key Features</h3>
-            <ul>
-              <li>Active noise cancellation for immersive listening</li>
-              <li>
-                Bluetooth 5.0 for stable and long-range wireless connectivity
-              </li>
-              <li>40mm drivers for rich, detailed sound</li>
-              <li>Comfortable over-ear design with premium materials</li>
-              <li>Voice assistant support for hands-free control</li>
-            </ul>
-          </div>
-          <div className="prose max-w-none">
-            <h2 className="text-2xl font-bold mb-4">Product Details</h2>
-            <p>
-              Our Premium Wireless Headphones are designed to deliver an
-              exceptional audio experience. With advanced noise-cancellation
-              technology, you can immerse yourself in your favorite music
-              without any distractions.
-            </p>
-            <p>
-              The over-ear design ensures comfort during long listening
-              sessions, while the 40-hour battery life means you can enjoy your
-              music for days without needing to recharge. Whether you're
-              commuting, working, or relaxing at home, these headphones are the
-              perfect companion.
-            </p>
-            <h3 className="text-xl font-semibold mt-6 mb-3">Key Features</h3>
-            <ul>
-              <li>Active noise cancellation for immersive listening</li>
-              <li>
-                Bluetooth 5.0 for stable and long-range wireless connectivity
-              </li>
-              <li>40mm drivers for rich, detailed sound</li>
-              <li>Comfortable over-ear design with premium materials</li>
-              <li>Voice assistant support for hands-free control</li>
-            </ul>
-          </div>
-          <div className="prose max-w-none">
-            <h2 className="text-2xl font-bold mb-4">Product Details</h2>
-            <p>
-              Our Premium Wireless Headphones are designed to deliver an
-              exceptional audio experience. With advanced noise-cancellation
-              technology, you can immerse yourself in your favorite music
-              without any distractions.
-            </p>
-            <p>
-              The over-ear design ensures comfort during long listening
-              sessions, while the 40-hour battery life means you can enjoy your
-              music for days without needing to recharge. Whether you're
-              commuting, working, or relaxing at home, these headphones are the
-              perfect companion.
-            </p>
-            <h3 className="text-xl font-semibold mt-6 mb-3">Key Features</h3>
-            <ul>
-              <li>Active noise cancellation for immersive listening</li>
-              <li>
-                Bluetooth 5.0 for stable and long-range wireless connectivity
-              </li>
-              <li>40mm drivers for rich, detailed sound</li>
-              <li>Comfortable over-ear design with premium materials</li>
-              <li>Voice assistant support for hands-free control</li>
-            </ul>
-          </div>
-          <div className="prose max-w-none">
-            <h2 className="text-2xl font-bold mb-4">Product Details</h2>
-            <p>
-              Our Premium Wireless Headphones are designed to deliver an
-              exceptional audio experience. With advanced noise-cancellation
-              technology, you can immerse yourself in your favorite music
-              without any distractions.
-            </p>
-            <p>
-              The over-ear design ensures comfort during long listening
-              sessions, while the 40-hour battery life means you can enjoy your
-              music for days without needing to recharge. Whether you're
-              commuting, working, or relaxing at home, these headphones are the
-              perfect companion.
-            </p>
-            <h3 className="text-xl font-semibold mt-6 mb-3">Key Features</h3>
-            <ul>
-              <li>Active noise cancellation for immersive listening</li>
-              <li>
-                Bluetooth 5.0 for stable and long-range wireless connectivity
-              </li>
-              <li>40mm drivers for rich, detailed sound</li>
-              <li>Comfortable over-ear design with premium materials</li>
-              <li>Voice assistant support for hands-free control</li>
-            </ul>
-          </div>
-          <div className="prose max-w-none">
-            <h2 className="text-2xl font-bold mb-4">Product Details</h2>
-            <p>
-              Our Premium Wireless Headphones are designed to deliver an
-              exceptional audio experience. With advanced noise-cancellation
-              technology, you can immerse yourself in your favorite music
-              without any distractions.
-            </p>
-            <p>
-              The over-ear design ensures comfort during long listening
-              sessions, while the 40-hour battery life means you can enjoy your
-              music for days without needing to recharge. Whether you're
-              commuting, working, or relaxing at home, these headphones are the
-              perfect companion.
-            </p>
-            <h3 className="text-xl font-semibold mt-6 mb-3">Key Features</h3>
-            <ul>
-              <li>Active noise cancellation for immersive listening</li>
-              <li>
-                Bluetooth 5.0 for stable and long-range wireless connectivity
-              </li>
-              <li>40mm drivers for rich, detailed sound</li>
-              <li>Comfortable over-ear design with premium materials</li>
-              <li>Voice assistant support for hands-free control</li>
-            </ul>
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-2xl font-bold mb-4">Share this campaign</h2>
+            <div className="flex items-center mb-4">
+              <input
+                type="text"
+                readOnly
+                value={shortenedCurrentUrl}
+                className="flex-grow p-2 border border-gray-100 focus-visible:outline-none focus:outline-none border-1 rounded-md mr-2"
+              />
+              <button
+                onClick={copyShareableUrl}
+                className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition duration-200"
+              >
+                {copyButtonText}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Right Column */}
-        <div className="lg:w-1/4 p-6 lg:sticky lg:top-0 lg:h-screen overflow-y-auto">
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-xl font-bold mb-4">Specifications</h2>
-            <table className="w-full">
-              <tbody>
-                {product.specifications.map((spec, index) => (
-                  <tr key={index} className="border-b last:border-b-0">
-                    <td className="py-2 font-medium text-gray-600">
-                      {spec.name}
-                    </td>
-                    <td className="py-2 text-right text-gray-800">
-                      {spec.value}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="flex justify-around">
-            <button className="flex items-center text-gray-600 hover:text-red-600 transition-colors duration-300">
-              <FaHeart className="mr-2" /> Send Good Wishes
-            </button>
-            <button className="flex items-center text-gray-600 hover:text-red-600 transition-colors duration-300">
-              <FaShare className="mr-2" /> Share
-            </button>
+        <div>
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8 sticky top-4">
+            <h2 className="text-2xl font-bold mb-4">Select a Reward</h2>
+            <div className="max-h-96 overflow-y-auto mb-4">
+              {campaignData.rewards.map((reward) => (
+                <div
+                  key={reward.id}
+                  className={`border rounded-md p-4 mb-4 cursor-pointer transition duration-300 ${selectedTier === reward.id ? 'border-blue-500 bg-blue-50' : 'hover:border-blue-300'}`}
+                  onClick={() => handleTierSelect(reward.id)}
+                >
+                  <h3 className="font-bold mb-2">{reward.title}</h3>
+                  <p className="text-gray-600 mb-2">{reward.description}</p>
+                  <div className="font-semibold">
+                    Pledge ${reward.amount} or more
+                  </div>
+                </div>
+              ))}
+            </div>
+            <form onSubmit={handlePledgeSubmit}>
+              <input
+                type="number"
+                className="w-full p-2 border rounded-md mb-4"
+                placeholder="Enter pledge amount"
+                value={pledgeAmount}
+                onChange={(e) => setPledgeAmount(e.target.value)}
+                required
+              />
+              <div className="flex items-center mb-4">
+                <input
+                  type="checkbox"
+                  id="recurring"
+                  className="mr-2"
+                  checked={isRecurring}
+                  onChange={(e) => setIsRecurring(e.target.checked)}
+                />
+                <label htmlFor="recurring">
+                  {isRecurring
+                    ? 'Back this campaign monthly for 3 months'
+                    : 'Back once'}
+                </label>
+              </div>
+              <DonationButton />
+            </form>
           </div>
         </div>
       </div>
+
+      {/* Button to toggle comments visibility */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Comments</h2>
+        <button
+          onClick={toggleCommentsVisibility}
+          className="text-blue-600 hover:underline"
+        >
+          {areCommentsVisible ? 'Hide Comments' : 'View Comments'}
+        </button>
+      </div>
+
+      {/* Comments section */}
+      {areCommentsVisible && (
+        <div className="bg-white rounded-lg p-8 max-w-3xl w-full h-1/2 overflow-y-auto">
+          <div className="space-y-4 mb-4">
+            {campaignData.comments.map((comment) => (
+              <div key={comment.id} className="bg-gray-100 rounded-lg p-4">
+                <div className="font-semibold mb-2">{comment.user}</div>
+                <p>{comment.content}</p>
+              </div>
+            ))}
+          </div>
+          <form onSubmit={handleCommentSubmit} className="mt-4">
+            <textarea
+              className="w-full p-2 border rounded-md"
+              rows={3}
+              placeholder="Leave a comment..."
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              required
+            ></textarea>
+            <button
+              type="submit"
+              className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"
+            >
+              Post Comment
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 };
