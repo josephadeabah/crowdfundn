@@ -38,6 +38,7 @@
     "embla-carousel-autoplay": "^8.3.0",
     "embla-carousel-react": "^8.3.0",
     "framer-motion": "^11.9.0",
+    "jwt-decode": "^4.0.0",
     "next": "14.2",
     "next-themes": "^0.2.1",
     "react": "18.2.0",
