@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -28,7 +28,7 @@ ChartJS.register(
   PieController,
   ArcElement,
   LineElement,
-  PointElement, // Registering PointElement for Line charts
+  PointElement,
   Title,
   Tooltip,
   Legend,
@@ -37,6 +37,9 @@ ChartJS.register(
 const GeneralDashboard = () => {
   const [filter, setFilter] = useState('daily');
   const [searchTerm, setSearchTerm] = useState('');
+  const [transfers, setTransfers] = useState<
+    { date: string; amount: number; from: string; to: string }[]
+  >([]);
 
   const cardData = [
     { title: 'Total Donations', value: '$1,234,567', icon: <FaDollarSign /> },
@@ -99,6 +102,16 @@ const GeneralDashboard = () => {
     },
     { id: 2, name: 'Jane Smith', comment: 'Easy to use and transparent.' },
   ];
+
+  useEffect(() => {
+    // Static transfer data
+    const staticTransfers = [
+      { date: '2023-06-01', amount: 5000, from: 'User 1', to: 'Charity 1' },
+      { date: '2023-06-02', amount: 7000, from: 'User 2', to: 'Charity 2' },
+      { date: '2023-06-03', amount: 3000, from: 'User 3', to: 'Charity 3' },
+    ];
+    setTransfers(staticTransfers);
+  }, []);
 
   return (
     <div className="mx-auto px-4 py-8">
@@ -179,14 +192,12 @@ const GeneralDashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {[1, 2, 3].map((_, index) => (
+            {transfers.map((transfer, index) => (
               <tr key={index} className="hover:bg-gray-100">
-                <td className="p-2">2023-06-{index + 1}</td>
-                <td className="p-2">${Math.floor(Math.random() * 10000)}</td>
-                <td className="p-2">User {Math.floor(Math.random() * 100)}</td>
-                <td className="p-2">
-                  Charity {Math.floor(Math.random() * 50)}
-                </td>
+                <td className="p-2">{transfer.date}</td>
+                <td className="p-2">${transfer.amount}</td>
+                <td className="p-2">{transfer.from}</td>
+                <td className="p-2">{transfer.to}</td>
               </tr>
             ))}
           </tbody>
