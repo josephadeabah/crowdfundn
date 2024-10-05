@@ -2,6 +2,7 @@ module Api
   module V1
     module Members
       class RolesController < ApplicationController
+        before_action :authenticate_request
         before_action :authorize_admin, only: [:create]
 
         # Endpoint to create a new role
