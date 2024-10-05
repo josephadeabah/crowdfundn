@@ -1,6 +1,7 @@
 {
   "name": "crowdfundnapp",
   "version": "0.1.0",
+  "license": "UNLICENSED",
   "type": "module",
   "private": true,
   "scripts": {
