@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const decodedUser = jwtDecode<User>(token);
       setUser(decodedUser);
-      setToken(token); // Store the token in state
+      setToken(token);
       resetLogoutTimer(); // Reset the inactivity timer on login
     } catch (error) {
       console.error('Invalid token', error);
@@ -44,14 +44,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
-    clearTimeout(logoutTimer!); // Clear the logout timer if any
+    clearTimeout(logoutTimer!);
     router.push('/login');
   };
 
   // Function to reset the inactivity timer
   const resetLogoutTimer = () => {
     if (logoutTimer) {
-      clearTimeout(logoutTimer); // Clear any existing timer
+      clearTimeout(logoutTimer);
     }
     const timer = setTimeout(() => {
       logout(); // Automatically log the user out after timeout
