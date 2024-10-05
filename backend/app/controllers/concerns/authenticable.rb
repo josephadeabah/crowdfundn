@@ -21,8 +21,24 @@ module Authenticable
     render json: { error: 'Not Authorized' }, status: :unauthorized unless @current_user
   end
 
+  def authorize_role(role_name)
+    render json: { error: 'Forbidden' }, status: :forbidden unless @current_user&.has_role?(role_name)
+  end
+
   def authorize_admin
     render json: { error: 'Forbidden' }, status: :forbidden unless @current_user&.admin?
+  end
+
+  def authorize_admin_role
+    authorize_role('Admin')
+  end
+
+  def authorize_manager
+    authorize_role('Manager')
+  end
+
+  def authorize_moderator
+    authorize_role('Moderator')
   end
 
   private

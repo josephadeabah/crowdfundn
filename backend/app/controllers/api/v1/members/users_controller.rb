@@ -2,29 +2,52 @@ module Api
   module V1
     module Members
       class UsersController < ApplicationController
-        before_action :authenticate_request, except: [:index]  # Skip authentication for index action
+        before_action :authenticate_request, except: [:index]
         before_action :authorize_admin, only: [:make_admin]
-        before_action :set_user, only: [:make_admin, :show_by_id]
+        before_action :set_user, only: [:make_admin, :make_admin_role, :show_by_id, :assign_role] # Added :assign_role
 
         def index
-          @users = User.includes(:profile).all
-          render json: @users.to_json(include: :profile), status: :ok
+          @users = User.includes(:profile, :roles).all
+          render json: @users.to_json(include: [:profile, :roles]), status: :ok
         end
 
         def show
-          render json: @current_user.as_json(include: :profile), status: :ok
+          render json: @current_user.as_json(include: [:profile, :roles]), status: :ok
         end
 
         def show_by_id
-          render json: @user.as_json(include: :profile), status: :ok
+          render json: @user.as_json(include: [:profile, :roles]), status: :ok
         end
 
+
+        # PUT /api/v1/members/users/:id/make_admin
         def make_admin
           admin_status = params[:admin] == "true"
           if @user.update(admin: admin_status)
             render json: @user.as_json(include: :profile), status: :ok
           else
             render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
+          end
+        end
+
+        def make_admin_role
+          admin_role = Role.find_by(name: 'Admin')
+          if params[:admin] == "true"
+            @user.roles << admin_role unless @user.has_role?('Admin')
+          else
+            @user.roles.delete(admin_role)
+          end
+
+          render json: @user.as_json(include: [:profile, :roles]), status: :ok
+        end
+
+        def assign_role
+          role = Role.find_by(name: params[:role_name])
+          if role.present?
+            @user.roles << role unless @user.has_role?(role.name)
+            render json: { message: "Role assigned successfully." }, status: :ok
+          else
+            render json: { error: 'Role not found' }, status: :unprocessable_entity
           end
         end
 
@@ -47,7 +70,7 @@ module Api
         private
 
         def set_user
-          @user = User.includes(:profile).find(params[:id])
+          @user = User.includes(:profile, :roles).find(params[:id])
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'User not found' }, status: :not_found
         end
@@ -57,7 +80,6 @@ module Api
             :email,
             :password,
             :password_confirmation,
-            :admin,
             :full_name,
             :phone_number,
             :country,

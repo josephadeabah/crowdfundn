@@ -6,11 +6,12 @@ module Api
         def signup
           user = User.new(user_params)
           if user.save
-            render json: { token: encode_token(user.id), user: user }, status: :created
+            render json: { token: encode_token(user.id), user: user.as_json(include: :roles) }, status: :created
           else
             render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
           end
         end
+
 
         def login
           user = User.find_by(email: params[:email])

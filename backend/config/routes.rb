@@ -2,6 +2,8 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       namespace :members do
+        resources :roles, only: [:create]
+        get 'roles/create'
         post 'auth/signup', to: 'auth#signup'
         post 'auth/login', to: 'auth#login'
         post 'auth/password/reset', to: 'auth#password_reset'
@@ -12,22 +14,20 @@ Rails.application.routes.draw do
         put 'users/me/password', to: 'users#change_password'
         get 'users/:id', to: 'users#show_by_id' # Route to get user by ID
         put 'users/:id/make_admin', to: 'users#make_admin'  # Route to make user an admin
+        put 'users/:id/assign_role', to: 'users#assign_role'  # Added route for assign_role
       end
+
       namespace :fundraisers do
         resources :campaigns do
           resources :updates, only: [:create, :update, :destroy]
           resources :comments, only: [:create, :index, :destroy]
         end
-      end  # Closing namespace for fundraisers
-    end  # Closing namespace for v1
-  end  # Closing namespace for api
+      end
+    end
+  end
 
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  # Health check route
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Defines the root path route ("/")
   # root "posts#index"
 end
