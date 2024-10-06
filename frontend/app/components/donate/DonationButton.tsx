@@ -6,7 +6,17 @@ import PaystackIcon from '@/app/components/icons/PaystackIcon';
 import ProcessingPayment from '@/app/components/donate/ProcessingPayment';
 import { Button } from '../button/Button';
 
-const DonationButton = () => {
+interface DonationButtonProps {
+  selectedTier: number | null;
+  pledgeAmount: string;
+  billingFrequency: string;
+}
+
+const DonationButton: React.FC<DonationButtonProps> = ({
+  selectedTier,
+  pledgeAmount,
+  billingFrequency,
+}) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -50,10 +60,19 @@ const DonationButton = () => {
       return;
     }
 
+    // Start processing the payment and display details
+    console.log('Payment Details:', {
+      selectedTier,
+      pledgeAmount,
+      billingFrequency,
+      selectedPaymentMethod,
+      paymentDetails,
+    });
+
     setIsPaymentModalOpen(false); // Close the payment modal
     setIsProcessing(true); // Start processing
 
-    // Start processing and pass payment details
+    // Simulate processing payment
     setTimeout(() => {
       setIsProcessing(false);
       setSelectedPaymentMethod('');
@@ -76,7 +95,7 @@ const DonationButton = () => {
     <div className="flex items-center max-w-full">
       <button
         onClick={handleDonateClick}
-        className="w-full px-6 py-3 text-white font-semibold rounded-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-pink-600 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 transform hover:scale-105 transition-all duration-200 shadow"
+        className="w-full px-6 py-3 text-white font-semibold rounded-full bg-gradient-to-r from-red-500 to-gray-800 hover:from-gray-800 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 transform hover:scale-105 transition-all duration-200 shadow"
         aria-label="Donate Now"
       >
         Back Now

@@ -4,6 +4,7 @@ import DonationButton from '@/app/components/donate/DonationButton';
 import { useParams } from 'next/navigation';
 import { FaShare } from 'react-icons/fa';
 import { Button } from '@/app/components/button/Button';
+import { RadioGroup, RadioGroupItem } from '@/app/components/radio/RadioGroup';
 
 interface Reward {
   id: number;
@@ -36,7 +37,6 @@ interface CampaignData {
   comments: Comment[];
 }
 
-// Sample campaign data (you may replace this with real data)
 const campaignData: CampaignData = {
   title: 'Revolutionary Eco-Friendly Water Bottle',
   description:
@@ -128,7 +128,7 @@ const SingleCampaignPage: React.FC = () => {
   const [selectedTier, setSelectedTier] = useState<number | null>(null);
   const [pledgeAmount, setPledgeAmount] = useState<string>('');
   const [comment, setComment] = useState<string>('');
-  const [isRecurring, setIsRecurring] = useState<boolean>(false);
+  const [billingFrequency, setBillingFrequency] = useState<string>('once');
   const [currentUrl, setCurrentUrl] = useState<string>('');
   const [shortenedCurrentUrl, setShortenedCurrentUrl] = useState<string>('');
   const [copyButtonText, setCopyButtonText] = useState<string>('Copy');
@@ -152,7 +152,7 @@ const SingleCampaignPage: React.FC = () => {
     console.log('Pledge submitted:', {
       selectedTier,
       pledgeAmount,
-      isRecurring,
+      billingFrequency,
     });
   };
 
@@ -247,7 +247,11 @@ const SingleCampaignPage: React.FC = () => {
           <div className="flex items-center py-5 w-full">
             <h2 className="text-2xl font-bold mb-4 w-full">Updates</h2>
             <div className="w-full">
-              <DonationButton />
+              <DonationButton
+                selectedTier={selectedTier}
+                pledgeAmount={pledgeAmount}
+                billingFrequency={billingFrequency}
+              />
             </div>
           </div>
           {/* Campaign Updates */}
@@ -285,7 +289,7 @@ const SingleCampaignPage: React.FC = () => {
               </div>
               <button
                 onClick={handleShare}
-                className="bg-black hover:bg-gray-600 w-full dark:bg-gray-950 dark:text-gray-50 text-white font-bold py-2 px-4  justify-center rounded inline-flex items-center"
+                className="bg-black hover:bg-gray-600 w-full dark:bg-gray-950 dark:text-gray-50 text-white font-bold py-2 px-4 justify-center rounded inline-flex items-center"
                 aria-label="Share order details"
               >
                 <FaShare className="mr-2" />
@@ -299,7 +303,7 @@ const SingleCampaignPage: React.FC = () => {
         <div className="sticky top-4 h-fit">
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 className="text-2xl font-bold mb-4">Select a Reward</h2>
-            <div className="max-h-96 overflow-y-auto px-4 mb-4 [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
+            <div className="max-h-96 overflow-y-auto px-4 mb-4">
               {campaignData.rewards.map((reward) => (
                 <div
                   key={reward.id}
@@ -323,28 +327,26 @@ const SingleCampaignPage: React.FC = () => {
                 onChange={(e) => setPledgeAmount(e.target.value)}
                 required
               />
-              <div className="flex items-center mb-4">
-                <input
-                  type="checkbox"
-                  id="recurring"
-                  className="mr-2"
-                  checked={isRecurring}
-                  onChange={(e) => setIsRecurring(e.target.checked)}
-                />
-                <label htmlFor="recurring">
-                  {isRecurring
-                    ? 'Back this campaign monthly for 3 months'
-                    : 'Back once'}
-                </label>
+              <div className="mb-4">
+                <h3 className="font-semibold mb-2">Choose Billing Cycle</h3>
+                <RadioGroup
+                  value={billingFrequency}
+                  onValueChange={setBillingFrequency}
+                >
+                  <RadioGroupItem value="daily" id="daily" className="mr-2" />
+                  <label htmlFor="daily">Daily</label>
+                  <RadioGroupItem value="weekly" id="weekly" className="mr-2" />
+                  <label htmlFor="weekly">Weekly</label>
+                  <RadioGroupItem
+                    value="monthly"
+                    id="monthly"
+                    className="mr-2"
+                  />
+                  <label htmlFor="monthly">Monthly</label>
+                  <RadioGroupItem value="yearly" id="yearly" className="mr-2" />
+                  <label htmlFor="yearly">Yearly</label>
+                </RadioGroup>
               </div>
-              <Button
-                type="submit"
-                className="w-full px-4 py-2 rounded-full transition duration-300"
-                size="lg"
-                variant="outline"
-              >
-                Confirm Pledge
-              </Button>
             </form>
           </div>
         </div>
