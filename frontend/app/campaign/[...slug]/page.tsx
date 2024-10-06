@@ -333,18 +333,35 @@ const SingleCampaignPage: React.FC = () => {
                   value={billingFrequency}
                   onValueChange={setBillingFrequency}
                 >
-                  <RadioGroupItem value="daily" id="daily" className="mr-2" />
-                  <label htmlFor="daily">Daily</label>
-                  <RadioGroupItem value="weekly" id="weekly" className="mr-2" />
-                  <label htmlFor="weekly">Weekly</label>
-                  <RadioGroupItem
-                    value="monthly"
-                    id="monthly"
-                    className="mr-2"
-                  />
-                  <label htmlFor="monthly">Monthly</label>
-                  <RadioGroupItem value="yearly" id="yearly" className="mr-2" />
-                  <label htmlFor="yearly">Yearly</label>
+                  <div className="flex gap-1 items-center">
+                    <RadioGroupItem value="daily" id="daily" className="mr-2" />
+                    <label htmlFor="daily">Daily</label>
+                  </div>
+
+                  <div className="flex gap-1 items-center">
+                    <RadioGroupItem
+                      value="weekly"
+                      id="weekly"
+                      className="mr-2"
+                    />
+                    <label htmlFor="weekly">Weekly</label>
+                  </div>
+                  <div className="flex gap-1 items-center">
+                    <RadioGroupItem
+                      value="monthly"
+                      id="monthly"
+                      className="mr-2"
+                    />
+                    <label htmlFor="monthly">Monthly</label>
+                  </div>
+                  <div className="flex gap-1 items-center">
+                    <RadioGroupItem
+                      value="yearly"
+                      id="yearly"
+                      className="mr-2"
+                    />
+                    <label htmlFor="yearly">Yearly</label>
+                  </div>
                 </RadioGroup>
               </div>
             </form>
