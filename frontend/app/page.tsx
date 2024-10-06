@@ -13,6 +13,7 @@ import FAQsPage from './molecules/faqs';
 import DownloadApp from './molecules/DownloadApp';
 import CTa from './molecules/CTA';
 import ChatbotComponent from './chatbot/ChatbotComponent';
+import Link from 'next/link';
 
 const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
@@ -289,34 +290,36 @@ const HomePage = () => {
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                       className="bg-gray-800 flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
                     >
-                      <div
-                        key={campaign.id}
-                        className="flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
-                      >
-                        <img
-                          src={campaign?.image}
-                          alt={campaign?.name}
-                          className="mb-2 object-cover h-32 w-full"
-                        />
-                        <div className="px-1">
-                          <div className="flex-grow">
-                            <h3 className="text-lg font-bold">
-                              {campaign?.name}
-                            </h3>
-                            <p className="text-sm">{campaign?.description}</p>
+                      <Link href={`/campaign/fundraiser/${campaign.id}`}>
+                        <div
+                          key={campaign.id}
+                          className="flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+                        >
+                          <img
+                            src={campaign?.image}
+                            alt={campaign?.name}
+                            className="mb-2 object-cover h-32 w-full"
+                          />
+                          <div className="px-1">
+                            <div className="flex-grow">
+                              <h3 className="text-lg font-bold">
+                                {campaign?.name}
+                              </h3>
+                              <p className="text-sm">{campaign?.description}</p>
+                            </div>
+                            <div className="w-full text-xs">
+                              <Progress
+                                firstProgress={33}
+                                firstTooltipContent={`Performance: ${33}%`}
+                              />
+                            </div>
+                            <p className="flex justify-between items-center text-sm font-semibold mt-2">
+                              {campaign?.amountRaised}{' '}
+                              <span className="font-normal">raised</span>
+                            </p>
                           </div>
-                          <div className="w-full text-xs">
-                            <Progress
-                              firstProgress={33}
-                              firstTooltipContent={`Performance: ${33}%`}
-                            />
-                          </div>
-                          <p className="flex justify-between items-center text-sm font-semibold mt-2">
-                            {campaign?.amountRaised}{' '}
-                            <span className="font-normal">raised</span>
-                          </p>
                         </div>
-                      </div>
+                      </Link>
                     </motion.div>
                   ))}
                 </div>
@@ -347,34 +350,36 @@ const HomePage = () => {
                       transition={{ duration: 0.5, delay: index * 0.2 }}
                       className="bg-gray-800 flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
                     >
-                      <div
-                        key={campaign.id}
-                        className="flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
-                      >
-                        <img
-                          src={campaign.image}
-                          alt={campaign.name}
-                          className="mb-2 object-cover h-32 w-full"
-                        />
-                        <div className="p-2">
-                          <div className="flex-grow">
-                            <h3 className="text-lg font-bold">
-                              {campaign.name}
-                            </h3>
-                            <p className="text-sm">{campaign.description}</p>
+                      <Link href={`/campaign/fundraiser/${campaign.id}`}>
+                        <div
+                          key={campaign.id}
+                          className="flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+                        >
+                          <img
+                            src={campaign.image}
+                            alt={campaign.name}
+                            className="mb-2 object-cover h-32 w-full"
+                          />
+                          <div className="p-2">
+                            <div className="flex-grow">
+                              <h3 className="text-lg font-bold">
+                                {campaign.name}
+                              </h3>
+                              <p className="text-sm">{campaign.description}</p>
+                            </div>
+                            <div className="w-full text-xs">
+                              <Progress
+                                firstProgress={13}
+                                firstTooltipContent={`Performance: ${13}%`}
+                              />
+                            </div>
+                            <p className="flex justify-between items-center text-sm font-semibold mt-2">
+                              {campaign.amountRaised}{' '}
+                              <span className="font-normal">raised</span>
+                            </p>
                           </div>
-                          <div className="w-full text-xs">
-                            <Progress
-                              firstProgress={13}
-                              firstTooltipContent={`Performance: ${13}%`}
-                            />
-                          </div>
-                          <p className="flex justify-between items-center text-sm font-semibold mt-2">
-                            {campaign.amountRaised}{' '}
-                            <span className="font-normal">raised</span>
-                          </p>
                         </div>
-                      </div>
+                      </Link>
                     </motion.div>
                   ))}
                 </div>
@@ -388,34 +393,36 @@ const HomePage = () => {
                       transition={{ duration: 0.5, delay: 2 * 0.2 }}
                       className="bg-gray-800 flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
                     >
-                      <div
-                        key={campaign.id}
-                        className="flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
-                      >
-                        <img
-                          src={campaign.image}
-                          alt={campaign.name}
-                          className="mb-2 object-cover h-32 w-full"
-                        />
-                        <div className="px-1">
-                          <div className="flex-grow">
-                            <h3 className="text-lg font-bold">
-                              {campaign.name}
-                            </h3>
-                            <p className="text-sm">{campaign.description}</p>
+                      <Link href={`/campaign/fundraiser/${campaign.id}`}>
+                        <div
+                          key={campaign.id}
+                          className="flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+                        >
+                          <img
+                            src={campaign.image}
+                            alt={campaign.name}
+                            className="mb-2 object-cover h-32 w-full"
+                          />
+                          <div className="px-1">
+                            <div className="flex-grow">
+                              <h3 className="text-lg font-bold">
+                                {campaign.name}
+                              </h3>
+                              <p className="text-sm">{campaign.description}</p>
+                            </div>
+                            <div className="w-full text-xs">
+                              <Progress
+                                firstProgress={13}
+                                firstTooltipContent={`Performance: ${13}%`}
+                              />
+                            </div>
+                            <p className="flex justify-between items-center text-sm font-semibold mt-2">
+                              {campaign.amountRaised}{' '}
+                              <span className="font-normal">raised</span>
+                            </p>
                           </div>
-                          <div className="w-full text-xs">
-                            <Progress
-                              firstProgress={13}
-                              firstTooltipContent={`Performance: ${13}%`}
-                            />
-                          </div>
-                          <p className="flex justify-between items-center text-sm font-semibold mt-2">
-                            {campaign.amountRaised}{' '}
-                            <span className="font-normal">raised</span>
-                          </p>
                         </div>
-                      </div>
+                      </Link>
                     </motion.div>
                   ))}
                 </div>
