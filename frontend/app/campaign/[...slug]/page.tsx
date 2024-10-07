@@ -371,10 +371,13 @@ const SingleCampaignPage: React.FC = () => {
             <form onSubmit={handlePledgeSubmit} className="mb-4 relative">
               <FaInfoCircle
                 data-tooltip-id="amount-info"
-                data-tooltip-content="Enter the amount you want to pledge. You will be charged this amount during payment."
+                data-tooltip-content="Enter the amount you want to pledge. You will be charged this amount during payment. If you do not want any reward just enter the amount you want to donate and choose backing period to proceed."
                 className="absolute top-0 left-0 text-gray-500"
               />
-              <Tooltip id="amount-info" />
+              <Tooltip
+                id="amount-info"
+                className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
+              />
               <input
                 type="number"
                 className="w-full p-2 border rounded-md mb-4 mt-2"
