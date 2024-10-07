@@ -350,7 +350,7 @@ const SingleCampaignPage: React.FC = () => {
 
         {/* Right Column: Sticky Rewards */}
         <div className="order-2 lg:col-span-1 ">
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <div className="bg-white rounded-lg shadow-md px-6 mb-20 pb-10">
             <h2 className="text-2xl font-bold mb-4">Select a Reward</h2>
             <div className="max-h-96 overflow-y-auto px-4 mb-4 [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
               {campaignData.rewards.map((reward) => (
