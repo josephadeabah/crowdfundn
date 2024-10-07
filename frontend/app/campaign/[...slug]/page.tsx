@@ -2,9 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import DonationButton from '@/app/components/donate/DonationButton';
 import { useParams } from 'next/navigation';
-import { FaShare } from 'react-icons/fa';
+import { FaInfoCircle, FaShare } from 'react-icons/fa';
 import { Button } from '@/app/components/button/Button';
 import { RadioGroup, RadioGroupItem } from '@/app/components/radio/RadioGroup';
+import { Tooltip } from 'react-tooltip';
 
 interface Reward {
   id: number;
@@ -367,17 +368,24 @@ const SingleCampaignPage: React.FC = () => {
                 </div>
               ))}
             </div>
-            <form onSubmit={handlePledgeSubmit} className="mb-4">
+            <form onSubmit={handlePledgeSubmit} className="mb-4 relative">
+              <FaInfoCircle
+                data-tooltip-id="amount-info"
+                data-tooltip-content="Enter the amount you want to pledge. You will be charged this amount during payment."
+                className="absolute top-0 left-0 text-gray-500"
+              />
+              <Tooltip id="amount-info" />
               <input
                 type="number"
-                className="w-full p-2 border rounded-md mb-4"
+                className="w-full p-2 border rounded-md mb-4 mt-2"
                 placeholder="Enter pledge amount"
                 value={pledgeAmount}
                 onChange={(e) => setPledgeAmount(e.target.value)}
                 required
               />
+
               <div className="mb-4">
-                <h3 className="font-semibold mb-2">Choose Billing Period</h3>
+                <h3 className="font-semibold mb-2">Choose Backing Period</h3>
                 <RadioGroup
                   value={billingFrequency}
                   onValueChange={setBillingFrequency}
