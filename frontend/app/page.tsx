@@ -14,6 +14,7 @@ import DownloadApp from './molecules/DownloadApp';
 import CTa from './molecules/CTA';
 import ChatbotComponent from './chatbot/ChatbotComponent';
 import Link from 'next/link';
+import { FaHandHoldingUsd } from 'react-icons/fa';
 
 const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
@@ -203,21 +204,21 @@ const HomePage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {[
                 {
-                  title: 'Manage Your Campaigns',
+                  title: 'Raise Money with No Stress',
                   description:
-                    'Track donations, monitor progress, and keep your supporters updated all in one place.',
+                    'We take care of everything so you can focus on your mission.',
                   icon: <FiUsers size={80} />,
                 },
                 {
-                  title: 'Supporter Engagement',
+                  title: 'Back a Cause and Make a Difference',
                   description:
-                    'Keep your community engaged by thanking donors and sharing updates with them.',
-                  icon: <FiActivity size={80} />,
+                    'Donate to a Cause You Care About with Confidence, Purpose and Ease.',
+                  icon: <FaHandHoldingUsd size={80} />,
                 },
                 {
                   title: 'Rewards & Recognition',
                   description:
-                    'Show your appreciation by offering rewards to your backers and recognizing their contributions.',
+                    'Earn recognition and rewards for your contributions.',
                   icon: <FiAward size={80} />,
                 },
                 {
