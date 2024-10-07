@@ -241,6 +241,22 @@ const PaymentPageContent = () => {
                   </p>
                 )}
               </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="paymentAmount"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Amount
+                </label>
+                <input
+                  type="text"
+                  id="paymentAmount"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="Enter your amount"
+                  value={paymentAmount}
+                  onChange={(e) => setPaymentAmount(e.target.value)}
+                />
+              </div>
             </>
           ) : null}
 
