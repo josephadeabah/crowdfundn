@@ -22,7 +22,6 @@ const DonationButton: React.FC<DonationButtonProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState('');
 
-  // State for payment details
   const [paymentDetails, setPaymentDetails] = useState({
     cardNumber: '12345678901234567',
     expirationDate: '01/22',
@@ -32,6 +31,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
     first_name: 'John',
     last_name: 'Doe',
     phone: '1234567890',
+    amount: pledgeAmount,
     email: 'test@example.com',
     type: 'Credit Card',
   });
@@ -53,6 +53,12 @@ const DonationButton: React.FC<DonationButtonProps> = ({
     setError('');
   };
 
+  const billing = {
+    frequency: billingFrequency,
+    amount: pledgeAmount,
+    tier: selectedTier !== null ? selectedTier.toString() : 'N/A',
+  };
+
   const handlePaymentSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedPaymentMethod) {
@@ -60,23 +66,14 @@ const DonationButton: React.FC<DonationButtonProps> = ({
       return;
     }
 
-    // Start processing the payment and display details
-    console.log('Payment Details:', {
-      selectedTier,
-      pledgeAmount,
-      billingFrequency,
-      selectedPaymentMethod,
-      paymentDetails,
-    });
+    setIsPaymentModalOpen(false);
+    setIsProcessing(true);
 
-    setIsPaymentModalOpen(false); // Close the payment modal
-    setIsProcessing(true); // Start processing
-
-    // Simulate processing payment
     setTimeout(() => {
       setIsProcessing(false);
       setSelectedPaymentMethod('');
       setPaymentDetails({
+        amount: billing.amount,
         cardNumber: '',
         expirationDate: '',
         cvv: '',
@@ -183,13 +180,14 @@ const DonationButton: React.FC<DonationButtonProps> = ({
       {isProcessing && (
         <Modal
           isOpen={isProcessing}
-          onClose={() => setIsProcessing(false)} // Optional: You may want to prevent closing this modal manually
+          onClose={() => setIsProcessing(false)}
           size="xlarge"
           closeOnBackdropClick={false}
         >
           <ProcessingPayment
             selectedPaymentMethod={selectedPaymentMethod}
-            paymentDetails={paymentDetails} // Pass payment details here
+            paymentDetails={paymentDetails}
+            billing={billing} // Ensure billing is correctly structured
           />
         </Modal>
       )}

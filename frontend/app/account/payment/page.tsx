@@ -14,6 +14,8 @@ const PaymentPageContent = () => {
   const [cardholderName, setCardholderName] = useState('');
   const [paymentEmail, setPaymentEmail] = useState('');
   const [paymentPassword, setPaymentPassword] = useState('');
+  const [paymentPhone, setPaymentPhone] = useState('');
+  const [paymentAmount, setPaymentAmount] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -27,6 +29,8 @@ const PaymentPageContent = () => {
     const firstName = searchParams.get('firstName') ?? '';
     const lastName = searchParams.get('lastName') ?? '';
     const paymentEmailParam = searchParams.get('email') ?? '';
+    const payAmount = searchParams.get('amount');
+    const phone = searchParams.get('phone');
 
     if (method) setPaymentMethod(method);
     if (cardNumberParam) setCardNumber(cardNumberParam);
@@ -34,6 +38,8 @@ const PaymentPageContent = () => {
     if (cvvParam) setCvv(cvvParam);
     if (firstName || lastName) setCardholderName(`${firstName} ${lastName}`);
     if (paymentEmailParam) setPaymentEmail(paymentEmailParam);
+    if (payAmount) setPaymentAmount(payAmount);
+    if (phone) setPaymentPhone(phone);
   }, [searchParams]);
 
   const paymentMethods: {
@@ -112,24 +118,8 @@ const PaymentPageContent = () => {
           )}
         </div>
 
-        <div className="flex flex-wrap justify-center mb-6 gap-2">
-          {Object.keys(paymentMethods).map((method) => (
-            <button
-              key={method}
-              className={`px-4 py-2 rounded-full flex items-center gap-2 ${
-                paymentMethod === method
-                  ? 'bg-black text-white'
-                  : 'bg-gray-200 text-black'
-              }`}
-              onClick={() => setPaymentMethod(method)}
-            >
-              {paymentMethods[method as keyof typeof paymentMethods].icon}{' '}
-              {paymentMethods[method as keyof typeof paymentMethods].name}
-            </button>
-          ))}
-        </div>
         <form onSubmit={handleSubmitPayment}>
-          {['creditCard'].includes(paymentMethod) && (
+          {paymentMethod == 'creditCard' ? (
             <>
               <div className="mb-4">
                 <label
@@ -252,12 +242,40 @@ const PaymentPageContent = () => {
                 )}
               </div>
             </>
-          )}
+          ) : null}
 
-          {['paypal', 'flutterwave', 'paystack', 'stripe'].includes(
-            paymentMethod,
-          ) && (
+          {paymentMethod == 'paystack' ? (
             <>
+              <div className="mb-4">
+                <label
+                  htmlFor="cardholderName"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="cardholderName"
+                  className={`w-full px-3 py-2 border rounded-md ${
+                    errors.cardholderName ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="John Doe"
+                  value={cardholderName}
+                  onChange={(e) => setCardholderName(e.target.value)}
+                  aria-invalid={!!errors.cardholderName}
+                  aria-describedby={
+                    errors.cardholderName ? 'cardholderName-error' : undefined
+                  }
+                />
+                {errors.cardholderName && (
+                  <p
+                    id="cardholderName-error"
+                    className="mt-1 text-sm text-red-500"
+                  >
+                    {errors.cardholderName}
+                  </p>
+                )}
+              </div>
               <div className="mb-4">
                 <label
                   htmlFor="paymentEmail"
@@ -276,22 +294,287 @@ const PaymentPageContent = () => {
               </div>
               <div className="mb-4">
                 <label
-                  htmlFor="paymentPassword"
+                  htmlFor="paymentPhone"
                   className="block mb-2 text-sm font-medium text-gray-700"
                 >
-                  Password
+                  Phone
                 </label>
                 <input
-                  type="password"
-                  id="paymentPassword"
+                  type="text"
+                  id="paymentPhone"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="Enter your password"
-                  value={paymentPassword}
-                  onChange={(e) => setPaymentPassword(e.target.value)}
+                  placeholder="Enter your phone number"
+                  value={paymentPhone}
+                  onChange={(e) => setPaymentPhone(e.target.value)}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="paymentAmount"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Amount
+                </label>
+                <input
+                  type="text"
+                  id="paymentAmount"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="Enter your amount"
+                  value={paymentAmount}
+                  onChange={(e) => setPaymentAmount(e.target.value)}
                 />
               </div>
             </>
-          )}
+          ) : null}
+
+          {paymentMethod == 'paypal' ? (
+            <>
+              <div className="mb-4">
+                <label
+                  htmlFor="cardholderName"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="cardholderName"
+                  className={`w-full px-3 py-2 border rounded-md ${
+                    errors.cardholderName ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="John Doe"
+                  value={cardholderName}
+                  onChange={(e) => setCardholderName(e.target.value)}
+                  aria-invalid={!!errors.cardholderName}
+                  aria-describedby={
+                    errors.cardholderName ? 'cardholderName-error' : undefined
+                  }
+                />
+                {errors.cardholderName && (
+                  <p
+                    id="cardholderName-error"
+                    className="mt-1 text-sm text-red-500"
+                  >
+                    {errors.cardholderName}
+                  </p>
+                )}
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="paymentEmail"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="paymentEmail"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="you@example.com"
+                  value={paymentEmail}
+                  onChange={(e) => setPaymentEmail(e.target.value)}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="paymentPhone"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Phone
+                </label>
+                <input
+                  type="text"
+                  id="paymentPhone"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="Enter your phone number"
+                  value={paymentPhone}
+                  onChange={(e) => setPaymentPhone(e.target.value)}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="paymentAmount"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Amount
+                </label>
+                <input
+                  type="text"
+                  id="paymentAmount"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="Enter your amount"
+                  value={paymentAmount}
+                  onChange={(e) => setPaymentAmount(e.target.value)}
+                />
+              </div>
+            </>
+          ) : null}
+
+          {paymentMethod == 'flutterwave' ? (
+            <>
+              <div className="mb-4">
+                <label
+                  htmlFor="cardholderName"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="cardholderName"
+                  className={`w-full px-3 py-2 border rounded-md ${
+                    errors.cardholderName ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="John Doe"
+                  value={cardholderName}
+                  onChange={(e) => setCardholderName(e.target.value)}
+                  aria-invalid={!!errors.cardholderName}
+                  aria-describedby={
+                    errors.cardholderName ? 'cardholderName-error' : undefined
+                  }
+                />
+                {errors.cardholderName && (
+                  <p
+                    id="cardholderName-error"
+                    className="mt-1 text-sm text-red-500"
+                  >
+                    {errors.cardholderName}
+                  </p>
+                )}
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="paymentEmail"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="paymentEmail"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="you@example.com"
+                  value={paymentEmail}
+                  onChange={(e) => setPaymentEmail(e.target.value)}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="paymentPhone"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Phone
+                </label>
+                <input
+                  type="text"
+                  id="paymentPhone"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="Enter your phone number"
+                  value={paymentPhone}
+                  onChange={(e) => setPaymentPhone(e.target.value)}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="paymentAmount"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Amount
+                </label>
+                <input
+                  type="text"
+                  id="paymentAmount"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="Enter your amount"
+                  value={paymentAmount}
+                  onChange={(e) => setPaymentAmount(e.target.value)}
+                />
+              </div>
+            </>
+          ) : null}
+
+          {paymentMethod == 'stripe' ? (
+            <>
+              <div className="mb-4">
+                <label
+                  htmlFor="cardholderName"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="cardholderName"
+                  className={`w-full px-3 py-2 border rounded-md ${
+                    errors.cardholderName ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="John Doe"
+                  value={cardholderName}
+                  onChange={(e) => setCardholderName(e.target.value)}
+                  aria-invalid={!!errors.cardholderName}
+                  aria-describedby={
+                    errors.cardholderName ? 'cardholderName-error' : undefined
+                  }
+                />
+                {errors.cardholderName && (
+                  <p
+                    id="cardholderName-error"
+                    className="mt-1 text-sm text-red-500"
+                  >
+                    {errors.cardholderName}
+                  </p>
+                )}
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="paymentEmail"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="paymentEmail"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="you@example.com"
+                  value={paymentEmail}
+                  onChange={(e) => setPaymentEmail(e.target.value)}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="paymentPhone"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Phone
+                </label>
+                <input
+                  type="text"
+                  id="paymentPhone"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="Enter your phone number"
+                  value={paymentPhone}
+                  onChange={(e) => setPaymentPhone(e.target.value)}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="paymentAmount"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Amount
+                </label>
+                <input
+                  type="text"
+                  id="paymentAmount"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="Enter your amount"
+                  value={paymentAmount}
+                  onChange={(e) => setPaymentAmount(e.target.value)}
+                />
+              </div>
+            </>
+          ) : null}
 
           <button
             type="submit"

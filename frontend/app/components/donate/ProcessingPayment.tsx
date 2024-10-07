@@ -4,6 +4,11 @@ import { motion } from 'framer-motion';
 
 interface ProcessingPaymentProps {
   selectedPaymentMethod: string;
+  billing: {
+    frequency: string;
+    amount: string;
+    tier: string;
+  };
   paymentDetails: {
     cardNumber: string;
     expirationDate: string;
@@ -13,6 +18,7 @@ interface ProcessingPaymentProps {
     first_name: string;
     last_name: string;
     phone: string;
+    amount: string;
     email: string;
     type: string;
   };
@@ -21,6 +27,7 @@ interface ProcessingPaymentProps {
 const ProcessingPayment: React.FC<ProcessingPaymentProps> = ({
   selectedPaymentMethod,
   paymentDetails,
+  billing,
 }) => {
   const [isProcessing, setIsProcessing] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -54,6 +61,7 @@ const ProcessingPayment: React.FC<ProcessingPaymentProps> = ({
           firstName: paymentDetails.first_name,
           lastName: paymentDetails.last_name,
           phone: paymentDetails.phone,
+          amount: billing.amount,
           email: paymentDetails.email,
         }).toString();
 
