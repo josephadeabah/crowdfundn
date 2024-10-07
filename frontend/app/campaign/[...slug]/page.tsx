@@ -135,7 +135,7 @@ const SingleCampaignPage: React.FC = () => {
   const [areCommentsVisible, setAreCommentsVisible] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const params = useParams();
-  const { slug } = params; // slug will be an array of the URL segments
+  const { slug } = params;
 
   const handleTierSelect = (tierId: number) => {
     setSelectedTier(tierId);
@@ -197,10 +197,10 @@ const SingleCampaignPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-3 lg:px-8 py-12">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: Campaign Details */}
-        <div className="lg:col-span-2">
+        {/* Middle Column: Campaign Details */}
+        <div className="order-1 lg:col-span-1 overflow-y-auto max-h-100">
           <h1 className="text-4xl font-bold mb-4">{campaignData.title}</h1>
           <p className="text-gray-600 mb-6">{campaignData.description}</p>
           <div className="mb-8 relative">
@@ -212,28 +212,29 @@ const SingleCampaignPage: React.FC = () => {
           </div>
 
           {/* Progress Bar and Stats */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <span className="text-3xl font-bold">
+          <div className="bg-white rounded-lg shadow-md py-6 px-2 mb-8">
+            <div className="w-full flex flex-col gap-2 items-center mb-4">
+              <div className="w-full flex justify-start gap-2 mb-4 md:mb-0">
+                <div className="text-2xl font-bold">
                   ${campaignData.raised.toLocaleString()}
-                </span>
-                <span className="text-gray-600 ml-2">
+                </div>
+                <div className="text-gray-600">
                   {' '}
                   raised of ${campaignData.goal.toLocaleString()} goal
-                </span>
+                </div>
               </div>
-              <div className="text-right">
+              <div className="w-full flex justify-start gap-2 mb-4 md:mb-0">
                 <div className="text-2xl font-bold">{campaignData.backers}</div>
                 <div className="text-gray-600">backers</div>
               </div>
-              <div className="text-right">
+              <div className="w-full flex gap-2">
                 <div className="text-2xl font-bold">
                   {campaignData.daysLeft}
                 </div>
                 <div className="text-gray-600">days left</div>
               </div>
             </div>
+
             <div className="w-full bg-gray-200 rounded-full h-2.5">
               <div
                 className="bg-green-600 h-2.5 rounded-full"
@@ -244,16 +245,37 @@ const SingleCampaignPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center py-5 w-full">
-            <h2 className="text-2xl font-bold mb-4 w-full">Updates</h2>
-            <div className="w-full">
-              <DonationButton
-                selectedTier={selectedTier}
-                pledgeAmount={pledgeAmount}
-                billingFrequency={billingFrequency}
-              />
-            </div>
+          <div className="prose max-w-none">
+            <h2 className="text-2xl font-bold mb-4">Product Details</h2>
+            <p>
+              Our Premium Wireless Headphones are designed to deliver an
+              exceptional audio experience. With advanced noise-cancellation
+              technology, you can immerse yourself in your favorite music
+              without any distractions.
+            </p>
+            <p>
+              The over-ear design ensures comfort during long listening
+              sessions, while the 40-hour battery life means you can enjoy your
+              music for days without needing to recharge. Whether you're
+              commuting, working, or relaxing at home, these headphones are the
+              perfect companion.
+            </p>
+            <h3 className="text-xl font-semibold mt-6 mb-3">Key Features</h3>
+            <ul>
+              <li>Active noise cancellation for immersive listening</li>
+              <li>
+                Bluetooth 5.0 for stable and long-range wireless connectivity
+              </li>
+              <li>40mm drivers for rich, detailed sound</li>
+              <li>Comfortable over-ear design with premium materials</li>
+              <li>Voice assistant support for hands-free control</li>
+            </ul>
           </div>
+        </div>
+
+        {/* Left Column: Donation and Rewards */}
+        <div className="order-3 sticky top-4 h-fit">
+          <h2 className="text-2xl font-bold mb-4 w-full">Updates</h2>
           {/* Campaign Updates */}
           <div className="mb-8 w-full">
             {campaignData.updates.map((update) => (
@@ -268,42 +290,69 @@ const SingleCampaignPage: React.FC = () => {
               </div>
             ))}
           </div>
-
           {/* Share this campaign */}
           <div className="bg-white rounded-lg shadow p-6 mb-8">
             <h2 className="text-2xl font-bold mb-4">Share this campaign</h2>
-            <div className="flex flex-wrap items-center mb-4 gap-3">
-              <div className="flex flex-grow gap-1">
-                <input
-                  type="text"
-                  readOnly
-                  value={shortenedCurrentUrl}
-                  className="flex-grow p-2 border border-gray-100 focus-visible:outline-none rounded-md"
-                />
-                <button
-                  onClick={copyShareableUrl}
-                  className={`${copyButtonText === 'Copied' ? 'bg-gray-400' : 'bg-gray-700'} text-white px-4 py-2 rounded-md hover:bg-gray-700 transition duration-100 ml-2`}
-                >
-                  {copyButtonText}
-                </button>
-              </div>
+            <div className="flex flex-wrap items-center mb-4">
+              <Button onClick={handleShare} className="mr-4">
+                <FaShare className="mr-2" /> Share
+              </Button>
               <button
-                onClick={handleShare}
-                className="bg-black hover:bg-gray-600 w-full dark:bg-gray-950 dark:text-gray-50 text-white font-bold py-2 px-4 justify-center rounded inline-flex items-center"
-                aria-label="Share order details"
+                className="bg-gray-200 rounded-md px-4 py-2"
+                onClick={copyShareableUrl}
               >
-                <FaShare className="mr-2" />
-                Share
+                {copyButtonText}
               </button>
             </div>
+            {error && <p className="text-red-500">{error}</p>}
+          </div>
+
+          {/* Comments Section */}
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">
+                Comments ({campaignData.comments.length})
+              </h2>
+              <button
+                onClick={toggleCommentsVisibility}
+                className="text-red-500"
+              >
+                {areCommentsVisible ? 'Hide' : 'Show'}
+              </button>
+            </div>
+            {areCommentsVisible && (
+              <div className="max-h-96 overflow-y-auto">
+                {campaignData.comments.map((comment) => (
+                  <div key={comment.id} className="border-b py-2">
+                    <p className="font-semibold">{comment.user}</p>
+                    <p className="text-gray-600">{comment.content}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            <form onSubmit={handleCommentSubmit} className="mt-4">
+              <textarea
+                className="w-full border rounded-md p-2"
+                placeholder="Leave a comment..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                required
+              />
+              <button
+                type="submit"
+                className="mt-2 bg-gray-500 text-white rounded-md px-4 py-2"
+              >
+                Submit Comment
+              </button>
+            </form>
           </div>
         </div>
 
-        {/* Right Column: Donation and Rewards */}
-        <div className="sticky top-4 h-fit">
+        {/* Right Column: Sticky Rewards */}
+        <div className="order-2 lg:col-span-1 ">
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 className="text-2xl font-bold mb-4">Select a Reward</h2>
-            <div className="max-h-96 overflow-y-auto px-4 mb-4">
+            <div className="max-h-96 overflow-y-auto px-4 mb-4 [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
               {campaignData.rewards.map((reward) => (
                 <div
                   key={reward.id}
@@ -328,11 +377,15 @@ const SingleCampaignPage: React.FC = () => {
                 required
               />
               <div className="mb-4">
-                <h3 className="font-semibold mb-2">Choose Billing Cycle</h3>
+                <h3 className="font-semibold mb-2">Choose Billing Period</h3>
                 <RadioGroup
                   value={billingFrequency}
                   onValueChange={setBillingFrequency}
                 >
+                  <div className="flex gap-1 items-center">
+                    <RadioGroupItem value="once" id="once" className="mr-2" />
+                    <label htmlFor="daily">One-Time</label>
+                  </div>
                   <div className="flex gap-1 items-center">
                     <RadioGroupItem value="daily" id="daily" className="mr-2" />
                     <label htmlFor="daily">Daily</label>
@@ -365,51 +418,15 @@ const SingleCampaignPage: React.FC = () => {
                 </RadioGroup>
               </div>
             </form>
-          </div>
-        </div>
-      </div>
-
-      {/* Comments Section */}
-      <div className="mt-8">
-        <div className="flex justify-between items-center mb-4">
-          <button
-            onClick={toggleCommentsVisibility}
-            className="hover:no-underline focus:outline-none"
-          >
-            <h2 className="text-2xl font-bold">
-              {areCommentsVisible ? 'Hide Comments' : 'View Comments'}
-            </h2>
-          </button>
-        </div>
-
-        {areCommentsVisible && (
-          <div className="bg-white rounded-lg p-8 max-w-3xl w-full h-1/2 overflow-y-auto">
-            <div className="space-y-4 mb-4">
-              {campaignData.comments.map((comment) => (
-                <div key={comment.id} className="bg-gray-100 rounded-lg p-4">
-                  <div className="font-semibold mb-2">{comment.user}</div>
-                  <p>{comment.content}</p>
-                </div>
-              ))}
+            <div className="w-full">
+              <DonationButton
+                selectedTier={selectedTier}
+                pledgeAmount={pledgeAmount}
+                billingFrequency={billingFrequency}
+              />
             </div>
-            <form onSubmit={handleCommentSubmit} className="mt-4">
-              <textarea
-                className="w-full p-2 border rounded-md"
-                rows={3}
-                placeholder="Leave a comment..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                required
-              ></textarea>
-              <button
-                type="submit"
-                className="mt-2 bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition duration-300"
-              >
-                Post Comment
-              </button>
-            </form>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
