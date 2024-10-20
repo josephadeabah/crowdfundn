@@ -236,7 +236,9 @@ const HomePage = () => {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="bg-gray-50 dark:bg-gray-950 dark:text-gray-50 p-6 rounded-lg text-center hover:bg-white transition-colors duration-300"
                 >
-                  <div className="text-4xl text-orange-400 mb-4">{item.icon}</div>
+                  <div className="text-4xl text-orange-400 mb-4">
+                    {item.icon}
+                  </div>
                   <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
                   <p className="text-gray-500">{item.description}</p>
                 </motion.div>

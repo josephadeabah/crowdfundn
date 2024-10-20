@@ -110,7 +110,11 @@ const Navbar = () => {
             transition={{ duration: 0.5 }}
             className="text-2xl font-bold text-red-500"
           >
-            <img src="/bantuhive.svg" alt="Bantuhive Logo" className="w-25 h-20" />
+            <img
+              src="/bantuhive.svg"
+              alt="Bantuhive Logo"
+              className="w-25 h-20"
+            />
           </motion.div>
 
           <div className="hidden lg:flex items-center gap-x-2 mx-6">

@@ -8,7 +8,11 @@ const Footer = () => {
       <div className="mx-auto px-4 lg:px-2 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           <div className="col-span-1 md:col-span-2">
-          <img src="/bantuhive.svg" alt="Bantuhive Logo" className="w-30 h-auto" />
+            <img
+              src="/bantuhive.svg"
+              alt="Bantuhive Logo"
+              className="w-30 h-auto"
+            />
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4">Product</h3>

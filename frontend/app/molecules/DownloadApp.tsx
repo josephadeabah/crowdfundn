@@ -21,7 +21,7 @@ const DownloadApp = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-white text-orange-400 font-semibold py-3 px-6 rounded-full shadow-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50"
+            className="bg-white text-orange-400 font-semibold py-3 px-6 rounded-full shadow transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50"
           >
             <Link href="/contactus">Notify Me on Launch</Link>
           </motion.button>
@@ -36,7 +36,7 @@ const DownloadApp = () => {
           <img
             src="https://images.unsplash.com/photo-1655947715189-e7edcae154cf?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Smiling man holding a phone"
-            className="rounded-lg shadow-2xl max-w-full h-auto"
+            className="rounded-lg max-w-full h-auto"
           />
           <div className="absolute bottom-4 left-4 flex space-x-4">
             <motion.div
