@@ -102,19 +102,21 @@ const Navbar = () => {
     <header
       className={`sticky top-0 z-50 transition-transform duration-300 ease-in-out  hover:text-gray-50 focus:ring-0 hover:bg-gray-950 dark:hover:bg-gray-800 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
     >
-      <nav className="py-2 px-2 w-full shadow-sm bg-gray-50 text-gray-800 dark:bg-gray-950 dark:text-gray-50">
+      <nav className="px-2 w-full shadow-sm bg-gray-50 text-gray-800 dark:bg-gray-950 dark:text-gray-50">
         <div className="relative flex items-center justify-between">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-2xl font-bold text-red-500"
+            className="text-2xl font-bold text-orange-500"
           >
-            <img
-              src="/bantuhive.svg"
-              alt="Bantuhive Logo"
-              className="w-25 h-20"
-            />
+            <a href="/">
+              <img
+                src="/bantuhive.svg"
+                alt="Bantuhive Logo"
+                className="w-24 h-auto"
+              />
+            </a>
           </motion.div>
 
           <div className="hidden lg:flex items-center gap-x-2 mx-6">
