@@ -532,7 +532,7 @@ const RegisterComponent = () => {
                 <div className="flex justify-between mt-2">
                   <span className="text-xs font-medium">User Details</span>
                   <span className="text-xs font-medium">Category</span>
-                  <span className="text-xs font-medium">Payment & Review</span>
+                  <span className="text-xs font-medium">Payment Method</span>
                 </div>
               </div>
               <form onSubmit={handleSubmit}>

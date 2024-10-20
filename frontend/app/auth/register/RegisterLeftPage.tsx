@@ -15,7 +15,7 @@ export default function RegisterLeftPage() {
         </div>
         <div className="flex w-full flex-col items-center gap-12 rounded-lg bg-gray-50 px-6 py-12 dark:bg-gray-900 lg:flex-row lg:justify-center lg:gap-6 lg:px-12">
           <div>
-            <h4 className="mb-2 text-2xl font-bold text-red-600 lg:text-3xl">
+            <h4 className="mb-2 text-2xl font-bold text-orange-400 lg:text-3xl">
               500k+
             </h4>
             <p className="text-base font-medium text-gray-950 dark:text-gray-50">
@@ -23,7 +23,7 @@ export default function RegisterLeftPage() {
             </p>
           </div>
           <div>
-            <h4 className="mb-2 text-2xl font-bold text-red-600 lg:text-3xl">
+            <h4 className="mb-2 text-2xl font-bold text-orange-400  lg:text-3xl">
               250k+
             </h4>
             <p className="text-base font-medium text-gray-950 dark:text-gray-50">
@@ -31,7 +31,7 @@ export default function RegisterLeftPage() {
             </p>
           </div>
           <div>
-            <h4 className="mb-2 text-2xl font-bold text-red-600 lg:text-3xl">
+            <h4 className="mb-2 text-2xl font-bold text-orange-400  lg:text-3xl">
               175M+
             </h4>
             <p className="text-base font-medium text-gray-950 dark:text-gray-50">
@@ -39,7 +39,7 @@ export default function RegisterLeftPage() {
             </p>
           </div>
           <div>
-            <h4 className="mb-2 text-2xl font-bold text-red-600 lg:text-3xl">
+            <h4 className="mb-2 text-2xl font-bold text-orange-400  lg:text-3xl">
               5M+
             </h4>
             <p className="text-base font-medium text-gray-950 dark:text-gray-50">

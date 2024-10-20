@@ -17,14 +17,14 @@ export function CarouselPlugin() {
   return (
     <Carousel
       plugins={[plugin.current]}
-      className="w-full bg-white dark:bg-gray-950"
+      className="w-full max-w-screen-xl dark:bg-gray-950"
       onMouseEnter={plugin.current.stop}
       onMouseLeave={plugin.current.reset}
     >
       <CarouselContent>
         {data.recommendedFundraisers.map((fundraiser) => (
           <CarouselItem key={fundraiser.id}>
-            <Card className="w-full rounded-none bg-white shadow-none border-0">
+            <Card className="w-full rounded-none shadow-none border-0">
               <CardContent className="w-full p-0 flex aspect-square items-center justify-center h-96">
                 <img
                   src={fundraiser.image}

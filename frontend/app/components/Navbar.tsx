@@ -100,9 +100,9 @@ const Navbar = () => {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-transform duration-300 ease-in-out  hover:text-gray-50 focus:ring-0 hover:bg-gray-950 dark:hover:bg-gray-800 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
+      className={`bg-gray-50 sticky top-0 z-50 transition-transform duration-300 ease-in-out hover:text-gray-50 focus:ring-0 dark:hover:bg-gray-800 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
     >
-      <nav className="px-2 w-full shadow-sm bg-gray-50 text-gray-800 dark:bg-gray-950 dark:text-gray-50">
+      <nav className="w-full max-w-screen-xl mx-auto  text-gray-800 dark:bg-gray-950 dark:text-gray-50">
         <div className="relative flex items-center justify-between">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -167,7 +167,7 @@ const Navbar = () => {
             ))}
           </div>
 
-          <div className="lg:hidden">
+          <div className="lg:hidden mr-3">
             <button
               onClick={handleMenuToggle}
               className="text-gray-700 dark:text-gray-300"
@@ -241,19 +241,26 @@ const Navbar = () => {
             </div>
           )}
 
-          <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-3">
+          <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
             <DarkModeBtn />
             <Button
               variant="ghost"
               className="py-2 px-4 dark:hover:bg-gray-800"
             >
-              <Link href="/auth/register">Start A Project</Link>
+              <Link
+                href="/auth/register"
+                className="text-gray-700 dark:text-gray-50"
+              >
+                Start A Project
+              </Link>
             </Button>
             <Button
               variant="ghost"
-              className="py-2 px-4 dark:hover:bg-gray-800"
+              className="py-2 px-4 bg-orange-400 dark:hover:bg-gray-800"
             >
-              <Link href="/auth/login">Login</Link>
+              <Link href="/auth/login" className="text-white dark:text-gray-50">
+                Login
+              </Link>
             </Button>
           </div>
         </div>

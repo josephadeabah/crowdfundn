@@ -76,7 +76,7 @@ const Cta = () => {
   ];
 
   return (
-    <div className="w-full rounded-3xl my-8 bg-white text-gray-50 dark:bg-gray-950 dark:text-gray-50 px-4 sm:px-6 lg:px-8">
+    <div className="w-full rounded-3xl my-3 bg-white text-gray-50 dark:bg-gray-950 dark:text-gray-50">
       <div className="mx-auto">
         <div className="text-center mb-3 px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-green-700 mb-4">

@@ -5,8 +5,8 @@ import Link from 'next/link';
 
 const DownloadApp = () => {
   return (
-    <div className="relative w-full bg-white dark:bg-gray-700 dark:text-gray-50 text-gray-700 py-16 overflow-hidden">
-      <div className="mx-auto px-4 flex flex-col lg:flex-row items-center justify-between">
+    <div className="relative w-full max-w-screen-xl px-3 md:px-0 mx-auto bg-white dark:bg-gray-700 dark:text-gray-50 text-gray-700 py-16 overflow-hidden">
+      <div className="mx-auto flex flex-col lg:flex-row items-center justify-between">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
