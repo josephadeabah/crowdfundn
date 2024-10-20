@@ -126,16 +126,16 @@ const HomePage = () => {
   };
 
   return (
-    <div className="bg-black text-white min-h-screen">
+    <div className="text-gray-700 dark:text-gray-50 min-h-screen">
       <main className="max-w-7xl mx-auto">
         <div className="flex items-center justify-center">
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1589556763333-ad818080f39e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
-              filter: 'brightness(0.4)',
-            }}
+            // style={{
+            //   backgroundImage:
+            //     "url('https://images.unsplash.com/photo-1534951009808-766178b47a4f?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+            //   filter: 'brightness(0.4)',
+            // }}
           />
           <motion.div
             variants={fadeIn}
@@ -144,7 +144,7 @@ const HomePage = () => {
             transition={{ duration: 1 }}
             className="w-full relative text-center"
           >
-            <div className="flex-grow flex flex-col justify-center items-center text-gray-800 rounded-b-3xl dark:text-gray-50 dark:bg-gray-800 mx-auto w-full pt-1">
+            <div className="flex-grow flex flex-col justify-center items-center text-gray-800  dark:text-gray-50 dark:bg-gray-800 mx-auto w-full pt-1">
               <div className="w-full flex flex-col sm:flex-row gap-2">
                 <div className="p-4 sm:w-1/2">
                   <h1 className="text-4xl md:text-7xl">
@@ -153,7 +153,7 @@ const HomePage = () => {
                       style={{ height: '250px' }}
                     >
                       <h1
-                        className="word text-center text-2xl text-gray-50 md:text-4xl lg:text-5xl font-bold"
+                        className="word text-center text-2xl text-gray-700 dark:text-gray-50 md:text-4xl lg:text-5xl font-bold"
                         ref={wordRef}
                       >
                         .
@@ -164,7 +164,7 @@ const HomePage = () => {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="bg-red-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-red-600 hover:scale-105 transition-transform duration-300 "
+                      className="bg-green-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-green-700 hover:scale-105 transition-transform duration-300 "
                     >
                       <a href="/auth/register">Fundraise Now</a>
                     </motion.button>
@@ -172,7 +172,7 @@ const HomePage = () => {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="bg-gray-700 text-white dark:text-gray-50 px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-800 hover:scale-105 transition-transform duration-300 "
+                      className="bg-gray-50 text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300 "
                     >
                       <a href="/faqs">Learn More</a>
                     </motion.button>
@@ -189,7 +189,7 @@ const HomePage = () => {
 
         <div
           ref={ref}
-          className="py-20 bg-gradient-to-b from-black to-gray-900"
+          className="py-20 bg-white dark:bg-gray-800 dark:text-gray-50"
         >
           <div className="px-4">
             <motion.h2
@@ -234,25 +234,25 @@ const HomePage = () => {
                   initial="hidden"
                   animate={controls}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-gray-800 p-6 rounded-lg text-center hover:bg-gray-700 transition-colors duration-300"
+                  className="bg-gray-50 dark:bg-gray-950 dark:text-gray-50 p-6 rounded-lg text-center hover:bg-white transition-colors duration-300"
                 >
-                  <div className="text-4xl text-red-500 mb-4">{item.icon}</div>
+                  <div className="text-4xl text-orange-400 mb-4">{item.icon}</div>
                   <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                  <p className="text-gray-400">{item.description}</p>
+                  <p className="text-gray-500">{item.description}</p>
                 </motion.div>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="py-20 bg-black">
+        <div className="py-20 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-50">
           <div className="mx-auto">
             <motion.h2
               variants={fadeInUp}
               initial="hidden"
               animate={controls}
               transition={{ duration: 0.5 }}
-              className="text-4xl font-bold text-center mb-12 text-white"
+              className="text-4xl font-bold text-center mb-12 text-gray-700 dark:text-gray-50"
             >
               Featured Projects
             </motion.h2>
@@ -267,8 +267,8 @@ const HomePage = () => {
                       key={category.value}
                       className={`cursor-pointer transform hover:scale-105 transition-transform duration-300 ${
                         selectedCategory === category.value
-                          ? 'bg-red-600 text-white'
-                          : 'text-gray-400 dark:bg-slate-950 dark:text-gray-50'
+                          ? 'bg-orange-400 text-white'
+                          : 'text-gray-800 dark:bg-slate-950 dark:text-gray-50'
                       }`}
                       onClick={() => setSelectedCategory(category.value)}
                       variant="default"
@@ -289,12 +289,12 @@ const HomePage = () => {
                       initial="hidden"
                       animate={controls}
                       transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="bg-gray-800 flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+                      className="bg-white flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
                     >
                       <Link href={`/campaign/fundraiser/${campaign.id}`}>
                         <div
                           key={campaign.id}
-                          className="flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+                          className="flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
                         >
                           <img
                             src={campaign?.image}
@@ -331,11 +331,11 @@ const HomePage = () => {
         <CTa />
       </main>
 
-      <div className="bg-black text-white min-h-screen">
+      <div className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 min-h-screen">
         <main>
           <div
             id="projects"
-            className="py-16 bg-gradient-to-b from-black to-red-900"
+            className="py-16 bg-white dark:bg-gray-950 dark:text-gray-50"
           >
             <div className="max-w-7xl mx-auto">
               <h2 className="text-4xl font-bold mb-8 text-center">
@@ -349,12 +349,12 @@ const HomePage = () => {
                       initial={{ opacity: 0, y: 50 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: index * 0.2 }}
-                      className="bg-gray-800 flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+                      className="flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
                     >
                       <Link href={`/campaign/fundraiser/${campaign.id}`}>
                         <div
                           key={campaign.id}
-                          className="flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+                          className="flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
                         >
                           <img
                             src={campaign.image}
@@ -392,12 +392,12 @@ const HomePage = () => {
                       initial={{ opacity: 0, y: 50 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: 2 * 0.2 }}
-                      className="bg-gray-800 flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+                      className="bg-white flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
                     >
                       <Link href={`/campaign/fundraiser/${campaign.id}`}>
                         <div
                           key={campaign.id}
-                          className="flex flex-col h-full hover:bg-gray-700 dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+                          className="flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
                         >
                           <img
                             src={campaign.image}
@@ -443,7 +443,7 @@ const HomePage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: isVisible ? 1 : 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-8 right-8 bg-orange-500 text-white p-3 rounded-full shadow-lg hover:bg-orange-600 transition duration-300"
+            className="fixed bottom-8 right-8 bg-orange-400 text-white p-3 rounded-full shadow-lg hover:bg-orange-500 transition duration-300"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             aria-label="Scroll to top"
           >

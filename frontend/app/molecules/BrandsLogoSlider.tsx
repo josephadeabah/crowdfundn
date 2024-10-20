@@ -53,7 +53,7 @@ export function BrandsLogoSlider() {
   return (
     <Carousel
       plugins={[autoplayPlugin.current]}
-      className="w-full py-16 bg-gradient-to-b from-black to-red-900 dark:bg-gray-950"
+      className="w-full py-16 bg-white dark:bg-gray-950 text-gray-700 dark:text-gray-50"
     >
       <div className="w-full flex p-8 justify-center items-center">
         <h1>Trusted by Brands</h1>
@@ -68,14 +68,14 @@ export function BrandsLogoSlider() {
             {chunk.map((brand) => (
               <div
                 key={brand.id}
-                className="flex flex-col items-center gap-y-2 p-4 md:p-6 dark:bg-gray-900"
+                className="flex flex-col items-center gap-y-2 p-4 md:p-6 dark:bg-gray-950"
               >
                 <img
                   src={`https://img.logo.dev/${brand.id}.com?token=pk_EoYVBqzrSFeSm5-xN9WT9Q`}
                   alt={brand.name}
                   className="h-12 md:h-16"
                 />
-                <span className="text-sm md:text-lg text-gray-50">
+                <span className="text-sm md:text-lg text-gray-800 dark:text-gray-50">
                   {brand.name}
                 </span>
               </div>

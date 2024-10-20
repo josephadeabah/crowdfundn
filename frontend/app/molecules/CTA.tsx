@@ -20,10 +20,10 @@ const ParallaxCard: React.FC<ParallaxCardProps> = ({
   title,
   description,
 }) => (
-  <div className="bg-black text-gray-50 dark:bg-gray-700 dark:text-gray-50 rounded-lg p-4 mt-5 mb-8 transform hover:scale-105 transition-transform duration-300">
-    <Icon className="text-4xl text-orange-600 mb-4" />
+  <div className="bg-white text-gray-700 dark:bg-gray-700 dark:text-gray-50 rounded-lg p-4 mt-5 mb-8 transform hover:scale-105 transition-transform duration-300">
+    <Icon className="text-4xl text-orange-400 mb-4" />
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
-    <p className="text-gray-500">{description}</p>
+    <p className="text-gray-800 dark:text-gray-200">{description}</p>
   </div>
 );
 
@@ -76,17 +76,17 @@ const Cta = () => {
   ];
 
   return (
-    <div className="w-full rounded-3xl my-8 from-black to-red-950 text-gray-50 dark:bg-gray-950 dark:text-gray-50 px-4 sm:px-6 lg:px-8">
+    <div className="w-full rounded-3xl my-8 bg-white text-gray-50 dark:bg-gray-950 dark:text-gray-50 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto">
         <div className="text-center mb-3 px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-600 mb-4">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-green-700 mb-4">
             Discover BantuHive
           </h1>
           <p className="text-lg sm:text-xl italics text-gray-700 max-w-3xl mx-auto">
             Empowering African communities through innovative donation and
             fundraising
           </p>
-          <h1 className="m-4 text-4xl md:text-5xl text-gray-500 py-6 font-semibold">
+          <h1 className="m-4 text-4xl md:text-5xl text-gray-800 dark:text-gray-50 py-6 font-semibold">
             {data.name}
           </h1>
         </div>
@@ -105,7 +105,7 @@ const Cta = () => {
         >
           <a
             href="/auth/register"
-            className="inline-block bg-gradient-to-r from-red-600 to-orange-600 text-white font-bold py-3 px-8 rounded-full text-lg hover:from-orange-700 hover:to-orange-700 transition duration-300 shadow-lg hover:shadow-xl"
+            className="inline-block bg-gradient-to-r from-green-500 to-green-700 text-white font-bold py-3 px-8 rounded-full text-lg hover:from-green-700 hover:to-green-700 transition duration-300 shadow-lg hover:shadow-xl"
           >
             Join BantuHive Today
           </a>

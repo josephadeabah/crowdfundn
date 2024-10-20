@@ -5,13 +5,13 @@ import Link from 'next/link';
 
 const DownloadApp = () => {
   return (
-    <section className="relative w-full bg-gradient-to-br bg-black py-16 overflow-hidden">
+    <div className="relative w-full bg-white dark:bg-gray-700 dark:text-gray-50 text-gray-700 py-16 overflow-hidden">
       <div className="mx-auto px-4 flex flex-col lg:flex-row items-center justify-between">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="lg:w-1/2 text-white mb-8 lg:mb-0"
+          className="lg:w-1/2 text-gray-700 dark:text-gray-50 mb-8 lg:mb-0"
         >
           <h1>Launching Soon</h1>
           <p className="text-xl mb-6">
@@ -21,7 +21,7 @@ const DownloadApp = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-white text-orange-600 font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-orange-100 transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50"
+            className="bg-white text-orange-400 font-semibold py-3 px-6 rounded-full shadow-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50"
           >
             <Link href="/contactus">Notify Me on Launch</Link>
           </motion.button>
@@ -54,7 +54,7 @@ const DownloadApp = () => {
           </div>
         </motion.div>
       </div>
-    </section>
+    </div>
   );
 };
 

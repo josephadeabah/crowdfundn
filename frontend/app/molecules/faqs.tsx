@@ -42,7 +42,7 @@ const FAQsPage = () => {
   };
 
   return (
-    <div className="p-3 md:p-0 bg-gradient-to-b from-red-900 to-black text-gray-50 dark:bg-gray-800 dark:text-gray-50">
+    <div className="p-3 md:p-0 bg-green-900 text-gray-50 dark:bg-gray-800 dark:text-gray-50">
       {/* FAQs Section */}
       <div id="faqs" className="py-20 max-w-7xl mx-auto mb-10">
         <div className="">

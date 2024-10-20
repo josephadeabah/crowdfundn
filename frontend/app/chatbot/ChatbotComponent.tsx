@@ -202,7 +202,7 @@ const ChatbotComponent: React.FC = () => {
     >
       {isExpanded ? (
         <>
-          <div className="flex items-center justify-between bg-gradient-to-r from-red-800 to-black text-white p-4">
+          <div className="flex items-center justify-between bg-orange-400 text-white p-4">
             <div className="flex items-center">
               <FaRobot className="mr-2" />
               <h6 className="font-semibold">Bantuhive Assistant</h6>
@@ -242,7 +242,7 @@ const ChatbotComponent: React.FC = () => {
                   <div
                     className={`max-w-[70%] p-3 rounded-lg ${
                       message.type === 'user'
-                        ? 'bg-gradient-to-r from-red-600 to-red-800 text-white'
+                        ? 'bg-orange-400 text-white'
                         : 'bg-gray-800 text-gray-50'
                     }`}
                   >
@@ -318,7 +318,7 @@ const ChatbotComponent: React.FC = () => {
               />
               <button
                 type="submit"
-                className="bg-gradient-to-r from-red-600 to-red-800 text-white p-2 rounded-lg hover:from-red-700 hover:to-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="bg-green-600 text-white p-2 rounded-lg hover:from-orange-400 hover:to-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
                 aria-label="Send message"
               >
                 <FaPaperPlane />
@@ -329,7 +329,7 @@ const ChatbotComponent: React.FC = () => {
       ) : (
         <button
           onClick={toggleExpand}
-          className="w-8 h-8 flex items-center justify-center bg-gradient-to-r from-red-800 to-black text-white rounded-full p-1 hover:from-red-900 hover:to-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500"
+          className="w-8 h-8 flex items-center justify-center bg-green-800 text-white rounded-full p-1 hover:from-orange-400 hover:to-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
           aria-label="Open chat window"
         >
           <FaComments className="text-xl" />
