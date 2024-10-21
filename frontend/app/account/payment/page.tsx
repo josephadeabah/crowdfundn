@@ -594,7 +594,7 @@ const PaymentPageContent = () => {
 
           <button
             type="submit"
-            className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 disabled:bg-gray-400"
+            className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:bg-gray-400"
             disabled={isProcessing}
           >
             {isProcessing ? 'Processing...' : 'Pay Now'}

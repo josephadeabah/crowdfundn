@@ -92,7 +92,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
     <div className="flex items-center max-w-full">
       <button
         onClick={handleDonateClick}
-        className="w-full px-6 py-3 text-white font-semibold rounded-full bg-gradient-to-r from-red-500 to-gray-800 hover:from-gray-800 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 transform hover:scale-105 transition-all duration-200 shadow"
+        className="w-full px-6 py-3 text-white font-semibold rounded-full bg-gradient-to-r from-green-500 to-green-800 hover:from-green-800 hover:to-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transform hover:scale-105 transition-all duration-200 shadow"
         aria-label="Donate Now"
       >
         Back Now
