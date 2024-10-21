@@ -55,7 +55,6 @@ const RegisterComponent = () => {
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [countryCode, setCountryCode] = useState('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
   const [selectedMobileMoneyProvider, setSelectedMobileMoneyProvider] =
@@ -149,7 +148,10 @@ const RegisterComponent = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const newErrors: FormErrors = {};
+
+    // Validate required fields
     Object.keys(formData).forEach((key) => {
       if (
         !formData[key as keyof typeof formData] &&
@@ -161,13 +163,16 @@ const RegisterComponent = () => {
         newErrors[key] = 'This field is required';
       }
     });
+
+    // Validate passwords
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
+
     setErrors(newErrors);
 
+    // Proceed if there are no errors
     if (Object.keys(newErrors).length === 0) {
-      setIsSubmitting(true);
       try {
         const registrationData: UserRegistrationData = {
           email: formData.email,
@@ -176,7 +181,7 @@ const RegisterComponent = () => {
           full_name: formData.fullName,
           phone_number: formData.phone,
           country: formData.country,
-          payment_method: selectedPaymentMethod,
+          payment_method: selectedPaymentMethod, // Ensure these are valid
           mobile_money_provider: selectedMobileMoneyProvider,
           currency: selectedCurrency,
           birth_date: formData.birthDate,
@@ -188,12 +193,10 @@ const RegisterComponent = () => {
 
         const response = await registerUser(registrationData);
         console.log('Registration successful:', response);
-        // Handle successful registration (e.g., redirect, show success message)
+        // Handle success (e.g., redirect, success message)
       } catch (error) {
         console.error('Registration error:', error);
-        // Handle error (e.g., show error message to the user)
-      } finally {
-        setIsSubmitting(false);
+        // Handle the error (e.g., show error message)
       }
     }
   };
@@ -574,9 +577,8 @@ const RegisterComponent = () => {
                     <button
                       type="submit"
                       className="px-4 py-2 bg-green-600 text-white dark:bg-gray-950 dark:text-gray-50 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                      disabled={isSubmitting}
                     >
-                      {isSubmitting ? 'Registering...' : 'Finish'}
+                      Finish
                     </button>
                   )}
                 </div>
