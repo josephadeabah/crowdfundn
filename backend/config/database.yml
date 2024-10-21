@@ -85,3 +85,4 @@ production:
   <<: *default
   database: <%= ENV['DB_NAME'] %>
   password: <%= ENV['DB_PASSWORD'] %>
+  sslmode: require
