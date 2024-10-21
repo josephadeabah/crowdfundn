@@ -10,6 +10,8 @@ import RegisterLeftPage from './RegisterLeftPage';
 import data from '../../../data.json';
 import { RadioGroup, RadioGroupItem } from '@/app/components/radio/RadioGroup';
 import { Badge } from '@/app/components/badge/Badge';
+import { UserRegistrationData } from '@/app/types/user.registration.types';
+import { registerUser } from '@/app/utils/api/auth.api';
 
 const paymentMethods = data.paymentOptions.methods;
 const mobileMoneyMethod = paymentMethods.find(
@@ -145,7 +147,7 @@ const RegisterComponent = () => {
     if (step > 1) setStep((prevStep) => prevStep - 1);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newErrors: FormErrors = {};
     Object.keys(formData).forEach((key) => {
@@ -166,20 +168,33 @@ const RegisterComponent = () => {
 
     if (Object.keys(newErrors).length === 0) {
       setIsSubmitting(true);
-      // Simulating API call
-      setTimeout(() => {
-        console.log('Form submitted:', {
-          ...formData,
-          phone: formData.phone.startsWith(countryCode)
-            ? formData.phone
-            : countryCode + formData.phone.replace(/^\+?\d+/, ''),
-          selectedCategory,
-          selectedPaymentMethod,
-          selectedMobileMoneyProvider,
-          selectedCurrency,
-        });
+      try {
+        const registrationData: UserRegistrationData = {
+          email: formData.email,
+          password: formData.password,
+          password_confirmation: formData.confirmPassword,
+          full_name: formData.fullName,
+          phone_number: formData.phone,
+          country: formData.country,
+          payment_method: selectedPaymentMethod,
+          mobile_money_provider: selectedMobileMoneyProvider,
+          currency: selectedCurrency,
+          birth_date: formData.birthDate,
+          category: selectedCategory,
+          target_amount: parseInt(formData.targetAmount, 10),
+          duration_in_days: parseInt(formData.duration, 10),
+          national_id: formData.nationalId,
+        };
+
+        const response = await registerUser(registrationData);
+        console.log('Registration successful:', response);
+        // Handle successful registration (e.g., redirect, show success message)
+      } catch (error) {
+        console.error('Registration error:', error);
+        // Handle error (e.g., show error message to the user)
+      } finally {
         setIsSubmitting(false);
-      }, 2000);
+      }
     }
   };
 
