@@ -18,13 +18,13 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: <%= ENV['DB_USERNAME'] %>
+  username: <%= ENV['DB_USER'] %>
   host: <%= ENV['DB_HOST'] %>
   port: <%= ENV['DB_PORT'] %>
 
 development:
   <<: *default
-  database: bantuhive_backend
+  database: <%= ENV['DB_NAME'] %>
   password: <%= ENV['DB_PASSWORD'] %>
 
   # The specified database role being used to connect to PostgreSQL.
@@ -83,6 +83,5 @@ test:
 #
 production:
   <<: *default
-  database: backend_production
-  username: backend
-  password: <%= ENV["BACKEND_DATABASE_PASSWORD"] %>
+  database: <%= ENV['DB_NAME'] %>
+  password: <%= ENV['DB_PASSWORD'] %>
