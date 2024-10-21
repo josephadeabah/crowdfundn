@@ -87,6 +87,9 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
+  config.action_dispatch.trusted_proxies = ['127.0.0.1', '::1']
+  config.middleware.insert_before 0, Rack::SSL if ENV['FORCE_SSL'] == 'true'
+
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
   #   "example.com",     # Allow requests from example.com
