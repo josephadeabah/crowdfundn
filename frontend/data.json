@@ -147,8 +147,7 @@
       },
       { "value": "paypal", "label": "PayPal" },
       { "value": "paystack", "label": "Paystack" },
-      { "value": "wise", "label": "Wise" },
-      { "value": "payoneer", "label": "Payoneer" },
+      { "value": "flutterwave", "label": "FlutterWave" },
       { "value": "bank-transfer", "label": "Bank Transfer" }
     ],
     "currencies": [
