@@ -149,8 +149,8 @@ const Navbar = () => {
                     transition={{ duration: 0.2 }}
                     className={
                       key === 'donate' || key === 'for Diaspora'
-                        ? 'grid grid-cols-2 gap-x-8 gap-y-2 p-3 bg-gray-50 text-gray-700 dark:text-gray-50 dark:bg-gray-950'
-                        : 'p-2 bg-gray-50 text-gray-700 dark:text-gray-50 dark:bg-gray-950'
+                        ? 'grid grid-cols-2 gap-x-8 gap-y-2 p-3 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950'
+                        : 'p-2 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950'
                     }
                   >
                     {links.map((link) => (
