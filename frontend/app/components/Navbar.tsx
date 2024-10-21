@@ -100,7 +100,7 @@ const Navbar = () => {
 
   return (
     <header
-      className={`bg-gray-50 sticky top-0 z-50 transition-transform duration-300 ease-in-out hover:text-gray-50 focus:ring-0 dark:hover:bg-gray-800 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
+      className={`bg-gray-50 dark:bg-gray-950 sticky top-0 z-50 transition-transform duration-300 ease-in-out hover:text-gray-50 focus:ring-0 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
     >
       <nav className="w-full max-w-screen-xl mx-auto  text-gray-800 dark:bg-gray-950 dark:text-gray-50">
         <div className="relative flex items-center justify-between">
@@ -245,7 +245,7 @@ const Navbar = () => {
             <DarkModeBtn />
             <Button
               variant="ghost"
-              className="py-2 px-4 dark:hover:bg-gray-800"
+              className="py-2 px-4 dark:hover:bg-gray-800 bg-white dark:bg-gray-900 dark:text-gray-50 rounded-full"
             >
               <Link
                 href="/auth/register"
