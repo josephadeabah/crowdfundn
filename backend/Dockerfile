@@ -25,7 +25,7 @@ COPY entrypoint.sh /usr/src/app/entrypoint.sh
 RUN chmod +x /usr/src/app/entrypoint.sh
 
 # ENV variables
-ENV GOOGLE_APPLICATION_CREDENTIALS=/usr/src/app/config/paysight_runner.key
+# ENV GOOGLE_APPLICATION_CREDENTIALS=/usr/src/app/config/paysight_runner.key
 ARG DB_PASSWORD
 ARG SECRET_KEY_BASE
 ENV DATABASE_PASSWORD=${DB_PASSWORD}
