@@ -14,6 +14,7 @@ import { HamburgerMenuIcon, TriangleDownIcon } from '@radix-ui/react-icons';
 import { motion } from 'framer-motion';
 import Avatar from '@/app/components/avatar/Avatar';
 import { useAuth } from '@/app/context/auth/AuthContext';
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -21,6 +22,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activePopover, setActivePopover] = useState<string | null>(null);
   const { user, token, logout } = useAuth();
+  const router = useRouter();
 
   const handleLogout = () => {
     logout();
@@ -303,8 +305,13 @@ const Navbar = () => {
                 <PopoverContent side="bottom" align="end" sideOffset={10}>
                   <div className="flex flex-col justify-start gap-3 p-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50">
                     <div className="cursor-pointer flex items-center">
-                      <Avatar name={user.full_name} size="sm" />
-                      <div className="ml-3 flex flex-col">
+                      <Link href="/account">
+                        <Avatar name={user.full_name} size="sm" />
+                      </Link>
+                      <div
+                        className="ml-3 flex flex-col"
+                        onClick={() => router.push('/account')}
+                      >
                         <span className="font-semibold">{user.full_name}</span>
                         <span className="text-gray-600">{user.email}</span>
                       </div>
