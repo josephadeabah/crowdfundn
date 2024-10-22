@@ -169,7 +169,7 @@ const HomePage = () => {
                       className="bg-green-700 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-green-500 hover:scale-105 transition-transform duration-300 "
                     >
                       <a
-                        href={`${user ? '/dashboard/create' : '/auth/register'}`}
+                        href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
                       >
                         Fundraise Now
                       </a>
