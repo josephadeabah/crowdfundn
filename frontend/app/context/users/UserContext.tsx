@@ -27,7 +27,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/user/me`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/me`,
         {
           method: 'GET',
           headers: {

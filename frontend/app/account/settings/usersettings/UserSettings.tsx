@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaUser } from 'react-icons/fa';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
+import { useUserContext } from '@/app/context/users/UserContext';
 
 const UserSettings = () => {
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
@@ -11,6 +12,8 @@ const UserSettings = () => {
   const [language, setLanguage] = useState('');
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const { userProfile, loading, error, fetchUserProfile, hasRole } =
+    useUserContext();
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
@@ -48,16 +51,15 @@ const UserSettings = () => {
     setDeleteConfirmation(false);
     setIsAlertOpen(true);
   };
-
   useEffect(() => {
     // Simulate fetching user data
     setTimeout(() => {
-      setName('John Doe');
-      setPhone('(123) 456-7890');
-      setEmail('johndoe@example.com');
+      setName(userProfile?.full_name || '');
+      setPhone(userProfile?.phone_number || '');
+      setEmail(userProfile?.email || '');
       setLanguage('English');
     }, 1000);
-  }, []);
+  }, [userProfile]);
 
   const cancelAccountDelete = () => {
     setIsAlertOpen(false); // Close the AlertPopup without action
