@@ -42,7 +42,6 @@ const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
   return (
     <div
       className={`relative rounded-full overflow-hidden ${sizeClasses[size]} transition-transform duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
-      style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}
       tabIndex={0}
       role="img"
       aria-label={`Avatar for ${name || 'User'}`}
