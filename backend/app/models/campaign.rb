@@ -11,6 +11,22 @@ class Campaign < ApplicationRecord
 
   enum status: { active: 0, completed: 1, canceled: 2 }
 
+  # Permissions settings
+  attribute :accept_donations, :boolean, default: true
+  attribute :leave_words_of_support, :boolean, default: true
+  attribute :appear_in_search_results, :boolean, default: true
+  attribute :suggested_fundraiser_lists, :boolean, default: true
+  attribute :receive_donation_email, :boolean, default: true
+  attribute :receive_daily_summary, :boolean, default: false
+  attribute :is_public, :boolean, default: true
+
+  # Promotions settings
+  attribute :enable_promotions, :boolean, default: false
+  attribute :schedule_promotion, :boolean, default: false
+  attribute :promotion_frequency, :string, default: 'daily'
+  attribute :promotion_duration, :integer, default: 1
+  
+
   # Attachments for images/videos, you can use ActiveStorage or another service
   # has_many_attached :media
   # has_many_attached :media_files
@@ -19,10 +35,33 @@ class Campaign < ApplicationRecord
   def media_string
     media.present? ? media.split(",").map(&:strip) : []
   end
-    # Method to return media file URLs
-  # def media_urls
-  #   media_files.map { |file| Rails.application.routes.url_helpers.url_for(file) }
-  # end
+
+  # Method to customize the JSON response
+  def as_json(options = {})
+    super(only: [
+      :id, :title, :goal_amount, :current_amount, :start_date, :end_date,
+      :category, :location, :currency, :currency_code, :currency_symbol, :status,
+      :fundraiser_id, :created_at, :updated_at
+    ]).merge(
+      media: media_string,
+      description: description.as_json,
+      permissions: {
+        accept_donations: accept_donations,
+        leave_words_of_support: leave_words_of_support,
+        appear_in_search_results: appear_in_search_results,
+        suggested_fundraiser_lists: suggested_fundraiser_lists,
+        receive_donation_email: receive_donation_email,
+        receive_daily_summary: receive_daily_summary,
+        is_public: is_public
+      },
+      promotions: {
+        enable_promotions: enable_promotions,
+        schedule_promotion: schedule_promotion,
+        promotion_frequency: promotion_frequency,
+        promotion_duration: promotion_duration
+      }
+    )
+  end
 end
 
 class Update < ApplicationRecord

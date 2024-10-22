@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_05_055041) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_22_160014) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -69,6 +69,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_05_055041) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "media"
+    t.boolean "accept_donations"
+    t.boolean "leave_words_of_support"
+    t.boolean "appear_in_search_results"
+    t.boolean "suggested_fundraiser_lists"
+    t.boolean "receive_donation_email"
+    t.boolean "receive_daily_summary"
+    t.boolean "is_public"
+    t.boolean "enable_promotions"
+    t.boolean "schedule_promotion"
+    t.string "promotion_frequency"
+    t.integer "promotion_duration"
     t.index ["fundraiser_id"], name: "index_campaigns_on_fundraiser_id"
   end
 
