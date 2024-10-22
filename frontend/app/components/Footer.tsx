@@ -20,7 +20,7 @@ const Footer = () => {
               {['Features', 'Pricing', 'Case Studies'].map((item) => (
                 <li key={item}>
                   <a
-                    href="#"
+                    href={`/${item.toLowerCase().replace(' ', '-')}`}
                     className="hover:text-orange-300 transition duration-300"
                   >
                     {item}
@@ -35,7 +35,11 @@ const Footer = () => {
               {['About Us', 'Careers', 'Partners', 'News'].map((item) => (
                 <li key={item}>
                   <a
-                    href="#"
+                    href={
+                      item === 'About Us'
+                        ? '/team'
+                        : `/${item.toLowerCase().replace(' ', '-')}`
+                    }
                     className="hover:text-orange-300 transition duration-300"
                   >
                     {item}
@@ -51,7 +55,7 @@ const Footer = () => {
                 (item) => (
                   <li key={item}>
                     <a
-                      href="#"
+                      href={`/${item.toLowerCase().replace(' ', '-')}`}
                       className="hover:text-orange-300 transition duration-300"
                     >
                       {item}

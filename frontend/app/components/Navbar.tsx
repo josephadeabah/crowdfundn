@@ -12,12 +12,19 @@ import Link from 'next/link';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { HamburgerMenuIcon, TriangleDownIcon } from '@radix-ui/react-icons';
 import { motion } from 'framer-motion';
+import Avatar from '@/app/components/avatar/Avatar';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activePopover, setActivePopover] = useState<string | null>(null);
+  const { user, token, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -243,25 +250,48 @@ const Navbar = () => {
 
           <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
             <DarkModeBtn />
-            <Button
-              variant="ghost"
-              className="py-2 px-4 dark:hover:bg-gray-800 bg-white dark:bg-gray-900 dark:text-gray-50 rounded-full"
-            >
-              <Link
-                href="/auth/register"
-                className="text-gray-700 dark:text-gray-50"
-              >
-                Start A Project
-              </Link>
-            </Button>
-            <Button
-              variant="ghost"
-              className="py-2 px-4 bg-orange-400 rounded-full dark:hover:bg-gray-800"
-            >
-              <Link href="/auth/login" className="text-white dark:text-gray-50">
-                Login
-              </Link>
-            </Button>
+            {!user ? (
+              <>
+                <Button
+                  variant="ghost"
+                  className="py-2 px-4 dark:hover:bg-gray-800 bg-white dark:bg-gray-900 dark:text-gray-50 rounded-full"
+                >
+                  <Link
+                    href="/auth/register"
+                    className="text-gray-700 dark:text-gray-50"
+                  >
+                    Start A Project
+                  </Link>
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="py-2 px-4 bg-orange-400 rounded-full dark:hover:bg-gray-800"
+                >
+                  <Link
+                    href="/auth/login"
+                    className="text-white dark:text-gray-50"
+                  >
+                    Login
+                  </Link>
+                </Button>
+              </>
+            ) : (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <div className="cursor-pointer">
+                    <Avatar name={user.full_name} size="sm" />
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent side="bottom" align="end" sideOffset={10}>
+                  <div className="p-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50 rounded-lg shadow-lg">
+                    <p className="mb-2">{user.email}</p>
+                    <Button variant="ghost" onClick={handleLogout}>
+                      Logout
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
           </div>
         </div>
       </nav>

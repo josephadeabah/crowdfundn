@@ -1,7 +1,7 @@
 import {
   ApiResponse,
   UserRegistrationData,
-} from '@/app/types/user.registration.types';
+} from '@/app/types/auth.register.types';
 
 // Function to register users
 export async function registerUser(

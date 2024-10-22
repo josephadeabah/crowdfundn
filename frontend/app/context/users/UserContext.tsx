@@ -53,8 +53,12 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [token]);
 
+  const hasRole = (role: string) => {
+    return userProfile?.roles.some((r) => r.name === role) || false;
+  };
+
   const contextValue = React.useMemo(
-    () => ({ userProfile, loading, error, fetchUserProfile }),
+    () => ({ userProfile, loading, error, fetchUserProfile, hasRole }),
     [userProfile, loading, error],
   );
 

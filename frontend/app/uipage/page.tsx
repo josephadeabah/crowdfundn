@@ -25,7 +25,7 @@ import DataTable from './DataTable';
 import OrderDetailsPage from './OrderDetails';
 import PasswordResetComponent from './PasswordReset';
 import LoginComponent from './LoginComponent';
-import AvatarDemo from '../components/avatar/Avatar';
+// import AvatarDemo from '../components/avatar/Avatar';
 
 const TestPage = () => {
   return (
@@ -58,7 +58,7 @@ const TestPage = () => {
       <OrderDetailsPage />
       <PasswordResetComponent />
       <LoginComponent />
-      <AvatarDemo />
+      {/* <AvatarDemo /> */}
     </div>
   );
 };

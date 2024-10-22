@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaUser } from 'react-icons/fa';
 
-// Define types for Avatar props
 interface AvatarProps {
   name: string;
   imageUrl?: string;
@@ -45,6 +44,7 @@ const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
       className={`relative rounded-full overflow-hidden ${sizeClasses[size]} transition-transform duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
       style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}
       tabIndex={0}
+      role="img"
       aria-label={`Avatar for ${name || 'User'}`}
     >
       {imageUrl ? (
@@ -52,6 +52,7 @@ const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
           src={imageUrl}
           alt={`${name}'s avatar`}
           className="w-full h-full object-cover"
+          loading="lazy"
         />
       ) : initials ? (
         <div
@@ -91,40 +92,4 @@ const adjustColor = (color: string, amount: number): string => {
   );
 };
 
-const AvatarDemo: React.FC = () => {
-  const users = [
-    {
-      name: 'John Doe',
-      imageUrl:
-        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
-    },
-    { name: 'Jane Smith', imageUrl: '' },
-    {
-      name: 'Bob Johnson',
-      imageUrl:
-        'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
-    },
-    { name: 'Alice Brown', imageUrl: '' },
-    { name: '', imageUrl: '' },
-  ];
-
-  return (
-    <div className="p-8 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">
-        Avatar Component Demo
-      </h1>
-      <div className="flex flex-wrap justify-center gap-8">
-        {users.map((user, index) => (
-          <div key={index} className="flex flex-col items-center">
-            <Avatar name={user.name} imageUrl={user.imageUrl} size="lg" />
-            <p className="mt-2 text-sm text-gray-600">
-              {user.name || 'Anonymous User'}
-            </p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default AvatarDemo;
+export default Avatar;

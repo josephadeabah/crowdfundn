@@ -5,85 +5,53 @@ import React, {
   ReactNode,
   useEffect,
 } from 'react';
-import { User } from '@/app/types/user.types';
 import { jwtDecode } from 'jwt-decode';
+import { LoginUserType } from '@/app/types/auth.login.types';
 import { useRouter } from 'next/navigation';
+import { LoginUserResponseSuccess } from '@/app/types/auth.login.types';
 
 type AuthContextType = {
-  user: User | null;
-  token: string | null; // Store the token in the context
-  login: (token: string) => void;
+  user: LoginUserType | null;
+  token: string | null;
+  login: (response: LoginUserResponseSuccess) => void;
   logout: () => void;
-  hasRole: (role: string) => boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<LoginUserType | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
-  const [logoutTimer, setLogoutTimer] = useState<NodeJS.Timeout | null>(null);
 
-  const INACTIVITY_TIMEOUT = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+  // Load user and token from local storage on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('token');
 
-  // Function to handle user login
-  const login = (token: string) => {
-    try {
-      const decodedUser = jwtDecode<User>(token);
-      setUser(decodedUser);
-      setToken(token);
-      resetLogoutTimer(); // Reset the inactivity timer on login
-    } catch (error) {
-      console.error('Invalid token', error);
-      // handle error (e.g., redirect to login)
+    if (storedUser && storedToken) {
+      setUser(JSON.parse(storedUser));
+      setToken(storedToken);
     }
+  }, []);
+
+  const login = (response: LoginUserResponseSuccess) => {
+    setUser(response.user);
+    setToken(response.token);
+    localStorage.setItem('user', JSON.stringify(response.user));
+    localStorage.setItem('token', response.token);
   };
 
-  // Function to handle user logout
   const logout = () => {
     setUser(null);
     setToken(null);
-    clearTimeout(logoutTimer!);
-    router.push('/login');
-  };
-
-  // Function to reset the inactivity timer
-  const resetLogoutTimer = () => {
-    if (logoutTimer) {
-      clearTimeout(logoutTimer);
-    }
-    const timer = setTimeout(() => {
-      logout(); // Automatically log the user out after timeout
-    }, INACTIVITY_TIMEOUT);
-    setLogoutTimer(timer);
-  };
-
-  // UseEffect to detect user activity and reset the timer
-  useEffect(() => {
-    const handleUserActivity = () => resetLogoutTimer();
-
-    // List of events that will reset the timer
-    window.addEventListener('mousemove', handleUserActivity);
-    window.addEventListener('keydown', handleUserActivity);
-    window.addEventListener('click', handleUserActivity);
-    window.addEventListener('scroll', handleUserActivity);
-
-    return () => {
-      // Cleanup event listeners on component unmount
-      window.removeEventListener('mousemove', handleUserActivity);
-      window.removeEventListener('keydown', handleUserActivity);
-      window.removeEventListener('click', handleUserActivity);
-      window.removeEventListener('scroll', handleUserActivity);
-    };
-  }, []);
-
-  const hasRole = (role: string) => {
-    return user?.roles.some((r) => r.name === role) || false;
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    router.push('/auth/login');
   };
 
   const value = React.useMemo(
-    () => ({ user, token, login, logout, hasRole }),
+    () => ({ user, token, login, logout }),
     [user, token],
   );
 

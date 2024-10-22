@@ -10,8 +10,8 @@ import RegisterLeftPage from './RegisterLeftPage';
 import data from '../../../data.json';
 import { RadioGroup, RadioGroupItem } from '@/app/components/radio/RadioGroup';
 import { Badge } from '@/app/components/badge/Badge';
-import { UserRegistrationData } from '@/app/types/user.registration.types';
-import { registerUser } from '@/app/utils/api/auth.api';
+import { UserRegistrationData } from '@/app/types/auth.register.types';
+import { registerUser } from '@/app/utils/api/api.register';
 import ToastComponent from '@/app/components/toast/Toast';
 
 // Payment methods and currencies

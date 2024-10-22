@@ -40,4 +40,5 @@ export interface UserProfileState {
   loading: boolean;
   error: string | null;
   fetchUserProfile: () => void;
+  hasRole: (role: string) => boolean;
 }
