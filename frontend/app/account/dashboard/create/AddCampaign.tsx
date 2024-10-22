@@ -111,7 +111,7 @@ const CreateCampaign = () => {
         promotion_duration: promotionSettings.promotionDuration.toString(),
         media: selectedImage || undefined,
       };
-  
+
       addCampaign(campaign);
     }
   };
@@ -165,8 +165,8 @@ const CreateCampaign = () => {
               />
             </div>
 
-             {/* New input fields */}
-             <div className="mb-4">
+            {/* New input fields */}
+            <div className="mb-4">
               <label htmlFor="goal-amount" className="block text-sm mb-1">
                 Goal Amount:
               </label>
@@ -284,7 +284,7 @@ const CreateCampaign = () => {
 
             {/* Public Switch */}
             <div className="flex items-center justify-between mb-4">
-              <span className="text-sm">{isPublic ? "Public": "Private"}</span>
+              <span className="text-sm">{isPublic ? 'Public' : 'Private'}</span>
               <Switch
                 checked={isPublic}
                 onChange={setIsPublic}

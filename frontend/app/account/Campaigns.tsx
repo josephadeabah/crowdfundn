@@ -10,13 +10,17 @@ import {
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 
 export default function Campaigns() {
-  const { campaigns, loading, error } = useCampaignContext();
+  const { campaigns, loading, error, fetchCampaigns } = useCampaignContext();
 
-  if (loading) return <CampaignsLoader />;
+  // if (loading) return <CampaignsLoader />;
 
   if (error) {
     return <p>Error fetching campaigns: {error}</p>;
   }
+
+  useEffect(() => {
+    fetchCampaigns();
+  }, []);
 
   return (
     <div>
