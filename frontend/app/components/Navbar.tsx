@@ -15,6 +15,7 @@ import { motion } from 'framer-motion';
 import Avatar from '@/app/components/avatar/Avatar';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { useRouter } from 'next/navigation';
+import NavbarLoader from '../loaders/NavbarLoader';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -23,6 +24,15 @@ const Navbar = () => {
   const [activePopover, setActivePopover] = useState<string | null>(null);
   const { user, token, logout } = useAuth();
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -106,6 +116,10 @@ const Navbar = () => {
       { label: 'Volunteer Opportunities', href: '/african-diaspora/volunteer' },
     ],
   };
+
+  if (loading) {
+    return <NavbarLoader />;
+  }
 
   return (
     <header
