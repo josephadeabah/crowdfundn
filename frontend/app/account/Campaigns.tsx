@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
 import CampaignsLoader from '../loaders/CampaignsLoader';
 import { Button } from '../components/button/Button';
@@ -76,7 +76,7 @@ export default function Campaigns() {
                 {campaign.title}
               </h3>
               <p className="text-gray-500 dark:text-neutral-400 flex-grow">
-                {campaign.description}
+                {campaign.description.body}
               </p>
             </div>
 

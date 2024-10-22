@@ -1,6 +1,6 @@
 'use client';
 import dynamic from 'next/dynamic';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { FiX, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { Switch } from '@headlessui/react';
 import { Button } from '@/app/components/button/Button';
@@ -8,17 +8,28 @@ import { useDropzone } from 'react-dropzone';
 import Modal from '@/app/components/modal/Modal';
 import CampaignPermissionSetting from '@/app/account/dashboard/create/settings/PermissionSettings';
 import { FaEdit } from 'react-icons/fa';
+import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
+import { CampaignDataType } from '@/app/types/campaigns.types';
+import { useUserContext } from '@/app/context/users/UserContext';
 
 const RichTextEditor = dynamic(() => import('@mantine/rte'), { ssr: false });
 
 const CreateCampaign = () => {
+  const { userProfile } = useUserContext();
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [isPublic, setIsPublic] = useState(false);
+  const [goalAmount, setGoalAmount] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [category, setCategory] = useState('');
+  const [location, setLocation] = useState('');
+  const [currency, setCurrency] = useState('');
+  const [isPublic, setIsPublic] = useState(true);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [settingsOpen, setSettingsOpen] = useState(false); // Dropdown state
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const { addCampaign } = useCampaignContext();
 
   // Define permissions structure
   const initialPermissions = {
@@ -66,31 +77,42 @@ const CreateCampaign = () => {
     return Object.keys(formErrors).length === 0;
   };
 
+  useEffect(() => {
+    if (userProfile) {
+      setCategory(userProfile.category);
+      setLocation(userProfile.country);
+      setGoalAmount(userProfile.target_amount);
+      setCurrency(userProfile.currency);
+    }
+  }, [userProfile]);
+
   const handleSubmit = () => {
     if (validateForm()) {
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('content', content);
-      formData.append('isPublic', JSON.stringify(isPublic));
-      formData.append('permissions', JSON.stringify(permissions));
-      formData.append('promotionSettings', JSON.stringify(promotionSettings));
-
-      if (selectedImage) {
-        formData.append('image', selectedImage);
-      }
-
-      fetch('/api/campaigns', {
-        method: 'POST',
-        body: formData,
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log('Campaign submitted successfully:', data);
-          setIsOpen(false);
-        })
-        .catch((error) => {
-          console.error('Error submitting campaign:', error);
-        });
+      const campaign: CampaignDataType = {
+        title,
+        description: content,
+        goal_amount: goalAmount,
+        current_amount: '0',
+        start_date: startDate,
+        end_date: endDate,
+        category,
+        location,
+        currency,
+        is_public: isPublic,
+        accept_donations: permissions.acceptDonations,
+        leave_words_of_support: permissions.leaveWordsOfSupport,
+        appear_in_search_results: permissions.appearInSearchResults,
+        suggested_fundraiser_lists: permissions.suggestedFundraiserLists,
+        receive_donation_email: permissions.receiveDonationEmail,
+        receive_daily_summary: permissions.receiveDailySummary,
+        enable_promotions: promotionSettings.enablePromotions,
+        schedule_promotion: promotionSettings.schedulePromotion,
+        promotion_frequency: promotionSettings.promotionFrequency,
+        promotion_duration: promotionSettings.promotionDuration.toString(),
+        media: selectedImage || undefined,
+      };
+  
+      addCampaign(campaign);
     }
   };
 
@@ -143,6 +165,85 @@ const CreateCampaign = () => {
               />
             </div>
 
+             {/* New input fields */}
+             <div className="mb-4">
+              <label htmlFor="goal-amount" className="block text-sm mb-1">
+                Goal Amount:
+              </label>
+              <input
+                id="goal-amount"
+                type="number"
+                value={goalAmount}
+                onChange={(e) => setGoalAmount(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="start-date" className="block text-sm mb-1">
+                Start Date:
+              </label>
+              <input
+                id="start-date"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="end-date" className="block text-sm mb-1">
+                End Date:
+              </label>
+              <input
+                id="end-date"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="category" className="block text-sm mb-1">
+                Category:
+              </label>
+              <input
+                id="category"
+                type="text"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="location" className="block text-sm mb-1">
+                Location:
+              </label>
+              <input
+                id="location"
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="currency" className="block text-sm mb-1">
+                Currency:
+              </label>
+              <input
+                id="currency"
+                type="text"
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+
             <div className="mb-4">
               <label htmlFor="campaign-content" className="block text-sm mb-1">
                 Content:
@@ -183,7 +284,7 @@ const CreateCampaign = () => {
 
             {/* Public Switch */}
             <div className="flex items-center justify-between mb-4">
-              <span className="text-sm">Public Campaign</span>
+              <span className="text-sm">{isPublic ? "Public": "Private"}</span>
               <Switch
                 checked={isPublic}
                 onChange={setIsPublic}
