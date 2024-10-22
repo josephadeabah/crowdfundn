@@ -1,5 +1,6 @@
 import { useAuth } from '@/app/context/auth/AuthContext';
 import React from 'react';
+import { useUserContext } from '@/app/context/users/UserContext';
 
 type AccessOptions = {
   requiredRoles?: string[]; // List of roles the user must have
@@ -8,7 +9,8 @@ type AccessOptions = {
 
 const withRole = (Component: React.ComponentType, options: AccessOptions) => {
   return (props: any) => {
-    const { user, hasRole } = useAuth();
+    const { user } = useAuth();
+    const { hasRole } = useUserContext();
 
     // Check if admin is required and the user is not an admin
     if (options.requireAdmin && !user?.admin) {
