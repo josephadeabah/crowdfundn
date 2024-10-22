@@ -188,24 +188,28 @@ const Navbar = () => {
           </div>
 
           {isMenuOpen && (
-            <div className="absolute top-16 left-0 w-full bg-gray-800 text-gray-50 dark:text-gray-50 dark:bg-gray-900 lg:hidden">
+            <div className="absolute top-16 left-0 w-full bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-900 lg:hidden">
               <ul className="flex flex-col items-start p-4 space-y-4">
-                <li>
-                  <Link
-                    href="/auth/register"
-                    className="block dark:focus:bg-gray-800"
-                  >
-                    Start Project
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/auth/login"
-                    className="block dark:focus:bg-gray-800"
-                  >
-                    Login
-                  </Link>
-                </li>
+                {!user && (
+                  <li>
+                    <Link
+                      href="/auth/register"
+                      className="block dark:focus:bg-gray-800"
+                    >
+                      Start Project
+                    </Link>
+                  </li>
+                )}
+                {!user && (
+                  <li>
+                    <Link
+                      href="/auth/login"
+                      className="block dark:focus:bg-gray-800"
+                    >
+                      Login
+                    </Link>
+                  </li>
+                )}
                 {Object.entries(dropdownLinks).map(([key, links]) => (
                   <li key={key}>
                     <Popover>
@@ -244,12 +248,26 @@ const Navbar = () => {
                   </li>
                 ))}
                 <DarkModeBtn />
+                {/* Add user info if logged in */}
+                {user && (
+                  <li className="flex items-center gap-3">
+                    <Avatar name={user.full_name} size="sm" />
+                    <div className="ml-3 flex flex-col">
+                      <span className="font-semibold">{user.full_name}</span>
+                      <span className="text-gray-600">{user.email}</span>
+                    </div>
+                    <div
+                      className="hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </div>
+                  </li>
+                )}
               </ul>
             </div>
           )}
-
           <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
-            <DarkModeBtn />
             {!user ? (
               <>
                 <Button
@@ -283,11 +301,23 @@ const Navbar = () => {
                   </div>
                 </PopoverTrigger>
                 <PopoverContent side="bottom" align="end" sideOffset={10}>
-                  <div className="p-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50 rounded-lg shadow-lg">
-                    <p className="mb-2">{user.email}</p>
-                    <Button variant="ghost" onClick={handleLogout}>
+                  <div className="flex flex-col justify-start gap-3 p-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50">
+                    <div className="cursor-pointer flex items-center">
+                      <Avatar name={user.full_name} size="sm" />
+                      <div className="ml-3 flex flex-col">
+                        <span className="font-semibold">{user.full_name}</span>
+                        <span className="text-gray-600">{user.email}</span>
+                      </div>
+                    </div>
+                    <div
+                      className="hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
+                      onClick={handleLogout}
+                    >
                       Logout
-                    </Button>
+                    </div>
+                    <div className="hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
+                      <DarkModeBtn />
+                    </div>
                   </div>
                 </PopoverContent>
               </Popover>

@@ -36,7 +36,7 @@ const LoginPage = () => {
         setShowToast(true);
         setTimeout(() => {
           window.location.href = '/account';
-        }, 2000);
+        }, 1000);
       }
     } catch (error) {
       setError('An unexpected error occurred');

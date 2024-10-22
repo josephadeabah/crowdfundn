@@ -26,12 +26,15 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         throw new Error('Not authenticated');
       }
 
-      const response = await fetch('/api/v1/members/user/me', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/user/me`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         throw new Error('Failed to fetch user data');
