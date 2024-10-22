@@ -19,9 +19,15 @@ const NavbarLoader = () => {
 
           <div className="hidden lg:flex items-center gap-x-2 mx-6">
             {/* Original Navigation Links */}
-            <span className="mx-2">Fundraise</span>
-            <span className="mx-2">Donate</span>
-            <span className="mx-2">For Diaspora</span>
+            <span className="mx-2 text-sm font-semibold p-2 hover:text-gray-700 dark:text-gray-50 hover:outline-none dark:hover:bg-gray-800">
+              Fundraise
+            </span>
+            <span className="mx-2 text-sm font-semibold p-2 hover:text-gray-700 dark:text-gray-50 hover:outline-none dark:hover:bg-gray-800">
+              Donate
+            </span>
+            <span className="mx-2 text-sm font-semibold p-2 hover:text-gray-700 dark:text-gray-50 hover:outline-none dark:hover:bg-gray-800">
+              For Diaspora
+            </span>
           </div>
 
           <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
