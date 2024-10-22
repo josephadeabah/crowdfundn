@@ -15,6 +15,7 @@ import CTa from './molecules/CTA';
 import ChatbotComponent from './chatbot/ChatbotComponent';
 import Link from 'next/link';
 import { FaHandHoldingUsd } from 'react-icons/fa';
+import { useAuth } from './context/auth/AuthContext';
 
 const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
@@ -24,6 +25,7 @@ const HomePage = () => {
   const [scrollY, setScrollY] = useState(0);
   const controls = useAnimation();
   const [ref, inView] = useInView();
+  const { user, token, logout } = useAuth();
 
   const [isVisible, setIsVisible] = useState(false);
   React.useEffect(() => {
@@ -166,7 +168,11 @@ const HomePage = () => {
                       whileTap={{ scale: 0.95 }}
                       className="bg-green-700 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-green-500 hover:scale-105 transition-transform duration-300 "
                     >
-                      <a href="/auth/register">Fundraise Now</a>
+                      <a
+                        href={`${user ? '/dashboard/create' : '/auth/register'}`}
+                      >
+                        Fundraise Now
+                      </a>
                     </motion.button>
 
                     <motion.button
