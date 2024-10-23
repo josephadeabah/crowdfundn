@@ -156,10 +156,10 @@ const Campaigns: React.FC = () => {
         <Modal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
-          size="xxlarge"
+          size="xlarge"
           closeOnBackdropClick={false}
         >
-          <div className="overflow-y-auto max-h-[80vh] p-4 bg-white dark:bg-neutral-800">
+          <div className="overflow-y-auto max-h-[60vh] p-2 bg-white dark:bg-neutral-800">
             <span className="text-xs font-semibold mb-5 text-gray-400 dark:text-gray-500">
               This is how your campaign looks to others when they see it.
             </span>
