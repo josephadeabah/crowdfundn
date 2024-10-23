@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
 import CampaignsLoader from '../loaders/CampaignsLoader';
 import { Button } from '../components/button/Button';
@@ -8,9 +8,14 @@ import {
   PopoverContent,
 } from '../components/popover/Popover';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
+import Modal from '@/app/components/modal/Modal';
+import { CampaignResponseDataType } from '../types/campaigns.types';
 
-export default function Campaigns() {
+const Campaigns: React.FC = () => {
   const { campaigns, loading, error, fetchCampaigns } = useCampaignContext();
+  const [selectedCampaign, setSelectedCampaign] =
+    useState<CampaignResponseDataType | null>(null);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCampaigns();
@@ -21,6 +26,16 @@ export default function Campaigns() {
   if (error) {
     return <p>Error fetching campaigns: {error}</p>;
   }
+
+  const handleOpenModal = (campaign: CampaignResponseDataType) => {
+    setSelectedCampaign(campaign);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedCampaign(null);
+  };
 
   return (
     <div>
@@ -36,12 +51,40 @@ export default function Campaigns() {
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {campaigns?.map((campaign) => (
+          {campaigns.map((campaign) => (
             <div
               key={campaign.id}
               className="relative p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 flex flex-col justify-between"
             >
-              {/* Popover for 3-dot menu */}
+              {/* Campaign Title and Goal Amount */}
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                {campaign.title}
+              </h3>
+              <p className="text-gray-500 dark:text-neutral-400">
+                Goal: {campaign.goal_amount}
+              </p>
+
+              {/* Preview Campaign Button */}
+              <div className="mt-4 flex justify-between items-center">
+                <Button
+                  className="px-4 py-2 text-green-500 rounded-full"
+                  variant="secondary"
+                  size="default"
+                >
+                  Promote
+                </Button>
+
+                <Button
+                  className="px-4 py-2 text-gray-700 rounded-full"
+                  variant="secondary"
+                  size="default"
+                  onClick={() => handleOpenModal(campaign)}
+                >
+                  Preview Campaign
+                </Button>
+              </div>
+
+              {/* Popover for additional options */}
               <Popover>
                 <PopoverTrigger asChild>
                   <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-200">
@@ -79,38 +122,47 @@ export default function Campaigns() {
                   </ul>
                 </PopoverContent>
               </Popover>
-
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                  {campaign.title}
-                </h3>
-                {/* Render rich text for campaign.description.body */}
-                <div
-                  className="text-gray-500 dark:text-neutral-400 flex-grow"
-                  dangerouslySetInnerHTML={{
-                    __html: campaign.description.body,
-                  }}
-                />
-              </div>
-
-              <div className="mt-4 flex justify-between items-center">
-                <Button
-                  className="px-4 py-2 text-green-500 rounded-full"
-                  variant="secondary"
-                  size="default"
-                >
-                  Promote
-                </Button>
-                <span className="text-xs text-red-500 font-semibold">
-                  Active campaign
-                </span>
-              </div>
             </div>
           ))}
         </div>
       )}
+      {/* Modal for previewing campaign details */}
+      {selectedCampaign && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          size="xlarge"
+          closeOnBackdropClick={false}
+        >
+          <div className="overflow-y-auto max-h-[80vh] p-2">
+            <span className="text-xs font-semibold mb-5 text-gray-400">
+              This is how your campaign looks to others when they see it.
+            </span>
+            <h2 className="text-xl font-semibold">{selectedCampaign.title}</h2>
+            <p>
+              <strong>Goal Amount:</strong> {selectedCampaign.goal_amount}
+            </p>
+            <p>
+              <strong>Raised Amount:</strong> {selectedCampaign.current_amount}
+            </p>
+            <img
+              src={selectedCampaign.media}
+              alt="campaign thumbnail"
+              className="w-full"
+            />
+            <div
+              className="text-gray-800 dark:text-neutral-200 flex-grow"
+              dangerouslySetInnerHTML={{
+                __html: selectedCampaign.description.body,
+              }}
+            />
+          </div>
+        </Modal>
+      )}
       {/* Space Below the Page */}
-      <div className="h-20"></div> {/* Adjust the height as needed */}
+      <div className="h-20"></div>
     </div>
   );
-}
+};
+
+export default Campaigns;
