@@ -2,7 +2,7 @@ module Api
   module V1
     module Fundraisers
       class CampaignsController < ApplicationController
-        before_action :authenticate_request, only: [:create, :update, :destroy]
+        before_action :authenticate_request, only: [:create, :update, :destroy, :my_campaigns]
         before_action :set_campaign, only: [:show, :update, :destroy]
 
         def index
@@ -14,6 +14,11 @@ module Api
           render json: @campaign.as_json(include: [:updates, :comments]).merge(media: @campaign.media), status: :ok
         end
 
+        def my_campaigns
+          @campaigns = @current_user.campaigns
+          render json: @campaigns, status: :ok
+        end
+        
         # POST /api/v1/fundraisers/campaigns
         def create
           @campaign = @current_user.campaigns.new(campaign_params)

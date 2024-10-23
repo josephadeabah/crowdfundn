@@ -19,6 +19,7 @@ Rails.application.routes.draw do
 
       namespace :fundraisers do
         resources :campaigns do
+          get 'my_campaigns', on: :collection
           resources :updates, only: [:create, :update, :destroy]
           resources :comments, only: [:create, :index, :destroy]
         end
