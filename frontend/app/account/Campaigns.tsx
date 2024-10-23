@@ -10,12 +10,33 @@ import {
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import Modal from '@/app/components/modal/Modal';
 import { CampaignResponseDataType } from '../types/campaigns.types';
+import CampaignPermissionSetting from './dashboard/create/settings/PermissionSettings';
+import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 const Campaigns: React.FC = () => {
   const { campaigns, loading, error, fetchCampaigns } = useCampaignContext();
   const [selectedCampaign, setSelectedCampaign] =
     useState<CampaignResponseDataType | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const initialPermissions = {
+    acceptDonations: false,
+    leaveWordsOfSupport: false,
+    appearInSearchResults: false,
+    suggestedFundraiserLists: false,
+    receiveDonationEmail: false,
+    receiveDailySummary: false,
+  };
+
+  const [permissions, setPermissions] = useState(initialPermissions);
+
+  const [promotionSettings, setPromotionSettings] = useState({
+    enablePromotions: false,
+    schedulePromotion: false,
+    promotionFrequency: 'daily',
+    promotionDuration: 1,
+  });
 
   useEffect(() => {
     fetchCampaigns();
@@ -135,7 +156,7 @@ const Campaigns: React.FC = () => {
         <Modal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
-          size="xlarge"
+          size="xxlarge"
           closeOnBackdropClick={false}
         >
           <div className="overflow-y-auto max-h-[80vh] p-4 bg-white dark:bg-neutral-800">
@@ -162,6 +183,32 @@ const Campaigns: React.FC = () => {
                 __html: selectedCampaign.description.body,
               }}
             />
+          </div>
+
+          {/* Dropdown for Campaign Permissions and Promotion Settings */}
+          <div className="mb-4 mt-4">
+            <button
+              onClick={() => setSettingsOpen((prev) => !prev)}
+              className="flex items-center justify-between w-full p-2 bg-gray-100 rounded-lg text-left focus:outline-none"
+            >
+              <span className="text-lg font-semibold">Campaign Settings</span>
+              {settingsOpen ? <FiChevronUp /> : <FiChevronDown />}
+            </button>
+
+            {settingsOpen && (
+              <div className="mt-2 p-4 border rounded-lg bg-gray-50">
+                <CampaignPermissionSetting
+                  permissions={permissions as { [key: string]: boolean }}
+                  setPermissions={
+                    setPermissions as React.Dispatch<
+                      React.SetStateAction<{ [key: string]: boolean }>
+                    >
+                  }
+                  promotionSettings={promotionSettings}
+                  setPromotionSettings={setPromotionSettings}
+                />
+              </div>
+            )}
           </div>
         </Modal>
       )}
