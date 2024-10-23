@@ -63,7 +63,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/my_campaigns`,
         {
           method: 'GET',
           headers: {
