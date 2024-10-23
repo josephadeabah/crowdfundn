@@ -9,8 +9,8 @@ import Modal from '@/app/components/modal/Modal';
 import CampaignPermissionSetting from '@/app/account/dashboard/create/settings/PermissionSettings';
 import { FaEdit } from 'react-icons/fa';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import { CampaignDataType } from '@/app/types/campaigns.types';
 import { useUserContext } from '@/app/context/users/UserContext';
+import { CampaignDataType } from '@/app/types/campaigns.types';
 
 const RichTextEditor = dynamic(() => import('@mantine/rte'), { ssr: false });
 
@@ -31,7 +31,6 @@ const CreateCampaign = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { addCampaign } = useCampaignContext();
 
-  // Define permissions structure
   const initialPermissions = {
     acceptDonations: false,
     leaveWordsOfSupport: false,
@@ -41,7 +40,6 @@ const CreateCampaign = () => {
     receiveDailySummary: false,
   };
 
-  // State for permissions and promotion settings
   const [permissions, setPermissions] = useState(initialPermissions);
 
   const [promotionSettings, setPromotionSettings] = useState({
@@ -109,10 +107,10 @@ const CreateCampaign = () => {
         schedule_promotion: promotionSettings.schedulePromotion,
         promotion_frequency: promotionSettings.promotionFrequency,
         promotion_duration: promotionSettings.promotionDuration.toString(),
-        media: selectedImage || undefined,
       };
 
-      addCampaign(campaign);
+      // Call addCampaign with the campaign data and selected image
+      addCampaign(campaign, selectedImage);
     }
   };
 
@@ -135,7 +133,7 @@ const CreateCampaign = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed flex items-center gap-2 bottom-4 right-4 bg-red-500 text-white p-2 z-50 rounded-full shadow-lg hover:scale-105 transition-transform duration-300  hover:bg-red-600"
+        className="fixed flex items-center gap-2 bottom-4 right-4 bg-red-500 text-white p-2 z-50 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 hover:bg-red-600"
       >
         Create Your Story
         <FaEdit />
@@ -147,11 +145,10 @@ const CreateCampaign = () => {
         size="xxxlarge"
         closeOnBackdropClick={false}
       >
-        <div className="overflow-y-auto max-h-[80vh] p-2 [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
-          {' '}
-          {/* Add this wrapper */}
+        <div className="overflow-y-auto max-h-[80vh] p-2">
           <div className="space-y-4">
             <h2 className="text-xl font-bold mb-4">Create a New Campaign</h2>
+
             <div className="mb-4">
               <label htmlFor="campaign-title" className="block text-sm mb-1">
                 Title:
@@ -161,7 +158,7 @@ const CreateCampaign = () => {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white "
+                className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
               />
             </div>
 
@@ -245,41 +242,47 @@ const CreateCampaign = () => {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="campaign-content" className="block text-sm mb-1">
-                Content:
+              <label htmlFor="content" className="block text-sm mb-1">
+                Description:
               </label>
-              <RichTextEditor
-                id="campaign-content"
-                value={content}
-                onChange={setContent}
-                placeholder="Write your campaign content here..."
-              />
+              <RichTextEditor value={content} onChange={setContent} />
             </div>
 
             <div className="mb-4">
-              <label htmlFor="campaign-image" className="block text-sm mb-1">
-                Image:
-              </label>
-              <div
-                {...getRootProps()}
-                className={`border-2 border-dashed p-4 rounded ${isDragActive ? 'border-gray-400' : 'border-gray-300'}`}
-              >
-                <input id="campaign-image" {...getInputProps()} />
-                {selectedImage ? (
-                  <div className="flex justify-between items-center">
-                    <span>{selectedImage.name}</span>
-                    <button
-                      onClick={handleRemoveImage}
-                      className="text-red-500"
-                    >
-                      <FiX />
-                    </button>
-                  </div>
-                ) : (
-                  <p>Drag 'n' drop some files here, or click to select files</p>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold">Image Upload</h3>
+                {selectedImage && (
+                  <FiX
+                    size={24}
+                    className="text-gray-500 cursor-pointer"
+                    onClick={handleRemoveImage}
+                  />
                 )}
               </div>
-              {error && <p className="text-red-500 text-sm">{error}</p>}
+
+              {!selectedImage ? (
+                <div
+                  {...getRootProps()}
+                  className={`border-2 border-dashed rounded-md p-4 text-center ${
+                    isDragActive ? 'border-blue-600' : 'border-gray-400'
+                  }`}
+                >
+                  <input {...getInputProps()} />
+                  {isDragActive ? (
+                    <p>Drop the files here...</p>
+                  ) : (
+                    <p>Drag 'n' drop a file here, or click to select one</p>
+                  )}
+                </div>
+              ) : (
+                <div className="relative h-64 bg-cover bg-center rounded-md overflow-hidden">
+                  <img
+                    src={URL.createObjectURL(selectedImage)}
+                    alt="Selected image"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              )}
             </div>
 
             {/* Public Switch */}

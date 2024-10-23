@@ -12,6 +12,7 @@ import React, {
   useCallback,
 } from 'react';
 import { useAuth } from '../../auth/AuthContext';
+import { toBase64 } from '@/app/utils/helpers/base64.image';
 
 const CampaignContext = createContext<CampaignState | undefined>(undefined);
 
@@ -22,7 +23,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const { token } = useAuth();
 
   const addCampaign = useCallback(
-    async (campaign: CampaignDataType) => {
+    async (campaign: CampaignDataType, media: File | null) => {
       setLoading(true);
       setError(null);
       try {
@@ -31,10 +32,13 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
             },
-            body: JSON.stringify(campaign),
+            body: JSON.stringify({
+              ...campaign,
+              media: media ? await toBase64(media) : null,
+            }),
           },
         );
 
@@ -43,6 +47,8 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const createdCampaign = await response.json();
+        console.log('createdCampaign', createdCampaign);
+        setError(null);
         return createdCampaign;
       } catch (err: any) {
         setError(err.message || 'Error creating campaign');
@@ -69,11 +75,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       );
 
       if (!response.ok) {
-        throw new Error('Failed to fetch campaigns');
+        const errorText = await response.text();
+        throw new Error(`Failed to fetch campaigns: ${errorText}`);
       }
 
-      const createdCampaign = await response.json();
-      setCampaigns(createdCampaign);
+      const fetchedCampaigns = await response.json();
+      setCampaigns(fetchedCampaigns);
     } catch (err: any) {
       setError(err.message || 'Error fetching campaigns');
     } finally {

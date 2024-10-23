@@ -12,15 +12,15 @@ import { DotsVerticalIcon } from '@radix-ui/react-icons';
 export default function Campaigns() {
   const { campaigns, loading, error, fetchCampaigns } = useCampaignContext();
 
-  // if (loading) return <CampaignsLoader />;
+  useEffect(() => {
+    fetchCampaigns();
+  }, [fetchCampaigns]);
+
+  if (loading) return <CampaignsLoader />;
 
   if (error) {
     return <p>Error fetching campaigns: {error}</p>;
   }
-
-  useEffect(() => {
-    fetchCampaigns();
-  }, []);
 
   return (
     <div>
@@ -79,9 +79,11 @@ export default function Campaigns() {
               <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
                 {campaign.title}
               </h3>
-              <p className="text-gray-500 dark:text-neutral-400 flex-grow">
-                {campaign.description.body}
-              </p>
+              {/* Render rich text for campaign.description.body */}
+              <div
+                className="text-gray-500 dark:text-neutral-400 flex-grow"
+                dangerouslySetInnerHTML={{ __html: campaign.description.body }}
+              />
             </div>
 
             <div className="mt-4 flex justify-between items-center">

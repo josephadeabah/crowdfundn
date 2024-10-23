@@ -19,7 +19,7 @@ export interface CampaignDataType {
   schedule_promotion: boolean;
   promotion_frequency: string;
   promotion_duration: string;
-  media?: File;
+  media?: FormData;
 }
 
 export interface CampaignResponseDataType {
@@ -69,6 +69,6 @@ export interface CampaignState {
   campaigns: CampaignResponseDataType[];
   loading: boolean;
   error: string | null;
-  addCampaign: (campaign: CampaignDataType) => void;
-  fetchCampaigns: () => void;
+  addCampaign: (campaign: CampaignDataType, media: File | null) => Promise<any>;
+  fetchCampaigns: () => Promise<void>;
 }
