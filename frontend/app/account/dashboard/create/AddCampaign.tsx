@@ -2,7 +2,7 @@
 import dynamic from 'next/dynamic';
 import React, { useState, useCallback, useEffect } from 'react';
 import { FiX, FiChevronDown, FiChevronUp } from 'react-icons/fi';
-import { Switch } from '@headlessui/react';
+import { Field, Switch } from '@headlessui/react';
 import { Button } from '@/app/components/button/Button';
 import { useDropzone } from 'react-dropzone';
 import Modal from '@/app/components/modal/Modal';
@@ -14,10 +14,13 @@ import { CampaignDataType } from '@/app/types/campaigns.types';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { FaExclamationTriangle } from 'react-icons/fa';
 
+// Import data.json
+import data from '../../../../data.json';
 const RichTextEditor = dynamic(() => import('@mantine/rte'), { ssr: false });
 
 const CreateCampaign = () => {
   const { userProfile } = useUserContext();
+  const { categories, paymentOptions, countries } = data; // Destructure the data
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -184,7 +187,6 @@ const CreateCampaign = () => {
               />
             </div>
 
-            {/* New input fields */}
             <div className="mb-4">
               <label htmlFor="goal-amount" className="block text-sm mb-1">
                 Goal Amount:
@@ -224,50 +226,72 @@ const CreateCampaign = () => {
               />
             </div>
 
+            {/* Dropdown for Category */}
             <div className="mb-4">
               <label htmlFor="category" className="block text-sm mb-1">
                 Category:
               </label>
-              <input
+              <select
                 id="category"
-                type="text"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-              />
+              >
+                {categories.map((cat: { value: string; label: string }) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <div className="mb-4">
-              <label htmlFor="location" className="block text-sm mb-1">
-                Location:
-              </label>
-              <input
-                id="location"
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-              />
-            </div>
-
+            {/* Dropdown for Currency */}
             <div className="mb-4">
               <label htmlFor="currency" className="block text-sm mb-1">
                 Currency:
               </label>
-              <input
+              <select
                 id="currency"
-                type="text"
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
                 className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-              />
+              >
+                {paymentOptions.currencies?.map(
+                  (curr: { value: string; label: string }) => (
+                    <option key={curr.value} value={curr.value}>
+                      {curr.label}
+                    </option>
+                  ),
+                )}
+              </select>
+            </div>
+
+            {/* Dropdown for Country */}
+            <div className="mb-4">
+              <label htmlFor="country" className="block text-sm mb-1">
+                Country:
+              </label>
+              <select
+                id="country"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+              >
+                {countries.map((country: { value: string; label: string }) => (
+                  <option key={country.value} value={country.value}>
+                    {country.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="mb-4">
-              <label htmlFor="content" className="block text-sm mb-1">
-                Description:
-              </label>
-              <RichTextEditor value={content} onChange={setContent} />
+              <label className="block text-sm mb-1">Description:</label>
+              <RichTextEditor
+                value={content}
+                onChange={setContent}
+                placeholder="Enter the campaign description here..."
+              />
             </div>
 
             <div className="mb-4">
@@ -308,17 +332,30 @@ const CreateCampaign = () => {
             </div>
 
             {/* Public Switch */}
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm">{isPublic ? 'Public' : 'Private'}</span>
-              <Switch
-                checked={isPublic}
-                onChange={setIsPublic}
-                className={`${isPublic ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
-              >
-                <span
-                  className={`${isPublic ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                />
-              </Switch>
+            <div className="mb-4">
+              <Field className="flex items-center justify-between">
+                <span className="flex-grow flex flex-col">
+                  <Field as="span" className="text-sm font-medium leading-6">
+                    Campaign is {isPublic ? 'Public' : 'Private'}
+                  </Field>
+                  <Field className="text-xs text-gray-500">
+                    Allow your campaign to be visible to the public.
+                  </Field>
+                </span>
+                <Switch
+                  checked={isPublic}
+                  onChange={setIsPublic}
+                  className={`${
+                    isPublic ? 'bg-green-500' : 'bg-gray-200'
+                  } relative inline-flex h-6 w-11 items-center rounded-full`}
+                >
+                  <span
+                    className={`${
+                      isPublic ? 'translate-x-6' : 'translate-x-1'
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  />
+                </Switch>
+              </Field>
             </div>
 
             {/* Dropdown for Campaign Permissions and Promotion Settings */}
