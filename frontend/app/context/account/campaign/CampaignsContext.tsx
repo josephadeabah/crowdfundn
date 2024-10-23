@@ -47,7 +47,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const createdCampaign = await response.json();
-        console.log('createdCampaign', createdCampaign);
         setError(null);
         return createdCampaign;
       } catch (err: any) {

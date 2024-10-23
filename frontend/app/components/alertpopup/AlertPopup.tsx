@@ -4,7 +4,7 @@ import { FaExclamationTriangle } from 'react-icons/fa';
 
 interface AlertPopupProps {
   title: string;
-  message: string;
+  message: ReactNode;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   onConfirm: () => void;
@@ -72,7 +72,7 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
             >
               <div className="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
                 <div className="sm:flex sm:items-start">
-                  <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
+                  <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-gray-50 rounded-full sm:mx-0 sm:h-10 sm:w-10">
                     {icon}
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
@@ -96,7 +96,7 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
               <div className="px-4 py-3 bg-gray-50 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
                   type="button"
-                  className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+                  className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-gray-400 border border-transparent rounded-md shadow-sm hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:ml-3 sm:w-auto sm:text-sm"
                   onClick={onConfirm}
                 >
                   Confirm

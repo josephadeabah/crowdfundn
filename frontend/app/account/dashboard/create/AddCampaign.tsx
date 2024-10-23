@@ -11,6 +11,8 @@ import { FaEdit } from 'react-icons/fa';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useUserContext } from '@/app/context/users/UserContext';
 import { CampaignDataType } from '@/app/types/campaigns.types';
+import AlertPopup from '@/app/components/alertpopup/AlertPopup';
+import { FaExclamationTriangle } from 'react-icons/fa';
 
 const RichTextEditor = dynamic(() => import('@mantine/rte'), { ssr: false });
 
@@ -29,7 +31,11 @@ const CreateCampaign = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const { addCampaign } = useCampaignContext();
+  const { addCampaign, loading } = useCampaignContext();
+
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<React.ReactNode>('');
+  const [alertTitle, setAlertTitle] = useState('');
 
   const initialPermissions = {
     acceptDonations: false,
@@ -84,7 +90,7 @@ const CreateCampaign = () => {
     }
   }, [userProfile]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateForm()) {
       const campaign: CampaignDataType = {
         title,
@@ -109,8 +115,24 @@ const CreateCampaign = () => {
         promotion_duration: promotionSettings.promotionDuration.toString(),
       };
 
-      // Call addCampaign with the campaign data and selected image
-      addCampaign(campaign, selectedImage);
+      try {
+        const createdCampaign = await addCampaign(campaign, selectedImage);
+        setAlertTitle('Success');
+        setAlertMessage(
+          <>
+            Campaign created successfully!{' '}
+            <a href="/account" className="text-gray-700 underline">
+              View created campaign in the "Campaigns" tab
+            </a>
+          </>,
+        );
+        setIsOpen(false);
+      } catch (err) {
+        setAlertTitle('Error');
+        setAlertMessage('Failed to create campaign. Please try again.');
+      } finally {
+        setAlertOpen(true);
+      }
     }
   };
 
@@ -133,7 +155,7 @@ const CreateCampaign = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed flex items-center gap-2 bottom-4 right-4 bg-red-500 text-white p-2 z-50 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 hover:bg-red-600"
+        className="fixed flex items-center gap-2 bottom-4 right-4 bg-orange-500 text-white p-2 z-50 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 hover:bg-orange-400"
       >
         Create Your Story
         <FaEdit />
@@ -330,12 +352,26 @@ const CreateCampaign = () => {
                 Cancel
               </Button>
               <Button variant="destructive" onClick={handleSubmit}>
-                Publish Campaign
+                {loading ? 'Creating...' : 'Create'}
               </Button>
             </div>
           </div>
         </div>
       </Modal>
+      <AlertPopup
+        title={alertTitle}
+        message={alertMessage}
+        isOpen={alertOpen}
+        setIsOpen={setAlertOpen}
+        onConfirm={() => setAlertOpen(false)}
+        icon={
+          alertTitle === 'Success' ? (
+            <FaExclamationTriangle className="w-6 h-6 text-green-600" />
+          ) : (
+            <FaExclamationTriangle className="w-6 h-6 text-red-600" />
+          )
+        }
+      />
     </>
   );
 };
