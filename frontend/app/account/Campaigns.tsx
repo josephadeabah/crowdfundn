@@ -24,7 +24,11 @@ const Campaigns: React.FC = () => {
   if (loading) return <CampaignsLoader />;
 
   if (error) {
-    return <p>Error fetching campaigns: {error}</p>;
+    return (
+      <p className="text-red-500 dark:text-red-300">
+        Error fetching campaigns: {error}
+      </p>
+    );
   }
 
   const handleOpenModal = (campaign: CampaignResponseDataType) => {
@@ -38,7 +42,7 @@ const Campaigns: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="p-4">
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
         Campaigns
       </h2>
@@ -54,7 +58,7 @@ const Campaigns: React.FC = () => {
           {campaigns.map((campaign) => (
             <div
               key={campaign.id}
-              className="relative p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 flex flex-col justify-between"
+              className="relative p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 dark:hover:bg-neutral-700 flex flex-col justify-between"
             >
               {/* Campaign Title and Goal Amount */}
               <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
@@ -75,7 +79,7 @@ const Campaigns: React.FC = () => {
                 </Button>
 
                 <Button
-                  className="px-4 py-2 text-gray-700 rounded-full"
+                  className="px-4 py-2 text-gray-700 dark:text-gray-300 rounded-full"
                   variant="secondary"
                   size="default"
                   onClick={() => handleOpenModal(campaign)}
@@ -95,7 +99,7 @@ const Campaigns: React.FC = () => {
                   <ul className="space-y-2">
                     <li>
                       <button
-                        className="w-full text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700 p-2 rounded-md"
+                        className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
                         onClick={() =>
                           (window.location.href = `/account/dashboard/create`)
                         }
@@ -105,7 +109,7 @@ const Campaigns: React.FC = () => {
                     </li>
                     <li>
                       <button
-                        className="w-full text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700 p-2 rounded-md"
+                        className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
                         onClick={() => console.log('Delete Campaign')}
                       >
                         Delete Campaign
@@ -113,7 +117,7 @@ const Campaigns: React.FC = () => {
                     </li>
                     <li>
                       <button
-                        className="w-full text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700 p-2 rounded-md"
+                        className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
                         onClick={() => console.log('Move to Archive')}
                       >
                         Move to Archive
@@ -134,21 +138,23 @@ const Campaigns: React.FC = () => {
           size="xlarge"
           closeOnBackdropClick={false}
         >
-          <div className="overflow-y-auto max-h-[80vh] p-2">
-            <span className="text-xs font-semibold mb-5 text-gray-400">
+          <div className="overflow-y-auto max-h-[80vh] p-4 bg-white dark:bg-neutral-800">
+            <span className="text-xs font-semibold mb-5 text-gray-400 dark:text-gray-500">
               This is how your campaign looks to others when they see it.
             </span>
-            <h2 className="text-xl font-semibold">{selectedCampaign.title}</h2>
-            <p>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+              {selectedCampaign.title}
+            </h2>
+            <p className="text-gray-800 dark:text-neutral-200">
               <strong>Goal Amount:</strong> {selectedCampaign.goal_amount}
             </p>
-            <p>
+            <p className="text-gray-800 dark:text-neutral-200">
               <strong>Raised Amount:</strong> {selectedCampaign.current_amount}
             </p>
             <img
               src={selectedCampaign.media}
               alt="campaign thumbnail"
-              className="w-full"
+              className="w-full rounded-lg"
             />
             <div
               className="text-gray-800 dark:text-neutral-200 flex-grow"
