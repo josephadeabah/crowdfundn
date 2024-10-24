@@ -25,6 +25,7 @@ const CreateCampaign = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [goalAmount, setGoalAmount] = useState('');
+  const [currentAmount, setCurrentAmount] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [category, setCategory] = useState('');
@@ -81,6 +82,9 @@ const CreateCampaign = () => {
     if (!title.trim()) formErrors.title = 'Title is required';
     if (!content.trim()) formErrors.content = 'Content is required';
     if (!selectedImage) formErrors.image = 'Image is required';
+    if (isNaN(parseFloat(currentAmount))) {
+      formErrors.currentAmount = 'Current amount must be a number';
+    }
     return Object.keys(formErrors).length === 0;
   };
 
@@ -90,69 +94,64 @@ const CreateCampaign = () => {
       setLocation(userProfile.country);
       setGoalAmount(userProfile.target_amount);
       setCurrency(userProfile.currency);
+      setCurrentAmount('0');
     }
   }, [userProfile]);
 
   const handleSubmit = async () => {
     if (validateForm()) {
-      // Create a FormData object
       const formData = new FormData();
 
-      // Append all the text-based fields
-      formData.append('title', title);
-      formData.append('description', content);
-      formData.append('goal_amount', goalAmount);
-      formData.append('start_date', startDate);
-      formData.append('end_date', endDate);
-      formData.append('category', category);
-      formData.append('location', location);
-      formData.append('currency', currency);
-      formData.append('is_public', isPublic.toString());
-
-      // Append permissions as needed
+      formData.append('campaign[title]', title);
+      formData.append('campaign[description]', content);
+      formData.append('campaign[goal_amount]', goalAmount);
       formData.append(
-        'accept_donations',
+        'campaign[current_amount]',
+        parseFloat(currentAmount).toString(),
+      );
+      formData.append('campaign[start_date]', startDate);
+      formData.append('campaign[end_date]', endDate);
+      formData.append('campaign[category]', category);
+      formData.append('campaign[location]', location);
+      formData.append('campaign[currency]', currency);
+      formData.append('campaign[is_public]', isPublic.toString());
+      // Permissions must match Rails' expected format
+      formData.append(
+        'campaign[permissions][accept_donations]',
         permissions.acceptDonations.toString(),
       );
       formData.append(
-        'leave_words_of_support',
+        'campaign[permissions][leave_words_of_support]',
         permissions.leaveWordsOfSupport.toString(),
       );
       formData.append(
-        'appear_in_search_results',
+        'campaign[permissions][appear_in_search_results]',
         permissions.appearInSearchResults.toString(),
       );
       formData.append(
-        'suggested_fundraiser_lists',
+        'campaign[permissions][suggested_fundraiser_lists]',
         permissions.suggestedFundraiserLists.toString(),
       );
       formData.append(
-        'receive_donation_email',
+        'campaign[permissions][receive_donation_email]',
         permissions.receiveDonationEmail.toString(),
       );
       formData.append(
-        'receive_daily_summary',
+        'campaign[permissions][receive_daily_summary]',
         permissions.receiveDailySummary.toString(),
       );
 
-      // Append the selected image file (if available)
       if (selectedImage) {
-        formData.append('image', selectedImage); // Key must match backend field name
+        formData.append('campaign[media]', selectedImage);
       }
 
       try {
-        // Send the FormData to your backend
         const createdCampaign = await addCampaign(formData);
-        console.log('Cheap', createdCampaign);
-
         setAlertTitle('Success');
         setAlertMessage(
-          <>
-            Campaign created successfully!{' '}
-            <a href="/account" className="text-gray-700 underline">
-              View created campaign in the "Campaigns" tab
-            </a>
-          </>,
+          <a href="/account" className="text-gray-700 underline">
+            View created campaign in the "Campaigns" tab
+          </a>,
         );
         setIsOpen(false);
       } catch (err) {

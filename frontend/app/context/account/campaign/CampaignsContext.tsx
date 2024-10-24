@@ -12,7 +12,6 @@ import React, {
   useCallback,
 } from 'react';
 import { useAuth } from '../../auth/AuthContext';
-import { toBase64 } from '@/app/utils/helpers/base64.image';
 
 const CampaignContext = createContext<CampaignState | undefined>(undefined);
 
@@ -38,7 +37,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
             method: 'POST',
             headers: {
               Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
             },
             body: campaign,
           },
