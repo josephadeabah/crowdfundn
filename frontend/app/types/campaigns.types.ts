@@ -48,6 +48,7 @@ export interface CampaignResponseDataType {
   created_at: string;
   updated_at: string;
   media: string;
+  media_filename: string;
   permissions: {
     accept_donations: boolean;
     leave_words_of_support: boolean;

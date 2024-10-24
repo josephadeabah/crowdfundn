@@ -147,7 +147,7 @@ const CreateCampaign = () => {
 
       try {
         const createdCampaign = await addCampaign(formData);
-        setAlertTitle('Success');
+        setAlertTitle(createdCampaign.message);
         setAlertMessage(
           <a href="/account" className="text-gray-700 underline">
             View created campaign in the "Campaigns" tab
@@ -426,7 +426,7 @@ const CreateCampaign = () => {
         setIsOpen={setAlertOpen}
         onConfirm={() => setAlertOpen(false)}
         icon={
-          alertTitle === 'Success' ? (
+          alertTitle ? (
             <FaExclamationTriangle className="w-6 h-6 text-green-600" />
           ) : (
             <FaExclamationTriangle className="w-6 h-6 text-red-600" />
