@@ -69,6 +69,6 @@ export interface CampaignState {
   campaigns: CampaignResponseDataType[];
   loading: boolean;
   error: string | null;
-  addCampaign: (campaign: CampaignDataType, media: File | null) => Promise<any>;
+  addCampaign: (campaign: FormData) => Promise<any>;
   fetchCampaigns: () => Promise<void>;
 }

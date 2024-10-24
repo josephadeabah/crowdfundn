@@ -95,31 +95,56 @@ const CreateCampaign = () => {
 
   const handleSubmit = async () => {
     if (validateForm()) {
-      const campaign: CampaignDataType = {
-        title,
-        description: content,
-        goal_amount: goalAmount,
-        current_amount: '0',
-        start_date: startDate,
-        end_date: endDate,
-        category,
-        location,
-        currency,
-        is_public: isPublic,
-        accept_donations: permissions.acceptDonations,
-        leave_words_of_support: permissions.leaveWordsOfSupport,
-        appear_in_search_results: permissions.appearInSearchResults,
-        suggested_fundraiser_lists: permissions.suggestedFundraiserLists,
-        receive_donation_email: permissions.receiveDonationEmail,
-        receive_daily_summary: permissions.receiveDailySummary,
-        enable_promotions: promotionSettings.enablePromotions,
-        schedule_promotion: promotionSettings.schedulePromotion,
-        promotion_frequency: promotionSettings.promotionFrequency,
-        promotion_duration: promotionSettings.promotionDuration.toString(),
-      };
+      // Create a FormData object
+      const formData = new FormData();
+
+      // Append all the text-based fields
+      formData.append('title', title);
+      formData.append('description', content);
+      formData.append('goal_amount', goalAmount);
+      formData.append('start_date', startDate);
+      formData.append('end_date', endDate);
+      formData.append('category', category);
+      formData.append('location', location);
+      formData.append('currency', currency);
+      formData.append('is_public', isPublic.toString());
+
+      // Append permissions as needed
+      formData.append(
+        'accept_donations',
+        permissions.acceptDonations.toString(),
+      );
+      formData.append(
+        'leave_words_of_support',
+        permissions.leaveWordsOfSupport.toString(),
+      );
+      formData.append(
+        'appear_in_search_results',
+        permissions.appearInSearchResults.toString(),
+      );
+      formData.append(
+        'suggested_fundraiser_lists',
+        permissions.suggestedFundraiserLists.toString(),
+      );
+      formData.append(
+        'receive_donation_email',
+        permissions.receiveDonationEmail.toString(),
+      );
+      formData.append(
+        'receive_daily_summary',
+        permissions.receiveDailySummary.toString(),
+      );
+
+      // Append the selected image file (if available)
+      if (selectedImage) {
+        formData.append('image', selectedImage); // Key must match backend field name
+      }
 
       try {
-        const createdCampaign = await addCampaign(campaign, selectedImage);
+        // Send the FormData to your backend
+        const createdCampaign = await addCampaign(formData);
+        console.log('Cheap', createdCampaign);
+
         setAlertTitle('Success');
         setAlertMessage(
           <>

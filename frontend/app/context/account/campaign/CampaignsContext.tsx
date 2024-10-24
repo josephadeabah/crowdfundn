@@ -23,7 +23,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const { token } = useAuth();
 
   const addCampaign = useCallback(
-    async (campaign: CampaignDataType, media: File | null) => {
+    async (campaign: FormData) => {
+      if (!token) {
+        setError('Authentication token is missing');
+        return;
+      }
+
       setLoading(true);
       setError(null);
       try {
@@ -35,22 +40,24 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-              ...campaign,
-              media: media ? await toBase64(media) : null,
-            }),
+            body: campaign,
           },
         );
 
         if (!response.ok) {
-          throw new Error('Failed to create campaign');
+          const errorText = await response.text();
+          throw new Error(`Failed to create campaign: ${errorText}`);
         }
 
         const createdCampaign = await response.json();
         setError(null);
         return createdCampaign;
-      } catch (err: any) {
-        setError(err.message || 'Error creating campaign');
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message || 'Error creating campaign');
+        } else {
+          setError('Unknown error occurred while creating campaign');
+        }
       } finally {
         setLoading(false);
       }
