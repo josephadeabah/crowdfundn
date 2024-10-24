@@ -19,15 +19,18 @@ module Api
           render json: @campaigns, status: :ok
         end
         
-        # POST /api/v1/fundraisers/campaigns
-        def create
-          @campaign = @current_user.campaigns.new(campaign_params)
-          if @campaign.save
-            render json: @campaign.as_json(include: [:updates, :comments]).merge(media: @campaign.media), status: :created
-          else
-            render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity
-          end
+      # POST /api/v1/fundraisers/campaigns
+      def create
+        @campaign = @current_user.campaigns.new(campaign_params)
+        # Attach media if present
+        @campaign.media.attach(params[:media]) if params[:media].present?
+
+        if @campaign.save
+          render json: @campaign.as_json(include: [:updates, :comments]).merge(media: @campaign.media_url), status: :created
+        else
+          render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity
         end
+      end
 
         # PUT /api/v1/fundraisers/campaigns/:id
         def update
@@ -54,10 +57,11 @@ module Api
         def campaign_params
           params.require(:campaign).permit(
             :title, :description, :goal_amount, :current_amount, :start_date, :end_date,
-            :category, :location, :currency, :currency_code, :currency_symbol, :status, :media,
-            :accept_donations, :leave_words_of_support, :appear_in_search_results, :suggested_fundraiser_lists, 
-            :receive_donation_email, :receive_daily_summary, :is_public,
-            :enable_promotions, :schedule_promotion, :promotion_frequency, :promotion_duration
+            :category, :location, :currency, :currency_code, :currency_symbol, :status,
+            :accept_donations, :leave_words_of_support, :appear_in_search_results, 
+            :suggested_fundraiser_lists, :receive_donation_email, :receive_daily_summary, 
+            :is_public, :enable_promotions, :schedule_promotion, :promotion_frequency, 
+            :promotion_duration
           )
         end
         

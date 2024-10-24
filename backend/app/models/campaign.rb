@@ -18,7 +18,7 @@ class Campaign < ApplicationRecord
   attribute :suggested_fundraiser_lists, :boolean, default: true
   attribute :receive_donation_email, :boolean, default: true
   attribute :receive_daily_summary, :boolean, default: false
-  attribute :is_public, :boolean, default: true
+  attribute :is_public, :boolean, default: false
 
   # Promotions settings
   attribute :enable_promotions, :boolean, default: false
@@ -27,23 +27,21 @@ class Campaign < ApplicationRecord
   attribute :promotion_duration, :integer, default: 1
   
 
-  # Attachments for images/videos, you can use ActiveStorage or another service
-  # has_many_attached :media
-  # has_many_attached :media_files
+  # Attachments for images or videos
+  has_one_attached :media # Use `has_many_attached` if there are multiple files
 
-  # Method to return media as a string
-  def media_string
-    media.present? ? media.split(",").map(&:strip) : []
+  # Method to return media URL (you can adjust this to return an array for multiple attachments)
+  def media_url
+    media.attached? ? Rails.application.routes.url_helpers.rails_blob_url(media, only_path: true) : nil
   end
 
-  # Method to customize the JSON response
   def as_json(options = {})
     super(only: [
       :id, :title, :goal_amount, :current_amount, :start_date, :end_date,
       :category, :location, :currency, :currency_code, :currency_symbol, :status,
       :fundraiser_id, :created_at, :updated_at
     ]).merge(
-      media: media_string,
+      media: media_url,  # Returning the media URL
       description: description.as_json,
       permissions: {
         accept_donations: accept_donations,
