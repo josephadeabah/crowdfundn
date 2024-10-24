@@ -35,6 +35,10 @@ class Campaign < ApplicationRecord
     media.attached? ? Rails.application.routes.url_helpers.rails_blob_url(media, only_path: true) : nil
   end
 
+  def media_filename
+    media.attached? ? media.filename.to_s : nil
+  end
+
   def as_json(options = {})
     super(only: [
       :id, :title, :goal_amount, :current_amount, :start_date, :end_date,
@@ -42,6 +46,7 @@ class Campaign < ApplicationRecord
       :fundraiser_id, :created_at, :updated_at
     ]).merge(
       media: media_url,  # Returning the media URL
+      media_filename: media_filename,
       description: description.as_json,
       permissions: {
         accept_donations: accept_donations,
