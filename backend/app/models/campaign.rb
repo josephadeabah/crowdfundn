@@ -31,9 +31,17 @@ class Campaign < ApplicationRecord
 
   # Method to return media URL (set `only_path: false` for full URL)
   def media_url
-    Rails.logger.info("APP_DOMAIN: #{ENV['APP_DOMAIN']}")
-    media.attached? ? Rails.application.routes.url_helpers.rails_blob_url(media, only_path: false) : nil
+    if media.attached?
+      Rails.application.routes.url_helpers.url_for(
+        controller: 'active_storage/blobs',
+        action: 'show',
+        signed_id: media.signed_id,
+        host: Rails.application.routes.default_url_options[:host],
+        protocol: 'https'
+      )
+    end
   end
+  
   
 
   def media_filename

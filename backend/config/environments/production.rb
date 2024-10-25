@@ -94,7 +94,7 @@ Rails.application.configure do
 
   # Specify the host for URL generation
   config.action_mailer.default_url_options = { host: ENV['APP_DOMAIN'] || 'https://crowdfundn.vercel.app' }
-  config.action_controller.default_url_options = { host: ENV['APP_DOMAIN'] || 'https://crowdfundn.vercel.app' }
+  config.action_controller.default_url_options = { host: ENV['APP_DOMAIN'] || 'https://crowdfundn.vercel.app', protocol: 'https' }
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
