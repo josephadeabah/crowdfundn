@@ -23,8 +23,11 @@ module Api
         def create
           @campaign = @current_user.campaigns.new(campaign_params)
           # Attach media if present
-          @campaign.media.attach(params[:media]) if params[:media].present?
-
+          if params[:media].present?
+            @campaign.media.attach(params[:media])
+            set_media_content_disposition(@campaign.media) # Set content disposition
+          end
+        
           if @campaign.save
             render json: {
               message: 'Campaign created successfully',
@@ -50,6 +53,18 @@ module Api
         end
 
         private
+
+        def set_media_content_disposition(media)
+          s3 = Aws::S3::Resource.new
+          object = s3.bucket(Rails.application.credentials.dig(:digitalocean, :bucket)).object(media.key)
+          
+          # Ensure the content disposition is set to inline
+          object.copy_from(object.bucket.name + '/' + object.key, {
+            metadata_directive: 'REPLACE',
+            content_disposition: 'inline',
+            acl: 'public-read' # Make sure the file is public
+          })
+        end
 
         def set_campaign
           @campaign = Campaign.find(params[:id])
