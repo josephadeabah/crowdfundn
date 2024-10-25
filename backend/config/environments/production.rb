@@ -93,8 +93,9 @@ Rails.application.configure do
   config.middleware.insert_before 0, Rack::SSL if ENV['FORCE_SSL'] == 'true'
 
   # Specify the host for URL generation
-  config.action_mailer.default_url_options = { host: ENV['APP_DOMAIN'] || 'https://crowdfundn.vercel.app' }
-  config.action_controller.default_url_options = { host: ENV['APP_DOMAIN'] || 'https://crowdfundn.vercel.app', protocol: 'https' }
+  config.action_mailer.default_url_options = { host: 'crowdfundn.vercel.app' }
+  config.action_controller.default_url_options = { host: 'crowdfundn.vercel.app' }
+  
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [

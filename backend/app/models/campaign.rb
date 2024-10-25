@@ -34,7 +34,8 @@ class Campaign < ApplicationRecord
     if media.attached?
       Rails.application.routes.url_helpers.rails_blob_url(media, host: Rails.application.routes.default_url_options[:host])
     end
-  end  
+  end
+   
   
   def media_filename
     media.attached? ? media.filename.to_s : nil
