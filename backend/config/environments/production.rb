@@ -94,8 +94,7 @@ Rails.application.configure do
 
   # Specify the host for URL generation
   config.action_mailer.default_url_options = { host: ENV['APP_DOMAIN'] || 'https://crowdfundn.vercel.app' }
-  config.active_storage.service_urls_expire_in = 1.hour # Optional: Adjust expiration time
-  config.active_storage.routes_prefix = 'rails' # Optional: Adjust routes prefix if needed
+  config.action_controller.default_url_options = { host: ENV['APP_DOMAIN'] || 'https://crowdfundn.vercel.app' }
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
