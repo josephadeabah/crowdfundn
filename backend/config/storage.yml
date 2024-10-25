@@ -14,7 +14,7 @@ digitalocean:
   secret_access_key: <%= Rails.application.credentials.dig(:digitalocean, :secret_access_key) %>
   endpoint: <%= Rails.application.credentials.dig(:digitalocean, :endpoint) %>
   region: nyc3
-  bucket: bantuhive-space-media
+  bucket: <%= Rails.application.credentials.dig(:digitalocean, :bucket) %>
 
 # Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
 # amazon:

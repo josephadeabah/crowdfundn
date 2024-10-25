@@ -3,7 +3,9 @@ Aws.config.update({
       Rails.application.credentials.dig(:digitalocean, :access_key_id),
       Rails.application.credentials.dig(:digitalocean, :secret_access_key)
     ),
-    region: 'nyc3', # or the appropriate region for your setup
-    endpoint: Rails.application.credentials.dig(:digitalocean, :endpoint)
+    region: 'nyc3', # or your specific region
+    endpoint: Rails.application.credentials.dig(:digitalocean, :endpoint),
+    bucket: Rails.application.credentials.dig(:digitalocean, :bucket),
+    force_path_style: true # Necessary for Spaces
   })
   
