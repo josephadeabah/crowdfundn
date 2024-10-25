@@ -10,11 +10,11 @@ local:
 # DigitalOcean Spaces configuration
 digitalocean:
   service: S3
-  endpoint: https://bantuhive-space-media.nyc3.digitaloceanspaces.com
-  access_key_id: <%= Rails.application.credentials.dig(:digitalocean, :access_key) %>
-  secret_access_key: <%= Rails.application.credentials.dig(:digitalocean, :secret) %>
-  bucket: bantuhive-space-media
+  access_key_id: <%= Rails.application.credentials.dig(:digitalocean, :access_key_id) %>
+  secret_access_key: <%= Rails.application.credentials.dig(:digitalocean, :secret_access_key) %>
+  endpoint: <%= Rails.application.credentials.dig(:digitalocean, :endpoint) %>
   region: nyc3
+  bucket: bantuhive-space-media
 
 # Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
 # amazon:
