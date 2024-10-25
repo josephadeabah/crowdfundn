@@ -32,8 +32,13 @@ class Campaign < ApplicationRecord
 
   # Method to return media URL (you can adjust this to return an array for multiple attachments)
   def media_url
-    media.attached? ? Rails.application.routes.url_helpers.rails_blob_url(media, only_path: false) : nil
+    if media.attached?
+      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{media.blob.key}"
+    else
+      nil
+    end
   end
+  
   
 
   def media_filename
