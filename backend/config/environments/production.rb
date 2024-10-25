@@ -30,7 +30,7 @@ Rails.application.configure do
   config.assets.compile = false
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  # config.asset_host = "http://assets.example.com"
+  config.asset_host = ENV['DO_SPACES_ENDPOINT']
 
   config.action_controller.asset_host = ENV['DO_SPACES_ENDPOINT']
 
