@@ -1,5 +1,4 @@
 class Campaign < ApplicationRecord
-  include Rails.application.routes.url_helpers
   belongs_to :fundraiser, class_name: 'User', foreign_key: 'fundraiser_id'
   has_many :updates, dependent: :destroy
   has_many :comments, dependent: :destroy
@@ -26,16 +25,16 @@ class Campaign < ApplicationRecord
   attribute :schedule_promotion, :boolean, default: false
   attribute :promotion_frequency, :string, default: 'daily'
   attribute :promotion_duration, :integer, default: 1
+  
 
   # Attachments for images or videos
   has_one_attached :media # Use `has_many_attached` if there are multiple files
 
-  # Method to return media URL (set `only_path: false` for full URL)
+  # Method to return media URL (you can adjust this to return an array for multiple attachments)
   def media_url
-    rails_blob_url(media, only_path: false) if media.attached?
+    media.attached? ? Rails.application.routes.url_helpers.rails_blob_url(media, only_path: true) : nil
   end
-   
-  
+
   def media_filename
     media.attached? ? media.filename.to_s : nil
   end

@@ -92,11 +92,6 @@ Rails.application.configure do
   config.action_dispatch.trusted_proxies = ['127.0.0.1', '::1']
   config.middleware.insert_before 0, Rack::SSL if ENV['FORCE_SSL'] == 'true'
 
-  # Specify the host for URL generation
-  config.action_mailer.default_url_options = { host: 'crowdfundn.vercel.app' }
-  config.action_controller.default_url_options = { host: 'crowdfundn.vercel.app' }
-  
-
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
   #   "example.com",     # Allow requests from example.com
