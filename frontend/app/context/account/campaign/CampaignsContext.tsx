@@ -1,5 +1,4 @@
 import {
-  CampaignDataType,
   CampaignResponseDataType,
   CampaignState,
 } from '@/app/types/campaigns.types';
