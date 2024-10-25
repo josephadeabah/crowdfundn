@@ -1,4 +1,5 @@
 class Campaign < ApplicationRecord
+  include Rails.application.routes.url_helpers
   belongs_to :fundraiser, class_name: 'User', foreign_key: 'fundraiser_id'
   has_many :updates, dependent: :destroy
   has_many :comments, dependent: :destroy
@@ -31,9 +32,7 @@ class Campaign < ApplicationRecord
 
   # Method to return media URL (set `only_path: false` for full URL)
   def media_url
-    if media.attached?
-      Rails.application.routes.url_helpers.rails_blob_url(media, host: Rails.application.routes.default_url_options[:host])
-    end
+    rails_blob_url(media, only_path: false) if media.attached?
   end
    
   
