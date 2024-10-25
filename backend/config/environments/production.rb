@@ -30,16 +30,16 @@ Rails.application.configure do
   config.assets.compile = false
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  config.asset_host = ENV['DO_SPACES_ENDPOINT']
+  config.asset_host = "https://bantuhive-space-media.nyc3.digitaloceanspaces.com"
 
-  config.action_controller.asset_host = ENV['DO_SPACES_ENDPOINT']
+  config.action_controller.asset_host = "https://bantuhive-space-media.nyc3.digitaloceanspaces.com"
 
   # Specifies the header that your server uses for sending files.
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for Apache
   # config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for NGINX
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :digital_ocean
+  config.active_storage.service = :digitalocean
 
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil
