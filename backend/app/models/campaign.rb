@@ -33,7 +33,7 @@ class Campaign < ApplicationRecord
   # Method to return media URL (you can adjust this to return an array for multiple attachments)
   def media_url
     if media.attached?
-      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{media.blob.key}"
+      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{media.blob.key}"
     else
       nil
     end
