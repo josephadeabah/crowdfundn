@@ -32,8 +32,9 @@ class Campaign < ApplicationRecord
 
   # Method to return media URL (you can adjust this to return an array for multiple attachments)
   def media_url
-    media.attached? ? Rails.application.routes.url_helpers.rails_blob_url(media, only_path: true) : nil
+    media.attached? ? Rails.application.routes.url_helpers.rails_blob_url(media, only_path: false) : nil
   end
+  
 
   def media_filename
     media.attached? ? media.filename.to_s : nil
