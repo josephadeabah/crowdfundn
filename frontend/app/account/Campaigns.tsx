@@ -172,9 +172,9 @@ const Campaigns: React.FC = () => {
             <p className="text-gray-800 dark:text-neutral-200">
               <strong>Raised Amount:</strong> {selectedCampaign.current_amount}
             </p>
-            {selectedCampaign.media_filename && (
+            {selectedCampaign.media && (
               <img
-                src={selectedCampaign.media_filename} // Make sure this URL is correct
+                src={selectedCampaign.media} // Make sure this URL is correct
                 alt="Campaign thumbnail"
                 className="w-full rounded-lg"
               />
