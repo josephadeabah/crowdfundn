@@ -459,7 +459,7 @@ const CreateCampaign = () => {
         setIsOpen={setAlertOpen}
         onConfirm={() => setAlertOpen(false)}
         icon={
-          alertTitle === 'Campaign Created Successfully' ? (
+          alertTitle === 'Campaign created successfully' ? (
             <FaExclamationTriangle className="w-6 h-6 text-green-600" />
           ) : (
             <FaExclamationTriangle className="w-6 h-6 text-red-600" />
