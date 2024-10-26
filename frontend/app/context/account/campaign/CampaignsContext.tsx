@@ -85,6 +85,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
       const fetchedCampaigns = await response.json();
       setCampaigns(fetchedCampaigns);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.message || 'Error fetching campaigns');
     } finally {
@@ -92,9 +93,55 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [token]);
 
+  const deleteCampaign = useCallback(
+    async (id: string) => {
+      if (!token) {
+        setError('Authentication token is missing');
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}/`,
+          {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Failed to delete campaign: ${errorText}`);
+        }
+
+        setError(null);
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message || 'Error deleting campaign');
+        } else {
+          setError('Unknown error occurred while deleting campaign');
+        }
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
+
   const contextValue = useMemo(
-    () => ({ campaigns, loading, error, addCampaign, fetchCampaigns }),
-    [campaigns, loading, error, addCampaign, fetchCampaigns],
+    () => ({
+      campaigns,
+      loading,
+      error,
+      addCampaign,
+      fetchCampaigns,
+      deleteCampaign,
+    }),
+    [campaigns, loading, error, addCampaign, fetchCampaigns, deleteCampaign],
   );
 
   return (

@@ -9,16 +9,28 @@ import {
 } from '../components/popover/Popover';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import Modal from '@/app/components/modal/Modal';
+import AlertPopup from '@/app/components/alertpopup/AlertPopup'; // Import the AlertPopup
 import { CampaignResponseDataType } from '../types/campaigns.types';
 import CampaignPermissionSetting from './dashboard/create/settings/PermissionSettings';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 const Campaigns: React.FC = () => {
-  const { campaigns, loading, error, fetchCampaigns } = useCampaignContext();
+  const {
+    campaigns: initialCampaigns,
+    loading,
+    error,
+    fetchCampaigns,
+    deleteCampaign,
+  } = useCampaignContext();
+  const [campaigns, setCampaigns] =
+    useState<CampaignResponseDataType[]>(initialCampaigns);
   const [selectedCampaign, setSelectedCampaign] =
     useState<CampaignResponseDataType | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [alertPopupOpen, setAlertPopupOpen] = useState(false);
+  const [campaignToDelete, setCampaignToDelete] =
+    useState<CampaignResponseDataType | null>(null);
 
   const initialPermissions = {
     acceptDonations: false,
@@ -37,6 +49,10 @@ const Campaigns: React.FC = () => {
     promotionFrequency: 'daily',
     promotionDuration: 1,
   });
+
+  useEffect(() => {
+    setCampaigns(initialCampaigns);
+  }, [initialCampaigns]);
 
   useEffect(() => {
     fetchCampaigns();
@@ -62,6 +78,22 @@ const Campaigns: React.FC = () => {
     setSelectedCampaign(null);
   };
 
+  const handleDeleteCampaign = (campaign: CampaignResponseDataType) => {
+    setCampaignToDelete(campaign);
+    setAlertPopupOpen(true);
+  };
+
+  const confirmDeleteCampaign = () => {
+    if (campaignToDelete) {
+      deleteCampaign(String(campaignToDelete.id));
+      setCampaigns(
+        campaigns.filter((campaign) => campaign.id !== campaignToDelete.id),
+      ); // Remove from local state
+      setAlertPopupOpen(false);
+      setCampaignToDelete(null);
+    }
+  };
+
   return (
     <div className="p-4">
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
@@ -81,7 +113,6 @@ const Campaigns: React.FC = () => {
               key={campaign.id}
               className="relative p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 dark:hover:bg-neutral-700 flex flex-col justify-between"
             >
-              {/* Campaign Title and Goal Amount */}
               <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
                 {campaign.title}
               </h3>
@@ -89,7 +120,6 @@ const Campaigns: React.FC = () => {
                 Goal: {campaign.goal_amount}
               </p>
 
-              {/* Preview Campaign Button */}
               <div className="mt-4 flex justify-between items-center">
                 <Button
                   className="px-4 py-2 text-green-500 rounded-full"
@@ -109,7 +139,6 @@ const Campaigns: React.FC = () => {
                 </Button>
               </div>
 
-              {/* Popover for additional options */}
               <Popover>
                 <PopoverTrigger asChild>
                   <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-200">
@@ -131,7 +160,7 @@ const Campaigns: React.FC = () => {
                     <li>
                       <button
                         className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
-                        onClick={() => console.log('Delete Campaign')}
+                        onClick={() => handleDeleteCampaign(campaign)}
                       >
                         Delete Campaign
                       </button>
@@ -151,6 +180,16 @@ const Campaigns: React.FC = () => {
           ))}
         </div>
       )}
+
+      {/* AlertPopup for confirming deletion */}
+      <AlertPopup
+        title={campaignToDelete ? campaignToDelete.title : 'Confirm Deletion'}
+        message="Are you sure you want to delete this campaign?"
+        isOpen={alertPopupOpen}
+        setIsOpen={setAlertPopupOpen}
+        onConfirm={confirmDeleteCampaign}
+        onCancel={() => setAlertPopupOpen(false)}
+      />
       {/* Modal for previewing campaign details */}
       {selectedCampaign && (
         <Modal
@@ -174,7 +213,7 @@ const Campaigns: React.FC = () => {
             </p>
             {selectedCampaign.media && (
               <img
-                src={selectedCampaign.media} // Make sure this URL is correct
+                src={selectedCampaign.media}
                 alt="Campaign thumbnail"
                 className="w-full rounded-lg"
               />
