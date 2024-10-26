@@ -5,7 +5,6 @@ import {
   DashboardIcon,
   HandIcon,
   SymbolIcon,
-  ArchiveIcon,
   IconJarLogoIcon,
   GearIcon,
   RocketIcon,
@@ -14,7 +13,6 @@ import Rewards from '@/app/account/Rewards';
 import Campaigns from '@/app/account/Campaigns';
 import Transfers from '@/app/account/Transfers';
 import Donations from '@/app/account/Donations';
-import Archive from '@/app/account/Archive';
 import Dashboard from '@/app/account/Dashboard';
 import ProfileTabsLoader from '@/app/loaders/ProfileTabsLoader';
 import AccountSettings from '@/app/account/settings/AccountSettings';
@@ -92,10 +90,6 @@ const ProfileTabs = () => {
       content: 'Check your active campaigns in this tab.',
     },
     {
-      target: '#archive-tab',
-      content: 'Your archived campaigns can be found here.',
-    },
-    {
       target: '#settings-tab',
       content: 'Manage your account settings in this tab.',
     },
@@ -113,8 +107,6 @@ const ProfileTabs = () => {
         return <Rewards />;
       case 'Campaigns':
         return <Campaigns />;
-      case 'Archive':
-        return <Archive />;
       case 'Settings':
         return <AccountSettings />;
       default:
@@ -161,7 +153,6 @@ const ProfileTabs = () => {
             { label: 'Transfers', icon: <SymbolIcon />, id: 'transfers-tab' },
             { label: 'Rewards', icon: <IconJarLogoIcon />, id: 'rewards-tab' },
             { label: 'Campaigns', icon: <RocketIcon />, id: 'campaigns-tab' },
-            { label: 'Archive', icon: <ArchiveIcon />, id: 'archive-tab' },
             {
               label: 'Settings',
               icon: <GearIcon />,

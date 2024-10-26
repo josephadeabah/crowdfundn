@@ -165,14 +165,6 @@ const Campaigns: React.FC = () => {
                         Delete Campaign
                       </button>
                     </li>
-                    <li>
-                      <button
-                        className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
-                        onClick={() => console.log('Move to Archive')}
-                      >
-                        Move to Archive
-                      </button>
-                    </li>
                   </ul>
                 </PopoverContent>
               </Popover>
