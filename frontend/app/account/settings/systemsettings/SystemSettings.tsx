@@ -77,7 +77,7 @@ const SystemSettingsPage = () => {
     key: keyof Settings[T],
     value: any,
   ) => {
-    let newErrors = { ...errors };
+    const newErrors = { ...errors };
 
     if (section === 'email' && key === 'frequency') {
       if (!value) {

@@ -30,7 +30,7 @@ const BlogPostModal = () => {
   }, []);
 
   const validateForm = () => {
-    let formErrors: FormErrors = {};
+    const formErrors: FormErrors = {};
     if (!title.trim()) formErrors.title = 'Title is required';
     if (!content.trim()) formErrors.content = 'Content is required';
     setErrors(formErrors);

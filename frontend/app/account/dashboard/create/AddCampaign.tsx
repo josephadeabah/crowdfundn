@@ -78,7 +78,7 @@ const CreateCampaign = () => {
   };
 
   const validateForm = () => {
-    let formErrors: { [key: string]: string } = {};
+    const formErrors: { [key: string]: string } = {};
     if (!title.trim()) formErrors.title = 'Title is required';
     if (!content.trim()) formErrors.content = 'Content is required';
     if (!selectedImage) formErrors.image = 'Image is required';

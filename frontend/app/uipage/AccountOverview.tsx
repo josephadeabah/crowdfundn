@@ -31,7 +31,7 @@ const AccountOverview = () => {
   };
 
   const validateField = (name: string, value: string) => {
-    let newErrors = { ...errors };
+    const newErrors = { ...errors };
     switch (name) {
       case 'cardNumber':
         newErrors.cardNumber = /^\d{16}$/.test(value)

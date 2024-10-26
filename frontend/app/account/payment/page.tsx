@@ -64,7 +64,7 @@ const PaymentPageContent = () => {
       : undefined;
 
   const validatePaymentForm = () => {
-    let newErrors: {
+    const newErrors: {
       cardNumber?: string;
       expiryDate?: string;
       cvv?: string;
@@ -89,7 +89,7 @@ const PaymentPageContent = () => {
 
   const handleSubmitPayment = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let isValid = validatePaymentForm();
+    const isValid = validatePaymentForm();
     if (isValid) {
       setIsProcessing(true);
       // Simulate payment processing

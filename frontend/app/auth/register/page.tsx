@@ -99,7 +99,7 @@ const RegisterComponent = () => {
   };
 
   const validateField = (name: string, value: string) => {
-    let newErrors = { ...errors };
+    const newErrors = { ...errors };
     switch (name) {
       case 'email':
         if (!/^\S+@\S+\.\S+$/.test(value)) {
