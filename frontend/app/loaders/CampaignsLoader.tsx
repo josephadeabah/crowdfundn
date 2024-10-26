@@ -6,13 +6,13 @@ const CampaignsLoader = () => {
   return (
     <div>
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
-        Campaigns
+        My Campaigns
       </h2>
       <p className="text-gray-500 dark:text-neutral-400 mb-4">
         Manage your active and past campaigns.
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {Array(2)
+        {Array(6)
           .fill(null)
           .map((_, index) => (
             <div

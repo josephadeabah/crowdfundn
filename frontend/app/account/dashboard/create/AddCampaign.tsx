@@ -10,7 +10,6 @@ import CampaignPermissionSetting from '@/app/account/dashboard/create/settings/P
 import { FaEdit } from 'react-icons/fa';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useUserContext } from '@/app/context/users/UserContext';
-import { CampaignDataType } from '@/app/types/campaigns.types';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { FaExclamationTriangle } from 'react-icons/fa';
 
@@ -154,9 +153,9 @@ const CreateCampaign = () => {
           </a>,
         );
         setIsOpen(false);
-      } catch (err) {
-        setAlertTitle('Error');
-        setAlertMessage('Failed to create campaign. Please try again.');
+      } catch (err: unknown) {
+        setAlertTitle(String(err));
+        setAlertMessage(error);
       } finally {
         setAlertOpen(true);
       }
