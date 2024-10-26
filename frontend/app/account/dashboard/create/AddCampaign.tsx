@@ -19,26 +19,25 @@ const RichTextEditor = dynamic(() => import('@mantine/rte'), { ssr: false });
 
 const CreateCampaign = () => {
   const { userProfile } = useUserContext();
-  const { categories, paymentOptions, countries } = data; // Destructure the data
+  const { categories, paymentOptions, countries } = data;
   const [isOpen, setIsOpen] = useState(false);
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [goalAmount, setGoalAmount] = useState('');
-  const [currentAmount, setCurrentAmount] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [category, setCategory] = useState('');
-  const [location, setLocation] = useState('');
-  const [currency, setCurrency] = useState('');
-  const [isPublic, setIsPublic] = useState(true);
+  const [title, setTitle] = useState<string>('');
+  const [content, setContent] = useState<string>('');
+  const [goalAmount, setGoalAmount] = useState<string>('');
+  const [currentAmount, setCurrentAmount] = useState<string>('0');
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+  const [category, setCategory] = useState<string>('');
+  const [location, setLocation] = useState<string>('');
+  const [currency, setCurrency] = useState<string>('');
+  const [isPublic, setIsPublic] = useState<boolean>(true);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [error, setError] = useState<FormErrors>({});
+  const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
   const { addCampaign, loading } = useCampaignContext();
-
-  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<React.ReactNode>('');
-  const [alertTitle, setAlertTitle] = useState('');
+  const [alertTitle, setAlertTitle] = useState<string>('');
 
   const initialPermissions = {
     acceptDonations: false,
@@ -48,6 +47,16 @@ const CreateCampaign = () => {
     receiveDonationEmail: false,
     receiveDailySummary: false,
   };
+
+  interface FormErrors {
+    title?: string;
+    content?: string;
+    image?: string;
+    currentAmount?: string;
+    startDate?: string;
+    endDate?: string;
+    dateRange?: string;
+  }
 
   const [permissions, setPermissions] = useState(initialPermissions);
 
@@ -61,7 +70,7 @@ const CreateCampaign = () => {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       setSelectedImage(acceptedFiles[0]);
-      setError(null);
+      setError({});
     }
   }, []);
 
@@ -73,17 +82,25 @@ const CreateCampaign = () => {
 
   const handleRemoveImage = () => {
     setSelectedImage(null);
-    setError(null);
+    setError({});
   };
 
-  const validateForm = () => {
-    const formErrors: { [key: string]: string } = {};
+  const validateForm = (): boolean => {
+    const formErrors: FormErrors = {};
     if (!title.trim()) formErrors.title = 'Title is required';
     if (!content.trim()) formErrors.content = 'Content is required';
     if (!selectedImage) formErrors.image = 'Image is required';
     if (isNaN(parseFloat(currentAmount))) {
       formErrors.currentAmount = 'Current amount must be a number';
     }
+    if (!startDate) formErrors.startDate = 'Start date is required';
+    if (!endDate) formErrors.endDate = 'End date is required';
+
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+      formErrors.dateRange = 'End date must be after start date';
+    }
+
+    setError(formErrors);
     return Object.keys(formErrors).length === 0;
   };
 
@@ -153,9 +170,17 @@ const CreateCampaign = () => {
           </a>,
         );
         setIsOpen(false);
-      } catch (err: unknown) {
-        setAlertTitle(String(err));
-        setAlertMessage(error);
+      } catch {
+        setAlertTitle('Failed to create fundraising!');
+        setAlertMessage(
+          <div>
+            {Object.values(error).map((errMsg, index) => (
+              <p key={index} className="text-red-500">
+                {errMsg}
+              </p>
+            ))}
+          </div>,
+        );
       } finally {
         setAlertOpen(true);
       }
@@ -234,6 +259,9 @@ const CreateCampaign = () => {
                 onChange={(e) => setStartDate(e.target.value)}
                 className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
               />
+              {error && error.startDate && (
+                <p className="text-red-500 text-xs">{error.startDate}</p>
+              )}
             </div>
 
             <div className="mb-4">
@@ -247,6 +275,12 @@ const CreateCampaign = () => {
                 onChange={(e) => setEndDate(e.target.value)}
                 className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
               />
+              {error && error.endDate && (
+                <p className="text-red-500 text-xs">{error.endDate}</p>
+              )}
+              {error && error.dateRange && (
+                <p className="text-red-500 text-xs">{error.dateRange}</p>
+              )}
             </div>
 
             {/* Dropdown for Category */}
@@ -425,7 +459,7 @@ const CreateCampaign = () => {
         setIsOpen={setAlertOpen}
         onConfirm={() => setAlertOpen(false)}
         icon={
-          alertTitle ? (
+          alertTitle === 'Campaign Created Successfully' ? (
             <FaExclamationTriangle className="w-6 h-6 text-green-600" />
           ) : (
             <FaExclamationTriangle className="w-6 h-6 text-red-600" />

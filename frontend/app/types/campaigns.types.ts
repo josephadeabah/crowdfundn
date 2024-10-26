@@ -25,6 +25,7 @@ export interface CampaignDataType {
 export interface CampaignResponseDataType {
   id: number;
   title: string;
+  message: string;
   description: {
     id: number;
     name: string;
@@ -70,6 +71,6 @@ export interface CampaignState {
   campaigns: CampaignResponseDataType[];
   loading: boolean;
   error: string | null;
-  addCampaign: (campaign: FormData) => Promise<any>;
+  addCampaign: (campaign: FormData) => Promise<CampaignResponseDataType>;
   fetchCampaigns: () => Promise<void>;
 }
