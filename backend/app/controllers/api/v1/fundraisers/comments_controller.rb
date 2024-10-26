@@ -1,7 +1,7 @@
 class Api::V1::Fundraisers::CommentsController < ApplicationController
   before_action :authenticate_request
-  before_action :set_comment, only: [:show, :update, :destroy]
-  before_action :set_campaign, only: [:index, :create]
+  before_action :set_comment, only: %i[show update destroy]
+  before_action :set_campaign, only: %i[index create]
 
   # GET /api/v1/fundraisers/campaigns/:campaign_id/comments
   def index
@@ -17,7 +17,7 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
   # POST /api/v1/fundraisers/campaigns/:campaign_id/comments
   def create
     @comment = @campaign.comments.build(comment_params)
-    @comment.user = @current_user  # Associate the comment with the current user
+    @comment.user = @current_user # Associate the comment with the current user
 
     if @comment.save
       render json: @comment, status: :created
@@ -25,7 +25,6 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
       render json: { errors: @comment.errors.full_messages }, status: :unprocessable_entity
     end
   end
-
 
   def update
     if @comment.update(comment_params)

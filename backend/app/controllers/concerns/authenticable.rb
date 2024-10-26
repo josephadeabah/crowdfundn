@@ -45,7 +45,7 @@ module Authenticable
 
   def decode_token(token)
     JWT.decode(token, Rails.application.secret_key_base)[0].with_indifferent_access
-  rescue
+  rescue StandardError
     nil
   end
 end

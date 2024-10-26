@@ -4,25 +4,24 @@ module Api
       class UsersController < ApplicationController
         before_action :authenticate_request, except: [:index]
         before_action :authorize_admin, only: [:make_admin]
-        before_action :set_user, only: [:make_admin, :make_admin_role, :show_by_id, :assign_role] # Added :assign_role
+        before_action :set_user, only: %i[make_admin make_admin_role show_by_id assign_role] # Added :assign_role
 
         def index
           @users = User.includes(:profile, :roles).all
-          render json: @users.to_json(include: [:profile, :roles]), status: :ok
+          render json: @users.to_json(include: %i[profile roles]), status: :ok
         end
 
         def show
-          render json: @current_user.as_json(include: [:profile, :roles]), status: :ok
+          render json: @current_user.as_json(include: %i[profile roles]), status: :ok
         end
 
         def show_by_id
-          render json: @user.as_json(include: [:profile, :roles]), status: :ok
+          render json: @user.as_json(include: %i[profile roles]), status: :ok
         end
-
 
         # PUT /api/v1/members/users/:id/make_admin
         def make_admin
-          admin_status = params[:admin] == "true"
+          admin_status = params[:admin] == 'true'
           if @user.update(admin: admin_status)
             render json: @user.as_json(include: :profile), status: :ok
           else
@@ -32,20 +31,20 @@ module Api
 
         def make_admin_role
           admin_role = Role.find_by(name: 'Admin')
-          if params[:admin] == "true"
+          if params[:admin] == 'true'
             @user.roles << admin_role unless @user.has_role?('Admin')
           else
             @user.roles.delete(admin_role)
           end
 
-          render json: @user.as_json(include: [:profile, :roles]), status: :ok
+          render json: @user.as_json(include: %i[profile roles]), status: :ok
         end
 
         def assign_role
           role = Role.find_by(name: params[:role_name])
           if role.present?
             @user.roles << role unless @user.has_role?(role.name)
-            render json: { message: "Role assigned successfully." }, status: :ok
+            render json: { message: 'Role assigned successfully.' }, status: :ok
           else
             render json: { error: 'Role not found' }, status: :unprocessable_entity
           end
@@ -63,7 +62,8 @@ module Api
           if @current_user.authenticate(params[:user][:current_password]) && @current_user.update(password_params)
             render json: { message: 'Password updated successfully' }, status: :ok
           else
-            render json: { error: 'Current password is incorrect or new password is invalid' }, status: :unprocessable_entity
+            render json: { error: 'Current password is incorrect or new password is invalid' },
+                   status: :unprocessable_entity
           end
         end
 
@@ -91,16 +91,16 @@ module Api
             :target_amount,
             :duration_in_days,
             :national_id,
-            profile_attributes: [
-              :name,
-              :description,
-              :funding_goal,
-              :amount_raised,
-              :end_date,
-              :category,
-              :location,
-              :avatar,
-              :status
+            profile_attributes: %i[
+              name
+              description
+              funding_goal
+              amount_raised
+              end_date
+              category
+              location
+              avatar
+              status
             ]
           )
         end

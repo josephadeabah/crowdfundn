@@ -1,27 +1,27 @@
-require "test_helper"
+require 'test_helper'
 
 class Api::V1::Fundraisers::CampaignsControllerTest < ActionDispatch::IntegrationTest
-  test "should get index" do
+  test 'should get index' do
     get api_v1_fundraisers_campaigns_index_url
     assert_response :success
   end
 
-  test "should get show" do
+  test 'should get show' do
     get api_v1_fundraisers_campaigns_show_url
     assert_response :success
   end
 
-  test "should get create" do
+  test 'should get create' do
     get api_v1_fundraisers_campaigns_create_url
     assert_response :success
   end
 
-  test "should get update" do
+  test 'should get update' do
     get api_v1_fundraisers_campaigns_update_url
     assert_response :success
   end
 
-  test "should get destroy" do
+  test 'should get destroy' do
     get api_v1_fundraisers_campaigns_destroy_url
     assert_response :success
   end

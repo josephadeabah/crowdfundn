@@ -4,6 +4,6 @@ class AddDefaultRoles < ActiveRecord::Migration[7.1]
   end
 
   def down
-    Role.where(name: ['Admin', 'Manager', 'Moderator', 'User', 'Custom']).destroy_all
+    Role.where(name: %w[Admin Manager Moderator User Custom]).destroy_all
   end
 end

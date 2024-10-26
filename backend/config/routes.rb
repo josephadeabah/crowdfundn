@@ -13,22 +13,22 @@ Rails.application.routes.draw do
         put 'users/me', to: 'users#update'
         put 'users/me/password', to: 'users#change_password'
         get 'users/:id', to: 'users#show_by_id' # Route to get user by ID
-        put 'users/:id/make_admin', to: 'users#make_admin'  # Route to make user an admin
-        put 'users/:id/assign_role', to: 'users#assign_role'  # Added route for assign_role
+        put 'users/:id/make_admin', to: 'users#make_admin' # Route to make user an admin
+        put 'users/:id/assign_role', to: 'users#assign_role' # Added route for assign_role
       end
 
       namespace :fundraisers do
         resources :campaigns do
           get 'my_campaigns', on: :collection
-          resources :updates, only: [:create, :update, :destroy]
-          resources :comments, only: [:create, :index, :destroy]
+          resources :updates, only: %i[create update destroy]
+          resources :comments, only: %i[create index destroy]
         end
       end
     end
   end
 
   # Health check route
-  get "up" => "rails/health#show", as: :rails_health_check
+  get 'up' => 'rails/health#show', as: :rails_health_check
 
   # root "posts#index"
 end

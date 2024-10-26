@@ -2,7 +2,7 @@ class Campaign < ApplicationRecord
   belongs_to :fundraiser, class_name: 'User', foreign_key: 'fundraiser_id'
   has_many :updates, dependent: :destroy
   has_many :comments, dependent: :destroy
-  has_many :backers, through: :donations  # assuming a Backer model related to donations
+  has_many :backers, through: :donations # assuming a Backer model related to donations
   has_rich_text :description
 
   validates :title, :description, :goal_amount, :start_date, :end_date, :currency, presence: true
@@ -25,33 +25,31 @@ class Campaign < ApplicationRecord
   attribute :schedule_promotion, :boolean, default: false
   attribute :promotion_frequency, :string, default: 'daily'
   attribute :promotion_duration, :integer, default: 1
-  
+
 
   # Attachments for images or videos
   has_one_attached :media # Use `has_many_attached` if there are multiple files
 
   # Method to return media URL (you can adjust this to return an array for multiple attachments)
   def media_url
-    if media.attached?
-      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{media.blob.key}"
-    else
-      nil
-    end
+    return unless media.attached?
+
+    "#{Rails.application.credentials.dig(:digitalocean,
+                                         :endpoint)}/#{Rails.application.credentials.dig(:digitalocean,
+                                                                                         :bucket)}/#{media.blob.key}"
   end
-  
-  
 
   def media_filename
     media.attached? ? media.filename.to_s : nil
   end
 
-  def as_json(options = {})
-    super(only: [
-      :id, :title, :goal_amount, :current_amount, :start_date, :end_date,
-      :category, :location, :currency, :currency_code, :currency_symbol, :status,
-      :fundraiser_id, :created_at, :updated_at
+  def as_json(_options = {})
+    super(only: %i[
+      id title goal_amount current_amount start_date end_date
+      category location currency currency_code currency_symbol status
+      fundraiser_id created_at updated_at
     ]).merge(
-      media: media_url,  # Returning the media URL
+      media: media_url, # Returning the media URL
       media_filename: media_filename,
       description: description.as_json,
       permissions: {

@@ -4,7 +4,7 @@ module Api
       class UpdatesController < ApplicationController
         before_action :authenticate_request
         before_action :set_campaign
-        before_action :set_update, only: [:update, :destroy]
+        before_action :set_update, only: %i[update destroy]
 
         def create
           update = @campaign.updates.new(update_params)

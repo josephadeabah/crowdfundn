@@ -2,7 +2,6 @@ module Api
   module V1
     module Members
       class AuthController < ApplicationController
-
         def signup
           user = User.new(user_params)
           if user.save
@@ -11,7 +10,6 @@ module Api
             render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
           end
         end
-
 
         def login
           user = User.find_by(email: params[:email])
