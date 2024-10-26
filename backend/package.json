@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "rubocop": "rubocop",
+    "rubocop:fix": "rubocop -- --auto-correct",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
