@@ -4,7 +4,7 @@ module Api
       class CampaignsController < ApplicationController
         before_action :authenticate_request, only: %i[create update destroy my_campaigns]
         before_action :set_campaign, only: %i[show update destroy]
-        before_action :authorize_user!, only: %i[update destroy show]  # Ensure user authorization for these actions
+        before_action :authorize_campaign_user!, only: %i[update destroy show]  # Ensure user authorization for these actions
 
         def index
           @campaigns = Campaign.all
@@ -73,6 +73,10 @@ module Api
           @campaign = Campaign.find(params[:id])
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'Campaign not found' }, status: :not_found
+        end
+
+        def authorize_campaign_user!
+          authorize_user!(@campaign)  # Call the authorization method
         end
 
         def campaign_params
