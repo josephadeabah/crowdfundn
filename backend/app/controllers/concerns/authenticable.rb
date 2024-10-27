@@ -41,6 +41,12 @@ module Authenticable
     authorize_role('Moderator')
   end
 
+  def authorize_user!(resource)
+    unless resource.fundraiser_id == @current_user.id
+      render json: { error: 'You are not authorized to perform this action' }, status: :forbidden
+    end
+  end
+
   private
 
   def decode_token(token)

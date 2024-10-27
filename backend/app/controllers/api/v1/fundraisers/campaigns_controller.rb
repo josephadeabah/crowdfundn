@@ -4,6 +4,7 @@ module Api
       class CampaignsController < ApplicationController
         before_action :authenticate_request, only: %i[create update destroy my_campaigns]
         before_action :set_campaign, only: %i[show update destroy]
+        before_action :authorize_user!, only: %i[update destroy show]  # Ensure user authorization for these actions
 
         def index
           @campaigns = Campaign.all
