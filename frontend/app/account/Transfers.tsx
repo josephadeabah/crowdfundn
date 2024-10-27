@@ -50,7 +50,7 @@ export default function Transfers() {
 
         {/* Breakdown Card */}
         <div className="bg-white dark:bg-gray-900 rounded-lg duration-200">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+          <h3 className="text-lg p-3 font-semibold text-gray-800 dark:text-white mb-4">
             Breakdown
           </h3>
           {/* Total Donated - Full Width */}

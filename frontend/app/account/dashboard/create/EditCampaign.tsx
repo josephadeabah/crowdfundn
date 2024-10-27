@@ -22,7 +22,9 @@ const EditCampaign = () => {
   const [title, setTitle] = useState('');
   const [goalAmount, setGoalAmount] = useState('');
   const [description, setDescription] = useState('');
-  const [image, setImage] = useState('');
+  const [image, setImage] = useState(
+    'https://images.pexels.com/photos/28974077/pexels-photo-28974077/free-photo-of-close-up-of-two-polar-bears-on-rocky-terrain.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+  );
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
 

@@ -380,7 +380,7 @@ const CreateCampaign = () => {
               ) : (
                 <div className="relative h-64 bg-cover bg-center rounded-md overflow-hidden">
                   <img
-                    src={URL.createObjectURL(selectedImage)}
+                    src={URL.createObjectURL(selectedImage) || ''}
                     alt="Selected image"
                     className="h-full w-full object-cover"
                   />
