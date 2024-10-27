@@ -77,7 +77,7 @@ export interface CampaignState {
   editCampaign: (
     id: string | string[] | undefined,
     campaign: FormData,
-  ) => Promise<CampaignResponseDataType>;
+  ) => Promise<SingleCampaignResponseDataType>;
   fetchCampaignById: (id: string) => Promise<SingleCampaignResponseDataType>;
 }
 
