@@ -11,22 +11,16 @@ import {
 } from '../components/popover/Popover';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import Modal from '@/app/components/modal/Modal';
-import AlertPopup from '@/app/components/alertpopup/AlertPopup'; // Import the AlertPopup
+import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { CampaignResponseDataType } from '../types/campaigns.types';
 import CampaignPermissionSetting from './dashboard/create/settings/PermissionSettings';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { generateRandomString } from '../utils/helpers/generate.random-string';
 
 const Campaigns: React.FC = () => {
-  const {
-    campaigns: initialCampaigns,
-    loading,
-    error,
-    fetchCampaigns,
-    deleteCampaign,
-  } = useCampaignContext();
-  const [campaigns, setCampaigns] =
-    useState<CampaignResponseDataType[]>(initialCampaigns);
+  const { campaigns, loading, error, fetchCampaigns, deleteCampaign } =
+    useCampaignContext();
+
   const [selectedCampaign, setSelectedCampaign] =
     useState<CampaignResponseDataType | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -34,6 +28,7 @@ const Campaigns: React.FC = () => {
   const [alertPopupOpen, setAlertPopupOpen] = useState(false);
   const [campaignToDelete, setCampaignToDelete] =
     useState<CampaignResponseDataType | null>(null);
+
   const router = useRouter();
 
   const initialPermissions = {
@@ -46,7 +41,6 @@ const Campaigns: React.FC = () => {
   };
 
   const [permissions, setPermissions] = useState(initialPermissions);
-
   const [promotionSettings, setPromotionSettings] = useState({
     enablePromotions: false,
     schedulePromotion: false,
@@ -59,10 +53,6 @@ const Campaigns: React.FC = () => {
       `/account/dashboard/create/${campaignId}?${generateRandomString()}`,
     );
   };
-
-  useEffect(() => {
-    setCampaigns(initialCampaigns);
-  }, [initialCampaigns]);
 
   useEffect(() => {
     fetchCampaigns();
@@ -93,12 +83,10 @@ const Campaigns: React.FC = () => {
     setAlertPopupOpen(true);
   };
 
-  const confirmDeleteCampaign = () => {
+  const confirmDeleteCampaign = async () => {
     if (campaignToDelete) {
-      deleteCampaign(String(campaignToDelete.id));
-      setCampaigns(
-        campaigns.filter((campaign) => campaign.id !== campaignToDelete.id),
-      ); // Remove from local state
+      await deleteCampaign(String(campaignToDelete.id)); // Await deletion
+      await fetchCampaigns(); // Fetch updated campaigns after deletion
       setAlertPopupOpen(false);
       setCampaignToDelete(null);
     }
@@ -190,6 +178,7 @@ const Campaigns: React.FC = () => {
         onConfirm={confirmDeleteCampaign}
         onCancel={() => setAlertPopupOpen(false)}
       />
+
       {/* Modal for previewing campaign details */}
       {selectedCampaign && (
         <Modal

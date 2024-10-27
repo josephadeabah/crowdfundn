@@ -14,39 +14,38 @@ import { truncateHTML } from '@/app/utils/helpers/truncate.html';
 const RichTextEditor = dynamic(() => import('@mantine/rte'), { ssr: false });
 
 const EditCampaign = () => {
-  const { loading, error, editCampaign, fetchCampaignById } =
+  const { loading, editCampaign, fetchCampaignById, fetchCampaigns } =
     useCampaignContext();
   const { id } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editMode, setEditMode] = useState({ field: '', value: '' });
-  const [title, setTitle] = useState('Fundraising Title');
+  const [title, setTitle] = useState('');
   const [goalAmount, setGoalAmount] = useState('');
-  const [description, setDescription] = useState(
-    'Your fundraiser description goes here...',
-  );
+  const [description, setDescription] = useState('');
   const [image, setImage] = useState('');
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch campaign details if `id` is available
     if (id && typeof id === 'string') {
-      fetchCampaignById(id).then(
-        (campaignData: SingleCampaignResponseDataType) => {
-          setTitle(campaignData?.title);
-          setGoalAmount(campaignData?.goal_amount.toString());
-          setDescription(campaignData?.description.body);
-          setImage(campaignData?.media?.record.media);
-        },
-      );
+      fetchCampaignById(id)
+        .then((campaignData: SingleCampaignResponseDataType) => {
+          if (campaignData) {
+            setTitle(campaignData.title);
+            setGoalAmount(campaignData.goal_amount.toString());
+            setDescription(campaignData.description.body);
+            setImage(campaignData.media?.record.media || '');
+          }
+        })
+        .catch(() => setFetchError('Error fetching campaign details.'));
     }
   }, [id, fetchCampaignById]);
 
-  // For handling image drop using react-dropzone
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles && acceptedFiles.length > 0) {
+    if (acceptedFiles.length > 0) {
       const selectedImage = URL.createObjectURL(acceptedFiles[0]);
       setImage(selectedImage);
-      setSelectedImageFile(acceptedFiles[0]); // Save the actual file
+      setSelectedImageFile(acceptedFiles[0]);
     }
   }, []);
 
@@ -56,20 +55,18 @@ const EditCampaign = () => {
     multiple: false,
   });
 
-  // Open the modal and set the field to edit
   const openEditModal = (field: string, value: string) => {
     setEditMode({ field, value });
     setIsModalOpen(true);
   };
 
-  // Handle the save action from modal
   const handleSave = (newValue: string) => {
     switch (editMode.field) {
       case 'title':
         setTitle(newValue);
         break;
       case 'goalAmount':
-        setGoalAmount(parseInt(newValue, 10).toString());
+        setGoalAmount(newValue);
         break;
       case 'description':
         setDescription(newValue);
@@ -95,6 +92,7 @@ const EditCampaign = () => {
 
     try {
       const updatedData = await editCampaign(id, updatedCampaignData);
+      await fetchCampaigns();
       console.log('Campaign edited', updatedData);
     } catch (error) {
       console.error('Error editing campaign:', error);
@@ -102,18 +100,12 @@ const EditCampaign = () => {
   };
 
   if (loading) return <CampaignsLoader />;
-
-  if (error) {
-    return (
-      <p className="text-red-500 dark:text-red-300">
-        Error fetching campaigns: {error}
-      </p>
-    );
+  if (fetchError) {
+    return <p className="text-red-500 dark:text-red-300">{fetchError}</p>;
   }
 
   return (
     <>
-      {/* Display Campaign Information with Edit Buttons */}
       <div className="py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Title */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
@@ -131,7 +123,7 @@ const EditCampaign = () => {
         {/* Fundraising Goal */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
           <button
-            onClick={() => openEditModal('goalAmount', goalAmount.toString())}
+            onClick={() => openEditModal('goalAmount', goalAmount)}
             className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
           >
             <FaEdit />

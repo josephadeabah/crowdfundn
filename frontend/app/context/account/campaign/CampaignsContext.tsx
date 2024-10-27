@@ -20,6 +20,10 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
 
+  const handleApiError = (errorText: string) => {
+    setError(`API Error: ${errorText}`);
+  };
+
   const addCampaign = useCallback(
     async (campaign: FormData) => {
       if (!token) {
@@ -43,18 +47,16 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
         if (!response.ok) {
           const errorText = await response.text();
-          throw new Error(`Failed to create campaign: ${errorText}`);
+          handleApiError(errorText);
+          return;
         }
 
         const createdCampaign = await response.json();
-        setError(null);
         return createdCampaign;
       } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message || 'Error creating campaign');
-        } else {
-          setError('Unknown error occurred while creating campaign');
-        }
+        setError(
+          err instanceof Error ? err.message : 'Error creating campaign',
+        );
       } finally {
         setLoading(false);
       }
@@ -79,14 +81,14 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Failed to fetch campaigns: ${errorText}`);
+        handleApiError(errorText);
+        return;
       }
 
       const fetchedCampaigns = await response.json();
       setCampaigns(fetchedCampaigns);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      setError(err.message || 'Error fetching campaigns');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error fetching campaigns');
     } finally {
       setLoading(false);
     }
@@ -110,14 +112,16 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
         if (!response.ok) {
           const errorText = await response.text();
-          throw new Error(`Failed to fetch campaign: ${errorText}`);
+          handleApiError(errorText);
+          return null;
         }
 
         const fetchedCampaign = await response.json();
         return fetchedCampaign;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (err: any) {
-        setError(err.message || 'Error fetching campaign by ID');
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error fetching campaign by ID',
+        );
         return null;
       } finally {
         setLoading(false);
@@ -148,13 +152,13 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
         if (!response.ok) {
           const errorText = await response.text();
-          throw new Error(`Failed to delete campaign: ${errorText}`);
+          handleApiError(errorText);
+          return;
         }
-
-        setError(null);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (err: any) {
-        setError(err.message || 'Error deleting campaign');
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error deleting campaign',
+        );
       } finally {
         setLoading(false);
       }
@@ -188,7 +192,8 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
         if (!response.ok) {
           const errorText = await response.text();
-          throw new Error(`Failed to edit campaign: ${errorText}`);
+          handleApiError(errorText);
+          return;
         }
 
         const updatedCampaign = await response.json();
@@ -197,11 +202,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
             campaign.id === Number(id) ? updatedCampaign : campaign,
           ),
         );
-        setError(null);
         return updatedCampaign;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (err: any) {
-        setError(err.message || 'Error editing campaign');
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error editing campaign');
       } finally {
         setLoading(false);
       }
@@ -216,7 +219,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       error,
       addCampaign,
       fetchCampaigns,
-      fetchCampaignById, // Add the fetchCampaignById function
+      fetchCampaignById,
       deleteCampaign,
       editCampaign,
     }),
