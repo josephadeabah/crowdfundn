@@ -90,6 +90,8 @@ const EditCampaign = () => {
       updatedCampaignData.append('campaign[media]', selectedImageFile);
     }
 
+    console.log('Updated Campaign Data', updatedCampaignData);
+
     try {
       const updatedData = await editCampaign(id, updatedCampaignData);
       await fetchCampaigns();
