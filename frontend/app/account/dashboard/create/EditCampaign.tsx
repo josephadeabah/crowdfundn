@@ -9,6 +9,7 @@ import { useParams } from 'next/navigation';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { SingleCampaignResponseDataType } from '@/app/types/campaigns.types';
 import CampaignsLoader from '@/app/loaders/CampaignsLoader';
+import { truncateHTML } from '@/app/utils/helpers/truncate.html';
 
 const RichTextEditor = dynamic(() => import('@mantine/rte'), { ssr: false });
 
@@ -99,16 +100,6 @@ const EditCampaign = () => {
       console.error('Error editing campaign:', error);
     }
   };
-
-  function truncateHTML(html: string, wordLimit: number): string {
-    const textContent =
-      new DOMParser().parseFromString(html, 'text/html').body.textContent || '';
-    const words = textContent.split(' ');
-
-    return words.length > wordLimit
-      ? words.slice(0, wordLimit).join(' ') + '...'
-      : textContent;
-  }
 
   if (loading) return <CampaignsLoader />;
 
