@@ -15,6 +15,7 @@ import AlertPopup from '@/app/components/alertpopup/AlertPopup'; // Import the A
 import { CampaignResponseDataType } from '../types/campaigns.types';
 import CampaignPermissionSetting from './dashboard/create/settings/PermissionSettings';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { generateRandomString } from '../utils/helpers/generate.random-string';
 
 const Campaigns: React.FC = () => {
   const {
@@ -54,7 +55,9 @@ const Campaigns: React.FC = () => {
   });
 
   const handleEditCampaign = (campaignId: string) => {
-    router.push(`/account/dashboard/create?id=${campaignId}`);
+    router.push(
+      `/account/dashboard/create/${campaignId}?${generateRandomString()}`,
+    );
   };
 
   useEffect(() => {

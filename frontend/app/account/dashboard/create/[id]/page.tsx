@@ -1,9 +1,9 @@
 'use client';
 
-import CreateCampaign from './AddCampaign';
+import CreateCampaign from '../AddCampaign';
 import React, { useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
-import EditCampaign from './EditCampaign';
+import EditCampaign from '../EditCampaign';
 
 const FundraiserPage = () => {
   const [activeTab, setActiveTab] = useState('Details');

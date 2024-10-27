@@ -78,5 +78,83 @@ export interface CampaignState {
     id: string | string[] | undefined,
     campaign: FormData,
   ) => Promise<CampaignResponseDataType>;
-  fetchCampaignById: (id: string) => Promise<CampaignResponseDataType>;
+  fetchCampaignById: (id: string) => Promise<SingleCampaignResponseDataType>;
+}
+
+export interface CampaignDescription {
+  id: number;
+  name: string;
+  body: string;
+  record_type: string;
+  record_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CampaignPermissions {
+  accept_donations: boolean;
+  leave_words_of_support: boolean;
+  appear_in_search_results: boolean;
+  suggested_fundraiser_lists: boolean;
+  receive_donation_email: boolean;
+  receive_daily_summary: boolean;
+  is_public: boolean;
+}
+
+export interface CampaignPromotions {
+  enable_promotions: boolean;
+  schedule_promotion: boolean;
+  promotion_frequency: string;
+  promotion_duration: number;
+}
+
+export interface CampaignMediaRecord {
+  id: number;
+  title: string;
+  goal_amount: string;
+  current_amount: string;
+  start_date: string;
+  end_date: string;
+  category: string;
+  location: string;
+  currency: string;
+  currency_code: string | null;
+  currency_symbol: string | null;
+  status: string | null;
+  fundraiser_id: number;
+  created_at: string;
+  updated_at: string;
+  media: string;
+  media_filename: string;
+  description: CampaignDescription;
+  permissions: CampaignPermissions;
+  promotions: CampaignPromotions;
+}
+
+export interface CampaignMedia {
+  name: string;
+  record: CampaignMediaRecord;
+}
+
+export interface SingleCampaignResponseDataType {
+  id: number;
+  title: string;
+  goal_amount: string;
+  current_amount: string;
+  start_date: string;
+  end_date: string;
+  category: string;
+  location: string;
+  currency: string;
+  currency_code: string | null;
+  currency_symbol: string | null;
+  status: string | null;
+  fundraiser_id: number;
+  created_at: string;
+  updated_at: string;
+  media: CampaignMedia;
+  media_filename: string;
+  description: CampaignDescription;
+  permissions: CampaignPermissions;
+  promotions: CampaignPromotions;
 }
