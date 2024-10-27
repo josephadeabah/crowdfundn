@@ -1,3 +1,5 @@
+'use client';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
 import CampaignsLoader from '../loaders/CampaignsLoader';
@@ -31,6 +33,7 @@ const Campaigns: React.FC = () => {
   const [alertPopupOpen, setAlertPopupOpen] = useState(false);
   const [campaignToDelete, setCampaignToDelete] =
     useState<CampaignResponseDataType | null>(null);
+  const router = useRouter();
 
   const initialPermissions = {
     acceptDonations: false,
@@ -49,6 +52,10 @@ const Campaigns: React.FC = () => {
     promotionFrequency: 'daily',
     promotionDuration: 1,
   });
+
+  const handleEditCampaign = (campaignId: string) => {
+    router.push(`/account/dashboard/create?id=${campaignId}`);
+  };
 
   useEffect(() => {
     setCampaigns(initialCampaigns);
@@ -150,9 +157,7 @@ const Campaigns: React.FC = () => {
                     <li>
                       <button
                         className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
-                        onClick={() =>
-                          (window.location.href = `/account/dashboard/create`)
-                        }
+                        onClick={() => handleEditCampaign(String(campaign.id))}
                       >
                         Edit Campaign
                       </button>

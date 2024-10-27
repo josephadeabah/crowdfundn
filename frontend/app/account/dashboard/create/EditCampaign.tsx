@@ -5,26 +5,33 @@ import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Modal from '@/app/components/modal/Modal';
 import { Button } from '@/app/components/button/Button';
+import { useParams } from 'next/navigation';
+import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 
 const RichTextEditor = dynamic(() => import('@mantine/rte'), { ssr: false });
 
 const EditCampaign = () => {
+  const { editCampaign } = useCampaignContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editMode, setEditMode] = useState({ field: '', value: '' });
   const [title, setTitle] = useState('Fundraising Title');
-  const [goal, setGoal] = useState(10000);
+  const [goalAmount, setGoalAmount] = useState('');
   const [description, setDescription] = useState(
     'Your fundraiser description goes here...',
   );
   const [image, setImage] = useState(
     'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?auto=format&fit=crop&w=500&q=60',
   );
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  // Safely access `id` with a fallback
+  const { id } = useParams();
 
   // For handling image drop using react-dropzone
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles && acceptedFiles.length > 0) {
       const selectedImage = URL.createObjectURL(acceptedFiles[0]);
       setImage(selectedImage);
+      setSelectedImageFile(acceptedFiles[0]); // Save the actual file
     }
   }, []);
 
@@ -47,7 +54,7 @@ const EditCampaign = () => {
         setTitle(newValue);
         break;
       case 'goal':
-        setGoal(parseInt(newValue, 10));
+        setGoalAmount(parseInt(newValue, 10).toString());
         break;
       case 'description':
         setDescription(newValue);
@@ -61,34 +68,21 @@ const EditCampaign = () => {
     setIsModalOpen(false);
   };
 
-  // Function to prepare data and send to the API
   const submitCampaignData = async () => {
-    const campaignData = {
-      title,
-      goal,
-      description,
-      image,
-    };
+    const updatedCampaignData = new FormData();
+    updatedCampaignData.append('campaign[title]', title);
+    updatedCampaignData.append('campaign[description]', description);
+    updatedCampaignData.append('campaign[goal_amount]', goalAmount);
+
+    if (selectedImageFile) {
+      updatedCampaignData.append('campaign[media]', selectedImageFile);
+    }
 
     try {
-      const response = await fetch('/api/campaigns', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(campaignData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit data');
-      }
-
-      const result = await response.json();
-      console.log('Campaign submitted successfully:', result);
-      // Optionally, handle any UI feedback here
+      const updatedData = await editCampaign(id, updatedCampaignData);
+      console.log('Campaign edited', updatedData);
     } catch (error) {
-      console.error('Error submitting campaign:', error);
-      // Optionally, handle error UI feedback here
+      console.error('Error editing campaign:', error);
     }
   };
 
@@ -112,7 +106,7 @@ const EditCampaign = () => {
         {/* Fundraising Goal */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
           <button
-            onClick={() => openEditModal('goal', goal.toString())}
+            onClick={() => openEditModal('goal', goalAmount.toString())}
             className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
           >
             <FaEdit />
@@ -120,7 +114,7 @@ const EditCampaign = () => {
           <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
             Fundraising Goal
           </h3>
-          <p className="text-gray-700 dark:text-gray-400">${goal}</p>
+          <p className="text-gray-700 dark:text-gray-400">${goalAmount}</p>
         </div>
 
         {/* Description */}

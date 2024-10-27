@@ -132,6 +132,56 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
+  const editCampaign = useCallback(
+    async (
+      id: string | string[] | undefined,
+      updatedCampaignData: FormData,
+    ) => {
+      if (!token) {
+        setError('Authentication token is missing');
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}`,
+          {
+            method: 'PATCH',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: updatedCampaignData,
+          },
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Failed to edit campaign: ${errorText}`);
+        }
+
+        const updatedCampaign = await response.json();
+        setCampaigns((prevCampaigns) =>
+          prevCampaigns.map((campaign) =>
+            campaign.id === Number(id) ? updatedCampaign : campaign,
+          ),
+        );
+        setError(null);
+        return updatedCampaign;
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message || 'Error editing campaign');
+        } else {
+          setError('Unknown error occurred while editing campaign');
+        }
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
+
   const contextValue = useMemo(
     () => ({
       campaigns,
@@ -140,8 +190,17 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       addCampaign,
       fetchCampaigns,
       deleteCampaign,
+      editCampaign, // Add the editCampaign function
     }),
-    [campaigns, loading, error, addCampaign, fetchCampaigns, deleteCampaign],
+    [
+      campaigns,
+      loading,
+      error,
+      addCampaign,
+      fetchCampaigns,
+      deleteCampaign,
+      editCampaign,
+    ],
   );
 
   return (
