@@ -22,10 +22,9 @@ module Api
         # POST /api/v1/fundraisers/campaigns
         def create
           @campaign = @current_user.campaigns.new(campaign_params)
-          # Attach media if present
           if params[:media].present?
             @campaign.media.attach(params[:media])
-            set_media_content_disposition(@campaign.media) # Set content disposition
+            set_media_content_disposition(@campaign.media)
           end
 
           if @campaign.save
@@ -41,6 +40,11 @@ module Api
         # PUT /api/v1/fundraisers/campaigns/:id
         def update
           if @campaign.update(campaign_params)
+            # Update media if a new file is provided
+            if params[:media].present?
+              @campaign.media.attach(params[:media])
+              set_media_content_disposition(@campaign.media)
+            end
             render json: @campaign.as_json(include: %i[updates comments]).merge(media: @campaign.media), status: :ok
           else
             render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity
@@ -57,12 +61,10 @@ module Api
         def set_media_content_disposition(media)
           s3 = Aws::S3::Resource.new
           object = s3.bucket(Rails.application.credentials.dig(:digitalocean, :bucket)).object(media.key)
-
-          # Ensure the content disposition is set to inline
           object.copy_from(object.bucket.name + '/' + object.key, {
                              metadata_directive: 'REPLACE',
                              content_disposition: 'inline',
-                             acl: 'public-read' # Make sure the file is public
+                             acl: 'public-read'
                            })
         end
 
@@ -75,7 +77,7 @@ module Api
         def campaign_params
           params.require(:campaign).permit(
             :title, :description, :goal_amount, :current_amount, :start_date, :end_date,
-            :category, :location, :currency, :currency_code, :currency_symbol, :status, :media,
+            :category, :location, :currency, :currency_code, :currency_symbol, :status,
             :accept_donations, :leave_words_of_support, :appear_in_search_results,
             :suggested_fundraiser_lists, :receive_donation_email, :receive_daily_summary,
             :is_public, :enable_promotions, :schedule_promotion, :promotion_frequency,
