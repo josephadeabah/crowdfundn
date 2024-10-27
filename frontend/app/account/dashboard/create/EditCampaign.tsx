@@ -26,6 +26,17 @@ const EditCampaign = () => {
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
+  // Additional state variables
+  const [currentAmount, setCurrentAmount] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [category, setCategory] = useState('');
+  const [location, setLocation] = useState('');
+  const [currency, setCurrency] = useState('');
+  const [currencyCode, setCurrencyCode] = useState<string | null>(null);
+  const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
+
   useEffect(() => {
     if (id && typeof id === 'string') {
       fetchCampaignById(id)
@@ -35,6 +46,15 @@ const EditCampaign = () => {
             setGoalAmount(campaignData.goal_amount.toString());
             setDescription(campaignData.description.body);
             setImage(campaignData.media?.record.media || '');
+            setCurrentAmount(campaignData.current_amount);
+            setStartDate(campaignData.start_date);
+            setEndDate(campaignData.end_date);
+            setCategory(campaignData.category);
+            setLocation(campaignData.location);
+            setCurrency(campaignData.currency);
+            setCurrencyCode(campaignData.currency_code);
+            setCurrencySymbol(campaignData.currency_symbol);
+            setStatus(campaignData.status);
           }
         })
         .catch(() => setFetchError('Error fetching campaign details.'));
@@ -85,6 +105,18 @@ const EditCampaign = () => {
     updatedCampaignData.append('campaign[title]', title);
     updatedCampaignData.append('campaign[description]', description);
     updatedCampaignData.append('campaign[goal_amount]', goalAmount);
+    updatedCampaignData.append('campaign[current_amount]', currentAmount);
+    updatedCampaignData.append('campaign[start_date]', startDate);
+    updatedCampaignData.append('campaign[end_date]', endDate);
+    updatedCampaignData.append('campaign[category]', category);
+    updatedCampaignData.append('campaign[location]', location);
+    updatedCampaignData.append('campaign[currency]', currency);
+    updatedCampaignData.append('campaign[currency_code]', currencyCode || '');
+    updatedCampaignData.append(
+      'campaign[currency_symbol]',
+      currencySymbol || '',
+    );
+    updatedCampaignData.append('campaign[status]', status || '');
 
     if (selectedImageFile) {
       updatedCampaignData.append('campaign[media]', selectedImageFile);
