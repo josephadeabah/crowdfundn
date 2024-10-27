@@ -178,7 +178,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}`,
           {
-            method: 'PATCH',
+            method: 'PUT',
             headers: {
               Authorization: `Bearer ${token}`,
             },

@@ -68,7 +68,7 @@ const EditCampaign = () => {
       case 'title':
         setTitle(newValue);
         break;
-      case 'goal':
+      case 'goalAmount':
         setGoalAmount(parseInt(newValue, 10).toString());
         break;
       case 'description':
@@ -131,7 +131,7 @@ const EditCampaign = () => {
         {/* Fundraising Goal */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
           <button
-            onClick={() => openEditModal('goal', goalAmount.toString())}
+            onClick={() => openEditModal('goalAmount', goalAmount.toString())}
             className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
           >
             <FaEdit />
@@ -204,7 +204,7 @@ const EditCampaign = () => {
               </>
             )}
 
-            {editMode.field === 'goal' && (
+            {editMode.field === 'goalAmount' && (
               <>
                 <h3 className="text-lg font-semibold mb-2">
                   Edit Fundraising Goal
