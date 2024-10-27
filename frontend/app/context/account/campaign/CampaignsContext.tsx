@@ -47,7 +47,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const createdCampaign = await response.json();
-        console.log('createdCampaign', createdCampaign);
         setError(null);
         return createdCampaign;
       } catch (err) {
@@ -93,6 +92,40 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [token]);
 
+  const fetchCampaignById = useCallback(
+    async (id: string) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Failed to fetch campaign: ${errorText}`);
+        }
+
+        const fetchedCampaign = await response.json();
+        return fetchedCampaign;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        setError(err.message || 'Error fetching campaign by ID');
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
+
   const deleteCampaign = useCallback(
     async (id: string) => {
       if (!token) {
@@ -119,12 +152,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         }
 
         setError(null);
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message || 'Error deleting campaign');
-        } else {
-          setError('Unknown error occurred while deleting campaign');
-        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        setError(err.message || 'Error deleting campaign');
       } finally {
         setLoading(false);
       }
@@ -169,12 +199,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         );
         setError(null);
         return updatedCampaign;
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message || 'Error editing campaign');
-        } else {
-          setError('Unknown error occurred while editing campaign');
-        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        setError(err.message || 'Error editing campaign');
       } finally {
         setLoading(false);
       }
@@ -189,8 +216,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       error,
       addCampaign,
       fetchCampaigns,
+      fetchCampaignById, // Add the fetchCampaignById function
       deleteCampaign,
-      editCampaign, // Add the editCampaign function
+      editCampaign,
     }),
     [
       campaigns,
@@ -198,6 +226,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       error,
       addCampaign,
       fetchCampaigns,
+      fetchCampaignById,
       deleteCampaign,
       editCampaign,
     ],

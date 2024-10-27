@@ -78,4 +78,5 @@ export interface CampaignState {
     id: string | string[] | undefined,
     campaign: FormData,
   ) => Promise<CampaignResponseDataType>;
+  fetchCampaignById: (id: string) => Promise<CampaignResponseDataType>;
 }

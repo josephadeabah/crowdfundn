@@ -1,17 +1,19 @@
 'use client';
 import { FaEdit } from 'react-icons/fa';
 import dynamic from 'next/dynamic';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Modal from '@/app/components/modal/Modal';
 import { Button } from '@/app/components/button/Button';
 import { useParams } from 'next/navigation';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
+import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 
 const RichTextEditor = dynamic(() => import('@mantine/rte'), { ssr: false });
 
 const EditCampaign = () => {
-  const { editCampaign } = useCampaignContext();
+  const { editCampaign, fetchCampaignById } = useCampaignContext();
+  const { id } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editMode, setEditMode] = useState({ field: '', value: '' });
   const [title, setTitle] = useState('Fundraising Title');
@@ -23,8 +25,18 @@ const EditCampaign = () => {
     'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?auto=format&fit=crop&w=500&q=60',
   );
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
-  // Safely access `id` with a fallback
-  const { id } = useParams();
+
+  useEffect(() => {
+    // Fetch campaign details if `id` is available
+    if (id && typeof id === 'string') {
+      fetchCampaignById(id).then((campaignData: CampaignResponseDataType) => {
+        setTitle(campaignData.title);
+        setGoalAmount(campaignData.goal_amount.toString());
+        setDescription(campaignData.description.body);
+        setImage(campaignData.media);
+      });
+    }
+  }, [id, fetchCampaignById]);
 
   // For handling image drop using react-dropzone
   const onDrop = useCallback((acceptedFiles: File[]) => {
