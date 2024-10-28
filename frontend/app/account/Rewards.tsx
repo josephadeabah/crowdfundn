@@ -143,13 +143,21 @@ const RewardsPage: React.FC = () => {
         {loading ? (
           <RewardsLoader />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {campaigns.map((campaign) =>
-              campaign.rewards.map((reward) => (
-                <RewardCard key={reward.id} reward={reward} />
-              )),
+          <>
+            {campaigns.every((campaign) => campaign.rewards.length === 0) ? (
+              <p className="text-gray-500 text-lg">
+                You have not created any rewards yet!
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {campaigns.map((campaign) =>
+                  campaign.rewards.map((reward) => (
+                    <RewardCard key={reward.id} reward={reward} />
+                  )),
+                )}
+              </div>
             )}
-          </div>
+          </>
         )}
         <Modal
           isOpen={showModal}
