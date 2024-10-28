@@ -1,5 +1,6 @@
 class Campaign < ApplicationRecord
   belongs_to :fundraiser, class_name: 'User', foreign_key: 'fundraiser_id'
+  has_many :rewards, dependent: :destroy
   has_many :updates, dependent: :destroy
   has_many :comments, dependent: :destroy
   has_many :backers, through: :donations # assuming a Backer model related to donations
@@ -66,7 +67,10 @@ class Campaign < ApplicationRecord
         schedule_promotion: schedule_promotion,
         promotion_frequency: promotion_frequency,
         promotion_duration: promotion_duration
-      }
+      },
+      rewards: rewards, 
+      updates: updates,
+      comments: comments,
     )
   end
 end

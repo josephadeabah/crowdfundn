@@ -12,7 +12,7 @@ module Api
         end
 
         def show
-          render json: @campaign.as_json(include: %i[updates comments]).merge(media: @campaign.media), status: :ok
+          render json: @campaign.as_json(include: %i[rewards updates comments]).merge(media: @campaign.media_url), status: :ok
         end
 
         def my_campaigns
@@ -31,7 +31,7 @@ module Api
           if @campaign.save
             render json: {
               message: 'Campaign created successfully',
-              campaign: @campaign.as_json(include: %i[updates comments]).merge(media: @campaign.media_url)
+              campaign: @campaign.as_json(include: %i[rewards updates comments]).merge(media: @campaign.media_url)
             }, status: :created
           else
             render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity
@@ -46,7 +46,7 @@ module Api
               @campaign.media.attach(params[:media])
               set_media_content_disposition(@campaign.media)
             end
-            render json: @campaign.as_json(include: %i[updates comments]).merge(media: @campaign.media), status: :ok
+            render json: @campaign.as_json(include: %i[rewards updates comments]).merge(media: @campaign.media), status: :ok
           else
             render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity
           end
@@ -70,7 +70,7 @@ module Api
         end
 
         def set_campaign
-          @campaign = Campaign.find(params[:id])
+          @campaign = Campaign.includes(:rewards, :updates, :comments).find(params[:id])
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'Campaign not found' }, status: :not_found
         end

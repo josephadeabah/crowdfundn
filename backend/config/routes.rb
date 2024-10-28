@@ -22,6 +22,7 @@ Rails.application.routes.draw do
           get 'my_campaigns', on: :collection
           resources :updates, only: %i[create update destroy]
           resources :comments, only: %i[create index destroy]
+          resources :rewards, only: %i[index show create update destroy]
         end
       end
     end
