@@ -6,9 +6,9 @@ import React, {
   useEffect,
 } from 'react';
 import { LoginUserType } from '@/app/types/auth.login.types';
-import { useRouter } from 'next/navigation';
 import { LoginUserResponseSuccess } from '@/app/types/auth.login.types';
 import { jwtDecode } from 'jwt-decode';
+import { useRouter } from 'next/navigation';
 
 type AuthContextType = {
   user: LoginUserType | null;
@@ -27,7 +27,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
   let logoutTimer: NodeJS.Timeout;
 
-  // Load user and token from local storage on mount
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     const storedToken = localStorage.getItem('token');
@@ -37,25 +36,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken(storedToken);
     }
 
-    // Start inactivity timer
     resetLogoutTimer();
 
-    // Check if token is expired on mount
     if (storedToken && isTokenExpired(storedToken)) {
       logout(); // Log out if token is expired
     }
 
-    // Listen for user activity
     const handleUserActivity = () => resetLogoutTimer();
-
-    // List of events that will reset the timer
     window.addEventListener('mousemove', handleUserActivity);
     window.addEventListener('keydown', handleUserActivity);
     window.addEventListener('click', handleUserActivity);
     window.addEventListener('scroll', handleUserActivity);
 
     return () => {
-      // Cleanup event listeners and timer on component unmount
       window.removeEventListener('mousemove', handleUserActivity);
       window.removeEventListener('keydown', handleUserActivity);
       window.removeEventListener('click', handleUserActivity);
@@ -82,11 +75,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setToken(null);
     localStorage.removeItem('user');
     localStorage.removeItem('token');
+    localStorage.removeItem('userRoles'); // Remove userRoles from local storage
+    router.push('/auth/login'); // Redirect to login page
     window.location.href = '/auth/login'; // Redirect to login page
   };
 
   const isTokenExpired = (token: string) => {
-    const decoded: any = jwtDecode(token);
+    const decoded: { exp: number } = jwtDecode<{ exp: number }>(token);
     const currentTime = Date.now() / 1000; // Convert to seconds
     return decoded.exp < currentTime; // Check if token is expired
   };

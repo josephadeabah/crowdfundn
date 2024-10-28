@@ -4,6 +4,7 @@ import CreateCampaign from '../AddCampaign';
 import React, { useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import EditCampaign from '../EditCampaign';
+import withRole from '@/app/components/withRole';
 
 const FundraiserPage = () => {
   const [activeTab, setActiveTab] = useState('Details');
@@ -85,4 +86,6 @@ const FundraiserPage = () => {
   );
 };
 
-export default FundraiserPage;
+const requiredRoles = ['User', 'Admin', 'Manager', 'Moderator'];
+
+export default withRole(FundraiserPage, { requiredRoles });

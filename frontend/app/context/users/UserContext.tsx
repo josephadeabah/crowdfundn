@@ -1,3 +1,4 @@
+'use client';
 import React, {
   createContext,
   useState,
@@ -7,6 +8,7 @@ import React, {
 } from 'react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { UserProfile, UserProfileState } from '@/app/types/user_profiles.types';
+import { Role } from '@/app/types/user.types';
 
 const UserContext = createContext<UserProfileState | undefined>(undefined);
 
@@ -15,6 +17,12 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Function to store roles in local storage
+  const storeRolesInLocalStorage = (roles: Role[]) => {
+    const roleNames = roles.map((role) => role.name);
+    localStorage.setItem('userRoles', JSON.stringify(roleNames));
+  };
 
   // Function to fetch user profile data
   const fetchUserProfile = async () => {
@@ -42,6 +50,9 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
 
       const data: UserProfile = await response.json();
       setUserProfile(data);
+
+      // Store roles in local storage after fetching user data
+      storeRolesInLocalStorage(data.roles);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
