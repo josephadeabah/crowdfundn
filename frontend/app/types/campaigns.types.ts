@@ -108,34 +108,6 @@ export interface CampaignPromotions {
   promotion_duration: number;
 }
 
-export interface CampaignMediaRecord {
-  id: number;
-  title: string;
-  goal_amount: string;
-  current_amount: string;
-  start_date: string;
-  end_date: string;
-  category: string;
-  location: string;
-  currency: string;
-  currency_code: string | null;
-  currency_symbol: string | null;
-  status: string | null;
-  fundraiser_id: number;
-  created_at: string;
-  updated_at: string;
-  media: string;
-  media_filename: string;
-  description: CampaignDescription;
-  permissions: CampaignPermissions;
-  promotions: CampaignPromotions;
-}
-
-export interface CampaignMedia {
-  name: string;
-  record: CampaignMediaRecord;
-}
-
 export interface SingleCampaignResponseDataType {
   id: number;
   title: string;
@@ -152,7 +124,7 @@ export interface SingleCampaignResponseDataType {
   fundraiser_id: number;
   created_at: string;
   updated_at: string;
-  media: CampaignMedia;
+  media: string;
   media_filename: string;
   description: CampaignDescription;
   permissions: CampaignPermissions;

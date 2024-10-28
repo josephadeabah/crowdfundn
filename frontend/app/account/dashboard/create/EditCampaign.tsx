@@ -47,7 +47,7 @@ const EditCampaign = () => {
             setTitle(campaignData.title);
             setGoalAmount(campaignData.goal_amount.toString());
             setDescription(campaignData.description.body);
-            setImage(campaignData.media?.record.media || '');
+            setImage(campaignData.media || '');
             setCurrentAmount(campaignData.current_amount);
             setStartDate(campaignData.start_date);
             setEndDate(campaignData.end_date);
