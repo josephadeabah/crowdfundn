@@ -25,7 +25,11 @@ interface Errors {
 
 const RewardsPage: React.FC = () => {
   const { campaigns, fetchCampaigns, loading } = useCampaignContext();
-  const { addReward, error: contextError, fetchRewards } = useRewardContext();
+  const {
+    addReward,
+    error: contextError,
+    loading: loadingReward,
+  } = useRewardContext();
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
@@ -83,7 +87,7 @@ const RewardsPage: React.FC = () => {
       setShowModal(false);
       setSelectedCampaignId(null);
 
-      fetchRewards(selectedCampaignId!);
+      fetchCampaigns();
     }
   };
 
@@ -237,10 +241,10 @@ const RewardsPage: React.FC = () => {
                   htmlFor="amount"
                   className="block text-gray-700 dark:text-gray-300 mb-2"
                 >
-                  Amount (in points)
+                  Amount
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   id="amount"
                   name="amount"
                   value={formData.amount}
@@ -272,27 +276,21 @@ const RewardsPage: React.FC = () => {
                 {errors.image && (
                   <p className="text-red-500 text-sm mt-1">{errors.image}</p>
                 )}
-              </div>
-
-              {previewImage && (
-                <div className="mb-4">
+                {previewImage && (
                   <img
                     src={previewImage}
                     alt="Preview"
-                    className="w-32 h-32 object-cover"
+                    className="mt-2 h-32 w-32 object-cover rounded-lg"
                   />
-                </div>
-              )}
-
-              {errors.submit && (
-                <p className="text-red-500 text-sm mt-1">{errors.submit}</p>
-              )}
+                )}
+              </div>
 
               <button
                 type="submit"
-                className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                className={`w-full px-4 py-2 rounded-lg transition-colors ${loadingReward ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} text-white`}
+                disabled={loadingReward} // Disable button while loading
               >
-                Add Reward
+                {loadingReward ? 'Adding...' : 'Add Reward'}
               </button>
             </form>
           </div>

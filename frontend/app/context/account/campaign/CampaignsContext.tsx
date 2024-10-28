@@ -52,6 +52,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const createdCampaign = await response.json();
+        setCampaigns((prevRewards) => [...prevRewards, createdCampaign]);
         return createdCampaign;
       } catch (err) {
         setError(
