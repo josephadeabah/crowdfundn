@@ -1,8 +1,16 @@
-// RewardCard.tsx
 import { Reward } from '@/app/types/campaigns.types';
 import React from 'react';
+import { FiTrash } from 'react-icons/fi'; // Import the trash icon
 
-const RewardCard = ({ reward }: { reward: Reward }) => {
+const RewardCard = ({
+  reward,
+  campaignId,
+  onDelete,
+}: {
+  reward: Reward;
+  campaignId: string;
+  onDelete: (campaignId: string, rewardId: number) => void;
+}) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col">
       <img
@@ -21,9 +29,12 @@ const RewardCard = ({ reward }: { reward: Reward }) => {
           <span className="text-green-600 dark:text-green-400 font-bold">
             ${reward.amount}
           </span>
-          <span className="text-sm text-gray-500 dark:text-gray-300">
-            Points
-          </span>
+          <button
+            onClick={() => onDelete(campaignId, reward.id)}
+            className="text-gray-600 hover:text-gray-800 flex items-center"
+          >
+            <FiTrash className="mr-1" /> {/* Add the trash icon */}
+          </button>
         </div>
       </div>
     </div>
