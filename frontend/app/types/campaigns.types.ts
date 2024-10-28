@@ -1,25 +1,21 @@
-export interface CampaignDataType {
+export interface Reward {
+  id: number;
   title: string;
   description: string;
-  goal_amount: string;
-  current_amount: string;
-  start_date: string;
-  end_date: string;
-  category: string;
-  location: string;
-  currency: string;
-  is_public: boolean;
-  accept_donations: boolean;
-  leave_words_of_support: boolean;
-  appear_in_search_results: boolean;
-  suggested_fundraiser_lists: boolean;
-  receive_donation_email: boolean;
-  receive_daily_summary: boolean;
-  enable_promotions: boolean;
-  schedule_promotion: boolean;
-  promotion_frequency: string;
-  promotion_duration: string;
-  media?: FormData;
+  amount: number;
+  image: string;
+}
+
+export interface Update {
+  id: number;
+  date: string;
+  content: string;
+}
+
+export interface Comment {
+  id: number;
+  user: string;
+  content: string;
 }
 
 export interface CampaignResponseDataType {
@@ -65,6 +61,9 @@ export interface CampaignResponseDataType {
     promotion_frequency: string;
     promotion_duration: number;
   };
+  rewards: Reward[];
+  updates: Update[];
+  comments: Comment[];
 }
 
 export interface CampaignState {
