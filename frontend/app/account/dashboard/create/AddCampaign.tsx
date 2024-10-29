@@ -19,7 +19,7 @@ const RichTextEditor = dynamic(() => import('@mantine/rte'), { ssr: false });
 
 const CreateCampaign = () => {
   const { userProfile } = useUserContext();
-  const { categories, paymentOptions, countries } = data;
+  const { categories, paymentOptions } = data;
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
@@ -105,13 +105,13 @@ const CreateCampaign = () => {
   };
 
   useEffect(() => {
-    if (userProfile) {
-      setCategory(userProfile.category);
-      setLocation(userProfile.country);
-      setGoalAmount(userProfile.target_amount);
-      setCurrency(userProfile.currency);
+    setTimeout(() => {
+      setCategory(userProfile?.category || '');
+      setLocation(userProfile?.country || '');
+      setGoalAmount(userProfile?.target_amount || '');
+      setCurrency(userProfile?.currency || '');
       setCurrentAmount('0');
-    }
+    }, 1000);
   }, [userProfile]);
 
   const handleSubmit = async () => {
@@ -326,20 +326,17 @@ const CreateCampaign = () => {
             {/* Dropdown for Country */}
             <div className="mb-4">
               <label htmlFor="country" className="block text-sm mb-1">
-                Country:
+                Location:
               </label>
-              <select
-                id="country"
+              <input
+                type="text"
+                name="location"
+                id="location"
                 value={location}
-                onChange={(e) => setLocation(e.target.value)}
                 className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-              >
-                {countries.map((country: { value: string; label: string }) => (
-                  <option key={country.value} value={country.value}>
-                    {country.label}
-                  </option>
-                ))}
-              </select>
+                aria-label="Location"
+                disabled={true}
+              />
             </div>
 
             <div className="mb-4">
@@ -367,7 +364,7 @@ const CreateCampaign = () => {
                 <div
                   {...getRootProps()}
                   className={`border-2 border-dashed rounded-md p-4 text-center ${
-                    isDragActive ? 'border-blue-600' : 'border-gray-400'
+                    isDragActive ? 'border-green-600' : 'border-gray-400'
                   }`}
                 >
                   <input {...getInputProps()} />

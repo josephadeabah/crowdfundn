@@ -10,10 +10,9 @@ const UserSettings = () => {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [language, setLanguage] = useState('');
-  const [deleteConfirmation, setDeleteConfirmation] = useState(false);
+  const [country, setCountry] = useState('');
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const { userProfile, loading, error, fetchUserProfile, hasRole } =
-    useUserContext();
+  const { userProfile } = useUserContext();
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
@@ -41,14 +40,12 @@ const UserSettings = () => {
   };
 
   const handleDeleteAccount = () => {
-    setDeleteConfirmation(true);
     setIsAlertOpen(true);
   };
 
   const confirmDeleteAccount = () => {
     // Implement account deletion logic here
     console.log('Account deleted');
-    setDeleteConfirmation(false);
     setIsAlertOpen(true);
   };
   useEffect(() => {
@@ -57,13 +54,13 @@ const UserSettings = () => {
       setName(userProfile?.full_name || '');
       setPhone(userProfile?.phone_number || '');
       setEmail(userProfile?.email || '');
+      setCountry(userProfile?.country || '');
       setLanguage('English');
     }, 1000);
   }, [userProfile]);
 
   const cancelAccountDelete = () => {
     setIsAlertOpen(false); // Close the AlertPopup without action
-    setDeleteConfirmation(false); // Reset the ID
   };
 
   return (
@@ -196,6 +193,32 @@ const UserSettings = () => {
                     Please enter a valid email address.
                   </p>
                 )}
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <label
+                htmlFor="country"
+                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+              >
+                Country
+              </label>
+              <div className="mt-1 sm:mt-0 sm:col-span-2">
+                <input
+                  type="text"
+                  name="country"
+                  id="country"
+                  value={country}
+                  // onChange={handlePhoneChange}
+                  className="max-w-lg block w-full shadow-sm focus:ring-gray-500 focus:border-gray-500 sm:max-w-xs sm:text-sm border-gray-300 flex-grow px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                  aria-label="Country"
+                  disabled={true}
+                />
               </div>
             </motion.div>
 

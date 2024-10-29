@@ -16,7 +16,6 @@ import Donations from '@/app/account/Donations';
 import Dashboard from '@/app/account/Dashboard';
 import ProfileTabsLoader from '@/app/loaders/ProfileTabsLoader';
 import AccountSettings from '@/app/account/settings/AccountSettings';
-import withRole from '../components/withRole';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState('');
@@ -195,6 +194,4 @@ const ProfileTabs = () => {
   );
 };
 
-const requiredRoles = ['User', 'Admin', 'Manager', 'Moderator'];
-
-export default withRole(ProfileTabs, { requiredRoles });
+export default ProfileTabs;

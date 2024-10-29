@@ -9,6 +9,7 @@ import React, {
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { UserProfile, UserProfileState } from '@/app/types/user_profiles.types';
 import { Role } from '@/app/types/user.types';
+import Cookies from 'js-cookie'; // Import js-cookie for cookie handling
 
 const UserContext = createContext<UserProfileState | undefined>(undefined);
 
@@ -18,10 +19,10 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Function to store roles in local storage
-  const storeRolesInLocalStorage = (roles: Role[]) => {
+  // Function to store roles in cookies
+  const storeRolesInCookies = (roles: Role[]) => {
     const roleNames = roles.map((role) => role.name);
-    localStorage.setItem('userRoles', JSON.stringify(roleNames));
+    Cookies.set('roles', JSON.stringify(roleNames), { expires: 30 }); // Expires in 30 days
   };
 
   // Function to fetch user profile data
@@ -51,8 +52,8 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       const data: UserProfile = await response.json();
       setUserProfile(data);
 
-      // Store roles in local storage after fetching user data
-      storeRolesInLocalStorage(data.roles);
+      // Store roles in cookies after fetching user data
+      storeRolesInCookies(data.roles);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -68,7 +69,8 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
   }, [token]);
 
   const hasRole = (role: string) => {
-    return userProfile?.roles.some((r) => r.name === role) || false;
+    const roles = Cookies.get('roles') ? JSON.parse(Cookies.get('roles')!) : [];
+    return roles.includes(role);
   };
 
   const contextValue = React.useMemo(

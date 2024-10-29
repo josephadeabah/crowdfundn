@@ -9,6 +9,7 @@ import { LoginUserType } from '@/app/types/auth.login.types';
 import { LoginUserResponseSuccess } from '@/app/types/auth.login.types';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 type AuthContextType = {
   user: LoginUserType | null;
@@ -28,11 +29,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   let logoutTimer: NodeJS.Timeout;
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
+    const storedUser = Cookies.get('user')
+      ? JSON.parse(Cookies.get('user')!)
+      : null;
+    const storedToken = Cookies.get('token') || null;
 
     if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser));
+      setUser(storedUser);
       setToken(storedToken);
     }
 
@@ -65,19 +68,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = (response: LoginUserResponseSuccess) => {
     setUser(response.user);
     setToken(response.token);
-    localStorage.setItem('user', JSON.stringify(response.user));
-    localStorage.setItem('token', response.token);
+
+    // Store in cookies
+    Cookies.set('user', JSON.stringify(response.user), { expires: 30 }); // Expires in 30 days
+    Cookies.set('token', response.token, { expires: 30 });
+
     resetLogoutTimer(); // Reset timer on login
   };
 
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    localStorage.removeItem('userRoles'); // Remove userRoles from local storage
+    // Remove cookies
+    Cookies.remove('user');
+    Cookies.remove('token');
+
     router.push('/auth/login'); // Redirect to login page
-    window.location.href = '/auth/login'; // Redirect to login page
   };
 
   const isTokenExpired = (token: string) => {
