@@ -16,6 +16,7 @@ import { CampaignResponseDataType } from '../types/campaigns.types';
 import CampaignPermissionSetting from './dashboard/create/settings/PermissionSettings';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { generateRandomString } from '../utils/helpers/generate.random-string';
+import ErrorPage from '../components/errorpage/ErrorPage';
 
 const Campaigns: React.FC = () => {
   const { campaigns, loading, error, fetchCampaigns, deleteCampaign } =
@@ -61,11 +62,7 @@ const Campaigns: React.FC = () => {
   if (loading) return <CampaignsLoader />;
 
   if (error) {
-    return (
-      <p className="text-red-500 dark:text-red-300">
-        Error fetching campaigns: {error}
-      </p>
-    );
+    return <ErrorPage />;
   }
 
   const handleOpenModal = (campaign: CampaignResponseDataType) => {
