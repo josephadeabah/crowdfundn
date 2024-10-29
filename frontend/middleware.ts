@@ -10,7 +10,7 @@ interface ParsedCookies {
 // Specify protected, admin, and public routes
 const protectedRoutes = ['/account', '/account/dashboard/create'];
 const adminRoutes = ['/admin', '/admin/manage'];
-const publicRoutes = ['/auth/login', '/auth/signup', '/'];
+const publicRoutes = ['/auth/login', '/auth/register', '/'];
 
 // Helper function to parse cookies from the request header
 const parseCookies = (cookieHeader: string | undefined): ParsedCookies => {
