@@ -1,33 +1,40 @@
 'use client';
 import data from '../data.json';
 import React, { useState, useEffect } from 'react';
-import { FiUsers, FiActivity, FiBarChart, FiAward } from 'react-icons/fi';
+import { FiUsers, FiBarChart, FiAward } from 'react-icons/fi';
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 
 import { CarouselPlugin } from './molecules/CarouselPlugin';
 import { Badge } from './components/badge/Badge';
-import Progress from './components/progressbar/ProgressBar';
 import { BrandsLogoSlider } from './molecules/BrandsLogoSlider';
 import FAQsPage from './molecules/faqs';
 import DownloadApp from './molecules/DownloadApp';
 import CTa from './molecules/CTA';
 import ChatbotComponent from './chatbot/ChatbotComponent';
-import Link from 'next/link';
 import { FaHandHoldingUsd } from 'react-icons/fa';
 import { useAuth } from './context/auth/AuthContext';
+import CampaignCard from './components/campaigns/CampaignCard';
+import { useCampaignContext } from './context/account/campaign/CampaignsContext';
 
 const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
     null,
   );
   const wordRef = React.useRef<HTMLDivElement | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [scrollY, setScrollY] = useState(0);
   const controls = useAnimation();
   const [ref, inView] = useInView();
-  const { user, token, logout } = useAuth();
+  const { user } = useAuth();
 
   const [isVisible, setIsVisible] = useState(false);
+  const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
+
+  useEffect(() => {
+    fetchAllCampaigns();
+  }, [fetchAllCampaigns]);
+
   React.useEffect(() => {
     const words = [
       'Fundraise Like a Boss',
@@ -131,14 +138,7 @@ const HomePage = () => {
     <div className="text-gray-700 dark:text-gray-50 min-h-screen">
       <main className="max-w-7xl mx-auto">
         <div className="flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            // style={{
-            //   backgroundImage:
-            //     "url('https://images.unsplash.com/photo-1534951009808-766178b47a4f?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
-            //   filter: 'brightness(0.4)',
-            // }}
-          />
+          <div className="absolute inset-0 bg-cover bg-center" />
           <motion.div
             variants={fadeIn}
             initial={{ opacity: 0, y: 20 }}
@@ -286,52 +286,14 @@ const HomePage = () => {
                   ))}
                 </div>
               </div>
-
               {/* Recommended Fundraisers Section */}
               <div className="w-full flex flex-col gap-4 sm:flex-row">
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 p-2 md:p-0">
-                  {data?.recommendedFundraisers?.map((campaign, index) => (
-                    <motion.div
-                      key={campaign.id}
-                      variants={fadeInUp}
-                      initial="hidden"
-                      animate={controls}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="bg-white flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
-                    >
-                      <Link href={`/campaign/fundraiser/${campaign.id}`}>
-                        <div
-                          key={campaign.id}
-                          className="flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
-                        >
-                          <img
-                            src={campaign?.image}
-                            alt={campaign?.name}
-                            className="mb-2 object-cover h-32 w-full"
-                          />
-                          <div className="px-1">
-                            <div className="flex-grow">
-                              <h3 className="text-lg font-bold">
-                                {campaign?.name}
-                              </h3>
-                              <p className="text-sm">{campaign?.description}</p>
-                            </div>
-                            <div className="w-full text-xs">
-                              <Progress
-                                firstProgress={33}
-                                firstTooltipContent={`Performance: ${33}%`}
-                              />
-                            </div>
-                            <p className="flex justify-between items-center text-sm font-semibold mt-2">
-                              {campaign?.amountRaised}{' '}
-                              <span className="font-normal">raised</span>
-                            </p>
-                          </div>
-                        </div>
-                      </Link>
-                    </motion.div>
-                  ))}
-                </div>
+                <CampaignCard
+                  campaigns={campaigns}
+                  loading={loading}
+                  error={error}
+                  fetchCampaigns={fetchAllCampaigns}
+                />
               </div>
             </div>
           </div>
@@ -350,91 +312,18 @@ const HomePage = () => {
                 Featured Projects
               </h2>
               <div className="w-full flex flex-col gap-4 sm:flex-row">
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 p-2 md:p-0">
-                  {data.recommendedFundraisers.map((campaign, index) => (
-                    <motion.div
-                      key={campaign.id}
-                      initial={{ opacity: 0, y: 50 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.2 }}
-                      className="flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
-                    >
-                      <Link href={`/campaign/fundraiser/${campaign.id}`}>
-                        <div
-                          key={campaign.id}
-                          className="flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
-                        >
-                          <img
-                            src={campaign.image}
-                            alt={campaign.name}
-                            className="mb-2 object-cover h-32 w-full"
-                          />
-                          <div className="p-2">
-                            <div className="flex-grow">
-                              <h3 className="text-lg font-bold">
-                                {campaign.name}
-                              </h3>
-                              <p className="text-sm">{campaign.description}</p>
-                            </div>
-                            <div className="w-full text-xs">
-                              <Progress
-                                firstProgress={13}
-                                firstTooltipContent={`Performance: ${13}%`}
-                              />
-                            </div>
-                            <p className="flex justify-between items-center text-sm font-semibold mt-2">
-                              {campaign.amountRaised}{' '}
-                              <span className="font-normal">raised</span>
-                            </p>
-                          </div>
-                        </div>
-                      </Link>
-                    </motion.div>
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 p-2 md:p-0">
-                  {data.recommendedFundraisers.map((campaign) => (
-                    <motion.div
-                      key={campaign.id}
-                      initial={{ opacity: 0, y: 50 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 2 * 0.2 }}
-                      className="bg-white flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
-                    >
-                      <Link href={`/campaign/fundraiser/${campaign.id}`}>
-                        <div
-                          key={campaign.id}
-                          className="flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
-                        >
-                          <img
-                            src={campaign.image}
-                            alt={campaign.name}
-                            className="mb-2 object-cover h-32 w-full"
-                          />
-                          <div className="px-1">
-                            <div className="flex-grow">
-                              <h3 className="text-lg font-bold">
-                                {campaign.name}
-                              </h3>
-                              <p className="text-sm">{campaign.description}</p>
-                            </div>
-                            <div className="w-full text-xs">
-                              <Progress
-                                firstProgress={13}
-                                firstTooltipContent={`Performance: ${13}%`}
-                              />
-                            </div>
-                            <p className="flex justify-between items-center text-sm font-semibold mt-2">
-                              {campaign.amountRaised}{' '}
-                              <span className="font-normal">raised</span>
-                            </p>
-                          </div>
-                        </div>
-                      </Link>
-                    </motion.div>
-                  ))}
-                </div>
+                <CampaignCard
+                  campaigns={campaigns}
+                  loading={loading}
+                  error={error}
+                  fetchCampaigns={fetchAllCampaigns}
+                />
+                <CampaignCard
+                  campaigns={campaigns}
+                  loading={loading}
+                  error={error}
+                  fetchCampaigns={fetchAllCampaigns}
+                />
               </div>
             </div>
           </div>

@@ -95,6 +95,39 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [token]);
 
+  // New fetchAllCampaigns function
+  const fetchAllCampaigns = useCallback(async (): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        handleApiError(errorText);
+        return;
+      }
+
+      const allCampaigns = await response.json();
+      setCampaigns(allCampaigns);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Error fetching all campaigns',
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
   const fetchCampaignById = useCallback(
     async (id: string) => {
       setLoading(true);
@@ -220,6 +253,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       error,
       addCampaign,
       fetchCampaigns,
+      fetchAllCampaigns,
       fetchCampaignById,
       deleteCampaign,
       editCampaign,
@@ -230,6 +264,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       error,
       addCampaign,
       fetchCampaigns,
+      fetchAllCampaigns,
       fetchCampaignById,
       deleteCampaign,
       editCampaign,

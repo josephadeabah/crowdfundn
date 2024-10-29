@@ -10,13 +10,12 @@ const ErrorPage = () => {
   };
 
   const handleHomeClick = () => {
-    // Add your home navigation logic here
     window.location.href = '/';
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-      <div className="w-full bg-white rounded-2xl p-8 md:p-12 relative overflow-hidden transform transition-transform duration-300 hover:scale-[1.02]">
+      <div className="w-full max-w-7xl bg-white rounded-2xl p-8 md:p-12 relative overflow-hidden transform transition-transform duration-300 hover:scale-[1.02] shadow-lg">
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 via-green-500 to-green-300"></div>
 
         <div className="flex flex-col items-center text-center space-y-6">
@@ -30,12 +29,13 @@ const ErrorPage = () => {
           <div className="space-y-3">
             <h1
               className="text-4xl md:text-5xl font-bold text-gray-900"
-              aria-label="404 Error Page Not Found"
+              aria-label="Error Occurred"
             >
-              Error Occured
+              Oops! An Error Occurred
             </h1>
             <p className="text-gray-500 max-w-md">
-              We're sorry! Something Went Wrong.
+              We're sorry! Something went wrong. Please try again later or
+              navigate back to the homepage.
             </p>
           </div>
 
@@ -59,6 +59,19 @@ const ErrorPage = () => {
               <FiRefreshCw className="w-5 h-5" />
               Reload Page
             </button>
+          </div>
+
+          <div className="mt-8">
+            <p className="text-gray-400">
+              If the problem persists, please contact support at{' '}
+              <a
+                href="mailto:support@example.com"
+                className="text-gray-600 hover:underline"
+              >
+                support@example.com
+              </a>
+              .
+            </p>
           </div>
         </div>
 
