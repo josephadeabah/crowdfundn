@@ -1,15 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Specify protected and public routes
-const protectedRoutes = [
-  '/account',
-  '/account/dashboard/create',
-  '/admin',
-  '/admin/manage',
-];
+type Roles = 'Admin' | 'Manager' | 'Moderator' | 'User';
+
+interface ParsedCookies {
+  token: string | null;
+  roles: Roles[];
+}
+
+// Specify protected, admin, and public routes
+const protectedRoutes = ['/account', '/account/dashboard/create'];
+const adminRoutes = ['/admin', '/admin/manage'];
 const publicRoutes = ['/auth/login', '/auth/signup', '/'];
 
-const parseCookies = (cookieHeader: string | undefined) => {
+// Helper function to parse cookies from the request header
+const parseCookies = (cookieHeader: string | undefined): ParsedCookies => {
   const cookies: Record<string, string> = {};
   if (cookieHeader) {
     cookieHeader.split('; ').forEach((cookie) => {
@@ -17,35 +21,42 @@ const parseCookies = (cookieHeader: string | undefined) => {
       cookies[name] = decodeURIComponent(value);
     });
   }
-  return cookies;
+  return {
+    token: cookies['token'] || null,
+    roles: cookies['roles'] ? (JSON.parse(cookies['roles']) as Roles[]) : [],
+  };
 };
 
-export default async function middleware(req: NextRequest) {
+export default function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.includes(path);
+  const isAdminRoute = adminRoutes.includes(path);
   const isPublicRoute = publicRoutes.includes(path);
 
   const cookies = parseCookies(req.headers.get('cookie') ?? undefined);
-  const token = cookies.token || null;
-  const roles = cookies.roles ? JSON.parse(cookies.roles) : [];
+  const { token, roles } = cookies;
 
-  console.log('roles', roles);
-
-  // Redirect to /login if the user is not authenticated and trying to access a protected route
-  if (isProtectedRoute && !token) {
+  // Redirect unauthenticated users to login if accessing a protected route
+  if ((isProtectedRoute || isAdminRoute) && !token) {
     return NextResponse.redirect(new URL('/auth/login', req.nextUrl));
   }
 
-  // Redirect if user lacks required roles
-  //   if (isProtectedRoute && token && !roles.includes('Admin')) {
-  //     return NextResponse.redirect(new URL('/', req.nextUrl));
-  //   }
-
-  // Redirect to /dashboard if the user is authenticated and on a public route
-  if (isPublicRoute && token) {
+  // Redirect authenticated users to /account if trying to access /auth routes (except '/')
+  if (isPublicRoute && token && path !== '/') {
     return NextResponse.redirect(new URL('/account', req.nextUrl));
   }
 
+  // Restrict /admin routes to specific roles (Admin, Manager, Moderator)
+  if (isAdminRoute) {
+    const hasAccessRole = roles.some((role) =>
+      ['Admin', 'Manager', 'Moderator'].includes(role),
+    );
+    if (!hasAccessRole) {
+      return NextResponse.redirect(new URL('/', req.nextUrl));
+    }
+  }
+
+  // Allow access to other routes if authenticated or if they are public
   return NextResponse.next();
 }
 
