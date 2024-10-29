@@ -40,9 +40,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   // Memoize the shuffled campaigns to avoid re-shuffling on each render
   const shuffledCampaigns = useMemo(() => shuffleArray(campaigns), [campaigns]);
 
+  // Slice the first 6 campaigns after shuffling
+  const displayedCampaigns = shuffledCampaigns.slice(0, 6);
+
   return (
     <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:p-0">
-      {shuffledCampaigns.map((campaign, index) => (
+      {displayedCampaigns.map((campaign, index) => (
         <motion.div
           key={campaign.id}
           initial="hidden"
