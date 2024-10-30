@@ -211,6 +211,11 @@ const SingleCampaignPage: React.FC = () => {
                     }`}
                     onClick={() => handleTierSelect(reward?.id)}
                   >
+                    <img
+                      src={reward?.image}
+                      alt="Reward Image"
+                      className="w-full h-auto rounded-lg shadow-lg cursor-pointer"
+                    />
                     <h3 className="font-bold mb-2">{reward?.title}</h3>
                     <p className="text-gray-600 mb-2">{reward?.description}</p>
                     <div className="font-semibold">
