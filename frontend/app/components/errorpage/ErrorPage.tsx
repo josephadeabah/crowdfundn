@@ -68,7 +68,7 @@ const ErrorPage = () => {
                 href="mailto:support@example.com"
                 className="text-gray-600 hover:underline"
               >
-                support@example.com
+                support@bantuhive.com
               </a>
               .
             </p>
