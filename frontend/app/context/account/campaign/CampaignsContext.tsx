@@ -235,11 +235,14 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const updatedCampaign = await response.json();
+
+        // Update both campaigns list and currentCampaign
         setCampaigns((prevCampaigns) =>
           prevCampaigns.map((campaign) =>
             campaign.id === Number(id) ? updatedCampaign : campaign,
           ),
         );
+        setCurrentCampaign(updatedCampaign); // Update currentCampaign directly in context
         return updatedCampaign;
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error editing campaign');

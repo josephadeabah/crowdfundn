@@ -14,8 +14,13 @@ import { truncateHTML } from '@/app/utils/helpers/truncate.html';
 const RichTextEditor = dynamic(() => import('@mantine/rte'), { ssr: false });
 
 const EditCampaign = () => {
-  const { loading, editCampaign, fetchCampaignById, fetchCampaigns } =
-    useCampaignContext();
+  const {
+    loading,
+    editCampaign,
+    fetchCampaignById,
+    currentCampaign,
+    fetchCampaigns,
+  } = useCampaignContext();
   const { id } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editMode, setEditMode] = useState({ field: '', value: '' });
@@ -29,14 +34,23 @@ const EditCampaign = () => {
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   // Additional state variables
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currentAmount, setCurrentAmount] = useState('');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [startDate, setStartDate] = useState('');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [endDate, setEndDate] = useState('');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [category, setCategory] = useState('');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [location, setLocation] = useState('');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currency, setCurrency] = useState('');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currencyCode, setCurrencyCode] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => {
@@ -82,57 +96,20 @@ const EditCampaign = () => {
     setIsModalOpen(true);
   };
 
-  const handleSave = (newValue: string) => {
-    switch (editMode.field) {
-      case 'title':
-        setTitle(newValue);
-        break;
-      case 'goalAmount':
-        setGoalAmount(newValue);
-        break;
-      case 'description':
-        setDescription(newValue);
-        break;
-      case 'image':
-        setImage(newValue);
-        break;
-      default:
-        break;
+  const handleSave = async (newValue: string) => {
+    if (!currentCampaign) return;
+
+    const updatedData = new FormData();
+    updatedData.append(`campaign[${editMode.field}]`, newValue);
+
+    if (selectedImageFile && editMode.field === 'image') {
+      updatedData.append('campaign[media]', selectedImageFile);
     }
+
+    await editCampaign(id, updatedData);
+    await fetchCampaignById(String(id));
+    await fetchCampaigns();
     setIsModalOpen(false);
-  };
-
-  const submitCampaignData = async () => {
-    const updatedCampaignData = new FormData();
-    updatedCampaignData.append('campaign[title]', title);
-    updatedCampaignData.append('campaign[description]', description);
-    updatedCampaignData.append('campaign[goal_amount]', goalAmount);
-    updatedCampaignData.append('campaign[current_amount]', currentAmount);
-    updatedCampaignData.append('campaign[start_date]', startDate);
-    updatedCampaignData.append('campaign[end_date]', endDate);
-    updatedCampaignData.append('campaign[category]', category);
-    updatedCampaignData.append('campaign[location]', location);
-    updatedCampaignData.append('campaign[currency]', currency);
-    updatedCampaignData.append('campaign[currency_code]', currencyCode || '');
-    updatedCampaignData.append(
-      'campaign[currency_symbol]',
-      currencySymbol || '',
-    );
-    updatedCampaignData.append('campaign[status]', status || '');
-
-    if (selectedImageFile) {
-      updatedCampaignData.append('campaign[media]', selectedImageFile);
-    }
-
-    console.log('Updated Campaign Data', updatedCampaignData);
-
-    try {
-      const updatedData = await editCampaign(id, updatedCampaignData);
-      await fetchCampaigns();
-      console.log('Campaign edited', updatedData);
-    } catch (error) {
-      console.error('Error editing campaign:', error);
-    }
   };
 
   if (loading) return <CampaignsLoader />;
@@ -159,7 +136,7 @@ const EditCampaign = () => {
         {/* Fundraising Goal */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
           <button
-            onClick={() => openEditModal('goalAmount', goalAmount)}
+            onClick={() => openEditModal('goal_amount', goalAmount)}
             className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
           >
             <FaEdit />
@@ -167,7 +144,9 @@ const EditCampaign = () => {
           <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
             Fundraising Goal
           </h3>
-          <p className="text-gray-700 dark:text-gray-400">${goalAmount}</p>
+          <p className="text-gray-700 dark:text-gray-400">
+            ${currentCampaign?.goal_amount}
+          </p>
         </div>
 
         {/* Description */}
@@ -184,7 +163,7 @@ const EditCampaign = () => {
           <div
             className="text-gray-800 dark:text-neutral-200 flex-grow"
             dangerouslySetInnerHTML={{
-              __html: truncateHTML(description, 30),
+              __html: truncateHTML(currentCampaign?.description.body || '', 30),
             }}
           />
         </div>
@@ -201,7 +180,7 @@ const EditCampaign = () => {
             Fundraising Image
           </h3>
           <img
-            src={image}
+            src={currentCampaign?.media || image}
             alt="Campaign"
             className="w-full h-40 object-cover rounded"
           />
@@ -232,7 +211,7 @@ const EditCampaign = () => {
               </>
             )}
 
-            {editMode.field === 'goalAmount' && (
+            {editMode.field === 'goal_amount' && (
               <>
                 <h3 className="text-lg font-semibold mb-2">
                   Edit Fundraising Goal
@@ -284,7 +263,6 @@ const EditCampaign = () => {
             <Button
               onClick={() => {
                 handleSave(editMode.value);
-                submitCampaignData();
               }}
               className="mt-4 dark:bg-gray-800 text-gray-800 hover:bg-gray-100 dark:text-gray-50 py-2 px-4 rounded-full"
               size="lg"
