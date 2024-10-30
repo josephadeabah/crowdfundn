@@ -7,6 +7,7 @@ import { FaInfoCircle, FaShare } from 'react-icons/fa';
 import { Button } from '@/app/components/button/Button';
 import { RadioGroup, RadioGroupItem } from '@/app/components/radio/RadioGroup';
 import { Tooltip } from 'react-tooltip';
+import SingleCampaignLoader from '@/app/loaders/SingleCampaignLoader';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTier, setSelectedTier] = useState<number | null>(null);
@@ -18,7 +19,7 @@ const SingleCampaignPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const { id } = useParams() as { id: string };
-  const { currentCampaign, fetchCampaignById } = useCampaignContext();
+  const { currentCampaign, fetchCampaignById, loading } = useCampaignContext();
 
   useEffect(() => {
     if (id) {
@@ -73,6 +74,8 @@ const SingleCampaignPage: React.FC = () => {
       setError('Error sharing fundraising details');
     }
   };
+
+  if (loading) return <SingleCampaignLoader />;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-3 lg:px-8 py-12">
