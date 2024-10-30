@@ -75,7 +75,7 @@ const EditCampaign = () => {
         })
         .catch(() => setFetchError('Error fetching campaign details.'));
     }
-  }, [id, fetchCampaignById]);
+  }, [id, fetchCampaignById, fetchCampaigns]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -129,8 +129,11 @@ const EditCampaign = () => {
             <FaEdit />
           </button>
           <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
-            {title}
+            Fundraising Title
           </h3>
+          <p className="text-gray-700 dark:text-gray-400">
+            {currentCampaign?.title}
+          </p>
         </div>
 
         {/* Fundraising Goal */}
@@ -180,7 +183,7 @@ const EditCampaign = () => {
             Fundraising Image
           </h3>
           <img
-            src={currentCampaign?.media || image}
+            src={image}
             alt="Campaign"
             className="w-full h-40 object-cover rounded"
           />
