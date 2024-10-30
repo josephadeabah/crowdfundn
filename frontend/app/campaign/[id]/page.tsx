@@ -206,8 +206,8 @@ const SingleCampaignPage: React.FC = () => {
                     key={reward.id}
                     className={`border rounded-md p-4 mb-4 cursor-pointer transition duration-300 ${
                       selectedTier === reward.id
-                        ? 'border-gray-500 bg-indigo-50'
-                        : 'hover:border-indigo-300'
+                        ? 'border-gray-500 bg-orange-50'
+                        : 'hover:border-orange-300'
                     }`}
                     onClick={() => handleTierSelect(reward?.id)}
                   >
