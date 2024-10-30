@@ -68,6 +68,7 @@ export interface CampaignResponseDataType {
 
 export interface CampaignState {
   campaigns: CampaignResponseDataType[];
+  currentCampaign: SingleCampaignResponseDataType | null;
   loading: boolean;
   error: string | null;
   addCampaign: (campaign: FormData) => Promise<CampaignResponseDataType>;

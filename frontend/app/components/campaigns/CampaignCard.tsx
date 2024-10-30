@@ -6,6 +6,7 @@ import Link from 'next/link';
 import ErrorPage from '../errorpage/ErrorPage';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import EmptyPage from '../emptypage/EmptyPage';
+import { generateRandomString } from '../../utils/helpers/generate.random-string';
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -53,7 +54,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
           transition={{ duration: 0.5, delay: index * 0.1 }}
           className="bg-white flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
         >
-          <Link href={`/campaign/${campaign.id}`}>
+          <Link href={`/campaign/${campaign.id}?${generateRandomString()}`}>
             <div className="flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer">
               <img
                 src={campaign?.media}

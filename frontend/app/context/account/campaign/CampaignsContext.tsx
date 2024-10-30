@@ -1,6 +1,7 @@
 import {
   CampaignResponseDataType,
   CampaignState,
+  SingleCampaignResponseDataType,
 } from '@/app/types/campaigns.types';
 import React, {
   createContext,
@@ -16,6 +17,8 @@ const CampaignContext = createContext<CampaignState | undefined>(undefined);
 
 export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const [campaigns, setCampaigns] = useState<CampaignResponseDataType[]>([]);
+  const [currentCampaign, setCurrentCampaign] =
+    useState<SingleCampaignResponseDataType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
@@ -151,6 +154,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const fetchedCampaign = await response.json();
+        setCurrentCampaign(fetchedCampaign);
         return fetchedCampaign;
       } catch (err) {
         setError(
@@ -249,6 +253,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const contextValue = useMemo(
     () => ({
       campaigns,
+      currentCampaign, // Expose currentCampaign to context
       loading,
       error,
       addCampaign,
@@ -260,6 +265,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     }),
     [
       campaigns,
+      currentCampaign, // Include it in the dependencies
       loading,
       error,
       addCampaign,

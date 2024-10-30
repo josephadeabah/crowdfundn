@@ -15,7 +15,7 @@ const ErrorPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-      <div className="w-full max-w-7xl bg-white rounded-2xl p-8 md:p-12 relative overflow-hidden transform transition-transform duration-300 hover:scale-[1.02] shadow-lg">
+      <div className="w-full max-w-7xl bg-white rounded-2xl p-8 md:p-12 relative overflow-hidden transform transition-transform duration-300 hover:scale-[1.02]">
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 via-green-500 to-green-300"></div>
 
         <div className="flex flex-col items-center text-center space-y-6">
