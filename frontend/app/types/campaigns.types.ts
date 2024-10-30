@@ -129,4 +129,7 @@ export interface SingleCampaignResponseDataType {
   description: CampaignDescription;
   permissions: CampaignPermissions;
   promotions: CampaignPromotions;
+  rewards: Reward[];
+  updates: Update[];
+  comments: Comment[];
 }

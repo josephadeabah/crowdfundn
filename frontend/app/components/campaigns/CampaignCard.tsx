@@ -53,7 +53,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
           transition={{ duration: 0.5, delay: index * 0.1 }}
           className="bg-white flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
         >
-          <Link href={`/campaign/fundraiser/${campaign.id}`}>
+          <Link href={`/campaign/${campaign.id}`}>
             <div className="flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer">
               <img
                 src={campaign?.media}
