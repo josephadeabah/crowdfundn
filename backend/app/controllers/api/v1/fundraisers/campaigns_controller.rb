@@ -70,10 +70,11 @@ module Api
         end
 
         def set_campaign
-          @campaign = Campaign.includes(:rewards, :updates, :comments).find(params[:id])
+          @campaign = Campaign.includes(:rewards, :updates, :comments, fundraiser: :profile).find(params[:id])
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'Campaign not found' }, status: :not_found
         end
+        
 
         def authorize_campaign_user!
           authorize_user!(@campaign)  # Call the authorization method
