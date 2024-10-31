@@ -45,12 +45,6 @@ class User < ApplicationRecord
 
   # Create a profile for existing users who don't have one
   User.where.missing(:profile).find_each do |user|
-    user.create_profile(
-      name: user.full_name,
-      description: 'Default profile description',
-      funding_goal: 1000,
-      amount_raised: 0,
-      status: 'active'
-    )
-  end
+    user.create_default_profile
+  end  
 end
