@@ -2,13 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { FiChevronDown, FiAlertCircle, FiPlus } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
+import { useCampaignUpdatesContext } from '@/app/context/account/updates/CampaignUpdatesContext';
 import { truncateTitle } from '../utils/helpers/truncate.title';
-
-interface Update {
-  id: number;
-  campaignId: string;
-  content: string;
-}
 
 // Define type for form data
 interface FormData {
@@ -16,16 +11,13 @@ interface FormData {
 }
 
 const CampaignUpdates: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { campaigns, fetchCampaigns, loading } = useCampaignContext();
+  const { campaigns, fetchCampaigns } = useCampaignContext();
+  const { createUpdate, loading } = useCampaignUpdatesContext();
   const [selectedCampaign, setSelectedCampaign] = useState<string>('');
-  const [formData, setFormData] = useState<FormData>({
-    content: '',
-  });
+  const [formData, setFormData] = useState<FormData>({ content: '' });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
     {},
   );
-  const [updates, setUpdates] = useState<Update[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -45,17 +37,17 @@ const CampaignUpdates: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (validateForm()) {
-      const newUpdate: Update = {
-        id: Date.now(),
-        campaignId: selectedCampaign,
-        ...formData,
-      };
-      setUpdates([...updates, newUpdate]);
-      setFormData({ content: '' });
-      setIsModalOpen(false);
+    if (validateForm() && selectedCampaign) {
+      try {
+        await createUpdate(selectedCampaign, formData.content);
+        await fetchCampaigns();
+        setFormData({ content: '' });
+        setIsModalOpen(false);
+      } catch (err) {
+        console.error('Failed to create update:', err);
+      }
     }
   };
 
@@ -139,7 +131,11 @@ const CampaignUpdates: React.FC = () => {
                     value={formData.content}
                     onChange={handleInputChange}
                     rows={4}
-                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 ${errors.content ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-200'}`}
+                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 ${
+                      errors.content
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:ring-gray-200'
+                    }`}
                   ></textarea>
                   {errors.content && (
                     <p className="mt-1 text-sm text-red-500 flex items-center">
@@ -160,7 +156,7 @@ const CampaignUpdates: React.FC = () => {
                     type="submit"
                     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200"
                   >
-                    Add Update
+                    {loading ? 'Adding...' : 'Add Update'}
                   </button>
                 </div>
               </form>
@@ -172,11 +168,7 @@ const CampaignUpdates: React.FC = () => {
       {/* Updates Display */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {campaigns.map((campaign) => {
-          const campaignUpdates = updates.filter(
-            (update) => update.campaignId === campaign.id.toString(),
-          );
-
-          if (campaignUpdates.length === 0) return null;
+          if (!campaign.updates || campaign.updates.length === 0) return null;
 
           return (
             <motion.div
@@ -190,7 +182,7 @@ const CampaignUpdates: React.FC = () => {
                 {campaign.title}
               </h2>
               <div className="space-y-4">
-                {campaignUpdates.map((update) => (
+                {campaign.updates.map((update) => (
                   <motion.div
                     key={update.id}
                     initial={{ opacity: 0, x: -20 }}
