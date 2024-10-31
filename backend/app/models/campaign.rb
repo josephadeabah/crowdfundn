@@ -75,7 +75,7 @@ class Campaign < ApplicationRecord
         id: fundraiser.id,
         name: fundraiser.full_name,
         email: fundraiser.email,
-        profile: fundraiser.profile&.as_json(only: %i[name description funding_goal amount_raised status])
+        profile: fundraiser.profile
       }
     )
   end
