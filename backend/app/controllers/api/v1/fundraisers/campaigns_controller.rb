@@ -12,7 +12,7 @@ module Api
         end
 
         def show
-          render json: @campaign.as_json(include: %i[rewards updates comments]).merge(media: @campaign.media_url), status: :ok
+          render json: @campaign.as_json(include: %i[rewards updates comments fundraiser: :profile]).merge(media: @campaign.media_url), status: :ok
         end
 
         def my_campaigns
