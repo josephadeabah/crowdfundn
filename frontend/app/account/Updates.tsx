@@ -6,7 +6,6 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import { useCampaignUpdatesContext } from '@/app/context/account/updates/CampaignUpdatesContext';
 import { truncateTitle } from '../utils/helpers/truncate.title';
 import CampaignUpdatesLoader from '../loaders/CampaignsUpdateLoader';
-import EmptyPage from '../components/emptypage/EmptyPage';
 import ErrorPage from '../components/errorpage/ErrorPage';
 
 // Define type for form data
@@ -16,7 +15,7 @@ interface FormData {
 
 const CampaignUpdates: React.FC = () => {
   const { campaigns, fetchCampaigns, loading, error } = useCampaignContext();
-  const { createUpdate } = useCampaignUpdatesContext();
+  const { createUpdate, loading: updatesLoading } = useCampaignUpdatesContext();
   const [selectedCampaign, setSelectedCampaign] = useState<string>('');
   const [formData, setFormData] = useState<FormData>({ content: '' });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
@@ -72,7 +71,9 @@ const CampaignUpdates: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-2 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Campaign Updates</h1>
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
+          Campaign Updates
+        </h1>
         <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
@@ -164,7 +165,7 @@ const CampaignUpdates: React.FC = () => {
                     type="submit"
                     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200"
                   >
-                    {loading ? 'Adding...' : 'Add Update'}
+                    {updatesLoading ? 'Adding...' : 'Add Update'}
                   </button>
                 </div>
               </form>
@@ -174,37 +175,40 @@ const CampaignUpdates: React.FC = () => {
       </AnimatePresence>
 
       {/* Updates Display */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {campaigns.map((campaign) => {
-          if (!campaign.updates || campaign.updates.length === 0)
-            return <EmptyPage />;
-
-          return (
-            <motion.div
-              key={campaign.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white p-6 rounded-lg shadow-md"
-            >
-              <h2 className="text-xl font-semibold mb-4 text-gray-800">
-                {campaign.title}
-              </h2>
-              <div className="space-y-4">
-                {campaign.updates.map((update) => (
-                  <motion.div
-                    key={update.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="border-l-4 border-orange-400 pl-4 py-2"
-                  >
-                    <p className="text-gray-600 mt-1">{update.content}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          );
-        })}
+      <div>
+        {campaigns.every((campaign) => campaign.updates.length === 0) ? (
+          <p className="text-gray-500 text-lg">
+            You have not created any updates yet!
+          </p>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {campaigns.map((campaign) => (
+              <motion.div
+                key={campaign.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="bg-white p-6 rounded-lg shadow-md"
+              >
+                <h2 className="text-xl font-semibold mb-4 text-gray-800">
+                  {campaign.title}
+                </h2>
+                <div className="space-y-4">
+                  {campaign.updates.map((update) => (
+                    <motion.div
+                      key={update.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="border-l-4 border-orange-400 pl-4 py-2"
+                    >
+                      <p className="text-gray-600 mt-1">{update.content}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
