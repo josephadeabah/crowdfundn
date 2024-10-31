@@ -50,7 +50,7 @@ class Campaign < ApplicationRecord
       category location currency currency_code currency_symbol status
       fundraiser_id created_at updated_at
     ]).merge(
-      media: media_url, # Returning the media URL
+      media: media_url,
       media_filename: media_filename,
       description: description.as_json,
       permissions: {
@@ -68,9 +68,15 @@ class Campaign < ApplicationRecord
         promotion_frequency: promotion_frequency,
         promotion_duration: promotion_duration
       },
-      rewards: rewards, 
+      rewards: rewards,
       updates: updates,
       comments: comments,
+      fundraiser: {
+        id: fundraiser.id,
+        name: fundraiser.full_name,
+        email: fundraiser.email,
+        profile: fundraiser.profile&.as_json(only: %i[name description funding_goal amount_raised status])
+      }
     )
   end
 end
