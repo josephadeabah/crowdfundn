@@ -10,7 +10,6 @@ class User < ApplicationRecord
   has_one :profile, dependent: :destroy
   has_many :campaigns, foreign_key: 'fundraiser_id', dependent: :destroy
   accepts_nested_attributes_for :profile
-  before_create :create_default_profile
 
   after_create :assign_default_role
   after_create :create_default_profile
@@ -28,8 +27,6 @@ class User < ApplicationRecord
   def has_any_role?(*role_names)
     roles.where(name: role_names).exists?
   end
-
-  private
 
   def create_default_profile
     profile = build_profile(
