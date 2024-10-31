@@ -8,11 +8,13 @@ import {
   IconJarLogoIcon,
   GearIcon,
   RocketIcon,
+  ChatBubbleIcon  
 } from '@radix-ui/react-icons';
 import Rewards from '@/app/account/Rewards';
 import Campaigns from '@/app/account/Campaigns';
 import Transfers from '@/app/account/Transfers';
 import Donations from '@/app/account/Donations';
+import CampaignUpdates from '@/app/account/Updates';
 import Dashboard from '@/app/account/Dashboard';
 import ProfileTabsLoader from '@/app/loaders/ProfileTabsLoader';
 import AccountSettings from '@/app/account/settings/AccountSettings';
@@ -90,6 +92,10 @@ const ProfileTabs = () => {
       content: 'Check your active campaigns in this tab.',
     },
     {
+      target: '#updates-tab',
+      content: 'Add your fundraising updates in this tab.',
+    },
+    {
       target: '#settings-tab',
       content: 'Manage your account settings in this tab.',
     },
@@ -107,6 +113,8 @@ const ProfileTabs = () => {
         return <Rewards />;
       case 'Campaigns':
         return <Campaigns />;
+      case 'Updates':
+        return <CampaignUpdates />;
       case 'Settings':
         return <AccountSettings />;
       default:
@@ -153,6 +161,7 @@ const ProfileTabs = () => {
             { label: 'Transfers', icon: <SymbolIcon />, id: 'transfers-tab' },
             { label: 'Rewards', icon: <IconJarLogoIcon />, id: 'rewards-tab' },
             { label: 'Campaigns', icon: <RocketIcon />, id: 'campaigns-tab' },
+            { label: 'Updates', icon: <ChatBubbleIcon />, id: 'updates-tab' },
             {
               label: 'Settings',
               icon: <GearIcon />,

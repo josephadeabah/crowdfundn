@@ -28,6 +28,7 @@ const Modal: React.FC<ModalProps> = ({
   closeOnBackdropClick = true,
   customStyles = {},
 }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const modalRef = useRef(null);
 
