@@ -1,12 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiChevronDown, FiAlertCircle, FiPlus } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
-
-// Define types for campaign and update
-interface Campaign {
-  id: number;
-  name: string;
-}
+import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
+import { truncateTitle } from '../utils/helpers/truncate.title';
 
 interface Update {
   id: number;
@@ -20,6 +16,8 @@ interface FormData {
 }
 
 const CampaignUpdates: React.FC = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { campaigns, fetchCampaigns, loading } = useCampaignContext();
   const [selectedCampaign, setSelectedCampaign] = useState<string>('');
   const [formData, setFormData] = useState<FormData>({
     content: '',
@@ -30,12 +28,9 @@ const CampaignUpdates: React.FC = () => {
   const [updates, setUpdates] = useState<Update[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const campaigns: Campaign[] = [
-    { id: 1, name: 'Summer Marketing Campaign' },
-    { id: 2, name: 'Product Launch 2024' },
-    { id: 3, name: 'Holiday Season Promotion' },
-    { id: 4, name: 'Brand Awareness Drive' },
-  ];
+  useEffect(() => {
+    fetchCampaigns();
+  }, [fetchCampaigns]);
 
   const handleCampaignSelect = (campaignId: string) => {
     setSelectedCampaign(campaignId);
@@ -75,7 +70,7 @@ const CampaignUpdates: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-2 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Campaign Updates</h1>
         <button
@@ -125,7 +120,7 @@ const CampaignUpdates: React.FC = () => {
                     <option value="">Choose a campaign</option>
                     {campaigns.map((campaign) => (
                       <option key={campaign.id} value={campaign.id}>
-                        {campaign.name}
+                        {truncateTitle(campaign.title, 60)}
                       </option>
                     ))}
                   </select>
@@ -192,7 +187,7 @@ const CampaignUpdates: React.FC = () => {
               className="bg-white p-6 rounded-lg shadow-md"
             >
               <h2 className="text-xl font-semibold mb-4 text-gray-800">
-                {campaign.name}
+                {campaign.title}
               </h2>
               <div className="space-y-4">
                 {campaignUpdates.map((update) => (

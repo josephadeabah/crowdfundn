@@ -8,7 +8,7 @@ import {
   IconJarLogoIcon,
   GearIcon,
   RocketIcon,
-  ChatBubbleIcon  
+  ChatBubbleIcon,
 } from '@radix-ui/react-icons';
 import Rewards from '@/app/account/Rewards';
 import Campaigns from '@/app/account/Campaigns';

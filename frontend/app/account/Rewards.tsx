@@ -7,6 +7,7 @@ import { CampaignResponseDataType } from '../types/campaigns.types';
 import RewardCard from '@/app/components/rewardcard/RewardCard';
 import RewardsLoader from '../loaders/RewardsLoader';
 import AlertPopup from '../components/alertpopup/AlertPopup';
+import { truncateTitle } from '../utils/helpers/truncate.title';
 
 interface FormData {
   title: string;
@@ -142,12 +143,6 @@ const RewardsPage: React.FC = () => {
   const cancelDelete = () => {
     setShowDeletePopup(false);
     setRewardToDelete(null);
-  };
-
-  const truncateTitle = (title: string, maxLength: number): string => {
-    return title.length <= maxLength
-      ? title
-      : `${title.slice(0, maxLength)}...`;
   };
 
   return (
