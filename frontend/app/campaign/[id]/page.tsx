@@ -133,12 +133,22 @@ const SingleCampaignPage: React.FC = () => {
               currentCampaign.updates.map((update) => (
                 <div
                   key={update.id}
-                  className="bg-white rounded-sm shadow-sm p-4 mb-4"
+                  className="bg-white dark:bg-gray-800 rounded-sm shadow-sm p-4 mb-4 flex items-start" // Dark mode background
                 >
-                  <div className="font-semibold text-gray-600 mb-2">
-                    {update.date}
+                  <div className="flex-shrink-0">
+                    {' '}
+                    {/* Prevent avatar from shrinking */}
+                    <Avatar name={String(fundraiserName)} size="sm" />
                   </div>
-                  <p>{update.content}</p>
+                  <div className="ml-3">
+                    <div className="font-semibold text-sm text-gray-600 dark:text-gray-300">
+                      {new Date(update.created_at).toLocaleString()}{' '}
+                      {/* Format the date */}
+                    </div>
+                    <p className="text-gray-800 dark:text-gray-200 break-words">
+                      {update.content}
+                    </p>
+                  </div>
                 </div>
               ))
             ) : (
@@ -209,8 +219,8 @@ const SingleCampaignPage: React.FC = () => {
             <div className="text-xs italic text-gray-500 dark:text-gray-50 mr-3">
               fundraiser:
             </div>
-            <Avatar name={String(fundraiserName)} size="sm" />
-            <h5 className="ml-2">{fundraiserName}</h5>
+            <Avatar name={String(fundraiserName)} size="md" />
+            <h3 className="ml-2">{fundraiserName}</h3>
           </div>
           <div className="py-2">
             {currentCampaign?.fundraiser?.profile?.description}

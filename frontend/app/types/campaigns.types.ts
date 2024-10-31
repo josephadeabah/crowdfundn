@@ -8,7 +8,7 @@ export interface Reward {
 
 export interface Update {
   id: number;
-  date: string;
+  created_at: string;
   content: string;
 }
 
