@@ -12,6 +12,7 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :profile
 
   after_create :assign_default_role
+  after_create :create_default_profile
 
   def assign_default_role
     roles << Role.find_by(name: 'User') unless has_role?('User')
@@ -25,5 +26,31 @@ class User < ApplicationRecord
   # Check if user has any of the specified roles
   def has_any_role?(*role_names)
     roles.where(name: role_names).exists?
+  end
+
+  private
+
+  def create_default_profile
+    profile = build_profile(
+      name: full_name,
+      description: 'This is the default profile description.',
+      funding_goal: 1000,
+      amount_raised: 0,
+      status: 'active'
+    )
+    unless profile.save
+      Rails.logger.error "Failed to create profile for user #{id}: #{profile.errors.full_messages}"
+    end
+  end
+
+  # Create a profile for existing users who don't have one
+  User.where.missing(:profile).find_each do |user|
+    user.create_profile(
+      name: user.full_name,
+      description: 'Default profile description',
+      funding_goal: 1000,
+      amount_raised: 0,
+      status: 'active'
+    )
   end
 end
