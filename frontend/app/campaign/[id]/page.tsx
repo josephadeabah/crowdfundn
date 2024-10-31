@@ -127,7 +127,7 @@ const SingleCampaignPage: React.FC = () => {
 
         {/* Left Column: Donation and Rewards */}
         <div className="order-3 sticky top-4 h-fit">
-          <h2 className="text-2xl font-bold mb-4 w-full">Updates</h2>
+          <h2 className="text-2xl font-bold mb-4 w-full">Fundraiser Updates</h2>
           <div className="max-h-96 overflow-y-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
             {currentCampaign?.updates?.length ? (
               currentCampaign.updates.map((update) => (
@@ -152,11 +152,11 @@ const SingleCampaignPage: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div className="py-2">No update on this campaign yet.</div>
+              <div className="py-2">No update on this fundraiser yet.</div>
             )}
           </div>
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold mb-4">Share this campaign</h2>
+            <h2 className="text-2xl font-bold mb-4">Share this fundraiser</h2>
             <div className="flex items-center mb-4">
               <Button onClick={handleShare} className="mr-4">
                 <FaShare className="mr-2" /> Share
