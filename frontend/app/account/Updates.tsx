@@ -1,9 +1,13 @@
+'use client';
 import React, { useState, useEffect } from 'react';
 import { FiChevronDown, FiAlertCircle, FiPlus } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useCampaignUpdatesContext } from '@/app/context/account/updates/CampaignUpdatesContext';
 import { truncateTitle } from '../utils/helpers/truncate.title';
+import CampaignUpdatesLoader from '../loaders/CampaignsUpdateLoader';
+import EmptyPage from '../components/emptypage/EmptyPage';
+import ErrorPage from '../components/errorpage/ErrorPage';
 
 // Define type for form data
 interface FormData {
@@ -11,8 +15,8 @@ interface FormData {
 }
 
 const CampaignUpdates: React.FC = () => {
-  const { campaigns, fetchCampaigns } = useCampaignContext();
-  const { createUpdate, loading } = useCampaignUpdatesContext();
+  const { campaigns, fetchCampaigns, loading, error } = useCampaignContext();
+  const { createUpdate } = useCampaignUpdatesContext();
   const [selectedCampaign, setSelectedCampaign] = useState<string>('');
   const [formData, setFormData] = useState<FormData>({ content: '' });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
@@ -60,6 +64,10 @@ const CampaignUpdates: React.FC = () => {
       setErrors({ ...errors, [name as keyof FormData]: '' });
     }
   };
+
+  // Handle loading and error state after all hooks
+  if (loading) return <CampaignUpdatesLoader />;
+  if (error) return <ErrorPage />;
 
   return (
     <div className="max-w-7xl mx-auto px-2 py-8">
@@ -168,7 +176,8 @@ const CampaignUpdates: React.FC = () => {
       {/* Updates Display */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {campaigns.map((campaign) => {
-          if (!campaign.updates || campaign.updates.length === 0) return null;
+          if (!campaign.updates || campaign.updates.length === 0)
+            return <EmptyPage />;
 
           return (
             <motion.div

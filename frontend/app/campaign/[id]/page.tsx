@@ -128,22 +128,24 @@ const SingleCampaignPage: React.FC = () => {
         {/* Left Column: Donation and Rewards */}
         <div className="order-3 sticky top-4 h-fit">
           <h2 className="text-2xl font-bold mb-4 w-full">Updates</h2>
-          {currentCampaign?.updates?.length ? (
-            currentCampaign.updates.map((update) => (
-              <div
-                key={update.id}
-                className="bg-white rounded-sm shadow p-4 mb-4"
-              >
-                <div className="font-semibold text-gray-600 mb-2">
-                  {update.date}
+          <div className="max-h-96 overflow-y-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
+            {currentCampaign?.updates?.length ? (
+              currentCampaign.updates.map((update) => (
+                <div
+                  key={update.id}
+                  className="bg-white rounded-sm shadow-sm p-4 mb-4"
+                >
+                  <div className="font-semibold text-gray-600 mb-2">
+                    {update.date}
+                  </div>
+                  <p>{update.content}</p>
                 </div>
-                <p>{update.content}</p>
-              </div>
-            ))
-          ) : (
-            <div className="py-2">No update on this campaign yet.</div>
-          )}
-          <div className="bg-white rounded-lg shadow p-6 mb-8">
+              ))
+            ) : (
+              <div className="py-2">No update on this campaign yet.</div>
+            )}
+          </div>
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
             <h2 className="text-2xl font-bold mb-4">Share this campaign</h2>
             <div className="flex items-center mb-4">
               <Button onClick={handleShare} className="mr-4">
@@ -157,7 +159,7 @@ const SingleCampaignPage: React.FC = () => {
           </div>
 
           {/* Comments Section */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold">
                 Comments ({currentCampaign?.comments?.length})
