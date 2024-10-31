@@ -8,6 +8,7 @@ import { Button } from '@/app/components/button/Button';
 import { RadioGroup, RadioGroupItem } from '@/app/components/radio/RadioGroup';
 import { Tooltip } from 'react-tooltip';
 import SingleCampaignLoader from '@/app/loaders/SingleCampaignLoader';
+import Avatar from '@/app/components/avatar/Avatar';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTier, setSelectedTier] = useState<number | null>(null);
@@ -76,6 +77,11 @@ const SingleCampaignPage: React.FC = () => {
   };
 
   if (loading) return <SingleCampaignLoader />;
+
+  // Determine the fundraiser name
+  const fundraiserName =
+    currentCampaign?.fundraiser?.profile?.name ||
+    currentCampaign?.fundraiser?.name;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-3 lg:px-8 py-12">
@@ -197,6 +203,16 @@ const SingleCampaignPage: React.FC = () => {
 
         {/* Right Column: Sticky Rewards */}
         <div className="order-2 lg:col-span-1 ">
+          <div className="flex items-center py-8">
+            <div className="text-xs italic text-gray-500 dark:text-gray-50 mr-3">
+              fundraiser:
+            </div>
+            <Avatar name={String(fundraiserName)} size="sm" />
+            <h5 className="ml-2">{fundraiserName}</h5>
+          </div>
+          <div className="py-2">
+            {currentCampaign?.fundraiser?.profile?.description}
+          </div>
           <div className="bg-white rounded-lg shadow-md px-6 mb-20 pb-10">
             <h2 className="text-2xl font-bold mb-4">Select a Reward</h2>
             <div className="max-h-96 overflow-y-auto py-4 [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">

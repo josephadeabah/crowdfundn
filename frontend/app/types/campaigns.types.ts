@@ -92,6 +92,22 @@ export interface CampaignDescription {
   updated_at: string;
 }
 
+export interface FundraiserProfileType {
+  id: number;
+  name: string;
+  description: string;
+  created_at: string;
+  updated_at: string;
+}
+export interface FundraiserDetailsType {
+  id: number;
+  name: string;
+  email: string;
+  created_at: string;
+  updated_at: string;
+  profile: FundraiserProfileType;
+}
+
 export interface CampaignPermissions {
   accept_donations: boolean;
   leave_words_of_support: boolean;
@@ -133,4 +149,5 @@ export interface SingleCampaignResponseDataType {
   rewards: Reward[];
   updates: Update[];
   comments: Comment[];
+  fundraiser: FundraiserDetailsType;
 }

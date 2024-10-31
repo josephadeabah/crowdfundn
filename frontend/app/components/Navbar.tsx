@@ -22,6 +22,7 @@ const Navbar = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activePopover, setActivePopover] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { user, token, logout } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
