@@ -34,7 +34,7 @@ const DownloadApp = () => {
           className="lg:w-1/2 relative"
         >
           <img
-            src="https://images.unsplash.com/photo-1655947715189-e7edcae154cf?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            src="https://images.pexels.com/photos/4101847/pexels-photo-4101847.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
             alt="Smiling man holding a phone"
             className="rounded-lg max-w-full h-auto"
           />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
 
@@ -28,9 +28,7 @@ const Modal: React.FC<ModalProps> = ({
   closeOnBackdropClick = true,
   customStyles = {},
 }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const modalRef = useRef(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -89,7 +87,7 @@ const Modal: React.FC<ModalProps> = ({
         >
           <motion.div
             ref={modalRef}
-            className={`relative w-full ${sizeClasses[size]} bg-white dark:bg-neutral-800 rounded-sm shadow-xl`}
+            className={`relative w-full ${sizeClasses[size]} bg-white dark:bg-neutral-800 rounded-sm shadow-xl modal-scrollbar`}
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
@@ -103,8 +101,8 @@ const Modal: React.FC<ModalProps> = ({
             }}
             style={{
               ...customStyles,
-              x: position.x,
-              y: position.y,
+              maxHeight: '90vh',
+              overflowY: 'auto',
             }}
           >
             <div className="p-6">

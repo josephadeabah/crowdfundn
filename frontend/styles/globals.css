@@ -66,3 +66,30 @@ h6 {
     font-size: 1.5rem;
   }
 }
+
+/* modal.css */
+.modal-scrollbar::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
+}
+
+.modal-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cbe1da; /* Color of the scrollbar thumb */
+  border-radius: 4px; /* Rounded corners for the scrollbar thumb */
+}
+
+.modal-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9; /* Color of the scrollbar track */
+}
+
+.modal-scrollbar::-moz-scrollbar {
+  width: 8px; /* Width of the scrollbar for Firefox */
+}
+
+.modal-scrollbar::-moz-scrollbar-thumb {
+  background-color: #cbd5e1; /* Color of the scrollbar thumb for Firefox */
+  border-radius: 4px; /* Rounded corners for the scrollbar thumb for Firefox */
+}
+
+.modal-scrollbar::-moz-scrollbar-track {
+  background: #f1f5f9; /* Color of the scrollbar track for Firefox */
+}

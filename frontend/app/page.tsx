@@ -1,12 +1,10 @@
 'use client';
-import data from '../data.json';
 import React, { useState, useEffect } from 'react';
 import { FiUsers, FiBarChart, FiAward } from 'react-icons/fi';
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 
 import { CarouselPlugin } from './molecules/CarouselPlugin';
-import { Badge } from './components/badge/Badge';
 import { BrandsLogoSlider } from './molecules/BrandsLogoSlider';
 import FAQsPage from './molecules/faqs';
 import DownloadApp from './molecules/DownloadApp';
@@ -16,11 +14,9 @@ import { FaHandHoldingUsd } from 'react-icons/fa';
 import { useAuth } from './context/auth/AuthContext';
 import CampaignCard from './components/campaigns/CampaignCard';
 import { useCampaignContext } from './context/account/campaign/CampaignsContext';
+import CategoryList from './components/categories/CategoryList';
 
 const HomePage = () => {
-  const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
-    null,
-  );
   const wordRef = React.useRef<HTMLDivElement | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [scrollY, setScrollY] = useState(0);
@@ -267,25 +263,7 @@ const HomePage = () => {
 
             {/* Parent grid for Categories and Recommended Fundraisers */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Categories Section */}
-              <div className="w-full flex flex-col">
-                <div className="flex flex-wrap gap-2 mb-4 p-2 justify-start">
-                  {data.categories.map((category) => (
-                    <Badge
-                      key={category.value}
-                      className={`cursor-pointer transform hover:scale-105 transition-transform duration-300 ${
-                        selectedCategory === category.value
-                          ? 'bg-orange-400 text-white'
-                          : 'text-gray-800 dark:bg-slate-950 dark:text-gray-50'
-                      }`}
-                      onClick={() => setSelectedCategory(category.value)}
-                      variant="default"
-                    >
-                      {category.label}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
+              <CategoryList />
               {/* Recommended Fundraisers Section */}
               <div className="w-full flex flex-col gap-4 sm:flex-row">
                 <CampaignCard

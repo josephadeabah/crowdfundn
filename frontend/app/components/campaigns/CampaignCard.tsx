@@ -37,7 +37,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const shuffledCampaigns = useMemo(() => shuffleArray(campaigns), [campaigns]);
 
   // Slice the first 6 campaigns after shuffling
-  const displayedCampaigns = shuffledCampaigns.slice(0, 6);
+  const displayedCampaigns = shuffledCampaigns.slice(0, 9);
 
   return (
     <div>
