@@ -1,27 +1,33 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { FiChevronDown, FiAlertCircle, FiPlus } from 'react-icons/fi';
+import { FiChevronDown, FiAlertCircle, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useCampaignUpdatesContext } from '@/app/context/account/updates/CampaignUpdatesContext';
 import { truncateTitle } from '../utils/helpers/truncate.title';
 import CampaignUpdatesLoader from '../loaders/CampaignsUpdateLoader';
 import ErrorPage from '../components/errorpage/ErrorPage';
+import AlertPopup from '../components/alertpopup/AlertPopup';
 
-// Define type for form data
 interface FormData {
   content: string;
 }
 
 const CampaignUpdates: React.FC = () => {
   const { campaigns, fetchCampaigns, loading, error } = useCampaignContext();
-  const { createUpdate, loading: updatesLoading } = useCampaignUpdatesContext();
+  const {
+    createUpdate,
+    deleteUpdate,
+    loading: updatesLoading,
+  } = useCampaignUpdatesContext();
   const [selectedCampaign, setSelectedCampaign] = useState<string>('');
   const [formData, setFormData] = useState<FormData>({ content: '' });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
     {},
   );
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
+  const [updateToDelete, setUpdateToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCampaigns();
@@ -64,12 +70,41 @@ const CampaignUpdates: React.FC = () => {
     }
   };
 
+  const openDeleteConfirmation = (campaignId: string, updateId: string) => {
+    setSelectedCampaign(campaignId);
+    setUpdateToDelete(updateId);
+    setIsAlertOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (updateToDelete && selectedCampaign) {
+      try {
+        await deleteUpdate(selectedCampaign, updateToDelete);
+        setUpdateToDelete(null);
+        setIsAlertOpen(false);
+        fetchCampaigns();
+      } catch (err) {
+        console.error('Failed to delete update:', err);
+      }
+    } else {
+      console.error('Campaign or update ID is missing');
+    }
+  };
+
   // Handle loading and error state after all hooks
   if (loading) return <CampaignUpdatesLoader />;
   if (error) return <ErrorPage />;
 
   return (
     <div className="max-w-7xl mx-auto px-2 py-8">
+      <AlertPopup
+        title="Confirm Deletion"
+        message="Are you sure you want to delete this update? This action cannot be undone."
+        isOpen={isAlertOpen}
+        setIsOpen={setIsAlertOpen}
+        onConfirm={confirmDelete}
+        onCancel={() => setUpdateToDelete(null)}
+      />
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-50">
           Campaign Updates
@@ -201,11 +236,24 @@ const CampaignUpdates: React.FC = () => {
                       key={update.id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="border-l-4 border-orange-400 pl-4 py-2 dark:border-orange-500"
+                      className="border-l-4 border-orange-400 pl-4 py-2 dark:border-orange-500 flex items-center"
                     >
-                      <p className="text-gray-600 dark:text-gray-300 mt-1">
-                        {update.content}
-                      </p>
+                      <div className="flex-grow">
+                        <p className="text-gray-600 dark:text-gray-300 mt-1">
+                          {update.content}
+                        </p>
+                      </div>
+                      <div className="flex-shrink-0 ml-2">
+                        <FiTrash2
+                          className="cursor-pointer text-red-600"
+                          onClick={() =>
+                            openDeleteConfirmation(
+                              String(campaign.id),
+                              String(update.id),
+                            )
+                          }
+                        />
+                      </div>
                     </motion.div>
                   ))}
                 </div>
