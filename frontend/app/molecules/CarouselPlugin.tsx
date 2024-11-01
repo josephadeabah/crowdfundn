@@ -8,6 +8,7 @@ import {
 } from '../components/carousel/Carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import { Card, CardContent } from '../components/card/Card';
+import Image from 'next/image';
 import data from '../../data.json';
 export function CarouselPlugin() {
   const plugin = React.useRef(
@@ -26,10 +27,16 @@ export function CarouselPlugin() {
           <CarouselItem key={fundraiser.id}>
             <Card className="w-full rounded-none shadow-none border-0">
               <CardContent className="w-full p-0 flex aspect-square items-center justify-center h-96">
-                <img
+                <Image
                   src={fundraiser.image}
                   alt={fundraiser.name}
-                  className="object-cover h-full w-full"
+                  sizes="100vw"
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                  }}
+                  width={500}
+                  height={300}
                 />
               </CardContent>
             </Card>

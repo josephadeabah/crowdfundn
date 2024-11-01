@@ -45,7 +45,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       src={campaign?.media}
                       alt="media thumbnail"
                       fill
-                      loading="lazy"
+                      loading="eager"
                       objectFit="cover"
                     />
                   </div>

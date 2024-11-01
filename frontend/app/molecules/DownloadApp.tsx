@@ -2,6 +2,7 @@ import React from 'react';
 import { FaGooglePlay, FaApple } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const DownloadApp = () => {
   return (
@@ -33,11 +34,24 @@ const DownloadApp = () => {
           transition={{ duration: 0.5 }}
           className="lg:w-1/2 relative"
         >
-          <img
+          {/* <img
             src="https://images.pexels.com/photos/4101847/pexels-photo-4101847.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
             alt="Smiling man holding a phone"
             className="rounded-lg max-w-full h-auto"
+          /> */}
+
+          <Image
+            src="https://images.pexels.com/photos/4101847/pexels-photo-4101847.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+            alt="Picture of the author"
+            sizes="100vw"
+            style={{
+              width: '100%',
+              height: 'auto',
+            }}
+            width={500}
+            height={300}
           />
+
           <div className="absolute bottom-4 left-4 flex space-x-4">
             <motion.div
               whileHover={{ scale: 1.1 }}

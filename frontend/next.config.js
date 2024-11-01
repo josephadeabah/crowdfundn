@@ -3,11 +3,32 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {},
   images: {
-    domains: [
-      'pbs.twimg.com',
-      'images.pexels.com',
-      'plus.unsplash.com',
-      'bantuhive-space-media.nyc3.digitaloceanspaces.com',
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'pbs.twimg.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.pexels.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'plus.unsplash.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'bantuhive-space-media.nyc3.digitaloceanspaces.com',
+        pathname: '/**',
+      },
     ],
   },
 };
