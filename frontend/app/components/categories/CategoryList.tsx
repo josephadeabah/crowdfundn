@@ -288,7 +288,7 @@ const CategoryList: React.FC = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-green-50 to-orange-50 dark:from-green-900 dark:to-orange-900 dark:bg-gray-900 p-2">
+    <div className="p-2">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
           {categories.map((category) => {

@@ -6,7 +6,7 @@ import { useInView } from 'react-intersection-observer';
 
 import { CarouselPlugin } from './molecules/CarouselPlugin';
 import { BrandsLogoSlider } from './molecules/BrandsLogoSlider';
-import FAQsPage from './molecules/faqs';
+// import FAQsPage from './molecules/faqs';
 import DownloadApp from './molecules/DownloadApp';
 import CTa from './molecules/CTA';
 import ChatbotComponent from './chatbot/ChatbotComponent';
@@ -280,7 +280,7 @@ const HomePage = () => {
       </main>
 
       <div className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 min-h-screen">
-        <main>
+        <main className="bg-gradient-to-br from-green-50 to-orange-50 dark:from-green-900 dark:to-orange-900 dark:bg-gray-900">
           <div
             id="projects"
             className="py-16 bg-white dark:bg-gray-950 dark:text-gray-50"
@@ -306,7 +306,7 @@ const HomePage = () => {
             </div>
           </div>
         </main>
-        <FAQsPage />
+        {/* <FAQsPage /> */}
         <DownloadApp />
         <div id="brands">
           <BrandsLogoSlider />

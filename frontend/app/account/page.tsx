@@ -147,7 +147,7 @@ const ProfileTabs = () => {
       />
       {/* Tabs Menu */}
       <div className="md:w-1/6 border-b h-auto md:h-screen md:border-b-0 md:border-r-2 border-dashed border-orange-200 dark:border-neutral-700">
-        <nav
+        <div
           className="flex md:flex-col w-full space-x-2 md:space-x-0 md:space-y-2 overflow-x-auto md:overflow-visible"
           aria-label="Tabs"
         >
@@ -186,7 +186,7 @@ const ProfileTabs = () => {
               {label}
             </button>
           ))}
-        </nav>
+        </div>
       </div>
 
       {/* Tab Content */}
