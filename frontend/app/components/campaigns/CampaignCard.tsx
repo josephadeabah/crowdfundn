@@ -50,8 +50,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                     </h3>
                     <div className="w-full text-xs">
                       <Progress
-                        firstProgress={33}
-                        firstTooltipContent={`Performance: ${33}%`}
+                        firstProgress={
+                          (Number(campaign?.current_amount) /
+                            Number(campaign?.goal_amount)) *
+                          100
+                        }
+                        firstTooltipContent={`Performance: ${(Number(campaign?.current_amount) / Number(campaign?.goal_amount)) * 100}%`}
                       />
                     </div>
                     <p className="flex justify-between items-center text-sm font-semibold mt-2">
