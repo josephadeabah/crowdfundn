@@ -1,5 +1,5 @@
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import Progress from '@/app/components/progressbar/ProgressBar';
 import Link from 'next/link';
@@ -15,16 +15,6 @@ type CampaignCardProps = {
   fetchCampaigns: () => Promise<void>;
 };
 
-// Fisher-Yates shuffle algorithm to randomize the array
-const shuffleArray = (array: CampaignResponseDataType[]) => {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-};
-
 const CampaignCard: React.FC<CampaignCardProps> = ({
   campaigns,
   loading,
@@ -33,19 +23,13 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   if (loading) return <CampaignCardLoader />;
   if (error) return <ErrorPage />;
 
-  // Memoize the shuffled campaigns to avoid re-shuffling on each render
-  const shuffledCampaigns = useMemo(() => shuffleArray(campaigns), [campaigns]);
-
-  // Slice the first 6 campaigns after shuffling
-  const displayedCampaigns = shuffledCampaigns.slice(0, 9);
-
   return (
     <div>
       {campaigns.length === 0 ? (
         <EmptyPage />
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 px-2 md:p-0">
-          {displayedCampaigns.map((campaign, index) => (
+          {campaigns.slice(0, 9).map((campaign, index) => (
             <motion.div
               key={campaign.id}
               initial="hidden"
