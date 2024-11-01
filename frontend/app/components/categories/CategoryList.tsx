@@ -288,7 +288,7 @@ const CategoryList: React.FC = () => {
   };
 
   return (
-    <div className="p-2">
+    <div className="p-2 bg-gradient-to-br from-gray-50 to-neutral-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
           {categories.map((category) => {
@@ -296,7 +296,7 @@ const CategoryList: React.FC = () => {
             return (
               <Badge
                 key={category.value}
-                className={`cursor-pointer transform hover:scale-105 transition-transform duration-300 ${
+                className={`cursor-pointer transform hover:scale-105 transition-transform duration-300 w-fit ${
                   selectedCategory === category.value
                     ? 'bg-orange-400 text-white'
                     : 'text-gray-800 dark:bg-slate-950 dark:text-gray-50'
@@ -371,7 +371,7 @@ const CategoryList: React.FC = () => {
                             </span>
                           </div>
                         </div>
-                        <button className="mt-4 bg-orange-500 text-white px-5 py-1.5 rounded-lg hover:bg-orange-600 transition-colors">
+                        <button className="mt-4 bg-green-500 text-white px-5 py-1.5 rounded-lg hover:bg-green-600 transition-colors">
                           Donate Now
                         </button>
                       </div>
