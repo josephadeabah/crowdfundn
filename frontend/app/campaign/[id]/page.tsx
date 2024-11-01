@@ -84,7 +84,7 @@ const SingleCampaignPage: React.FC = () => {
     currentCampaign?.fundraiser?.name;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-3 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-3 lg:px-8 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Middle Column: Campaign Details */}
         <div className="order-1 lg:col-span-1 overflow-y-auto max-h-100">
