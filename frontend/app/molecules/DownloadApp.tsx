@@ -34,12 +34,6 @@ const DownloadApp = () => {
           transition={{ duration: 0.5 }}
           className="lg:w-1/2 relative"
         >
-          {/* <img
-            src="https://images.pexels.com/photos/4101847/pexels-photo-4101847.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-            alt="Smiling man holding a phone"
-            className="rounded-lg max-w-full h-auto"
-          /> */}
-
           <Image
             src="https://images.pexels.com/photos/4101847/pexels-photo-4101847.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
             alt="Picture of the author"
