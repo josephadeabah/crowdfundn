@@ -7,9 +7,9 @@ class Profile < ApplicationRecord
   validates :funding_goal, numericality: { greater_than: 0 }, presence: true
   validates :amount_raised, numericality: { greater_than_or_equal_to: 0 }
   validates :status, inclusion: { in: %w[active inactive], message: '%<value>s is not a valid status' }
-  validates :end_date, presence: true
-  validates :category, presence: true
-  validates :location, presence: true
+  validates :end_date, presence: true, allow_blank: true
+  validates :category, presence: true, allow_blank: true
+  validates :location, presence: true, allow_blank: true
   validates :avatar, presence: true, allow_blank: true # Optional, depending on your requirements
 
   # Validations for new fields
