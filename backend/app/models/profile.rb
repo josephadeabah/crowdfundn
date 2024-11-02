@@ -12,11 +12,6 @@ class Profile < ApplicationRecord
   validates :location, presence: true, allow_blank: true
   validates :avatar, presence: true, allow_blank: true # Optional, depending on your requirements
 
-  # Validations for new fields
-  # validates :currency, presence: true
-  # validates :currency_code, presence: true
-  # validates :currency_symbol, presence: true
-
   # Optional associations, depending on your app structure:
   # has_one_attached :avatar (if you're using Active Storage for file uploads)
 end

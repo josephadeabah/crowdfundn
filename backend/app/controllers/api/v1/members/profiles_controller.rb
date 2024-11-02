@@ -24,8 +24,8 @@ module Api
           end
   
           def profile_params
-            params.require(:profile).permit(:name, :description, :funding_goal, :amount_raised, :status, :end_date, :category, :location, :currency, :currency_code, :currency_symbol)
-          end
+            params.require(:profile).permit(:name, :description, :funding_goal, :amount_raised, :status, :end_date, :category, :location)
+          end          
         end
       end
     end
