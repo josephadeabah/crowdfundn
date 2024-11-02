@@ -49,6 +49,8 @@ module Api
             :payment_method,
             :mobile_money_provider,
             :currency,
+            :currency_symbol,
+            :phone_code,
             :birth_date,
             :category,
             :target_amount,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_28_075219) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_02_141601) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -115,6 +115,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_28_075219) do
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "currency"
+    t.string "currency_code"
+    t.string "currency_symbol"
     t.index ["user_id"], name: "index_profiles_on_user_id"
   end
 
@@ -170,6 +173,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_28_075219) do
     t.decimal "target_amount"
     t.integer "duration_in_days"
     t.string "national_id"
+    t.string "currency_symbol"
+    t.string "phone_code"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
