@@ -13,7 +13,7 @@ class Profile < ApplicationRecord
   validates :avatar, presence: true, allow_blank: true # Optional, depending on your requirements
 
   # Validations for new fields
-  validates :currency, presence: true
+  validates :currency, presence: true, allow_blank: true
   validates :currency_code, presence: true
   validates :currency_symbol, presence: true
 
