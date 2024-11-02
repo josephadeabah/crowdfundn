@@ -33,12 +33,12 @@ const HomePage = () => {
 
   React.useEffect(() => {
     const words = [
-      'Fundraise Like a Boss',
-      'Donate Like the World is Ending',
-      'Crowdfunding Solutions for Africa Innovators',
-      'Uniting Communities Through Social Change',
+      "We're Happy to Invest in your story",
+      'Wherever you are, Whenever you need',
+      'Crowdfunding Solutions for African dreamers',
       'Transforming Ideas into Action Across Continents',
       'Championing Local Causes with Global Support',
+      'Donate Like the World is Ending Tomorrow',
     ];
 
     let part = '';
