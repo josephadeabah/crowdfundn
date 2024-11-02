@@ -154,39 +154,13 @@ const RegisterForm: React.FC = () => {
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
+
+    // Update the form data
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Validate the field and set errors
     const error = validateField(name as keyof FormData, value);
     setErrors((prev) => ({ ...prev, [name]: error }));
-  };
-
-  const handlePhoneCodeChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    const { value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      phoneCode: value,
-    }));
-  };
-
-  const handlePhoneNumberChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    const { value } = e.target;
-    const updatedPhoneNumber = value; // Store the value of the phone number input
-
-    // Update the phone number state
-    setFormData((prev) => ({
-      ...prev,
-      phoneNumber: updatedPhoneNumber,
-    }));
-
-    // Use the updated value to validate and set the error
-    const error = validateField(
-      'phoneNumber',
-      `${formData.phoneCode}${updatedPhoneNumber}`,
-    );
-    setErrors((prev) => ({ ...prev, phoneNumber: error }));
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -220,6 +194,7 @@ const RegisterForm: React.FC = () => {
     }
   };
 
+  // Update InputField to use handleChange
   const InputField: React.FC<{
     label: string;
     name: keyof FormData;
@@ -233,19 +208,11 @@ const RegisterForm: React.FC = () => {
     const isPassword = name === 'password' || name === 'confirmPassword';
     const showPasswordState =
       name === 'password' ? showPassword : showConfirmPassword;
-    const togglePassword = () => {
-      if (name === 'password') {
-        setShowPassword(!showPassword);
-      } else if (name === 'confirmPassword') {
-        setShowConfirmPassword(!showConfirmPassword);
-      }
-    };
 
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-      const { value } = e.target;
-      setFormData((prev) => ({ ...prev, [name]: value }));
-      const error = validateField(name, value);
-      setErrors((prev) => ({ ...prev, [name]: error }));
+    const togglePassword = () => {
+      if (name === 'password') setShowPassword(!showPassword);
+      if (name === 'confirmPassword')
+        setShowConfirmPassword(!showConfirmPassword);
     };
 
     const uniqueId = `input-${name}`;
@@ -262,10 +229,9 @@ const RegisterForm: React.FC = () => {
           <div className="flex border border-gray-300 rounded-md overflow-hidden">
             <input
               type="text"
-              id={`phoneCode`}
               name="phoneCode"
               value={formData.phoneCode}
-              onChange={handlePhoneCodeChange}
+              onChange={handleChange}
               className="mt-1 block w-[70px] px-4 py-2 border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
               placeholder="Code"
             />
@@ -274,16 +240,14 @@ const RegisterForm: React.FC = () => {
               id={uniqueId}
               name={name}
               value={formData.phoneNumber}
-              onChange={handlePhoneNumberChange}
+              onChange={handleChange}
               className={`mt-1 block flex-grow px-4 py-2 border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors[name] ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
               placeholder="Add phone without code"
               {...props}
             />
           </div>
           {errors[name] && (
-            <p className="mt-1 text-sm text-red-500" role="alert">
-              {errors[name]}
-            </p>
+            <p className="mt-1 text-sm text-red-500">{errors[name]}</p>
           )}
         </div>
       );
@@ -303,9 +267,9 @@ const RegisterForm: React.FC = () => {
             name={name}
             type={isPassword ? (showPasswordState ? 'text' : 'password') : type}
             value={value ?? formData[name]}
-            onChange={handleInputChange}
+            onChange={handleChange}
             autoComplete="off"
-            className={`block w-full py-2 px-4 rounded-md border mt-1 focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white  ${errors[name] ? 'border-red-500' : 'border-gray-300'} ${isPassword ? 'pr-10' : ''} ${name === 'targetAmount' ? 'pl-8' : 'pl-4'}`}
+            className={`block w-full py-2 px-4 rounded-md border mt-1 focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors[name] ? 'border-red-500' : 'border-gray-300'} ${isPassword ? 'pr-10' : ''} ${name === 'targetAmount' ? 'pl-8' : 'pl-4'}`}
             aria-invalid={errors[name] ? 'true' : 'false'}
             aria-describedby={`${name}-error`}
             {...props}
@@ -339,6 +303,7 @@ const RegisterForm: React.FC = () => {
     );
   };
 
+  // Update SelectField to use handleChange
   const SelectField: React.FC<{
     label: string;
     name: keyof FormData;
@@ -371,9 +336,7 @@ const RegisterForm: React.FC = () => {
           ))}
         </select>
         {errors[name] && (
-          <p className="mt-1 text-sm text-red-500" role="alert">
-            {errors[name]}
-          </p>
+          <p className="mt-1 text-sm text-red-500">{errors[name]}</p>
         )}
       </div>
     );
