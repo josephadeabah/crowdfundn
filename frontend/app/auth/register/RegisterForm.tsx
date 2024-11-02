@@ -260,6 +260,8 @@ const RegisterForm: React.FC = () => {
           <div className="flex border border-gray-300 rounded-md overflow-hidden">
             <input
               type="text"
+              id={name}
+              name={name}
               value={formData.phoneCode}
               onChange={handlePhoneCodeChange}
               className="mt-1 block w-[70px] px-4 py-2 border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
@@ -272,7 +274,7 @@ const RegisterForm: React.FC = () => {
               value={formData.phoneNumber}
               onChange={handlePhoneNumberChange}
               className={`mt-1 block flex-grow px-4 py-2 border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors[name] ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
-              placeholder="Phone number"
+              placeholder="Add phone without code"
               {...props}
             />
           </div>
