@@ -1,5 +1,8 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { FaSpinner, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { UserRegistrationData } from '@/app/types/auth.register.types';
+import { registerUser } from '@/app/utils/api/api.register';
+import ToastComponent from '@/app/components/toast/Toast';
 
 type FormData = {
   email: string;
@@ -52,6 +55,9 @@ const RegisterForm: React.FC = () => {
     useState<boolean>(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [countryCode, setCountryCode] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
 
   const categories = ['Business', 'Personal', 'Education', 'Healthcare'];
   const paymentMethods = ['Credit Card', 'Mobile Money', 'Bank Transfer'];
@@ -64,7 +70,7 @@ const RegisterForm: React.FC = () => {
         'password',
         'confirmPassword',
         'fullName',
-        'phoneCode',
+        'phoneNumber',
         'birthDate',
       ],
       2: ['category', 'targetAmount', 'durationDays', 'nationalId'],
@@ -76,7 +82,6 @@ const RegisterForm: React.FC = () => {
           : []),
       ] as (keyof FormData)[],
     };
-
     return fieldsToValidate[currentStep].every((field) => {
       const value = formData[field];
       return value && value.trim() !== '' && !errors[field];
@@ -88,14 +93,11 @@ const RegisterForm: React.FC = () => {
       try {
         const ipResponse = await fetch('https://ipapi.co/json/');
         const data = await ipResponse.json();
-
         setCountryCode(data.country_calling_code);
-
         const currencyResponse = await fetch(
           `https://restcountries.com/v3.1/alpha/${data.country_code}`,
         );
         const [countryData] = await currencyResponse.json();
-
         const currencies = Object.values(countryData.currencies)[0];
         const currencySymbol = (currencies as { symbol: string }).symbol;
         const currencyCode = Object.keys(countryData.currencies)[0];
@@ -154,11 +156,7 @@ const RegisterForm: React.FC = () => {
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
-
-    // Update the form data
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    // Validate the field and set errors
     const error = validateField(name as keyof FormData, value);
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
@@ -185,161 +183,43 @@ const RegisterForm: React.FC = () => {
     }
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log('Form submitted:', formData);
-    } catch (error) {
-      console.error('Submission error:', error);
-    } finally {
+      const registrationData: UserRegistrationData = {
+        email: formData.email,
+        password: formData.password,
+        password_confirmation: formData.confirmPassword,
+        full_name: formData.fullName,
+        phone_number: formData.phoneNumber,
+        country: formData.country,
+        payment_method: formData.paymentMethod,
+        mobile_money_provider: formData.mobileMoneyProvider,
+        currency: formData.currency,
+        birth_date: formData.birthDate,
+        category: formData.category,
+        target_amount: parseInt(formData.targetAmount, 10),
+        duration_in_days: parseInt(formData.durationDays, 10),
+        national_id: formData.nationalId,
+      };
+
+      const response = await registerUser(registrationData);
       setIsLoading(false);
+
+      if ('errors' in response) {
+        if (Array.isArray(response.errors)) {
+          setError(response.errors.join(', '));
+        } else {
+          setError('An unknown error occurred.');
+        }
+        setShowToast(true);
+      } else if ('token' in response) {
+        setSuccess('Successful!, proceed to login.');
+        setShowToast(true);
+        setTimeout(() => {
+          window.location.href = '/auth/login';
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
     }
-  };
-
-  // Update InputField to use handleChange
-  const InputField: React.FC<{
-    label: string;
-    name: keyof FormData;
-    type?: string;
-    placeholder?: string;
-    required?: boolean;
-    disabled?: boolean;
-    min?: string;
-    value?: string;
-  }> = ({ label, name, type = 'text', min, value, ...props }) => {
-    const isPassword = name === 'password' || name === 'confirmPassword';
-    const showPasswordState =
-      name === 'password' ? showPassword : showConfirmPassword;
-
-    const togglePassword = () => {
-      if (name === 'password') setShowPassword(!showPassword);
-      if (name === 'confirmPassword')
-        setShowConfirmPassword(!showConfirmPassword);
-    };
-
-    const uniqueId = `input-${name}`;
-
-    if (name === 'phoneNumber') {
-      return (
-        <div className="mb-4">
-          <label
-            htmlFor={uniqueId}
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            {label} <span className="text-red-500">*</span>
-          </label>
-          <div className="flex border border-gray-300 rounded-md overflow-hidden">
-            <input
-              type="text"
-              name="phoneCode"
-              value={formData.phoneCode}
-              onChange={handleChange}
-              className="mt-1 block w-[70px] px-4 py-2 border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-              placeholder="Code"
-            />
-            <input
-              type="tel"
-              id={uniqueId}
-              name={name}
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              className={`mt-1 block flex-grow px-4 py-2 border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors[name] ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
-              placeholder="Add phone without code"
-              {...props}
-            />
-          </div>
-          {errors[name] && (
-            <p className="mt-1 text-sm text-red-500">{errors[name]}</p>
-          )}
-        </div>
-      );
-    }
-
-    return (
-      <div className="mb-4">
-        <label
-          htmlFor={uniqueId}
-          className="block mb-1 text-sm font-medium text-gray-700"
-        >
-          {label} <span className="text-red-500">*</span>
-        </label>
-        <div className="relative">
-          <input
-            id={uniqueId}
-            name={name}
-            type={isPassword ? (showPasswordState ? 'text' : 'password') : type}
-            value={value ?? formData[name]}
-            onChange={handleChange}
-            autoComplete="off"
-            className={`block w-full py-2 px-4 rounded-md border mt-1 focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors[name] ? 'border-red-500' : 'border-gray-300'} ${isPassword ? 'pr-10' : ''} ${name === 'targetAmount' ? 'pl-8' : 'pl-4'}`}
-            aria-invalid={errors[name] ? 'true' : 'false'}
-            aria-describedby={`${name}-error`}
-            {...props}
-            min={min}
-          />
-          {isPassword && (
-            <button
-              type="button"
-              onClick={togglePassword}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 bg-transparent border-none cursor-pointer"
-            >
-              {showPasswordState ? <FaEyeSlash /> : <FaEye />}
-            </button>
-          )}
-          {name === 'targetAmount' && (
-            <span className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500">
-              {formData.currencySymbol}
-            </span>
-          )}
-        </div>
-        {errors[name] && (
-          <p
-            id={`${name}-error`}
-            className="mt-1 text-sm text-red-500"
-            role="alert"
-          >
-            {errors[name]}
-          </p>
-        )}
-      </div>
-    );
-  };
-
-  // Update SelectField to use handleChange
-  const SelectField: React.FC<{
-    label: string;
-    name: keyof FormData;
-    options: string[];
-    disabled?: boolean;
-  }> = ({ label, name, options, disabled = false }) => {
-    const uniqueId = `select-${name}`;
-
-    return (
-      <div className="mb-4">
-        <label
-          htmlFor={uniqueId}
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          {label} <span className="text-red-500">*</span>
-        </label>
-        <select
-          id={uniqueId}
-          name={name}
-          value={formData[name]}
-          onChange={handleChange}
-          disabled={disabled}
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
-        >
-          <option value="">Select {label}</option>
-          {options.map((option, index) => (
-            <option key={index} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-        {errors[name] && (
-          <p className="mt-1 text-sm text-red-500">{errors[name]}</p>
-        )}
-      </div>
-    );
   };
 
   const StepIndicator = () => (
@@ -348,7 +228,7 @@ const RegisterForm: React.FC = () => {
         {[1, 2, 3].map((step) => (
           <div
             key={step}
-            className={`w-1/3 h-2 ${currentStep > step ? 'bg-orange-400' : 'bg-gray-200'}`}
+            className={`w-1/3 h-2 ${currentStep >= step ? 'bg-orange-400' : 'bg-gray-200'}`}
           />
         ))}
       </div>
@@ -366,32 +246,140 @@ const RegisterForm: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <InputField
-                label="Full Name"
-                name="fullName"
-                placeholder="John Doe"
-                required
-              />
-              <InputField
-                label="Email"
-                name="email"
-                type="email"
-                placeholder="john@example.com"
-                required
-              />
-              <InputField label="Password" name="password" required />
-              <InputField
-                label="Confirm Password"
-                name="confirmPassword"
-                required
-              />
-              <InputField label="Phone Number" name="phoneNumber" required />
-              <InputField
-                label="Birth Date"
-                name="birthDate"
-                type="date"
-                required
-              />
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Full Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors.fullName ? 'border-red-500' : 'border-gray-300'}`}
+                  placeholder="John Doe"
+                  required
+                />
+                {errors.fullName && (
+                  <p className="mt-1 text-sm text-red-500">{errors.fullName}</p>
+                )}
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white  ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+                  placeholder="john@example.com"
+                  required
+                />
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+                )}
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Password <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    placeholder="Enter Password"
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white  ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+                )}
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Confirm Password <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    placeholder="Confirm Password"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white  ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'}`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                  >
+                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+                {errors.confirmPassword && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.confirmPassword}
+                  </p>
+                )}
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone Number <span className="text-red-500">*</span>
+                </label>
+                <div className="flex border border-gray-300 rounded-md overflow-hidden">
+                  <input
+                    type="text"
+                    name="phoneCode"
+                    value={formData.phoneCode}
+                    onChange={handleChange}
+                    className="mt-1 block w-[70px] px-4 py-2 border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white "
+                    placeholder="Code"
+                  />
+                  <input
+                    type="tel"
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
+                    className={`mt-1 block flex-grow px-4 py-2 border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white  ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'}`}
+                    placeholder="Phone without code"
+                    required
+                  />
+                </div>
+                {errors.phoneNumber && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.phoneNumber}
+                  </p>
+                )}
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Birth Date <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  name="birthDate"
+                  value={formData.birthDate}
+                  onChange={handleChange}
+                  className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors.birthDate ? 'border-red-500' : 'border-gray-300'}`}
+                  required
+                />
+                {errors.birthDate && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.birthDate}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         );
@@ -399,26 +387,88 @@ const RegisterForm: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <SelectField
-                label="Category"
-                name="category"
-                options={categories}
-              />
-              <InputField
-                label="Target Amount"
-                name="targetAmount"
-                type="number"
-                min="0"
-                required
-              />
-              <InputField
-                label="Duration (Days)"
-                name="durationDays"
-                type="number"
-                min="1"
-                required
-              />
-              <InputField label="National ID" name="nationalId" required />
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Category <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors.category ? 'border-red-500' : 'border-gray-300'}`}
+                >
+                  <option value="">Select Category</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+                {errors.category && (
+                  <p className="mt-1 text-sm text-red-500">{errors.category}</p>
+                )}
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Target Amount <span className="text-red-500">*</span>
+                </label>
+                <div className="flex items-center border border-gray-300 rounded-md">
+                  <span className="px-4 text-gray-700">
+                    {formData.currencySymbol}
+                  </span>
+                  <input
+                    type="number"
+                    name="targetAmount"
+                    value={formData.targetAmount}
+                    onChange={handleChange}
+                    className={`mt-1 block flex-grow px-4 py-2 rounded-md border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors.targetAmount ? 'border-red-500' : 'border-gray-300'}`}
+                    min="0"
+                    required
+                  />
+                </div>
+                {errors.targetAmount && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.targetAmount}
+                  </p>
+                )}
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Duration (Days) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="durationDays"
+                  value={formData.durationDays}
+                  onChange={handleChange}
+                  className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors.durationDays ? 'border-red-500' : 'border-gray-300'}`}
+                  min="1"
+                  required
+                />
+                {errors.durationDays && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.durationDays}
+                  </p>
+                )}
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  National ID <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="nationalId"
+                  value={formData.nationalId}
+                  onChange={handleChange}
+                  className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors.nationalId ? 'border-red-500' : 'border-gray-300'}`}
+                  required
+                />
+                {errors.nationalId && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.nationalId}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         );
@@ -426,24 +476,66 @@ const RegisterForm: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <InputField
-                label="Country"
-                name="country"
-                value={formData.country}
-                disabled
-                required
-              />
-              <SelectField
-                label="Payment Method"
-                name="paymentMethod"
-                options={paymentMethods}
-              />
-              {formData.paymentMethod === 'Mobile Money' && (
-                <SelectField
-                  label="Mobile Money Provider"
-                  name="mobileMoneyProvider"
-                  options={mobileProviders}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Country <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="country"
+                  value={formData.country}
+                  className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                  disabled
+                  required
                 />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Payment Method <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="paymentMethod"
+                  value={formData.paymentMethod}
+                  onChange={handleChange}
+                  className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors.paymentMethod ? 'border-red-500' : 'border-gray-300'}`}
+                >
+                  <option value="">Select Payment Method</option>
+                  {paymentMethods.map((method) => (
+                    <option key={method} value={method}>
+                      {method}
+                    </option>
+                  ))}
+                </select>
+                {errors.paymentMethod && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.paymentMethod}
+                  </p>
+                )}
+              </div>
+              {formData.paymentMethod === 'Mobile Money' && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Mobile Money Provider{' '}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="mobileMoneyProvider"
+                    value={formData.mobileMoneyProvider}
+                    onChange={handleChange}
+                    className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors.mobileMoneyProvider ? 'border-red-500' : 'border-gray-300'}`}
+                  >
+                    <option value="">Select Provider</option>
+                    {mobileProviders.map((provider) => (
+                      <option key={provider} value={provider}>
+                        {provider}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.mobileMoneyProvider && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.mobileMoneyProvider}
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -457,62 +549,84 @@ const RegisterForm: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <FaSpinner className="animate-spin text-4xl text-gray-600" />
-        <span className="ml-2 text-gray-600">Loading location data...</span>
+        <span className="ml-2 text-gray-600">
+          Loading your location data...
+        </span>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen py-0 px-2 lg:px-0">
-      <div className="max-w-2xl mx-auto bg-white shadow p-2 md:p-6">
-        <StepIndicator />
-        <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-          <p className="text-violet-600">
-            Location detected: {formData.country} ({formData.currency} -{' '}
-            {formData.currencySymbol})
-          </p>
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {renderStep()}
-          <div className="flex justify-between mt-8">
-            {currentStep > 1 && (
-              <button
-                type="button"
-                onClick={() => setCurrentStep(currentStep - 1)}
-                className="px-4 py-2 text-sm font-medium text-green-600 bg-white border border-green-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all"
-              >
-                Previous
-              </button>
-            )}
-            {currentStep < 3 ? (
-              <button
-                type="button"
-                onClick={() => setCurrentStep(currentStep + 1)}
-                disabled={!isStepValid()}
-                className="ml-auto px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
-            ) : (
-              <button
-                type="submit"
-                disabled={isLoading || !isStepValid()}
-                className="ml-auto px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? (
-                  <span className="flex items-center">
-                    <FaSpinner className="animate-spin mr-2" />
-                    Processing...
-                  </span>
-                ) : (
-                  'Submit'
-                )}
-              </button>
-            )}
+    <>
+      {showToast && error && (
+        <ToastComponent
+          type="error"
+          isOpen={showToast}
+          onClose={() => setShowToast(false)}
+          description={error}
+        />
+      )}
+      {showToast && success && (
+        <ToastComponent
+          type="success"
+          isOpen={showToast}
+          onClose={() => setShowToast(false)}
+          description={success}
+        />
+      )}
+      <div className="min-h-screen py-0 px-2 lg:px-0">
+        <div className="max-w-2xl mx-auto bg-white shadow p-2 md:p-6">
+          <StepIndicator />
+          <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+            <p className="text-violet-600">
+              Location detected: {formData.country} ({formData.currency} -{' '}
+              {formData.currencySymbol})
+            </p>
           </div>
-        </form>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {renderStep()}
+            <div className="flex justify-between mt-8">
+              {currentStep > 1 && (
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(currentStep - 1)}
+                  className="px-4 py-2 text-sm font-medium text-green-600 bg-white border border-green-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all"
+                >
+                  Previous
+                </button>
+              )}
+              {currentStep < 3 && (
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(currentStep + 1)}
+                  disabled={!isStepValid()}
+                  className="ml-auto px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              )}
+
+              {currentStep === 3 && (
+                <button
+                  type="submit"
+                  disabled={isLoading || !isStepValid()}
+                  className="ml-auto px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? (
+                    <span className="flex items-center">
+                      <FaSpinner className="animate-spin mr-2" />
+                      Processing...
+                    </span>
+                  ) : (
+                    "Let's Go!"
+                  )}
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
