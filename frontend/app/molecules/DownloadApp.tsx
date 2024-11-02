@@ -34,17 +34,13 @@ const DownloadApp = () => {
           transition={{ duration: 0.5 }}
           className="lg:w-1/2 relative"
         >
-          <div className="w-full p-0 flex aspect-square items-center justify-center h-full">
+          <div className="relative w-full h-fit aspect-square rounded overflow-hidden">
             <Image
               src="https://images.pexels.com/photos/4101847/pexels-photo-4101847.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-              alt="Picture of the author"
-              sizes="100vw"
-              style={{
-                width: '100%',
-                height: 'auto',
-              }}
-              width={1024}
-              height={300}
+              alt="download info thumbnail"
+              loading="eager"
+              layout="fill" // Use "fill" layout
+              objectFit="cover" // This ensures the image covers the entire container
             />
           </div>
           <div className="absolute bottom-4 left-4 flex space-x-4">

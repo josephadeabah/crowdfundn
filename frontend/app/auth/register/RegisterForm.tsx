@@ -59,7 +59,73 @@ const RegisterForm: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
 
-  const categories = ['Business', 'Personal', 'Education', 'Healthcare'];
+  const categories = [
+    'Environment',
+    'Education',
+    'Community Support',
+    'Health',
+    'Animal Welfare',
+    'Arts and Culture',
+    'Disaster Relief',
+    'Technology',
+    "Women's Empowerment",
+    'Youth Development',
+    'Sports and Recreation',
+    'Mental Health',
+    'Food Security',
+    'Human Rights',
+    'Clean Energy',
+    'Housing and Homelessness',
+    'Public Health',
+    'Disability Support',
+    'Sustainable Agriculture',
+    'Crisis Response',
+    'Economic Development',
+    'Civic Engagement',
+    'Rural Development',
+    'Water and Sanitation',
+    'Job Creation',
+    'Digital Literacy',
+    'Local Business Support',
+    'Transportation',
+    'Cultural Preservation',
+    'Innovation and Research',
+    'Renewable Energy',
+    'Wildlife Conservation',
+    'Urban Development',
+    'Elderly Care',
+    'Child Protection',
+    'Environmental Justice',
+    'Arts Education',
+    'Gender Equality',
+    'Poverty Reduction',
+    'Climate Change',
+    'Clean Water',
+    'Access to Education',
+    'Veterans Support',
+    'Disaster Preparedness',
+    'Agriculture Innovation',
+    'Humanitarian Aid',
+    'Family Services',
+    'Microfinance',
+    'Financial Literacy',
+    'Public Transport',
+    'Energy Efficiency',
+    'Social Enterprise',
+    'Plastic Recycling',
+    'Forestry Management',
+    'Marine Conservation',
+    'Disaster Response',
+    'Mental Wellness',
+    'Community Health',
+    'Peer Support',
+    'Innovation in Education',
+    'Technology Access',
+    'Public Safety',
+    'Community Empowerment',
+    'Local Farmers Support',
+  ];
+
   const paymentMethods = ['Credit Card', 'Mobile Money', 'Bank Transfer'];
   const mobileProviders = ['Provider A', 'Provider B', 'Provider C'];
 
@@ -218,7 +284,7 @@ const RegisterForm: React.FC = () => {
         setSuccess('Successful!, proceed to login.');
         setShowToast(true);
         setTimeout(() => {
-            window.location.href = '/auth/login';
+          window.location.href = '/auth/login';
         }, 2000);
       }
     } catch (error) {
