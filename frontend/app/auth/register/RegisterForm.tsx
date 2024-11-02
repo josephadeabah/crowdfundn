@@ -1,6 +1,5 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { FaSpinner, FaEye, FaEyeSlash } from "react-icons/fa";
-
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import { FaSpinner, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 type FormData = {
   email: string;
@@ -25,22 +24,22 @@ type Errors = Partial<Record<keyof FormData, string>>;
 
 const RegisterForm: React.FC = () => {
   const initialState: FormData = {
-    email: "",
-    password: "",
-    confirmPassword: "",
-    fullName: "",
-    birthDate: "",
-    phoneNumber: "",
-    targetAmount: "",
-    durationDays: "",
-    nationalId: "",
-    country: "",
-    paymentMethod: "",
-    mobileMoneyProvider: "",
-    currency: "",
-    currencySymbol: "",
-    phoneCode: "",
-    category: ""
+    email: '',
+    password: '',
+    confirmPassword: '',
+    fullName: '',
+    birthDate: '',
+    phoneNumber: '',
+    targetAmount: '',
+    durationDays: '',
+    nationalId: '',
+    country: '',
+    paymentMethod: '',
+    mobileMoneyProvider: '',
+    currency: '',
+    currencySymbol: '',
+    phoneCode: '',
+    category: '',
   };
 
   const [formData, setFormData] = useState<FormData>(initialState);
@@ -49,123 +48,146 @@ const RegisterForm: React.FC = () => {
   const [isLocationLoading, setIsLocationLoading] = useState<boolean>(true);
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [countryCode, setCountryCode] = useState('');
 
-  const categories = ["Business", "Personal", "Education", "Healthcare"];
-  const paymentMethods = ["Credit Card", "Mobile Money", "Bank Transfer"];
-  const mobileProviders = ["Provider A", "Provider B", "Provider C"];
+  const categories = ['Business', 'Personal', 'Education', 'Healthcare'];
+  const paymentMethods = ['Credit Card', 'Mobile Money', 'Bank Transfer'];
+  const mobileProviders = ['Provider A', 'Provider B', 'Provider C'];
 
   const isStepValid = (): boolean => {
     const fieldsToValidate: Record<number, (keyof FormData)[]> = {
-      1: ["email", "password", "confirmPassword", "fullName", "phoneCode", "birthDate"],
-      2: ["category", "targetAmount", "durationDays", "nationalId"],
-      3: ["country", "paymentMethod", ...(formData.paymentMethod === "Mobile Money" ? ["mobileMoneyProvider"] : [])] as (keyof FormData)[]
+      1: [
+        'email',
+        'password',
+        'confirmPassword',
+        'fullName',
+        'phoneCode',
+        'birthDate',
+      ],
+      2: ['category', 'targetAmount', 'durationDays', 'nationalId'],
+      3: [
+        'country',
+        'paymentMethod',
+        ...(formData.paymentMethod === 'Mobile Money'
+          ? ['mobileMoneyProvider']
+          : []),
+      ] as (keyof FormData)[],
     };
 
-    return fieldsToValidate[currentStep].every(field => {
+    return fieldsToValidate[currentStep].every((field) => {
       const value = formData[field];
-      return value && value.trim() !== "" && !errors[field];
+      return value && value.trim() !== '' && !errors[field];
     });
   };
 
   useEffect(() => {
     const fetchUserLocation = async () => {
       try {
-        const ipResponse = await fetch("https://ipapi.co/json/");
+        const ipResponse = await fetch('https://ipapi.co/json/');
         const data = await ipResponse.json();
 
         setCountryCode(data.country_calling_code);
-  
+
         const currencyResponse = await fetch(
-          `https://restcountries.com/v3.1/alpha/${data.country_code}`
+          `https://restcountries.com/v3.1/alpha/${data.country_code}`,
         );
         const [countryData] = await currencyResponse.json();
-  
+
         const currencies = Object.values(countryData.currencies)[0];
         const currencySymbol = (currencies as { symbol: string }).symbol;
         const currencyCode = Object.keys(countryData.currencies)[0];
-  
+
         setFormData((prev) => ({
           ...prev,
           country: data.country_name,
           currency: currencyCode,
           currencySymbol: currencySymbol,
-          phoneCode: `+${data.country_calling_code.replace(/\+/g, "")}`,
+          phoneCode: `+${data.country_calling_code.replace(/\+/g, '')}`,
         }));
       } catch (error) {
-        console.error("Error fetching location:", error);
+        console.error('Error fetching location:', error);
         setFormData((prev) => ({
           ...prev,
-          country: "United States",
-          currency: "USD",
-          currencySymbol: "$",
-          phoneCode: "+1",
+          country: 'United States',
+          currency: 'USD',
+          currencySymbol: '$',
+          phoneCode: '+1',
         }));
       } finally {
         setIsLocationLoading(false);
       }
     };
-  
+
     fetchUserLocation();
   }, []);
-  
 
   const validateField = (name: keyof FormData, value: string): string => {
-    let error = "";
+    let error = '';
     switch (name) {
-      case "email": {
+      case 'email': {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        error = !emailRegex.test(value) ? "Invalid email format" : "";
+        error = !emailRegex.test(value) ? 'Invalid email format' : '';
         break;
       }
-      case "password":
-        error = value.length < 8 ? "Password must be at least 8 characters" : "";
+      case 'password':
+        error =
+          value.length < 8 ? 'Password must be at least 8 characters' : '';
         break;
-      case "confirmPassword":
-        error = value !== formData.password ? "Passwords do not match" : "";
+      case 'confirmPassword':
+        error = value !== formData.password ? 'Passwords do not match' : '';
         break;
-      case "phoneNumber": {
+      case 'phoneNumber': {
         const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-        error = !phoneRegex.test(value) ? "Invalid phone number" : "";
+        error = !phoneRegex.test(value) ? 'Invalid phone number' : '';
         break;
       }
       default:
-        error = value.trim() === "" ? "This field is required" : "";
+        error = value.trim() === '' ? 'This field is required' : '';
     }
     return error;
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     const error = validateField(name as keyof FormData, value);
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
-  const handlePhoneCodeChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handlePhoneCodeChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      phoneCode: value
+      phoneCode: value,
     }));
   };
 
-  const handlePhoneNumberChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handlePhoneNumberChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { value } = e.target;
     const updatedPhoneNumber = value; // Store the value of the phone number input
-  
+
     // Update the phone number state
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      phoneNumber: updatedPhoneNumber
+      phoneNumber: updatedPhoneNumber,
     }));
-  
+
     // Use the updated value to validate and set the error
-    const error = validateField("phoneNumber", `${formData.phoneCode}${updatedPhoneNumber}`);
-    setErrors(prev => ({ ...prev, phoneNumber: error }));
-  };  
+    const error = validateField(
+      'phoneNumber',
+      `${formData.phoneCode}${updatedPhoneNumber}`,
+    );
+    setErrors((prev) => ({ ...prev, phoneNumber: error }));
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -175,7 +197,10 @@ const RegisterForm: React.FC = () => {
 
     const newErrors: Errors = {};
     Object.keys(formData).forEach((key) => {
-      const error = validateField(key as keyof FormData, formData[key as keyof FormData]);
+      const error = validateField(
+        key as keyof FormData,
+        formData[key as keyof FormData],
+      );
       if (error) newErrors[key as keyof FormData] = error;
     });
 
@@ -187,9 +212,9 @@ const RegisterForm: React.FC = () => {
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log("Form submitted:", formData);
+      console.log('Form submitted:', formData);
     } catch (error) {
-      console.error("Submission error:", error);
+      console.error('Submission error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -204,25 +229,26 @@ const RegisterForm: React.FC = () => {
     disabled?: boolean;
     min?: string;
     value?: string;
-  }> = ({ label, name, type = "text", min, value, ...props }) => {
-    const isPassword = name === "password" || name === "confirmPassword";
-    const showPasswordState = name === "password" ? showPassword : showConfirmPassword;
+  }> = ({ label, name, type = 'text', min, value, ...props }) => {
+    const isPassword = name === 'password' || name === 'confirmPassword';
+    const showPasswordState =
+      name === 'password' ? showPassword : showConfirmPassword;
     const togglePassword = () => {
-      if (name === "password") {
+      if (name === 'password') {
         setShowPassword(!showPassword);
-      } else if (name === "confirmPassword") {
+      } else if (name === 'confirmPassword') {
         setShowConfirmPassword(!showConfirmPassword);
       }
     };
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
       const { value } = e.target;
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
       const error = validateField(name, value);
-      setErrors(prev => ({ ...prev, [name]: error }));
+      setErrors((prev) => ({ ...prev, [name]: error }));
     };
 
-    if (name === "phoneNumber") {
+    if (name === 'phoneNumber') {
       return (
         <div className="mb-4">
           <label
@@ -232,24 +258,24 @@ const RegisterForm: React.FC = () => {
             {label} <span className="text-red-500">*</span>
           </label>
           <div className="flex border border-gray-300 rounded-md overflow-hidden">
-  <input
-    type="text"
-    value={formData.phoneCode}
-    onChange={handlePhoneCodeChange}
-    className="mt-1 block w-[70px] px-4 py-2 border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-    placeholder="Code"
-  />
-  <input
-    type="tel"
-    id={name}
-    name={name}
-    value={formData.phoneNumber}
-    onChange={handlePhoneNumberChange}
-    className={`mt-1 block flex-grow px-4 py-2 border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors[name] ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
-    placeholder="Phone number"
-    {...props}
-  />
-</div>
+            <input
+              type="text"
+              value={formData.phoneCode}
+              onChange={handlePhoneCodeChange}
+              className="mt-1 block w-[70px] px-4 py-2 border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+              placeholder="Code"
+            />
+            <input
+              type="tel"
+              id={name}
+              name={name}
+              value={formData.phoneNumber}
+              onChange={handlePhoneNumberChange}
+              className={`mt-1 block flex-grow px-4 py-2 border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors[name] ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
+              placeholder="Phone number"
+              {...props}
+            />
+          </div>
 
           {errors[name] && (
             <p className="mt-1 text-sm text-red-500" role="alert">
@@ -261,7 +287,7 @@ const RegisterForm: React.FC = () => {
     }
 
     return (
-        <div className="mb-4">
+      <div className="mb-4">
         <label
           htmlFor={name}
           className="block mb-1 text-sm font-medium text-gray-700"
@@ -272,12 +298,12 @@ const RegisterForm: React.FC = () => {
           <input
             id={name}
             name={name}
-            type={isPassword ? (showPasswordState ? "text" : "password") : type}
+            type={isPassword ? (showPasswordState ? 'text' : 'password') : type}
             value={value ?? formData[name]}
             onChange={handleInputChange}
             autoComplete="off"
             className={`block w-full py-2 px-4 rounded-md border mt-1 focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white  ${errors[name] ? 'border-red-500' : 'border-gray-300'} ${isPassword ? 'pr-10' : ''} ${name === 'targetAmount' ? 'pl-8' : 'pl-4'}`}
-            aria-invalid={errors[name] ? "true" : "false"}
+            aria-invalid={errors[name] ? 'true' : 'false'}
             aria-describedby={`${name}-error`}
             {...props}
             min={min}
@@ -291,7 +317,7 @@ const RegisterForm: React.FC = () => {
               {showPasswordState ? <FaEyeSlash /> : <FaEye />}
             </button>
           )}
-          {name === "targetAmount" && (
+          {name === 'targetAmount' && (
             <span className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500">
               {formData.currencySymbol}
             </span>
@@ -307,7 +333,6 @@ const RegisterForm: React.FC = () => {
           </p>
         )}
       </div>
-      
     );
   };
 
@@ -349,19 +374,19 @@ const RegisterForm: React.FC = () => {
 
   const StepIndicator = () => (
     <div className="mb-8">
-    <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
         {[1, 2, 3].map((step) => (
-            <div
+          <div
             key={step}
             className={`w-1/3 h-2 ${currentStep > step ? 'bg-orange-400' : 'bg-gray-200'}`}
-            />
+          />
         ))}
-        </div>
-        <div className="flex justify-between mt-2">
+      </div>
+      <div className="flex justify-between mt-2">
         <span className="text-xs font-medium">User Details</span>
         <span className="text-xs font-medium">Category & other</span>
         <span className="text-xs font-medium">Payment Method</span>
-    </div>
+      </div>
     </div>
   );
 
@@ -384,21 +409,13 @@ const RegisterForm: React.FC = () => {
                 placeholder="john@example.com"
                 required
               />
-              <InputField
-                label="Password"
-                name="password"
-                required
-              />
+              <InputField label="Password" name="password" required />
               <InputField
                 label="Confirm Password"
                 name="confirmPassword"
                 required
               />
-              <InputField
-                label="Phone Number"
-                name="phoneNumber"
-                required
-              />
+              <InputField label="Phone Number" name="phoneNumber" required />
               <InputField
                 label="Birth Date"
                 name="birthDate"
@@ -431,11 +448,7 @@ const RegisterForm: React.FC = () => {
                 min="1"
                 required
               />
-              <InputField
-                label="National ID"
-                name="nationalId"
-                required
-              />
+              <InputField label="National ID" name="nationalId" required />
             </div>
           </div>
         );
@@ -455,7 +468,7 @@ const RegisterForm: React.FC = () => {
                 name="paymentMethod"
                 options={paymentMethods}
               />
-              {formData.paymentMethod === "Mobile Money" && (
+              {formData.paymentMethod === 'Mobile Money' && (
                 <SelectField
                   label="Mobile Money Provider"
                   name="mobileMoneyProvider"
@@ -485,7 +498,8 @@ const RegisterForm: React.FC = () => {
         <StepIndicator />
         <div className="mb-6 p-4 bg-blue-50 rounded-lg">
           <p className="text-violet-600">
-            Location detected: {formData.country} ({formData.currency} - {formData.currencySymbol})
+            Location detected: {formData.country} ({formData.currency} -{' '}
+            {formData.currencySymbol})
           </p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -521,7 +535,7 @@ const RegisterForm: React.FC = () => {
                     Processing...
                   </span>
                 ) : (
-                  "Submit"
+                  'Submit'
                 )}
               </button>
             )}

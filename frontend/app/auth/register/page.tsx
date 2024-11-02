@@ -3,10 +3,7 @@ import React from 'react';
 import RegisterLeftPage from './RegisterLeftPage';
 import RegisterForm from './RegisterForm';
 
-
-
 const RegisterComponent = () => {
-
   return (
     <>
       <div className="h-full flex items-center justify-center p-2 mt-10 mb-10">
@@ -16,7 +13,7 @@ const RegisterComponent = () => {
               <RegisterLeftPage />
             </div>
             <div className="md:w-1/2">
-            <RegisterForm />
+              <RegisterForm />
             </div>
           </div>
         </div>
