@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { FaSpinner, FaUser, FaMoneyBill, FaListAlt, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaSpinner, FaEye, FaEyeSlash } from "react-icons/fa";
 
 
 type FormData = {
@@ -348,23 +348,20 @@ const RegisterForm: React.FC = () => {
   );
 
   const StepIndicator = () => (
-    <div className="flex justify-center mb-8">
-      {[1, 2, 3].map((step) => (
-        <div key={step} className="flex items-center">
-          <div
-            className={`w-10 h-10 rounded-full flex items-center justify-center ${currentStep === step ? "bg-orange-400 text-white" : "bg-gray-200 text-gray-600"} ${currentStep > step ? "bg-green-500 text-white" : ""}`}
-          >
-            {step === 1 && <FaUser />}
-            {step === 2 && <FaListAlt />}
-            {step === 3 && <FaMoneyBill />}
-          </div>
-          {step < 3 && (
+    <div className="mb-8">
+    <div className="flex items-center justify-between">
+        {[1, 2, 3].map((step) => (
             <div
-              className={`w-20 h-1 ${currentStep > step ? "bg-green-500" : "bg-gray-200"}`}
+            key={step}
+            className={`w-1/3 h-2 ${currentStep > step ? 'bg-orange-400' : 'bg-gray-200'}`}
             />
-          )}
+        ))}
         </div>
-      ))}
+        <div className="flex justify-between mt-2">
+        <span className="text-xs font-medium">User Details</span>
+        <span className="text-xs font-medium">Category</span>
+        <span className="text-xs font-medium">Payment Method</span>
+    </div>
     </div>
   );
 
@@ -487,10 +484,7 @@ const RegisterForm: React.FC = () => {
 
   return (
     <div className="min-h-screen py-0 px-2 lg:px-0">
-      <div className="max-w-2xl mx-auto bg-white shadow-sm p-8">
-        <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">
-          Registration Form
-        </h2>
+      <div className="max-w-2xl mx-auto bg-white shadow p-8">
         <StepIndicator />
         <div className="mb-6 p-4 bg-blue-50 rounded-lg">
           <p className="text-blue-800">
