@@ -13,36 +13,8 @@
       "id": 2,
       "name": "Support Local Families",
       "description": "Donate to help families in need.",
-      "image": "https://images.pexels.com/photos/5094417/pexels-photo-5094417.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "image": "/mamaba.jpg",
       "amountRaised": "KSh 300,000"
-    },
-    {
-      "id": 3,
-      "name": "Raise Money for your event",
-      "description": "Help raise money for your event.",
-      "image": "https://images.pexels.com/photos/9908669/pexels-photo-9908669.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      "amountRaised": "R 2,000"
-    },
-    {
-      "id": 4,
-      "name": "Family Reunion",
-      "description": "Help raise money for your family reunion.",
-      "image": "https://images.unsplash.com/photo-1589169011402-8b2cbd1ee593?q=80&w=1842&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "amountRaised": "TZS 1,000,000"
-    },
-    {
-      "id": 5,
-      "name": "Making Roads Accessible",
-      "description": "Help provide good road accessibility.",
-      "image": "https://images.pexels.com/photos/3768125/pexels-photo-3768125.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      "amountRaised": "₦800,000"
-    },
-    {
-      "id": 6,
-      "name": "Clean Water Initiative",
-      "description": "Help provide clean drinking water.",
-      "image": "https://images.pexels.com/photos/4350053/pexels-photo-4350053.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      "amountRaised": "KSh 500,000"
     }
   ],
   "categories": [
