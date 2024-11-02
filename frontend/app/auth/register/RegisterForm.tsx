@@ -193,6 +193,8 @@ const RegisterForm: React.FC = () => {
         payment_method: formData.paymentMethod,
         mobile_money_provider: formData.mobileMoneyProvider,
         currency: formData.currency,
+        currency_symbol: formData.currencySymbol,
+        phone_code: formData.phoneCode,
         birth_date: formData.birthDate,
         category: formData.category,
         target_amount: parseInt(formData.targetAmount, 10),

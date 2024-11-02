@@ -9,6 +9,8 @@ export interface UserRegistrationData {
   payment_method: string;
   mobile_money_provider: string;
   currency: string;
+  currency_symbol: string;
+  phone_code: string;
   birth_date: string;
   category: string | null;
   target_amount: number;
@@ -28,6 +30,8 @@ export interface RegisterUserResponseSuccess {
     payment_method: string;
     mobile_money_provider: string;
     currency: string;
+    currency_symbol: string;
+    phone_code: string;
     birth_date: string;
     category: string;
     target_amount: number;
