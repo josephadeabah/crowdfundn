@@ -218,7 +218,7 @@ const RegisterForm: React.FC = () => {
         setSuccess('Successful!, proceed to login.');
         setShowToast(true);
         setTimeout(() => {
-          //   window.location.href = '/auth/login';
+            window.location.href = '/auth/login';
         }, 2000);
       }
     } catch (error) {
