@@ -7,8 +7,8 @@ type FormData = {
   password: string;
   confirmPassword: string;
   fullName: string;
-  phoneNumber: string;
   birthDate: string;
+  phoneNumber: string;
   targetAmount: string;
   durationDays: string;
   nationalId: string;
@@ -29,8 +29,8 @@ const RegisterForm: React.FC = () => {
     password: "",
     confirmPassword: "",
     fullName: "",
-    phoneNumber: "",
     birthDate: "",
+    phoneNumber: "",
     targetAmount: "",
     durationDays: "",
     nationalId: "",
@@ -50,6 +50,8 @@ const RegisterForm: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [countryCode, setCountryCode] = useState('');
 
   const categories = ["Business", "Personal", "Education", "Healthcare"];
   const paymentMethods = ["Credit Card", "Mobile Money", "Bank Transfer"];
@@ -57,7 +59,7 @@ const RegisterForm: React.FC = () => {
 
   const isStepValid = (): boolean => {
     const fieldsToValidate: Record<number, (keyof FormData)[]> = {
-      1: ["email", "password", "confirmPassword", "fullName", "phoneNumber", "birthDate"],
+      1: ["email", "password", "confirmPassword", "fullName", "phoneCode", "birthDate"],
       2: ["category", "targetAmount", "durationDays", "nationalId"],
       3: ["country", "paymentMethod", ...(formData.paymentMethod === "Mobile Money" ? ["mobileMoneyProvider"] : [])] as (keyof FormData)[]
     };
@@ -72,40 +74,43 @@ const RegisterForm: React.FC = () => {
     const fetchUserLocation = async () => {
       try {
         const ipResponse = await fetch("https://ipapi.co/json/");
-        const locationData = await ipResponse.json();
+        const data = await ipResponse.json();
 
+        setCountryCode(data.country_calling_code);
+  
         const currencyResponse = await fetch(
-          `https://restcountries.com/v3.1/alpha/${locationData.country_code}`
+          `https://restcountries.com/v3.1/alpha/${data.country_code}`
         );
         const [countryData] = await currencyResponse.json();
-
+  
         const currencies = Object.values(countryData.currencies)[0];
         const currencySymbol = (currencies as { symbol: string }).symbol;
         const currencyCode = Object.keys(countryData.currencies)[0];
-
-        setFormData(prev => ({
+  
+        setFormData((prev) => ({
           ...prev,
-          country: locationData.country_name,
+          country: data.country_name,
           currency: currencyCode,
           currencySymbol: currencySymbol,
-          phoneCode: `+${locationData.country_calling_code.replace(/\+/g, "")}`
+          phoneCode: `+${data.country_calling_code.replace(/\+/g, "")}`,
         }));
       } catch (error) {
         console.error("Error fetching location:", error);
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           country: "United States",
           currency: "USD",
           currencySymbol: "$",
-          phoneCode: "+1"
+          phoneCode: "+1",
         }));
       } finally {
         setIsLocationLoading(false);
       }
     };
-
+  
     fetchUserLocation();
   }, []);
+  
 
   const validateField = (name: keyof FormData, value: string): string => {
     let error = "";
@@ -139,7 +144,7 @@ const RegisterForm: React.FC = () => {
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
-  const handlePhoneCodeChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handlePhoneCodeChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -147,15 +152,20 @@ const RegisterForm: React.FC = () => {
     }));
   };
 
-  const handlePhoneNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handlePhoneNumberChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { value } = e.target;
+    const updatedPhoneNumber = value; // Store the value of the phone number input
+  
+    // Update the phone number state
     setFormData(prev => ({
       ...prev,
-      phoneNumber: value
+      phoneNumber: updatedPhoneNumber
     }));
-    const error = validateField("phoneNumber", `${formData.phoneCode}${value}`);
+  
+    // Use the updated value to validate and set the error
+    const error = validateField("phoneNumber", `${formData.phoneCode}${updatedPhoneNumber}`);
     setErrors(prev => ({ ...prev, phoneNumber: error }));
-  };
+  };  
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -221,24 +231,26 @@ const RegisterForm: React.FC = () => {
           >
             {label} <span className="text-red-500">*</span>
           </label>
-          <div className="flex">
-            <input
-              type="text"
-              value={formData.phoneCode}
-              onChange={handlePhoneCodeChange}
-              className="w-24 px-4 py-2 rounded-l-lg border border-r-0 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-            />
-            <input
-              id={name}
-              name={name}
-              type="tel"
-              value={formData.phoneNumber}
-              onChange={handlePhoneNumberChange}
-              className={`flex-1 px-4 py-2 rounded-r-lg border ${errors[name] ? "border-red-500" : "border-gray-300 dark:border-gray-600"} dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
-              placeholder="Phone number"
-              {...props}
-            />
-          </div>
+          <div className="flex border border-gray-300 rounded-md overflow-hidden">
+  <input
+    type="text"
+    value={formData.phoneCode}
+    onChange={handlePhoneCodeChange}
+    className="mt-1 block w-[70px] px-4 py-2 border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+    placeholder="Code"
+  />
+  <input
+    type="tel"
+    id={name}
+    name={name}
+    value={formData.phoneNumber}
+    onChange={handlePhoneNumberChange}
+    className={`mt-1 block flex-grow px-4 py-2 border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors[name] ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
+    placeholder="Phone number"
+    {...props}
+  />
+</div>
+
           {errors[name] && (
             <p className="mt-1 text-sm text-red-500" role="alert">
               {errors[name]}
@@ -249,10 +261,10 @@ const RegisterForm: React.FC = () => {
     }
 
     return (
-      <div className="mb-4">
+        <div className="mb-4">
         <label
           htmlFor={name}
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block mb-1 text-sm font-medium text-gray-700"
         >
           {label} <span className="text-red-500">*</span>
         </label>
@@ -260,26 +272,27 @@ const RegisterForm: React.FC = () => {
           <input
             id={name}
             name={name}
-            type={isPassword && !showPasswordState ? "password" : type}
+            type={isPassword ? (showPasswordState ? "text" : "password") : type}
             value={value ?? formData[name]}
             onChange={handleInputChange}
             autoComplete="off"
-            min={min}
+            className={`block w-full py-2 px-4 rounded-md border mt-1 focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white  ${errors[name] ? 'border-red-500' : 'border-gray-300'} ${isPassword ? 'pr-10' : ''} ${name === 'targetAmount' ? 'pl-8' : 'pl-4'}`}
             aria-invalid={errors[name] ? "true" : "false"}
             aria-describedby={`${name}-error`}
             {...props}
+            min={min}
           />
           {isPassword && (
             <button
               type="button"
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
               onClick={togglePassword}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 bg-transparent border-none cursor-pointer"
             >
               {showPasswordState ? <FaEyeSlash /> : <FaEye />}
             </button>
           )}
           {name === "targetAmount" && (
-            <span className="absolute top-1/2 transform -translate-y-1/2 left-3 text-gray-500">
+            <span className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500">
               {formData.currencySymbol}
             </span>
           )}
@@ -294,6 +307,7 @@ const RegisterForm: React.FC = () => {
           </p>
         )}
       </div>
+      
     );
   };
 
@@ -316,7 +330,7 @@ const RegisterForm: React.FC = () => {
         value={formData[name]}
         onChange={handleChange}
         disabled={disabled}
-        className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+        className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
       >
         <option value="">Select {label}</option>
         {options.map((option, index) => (
@@ -338,7 +352,7 @@ const RegisterForm: React.FC = () => {
       {[1, 2, 3].map((step) => (
         <div key={step} className="flex items-center">
           <div
-            className={`w-10 h-10 rounded-full flex items-center justify-center ${currentStep === step ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"} ${currentStep > step ? "bg-green-500 text-white" : ""}`}
+            className={`w-10 h-10 rounded-full flex items-center justify-center ${currentStep === step ? "bg-orange-400 text-white" : "bg-gray-200 text-gray-600"} ${currentStep > step ? "bg-green-500 text-white" : ""}`}
           >
             {step === 1 && <FaUser />}
             {step === 2 && <FaListAlt />}
@@ -465,15 +479,15 @@ const RegisterForm: React.FC = () => {
   if (isLocationLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <FaSpinner className="animate-spin text-4xl text-blue-600" />
+        <FaSpinner className="animate-spin text-4xl text-gray-600" />
         <span className="ml-2 text-gray-600">Loading location data...</span>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-md p-8">
+    <div className="min-h-screen py-0 px-2 lg:px-0">
+      <div className="max-w-2xl mx-auto bg-white shadow-sm p-8">
         <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">
           Registration Form
         </h2>
