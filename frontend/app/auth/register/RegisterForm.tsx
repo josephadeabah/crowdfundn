@@ -359,7 +359,7 @@ const RegisterForm: React.FC = () => {
         </div>
         <div className="flex justify-between mt-2">
         <span className="text-xs font-medium">User Details</span>
-        <span className="text-xs font-medium">Category</span>
+        <span className="text-xs font-medium">Category & other</span>
         <span className="text-xs font-medium">Payment Method</span>
     </div>
     </div>
@@ -370,7 +370,6 @@ const RegisterForm: React.FC = () => {
       case 1:
         return (
           <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-center mb-6">Personal Details</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <InputField
                 label="Full Name"
@@ -412,7 +411,6 @@ const RegisterForm: React.FC = () => {
       case 2:
         return (
           <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-center mb-6">Category & Details</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <SelectField
                 label="Category"
@@ -444,7 +442,6 @@ const RegisterForm: React.FC = () => {
       case 3:
         return (
           <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-center mb-6">Payment Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <InputField
                 label="Country"
@@ -487,7 +484,7 @@ const RegisterForm: React.FC = () => {
       <div className="max-w-2xl mx-auto bg-white shadow p-8">
         <StepIndicator />
         <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-          <p className="text-blue-800">
+          <p className="text-violet-600">
             Location detected: {formData.country} ({formData.currency} - {formData.currencySymbol})
           </p>
         </div>
@@ -498,7 +495,7 @@ const RegisterForm: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setCurrentStep(currentStep - 1)}
-                className="px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
+                className="px-4 py-2 text-sm font-medium text-green-600 bg-white border border-green-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all"
               >
                 Previous
               </button>
@@ -508,7 +505,7 @@ const RegisterForm: React.FC = () => {
                 type="button"
                 onClick={() => setCurrentStep(currentStep + 1)}
                 disabled={!isStepValid()}
-                className="ml-auto px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ml-auto px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
               </button>
@@ -516,7 +513,7 @@ const RegisterForm: React.FC = () => {
               <button
                 type="submit"
                 disabled={isLoading || !isStepValid()}
-                className="ml-auto px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ml-auto px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <span className="flex items-center">
