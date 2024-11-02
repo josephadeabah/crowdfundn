@@ -248,11 +248,13 @@ const RegisterForm: React.FC = () => {
       setErrors((prev) => ({ ...prev, [name]: error }));
     };
 
+    const uniqueId = `input-${name}`;
+
     if (name === 'phoneNumber') {
       return (
         <div className="mb-4">
           <label
-            htmlFor={name}
+            htmlFor={uniqueId}
             className="block text-sm font-medium text-gray-700 mb-1"
           >
             {label} <span className="text-red-500">*</span>
@@ -260,8 +262,8 @@ const RegisterForm: React.FC = () => {
           <div className="flex border border-gray-300 rounded-md overflow-hidden">
             <input
               type="text"
-              id={name}
-              name={name}
+              id={`phoneCode`}
+              name="phoneCode"
               value={formData.phoneCode}
               onChange={handlePhoneCodeChange}
               className="mt-1 block w-[70px] px-4 py-2 border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
@@ -269,7 +271,7 @@ const RegisterForm: React.FC = () => {
             />
             <input
               type="tel"
-              id={name}
+              id={uniqueId}
               name={name}
               value={formData.phoneNumber}
               onChange={handlePhoneNumberChange}
@@ -278,7 +280,6 @@ const RegisterForm: React.FC = () => {
               {...props}
             />
           </div>
-
           {errors[name] && (
             <p className="mt-1 text-sm text-red-500" role="alert">
               {errors[name]}
@@ -291,14 +292,14 @@ const RegisterForm: React.FC = () => {
     return (
       <div className="mb-4">
         <label
-          htmlFor={name}
+          htmlFor={uniqueId}
           className="block mb-1 text-sm font-medium text-gray-700"
         >
           {label} <span className="text-red-500">*</span>
         </label>
         <div className="relative">
           <input
-            id={name}
+            id={uniqueId}
             name={name}
             type={isPassword ? (showPasswordState ? 'text' : 'password') : type}
             value={value ?? formData[name]}
@@ -343,36 +344,40 @@ const RegisterForm: React.FC = () => {
     name: keyof FormData;
     options: string[];
     disabled?: boolean;
-  }> = ({ label, name, options, disabled = false }) => (
-    <div className="mb-4">
-      <label
-        htmlFor={name}
-        className="block text-sm font-medium text-gray-700 mb-1"
-      >
-        {label} <span className="text-red-500">*</span>
-      </label>
-      <select
-        id={name}
-        name={name}
-        value={formData[name]}
-        onChange={handleChange}
-        disabled={disabled}
-        className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
-      >
-        <option value="">Select {label}</option>
-        {options.map((option, index) => (
-          <option key={index} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-      {errors[name] && (
-        <p className="mt-1 text-sm text-red-500" role="alert">
-          {errors[name]}
-        </p>
-      )}
-    </div>
-  );
+  }> = ({ label, name, options, disabled = false }) => {
+    const uniqueId = `select-${name}`;
+
+    return (
+      <div className="mb-4">
+        <label
+          htmlFor={uniqueId}
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          {label} <span className="text-red-500">*</span>
+        </label>
+        <select
+          id={uniqueId}
+          name={name}
+          value={formData[name]}
+          onChange={handleChange}
+          disabled={disabled}
+          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+        >
+          <option value="">Select {label}</option>
+          {options.map((option, index) => (
+            <option key={index} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+        {errors[name] && (
+          <p className="mt-1 text-sm text-red-500" role="alert">
+            {errors[name]}
+          </p>
+        )}
+      </div>
+    );
+  };
 
   const StepIndicator = () => (
     <div className="mb-8">
@@ -496,7 +501,7 @@ const RegisterForm: React.FC = () => {
 
   return (
     <div className="min-h-screen py-0 px-2 lg:px-0">
-      <div className="max-w-2xl mx-auto bg-white shadow p-8">
+      <div className="max-w-2xl mx-auto bg-white shadow p-2 md:p-6">
         <StepIndicator />
         <div className="mb-6 p-4 bg-blue-50 rounded-lg">
           <p className="text-violet-600">
