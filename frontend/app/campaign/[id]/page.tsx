@@ -9,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from '@/app/components/radio/RadioGroup';
 import { Tooltip } from 'react-tooltip';
 import SingleCampaignLoader from '@/app/loaders/SingleCampaignLoader';
 import Avatar from '@/app/components/avatar/Avatar';
+import Image from 'next/image';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTier, setSelectedTier] = useState<number | null>(null);
@@ -89,11 +90,13 @@ const SingleCampaignPage: React.FC = () => {
         {/* Middle Column: Campaign Details */}
         <div className="order-1 lg:col-span-1 overflow-y-auto max-h-100">
           <h1 className="text-4xl font-bold mb-4">{currentCampaign?.title}</h1>
-          <div className="mb-8 relative">
-            <img
-              src={currentCampaign?.media}
-              alt="Campaign Media"
-              className="w-full h-auto rounded-lg shadow-lg cursor-pointer"
+          <div className="relative w-full h-fit aspect-square rounded-sm overflow-hidden">
+            <Image
+              src={currentCampaign?.media || '/bantuhive.svg'}
+              alt="fundraising thumbnail"
+              loading="eager"
+              layout="fill" // Use "fill" layout
+              objectFit="cover" // This ensures the image covers the entire container
             />
           </div>
 
@@ -239,11 +242,15 @@ const SingleCampaignPage: React.FC = () => {
                     }`}
                     onClick={() => handleTierSelect(reward?.id)}
                   >
-                    <img
-                      src={reward?.image}
-                      alt="Reward Image"
-                      className="w-full h-auto rounded-lg shadow-lg cursor-pointer"
-                    />
+                    <div className="relative w-full h-fit aspect-square rounded overflow-hidden">
+                      <Image
+                        src={reward?.image || '/bantuhive.svg'}
+                        alt="fundraising thumbnail"
+                        layout="fill"
+                        loading="eager"
+                        objectFit="cover"
+                      />
+                    </div>
                     <h3 className="font-bold mb-2">{reward?.title}</h3>
                     <p className="text-gray-600 mb-2">{reward?.description}</p>
                     <div className="font-semibold">

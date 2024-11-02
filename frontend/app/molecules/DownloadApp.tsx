@@ -34,18 +34,19 @@ const DownloadApp = () => {
           transition={{ duration: 0.5 }}
           className="lg:w-1/2 relative"
         >
-          <Image
-            src="https://images.pexels.com/photos/4101847/pexels-photo-4101847.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-            alt="Picture of the author"
-            sizes="100vw"
-            style={{
-              width: '100%',
-              height: 'auto',
-            }}
-            width={500}
-            height={300}
-          />
-
+          <div className="w-full p-0 flex aspect-square items-center justify-center h-full">
+            <Image
+              src="https://images.pexels.com/photos/4101847/pexels-photo-4101847.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+              alt="Picture of the author"
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+              width={1024}
+              height={300}
+            />
+          </div>
           <div className="absolute bottom-4 left-4 flex space-x-4">
             <motion.div
               whileHover={{ scale: 1.1 }}

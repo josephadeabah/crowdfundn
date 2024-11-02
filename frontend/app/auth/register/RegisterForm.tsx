@@ -164,7 +164,9 @@ const RegisterForm: React.FC = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isStepValid()) return;
-
+    setError(null);
+    setSuccess(null);
+    setShowToast(false);
     setIsLoading(true);
 
     const newErrors: Errors = {};
@@ -216,7 +218,7 @@ const RegisterForm: React.FC = () => {
         setSuccess('Successful!, proceed to login.');
         setShowToast(true);
         setTimeout(() => {
-          window.location.href = '/auth/login';
+          //   window.location.href = '/auth/login';
         }, 2000);
       }
     } catch (error) {
