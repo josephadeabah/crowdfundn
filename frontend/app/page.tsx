@@ -251,64 +251,52 @@ const HomePage = () => {
 
         <div className="py-20 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-50">
           <div className="mx-auto">
-            <motion.h2
+            <motion.h4
               variants={fadeInUp}
               initial="hidden"
               animate={controls}
               transition={{ duration: 0.5 }}
-              className="text-4xl font-bold text-center mb-12 text-gray-700 dark:text-gray-50"
+              className="text-4xl font-bold text-center mb-8 text-gray-700 dark:text-gray-50"
             >
-              Featured Projects
-            </motion.h2>
-
+              Explore Projects in Categories
+            </motion.h4>
             {/* Parent grid for Categories and Recommended Fundraisers */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="">
               <CategoryList />
-              {/* Recommended Fundraisers Section */}
-              <div className="w-full flex flex-col gap-4 sm:flex-row">
-                <CampaignCard
-                  campaigns={campaigns}
-                  loading={loading}
-                  error={error}
-                  fetchCampaigns={fetchAllCampaigns}
-                />
-              </div>
             </div>
           </div>
         </div>
         <CTa />
       </main>
 
-      <div className="mb-8 text-gray-700 dark:bg-gray-950 dark:text-gray-50 min-h-screen">
-        <div id="projects" className="dark:bg-gray-950 dark:text-gray-50">
-          <div className="w-full p-1 mx-auto">
-            <h2 className="text-4xl font-bold mb-8 text-center">
-              Featured Projects
-            </h2>
-            <div className="w-full">
-              <CampaignCard
-                campaigns={campaigns}
-                loading={loading}
-                error={error}
-                fetchCampaigns={fetchAllCampaigns}
-              />
-            </div>
+      <div id="projects" className="dark:bg-gray-950 dark:text-gray-50">
+        <div className="w-full p-1 mx-auto">
+          <h2 className="text-4xl font-bold mb-8 text-center">
+            Featured Projects
+          </h2>
+          <div className="w-full">
+            <CampaignCard
+              campaigns={campaigns}
+              loading={loading}
+              error={error}
+              fetchCampaigns={fetchAllCampaigns}
+            />
           </div>
         </div>
+      </div>
 
-        <div>
-          <ChatbotComponent />
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isVisible ? 1 : 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed bottom-8 right-8 bg-orange-400 text-white p-3 rounded-full shadow-lg hover:bg-orange-500 transition duration-300"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            aria-label="Scroll to top"
-          >
-            ↑
-          </motion.button>
-        </div>
+      <div className="mb-8 text-gray-700 dark:bg-gray-950 dark:text-gray-50">
+        <ChatbotComponent />
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isVisible ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+          className="fixed bottom-8 right-8 bg-orange-400 text-white p-3 rounded-full shadow-lg hover:bg-orange-500 transition duration-300"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          aria-label="Scroll to top"
+        >
+          ↑
+        </motion.button>
       </div>
       <DownloadApp />
       <div id="brands">
