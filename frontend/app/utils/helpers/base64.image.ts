@@ -6,3 +6,9 @@ export const toBase64 = (file: File): Promise<string> => {
     reader.onerror = (error) => reject(error);
   });
 };
+
+export const handleContextMenu = (
+  e: React.MouseEvent<HTMLImageElement, MouseEvent>,
+) => {
+  e.preventDefault();
+};

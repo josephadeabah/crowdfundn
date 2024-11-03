@@ -2,6 +2,9 @@ import React from 'react';
 import { FaGooglePlay, FaApple } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { Card, CardContent } from '../components/card/Card';
+import Image from 'next/image';
+import { handleContextMenu } from '../utils/helpers/base64.image';
 
 const DownloadApp = () => {
   return (
@@ -33,13 +36,23 @@ const DownloadApp = () => {
           transition={{ duration: 0.5 }}
           className="lg:w-1/2 relative"
         >
-          <div className="w-full p-0 flex aspect-square items-center justify-center h-full">
-            <img
-              src="/download-app.png"
-              alt="Picture of the author"
-              className="object-cover w-full h-full rounded-sm"
-            />
-          </div>
+          <Card className="w-full rounded-none shadow-none border-0">
+            <CardContent className="w-full p-0 flex aspect-square items-center justify-center h-96">
+              <Image
+                src="/download-app.png"
+                alt="Bantu Hive App"
+                sizes="100vw"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                }}
+                width={500}
+                height={300}
+                onContextMenu={handleContextMenu}
+              />
+            </CardContent>
+          </Card>
+
           <div className="absolute bottom-4 left-4 flex space-x-4">
             <motion.div
               whileHover={{ scale: 1.1 }}

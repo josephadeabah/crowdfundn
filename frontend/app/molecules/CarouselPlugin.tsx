@@ -10,6 +10,8 @@ import Autoplay from 'embla-carousel-autoplay';
 import { Card, CardContent } from '../components/card/Card';
 import Image from 'next/image';
 import data from '../../data.json';
+import { handleContextMenu } from '../utils/helpers/base64.image';
+
 export function CarouselPlugin() {
   const plugin = React.useRef(
     Autoplay({ delay: 4000, stopOnInteraction: true }),
@@ -37,6 +39,7 @@ export function CarouselPlugin() {
                   }}
                   width={500}
                   height={300}
+                  onContextMenu={handleContextMenu}
                 />
               </CardContent>
             </Card>
