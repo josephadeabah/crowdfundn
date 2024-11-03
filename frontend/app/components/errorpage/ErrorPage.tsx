@@ -1,9 +1,11 @@
+import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useState } from 'react';
 import { FiHome, FiRefreshCw, FiAlertCircle } from 'react-icons/fi';
 
 const ErrorPage = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isHovered, setIsHovered] = useState(false);
+  const { error } = useCampaignContext();
 
   const handleReload = () => {
     window.location.reload();
@@ -33,10 +35,7 @@ const ErrorPage = () => {
             >
               Oops! An Error Occurred
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 max-w-md">
-              We're sorry! Something went wrong. Please try again later or
-              navigate back to the homepage.
-            </p>
+            <p className="text-gray-500 dark:text-gray-400 max-w-md">{error}</p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-6 w-full sm:w-auto">

@@ -99,7 +99,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         return;
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') {
-          setError('Request timed out. Please try again.');
+          setError("We're Sorry, Request timed out. Please try again.");
         } else {
           setError(
             err instanceof Error ? err.message : 'Error fetching campaigns',
