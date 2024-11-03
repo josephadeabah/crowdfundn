@@ -5,7 +5,7 @@ import {
   FaShieldAlt,
   FaTrophy,
   FaRecycle,
-  FaHandHoldingUsd,
+  FaHandsHelping,
 } from 'react-icons/fa';
 import data from '../../data.json';
 
@@ -68,10 +68,10 @@ const Cta = () => {
         'Unique subscription-based features that allow for recurring donations to support ongoing causes or businesses.',
     },
     {
-      icon: FaHandHoldingUsd,
+      icon: FaHandsHelping,
       title: 'Dedicated Support Team',
       description:
-        'Keep donors engaged with leaderboards, badges, rewards, and recognition for recurring support.',
+        'Our dedicated support team ensures donors feel valued and connected, providing personalized assistance and guidance every step of the way.',
     },
   ];
 

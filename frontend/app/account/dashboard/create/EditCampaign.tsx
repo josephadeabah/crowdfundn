@@ -1,6 +1,5 @@
 'use client';
 import { FaEdit } from 'react-icons/fa';
-import dynamic from 'next/dynamic';
 import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Modal from '@/app/components/modal/Modal';
@@ -10,8 +9,7 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import { SingleCampaignResponseDataType } from '@/app/types/campaigns.types';
 import CampaignsLoader from '@/app/loaders/CampaignsLoader';
 import { truncateHTML } from '@/app/utils/helpers/truncate.html';
-
-const RichTextEditor = dynamic(() => import('@mantine/rte'), { ssr: false });
+import RichTextEditor from '@/app/components/richtext/Richtext';
 
 const EditCampaign = () => {
   const {
@@ -236,6 +234,13 @@ const EditCampaign = () => {
                 <RichTextEditor
                   value={editMode.value}
                   onChange={(value) => setEditMode({ ...editMode, value })}
+                  sticky={false}
+                  controls={[
+                    ['bold', 'italic', 'underline'],
+                    ['link', 'image', 'video'],
+                    ['unorderedList', 'h1', 'h2', 'h3', 'blockquote'],
+                    ['alignLeft', 'alignCenter', 'alignRight'],
+                  ]}
                 />
               </>
             )}

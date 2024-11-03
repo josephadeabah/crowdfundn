@@ -1,5 +1,4 @@
 'use client';
-import dynamic from 'next/dynamic';
 import React, { useState, useCallback, useEffect } from 'react';
 import { FiX, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { Field, Switch } from '@headlessui/react';
@@ -12,10 +11,10 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import { useUserContext } from '@/app/context/users/UserContext';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { FaExclamationTriangle } from 'react-icons/fa';
+import RichTextEditor from '@/app/components/richtext/Richtext';
 
 // Import data.json
 import data from '../../../../data.json';
-const RichTextEditor = dynamic(() => import('@mantine/rte'), { ssr: false });
 
 const CreateCampaign = () => {
   const { userProfile } = useUserContext();
@@ -339,12 +338,19 @@ const CreateCampaign = () => {
               />
             </div>
 
-            <div className="mb-4">
+            <div className="mb-4 w-full">
               <label className="block text-sm mb-1">Description:</label>
               <RichTextEditor
                 value={content}
                 onChange={setContent}
-                placeholder="Enter the campaign description here..."
+                placeholder="Enter the fundraiser description here..."
+                id="rte"
+                controls={[
+                  ['bold', 'italic', 'underline'],
+                  ['link', 'image', 'video'],
+                  ['unorderedList', 'h1', 'h2', 'h3', 'blockquote'],
+                  ['alignLeft', 'alignCenter', 'alignRight'],
+                ]}
               />
             </div>
 

@@ -491,7 +491,7 @@ const RegisterForm: React.FC = () => {
                     name="targetAmount"
                     value={formData.targetAmount}
                     onChange={handleChange}
-                    className={`mt-1 block flex-grow px-4 py-2 rounded-md border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors.targetAmount ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`mt-1 block flex-grow px-4 py-1 rounded-md border-none focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors.targetAmount ? 'border-red-500' : 'border-gray-300'}`}
                     min="0"
                     required
                   />
