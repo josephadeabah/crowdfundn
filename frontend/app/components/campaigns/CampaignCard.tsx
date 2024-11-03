@@ -30,7 +30,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         <EmptyPage />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 px-2 md:p-0 relative">
-          {campaigns.slice(0, 8).map((campaign, index) => (
+          {campaigns.slice(0, 12).map((campaign, index) => (
             <motion.div
               key={campaign.id}
               initial="hidden"

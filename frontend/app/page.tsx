@@ -270,7 +270,7 @@ const HomePage = () => {
       </main>
 
       <div id="projects" className="dark:bg-gray-950 dark:text-gray-50">
-        <div className="w-full p-1 mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl font-bold mb-8 text-center">
             Featured Projects
           </h2>
@@ -285,6 +285,11 @@ const HomePage = () => {
         </div>
       </div>
 
+      <div id="brands" className="mt-20">
+        <DownloadApp />
+        <BrandsLogoSlider />
+      </div>
+
       <div className="mb-8 text-gray-700 dark:bg-gray-950 dark:text-gray-50">
         <ChatbotComponent />
         <motion.button
@@ -297,10 +302,6 @@ const HomePage = () => {
         >
           ↑
         </motion.button>
-      </div>
-      <DownloadApp />
-      <div id="brands">
-        <BrandsLogoSlider />
       </div>
     </div>
   );
