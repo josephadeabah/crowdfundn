@@ -16,14 +16,14 @@ const CampaignCardLoader = () => {
               <Skeleton height={128} className="mb-2 w-full" />{' '}
               {/* Image placeholder */}
               <div className="px-1">
-                <Skeleton height={20} width={150} className="mb-2" />{' '}
+                <Skeleton height={20} width={135} className="mb-2" />{' '}
                 {/* Title placeholder */}
-                <Skeleton height={10} width={200} className="mb-2" />{' '}
+                <Skeleton height={10} width={100} className="mb-2" />{' '}
                 {/* Progress bar placeholder */}
                 <Skeleton height={10} width={120} />{' '}
                 {/* Raised amount placeholder */}
                 <div className="w-full text-xs mt-2">
-                  <Skeleton height={10} width={200} />
+                  <Skeleton height={10} width={100} />
                 </div>
                 <p className="flex justify-between items-center text-sm font-semibold mt-2">
                   <Skeleton height={10} width={80} /> {/* Current amount */}

@@ -1,13 +1,14 @@
-import { CampaignResponseDataType } from '@/app/types/campaigns.types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Progress from '@/app/components/progressbar/ProgressBar';
 import Link from 'next/link';
 import ErrorPage from '../errorpage/ErrorPage';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
+import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import EmptyPage from '../emptypage/EmptyPage';
 import { generateRandomString } from '../../utils/helpers/generate.random-string';
 import Image from 'next/image';
+import ToastComponent from '@/app/components/toast/Toast'
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -20,17 +21,37 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   campaigns,
   loading,
   error,
+  fetchCampaigns,
 }) => {
+  const [isToastOpen, setToastOpen] = useState(false);
+
+  useEffect(() => {
+    if (error) {
+      setToastOpen(true); // Open the toast if there is an error
+    }
+    fetchCampaigns();
+  }, [fetchCampaigns]);
+
+  const handleToastClose = () => {
+    setToastOpen(false); // Close the toast
+  };
+
   if (loading) return <CampaignCardLoader />;
   if (error) return <ErrorPage />;
 
   return (
     <div>
+      <ToastComponent
+        isOpen={isToastOpen}
+        onClose={handleToastClose}
+        description={String(error)}
+        type="error"
+      />
       {campaigns.length === 0 ? (
         <EmptyPage />
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-2 md:p-0 relative w-full aspect-square rounded overflow-hidden">
-          {campaigns.slice(0, 9).map((campaign, index) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-2 md:p-0 relative w-full aspect-square rounded">
+          {campaigns.slice(0, 8).map((campaign, index) => (
             <motion.div
               key={campaign.id}
               initial="hidden"
@@ -39,7 +60,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
               className="bg-white flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transition-transform duration-300 cursor-pointer"
             >
               <Link href={`/campaign/${campaign.id}?${generateRandomString()}`}>
-                <div className="flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-90 transition-transform duration-300 cursor-pointer">
+                <div className="flex flex-col h-full dark:bg-gray-800 dark:text-gray-50  transition-transform duration-300 cursor-pointer">
                   <div className="relative rounded-t-lg h-full w-full overflow-hidden">
                     <Image
                       src={campaign?.media}
