@@ -29,24 +29,29 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       {campaigns.length === 0 ? (
         <EmptyPage />
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 px-2 md:p-0">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-2 md:p-0 relative w-full aspect-square rounded overflow-hidden">
           {campaigns.slice(0, 9).map((campaign, index) => (
             <motion.div
               key={campaign.id}
               initial="hidden"
               animate="visible"
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+              className="bg-white flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transition-transform duration-300 cursor-pointer"
             >
               <Link href={`/campaign/${campaign.id}?${generateRandomString()}`}>
-                <div className="flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer">
-                  <div className="relative h-32 w-full overflow-hidden">
+                <div className="flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-90 transition-transform duration-300 cursor-pointer">
+                  <div className="relative rounded-t-lg h-full w-full overflow-hidden">
                     <Image
                       src={campaign?.media}
                       alt="media thumbnail"
-                      fill
-                      loading="eager"
-                      objectFit="cover"
+                      sizes="100vw"
+                      style={{
+                        width: '100%',
+                        height: '200px',
+                        objectFit: 'cover',
+                      }}
+                      width={500}
+                      height={500}
                     />
                   </div>
                   <div className="px-1">

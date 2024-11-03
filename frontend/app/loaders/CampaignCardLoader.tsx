@@ -4,8 +4,8 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 const CampaignCardLoader = () => {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 px-2 md:p-0">
-      {Array(6)
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-2 md:p-0">
+      {Array(8)
         .fill(null)
         .map((_, index) => (
           <div

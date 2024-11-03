@@ -279,37 +279,21 @@ const HomePage = () => {
         <CTa />
       </main>
 
-      <div className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 min-h-screen">
-        <main className="bg-gradient-to-br from-green-50 to-orange-50 dark:from-green-900 dark:to-orange-900 dark:bg-gray-900">
-          <div
-            id="projects"
-            className="py-16 bg-white dark:bg-gray-950 dark:text-gray-50"
-          >
-            <div className="max-w-7xl mx-auto">
-              <h2 className="text-4xl font-bold mb-8 text-center">
-                Featured Projects
-              </h2>
-              <div className="w-full flex flex-col gap-4 sm:flex-row">
-                <CampaignCard
-                  campaigns={campaigns}
-                  loading={loading}
-                  error={error}
-                  fetchCampaigns={fetchAllCampaigns}
-                />
-                <CampaignCard
-                  campaigns={campaigns}
-                  loading={loading}
-                  error={error}
-                  fetchCampaigns={fetchAllCampaigns}
-                />
-              </div>
+      <div className="mb-8 text-gray-700 dark:bg-gray-950 dark:text-gray-50 min-h-screen">
+        <div id="projects" className="dark:bg-gray-950 dark:text-gray-50">
+          <div className="w-full p-1 mx-auto">
+            <h2 className="text-4xl font-bold mb-8 text-center">
+              Featured Projects
+            </h2>
+            <div className="w-full">
+              <CampaignCard
+                campaigns={campaigns}
+                loading={loading}
+                error={error}
+                fetchCampaigns={fetchAllCampaigns}
+              />
             </div>
           </div>
-        </main>
-        {/* <FAQsPage /> */}
-        <DownloadApp />
-        <div id="brands">
-          <BrandsLogoSlider />
         </div>
 
         <div>
@@ -325,6 +309,10 @@ const HomePage = () => {
             ↑
           </motion.button>
         </div>
+      </div>
+      <DownloadApp />
+      <div id="brands">
+        <BrandsLogoSlider />
       </div>
     </div>
   );

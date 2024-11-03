@@ -71,30 +71,45 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const fetchCampaigns = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/my_campaigns`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+    const maxRetries = 3;
+    let attempt = 0;
+
+    while (attempt < maxRetries) {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/my_campaigns`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            signal: AbortSignal.timeout(60000), // Set a reasonable timeout
           },
-        },
-      );
+        );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        handleApiError(errorText);
+        if (!response.ok) {
+          const errorText = await response.text();
+          handleApiError(errorText);
+          return;
+        }
+
+        const fetchedCampaigns = await response.json();
+        setCampaigns(fetchedCampaigns);
         return;
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          setError('Request timed out. Please try again.');
+        } else {
+          setError(
+            err instanceof Error ? err.message : 'Error fetching campaigns',
+          );
+        }
+        attempt++;
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait before retrying
+      } finally {
+        setLoading(false);
       }
-
-      const fetchedCampaigns = await response.json();
-      setCampaigns(fetchedCampaigns);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error fetching campaigns');
-    } finally {
-      setLoading(false);
     }
   }, [token]);
 
