@@ -75,7 +75,6 @@ class Campaign < ApplicationRecord
         id: fundraiser.id,
         name: fundraiser.full_name,
         currency: fundraiser.currency,
-        currency_code: fundraiser.currency_code,
         currency_symbol: fundraiser.currency_symbol,
         profile: fundraiser.profile
       }
