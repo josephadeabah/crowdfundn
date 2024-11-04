@@ -11,7 +11,6 @@ import { Button } from './button/Button';
 import Link from 'next/link';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { HamburgerMenuIcon, TriangleDownIcon } from '@radix-ui/react-icons';
-import { motion } from 'framer-motion';
 import Avatar from '@/app/components/avatar/Avatar';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -34,10 +33,6 @@ const Navbar = () => {
 
     return () => clearTimeout(timer);
   }, []);
-
-  const handleLogout = () => {
-    logout();
-  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -124,16 +119,11 @@ const Navbar = () => {
 
   return (
     <header
-      className={`bg-gray-50 p-1 dark:bg-gray-950 sticky top-0 z-50 transition-transform duration-300 ease-in-out hover:text-gray-50 focus:ring-0 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
+      className={`bg-gray-50 p-1 dark:bg-gray-950 sticky top-0 z-50 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
     >
-      <nav className="w-full max-w-screen-xl mx-auto  text-gray-800 dark:bg-gray-950 dark:text-gray-50">
+      <nav className="w-full max-w-screen-xl mx-auto text-gray-800 dark:bg-gray-950 dark:text-gray-50">
         <div className="relative flex items-center justify-between">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-2xl font-bold text-orange-500"
-          >
+          <div className="text-2xl font-bold text-orange-500">
             <a href="/">
               <img
                 src="/bantuhive.svg"
@@ -141,7 +131,7 @@ const Navbar = () => {
                 className="w-24 h-auto"
               />
             </a>
-          </motion.div>
+          </div>
 
           <div className="hidden lg:flex items-center gap-x-2 mx-6">
             {Object.entries(dropdownLinks).map(([key, links]) => (
@@ -153,10 +143,10 @@ const Navbar = () => {
                 >
                   <Button
                     variant="ghost"
-                    className="flex items-center text-gray-700 dark:text-gray-50 group focus:outline-none focus-visible:outline-none  focus:ring-0 focus-visible:ring-0 hover:outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
+                    className="flex items-center text-gray-700 dark:text-gray-50 group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
                   >
-                    {`${key.charAt(0).toUpperCase() + key.slice(1)}`}
-                    <TriangleDownIcon className="ml-2 h-4 w-4 transition-transform duration-100 ease-in-out transform group-hover:rotate-180" />
+                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                    <TriangleDownIcon className="ml-2 h-4 w-4 transition-transform duration-100 transform group-hover:rotate-180" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
@@ -167,25 +157,16 @@ const Navbar = () => {
                   onMouseLeave={() => setActivePopover(null)}
                   className="w-full p-0"
                 >
-                  <motion.ul
-                    initial={{ opacity: 0, x: 3 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className={
-                      key === 'donate' || key === 'for Diaspora'
-                        ? 'grid grid-cols-2 gap-x-8 gap-y-2 p-3 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950'
-                        : 'p-2 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950'
-                    }
-                  >
+                  <ul className="p-2 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950">
                     {links.map((link) => (
                       <li
                         key={link.href}
-                        className="p-2 hover:text-gray-700 dark:text-gray-50 hover:outline-none dark:hover:bg-gray-800"
+                        className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800"
                       >
                         <Link href={link.href}>{link.label}</Link>
                       </li>
                     ))}
-                  </motion.ul>
+                  </ul>
                 </PopoverContent>
               </Popover>
             ))}
@@ -208,24 +189,18 @@ const Navbar = () => {
             <div className="absolute top-16 left-0 w-full bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-900 lg:hidden">
               <ul className="flex flex-col items-start p-4 space-y-4">
                 {!user && (
-                  <li>
-                    <Link
-                      href="/auth/register"
-                      className="block dark:focus:bg-gray-800"
-                    >
-                      Start Project
-                    </Link>
-                  </li>
-                )}
-                {!user && (
-                  <li>
-                    <Link
-                      href="/auth/login"
-                      className="block dark:focus:bg-gray-800"
-                    >
-                      Login
-                    </Link>
-                  </li>
+                  <>
+                    <li>
+                      <Link href="/auth/register" className="block">
+                        Start Project
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/auth/login" className="block">
+                        Login
+                      </Link>
+                    </li>
+                  </>
                 )}
                 {Object.entries(dropdownLinks).map(([key, links]) => (
                   <li key={key}>
@@ -233,10 +208,10 @@ const Navbar = () => {
                       <PopoverTrigger asChild>
                         <Button
                           variant="ghost"
-                          className="flex items-center group focus:outline-none focus:ring-0 dark:hover:bg-gray-800"
+                          className="flex items-center group focus:outline-none focus-visible:outline-none  focus:ring-0 focus-visible:ring-0 hover:outline-none"
                         >
-                          {`${key.charAt(0).toUpperCase() + key.slice(1)}`}
-                          <TriangleDownIcon className="ml-2 h-4 w-4 transition-transform duration-200 ease-in-out transform group-hover:rotate-180" />
+                          {key.charAt(0).toUpperCase() + key.slice(1)}
+                          <TriangleDownIcon className="ml-2 h-4 w-4 transition-transform duration-200 transform group-hover:rotate-180" />
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent
@@ -244,13 +219,7 @@ const Navbar = () => {
                         align="start"
                         sideOffset={10}
                       >
-                        <ul
-                          className={
-                            key === 'donate' || key === 'africanDiaspora'
-                              ? 'grid grid-cols-2 gap-2'
-                              : ''
-                          }
-                        >
+                        <ul className="grid grid-cols-2 gap-2">
                           {links.map((link) => (
                             <li
                               key={link.href}
@@ -265,7 +234,6 @@ const Navbar = () => {
                   </li>
                 ))}
                 <DarkModeBtn />
-                {/* Add user info if logged in */}
                 {user && (
                   <li className="flex items-center gap-3">
                     <Avatar name={user.full_name} size="sm" />
@@ -275,7 +243,7 @@ const Navbar = () => {
                     </div>
                     <div
                       className="hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
-                      onClick={handleLogout}
+                      onClick={logout}
                     >
                       Logout
                     </div>
@@ -284,12 +252,13 @@ const Navbar = () => {
               </ul>
             </div>
           )}
+
           <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
             {!user ? (
               <>
                 <Button
                   variant="ghost"
-                  className="py-2 px-4 dark:hover:bg-gray-800 bg-white dark:bg-gray-900 dark:text-gray-50 rounded-full"
+                  className="py-2 px-4 bg-white dark:bg-gray-900 dark:text-gray-50 rounded-full focus-visible:outline-none  focus:ring-0 focus-visible:ring-0 hover:outline-none"
                 >
                   <Link
                     href="/auth/register"
@@ -337,7 +306,7 @@ const Navbar = () => {
                     </div>
                     <div
                       className="hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
-                      onClick={handleLogout}
+                      onClick={logout}
                     >
                       Logout
                     </div>
