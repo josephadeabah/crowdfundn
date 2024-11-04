@@ -28,7 +28,7 @@ export function CarouselPlugin() {
         {data.recommendedFundraisers.map((fundraiser) => (
           <CarouselItem key={fundraiser.id}>
             <Card className="w-full rounded-none shadow-none border-0">
-              <CardContent className="w-full p-0 flex aspect-square items-center justify-center h-96">
+              <CardContent className="w-full p-0 flex aspect-square items-center justify-center h-full">
                 <Image
                   src={fundraiser.image}
                   alt={fundraiser.name}
@@ -37,6 +37,7 @@ export function CarouselPlugin() {
                     width: '100%',
                     height: '100%', // Set height to 100% to fill the container
                     objectFit: 'contain', // This ensures the image maintains its aspect ratio
+                    // borderRadius: '100%'
                   }}
                   width={500}
                   height={300}
