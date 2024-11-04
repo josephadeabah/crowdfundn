@@ -35,7 +35,8 @@ export function CarouselPlugin() {
                   sizes="100vw"
                   style={{
                     width: '100%',
-                    height: 'auto',
+                    height: '100%', // Set height to 100% to fill the container
+                    objectFit: 'contain', // This ensures the image maintains its aspect ratio
                   }}
                   width={500}
                   height={300}
