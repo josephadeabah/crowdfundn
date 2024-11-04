@@ -11,16 +11,51 @@
     },
     {
       "id": 2,
+      "name": "Clean Water Initiative",
+      "description": "Provide clean water to communities in need.",
+      "image": "/marketing1.png",
+      "amountRaised": "KSh 300,000"
+    },
+    {
+      "id": 3,
       "name": "Support Local Families",
       "description": "Donate to help families in need.",
       "image": "/smile.png",
       "amountRaised": "KSh 300,000"
     },
     {
-      "id": 3,
-      "name": "Clean Water Initiative",
-      "description": "Provide clean water to communities in need.",
+      "id": 4,
+      "name": "Support Local Families",
+      "description": "Donate to help families in need.",
+      "image": "/marketing2.png",
+      "amountRaised": "KSh 300,000"
+    },
+    {
+      "id": 5,
+      "name": "Support Local Families",
+      "description": "Donate to help families in need.",
       "image": "/bantuhive-people-shake.png",
+      "amountRaised": "KSh 300,000"
+    },
+    {
+      "id": 6,
+      "name": "Support Local Families",
+      "description": "Donate to help families in need.",
+      "image": "/marketing3.png",
+      "amountRaised": "KSh 300,000"
+    },
+    {
+      "id": 7,
+      "name": "Support Local Families",
+      "description": "Donate to help families in need.",
+      "image": "/marketing4.png",
+      "amountRaised": "KSh 300,000"
+    },
+    {
+      "id": 8,
+      "name": "Support Local Families",
+      "description": "Donate to help families in need.",
+      "image": "/marketing5.png",
       "amountRaised": "KSh 300,000"
     }
   ],
