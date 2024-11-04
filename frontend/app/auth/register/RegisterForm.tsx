@@ -126,8 +126,14 @@ const RegisterForm: React.FC = () => {
     'Local Farmers Support',
   ];
 
-  const paymentMethods = ['Credit Card', 'Mobile Money', 'Bank Transfer'];
-  const mobileProviders = ['Provider A', 'Provider B', 'Provider C'];
+  const paymentMethods = [
+    'Credit Card',
+    'Mobile Money',
+    'PayStack',
+    'FlutterWave',
+    'Bank Transfer',
+  ];
+  const mobileProviders = ['MTN', 'MPesa', 'Telecel', 'Airtel', 'Tigo'];
 
   const isStepValid = (): boolean => {
     const fieldsToValidate: Record<number, (keyof FormData)[]> = {
@@ -212,6 +218,18 @@ const RegisterForm: React.FC = () => {
         error = !phoneRegex.test(value) ? 'Invalid phone number' : '';
         break;
       }
+      case 'paymentMethod':
+        // General check for payment method
+        error = value.trim() === '' ? 'Payment method is required' : '';
+        break;
+      case 'mobileMoneyProvider':
+        // Validate mobile money provider only if payment method is 'Mobile Money'
+        if (formData.paymentMethod === 'Mobile Money' && value.trim() === '') {
+          error = 'Mobile Money Provider is required';
+        } else if (formData.paymentMethod !== 'Mobile Money') {
+          error = ''; // Clear error if not relevant
+        }
+        break;
       default:
         error = value.trim() === '' ? 'This field is required' : '';
     }

@@ -36,10 +36,10 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
               initial="hidden"
               animate="visible"
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transition-transform duration-300 cursor-pointer"
+              className="bg-white flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:shadow-lg transition-transform duration-300 cursor-pointer"
             >
               <Link href={`/campaign/${campaign.id}?${generateRandomString()}`}>
-                <div className="flex flex-col h-full">
+                <div className="flex flex-col p-2 h-full">
                   <div
                     className="relative w-full"
                     style={{ paddingTop: '100%' }}
@@ -49,7 +49,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       alt="media thumbnail"
                       layout="fill"
                       objectFit="cover"
-                      className="absolute top-0 left-0 rounded-t-lg"
+                      className="absolute top-0 left-0 rounded-t"
                     />
                   </div>
                   <div className="px-1">
