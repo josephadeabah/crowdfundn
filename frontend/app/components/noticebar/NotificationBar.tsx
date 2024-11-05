@@ -22,7 +22,7 @@ const NotificationBar = () => {
         onClick={handleClose}
         className="p-2 rounded-full hover:bg-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-600"
       >
-        <XMarkIcon className="h-5 w-5 text-white" />
+        <XMarkIcon className="h-5 w-5 hover:text-white text-orange-400" />
       </button>
     </div>
   );
