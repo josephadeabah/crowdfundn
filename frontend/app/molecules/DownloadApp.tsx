@@ -8,7 +8,7 @@ import { handleContextMenu } from '../utils/helpers/base64.image';
 
 const DownloadApp = () => {
   return (
-    <div className="relative w-full max-w-screen-xl px-3 md:px-0 mx-auto bg-white dark:bg-gray-950 dark:text-gray-50 text-gray-700 py-16 overflow-hidden">
+    <div className="relative w-full max-w-screen-xl px-3 md:px-2 mx-auto bg-white dark:bg-gray-950 dark:text-gray-50 text-gray-700 py-16 overflow-hidden">
       <div className="mx-auto flex flex-col lg:flex-row items-center justify-between">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -37,14 +37,15 @@ const DownloadApp = () => {
           className="lg:w-1/2 relative"
         >
           <Card className="w-full rounded-none shadow-none border-0">
-            <CardContent className="w-full p-0 flex aspect-square items-center justify-center h-96">
+            <CardContent className="w-full p-0 flex aspect-square items-center justify-center h-full">
               <Image
                 src="/download-app.png"
                 alt="Bantu Hive App"
                 sizes="100vw"
                 style={{
                   width: '100%',
-                  height: 'auto',
+                  height: '100%',
+                  objectFit: 'contain',
                 }}
                 width={500}
                 height={300}
