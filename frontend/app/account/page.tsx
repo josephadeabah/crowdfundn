@@ -23,12 +23,19 @@ import AccountSettings from '@/app/account/settings/AccountSettings';
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
+  const [showWalktour, setShowWalktour] = useState<boolean>(true);
 
   useEffect(() => {
     const savedTab = localStorage.getItem('activeTab');
+    const completedWalktour = localStorage.getItem('completedWalktour');
 
+    // If the walkthrough is marked as completed, do not show it again
     if (savedTab) {
       setActiveTab(savedTab);
+    }
+
+    if (completedWalktour) {
+      setShowWalktour(false); // Don't show Walktour if already completed
     }
 
     setLoading(false);
@@ -90,6 +97,16 @@ const ProfileTabs = () => {
     },
   ];
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleTourFinish = (logic: any) => {
+    // If the last step is reached, mark the tour as completed
+    if (logic.stepIndex === steps.length - 1) {
+      // Mark the tour as completed in localStorage
+      localStorage.setItem('completedWalktour', 'true');
+      setShowWalktour(false); // Hide the tour immediately
+    }
+  };
+
   // Render content for each tab
   const renderTabContent = () => {
     switch (activeTab) {
@@ -118,8 +135,20 @@ const ProfileTabs = () => {
 
   return (
     <div className="max-w-7xl mx-auto flex flex-col mt-0 md:flex-row h-screen">
-      {/* Walktour Component */}
-      <Walktour steps={steps} />
+      {/* Conditionally render the Walktour component */}
+      {showWalktour && (
+        <Walktour
+          steps={steps}
+          customNextFunc={(logic) => {
+            logic.next();
+            handleTourFinish(logic);
+          }}
+          customPrevFunc={(logic) => {
+            logic.prev();
+            handleTourFinish(logic);
+          }}
+        />
+      )}
 
       {/* Tabs Menu */}
       <div className="md:w-1/6 border-b h-auto md:h-screen md:border-b-0 md:border-r-2 border-dashed border-orange-200 dark:border-neutral-700">
