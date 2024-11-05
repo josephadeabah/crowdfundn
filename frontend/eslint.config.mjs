@@ -7,7 +7,8 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     rules: {
-      '@typescript-eslint/no-unused-vars': ['off'], // Disable the rule for unused vars
-    },
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "off"
+    }
   }
 );
