@@ -1,6 +1,7 @@
 'use client';
-import { SetStateAction, useEffect, useState } from 'react';
-import Joyride, { CallBackProps, Step, STATUS } from 'react-joyride';
+
+import { useState, useEffect } from 'react';
+import { Walktour } from 'walktour';
 import {
   DashboardIcon,
   HandIcon,
@@ -20,29 +21,17 @@ import ProfileTabsLoader from '@/app/loaders/ProfileTabsLoader';
 import AccountSettings from '@/app/account/settings/AccountSettings';
 
 const ProfileTabs = () => {
-  const [activeTab, setActiveTab] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [runWalkthrough, setRunWalkthrough] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const savedTab = localStorage.getItem('activeTab');
-    const hasSeenWalkthrough = localStorage.getItem('hasSeenWalkthrough');
 
     if (savedTab) {
       setActiveTab(savedTab);
     }
 
-    // Trigger walkthrough if it's the user's first time
-    if (!hasSeenWalkthrough) {
-      setRunWalkthrough(true);
-    }
-
-    setLoading(true);
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -51,56 +40,57 @@ const ProfileTabs = () => {
     }
   }, [activeTab]);
 
-  const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status } = data;
-    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
-      setRunWalkthrough(false);
-      localStorage.setItem('hasSeenWalkthrough', 'true'); // Mark walkthrough as seen
-    }
-  };
-
-  const handleTabClick = (tab: SetStateAction<string>) => {
+  // Handle tab click and loading state
+  const handleTabClick = (tab: string) => {
     setLoading(true);
     setActiveTab(tab);
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       setLoading(false);
     }, 1000);
-
-    return () => clearTimeout(timer);
   };
 
-  const steps: Step[] = [
+  // Define steps for the Walktour
+  const steps = [
     {
-      target: '#dashboard-tab',
-      content:
+      selector: '#dashboard-tab',
+      title: 'Dashboard Guide',
+      description:
         'This is your dashboard where you can see an overview of activities.',
     },
     {
-      target: '#donations-tab',
-      content: 'View all your donations and say thank you in this tab.',
+      selector: '#donations-tab',
+      title: 'Donations Guide',
+      description: 'View all your donations and say thank you in this tab.',
     },
     {
-      target: '#transfers-tab',
-      content: 'Manage your transfers in this tab.',
+      selector: '#transfers-tab',
+      title: 'Transfer Guide',
+      description: 'Manage your transfers in this tab.',
     },
     {
-      target: '#rewards-tab',
-      content: 'Give rewards to your backers and view your rewards from here.',
+      selector: '#rewards-tab',
+      title: 'Rewards Guide',
+      description:
+        'Give rewards to your backers and view your rewards from here.',
     },
     {
-      target: '#campaigns-tab',
-      content: 'Check your active campaigns in this tab.',
+      selector: '#campaigns-tab',
+      title: 'Campaigns Guide',
+      description: 'Check your active campaigns in this tab.',
     },
     {
-      target: '#updates-tab',
-      content: 'Add your fundraising updates in this tab.',
+      selector: '#updates-tab',
+      title: 'Updates Guide',
+      description: 'Add your fundraising updates in this tab.',
     },
     {
-      target: '#settings-tab',
-      content: 'Manage your account settings in this tab.',
+      selector: '#settings-tab',
+      title: 'Settings Guide',
+      description: 'Manage your account settings in this tab.',
     },
   ];
 
+  // Render content for each tab
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Dashboard':
@@ -128,23 +118,9 @@ const ProfileTabs = () => {
 
   return (
     <div className="max-w-7xl mx-auto flex flex-col mt-0 md:flex-row h-screen">
-      <Joyride
-        steps={steps}
-        run={runWalkthrough}
-        continuous
-        showSkipButton
-        callback={handleJoyrideCallback}
-        styles={{
-          options: {
-            arrowColor: '#e3ffeb',
-            backgroundColor: '#e3ffeb',
-            overlayColor: '#343131',
-            primaryColor: '#347928',
-            textColor: '#000',
-            spotlightShadow: '0 0 15px rgba(0, 0, 0, 0.5)',
-          },
-        }}
-      />
+      {/* Walktour Component */}
+      <Walktour steps={steps} />
+
       {/* Tabs Menu */}
       <div className="md:w-1/6 border-b h-auto md:h-screen md:border-b-0 md:border-r-2 border-dashed border-orange-200 dark:border-neutral-700">
         <div
@@ -162,11 +138,7 @@ const ProfileTabs = () => {
             { label: 'Rewards', icon: <IconJarLogoIcon />, id: 'rewards-tab' },
             { label: 'Campaigns', icon: <RocketIcon />, id: 'campaigns-tab' },
             { label: 'Updates', icon: <ChatBubbleIcon />, id: 'updates-tab' },
-            {
-              label: 'Settings',
-              icon: <GearIcon />,
-              id: 'settings-tab',
-            },
+            { label: 'Settings', icon: <GearIcon />, id: 'settings-tab' },
           ].map(({ label, icon, id }) => (
             <button
               id={id}
