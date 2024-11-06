@@ -102,7 +102,8 @@ export interface FundraiserProfileType {
 export interface FundraiserDetailsType {
   id: number;
   name: string;
-  email: string;
+  currency: string;
+  currency_symbol: string;
   created_at: string;
   updated_at: string;
   profile: FundraiserProfileType;

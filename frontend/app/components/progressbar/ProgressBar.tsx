@@ -25,7 +25,7 @@ const Progress: React.FC<ProgressBarProps> = ({
       {/* Progress labels */}
       <div className="text-md flex items-center justify-between font-bold">
         <span
-          className="text-red-500"
+          className="text-orange-500"
           data-tooltip-id="performance-tooltip"
           data-tooltip-content={firstTooltipContent}
         >

@@ -79,10 +79,16 @@ const SingleCampaignPage: React.FC = () => {
 
   if (loading) return <SingleCampaignLoader />;
 
+  console.log('Current campaign', currentCampaign);
+
   // Determine the fundraiser name
   const fundraiserName =
     currentCampaign?.fundraiser?.profile?.name ||
     currentCampaign?.fundraiser?.name;
+
+  const fundraiserCurrency =
+    currentCampaign?.fundraiser?.currency_symbol ||
+    currentCampaign?.fundraiser?.currency?.toUpperCase();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-3 lg:px-8 py-8">
@@ -103,9 +109,22 @@ const SingleCampaignPage: React.FC = () => {
           {/* Progress Bar and Stats */}
           <div className="bg-white rounded-lg shadow-md py-6 px-2 mb-8">
             <div className="w-full flex flex-col gap-2 items-center mb-4">
-              <div className="text-2xl font-bold">
-                ${currentCampaign?.current_amount?.toLocaleString()} raised of $
-                {currentCampaign?.goal_amount?.toLocaleString()} goal
+              <div className="text-xl md:text-2xl font-bold text-center md:text-left py-4 space-y-2">
+                <div className="text-gray-700">
+                  <span className="font-medium">{fundraiserCurrency} </span>
+                  <span className="text-green-500">
+                    {currentCampaign?.current_amount?.toLocaleString()}
+                  </span>
+                  <span> raised of </span>
+                  <span className="font-medium">{fundraiserCurrency} </span>
+                  <span className="text-orange-700">
+                    {currentCampaign?.goal_amount?.toLocaleString()}
+                  </span>
+                  <span> goal</span>
+                </div>
+                <div className="text-sm text-gray-500">
+                  <span>Goal Progress</span>
+                </div>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2.5">
                 <div
