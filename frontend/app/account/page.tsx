@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Walktour } from 'walktour';
 import {
   DashboardIcon,
   HandIcon,
@@ -21,21 +20,21 @@ import ProfileTabsLoader from '@/app/loaders/ProfileTabsLoader';
 import AccountSettings from '@/app/account/settings/AccountSettings';
 
 const ProfileTabs = () => {
-  const [activeTab, setActiveTab] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<string>('Dashboard');
   const [loading, setLoading] = useState<boolean>(true);
-  const [showWalktour, setShowWalktour] = useState<boolean>(true);
+  const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
+  const [currentStep, setCurrentStep] = useState<number>(0); // To track the onboarding step
 
   useEffect(() => {
     const savedTab = localStorage.getItem('activeTab');
-    const completedWalktour = localStorage.getItem('completedWalktour');
+    const onboardingCompleted = localStorage.getItem('onboardingCompleted');
 
-    // If the walkthrough is marked as completed, do not show it again
     if (savedTab) {
       setActiveTab(savedTab);
     }
 
-    if (completedWalktour) {
-      setShowWalktour(false); // Don't show Walktour if already completed
+    if (!onboardingCompleted) {
+      setShowOnboarding(true); // Show onboarding if it's not completed
     }
 
     setLoading(false);
@@ -56,55 +55,10 @@ const ProfileTabs = () => {
     }, 1000);
   };
 
-  // Define steps for the Walktour
-  const steps = [
-    {
-      selector: '#dashboard-tab',
-      title: 'Dashboard Guide',
-      description:
-        'This is your dashboard where you can see an overview of activities.',
-    },
-    {
-      selector: '#donations-tab',
-      title: 'Donations Guide',
-      description: 'View all your donations and say thank you in this tab.',
-    },
-    {
-      selector: '#transfers-tab',
-      title: 'Transfer Guide',
-      description: 'Manage your transfers in this tab.',
-    },
-    {
-      selector: '#rewards-tab',
-      title: 'Rewards Guide',
-      description:
-        'Give rewards to your backers and view your rewards from here.',
-    },
-    {
-      selector: '#campaigns-tab',
-      title: 'Campaigns Guide',
-      description: 'Check your active campaigns in this tab.',
-    },
-    {
-      selector: '#updates-tab',
-      title: 'Updates Guide',
-      description: 'Add your fundraising updates in this tab.',
-    },
-    {
-      selector: '#settings-tab',
-      title: 'Settings Guide',
-      description: 'Manage your account settings in this tab.',
-    },
-  ];
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleTourFinish = (logic: any) => {
-    // If the last step is reached, mark the tour as completed
-    if (logic.stepIndex === steps.length - 1) {
-      // Mark the tour as completed in localStorage
-      localStorage.setItem('completedWalktour', 'true');
-      setShowWalktour(false); // Hide the tour immediately
-    }
+  // Mark onboarding as completed
+  const completeOnboarding = () => {
+    localStorage.setItem('onboardingCompleted', 'true');
+    setShowOnboarding(false);
   };
 
   // Render content for each tab
@@ -133,44 +87,56 @@ const ProfileTabs = () => {
     return <ProfileTabsLoader />;
   }
 
+  // Tab titles and icons
+  const tabs = [
+    {
+      label: 'Dashboard',
+      icon: <DashboardIcon />,
+      description:
+        'Your overall dashboard where you can see an overview of activities and analytics.',
+    },
+    {
+      label: 'Donations',
+      icon: <HandIcon />,
+      description: 'Manage your donations and charity activities.',
+    },
+    {
+      label: 'Transfers',
+      icon: <SymbolIcon />,
+      description: 'View and manage your transfers.',
+    },
+    {
+      label: 'Rewards',
+      icon: <IconJarLogoIcon />,
+      description: 'Receive and give rewards to your donors here.',
+    },
+    {
+      label: 'Campaigns',
+      icon: <RocketIcon />,
+      description: 'Create and manage your fundraising campaigns.',
+    },
+    {
+      label: 'Updates',
+      icon: <ChatBubbleIcon />,
+      description: 'Add your fundraising updates in this tab.',
+    },
+    {
+      label: 'Settings',
+      icon: <GearIcon />,
+      description: 'Manage your account settings and payment here.',
+    },
+  ];
+
   return (
     <div className="max-w-7xl mx-auto flex flex-col mt-0 md:flex-row h-screen">
-      {/* Conditionally render the Walktour component */}
-      {showWalktour && (
-        <Walktour
-          steps={steps}
-          customNextFunc={(logic) => {
-            logic.next();
-            handleTourFinish(logic);
-          }}
-          customPrevFunc={(logic) => {
-            logic.prev();
-            handleTourFinish(logic);
-          }}
-        />
-      )}
-
       {/* Tabs Menu */}
       <div className="md:w-1/6 border-b h-auto md:h-screen md:border-b-0 md:border-r-2 border-dashed border-orange-200 dark:border-neutral-700">
         <div
           className="flex md:flex-col w-full space-x-2 md:space-x-0 md:space-y-2 !overflow-x-auto md:overflow-visible"
           aria-label="Tabs"
         >
-          {[
-            {
-              label: 'Dashboard',
-              icon: <DashboardIcon />,
-              id: 'dashboard-tab',
-            },
-            { label: 'Donations', icon: <HandIcon />, id: 'donations-tab' },
-            { label: 'Transfers', icon: <SymbolIcon />, id: 'transfers-tab' },
-            { label: 'Rewards', icon: <IconJarLogoIcon />, id: 'rewards-tab' },
-            { label: 'Campaigns', icon: <RocketIcon />, id: 'campaigns-tab' },
-            { label: 'Updates', icon: <ChatBubbleIcon />, id: 'updates-tab' },
-            { label: 'Settings', icon: <GearIcon />, id: 'settings-tab' },
-          ].map(({ label, icon, id }) => (
+          {tabs.map(({ label, icon }) => (
             <button
-              id={id}
               key={label}
               type="button"
               className={`py-4 px-4 h-full whitespace-nowrap text-sm font-medium md:text-base transform transition-transform duration-300 ${
@@ -200,6 +166,41 @@ const ProfileTabs = () => {
           {renderTabContent()}
         </div>
       </div>
+
+      {/* Onboarding Modal */}
+      {showOnboarding && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full">
+            <h2 className="text-xl font-semibold mb-4">
+              Welcome! Let's take a quick tour.
+            </h2>
+            <div className="mb-4">
+              <h3 className="font-bold text-lg">{tabs[currentStep].label}</h3>
+              <p>{tabs[currentStep].description}</p>
+            </div>
+            <div className="flex justify-between mt-4">
+              <button
+                className="py-2 px-4 bg-gray-500 text-white rounded-lg"
+                onClick={() => {
+                  if (currentStep === tabs.length - 1) {
+                    completeOnboarding();
+                  } else {
+                    setCurrentStep(currentStep + 1);
+                  }
+                }}
+              >
+                {currentStep === tabs.length - 1 ? 'Finish' : 'Next'}
+              </button>
+              <button
+                className="py-2 px-4 bg-gray-300 text-black rounded-lg"
+                onClick={completeOnboarding}
+              >
+                Skip Tour
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
