@@ -18,6 +18,7 @@ import CampaignUpdates from '@/app/account/Updates';
 import Dashboard from '@/app/account/Dashboard';
 import ProfileTabsLoader from '@/app/loaders/ProfileTabsLoader';
 import AccountSettings from '@/app/account/settings/AccountSettings';
+import OnboardingModal from '@/app/components/onboarding/OnboardingModal';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState<string>('Dashboard');
@@ -148,7 +149,9 @@ const ProfileTabs = () => {
                     ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-400 dark:text-orange-600'
                     : 'border-transparent text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-gray-800 dark:text-neutral-400 dark:hover:text-gray-950'
                 } flex items-center focus:outline-none ${
-                  isOnboarding ? 'bg-orange-100 dark:bg-orange-700' : ''
+                  isOnboarding
+                    ? 'bg-green-600 text-white dark:bg-orange-700'
+                    : ''
                 }`}
                 onClick={() => handleTabClick(label)}
                 aria-selected={isActive}
@@ -177,51 +180,12 @@ const ProfileTabs = () => {
 
       {/* Onboarding Modal */}
       {showOnboarding && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-sm max-w-md w-full">
-            <h2 className="text-xl font-semibold mb-4">
-              Welcome! Let's take a quick tour.
-            </h2>
-            <div className="mb-4">
-              <h3 className="font-bold text-lg">{tabs[currentStep].label}</h3>
-              <p>{tabs[currentStep].description}</p>
-            </div>
-            <div className="flex justify-between mt-4">
-              {/* Previous Button */}
-              <button
-                className="py-2 px-4 bg-gray-300 text-black rounded-lg"
-                onClick={() => {
-                  if (currentStep > 0) {
-                    setCurrentStep(currentStep - 1);
-                  }
-                }}
-                disabled={currentStep === 0}
-              >
-                Previous
-              </button>
-              {/* Next Button */}
-              <button
-                className="py-2 px-4 bg-gray-500 text-white rounded-lg"
-                onClick={() => {
-                  if (currentStep === tabs.length - 1) {
-                    completeOnboarding();
-                  } else {
-                    setCurrentStep(currentStep + 1);
-                  }
-                }}
-              >
-                {currentStep === tabs.length - 1 ? 'Finish' : 'Next'}
-              </button>
-              {/* Skip Button */}
-              <button
-                className="py-2 px-4 bg-gray-300 text-black rounded-lg"
-                onClick={completeOnboarding}
-              >
-                Skip Tour
-              </button>
-            </div>
-          </div>
-        </div>
+        <OnboardingModal
+          currentStep={currentStep}
+          setCurrentStep={setCurrentStep}
+          completeOnboarding={completeOnboarding}
+          tabs={tabs}
+        />
       )}
     </div>
   );
