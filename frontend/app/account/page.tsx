@@ -21,7 +21,7 @@ import AccountSettings from '@/app/account/settings/AccountSettings';
 import OnboardingModal from '@/app/components/onboarding/OnboardingModal';
 
 const ProfileTabs = () => {
-  const [activeTab, setActiveTab] = useState<string>('Dashboard');
+  const [activeTab, setActiveTab] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<number>(0); // To track the onboarding step
