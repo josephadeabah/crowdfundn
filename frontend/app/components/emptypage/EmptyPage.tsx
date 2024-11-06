@@ -21,12 +21,11 @@ const EmptyPage = () => {
                 No Fundraisers Yet
               </h1>
               <p className="text-lg text-gray-500 dark:text-gray-400">
-                Get started by creating your first fundraising or exploring
-                available fundraisers.
+                Get started by creating your first fundraising!
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+            <div className="w-full mx-auto max-w-xl">
               <button
                 type="button"
                 className="inline-flex items-center justify-center rounded-lg bg-orange-400 dark:bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-orange-300 dark:hover:bg-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 transition-colors duration-200 ease-in-out w-full sm:w-auto"
@@ -36,15 +35,6 @@ const EmptyPage = () => {
               >
                 <FiPlus className="-ml-0.5 mr-2 h-4 w-4" aria-hidden="true" />
                 Create New
-              </button>
-
-              <button
-                type="button"
-                className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 px-6 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200 ease-in-out w-full sm:w-auto"
-                onClick={() => console.log('Search items')}
-              >
-                <FiSearch className="-ml-0.5 mr-2 h-4 w-4" aria-hidden="true" />
-                Search
               </button>
             </div>
             <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 w-full max-w-2xl"></div>
