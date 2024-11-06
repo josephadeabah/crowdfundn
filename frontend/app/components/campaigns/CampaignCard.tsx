@@ -47,6 +47,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                     <Image
                       src={campaign?.media}
                       alt="media thumbnail"
+                      sizes="100vw"
                       layout="fill"
                       objectFit="cover"
                       className="absolute top-0 left-0 rounded-t"

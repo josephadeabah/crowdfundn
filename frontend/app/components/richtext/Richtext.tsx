@@ -1,9 +1,9 @@
+'use client';
 import dynamic from 'next/dynamic';
 
-export default dynamic(() => import('@mantine/rte'), {
-  // Disable during server side rendering
+const RichTextEditor = dynamic(() => import('@mantine/rte'), {
   ssr: false,
-
-  // Render anything as fallback on server, e.g. loader or html content without editor
-  loading: () => null,
+  loading: () => <div>Loading editor...</div>,
 });
+
+export default RichTextEditor;
