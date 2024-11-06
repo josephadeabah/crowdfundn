@@ -135,24 +135,32 @@ const ProfileTabs = () => {
           className="flex md:flex-col w-full space-x-2 md:space-x-0 md:space-y-2 !overflow-x-auto md:overflow-visible"
           aria-label="Tabs"
         >
-          {tabs.map(({ label, icon }) => (
-            <button
-              key={label}
-              type="button"
-              className={`py-4 px-4 h-full whitespace-nowrap text-sm font-medium md:text-base transform transition-transform duration-300 ${
-                activeTab === label
-                  ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-400 dark:text-orange-600'
-                  : 'border-transparent text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-gray-800 dark:text-neutral-400 dark:hover:text-gray-950'
-              } flex items-center focus:outline-none`}
-              onClick={() => handleTabClick(label)}
-              aria-selected={activeTab === label}
-              aria-controls={`vertical-tab-${label}`}
-              role="tab"
-            >
-              <span className="mr-2">{icon}</span>
-              {label}
-            </button>
-          ))}
+          {tabs.map(({ label, icon }, index) => {
+            const isActive = activeTab === label;
+            const isOnboarding = showOnboarding && currentStep === index;
+
+            return (
+              <button
+                key={label}
+                type="button"
+                className={`py-4 px-4 h-full whitespace-nowrap text-sm font-medium md:text-base transform transition-transform duration-300 ${
+                  isActive
+                    ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-400 dark:text-orange-600'
+                    : 'border-transparent text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-gray-800 dark:text-neutral-400 dark:hover:text-gray-950'
+                } flex items-center focus:outline-none ${
+                  isOnboarding ? 'bg-orange-100 dark:bg-orange-700' : ''
+                }`}
+                onClick={() => handleTabClick(label)}
+                aria-selected={isActive}
+                aria-controls={`vertical-tab-${label}`}
+                role="tab"
+                id={`tab-${label}`} // Specific ID for better targeting
+              >
+                <span className="mr-2">{icon}</span>
+                {label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -170,7 +178,7 @@ const ProfileTabs = () => {
       {/* Onboarding Modal */}
       {showOnboarding && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full">
+          <div className="bg-white p-6 rounded-sm max-w-md w-full">
             <h2 className="text-xl font-semibold mb-4">
               Welcome! Let's take a quick tour.
             </h2>
@@ -179,6 +187,19 @@ const ProfileTabs = () => {
               <p>{tabs[currentStep].description}</p>
             </div>
             <div className="flex justify-between mt-4">
+              {/* Previous Button */}
+              <button
+                className="py-2 px-4 bg-gray-300 text-black rounded-lg"
+                onClick={() => {
+                  if (currentStep > 0) {
+                    setCurrentStep(currentStep - 1);
+                  }
+                }}
+                disabled={currentStep === 0}
+              >
+                Previous
+              </button>
+              {/* Next Button */}
               <button
                 className="py-2 px-4 bg-gray-500 text-white rounded-lg"
                 onClick={() => {
@@ -191,6 +212,7 @@ const ProfileTabs = () => {
               >
                 {currentStep === tabs.length - 1 ? 'Finish' : 'Next'}
               </button>
+              {/* Skip Button */}
               <button
                 className="py-2 px-4 bg-gray-300 text-black rounded-lg"
                 onClick={completeOnboarding}
