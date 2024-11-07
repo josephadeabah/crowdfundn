@@ -8,6 +8,7 @@ import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import EmptyPage from '../emptypage/EmptyPage';
 import { generateRandomString } from '../../utils/helpers/generate.random-string';
 import Image from 'next/image';
+import { deslugify } from '@/app/utils/helpers/categories';
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -63,6 +64,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       <h3 className="text-lg font-bold truncate whitespace-nowrap overflow-hidden">
                         {campaign?.title}
                       </h3>
+                      <span className="text-xs font-extrabold">
+                        In: {deslugify(campaign?.category)}
+                      </span>
                       <div className="w-full text-xs">
                         <Progress
                           firstProgress={
@@ -70,7 +74,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                               Number(campaign?.goal_amount)) *
                             100
                           }
-                          firstTooltipContent={`Performance: ${
+                          firstTooltipContent={`Progress: ${
                             (Number(campaign?.current_amount) /
                               Number(campaign?.goal_amount)) *
                             100
@@ -78,13 +82,14 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                         />
                       </div>
                       <p className="flex justify-between items-center text-sm font-semibold mt-2">
-                        <span className="flex items-center gap-1">
-                          <span className="font-medium">
-                            {fundraiserCurrency}
-                          </span>
-                          {campaign?.current_amount?.toLocaleString()}
+                        <span className="font-medium">
+                          {fundraiserCurrency}
+                          {parseFloat(campaign.current_amount).toLocaleString()}
                         </span>
-                        <span className="font-normal">raised</span>
+                        <span className="text-gray-600 dark:text-gray-400">
+                          of {fundraiserCurrency}
+                          {parseFloat(campaign.goal_amount).toLocaleString()}
+                        </span>
                       </p>
                     </div>
                   </div>
