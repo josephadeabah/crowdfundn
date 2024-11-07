@@ -42,7 +42,6 @@ module Api
 
         # GET /api/v1/fundraisers/campaigns/group_by_category
         def group_by_category
-          # Retrieve campaigns for the current page
           page = params[:page] || 1
           page_size = params[:page_size] || 12
 
@@ -59,14 +58,20 @@ module Api
           end
 
           # Prepare the response with paginated grouped campaigns
+          response_data = grouped_paginated_campaigns.each_with_object({}) do |(category, campaigns), result|
+            result[category] = {
+              campaigns: campaigns,
+              current_page: campaigns.current_page,
+              total_pages: campaigns.total_pages,
+              total_count: campaigns.total_count
+            }
+          end
+
           render json: {
-            grouped_campaigns: grouped_paginated_campaigns,
-            current_page: page,
-            total_pages: grouped_paginated_campaigns.values.first.total_pages, # Assuming all categories have the same pagination structure
-            total_count: grouped_paginated_campaigns.values.flat_map(&:to_a).count
+            grouped_campaigns: response_data
           }, status: :ok
         end
-        
+
         # POST /api/v1/fundraisers/campaigns
         def create
           @campaign = @current_user.campaigns.new(campaign_params)
