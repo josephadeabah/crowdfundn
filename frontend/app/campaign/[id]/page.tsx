@@ -80,8 +80,6 @@ const SingleCampaignPage: React.FC = () => {
 
   if (loading) return <SingleCampaignLoader />;
 
-  console.log('Current campaign', currentCampaign);
-
   // Determine the fundraiser name
   const fundraiserName =
     currentCampaign?.fundraiser?.profile?.name ||
