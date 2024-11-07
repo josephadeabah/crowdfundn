@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Progress from '@/app/components/progressbar/ProgressBar';
 import Link from 'next/link';
@@ -9,6 +9,7 @@ import EmptyPage from '../emptypage/EmptyPage';
 import { generateRandomString } from '../../utils/helpers/generate.random-string';
 import Image from 'next/image';
 import { deslugify } from '@/app/utils/helpers/categories';
+import { useUserContext } from '@/app/context/users/UserContext';
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -22,16 +23,48 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   loading,
   error,
 }) => {
-  if (loading) return <CampaignCardLoader />;
+  const { userProfile } = useUserContext();
+  const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [isLocationLoading, setIsLocationLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserLocation = async () => {
+      try {
+        const ipResponse = await fetch('https://ipapi.co/json/');
+        const data = await ipResponse.json();
+        setUserCountry(data.country_name);
+      } catch (error) {
+        console.error('Error fetching location:', error);
+      } finally {
+        setIsLocationLoading(false);
+      }
+    };
+
+    // Fetch location only if userProfile doesn't have a country
+    if (!userProfile?.country) {
+      fetchUserLocation();
+    } else {
+      setUserCountry(userProfile.country);
+      setIsLocationLoading(false);
+    }
+  }, [userProfile]);
+
+  // Filter campaigns by the user's country
+  const filteredCampaigns = campaigns.filter(
+    (campaign) =>
+      campaign.location.toLowerCase() === userCountry?.toLowerCase(),
+  );
+
+  if (loading || isLocationLoading) return <CampaignCardLoader />;
   if (error) return <ErrorPage />;
 
   return (
     <div>
-      {campaigns.length === 0 ? (
+      {filteredCampaigns.length === 0 ? (
         <EmptyPage />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 px-2 md:p-0 relative">
-          {campaigns.slice(0, 12).map((campaign, index) => {
+          {filteredCampaigns.slice(0, 12).map((campaign, index) => {
             const fundraiserCurrency =
               campaign?.currency_symbol || campaign?.currency?.toUpperCase();
 
