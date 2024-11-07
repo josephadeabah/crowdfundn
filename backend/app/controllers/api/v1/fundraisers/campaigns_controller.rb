@@ -7,8 +7,18 @@ module Api
         before_action :authorize_campaign_user!, only: %i[update destroy]  # Ensure user authorization for these actions
 
         def index
-          @campaigns = Campaign.all
-          render json: @campaigns, status: :ok
+          page = params[:page] || 1
+          page_size = params[:pageSize] || 10
+        
+          # Retrieve campaigns with pagination
+          @campaigns = Campaign.page(page).per(page_size)
+        
+          render json: {
+            campaigns: @campaigns,
+            current_page: @campaigns.current_page,
+            total_pages: @campaigns.total_pages,
+            total_count: @campaigns.total_count
+          }, status: :ok
         end
 
         def show
@@ -16,9 +26,20 @@ module Api
         end
 
         def my_campaigns
-          @campaigns = @current_user.campaigns
-          render json: @campaigns, status: :ok
+          page = params[:page] || 1
+          page_size = params[:pageSize] || 10
+        
+          # Retrieve user's campaigns with pagination
+          @campaigns = @current_user.campaigns.page(page).per(page_size)
+        
+          render json: {
+            campaigns: @campaigns,
+            current_page: @campaigns.current_page,
+            total_pages: @campaigns.total_pages,
+            total_count: @campaigns.total_count
+          }, status: :ok
         end
+        
 
         # POST /api/v1/fundraisers/campaigns
         def create
