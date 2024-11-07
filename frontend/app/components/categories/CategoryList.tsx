@@ -61,7 +61,7 @@ const CategoryList: React.FC = () => {
           <div>
             <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-200">
               {categories.find((c) => c.value === selectedCategory)?.label}{' '}
-              Campaigns
+              Fundraisers
             </h3>
             <div className="space-y-6 mt-4">
               {fundraisingCampaigns[selectedCategory || '']?.length > 0 ? (
