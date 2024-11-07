@@ -112,8 +112,6 @@ const CreateCampaign = () => {
     // Disable further fetching
   }, [userProfile]);
 
-  console.log('user profile', userProfile);
-
   const handleSubmit = async () => {
     if (validateForm()) {
       const formData = new FormData();

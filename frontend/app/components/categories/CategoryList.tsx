@@ -73,12 +73,11 @@ const CategoryList: React.FC = () => {
                     <div className="flex flex-col md:flex-row gap-4">
                       <div className="w-full md:w-1/3">
                         <img
-                          src={`https://${campaign.media}`}
+                          src={campaign.media}
                           alt={campaign.title}
                           className="w-full h-40 object-cover rounded-lg"
                           onError={(e) => {
-                            e.currentTarget.src =
-                              'https://images.unsplash.com/photo-1531685250784-7569952593d2';
+                            e.currentTarget.src = '/bantuhive.svg';
                           }}
                         />
                       </div>
