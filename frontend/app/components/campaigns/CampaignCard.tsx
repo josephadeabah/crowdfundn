@@ -30,7 +30,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       {campaigns.length === 0 ? (
         <EmptyPage />
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 px-2 md:p-0 relative">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 px-2 md:p-0 relative">
           {campaigns.slice(0, 12).map((campaign, index) => {
             const fundraiserCurrency =
               campaign?.currency_symbol || campaign?.currency?.toUpperCase();
@@ -46,7 +46,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 <Link
                   href={`/campaign/${campaign.id}?${generateRandomString()}`}
                 >
-                  <div className="flex flex-col p-2 h-full">
+                  <div className="flex flex-col h-full">
                     <div
                       className="relative w-full"
                       style={{ paddingTop: '100%' }}
@@ -60,12 +60,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                         className="absolute top-0 left-0 rounded-t"
                       />
                     </div>
-                    <div className="px-1">
+                    <div className="px-1 dark:text-gray-50">
                       <h3 className="text-lg font-bold truncate whitespace-nowrap overflow-hidden">
                         {campaign?.title}
                       </h3>
-                      <span className="text-xs font-extrabold">
-                        In: {deslugify(campaign?.category)}
+                      <span className="text-xs text-green-600">
+                        {deslugify(campaign?.category)}
                       </span>
                       <div className="w-full text-xs">
                         <Progress
