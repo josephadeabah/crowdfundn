@@ -10,9 +10,6 @@ export interface Profile {
   end_date: string;
   category: string;
   location: string;
-  currency: string;
-  currency_symbol: string;
-  currency_code: string;
   avatar: string;
   status: string;
   created_at: string;
@@ -29,6 +26,7 @@ export interface UserProfile {
   payment_method: string;
   mobile_money_provider: string;
   currency: string;
+  currency_symbol: string;
   birth_date: string;
   category: string;
   target_amount: string;

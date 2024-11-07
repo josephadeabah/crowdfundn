@@ -12,23 +12,21 @@ import { useUserContext } from '@/app/context/users/UserContext';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { FaExclamationTriangle } from 'react-icons/fa';
 import RichTextEditor from '@/app/components/richtext/Richtext';
-
-// Import data.json
-import data from '../../../../data.json';
+import { categories } from '@/app/utils/helpers/categories';
 
 const CreateCampaign = () => {
   const { userProfile } = useUserContext();
-  const { categories, paymentOptions } = data;
   const [isOpen, setIsOpen] = useState(false);
-  const [title, setTitle] = useState<string>('');
-  const [content, setContent] = useState<string>('');
-  const [goalAmount, setGoalAmount] = useState<string>('');
-  const [currentAmount, setCurrentAmount] = useState<string>('0');
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [goalAmount, setGoalAmount] = useState('');
+  const [currentAmount, setCurrentAmount] = useState('0');
   const [startDate, setStartDate] = useState<string>('');
-  const [endDate, setEndDate] = useState<string>('');
-  const [category, setCategory] = useState<string>('');
-  const [location, setLocation] = useState<string>('');
-  const [currency, setCurrency] = useState<string>('');
+  const [endDate, setEndDate] = useState('');
+  const [category, setCategory] = useState('');
+  const [location, setLocation] = useState('');
+  const [currency, setCurrency] = useState('');
+  const [currency_symbol, setCurrencySymbol] = useState('');
   const [isPublic, setIsPublic] = useState<boolean>(true);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [error, setError] = useState<FormErrors>({});
@@ -104,14 +102,17 @@ const CreateCampaign = () => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      setCategory(userProfile?.category || '');
-      setLocation(userProfile?.country || '');
-      setGoalAmount(userProfile?.target_amount || '');
-      setCurrency(userProfile?.currency || '');
-      setCurrentAmount('0');
-    }, 1000);
+    // Set the initial profile values after fetching
+    setCategory(userProfile?.category || '');
+    setLocation(userProfile?.country || '');
+    setGoalAmount(userProfile?.target_amount || '');
+    setCurrency(userProfile?.currency || '');
+    setCurrencySymbol(userProfile?.currency_symbol || '');
+    setCurrentAmount('0');
+    // Disable further fetching
   }, [userProfile]);
+
+  console.log('user profile', userProfile);
 
   const handleSubmit = async () => {
     if (validateForm()) {
@@ -129,6 +130,7 @@ const CreateCampaign = () => {
       formData.append('campaign[category]', category);
       formData.append('campaign[location]', location);
       formData.append('campaign[currency]', currency);
+      formData.append('campaign[currency_symbol]', currency_symbol);
       formData.append('campaign[is_public]', isPublic.toString());
       // Permissions must match Rails' expected format
       formData.append(
@@ -288,38 +290,48 @@ const CreateCampaign = () => {
                 Category:
               </label>
               <select
-                id="category"
+                name="category"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
               >
-                {categories.map((cat: { value: string; label: string }) => (
+                <option value="">Select Category</option>
+                {categories.map((cat) => (
                   <option key={cat.value} value={cat.value}>
                     {cat.label}
                   </option>
                 ))}
               </select>
             </div>
-
+            {/* Dropdown for Currency Symbol*/}
+            <div className="mb-4">
+              <label htmlFor="currency_symbol" className="block text-sm mb-1">
+                Currency Symbol:
+              </label>
+              <input
+                type="text"
+                name="currency_symbol"
+                id="currency_symbol"
+                value={currency_symbol}
+                className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                aria-label="Currency Symbol"
+                disabled={true}
+              />
+            </div>
             {/* Dropdown for Currency */}
             <div className="mb-4">
               <label htmlFor="currency" className="block text-sm mb-1">
-                Currency:
+                Currency Code:
               </label>
-              <select
+              <input
+                type="text"
+                name="currency"
                 id="currency"
-                value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
+                value={currency?.toLocaleUpperCase()}
                 className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-              >
-                {paymentOptions.currencies?.map(
-                  (curr: { value: string; label: string }) => (
-                    <option key={curr.value} value={curr.value}>
-                      {curr.label}
-                    </option>
-                  ),
-                )}
-              </select>
+                aria-label="Currency"
+                disabled={true}
+              />
             </div>
 
             {/* Dropdown for Country */}

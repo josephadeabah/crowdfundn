@@ -1,63 +1,30 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from '@/app/components/modal/Modal';
 import { Badge } from '../badge/Badge';
 import { categories } from '@/app/utils/helpers/categories';
-
-type Campaign = {
-  id: number;
-  title: string;
-  description: string;
-  goalAmount: number;
-  currentAmount: number;
-  image: string;
-};
+import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
+import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 
 const CategoryList: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
 
-  // Dummy fundraising campaigns data
-  const fundraisingCampaigns: Record<string, Campaign[]> = {
-    environment: [
-      {
-        id: 1,
-        title: 'Clean River Project',
-        description: 'Help clean up local rivers and lakes.',
-        goalAmount: 50000,
-        currentAmount: 25000,
-        image: 'images.unsplash.com/photo-1511941680711-7c0a9a3e15e8',
+  // Group campaigns by category
+  const fundraisingCampaigns: Record<string, CampaignResponseDataType[]> =
+    campaigns.reduce(
+      (acc: Record<string, CampaignResponseDataType[]>, campaign) => {
+        const category = campaign.category.toLowerCase().replace(/\s+/g, '-');
+        if (!acc[category]) acc[category] = [];
+        acc[category].push(campaign);
+        return acc;
       },
-      // Add more campaigns...
-    ],
-    education: [
-      {
-        id: 1,
-        title: 'Scholarship Fund',
-        description: 'Provide scholarships to students in need.',
-        goalAmount: 20000,
-        currentAmount: 10000,
-        image: 'images.unsplash.com/photo-1560807707-8cc777a484c3',
-      },
-      {
-        id: 2,
-        title: 'School Supplies Drive',
-        description: 'Provide school supplies to underprivileged children.',
-        goalAmount: 30000,
-        currentAmount: 15000,
-        image: 'images.unsplash.com/photo-1573497490520-90ebf0d12c6e',
-      },
-      {
-        id: 3,
-        title: 'STEM Education Program',
-        description: 'Support STEM education initiatives in schools.',
-        goalAmount: 40000,
-        currentAmount: 20000,
-        image: 'images.unsplash.com/photo-1573497490520-90ebf0d12c6e',
-      },
-      // Add more campaigns...
-    ],
-    // Add more campaigns for other categories as needed
-  };
+      {},
+    );
+
+  useEffect(() => {
+    fetchAllCampaigns();
+  }, [fetchAllCampaigns]);
 
   const handleCategoryClick = (value: string) => {
     setSelectedCategory(value);
@@ -106,7 +73,7 @@ const CategoryList: React.FC = () => {
                     <div className="flex flex-col md:flex-row gap-4">
                       <div className="w-full md:w-1/3">
                         <img
-                          src={`https://${campaign.image}`}
+                          src={`https://${campaign.media}`}
                           alt={campaign.title}
                           className="w-full h-40 object-cover rounded-lg"
                           onError={(e) => {
@@ -120,14 +87,15 @@ const CategoryList: React.FC = () => {
                           {campaign.title}
                         </h4>
                         <p className="text-gray-600 dark:text-gray-300 mb-4">
-                          {campaign.description}
+                          {campaign.message}
                         </p>
                         <div className="space-y-2">
                           <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                             <span>Progress</span>
                             <span>
                               {Math.round(
-                                (campaign.currentAmount / campaign.goalAmount) *
+                                (parseFloat(campaign.current_amount) /
+                                  parseFloat(campaign.goal_amount)) *
                                   100,
                               )}
                               %
@@ -137,16 +105,26 @@ const CategoryList: React.FC = () => {
                             <div
                               className="bg-orange-400 h-2.5 rounded-full"
                               style={{
-                                width: `${(campaign.currentAmount / campaign.goalAmount) * 100}%`,
+                                width: `${
+                                  (parseFloat(campaign.current_amount) /
+                                    parseFloat(campaign.goal_amount)) *
+                                  100
+                                }%`,
                               }}
                             ></div>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="font-medium">
-                              ${campaign.currentAmount.toLocaleString()}
+                              {campaign.currency_symbol}
+                              {parseFloat(
+                                campaign.current_amount,
+                              ).toLocaleString()}
                             </span>
                             <span className="text-gray-600 dark:text-gray-400">
-                              of ${campaign.goalAmount.toLocaleString()}
+                              of {campaign.currency_symbol}
+                              {parseFloat(
+                                campaign.goal_amount,
+                              ).toLocaleString()}
                             </span>
                           </div>
                         </div>
