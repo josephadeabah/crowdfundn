@@ -10,6 +10,7 @@ import { Tooltip } from 'react-tooltip';
 import SingleCampaignLoader from '@/app/loaders/SingleCampaignLoader';
 import Avatar from '@/app/components/avatar/Avatar';
 import Image from 'next/image';
+import { calculateAndUpdateRemainingDays } from '@/app/utils/helpers/calculate.days';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTier, setSelectedTier] = useState<number | null>(null);
@@ -109,21 +110,33 @@ const SingleCampaignPage: React.FC = () => {
           {/* Progress Bar and Stats */}
           <div className="bg-white rounded-lg shadow-md py-6 px-2 mb-8">
             <div className="w-full flex flex-col gap-2 items-center mb-4">
-              <div className="text-xl md:text-2xl font-bold text-center md:text-left py-4 space-y-2">
-                <div className="text-gray-700">
-                  <span className="font-medium">{fundraiserCurrency} </span>
-                  <span className="text-green-500">
-                    {currentCampaign?.current_amount?.toLocaleString()}
-                  </span>
-                  <span> raised of </span>
-                  <span className="font-medium">{fundraiserCurrency} </span>
-                  <span className="text-orange-700">
-                    {currentCampaign?.goal_amount?.toLocaleString()}
-                  </span>
-                  <span> goal</span>
+              <div className="w-full text-md font-semibold text-right text-gray-600">
+                {currentCampaign?.start_date && currentCampaign?.end_date
+                  ? calculateAndUpdateRemainingDays(
+                      currentCampaign.start_date,
+                      currentCampaign.end_date,
+                    )
+                  : 'N/A'}{' '}
+                days left
+              </div>
+              <div className="w-full flex justify-between items-center text-xl py-2">
+                <div className="font-medium">
+                  {fundraiserCurrency}
+                  {parseFloat(
+                    currentCampaign?.current_amount || '0.0',
+                  ).toLocaleString()}
                 </div>
-                <div className="text-sm text-gray-500">
-                  <span>Goal Progress</span>
+                <div className="flex justify-between gap-2 items-center text-gray-600 dark:text-gray-400">
+                  <div className="text-sm text-gray-500">
+                    <span>of</span>
+                  </div>{' '}
+                  {fundraiserCurrency}
+                  {parseFloat(
+                    currentCampaign?.goal_amount || '0.0',
+                  ).toLocaleString()}
+                  <div className="text-sm text-gray-500">
+                    <span>Goal</span>
+                  </div>
                 </div>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2.5">

@@ -4,11 +4,19 @@ import { Badge } from '../badge/Badge';
 import { categories } from '@/app/utils/helpers/categories';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
+import { useRouter } from 'next/navigation';
+import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
+import { calculateAndUpdateRemainingDays } from '@/app/utils/helpers/calculate.days';
 
 const CategoryList: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
+  const router = useRouter();
+
+  const handleClick = (campaignId: string) => {
+    router.push(`/campaign/${campaignId}?${generateRandomString()}`);
+  };
 
   // Group campaigns by category
   const fundraisingCampaigns: Record<string, CampaignResponseDataType[]> =
@@ -127,9 +135,21 @@ const CategoryList: React.FC = () => {
                             </span>
                           </div>
                         </div>
-                        <button className="mt-4 bg-green-500 text-white px-5 py-1.5 rounded-lg hover:bg-green-600 transition-colors">
-                          Donate Now
-                        </button>
+                        <div className="w-full flex justify-between items-center">
+                          <button
+                            onClick={() => handleClick(String(campaign?.id))}
+                            className="w-full mt-4 bg-green-500 text-white px-5 py-1.5 rounded-lg hover:bg-green-600 transition-colors"
+                          >
+                            Back Now
+                          </button>
+                          <div className="w-full text-xs font-semibold text-right text-gray-600">
+                            {calculateAndUpdateRemainingDays(
+                              campaign?.start_date,
+                              campaign?.end_date,
+                            )}{' '}
+                            days left
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

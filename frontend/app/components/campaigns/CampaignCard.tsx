@@ -10,6 +10,7 @@ import { generateRandomString } from '../../utils/helpers/generate.random-string
 import Image from 'next/image';
 import { deslugify } from '@/app/utils/helpers/categories';
 import { useUserContext } from '@/app/context/users/UserContext';
+import { calculateAndUpdateRemainingDays } from '@/app/utils/helpers/calculate.days';
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -97,9 +98,16 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       <h3 className="text-lg font-bold truncate whitespace-nowrap overflow-hidden">
                         {campaign?.title}
                       </h3>
-                      <span className="text-xs text-green-600">
+                      <div className="w-full text-xs text-green-600">
                         {deslugify(campaign?.category)}
-                      </span>
+                      </div>
+                      <div className="w-full text-xs font-semibold text-right text-gray-600">
+                        {calculateAndUpdateRemainingDays(
+                          campaign?.start_date,
+                          campaign?.end_date,
+                        )}{' '}
+                        days left
+                      </div>
                       <div className="w-full text-xs">
                         <Progress
                           firstProgress={
