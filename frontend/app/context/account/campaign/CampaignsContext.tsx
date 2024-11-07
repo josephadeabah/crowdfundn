@@ -90,7 +90,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const fetchedCampaigns = await response.json();
-      setCampaigns(fetchedCampaigns);
+      setCampaigns(fetchedCampaigns?.campaigns);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error fetching campaigns');
     } finally {
@@ -121,7 +121,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const allCampaigns = await response.json();
-      setCampaigns(allCampaigns);
+      setCampaigns(allCampaigns?.campaigns);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Error fetching all campaigns',

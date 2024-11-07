@@ -1,3 +1,4 @@
+import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import React, {
   createContext,
   useState,
@@ -6,47 +7,49 @@ import React, {
   useMemo,
 } from 'react';
 
-interface Category {
-  id: number;
-  name: string;
-  description: string;
-}
-
 interface CategoryState {
-  categories: Category[];
+  campaignsGroupedByCategory: Record<string, CampaignResponseDataType[]>;
   loading: boolean;
   error: string | null;
-  fetchCategories: () => void;
+  fetchGroupedCampaigns: () => void;
 }
 
 const CategoryContext = createContext<CategoryState | undefined>(undefined);
 
 export const CategoryProvider = ({ children }: { children: ReactNode }) => {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [campaignsGroupedByCategory, setCampaignsGroupedByCategory] = useState<
+    Record<string, CampaignResponseDataType[]>
+  >({});
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCategories = async (): Promise<void> => {
+  const fetchGroupedCampaigns = async (): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
-      // Mock API call - replace this with your actual API call
-      const response = await fetch('/api/categories'); // Replace with your actual endpoint
-      if (!response.ok) {
-        throw new Error('Failed to fetch categories');
-      }
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/group_by_category`,
+      ); // Replace with actual grouped campaigns API
+      if (!response.ok) throw new Error('Failed to fetch campaigns');
       const data = await response.json();
-      setCategories(data.categories); // Assuming response contains a `categories` field
+      console.log('Fetched campaigns data:', data); // Debugging: log the data
+      setCampaignsGroupedByCategory(data.grouped_campaigns);
     } catch (err: any) {
-      setError(err.message || 'Error fetching categories');
+      console.error('Error fetching campaigns:', err); // Debugging: log the error
+      setError(err.message || 'Error fetching campaigns');
     } finally {
       setLoading(false);
     }
   };
 
   const contextValue = useMemo(
-    () => ({ categories, loading, error, fetchCategories }),
-    [categories, loading, error],
+    () => ({
+      campaignsGroupedByCategory,
+      loading,
+      error,
+      fetchGroupedCampaigns,
+    }),
+    [campaignsGroupedByCategory, loading, error],
   );
 
   return (

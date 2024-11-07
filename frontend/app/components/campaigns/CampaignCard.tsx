@@ -51,7 +51,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   }, [userProfile]);
 
   // Filter campaigns by the user's country
-  const filteredCampaigns = campaigns.filter(
+  const filteredCampaigns = campaigns?.filter(
     (campaign) =>
       campaign.location.toLowerCase() === userCountry?.toLowerCase(),
   );
