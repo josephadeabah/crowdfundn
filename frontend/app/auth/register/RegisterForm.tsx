@@ -3,6 +3,7 @@ import { FaSpinner, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { UserRegistrationData } from '@/app/types/auth.register.types';
 import { registerUser } from '@/app/utils/api/api.register';
 import ToastComponent from '@/app/components/toast/Toast';
+import { categories } from '@/app/utils/helpers/categories';
 
 type FormData = {
   email: string;
@@ -53,78 +54,10 @@ const RegisterForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [countryCode, setCountryCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
-
-  const categories = [
-    'Environment',
-    'Education',
-    'Community Support',
-    'Health',
-    'Animal Welfare',
-    'Arts and Culture',
-    'Disaster Relief',
-    'Technology',
-    "Women's Empowerment",
-    'Youth Development',
-    'Sports and Recreation',
-    'Mental Health',
-    'Food Security',
-    'Human Rights',
-    'Clean Energy',
-    'Housing and Homelessness',
-    'Public Health',
-    'Disability Support',
-    'Sustainable Agriculture',
-    'Crisis Response',
-    'Economic Development',
-    'Civic Engagement',
-    'Rural Development',
-    'Water and Sanitation',
-    'Job Creation',
-    'Digital Literacy',
-    'Local Business Support',
-    'Transportation',
-    'Cultural Preservation',
-    'Innovation and Research',
-    'Renewable Energy',
-    'Wildlife Conservation',
-    'Urban Development',
-    'Elderly Care',
-    'Child Protection',
-    'Environmental Justice',
-    'Arts Education',
-    'Gender Equality',
-    'Poverty Reduction',
-    'Climate Change',
-    'Clean Water',
-    'Access to Education',
-    'Veterans Support',
-    'Disaster Preparedness',
-    'Agriculture Innovation',
-    'Humanitarian Aid',
-    'Family Services',
-    'Microfinance',
-    'Financial Literacy',
-    'Public Transport',
-    'Energy Efficiency',
-    'Social Enterprise',
-    'Plastic Recycling',
-    'Forestry Management',
-    'Marine Conservation',
-    'Disaster Response',
-    'Mental Wellness',
-    'Community Health',
-    'Peer Support',
-    'Innovation in Education',
-    'Technology Access',
-    'Public Safety',
-    'Community Empowerment',
-    'Local Farmers Support',
-  ];
 
   const paymentMethods = [
     'Credit Card',
@@ -487,8 +420,8 @@ const RegisterForm: React.FC = () => {
                 >
                   <option value="">Select Category</option>
                   {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
+                    <option key={cat.value} value={cat.value}>
+                      {cat.label}
                     </option>
                   ))}
                 </select>
