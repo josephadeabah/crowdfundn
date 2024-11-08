@@ -6,7 +6,7 @@ import { generateRandomString } from '@/app/utils/helpers/generate.random-string
 import { calculateAndUpdateRemainingDays } from '@/app/utils/helpers/calculate.days';
 import { categories } from '@/app/utils/helpers/categories';
 import { useCategoryContext } from '@/app/context/categories/CategoryContext';
-import Pagination from '@/app/components/categories/PaginateCategory'; // Adjust path as needed
+import Pagination from '@/app/components/categories/PaginateCategory';
 
 const CategoryList: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -187,6 +187,7 @@ const CategoryList: React.FC = () => {
                   }
                   onNextPage={() => handlePageChange(selectedCategory, 'next')}
                   onLoading={loading}
+                  onError={error}
                 />
               )}
           </div>
