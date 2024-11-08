@@ -53,7 +53,7 @@ export function BrandsLogoSlider() {
   return (
     <Carousel
       plugins={[autoplayPlugin.current]}
-      className="w-full py-16 bg-white dark:bg-gray-950 text-gray-700 dark:text-gray-50"
+      className="max-w-7xl mx-auto py-16 bg-gradient-to-tr from-green-50 to-orange-50 dark:from-green-900 dark:to-orange-900 dark:bg-gray-900  text-gray-700 dark:text-gray-50"
     >
       <div className="w-full flex p-8 justify-center items-center">
         <h1>Trusted by Brands</h1>

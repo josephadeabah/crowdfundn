@@ -78,15 +78,11 @@ const Cta = () => {
   return (
     <div className="w-full rounded-3xl my-3 bg-white text-gray-50 dark:bg-gray-900 dark:text-gray-50">
       <div className="mx-auto">
-        <div className="text-center mb-3 px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-green-700 mb-4">
+        <div className="text-center mb-3 px-4">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-green-700 py-8">
             Discover BantuHive
           </h1>
-          <p className="text-lg sm:text-xl italics text-gray-700 max-w-3xl mx-auto">
-            Empowering African communities through innovative donation and
-            fundraising
-          </p>
-          <h1 className="m-4 text-4xl md:text-5xl text-gray-800 dark:text-gray-50 py-6 font-semibold">
+          <h1 className="m-4 text-gray-800 dark:text-gray-50 py-6 font-semibold">
             {data.name}
           </h1>
         </div>

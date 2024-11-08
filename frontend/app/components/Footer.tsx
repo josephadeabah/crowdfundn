@@ -121,7 +121,8 @@ const Footer = () => {
           </div>
 
           <p className="text-sm text-center md:text-right">
-            &copy; 2024 BantuHive. All rights reserved.
+            &copy; {new Date().getFullYear()} BantuHive Ltd. All rights
+            reserved.
           </p>
         </div>
       </div>

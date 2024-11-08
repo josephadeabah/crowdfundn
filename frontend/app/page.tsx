@@ -174,7 +174,7 @@ const HomePage = () => {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="bg-gray-50 text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300 "
+                      className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300 "
                     >
                       <a href="/faqs">Learn More</a>
                     </motion.button>
@@ -249,7 +249,7 @@ const HomePage = () => {
           </div>
         </div>
 
-        <div className="py-20 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-50">
+        <div className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-50">
           <div className="mx-auto">
             <motion.h4
               variants={fadeInUp}
