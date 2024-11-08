@@ -42,3 +42,13 @@ export function calculateAndUpdateRemainingDays(
 
   return remainingDays;
 }
+
+export function getRemainingDaysMessage(
+  startDate: string,
+  endDate: string,
+): string {
+  const remainingDays = calculateAndUpdateRemainingDays(startDate, endDate);
+  if (remainingDays === 1) return '1 day left';
+  if (remainingDays === 0) return 'No days left';
+  return `${remainingDays} days left`;
+}

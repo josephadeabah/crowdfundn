@@ -15,7 +15,7 @@ const NotificationBar = () => {
       <div className="flex items-center gap-2">
         <span className="text-sm">
           Thanks for visiting! We're in BETA, and we'd appreciate your feedback.
-          Contact us at bantuhivefund@gmail.com
+          Contact us at bantuhive1@gmail.com
         </span>
       </div>
       <button

@@ -10,7 +10,7 @@ import { Tooltip } from 'react-tooltip';
 import SingleCampaignLoader from '@/app/loaders/SingleCampaignLoader';
 import Avatar from '@/app/components/avatar/Avatar';
 import Image from 'next/image';
-import { calculateAndUpdateRemainingDays } from '@/app/utils/helpers/calculate.days';
+import { getRemainingDaysMessage } from '@/app/utils/helpers/calculate.days';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTier, setSelectedTier] = useState<number | null>(null);
@@ -110,12 +110,11 @@ const SingleCampaignPage: React.FC = () => {
             <div className="w-full flex flex-col gap-2 items-center mb-4">
               <div className="w-full text-md font-semibold text-right text-gray-600">
                 {currentCampaign?.start_date && currentCampaign?.end_date
-                  ? calculateAndUpdateRemainingDays(
+                  ? getRemainingDaysMessage(
                       currentCampaign.start_date,
                       currentCampaign.end_date,
                     )
-                  : 'N/A'}{' '}
-                days left
+                  : 'N/A days left'}
               </div>
               <div className="w-full flex justify-between items-center text-xl py-2">
                 <div className="font-medium">

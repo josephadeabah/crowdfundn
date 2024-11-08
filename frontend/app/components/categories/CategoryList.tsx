@@ -3,7 +3,7 @@ import Modal from '@/app/components/modal/Modal';
 import { Badge } from '../badge/Badge';
 import { useRouter } from 'next/navigation';
 import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
-import { calculateAndUpdateRemainingDays } from '@/app/utils/helpers/calculate.days';
+import { getRemainingDaysMessage } from '@/app/utils/helpers/calculate.days';
 import { categories } from '@/app/utils/helpers/categories';
 import { useCategoryContext } from '@/app/context/categories/CategoryContext';
 import Pagination from '@/app/components/categories/PaginateCategory';
@@ -136,13 +136,16 @@ const CategoryList: React.FC = () => {
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="font-medium">
-                              {campaign.currency_symbol}
+                              {campaign.currency_symbol ||
+                                campaign?.currency?.toUpperCase()}{' '}
                               {parseFloat(
                                 campaign.current_amount,
                               ).toLocaleString()}
                             </span>
                             <span className="text-gray-600 dark:text-gray-400">
-                              of {campaign.currency_symbol}
+                              of{' '}
+                              {campaign.currency_symbol ||
+                                campaign?.currency?.toUpperCase()}
                               {parseFloat(
                                 campaign.goal_amount,
                               ).toLocaleString()}
@@ -157,11 +160,10 @@ const CategoryList: React.FC = () => {
                             Back Now
                           </button>
                           <div className="w-full text-xs font-semibold text-right text-gray-600">
-                            {calculateAndUpdateRemainingDays(
+                            {getRemainingDaysMessage(
                               campaign.start_date,
                               campaign.end_date,
-                            )}{' '}
-                            days left
+                            )}
                           </div>
                         </div>
                       </div>
