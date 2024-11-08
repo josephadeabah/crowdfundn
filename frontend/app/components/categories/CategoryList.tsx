@@ -71,7 +71,12 @@ const CategoryList: React.FC = () => {
         </div>
 
         {/* Modal */}
-        <Modal isOpen={isModalOpen} onClose={closeModal} size="xxlarge">
+        <Modal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          size="xxlarge"
+          closeOnBackdropClick={false}
+        >
           <div>
             <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-200">
               {categories.find((c) => c.value === selectedCategory)?.label}{' '}
