@@ -90,28 +90,28 @@ const ProcessingPayment: React.FC<ProcessingPaymentProps> = ({
         >
           <div className="flex mb-2 items-center justify-between">
             <div>
-              <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-teal-600 bg-teal-200">
+              <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-600 bg-green-200">
                 {isProcessing ? 'Processing' : 'Redirecting'}
               </span>
             </div>
             <div className="text-right">
-              <span className="text-xs font-semibold inline-block text-teal-600">
+              <span className="text-xs font-semibold inline-block text-green-600">
                 {progress}%
               </span>
             </div>
           </div>
-          <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-teal-200">
+          <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-green-200">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.5 }}
-              className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-teal-500"
+              className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"
             ></motion.div>
           </div>
         </div>
         <div className="flex justify-center items-center mt-4">
           {isProcessing ? (
-            <FaSpinner className="animate-spin text-4xl text-teal-500" />
+            <FaSpinner className="animate-spin text-4xl text-green-500" />
           ) : (
             <motion.div
               initial={{ scale: 0 }}
