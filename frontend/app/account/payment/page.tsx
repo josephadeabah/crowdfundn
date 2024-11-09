@@ -195,14 +195,14 @@ const PaymentPageContent = () => {
               setPaymentAmount={setPaymentAmount}
             />
           )}
-
+          {/* 
           <button
             type="submit"
             className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:bg-gray-400"
             disabled={isProcessing}
           >
             {isProcessing ? 'Processing...' : 'Pay Now'}
-          </button>
+          </button> */}
         </form>
       </div>
     </div>

@@ -39,7 +39,7 @@ const DownloadApp = () => {
           <Card className="w-full rounded-none shadow-none border-0">
             <CardContent className="w-full p-0 flex aspect-square items-center justify-center h-full">
               <Image
-                src="/download-app.png"
+                src="/marketing4.png"
                 alt="Bantu Hive App"
                 sizes="100vw"
                 style={{

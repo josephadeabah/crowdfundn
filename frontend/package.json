@@ -33,6 +33,7 @@
     "@types/jquery": "^3.5.31",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "18.14.0",
+    "@types/paystack__inline-js": "^1.0.0",
     "@types/react": "18.0.28",
     "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-dom": "18.0.11",

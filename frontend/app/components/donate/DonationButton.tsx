@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaCreditCard, FaPaypal } from 'react-icons/fa';
 import { SiFlutter, SiStripe } from 'react-icons/si';
 import Modal from '@/app/components/modal/Modal';
 import PaystackIcon from '@/app/components/icons/PaystackIcon';
 import ProcessingPayment from '@/app/components/donate/ProcessingPayment';
 import { Button } from '../button/Button';
+import { useUserContext } from '@/app/context/users/UserContext';
 
 interface DonationButtonProps {
   selectedTier: number | null;
@@ -18,22 +19,31 @@ const DonationButton: React.FC<DonationButtonProps> = ({
   billingFrequency,
 }) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState('paystack');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState('');
+  const { userProfile, fetchUserProfile } = useUserContext();
+
+  useEffect(() => {
+    // Fetch user profile if not available or if needed
+    if (!userProfile) {
+      fetchUserProfile();
+    }
+  }, [userProfile, fetchUserProfile]);
 
   const [paymentDetails, setPaymentDetails] = useState({
     cardNumber: '12345678901234567',
     expirationDate: '01/22',
     cvv: '123',
-    billingAddress: '123 Main St, Anytown USA',
-    country: 'USA',
-    first_name: 'John',
-    last_name: 'Doe',
-    phone: '1234567890',
+    billingAddress: '',
+    country: userProfile?.country || 'Ghana',
+    first_name: userProfile?.full_name || '',
+    last_name: '',
+    phone: `${userProfile?.phone_code || ''}${userProfile?.phone_number || ''}`,
     amount: pledgeAmount,
-    email: 'test@example.com',
-    type: 'Credit Card',
+    email: userProfile?.email || '',
+    type: userProfile?.payment_method || 'paystack',
   });
 
   const paymentMethods = [
@@ -106,13 +116,8 @@ const DonationButton: React.FC<DonationButtonProps> = ({
       >
         <h2 className="text-2xl font-bold mb-1">Select Payment Type</h2>
         <div className="text-gray-400 text-xs">
-          Your payment information is saved in a payments profile, which is
-          associated with your Bantuhive Account. If you want to change your
-          payment method, you can do so from your account
-          <a href="/account" className="ml-1 mr-1 text-red-500">
-            settings
-          </a>
-          otherwise proceed to enter manually
+          We currently support payment with PayStack. If your preferred payment
+          method is not listed, kindly wait for future availability.
         </div>
         <hr className="my-4" />
         <form onSubmit={handlePaymentSubmit}>
@@ -124,15 +129,20 @@ const DonationButton: React.FC<DonationButtonProps> = ({
                   selectedPaymentMethod === method.id
                     ? 'border-black bg-gray-100'
                     : 'border-gray-200 hover:border-gray-800'
-                }`}
+                } ${method.id !== 'paystack' ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <input
                   type="radio"
                   name="paymentMethod"
                   value={method.id}
                   checked={selectedPaymentMethod === method.id}
-                  onChange={() => handlePaymentMethodSelect(method.id)}
+                  onChange={() => {
+                    if (method.id === 'paystack') {
+                      handlePaymentMethodSelect(method.id);
+                    }
+                  }}
                   className="sr-only"
+                  disabled={method.id !== 'paystack'}
                 />
                 <span className="flex items-center">
                   {method.icon}

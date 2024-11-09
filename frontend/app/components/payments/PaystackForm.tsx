@@ -1,4 +1,5 @@
 import React from 'react';
+import PaystackPop from '@paystack/inline-js';
 
 interface PaystackFormProps {
   cardholderName: string;
@@ -23,6 +24,25 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   setPaymentPhone,
   setPaymentAmount,
 }) => {
+  const handlePayment = () => {
+    const paystack = new PaystackPop();
+
+    paystack.newTransaction({
+      key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
+      email: paymentEmail,
+      amount: Number(paymentAmount) * 100, // Convert to kobo
+      onSuccess: (transaction) => {
+        alert(
+          `Payment successful! Transaction reference: ${transaction.reference}`,
+        );
+        // Here you can send `transaction.reference` and other details to your backend for verification
+      },
+      onCancel: () => {
+        alert('Transaction was canceled.');
+      },
+    });
+  };
+
   return (
     <>
       <div className="mb-4">
@@ -103,6 +123,14 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
           onChange={(e) => setPaymentAmount(e.target.value)}
         />
       </div>
+
+      <button
+        type="button"
+        onClick={handlePayment}
+        className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:bg-gray-400"
+      >
+        Proceed to Payment
+      </button>
     </>
   );
 };

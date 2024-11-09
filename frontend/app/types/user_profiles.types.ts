@@ -22,6 +22,7 @@ export interface UserProfile {
   admin: boolean;
   full_name: string;
   phone_number: string;
+  phone_code: string;
   country: string;
   payment_method: string;
   mobile_money_provider: string;
