@@ -9,6 +9,10 @@ interface ProcessingPaymentProps {
     amount: string;
     tier: string;
   };
+  fundraiserDetails: {
+    id: string;
+    campaignId: string;
+  };
   paymentDetails: {
     cardNumber: string;
     expirationDate: string;
@@ -28,6 +32,7 @@ const ProcessingPayment: React.FC<ProcessingPaymentProps> = ({
   selectedPaymentMethod,
   paymentDetails,
   billing,
+  fundraiserDetails,
 }) => {
   const [isProcessing, setIsProcessing] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -63,12 +68,22 @@ const ProcessingPayment: React.FC<ProcessingPaymentProps> = ({
           phone: paymentDetails.phone,
           amount: billing.amount,
           email: paymentDetails.email,
+          fundraiserId: fundraiserDetails.id, // Add fundraiser details here
+          campaignId: fundraiserDetails.campaignId,
+          billingFrequency: billing.frequency,
+          tier: billing.tier,
         }).toString();
 
         window.location.href = `/account/payment?${query}`;
       }, 3000);
     }
-  }, [progress]);
+  }, [
+    progress,
+    selectedPaymentMethod,
+    paymentDetails,
+    billing,
+    fundraiserDetails,
+  ]);
 
   return (
     <div className="flex flex-col items-center justify-center">

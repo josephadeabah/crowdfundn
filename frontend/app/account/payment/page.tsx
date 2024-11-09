@@ -5,11 +5,16 @@ import { FaCreditCard, FaPaypal } from 'react-icons/fa';
 import { SiFlutter, SiStripe } from 'react-icons/si';
 import PaystackIcon from '@/app/components/icons/PaystackIcon';
 import FullscreenLoader from '@/app/loaders/FullscreenLoader';
-import PaystackForm from '@/app/components/payments/PaystackForm';
+import dynamic from 'next/dynamic';
 import CreditCardForm from '@/app/components/payments/CreditCardForm';
 import StripeForm from '@/app/components/payments/StripeForm';
 import FlutterwaveForm from '@/app/components/payments/FlutterwaveForm';
 import PayPalForm from '@/app/components/payments/PayPalForm';
+
+const PaystackForm = dynamic(
+  () => import('@/app/components/payments/PaystackForm'),
+  { ssr: false },
+);
 
 const PaymentPageContent = () => {
   const [paymentMethod, setPaymentMethod] = useState('');
@@ -21,6 +26,9 @@ const PaymentPageContent = () => {
   const [paymentPassword, setPaymentPassword] = useState('');
   const [paymentPhone, setPaymentPhone] = useState('');
   const [paymentAmount, setPaymentAmount] = useState('');
+  const [fundraiserId, setFundraiserId] = useState('');
+  const [campaignId, setCampaignId] = useState('');
+  const [billingFrequency, setBillingFrequency] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -36,6 +44,9 @@ const PaymentPageContent = () => {
     const paymentEmailParam = searchParams.get('email') ?? '';
     const payAmount = searchParams.get('amount');
     const phone = searchParams.get('phone');
+    const fundraiserIdParam = searchParams.get('fundraiserId') ?? '';
+    const campaignIdParam = searchParams.get('campaignId') ?? '';
+    const billingFrequencyParam = searchParams.get('billingFrequency') ?? '';
 
     if (method) setPaymentMethod(method);
     if (cardNumberParam) setCardNumber(cardNumberParam);
@@ -45,6 +56,9 @@ const PaymentPageContent = () => {
     if (paymentEmailParam) setPaymentEmail(paymentEmailParam);
     if (payAmount) setPaymentAmount(payAmount);
     if (phone) setPaymentPhone(phone);
+    if (fundraiserIdParam) setFundraiserId(fundraiserIdParam);
+    if (campaignIdParam) setCampaignId(campaignIdParam);
+    if (billingFrequencyParam) setBillingFrequency(billingFrequencyParam);
   }, [searchParams]);
 
   const paymentMethods: {
@@ -97,7 +111,6 @@ const PaymentPageContent = () => {
     const isValid = validatePaymentForm();
     if (isValid) {
       setIsProcessing(true);
-      // Simulate payment processing
       setTimeout(() => {
         setIsProcessing(false);
         alert('Payment processed successfully!');
@@ -146,6 +159,9 @@ const PaymentPageContent = () => {
               paymentEmail={paymentEmail}
               paymentPhone={paymentPhone}
               paymentAmount={paymentAmount}
+              fundraiserId={fundraiserId}
+              campaignId={campaignId}
+              billingFrequency={billingFrequency}
               errors={errors}
               setCardholderName={setCardholderName}
               setPaymentEmail={setPaymentEmail}
@@ -195,14 +211,6 @@ const PaymentPageContent = () => {
               setPaymentAmount={setPaymentAmount}
             />
           )}
-          {/* 
-          <button
-            type="submit"
-            className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:bg-gray-400"
-            disabled={isProcessing}
-          >
-            {isProcessing ? 'Processing...' : 'Pay Now'}
-          </button> */}
         </form>
       </div>
     </div>

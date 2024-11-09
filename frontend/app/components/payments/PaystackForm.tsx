@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PaystackPop from '@paystack/inline-js';
 
 interface PaystackFormProps {
@@ -6,6 +6,9 @@ interface PaystackFormProps {
   paymentEmail: string;
   paymentPhone: string;
   paymentAmount: string;
+  fundraiserId: string;
+  campaignId: string;
+  billingFrequency: string;
   errors: { [key: string]: string };
   setCardholderName: React.Dispatch<React.SetStateAction<string>>;
   setPaymentEmail: React.Dispatch<React.SetStateAction<string>>;
@@ -18,6 +21,9 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   paymentEmail,
   paymentPhone,
   paymentAmount,
+  fundraiserId,
+  campaignId,
+  billingFrequency,
   errors,
   setCardholderName,
   setPaymentEmail,
@@ -31,6 +37,42 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
       key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
       email: paymentEmail,
       amount: Number(paymentAmount) * 100, // Convert to kobo
+      phone: paymentPhone || '',
+      firstName: cardholderName,
+      metadata: {
+        custom_fields: [
+          {
+            display_name: 'Fundraiser ID',
+            variable_name: 'fundraiserId',
+            value: fundraiserId,
+          },
+          {
+            display_name: 'Campaign ID',
+            variable_name: 'campaignId',
+            value: campaignId,
+          },
+          {
+            display_name: 'Billing Frequency',
+            variable_name: 'billingFrequency',
+            value: billingFrequency,
+          },
+          {
+            display_name: 'Donor Name',
+            variable_name: 'cardholderName',
+            value: cardholderName,
+          },
+          {
+            display_name: 'Donor Email',
+            variable_name: 'paymentEmail',
+            value: paymentEmail,
+          },
+          {
+            display_name: 'Donor Phone',
+            variable_name: 'paymentPhone',
+            value: paymentPhone,
+          },
+        ],
+      },
       onSuccess: (transaction) => {
         alert(
           `Payment successful! Transaction reference: ${transaction.reference}`,
@@ -39,6 +81,12 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
       },
       onCancel: () => {
         alert('Transaction was canceled.');
+      },
+      onError: (error) => {
+        alert(`An error occurred: ${error.message}`);
+      },
+      onLoad: () => {
+        console.log('Loading...');
       },
     });
   };
@@ -129,7 +177,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         onClick={handlePayment}
         className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:bg-gray-400"
       >
-        Proceed to Payment
+        Proceed to Pay
       </button>
     </>
   );

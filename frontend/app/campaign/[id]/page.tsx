@@ -329,6 +329,15 @@ const SingleCampaignPage: React.FC = () => {
                     </div>
                     <div className="flex gap-1 items-center">
                       <RadioGroupItem
+                        value="hourly"
+                        id="hourly"
+                        className="mr-2"
+                      />
+                      <label htmlFor="hourly">Hourly</label>
+                    </div>
+
+                    <div className="flex gap-1 items-center">
+                      <RadioGroupItem
                         value="daily"
                         id="daily"
                         className="mr-2"
@@ -354,11 +363,29 @@ const SingleCampaignPage: React.FC = () => {
                     </div>
                     <div className="flex gap-1 items-center">
                       <RadioGroupItem
-                        value="yearly"
-                        id="yearly"
+                        value="quartely"
+                        id="quartely"
                         className="mr-2"
                       />
-                      <label htmlFor="yearly">Yearly</label>
+                      <label htmlFor="quartely">Quartely</label>
+                    </div>
+                    <div className="flex gap-1 items-center">
+                      <RadioGroupItem
+                        value="biannually"
+                        id="biannually"
+                        className="mr-2"
+                      />
+                      <label htmlFor="biannually">
+                        Bi-Annually (every 6 months)
+                      </label>
+                    </div>
+                    <div className="flex gap-1 items-center">
+                      <RadioGroupItem
+                        value="annualy"
+                        id="annualy"
+                        className="mr-2"
+                      />
+                      <label htmlFor="annualy">Annually</label>
                     </div>
                   </RadioGroup>
                 </div>
@@ -368,6 +395,10 @@ const SingleCampaignPage: React.FC = () => {
                   selectedTier={selectedTier}
                   pledgeAmount={pledgeAmount}
                   billingFrequency={billingFrequency}
+                  fundraiserDetails={{
+                    id: String(currentCampaign?.fundraiser_id),
+                    campaignId: String(currentCampaign?.id),
+                  }}
                 />
               </div>
             </div>

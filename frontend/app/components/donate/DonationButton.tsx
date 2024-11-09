@@ -11,12 +11,17 @@ interface DonationButtonProps {
   selectedTier: number | null;
   pledgeAmount: string;
   billingFrequency: string;
+  fundraiserDetails: {
+    id: string;
+    campaignId: string;
+  };
 }
 
 const DonationButton: React.FC<DonationButtonProps> = ({
   selectedTier,
   pledgeAmount,
   billingFrequency,
+  fundraiserDetails,
 }) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
@@ -198,6 +203,10 @@ const DonationButton: React.FC<DonationButtonProps> = ({
             selectedPaymentMethod={selectedPaymentMethod}
             paymentDetails={paymentDetails}
             billing={billing} // Ensure billing is correctly structured
+            fundraiserDetails={{
+              id: String(fundraiserDetails?.id),
+              campaignId: String(fundraiserDetails?.campaignId),
+            }}
           />
         </Modal>
       )}
