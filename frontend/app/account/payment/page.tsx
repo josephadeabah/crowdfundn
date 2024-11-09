@@ -5,6 +5,11 @@ import { FaCreditCard, FaPaypal } from 'react-icons/fa';
 import { SiFlutter, SiStripe } from 'react-icons/si';
 import PaystackIcon from '@/app/components/icons/PaystackIcon';
 import FullscreenLoader from '@/app/loaders/FullscreenLoader';
+import PaystackForm from '@/app/components/payments/PaystackForm';
+import CreditCardForm from '@/app/components/payments/CreditCardForm';
+import StripeForm from '@/app/components/payments/StripeForm';
+import FlutterwaveForm from '@/app/components/payments/FlutterwaveForm';
+import PayPalForm from '@/app/components/payments/PayPalForm';
 
 const PaymentPageContent = () => {
   const [paymentMethod, setPaymentMethod] = useState('');
@@ -119,478 +124,77 @@ const PaymentPageContent = () => {
         </div>
 
         <form onSubmit={handleSubmitPayment}>
-          {paymentMethod == 'creditCard' ? (
-            <>
-              <div className="mb-4">
-                <label
-                  htmlFor="cardNumber"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Card Number
-                </label>
-                <input
-                  type="text"
-                  id="cardNumber"
-                  className={`w-full px-3 py-2 border rounded-md ${
-                    errors.cardNumber ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="1234 5678 9012 3456"
-                  value={cardNumber}
-                  onChange={(e) => setCardNumber(e.target.value)}
-                  aria-invalid={!!errors.cardNumber}
-                  aria-describedby={
-                    errors.cardNumber ? 'cardNumber-error' : undefined
-                  }
-                />
-                {errors.cardNumber && (
-                  <p
-                    id="cardNumber-error"
-                    className="mt-1 text-sm text-red-500"
-                  >
-                    {errors.cardNumber}
-                  </p>
-                )}
-              </div>
+          {paymentMethod === 'creditCard' && (
+            <CreditCardForm
+              cardNumber={cardNumber}
+              expiryDate={expiryDate}
+              cvv={cvv}
+              cardholderName={cardholderName}
+              paymentAmount={paymentAmount}
+              errors={errors}
+              setCardNumber={setCardNumber}
+              setExpiryDate={setExpiryDate}
+              setCvv={setCvv}
+              setCardholderName={setCardholderName}
+              setPaymentAmount={setPaymentAmount}
+            />
+          )}
 
-              <div className="mb-4 flex space-x-4">
-                <div className="flex-1">
-                  <label
-                    htmlFor="expiryDate"
-                    className="block mb-2 text-sm font-medium text-gray-700"
-                  >
-                    Expiry Date
-                  </label>
-                  <input
-                    type="text"
-                    id="expiryDate"
-                    className={`w-full px-3 py-2 border rounded-md ${
-                      errors.expiryDate ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                    placeholder="MM/YY"
-                    value={expiryDate}
-                    onChange={(e) => setExpiryDate(e.target.value)}
-                    aria-invalid={!!errors.expiryDate}
-                    aria-describedby={
-                      errors.expiryDate ? 'expiryDate-error' : undefined
-                    }
-                  />
-                  {errors.expiryDate && (
-                    <p
-                      id="expiryDate-error"
-                      className="mt-1 text-sm text-red-500"
-                    >
-                      {errors.expiryDate}
-                    </p>
-                  )}
-                </div>
+          {paymentMethod === 'paystack' && (
+            <PaystackForm
+              cardholderName={cardholderName}
+              paymentEmail={paymentEmail}
+              paymentPhone={paymentPhone}
+              paymentAmount={paymentAmount}
+              errors={errors}
+              setCardholderName={setCardholderName}
+              setPaymentEmail={setPaymentEmail}
+              setPaymentPhone={setPaymentPhone}
+              setPaymentAmount={setPaymentAmount}
+            />
+          )}
 
-                <div className="flex-1">
-                  <label
-                    htmlFor="cvv"
-                    className="block mb-2 text-sm font-medium text-gray-700"
-                  >
-                    CVV
-                  </label>
-                  <input
-                    type="text"
-                    id="cvv"
-                    className={`w-full px-3 py-2 border rounded-md ${
-                      errors.cvv ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                    placeholder="123"
-                    value={cvv}
-                    onChange={(e) => setCvv(e.target.value)}
-                    aria-invalid={!!errors.cvv}
-                    aria-describedby={errors.cvv ? 'cvv-error' : undefined}
-                  />
-                  {errors.cvv && (
-                    <p id="cvv-error" className="mt-1 text-sm text-red-500">
-                      {errors.cvv}
-                    </p>
-                  )}
-                </div>
-              </div>
+          {paymentMethod === 'paypal' && (
+            <PayPalForm
+              cardholderName={cardholderName}
+              paymentEmail={paymentEmail}
+              paymentPhone={paymentPhone}
+              paymentAmount={paymentAmount}
+              errors={errors}
+              setCardholderName={setCardholderName}
+              setPaymentEmail={setPaymentEmail}
+              setPaymentPhone={setPaymentPhone}
+              setPaymentAmount={setPaymentAmount}
+            />
+          )}
 
-              <div className="mb-4">
-                <label
-                  htmlFor="cardholderName"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Cardholder Name
-                </label>
-                <input
-                  type="text"
-                  id="cardholderName"
-                  className={`w-full px-3 py-2 border rounded-md ${
-                    errors.cardholderName ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="John Doe"
-                  value={cardholderName}
-                  onChange={(e) => setCardholderName(e.target.value)}
-                  aria-invalid={!!errors.cardholderName}
-                  aria-describedby={
-                    errors.cardholderName ? 'cardholderName-error' : undefined
-                  }
-                />
-                {errors.cardholderName && (
-                  <p
-                    id="cardholderName-error"
-                    className="mt-1 text-sm text-red-500"
-                  >
-                    {errors.cardholderName}
-                  </p>
-                )}
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="paymentAmount"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Amount
-                </label>
-                <input
-                  type="text"
-                  id="paymentAmount"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="Enter your amount"
-                  value={paymentAmount}
-                  onChange={(e) => setPaymentAmount(e.target.value)}
-                />
-              </div>
-            </>
-          ) : null}
+          {paymentMethod === 'flutterwave' && (
+            <FlutterwaveForm
+              cardholderName={cardholderName}
+              paymentEmail={paymentEmail}
+              paymentPhone={paymentPhone}
+              paymentAmount={paymentAmount}
+              errors={errors}
+              setCardholderName={setCardholderName}
+              setPaymentEmail={setPaymentEmail}
+              setPaymentPhone={setPaymentPhone}
+              setPaymentAmount={setPaymentAmount}
+            />
+          )}
 
-          {paymentMethod == 'paystack' ? (
-            <>
-              <div className="mb-4">
-                <label
-                  htmlFor="cardholderName"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="cardholderName"
-                  className={`w-full px-3 py-2 border rounded-md ${
-                    errors.cardholderName ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="John Doe"
-                  value={cardholderName}
-                  onChange={(e) => setCardholderName(e.target.value)}
-                  aria-invalid={!!errors.cardholderName}
-                  aria-describedby={
-                    errors.cardholderName ? 'cardholderName-error' : undefined
-                  }
-                />
-                {errors.cardholderName && (
-                  <p
-                    id="cardholderName-error"
-                    className="mt-1 text-sm text-red-500"
-                  >
-                    {errors.cardholderName}
-                  </p>
-                )}
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="paymentEmail"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="paymentEmail"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="you@example.com"
-                  value={paymentEmail}
-                  onChange={(e) => setPaymentEmail(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="paymentPhone"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Phone
-                </label>
-                <input
-                  type="text"
-                  id="paymentPhone"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="Enter your phone number"
-                  value={paymentPhone}
-                  onChange={(e) => setPaymentPhone(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="paymentAmount"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Amount
-                </label>
-                <input
-                  type="text"
-                  id="paymentAmount"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="Enter your amount"
-                  value={paymentAmount}
-                  onChange={(e) => setPaymentAmount(e.target.value)}
-                />
-              </div>
-            </>
-          ) : null}
-
-          {paymentMethod == 'paypal' ? (
-            <>
-              <div className="mb-4">
-                <label
-                  htmlFor="cardholderName"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="cardholderName"
-                  className={`w-full px-3 py-2 border rounded-md ${
-                    errors.cardholderName ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="John Doe"
-                  value={cardholderName}
-                  onChange={(e) => setCardholderName(e.target.value)}
-                  aria-invalid={!!errors.cardholderName}
-                  aria-describedby={
-                    errors.cardholderName ? 'cardholderName-error' : undefined
-                  }
-                />
-                {errors.cardholderName && (
-                  <p
-                    id="cardholderName-error"
-                    className="mt-1 text-sm text-red-500"
-                  >
-                    {errors.cardholderName}
-                  </p>
-                )}
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="paymentEmail"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="paymentEmail"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="you@example.com"
-                  value={paymentEmail}
-                  onChange={(e) => setPaymentEmail(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="paymentPhone"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Phone
-                </label>
-                <input
-                  type="text"
-                  id="paymentPhone"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="Enter your phone number"
-                  value={paymentPhone}
-                  onChange={(e) => setPaymentPhone(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="paymentAmount"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Amount
-                </label>
-                <input
-                  type="text"
-                  id="paymentAmount"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="Enter your amount"
-                  value={paymentAmount}
-                  onChange={(e) => setPaymentAmount(e.target.value)}
-                />
-              </div>
-            </>
-          ) : null}
-
-          {paymentMethod == 'flutterwave' ? (
-            <>
-              <div className="mb-4">
-                <label
-                  htmlFor="cardholderName"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="cardholderName"
-                  className={`w-full px-3 py-2 border rounded-md ${
-                    errors.cardholderName ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="John Doe"
-                  value={cardholderName}
-                  onChange={(e) => setCardholderName(e.target.value)}
-                  aria-invalid={!!errors.cardholderName}
-                  aria-describedby={
-                    errors.cardholderName ? 'cardholderName-error' : undefined
-                  }
-                />
-                {errors.cardholderName && (
-                  <p
-                    id="cardholderName-error"
-                    className="mt-1 text-sm text-red-500"
-                  >
-                    {errors.cardholderName}
-                  </p>
-                )}
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="paymentEmail"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="paymentEmail"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="you@example.com"
-                  value={paymentEmail}
-                  onChange={(e) => setPaymentEmail(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="paymentPhone"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Phone
-                </label>
-                <input
-                  type="text"
-                  id="paymentPhone"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="Enter your phone number"
-                  value={paymentPhone}
-                  onChange={(e) => setPaymentPhone(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="paymentAmount"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Amount
-                </label>
-                <input
-                  type="text"
-                  id="paymentAmount"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="Enter your amount"
-                  value={paymentAmount}
-                  onChange={(e) => setPaymentAmount(e.target.value)}
-                />
-              </div>
-            </>
-          ) : null}
-
-          {paymentMethod == 'stripe' ? (
-            <>
-              <div className="mb-4">
-                <label
-                  htmlFor="cardholderName"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="cardholderName"
-                  className={`w-full px-3 py-2 border rounded-md ${
-                    errors.cardholderName ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="John Doe"
-                  value={cardholderName}
-                  onChange={(e) => setCardholderName(e.target.value)}
-                  aria-invalid={!!errors.cardholderName}
-                  aria-describedby={
-                    errors.cardholderName ? 'cardholderName-error' : undefined
-                  }
-                />
-                {errors.cardholderName && (
-                  <p
-                    id="cardholderName-error"
-                    className="mt-1 text-sm text-red-500"
-                  >
-                    {errors.cardholderName}
-                  </p>
-                )}
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="paymentEmail"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="paymentEmail"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="you@example.com"
-                  value={paymentEmail}
-                  onChange={(e) => setPaymentEmail(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="paymentPhone"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Phone
-                </label>
-                <input
-                  type="text"
-                  id="paymentPhone"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="Enter your phone number"
-                  value={paymentPhone}
-                  onChange={(e) => setPaymentPhone(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="paymentAmount"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                >
-                  Amount
-                </label>
-                <input
-                  type="text"
-                  id="paymentAmount"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="Enter your amount"
-                  value={paymentAmount}
-                  onChange={(e) => setPaymentAmount(e.target.value)}
-                />
-              </div>
-            </>
-          ) : null}
+          {paymentMethod === 'stripe' && (
+            <StripeForm
+              cardholderName={cardholderName}
+              paymentEmail={paymentEmail}
+              paymentPhone={paymentPhone}
+              paymentAmount={paymentAmount}
+              errors={errors}
+              setCardholderName={setCardholderName}
+              setPaymentEmail={setPaymentEmail}
+              setPaymentPhone={setPaymentPhone}
+              setPaymentAmount={setPaymentAmount}
+            />
+          )}
 
           <button
             type="submit"
