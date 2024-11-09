@@ -122,7 +122,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
         <h2 className="text-2xl font-bold mb-1">Select Payment Type</h2>
         <div className="text-gray-400 text-xs">
           We currently support payment with PayStack. If your preferred payment
-          method is not listed, kindly wait for future availability.
+          method is disabled, kindly wait for future availability.
         </div>
         <hr className="my-4" />
         <form onSubmit={handlePaymentSubmit}>

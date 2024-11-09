@@ -3,22 +3,21 @@ import React, { useEffect, useState } from 'react';
 import DonationButton from '@/app/components/donate/DonationButton';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useParams } from 'next/navigation';
-import { FaInfoCircle, FaShare } from 'react-icons/fa';
+import { FaShare } from 'react-icons/fa';
 import { Button } from '@/app/components/button/Button';
-import { RadioGroup, RadioGroupItem } from '@/app/components/radio/RadioGroup';
-import { Tooltip } from 'react-tooltip';
 import SingleCampaignLoader from '@/app/loaders/SingleCampaignLoader';
 import Avatar from '@/app/components/avatar/Avatar';
 import Image from 'next/image';
 import { getRemainingDaysMessage } from '@/app/utils/helpers/calculate.days';
+import CommentsSection from '@/app/components/comments/CommentSection';
+import FundraiserUpdates from '@/app/components/fundraiserupdate/FundraiserUpdates';
+import RewardSelection from '@/app/components/selectreward/RewardSelection';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTier, setSelectedTier] = useState<number | null>(null);
   const [pledgeAmount, setPledgeAmount] = useState<string>('');
-  const [comment, setComment] = useState<string>('');
   const [billingFrequency, setBillingFrequency] = useState<string>('once');
   const [copyButtonText, setCopyButtonText] = useState<string>('Copy');
-  const [areCommentsVisible, setAreCommentsVisible] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const { id } = useParams() as { id: string };
@@ -40,24 +39,6 @@ const SingleCampaignPage: React.FC = () => {
     }
   };
 
-  const handlePledgeSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Pledge submitted:', {
-      selectedTier,
-      pledgeAmount,
-      billingFrequency,
-    });
-  };
-
-  const handleCommentSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Comment submitted:', comment);
-    setComment('');
-  };
-
-  const toggleCommentsVisibility = () =>
-    setAreCommentsVisible(!areCommentsVisible);
-
   const handleShare = async () => {
     const currentUrl = window.location.href;
     try {
@@ -72,7 +53,6 @@ const SingleCampaignPage: React.FC = () => {
         setCopyButtonText('Copied');
         setTimeout(() => setCopyButtonText('Copy'), 2000);
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setError('Error sharing fundraising details');
     }
@@ -109,7 +89,7 @@ const SingleCampaignPage: React.FC = () => {
             </div>
 
             {/* Progress Bar and Stats */}
-            <div className="bg-white rounded-lg shadow py-6 px-2 mb-8">
+            <div className="bg-white rounded-lg shadow-sm py-6 px-2 mb-8">
               <div className="w-full flex flex-col gap-2 items-center mb-4">
                 <div className="w-full text-md font-semibold text-right text-gray-600">
                   {currentCampaign?.start_date && currentCampaign?.end_date
@@ -165,34 +145,11 @@ const SingleCampaignPage: React.FC = () => {
             <h2 className="text-2xl font-bold mb-4 w-full">
               Fundraiser Updates
             </h2>
-            <div className="max-h-96 overflow-y-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
-              {currentCampaign?.updates?.length ? (
-                currentCampaign.updates.map((update) => (
-                  <div
-                    key={update.id}
-                    className="bg-white dark:bg-gray-800 rounded-sm shadow p-4 mb-4 flex items-start" // Dark mode background
-                  >
-                    <div className="flex-shrink-0">
-                      {' '}
-                      {/* Prevent avatar from shrinking */}
-                      <Avatar name={String(fundraiserName)} size="sm" />
-                    </div>
-                    <div className="ml-3">
-                      <div className="font-semibold text-sm text-gray-600 dark:text-gray-300">
-                        {new Date(update.created_at).toLocaleString()}{' '}
-                        {/* Format the date */}
-                      </div>
-                      <p className="text-gray-800 dark:text-gray-200 break-words">
-                        {update.content}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="py-2">No update on this fundraiser yet.</div>
-              )}
-            </div>
-            <div className="bg-white rounded-lg shadow p-6 mb-8">
+            <FundraiserUpdates
+              updates={currentCampaign?.updates || []}
+              fundraiserName={fundraiserName}
+            />
+            <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
               <h2 className="text-2xl font-bold mb-4">Share this fundraiser</h2>
               <div className="flex items-center mb-4">
                 <Button onClick={handleShare} className="mr-4">
@@ -204,50 +161,8 @@ const SingleCampaignPage: React.FC = () => {
               </div>
               {error && <p className="text-red-500">{error}</p>}
             </div>
-
             {/* Comments Section */}
-            <div className="bg-white rounded-lg shadow p-6 mb-8">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">
-                  Comments ({currentCampaign?.comments?.length})
-                </h2>
-                <button
-                  onClick={toggleCommentsVisibility}
-                  className="text-red-500"
-                >
-                  {areCommentsVisible ? 'Hide' : 'Show'}
-                </button>
-              </div>
-              {areCommentsVisible && (
-                <div className="max-h-96 overflow-y-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
-                  {currentCampaign?.comments?.length ? (
-                    currentCampaign.comments.map((comment) => (
-                      <div key={comment.id} className="border-b py-2">
-                        <p className="font-semibold">{comment.user}</p>
-                        <p className="text-gray-600">{comment.content}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <div>No comment yet.</div>
-                  )}
-                </div>
-              )}
-              <form onSubmit={handleCommentSubmit} className="mt-4">
-                <textarea
-                  className="w-full border rounded-md p-2"
-                  placeholder="Leave a comment..."
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  required
-                />
-                <button
-                  type="submit"
-                  className="mt-2 bg-gray-500 text-white rounded-md px-4 py-2"
-                >
-                  Submit Comment
-                </button>
-              </form>
-            </div>
+            <CommentsSection comments={currentCampaign?.comments || []} />
           </div>
 
           {/* Right Column: Sticky Rewards */}
@@ -262,134 +177,16 @@ const SingleCampaignPage: React.FC = () => {
             <div className="py-2">
               {currentCampaign?.fundraiser?.profile?.description}
             </div>
-            <div className="bg-white rounded-lg shadow px-6 mb-20 pb-10">
-              <h2 className="text-2xl font-bold mb-4">Select a Reward</h2>
-              <div className="max-h-96 overflow-y-auto py-4 [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
-                {currentCampaign?.rewards?.length ? (
-                  currentCampaign.rewards.map((reward) => (
-                    <div
-                      key={reward.id}
-                      className={`border rounded-md p-4 mb-4 cursor-pointer transition duration-300 ${
-                        selectedTier === reward.id
-                          ? 'border-gray-500 bg-orange-50'
-                          : 'hover:border-orange-300'
-                      }`}
-                      onClick={() => handleTierSelect(reward?.id)}
-                    >
-                      <div className="relative w-full h-fit aspect-square rounded overflow-hidden">
-                        <Image
-                          src={reward?.image || '/bantuhive.svg'}
-                          alt="fundraising thumbnail"
-                          layout="fill"
-                          loading="eager"
-                          objectFit="cover"
-                        />
-                      </div>
-                      <h3 className="font-bold mb-2">{reward?.title}</h3>
-                      <p className="text-gray-600 mb-2">
-                        {reward?.description}
-                      </p>
-                      <div className="font-semibold">
-                        Pledge ${reward?.amount} or more
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div>No rewards on this fundraising at this time.</div>
-                )}
-              </div>
-              <form onSubmit={handlePledgeSubmit} className="mb-4 relative">
-                <FaInfoCircle
-                  data-tooltip-id="amount-info"
-                  data-tooltip-content="Enter the amount you want to pledge. You will be charged this amount during payment. If you do not want any reward just enter the amount you want to donate and choose backing period to proceed."
-                  className="absolute top-0 left-0 text-gray-500"
-                />
-                <Tooltip
-                  id="amount-info"
-                  className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
-                />
-                <input
-                  type="number"
-                  className="w-full p-2 border rounded-md mb-4 mt-2"
-                  placeholder="Enter pledge amount"
-                  value={pledgeAmount}
-                  onChange={(e) => setPledgeAmount(e.target.value)}
-                  required
-                />
-
-                <div className="mb-4">
-                  <h3 className="font-semibold mb-2">Choose Backing Period</h3>
-                  <RadioGroup
-                    value={billingFrequency}
-                    onValueChange={setBillingFrequency}
-                  >
-                    <div className="flex gap-1 items-center">
-                      <RadioGroupItem value="once" id="once" className="mr-2" />
-                      <label htmlFor="daily">One-Time</label>
-                    </div>
-                    <div className="flex gap-1 items-center">
-                      <RadioGroupItem
-                        value="hourly"
-                        id="hourly"
-                        className="mr-2"
-                      />
-                      <label htmlFor="hourly">Hourly</label>
-                    </div>
-
-                    <div className="flex gap-1 items-center">
-                      <RadioGroupItem
-                        value="daily"
-                        id="daily"
-                        className="mr-2"
-                      />
-                      <label htmlFor="daily">Daily</label>
-                    </div>
-
-                    <div className="flex gap-1 items-center">
-                      <RadioGroupItem
-                        value="weekly"
-                        id="weekly"
-                        className="mr-2"
-                      />
-                      <label htmlFor="weekly">Weekly</label>
-                    </div>
-                    <div className="flex gap-1 items-center">
-                      <RadioGroupItem
-                        value="monthly"
-                        id="monthly"
-                        className="mr-2"
-                      />
-                      <label htmlFor="monthly">Monthly</label>
-                    </div>
-                    <div className="flex gap-1 items-center">
-                      <RadioGroupItem
-                        value="quartely"
-                        id="quartely"
-                        className="mr-2"
-                      />
-                      <label htmlFor="quartely">Quartely</label>
-                    </div>
-                    <div className="flex gap-1 items-center">
-                      <RadioGroupItem
-                        value="biannually"
-                        id="biannually"
-                        className="mr-2"
-                      />
-                      <label htmlFor="biannually">
-                        Bi-Annually (every 6 months)
-                      </label>
-                    </div>
-                    <div className="flex gap-1 items-center">
-                      <RadioGroupItem
-                        value="annualy"
-                        id="annualy"
-                        className="mr-2"
-                      />
-                      <label htmlFor="annualy">Annually</label>
-                    </div>
-                  </RadioGroup>
-                </div>
-              </form>
+            <div className="w-full marker:bg-white rounded-lg shadow-sm px-6 pb-4">
+              <RewardSelection
+                rewards={currentCampaign?.rewards || []}
+                selectedTier={selectedTier}
+                onTierSelect={handleTierSelect}
+                pledgeAmount={pledgeAmount}
+                setPledgeAmount={setPledgeAmount}
+                billingFrequency={billingFrequency}
+                setBillingFrequency={setBillingFrequency}
+              />
               <div className="w-full">
                 <DonationButton
                   selectedTier={selectedTier}
