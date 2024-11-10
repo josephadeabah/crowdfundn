@@ -30,65 +30,110 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   setPaymentPhone,
   setPaymentAmount,
 }) => {
-  const handlePayment = () => {
-    const paystack = new PaystackPop();
+  const [loading, setLoading] = useState(false); // Add loading state
 
-    paystack.newTransaction({
-      key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
-      email: paymentEmail,
-      amount: Number(paymentAmount) * 100, // Convert to kobo
-      phone: paymentPhone || '',
-      firstName: cardholderName,
-      metadata: {
-        custom_fields: [
-          {
-            display_name: 'Fundraiser ID',
-            variable_name: 'fundraiserId',
-            value: fundraiserId,
+  const handlePayment = async () => {
+    setLoading(true); // Set loading to true when starting the payment process
+
+    try {
+      // Step 1: Create the donation transaction in the backend
+      const donationResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-          {
-            display_name: 'Campaign ID',
-            variable_name: 'campaignId',
-            value: campaignId,
-          },
-          {
-            display_name: 'Billing Frequency',
-            variable_name: 'billingFrequency',
-            value: billingFrequency,
-          },
-          {
-            display_name: 'Donor Name',
-            variable_name: 'cardholderName',
-            value: cardholderName,
-          },
-          {
-            display_name: 'Donor Email',
-            variable_name: 'paymentEmail',
-            value: paymentEmail,
-          },
-          {
-            display_name: 'Donor Phone',
-            variable_name: 'paymentPhone',
-            value: paymentPhone,
-          },
-        ],
-      },
-      onSuccess: (transaction) => {
-        alert(
-          `Payment successful! Transaction reference: ${transaction.reference}`,
-        );
-        // Here you can send `transaction.reference` and other details to your backend for verification
-      },
-      onCancel: () => {
-        alert('Transaction was canceled.');
-      },
-      onError: (error) => {
-        alert(`An error occurred: ${error.message}`);
-      },
-      onLoad: () => {
-        console.log('Loading...');
-      },
-    });
+          body: JSON.stringify({
+            amount: paymentAmount,
+            email: paymentEmail,
+            metadata: {
+              custom_data: 'any additional info', // You can add additional metadata here
+            },
+          }),
+        },
+      );
+
+      const donationData = await donationResponse.json();
+
+      if (!donationResponse.ok) {
+        throw new Error(donationData.error || 'Failed to create donation');
+      }
+
+      const { authorization_url, donation } = donationData;
+
+      // Step 2: Redirect to Paystack using the authorization URL
+      if (authorization_url) {
+        window.location.href = authorization_url; // Redirect the user to Paystack for payment
+      } else {
+        throw new Error('Authorization URL not found');
+      }
+
+      // Step 2: Call Paystack to initiate payment
+      const paystack = new PaystackPop();
+      paystack.newTransaction({
+        key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
+        email: paymentEmail,
+        amount: Number(paymentAmount) * 100, // Convert to kobo
+        firstName: cardholderName,
+        metadata: {
+          custom_fields: [
+            {
+              display_name: 'Donation ID',
+              variable_name: 'donation_id',
+              value: donation.id,
+            },
+            {
+              display_name: 'Campaign ID',
+              variable_name: 'campaign_id',
+              value: campaignId,
+            },
+            {
+              display_name: 'Fundraiser ID',
+              variable_name: 'fundraiser_id',
+              value: fundraiserId,
+            },
+          ],
+        },
+        onSuccess: async (transaction) => {
+          // Step 3: Verify the transaction after successful payment
+          const verifyResponse = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations/${transaction.reference}/verify`,
+            {
+              method: 'POST', // Assuming POST for verification; if GET, change accordingly
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            },
+          );
+
+          const verificationData = await verifyResponse.json();
+
+          console.log('Verification data', verificationData);
+
+          if (verifyResponse.ok) {
+            alert('Donation successful! Thank you for your contribution.');
+            // Optionally, handle further UI updates, such as redirecting the user
+          } else {
+            alert('Donation verification failed. Please try again.');
+          }
+        },
+        onCancel: () => {
+          alert('Transaction was canceled.');
+        },
+        onError: (error) => {
+          alert(`An error occurred: ${error.message}`);
+        },
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(`Error: ${error.message}`);
+      } else {
+        alert('An unknown error occurred.');
+      }
+    } finally {
+      setLoading(false); // Set loading to false after the process ends
+    }
   };
 
   return (
@@ -103,9 +148,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         <input
           type="text"
           id="cardholderName"
-          className={`w-full px-3 py-2 border rounded-md ${
-            errors.cardholderName ? 'border-red-500' : 'border-gray-300'
-          }`}
+          className={`w-full px-3 py-2 border rounded-md ${errors.cardholderName ? 'border-red-500' : 'border-gray-300'}`}
           placeholder="John Doe"
           value={cardholderName}
           onChange={(e) => setCardholderName(e.target.value)}
@@ -176,8 +219,9 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         type="button"
         onClick={handlePayment}
         className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:bg-gray-400"
+        disabled={loading}
       >
-        Proceed to Pay
+        {loading ? 'Processing...' : 'Proceed to Pay'}
       </button>
     </>
   );
