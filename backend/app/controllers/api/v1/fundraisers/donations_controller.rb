@@ -2,24 +2,31 @@ module Api
     module V1
       module Fundraisers
         class DonationsController < ApplicationController
-          def create
-            donation = Donation.new(donation_params)
-            donation.campaign_id = params[:campaign_id]
-            donation.user_id = @current_user&.id # Authenticated user, if available
-            donation.status = 'pending'
-  
-            # Initialize transaction with Paystack
-            response = initialize_paystack_transaction(donation)
-  
-            if response[:status] == 'success'
-              donation.transaction_reference = response[:data][:reference]
-              donation.save
-  
-              render json: { authorization_url: response[:data][:authorization_url], donation: donation }, status: :created
-            else
-              render json: { error: response[:message] }, status: :unprocessable_entity
+            def create
+                donation = Donation.new(donation_params)
+                donation.campaign_id = params[:campaign_id]
+                donation.user_id = @current_user&.id # Authenticated user, if available
+                donation.status = 'pending'
+              
+                # Initialize transaction with Paystack
+                response = initialize_paystack_transaction(donation)
+              
+                if response[:status] == true # Check for Paystack success using boolean 'true'
+                  # Only save the donation if Paystack has returned a successful response
+                  donation.transaction_reference = response[:data][:reference]
+                  donation.save
+              
+                  render json: { authorization_url: response[:data][:authorization_url], donation: donation }, status: :created
+                else
+                  # Log the response in case of error
+                  Rails.logger.error("Paystack initialization failed: #{response[:message]}")
+              
+                  # Return an error response with the Paystack message
+                  render json: { error: response[:message] }, status: :unprocessable_entity
+                end
             end
-          end
+              
+              
   
           def verify
             donation = Donation.find_by(transaction_reference: params[:reference])
@@ -60,8 +67,8 @@ module Api
             request["Content-Type"] = "application/json"
           
             request.body = {
-              email: donor_email,  # Use the email from the user or the request params
-              amount: (donation.amount * 100).to_i, # Convert amount to kobo (smallest unit)
+              email: donor_email,
+              amount: (donation.amount * 100).to_i, # Convert amount to kobo
               reference: SecureRandom.uuid,
               metadata: {
                 user_id: donation.user_id,
@@ -70,8 +77,15 @@ module Api
             }.to_json
           
             response = http.request(request)
-            JSON.parse(response.body, symbolize_names: true)
+            parsed_response = JSON.parse(response.body, symbolize_names: true)
+          
+            # Log the Paystack response for debugging
+            Rails.logger.debug("Paystack response: #{parsed_response}")
+          
+            parsed_response
           end
+          
+          
           
   
           def verify_paystack_transaction(reference)
