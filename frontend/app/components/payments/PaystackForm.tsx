@@ -69,13 +69,12 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         throw new Error('Authorization URL not found');
       }
 
-      // Step 2: Call Paystack to initiate payment
+      // Initialize Paystack and create a new transaction
       const paystack = new PaystackPop();
       paystack.newTransaction({
         key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
         email: paymentEmail,
         amount: Number(paymentAmount) * 100, // Convert to kobo
-        firstName: cardholderName,
         metadata: {
           custom_fields: [
             {
@@ -96,26 +95,36 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
           ],
         },
         onSuccess: async (transaction) => {
-          // Step 3: Verify the transaction after successful payment
-          const verifyResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations/${transaction.reference}/verify`,
-            {
-              method: 'POST', // Assuming POST for verification; if GET, change accordingly
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            },
-          );
+          try {
+            // Step 3: Perform transaction verification after successful payment
+            if (transaction && transaction.reference) {
+              const verifyResponse = await fetch(
+                `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations/${transaction.reference}/verify`,
+                {
+                  method: 'GET', // Assuming GET for verification, but update if POST is required
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                },
+              );
 
-          const verificationData = await verifyResponse.json();
+              const verificationData = await verifyResponse.json();
 
-          console.log('Verification data', verificationData);
+              console.log('Verification data', verificationData);
 
-          if (verifyResponse.ok) {
-            alert('Donation successful! Thank you for your contribution.');
-            // Optionally, handle further UI updates, such as redirecting the user
-          } else {
-            alert('Donation verification failed. Please try again.');
+              if (verifyResponse.ok) {
+                alert('Donation successful! Thank you for your contribution.');
+                // You can redirect to a confirmation page or show a success message
+              } else {
+                alert('Donation verification failed. Please try again.');
+              }
+            } else {
+              alert(
+                'Transaction was successful, but no transaction reference was found.',
+              );
+            }
+          } catch (error) {
+            alert('An error occurred while verifying the payment.');
           }
         },
         onCancel: () => {
