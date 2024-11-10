@@ -11,7 +11,7 @@ module Api
           page_size = params[:pageSize] || 12
         
           # Retrieve campaigns with pagination
-          @campaigns = Campaign.page(page).per(page_size)
+          @campaigns = Campaign.page(page).per(page_size).reload
         
           render json: {
             campaigns: @campaigns,
