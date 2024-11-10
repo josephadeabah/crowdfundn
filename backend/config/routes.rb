@@ -28,8 +28,8 @@ Rails.application.routes.draw do
           resources :rewards, only: %i[index show create update destroy]
           
           resources :donations, only: [:create] do
-            collection do
-              get :verify # Place the verification endpoint under donations
+            member do
+              get :verify  # This makes 'verify' a member route
             end
           end
         end
