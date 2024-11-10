@@ -15,6 +15,27 @@
       "description": "Donate to help families in need.",
       "image": "/marketing2.png",
       "amountRaised": "KSh 300,000"
+    },
+    {
+      "id": 3,
+      "name": "Support Local Families",
+      "description": "Donate to help families in need.",
+      "image": "/marketing7.png",
+      "amountRaised": "KSh 300,000"
+    },
+    {
+      "id": 4,
+      "name": "Support Local Families",
+      "description": "Donate to help families in need.",
+      "image": "/marketing6.png",
+      "amountRaised": "KSh 300,000"
+    },
+    {
+      "id": 5,
+      "name": "Support Local Families",
+      "description": "Donate to help families in need.",
+      "image": "/marketing8.png",
+      "amountRaised": "KSh 300,000"
     }
   ],
   "categories": [
