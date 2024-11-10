@@ -30,58 +30,45 @@ module Api
                 # Return the authorization URL and donation details on success
                 render json: { authorization_url: response[:data][:authorization_url], donation: donation }, status: :created
               else
-                # Log and return any validation errors from the donation save
-                Rails.logger.error("Donation save failed: #{donation.errors.full_messages}")
                 render json: { error: donation.errors.full_messages.join(", ") }, status: :unprocessable_entity
               end
             else
-              # Log the error and return a message if Paystack initialization fails
-              Rails.logger.error("Paystack initialization failed: #{response[:message]}")
               render json: { error: response[:message] }, status: :unprocessable_entity
             end
           end
   
           def verify
-            # Log to confirm which reference is being processed
-            Rails.logger.debug("Verifying donation with reference: #{params[:id]}")
-          
             # Find the donation by its transaction reference
             donation = Donation.find_by(transaction_reference: params[:id])
-          
+  
             # If the donation is not found, return a 404 error
             if donation.nil?
-              Rails.logger.error("Donation not found with reference: #{params[:id]}")
               return render json: { error: 'Donation not found' }, status: :not_found
             end
-          
+  
             # Verify the Paystack transaction
             response = verify_paystack_transaction(donation.transaction_reference)
-          
-            # Log the response from Paystack for debugging
-            Rails.logger.debug("Paystack verification response: #{response}")
-          
+  
             # Check if the transaction was successful on Paystack
             if response[:status] == true && response[:data][:status] == 'success'
               # Update the donation status and amount
               donation.update(status: 'successful', amount: response[:data][:amount] / 100.0)
-          
+  
               # Check if the update was successful
               if donation.errors.any?
-                Rails.logger.error("Error updating donation: #{donation.errors.full_messages}")
                 return render json: { error: donation.errors.full_messages.join(", ") }, status: :unprocessable_entity
               end
-          
+  
               render json: { message: 'Donation successful', donation: donation }, status: :ok
             else
               # Mark the donation as failed if Paystack verification fails
               donation.update(status: 'failed')
-          
+  
               # Check if the update was successful
               if donation.errors.any?
-                Rails.logger.error("Error updating donation status to 'failed': #{donation.errors.full_messages}")
                 return render json: { error: donation.errors.full_messages.join(", ") }, status: :unprocessable_entity
               end
-          
+  
               render json: { error: 'Donation verification failed' }, status: :unprocessable_entity
             end
           end        
@@ -122,9 +109,6 @@ module Api
   
             response = http.request(request)
             parsed_response = JSON.parse(response.body, symbolize_names: true)
-  
-            # Log the Paystack response for debugging
-            Rails.logger.debug("Paystack response: #{parsed_response}")
   
             parsed_response
           end
