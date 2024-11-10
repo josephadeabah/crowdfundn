@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  amount: 9.99
+  campaign: one
+  user: one
+  status: MyString
+  transaction_reference: MyString
+  metadata: 
+
+two:
+  amount: 9.99
+  campaign: two
+  user: two
+  status: MyString
+  transaction_reference: MyString
+  metadata: 

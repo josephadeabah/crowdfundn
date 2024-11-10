@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_02_140203) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_10_125649) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -91,6 +91,19 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_02_140203) do
     t.datetime "updated_at", null: false
     t.index ["campaign_id"], name: "index_comments_on_campaign_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "donations", force: :cascade do |t|
+    t.decimal "amount"
+    t.bigint "campaign_id", null: false
+    t.bigint "user_id", null: false
+    t.string "status"
+    t.string "transaction_reference"
+    t.json "metadata"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id"], name: "index_donations_on_campaign_id"
+    t.index ["user_id"], name: "index_donations_on_user_id"
   end
 
   create_table "fundraisers", force: :cascade do |t|
@@ -179,6 +192,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_02_140203) do
   add_foreign_key "campaigns", "users", column: "fundraiser_id"
   add_foreign_key "comments", "campaigns"
   add_foreign_key "comments", "users"
+  add_foreign_key "donations", "campaigns"
+  add_foreign_key "donations", "users"
   add_foreign_key "fundraisers", "users"
   add_foreign_key "profiles", "users"
   add_foreign_key "rewards", "campaigns"

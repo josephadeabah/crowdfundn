@@ -15,6 +15,7 @@ digitalocean:
   endpoint: <%= Rails.application.credentials.dig(:digitalocean, :endpoint) %>
   region: nyc3
   bucket: <%= Rails.application.credentials.dig(:digitalocean, :bucket) %>
+  # paystack_secret_key: <%= Rails.application.credentials.dig(:digitalocean, :paystack_secret_key) %>
   force_path_style: true # Necessary for Spaces
   public: true # This line sets the default to public
 
