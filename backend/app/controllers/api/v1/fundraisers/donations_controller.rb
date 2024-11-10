@@ -40,38 +40,50 @@ module Api
           def verify
             # Find the donation by its transaction reference
             donation = Donation.find_by(transaction_reference: params[:id])
-  
+          
             # If the donation is not found, return a 404 error
             if donation.nil?
               return render json: { error: 'Donation not found' }, status: :not_found
             end
-  
+          
             # Verify the Paystack transaction
             response = verify_paystack_transaction(donation.transaction_reference)
-  
+          
             # Check if the transaction was successful on Paystack
             if response[:status] == true && response[:data][:status] == 'success'
               # Update the donation status and amount
               donation.update(status: 'successful', amount: response[:data][:amount] / 100.0)
-  
-              # Check if the update was successful
-              if donation.errors.any?
-                return render json: { error: donation.errors.full_messages.join(", ") }, status: :unprocessable_entity
-              end
-  
-              render json: { message: 'Donation successful', donation: donation }, status: :ok
+          
+              # Calculate the total accumulated donations for the campaign
+              total_donations = donation.campaign.donations.where(status: 'successful').sum(:amount)
+          
+              # Include campaign and fundraiser details in the response
+              campaign = donation.campaign
+              fundraiser = campaign.fundraiser
+          
+              render json: {
+                message: 'Donation successful',
+                donation: donation,
+                campaign: {
+                  id: campaign.id,
+                  title: campaign.title,
+                  goal_amount: campaign.goal_amount,
+                  current_amount: campaign.current_amount,
+                  total_donations: total_donations
+                },
+                fundraiser: {
+                  id: fundraiser.id,
+                  name: fundraiser.full_name,
+                  profile: fundraiser.profile
+                }
+              }, status: :ok
             else
               # Mark the donation as failed if Paystack verification fails
               donation.update(status: 'failed')
-  
-              # Check if the update was successful
-              if donation.errors.any?
-                return render json: { error: donation.errors.full_messages.join(", ") }, status: :unprocessable_entity
-              end
-  
+          
               render json: { error: 'Donation verification failed' }, status: :unprocessable_entity
             end
-          end        
+          end                 
   
           private
   
