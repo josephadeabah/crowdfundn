@@ -1,12 +1,10 @@
 'use client';  // Make sure the page runs on the client side
 
 import React, { useEffect } from 'react';
-import { useRouter } from 'next/router';  // Import useRouter to handle client-side navigation
 import { useSearchParams } from 'next/navigation';  // For capturing query params
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';  // Custom context for donations
 
 const ThankYouPage = () => {
-  const router = useRouter();  // Access the router to handle navigation
   const { donations, verifyTransaction } = useDonationsContext();  // Get donations and verifyTransaction from context
 
   // Get query parameters using useSearchParams
@@ -30,11 +28,6 @@ const ThankYouPage = () => {
           url: shareUrl,
         })
       : alert("Sharing isn't supported on your device.");
-  };
-
-  // Navigate back to home or explore other campaigns
-  const handleExplore = () => {
-    router.push('/');  // Adjust this route to go to your homepage or campaign listing
   };
 
   return (
@@ -64,7 +57,6 @@ const ThankYouPage = () => {
             Share This Campaign
           </button>
           <button
-            onClick={handleExplore}
             className="w-full bg-green-600 text-white py-2 px-4 rounded-lg shadow hover:bg-green-700 transition"
           >
             Explore Other Campaigns
