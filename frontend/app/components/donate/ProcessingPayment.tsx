@@ -141,7 +141,7 @@ const ProcessingPayment: React.FC<ProcessingPaymentProps> = ({
         <p className="text-center mt-4 text-gray-600">
           {isProcessing
             ? 'Please wait while we process your request...'
-            : 'Processing complete. Redirecting to payment details page...'}
+            : 'Processing complete. Redirecting to payment info page...'}
         </p>
       </motion.div>
     </div>
