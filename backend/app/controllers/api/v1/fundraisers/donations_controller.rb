@@ -59,12 +59,19 @@ module Api
               # Update the campaign's current amount with the total donations
               campaign.update(current_amount: total_donations)
           
-              # Include campaign and fundraiser details in the response
+              # Include campaign, fundraiser, and donor details in the response
               fundraiser = campaign.fundraiser
           
               render json: {
                 message: 'Donation successful',
-                donation: donation,
+                donation: {
+                  id: donation.id,
+                  amount: donation.amount,
+                  status: donation.status,
+                  full_name: donation.full_name,
+                  email: donation.email,
+                  phone: donation.phone
+                },
                 campaign: campaign,
                 total_donations: total_donations,
                 fundraiser: {
@@ -78,19 +85,18 @@ module Api
               donation.update(status: 'failed')
               render json: { error: 'Donation verification failed' }, status: :unprocessable_entity
             end
-          end
+          end          
                          
   
           private
   
           def donation_params
-            # Permit donation attributes and metadata, but not the user_id (it's optional)
-            params.require(:donation).permit(:amount, :transaction_reference, :email, metadata: {})
-          end
+            params.require(:donation).permit(:amount, :transaction_reference, :email, :full_name, :phone, metadata: {})
+          end          
   
           def initialize_paystack_transaction(donation)
             # Get the donor's email either from the authenticated user or from the provided email
-            donor_email = donation.user&.email || params[:email]
+            donor_email = donation.email
   
             if donor_email.blank?
               return { status: 'error', message: 'Email address is required' }
