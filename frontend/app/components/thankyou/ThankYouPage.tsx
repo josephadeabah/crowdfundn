@@ -60,10 +60,6 @@ const ThankYouPage = () => {
               <strong>Amount:</strong> ${donationDetails.amount}
             </p>
             <p className="text-sm text-gray-600">
-              <strong>Total Current Amount:</strong> $
-              {donationDetails.total_donations}
-            </p>
-            <p className="text-sm text-gray-600">
               <strong>Transaction Reference:</strong>{' '}
               {donationDetails.transaction_reference}
             </p>
