@@ -2,6 +2,27 @@ module Api
     module V1
       module Fundraisers
         class DonationsController < ApplicationController
+          before_action :authenticate_request, only: %i[index]
+        # Fetch donations for the current authenticated user
+        def index
+          if @current_user.nil?
+            return render json: { error: 'User not authenticated' }, status: :unauthorized
+          end
+          # Get the page number from params[:page], default to 1 if not present
+          page = params[:page] || 1
+          
+          # Get the number of items per page, default to 10 if not provided
+          per_page = params[:per_page] || 10
+          
+          # Fetch paginated donations with status 'successful'
+          donations = @current_user.donations.where(status: 'successful')
+                                              .page(page)
+                                              .per(per_page)
+
+          render json: donations, status: :ok
+        end
+
+        
           def create
             # Find the campaign based on the campaign_id provided
             campaign = Campaign.find_by(id: params[:campaign_id])

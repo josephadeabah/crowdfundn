@@ -11,6 +11,7 @@ class User < ApplicationRecord
             :duration_in_days, :national_id, presence: true
   has_one :profile, dependent: :destroy
   has_many :campaigns, foreign_key: 'fundraiser_id', dependent: :destroy
+  has_many :donations
   accepts_nested_attributes_for :profile
 
   after_create :assign_default_role
