@@ -57,7 +57,8 @@ const ThankYouPage = () => {
               <strong>Status:</strong> {donationDetails.status}
             </p>
             <p className="text-sm text-gray-600">
-              <strong>Amount:</strong> ${donationDetails.amount}
+              <strong>Amount:</strong> {campaignDetails.currency}
+              {donationDetails.amount}
             </p>
             <p className="text-sm text-gray-600">
               <strong>Transaction Reference:</strong>{' '}
@@ -81,10 +82,12 @@ const ThankYouPage = () => {
               <strong>Title:</strong> {campaignDetails.title}
             </p>
             <p className="text-sm text-gray-600">
-              <strong>Goal Amount:</strong> ${campaignDetails.goal_amount}
+              <strong>Goal Amount:</strong> {campaignDetails.currency}
+              {campaignDetails.goal_amount}
             </p>
             <p className="text-sm text-gray-600">
-              <strong>Current Amount:</strong> ${campaignDetails.current_amount}
+              <strong>Current Amount:</strong> {campaignDetails.currency}
+              {campaignDetails.current_amount}
             </p>
           </div>
 
@@ -96,10 +99,12 @@ const ThankYouPage = () => {
               <strong>Fundraiser Name:</strong> {fundraiserDetails.profile.name}
             </p>
             <p className="text-sm text-gray-600">
-              <strong>Funding Goal:</strong> ${campaignDetails.goal_amount}
+              <strong>Funding Goal:</strong> {campaignDetails.currency}
+              {campaignDetails.goal_amount}
             </p>
             <p className="text-sm text-gray-600">
-              <strong>Amount Raised:</strong> ${campaignDetails.current_amount}
+              <strong>Amount Raised:</strong> {campaignDetails.currency}
+              {campaignDetails.current_amount}
             </p>
             <p className="text-sm text-gray-600">
               <strong>Status:</strong> {fundraiserDetails.profile?.status}
