@@ -1,24 +1,25 @@
-'use client'; // Ensure this page runs on the client side
+'use client';  // Make sure the page runs on the client side
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { useSearchParams } from 'next/navigation';
-import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
+import React, { useEffect } from 'react';
+import { useSearchParams,useRouter } from 'next/navigation';  // For capturing query params
+import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';  // Custom context for donations
 
 const ThankYouPage = () => {
-  const router = useRouter();
-  const { donations, verifyTransaction } = useDonationsContext();
-
+  const router = useRouter();  // Access the router to handle navigation
+  const { donations, verifyTransaction } = useDonationsContext();  // Get donations and verifyTransaction from context
+  
   // Get query parameters using useSearchParams
   const searchParams = useSearchParams();
-  const reference = searchParams.get('reference') || searchParams.get('trxref'); // Capture reference or trxref
-
+  const reference = searchParams.get('reference') || searchParams.get('trxref');  // Capture reference or trxref from URL
+  
+  // Effect to handle transaction verification once reference is found
   useEffect(() => {
     if (reference) {
-      verifyTransaction(reference); // Call the verifyTransaction function when reference is available
+      verifyTransaction(reference);  // Verify the transaction when reference is available
     }
   }, [reference, verifyTransaction]);
 
+  // Share functionality for social sharing
   const handleShare = () => {
     const shareUrl = window.location.href;
     navigator.share
@@ -30,8 +31,9 @@ const ThankYouPage = () => {
       : alert("Sharing isn't supported on your device.");
   };
 
+  // Navigate back to home or explore other campaigns
   const handleExplore = () => {
-    router.push('/'); // Redirect to home or explore other campaigns
+    router.push('/');  // Adjust this route to go to your homepage or campaign listing
   };
 
   return (
@@ -43,9 +45,7 @@ const ThankYouPage = () => {
         </p>
 
         <div className="mt-6">
-          <h2 className="text-xl font-semibold text-blue-600">
-            Donation Summary
-          </h2>
+          <h2 className="text-xl font-semibold text-blue-600">Donation Summary</h2>
           <p className="text-gray-600 mt-2">
             <pre>
               {donations.map((donation, index) => (
