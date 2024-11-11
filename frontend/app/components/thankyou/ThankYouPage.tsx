@@ -1,15 +1,15 @@
-'use client'; // Make sure the page runs on the client side
+'use client';
 
 import React, { useEffect } from 'react';
-import { useSearchParams } from 'next/navigation'; // For capturing query params
-import { useDonationsContext } from '@/app/context/account/donations/DonationsContext'; // Custom context for donations
+import { useSearchParams } from 'next/navigation';
+import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
 
 const ThankYouPage = () => {
-  const { donations, verifyTransaction } = useDonationsContext(); // Get donations and verifyTransaction from context
+  const { donations, verifyTransaction } = useDonationsContext();
 
   // Get query parameters using useSearchParams
   const searchParams = useSearchParams();
-  const reference = searchParams.get('reference') || searchParams.get('trxref'); // Capture reference or trxref from URL
+  const reference = searchParams.get('reference') || searchParams.get('trxref');
 
   // Effect to handle transaction verification once reference is found
   useEffect(() => {
@@ -53,9 +53,6 @@ const ThankYouPage = () => {
           </h2>
 
           <div className="mt-4 text-left">
-            <p className="text-sm text-gray-600">
-              <strong>Message:</strong> {donationDetails.message}
-            </p>
             <p className="text-sm text-gray-600">
               <strong>Status:</strong> {donationDetails.status}
             </p>
@@ -127,14 +124,11 @@ const ThankYouPage = () => {
           >
             Share This Campaign
           </button>
-          <button className="w-full bg-green-600 text-white py-2 px-4 rounded-lg shadow hover:bg-green-700 transition">
-            Explore Other Campaigns
-          </button>
           <a
-            href="/subscribe"
+            href="/"
             className="w-full inline-block text-center bg-gray-600 text-white py-2 px-4 rounded-lg shadow hover:bg-gray-700 transition"
           >
-            Subscribe for Updates
+            Go Back to Home
           </a>
         </div>
 
