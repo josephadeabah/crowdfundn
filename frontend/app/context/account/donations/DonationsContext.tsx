@@ -1,3 +1,5 @@
+import { SingleCampaignResponseDataType } from '@/app/types/campaigns.types';
+import { Profile } from '@/app/types/user_profiles.types';
 import React, {
   createContext,
   useState,
@@ -6,11 +8,30 @@ import React, {
   useMemo,
 } from 'react';
 
+// Refactored Donation interface
 interface Donation {
-  id: number;
-  amount: number;
-  campaign: string;
-  reference: string; // Add reference to Donation type
+  id: number; // Donation ID
+  amount: number; // Donation amount (numeric type for calculation)
+  donation: {
+    message: string; // Donation message
+    status: 'successful'; // Donation status as a fixed string
+    amount: string; // Amount as string (if received as a string, otherwise change to number)
+    campaign_id: number; // Campaign ID that the donation is for
+    id: number; // Donation ID (duplicate, may be removed if redundant)
+    user_id: number | null; // User ID who made the donation, nullable
+    transaction_reference: string; // Unique reference for the transaction
+    total_donations: number; // Total donations received
+    metadata: {
+      custom_data: string; // Additional custom data for the donation
+    };
+    created_at: string; // Donation creation timestamp
+    updated_at: string; // Donation last updated timestamp
+  };
+  campaign: SingleCampaignResponseDataType; // Campaign details associated with the donation
+  reference: string; // Reference string (either `reference` or `trxref`)
+  fundraiser: {
+    profile: Profile; // Profile of the fundraiser associated with this donation
+  };
 }
 
 interface DonationsState {
@@ -52,7 +73,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            amount: amount * 100, // Amount in kobo
+            amount: amount,
             email: email,
             metadata: {
               custom_fields: [

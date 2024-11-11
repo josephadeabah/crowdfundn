@@ -1,22 +1,22 @@
-'use client';  // Make sure the page runs on the client side
+'use client'; // Make sure the page runs on the client side
 
 import React, { useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';  // For capturing query params
-import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';  // Custom context for donations
+import { useSearchParams } from 'next/navigation'; // For capturing query params
+import { useDonationsContext } from '@/app/context/account/donations/DonationsContext'; // Custom context for donations
 
 const ThankYouPage = () => {
-  const { donations, verifyTransaction } = useDonationsContext();  // Get donations and verifyTransaction from context
+  const { donations, verifyTransaction } = useDonationsContext(); // Get donations and verifyTransaction from context
 
   // Get query parameters using useSearchParams
   const searchParams = useSearchParams();
-  const reference = searchParams.get('reference') || searchParams.get('trxref');  // Capture reference or trxref from URL
+  const reference = searchParams.get('reference') || searchParams.get('trxref'); // Capture reference or trxref from URL
 
   // Effect to handle transaction verification once reference is found
   useEffect(() => {
     if (reference) {
-      verifyTransaction(reference);  // Verify the transaction when reference is available
+      verifyTransaction(reference); // Verify the transaction when reference is available
     }
-  }, [reference, verifyTransaction]);
+  }, [reference]);
 
   // Share functionality for social sharing
   const handleShare = () => {
@@ -30,6 +30,15 @@ const ThankYouPage = () => {
       : alert("Sharing isn't supported on your device.");
   };
 
+  if (!donations || donations.length === 0) {
+    return <div>Loading or No donations data available...</div>;
+  }
+
+  // Extracting donation details
+  const donationDetails = donations[0]?.donation || {};
+  const campaignDetails = donations[0]?.campaign || {};
+  const fundraiserDetails = donations[0]?.fundraiser || {};
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-green-200 via-blue-200 to-purple-200 flex items-center justify-center p-6">
       <div className="bg-white shadow-lg rounded-lg p-8 max-w-lg text-center">
@@ -39,14 +48,76 @@ const ThankYouPage = () => {
         </p>
 
         <div className="mt-6">
-          <h2 className="text-xl font-semibold text-blue-600">Donation Summary</h2>
-          <p className="text-gray-600 mt-2">
-            <pre>
-              {donations.map((donation, index) => (
-                <div key={index}>{JSON.stringify(donation, null, 2)}</div>
-              ))}
-            </pre>
-          </p>
+          <h2 className="text-xl font-semibold text-blue-600">
+            Donation Summary
+          </h2>
+
+          <div className="mt-4 text-left">
+            <p className="text-sm text-gray-600">
+              <strong>Message:</strong> {donationDetails.message}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Status:</strong> {donationDetails.status}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Amount:</strong> ${donationDetails.amount}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Total Current Amount:</strong> $
+              {donationDetails.total_donations}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Transaction Reference:</strong>{' '}
+              {donationDetails.transaction_reference}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Created At:</strong>{' '}
+              {new Date(donationDetails.created_at).toLocaleString()}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Updated At:</strong>{' '}
+              {new Date(donationDetails.updated_at).toLocaleString()}
+            </p>
+          </div>
+
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold text-blue-600">
+              Campaign Details
+            </h3>
+            <p className="text-sm text-gray-600">
+              <strong>Title:</strong> {campaignDetails.title}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Goal Amount:</strong> ${campaignDetails.goal_amount}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Current Amount:</strong> ${campaignDetails.current_amount}
+            </p>
+          </div>
+
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold text-blue-600">
+              Fundraiser Details
+            </h3>
+            <p className="text-sm text-gray-600">
+              <strong>Fundraiser Name:</strong> {fundraiserDetails.profile.name}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Funding Goal:</strong> $
+              {fundraiserDetails.profile?.funding_goal}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Amount Raised:</strong> $
+              {fundraiserDetails.profile?.amount_raised}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Status:</strong> {fundraiserDetails.profile?.status}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Fundraiser Created At:</strong>{' '}
+              {new Date(fundraiserDetails.profile?.created_at).toLocaleString()}
+            </p>
+          </div>
         </div>
 
         <div className="mt-8 space-y-4">
@@ -56,9 +127,7 @@ const ThankYouPage = () => {
           >
             Share This Campaign
           </button>
-          <button
-            className="w-full bg-green-600 text-white py-2 px-4 rounded-lg shadow hover:bg-green-700 transition"
-          >
+          <button className="w-full bg-green-600 text-white py-2 px-4 rounded-lg shadow hover:bg-green-700 transition">
             Explore Other Campaigns
           </button>
           <a
