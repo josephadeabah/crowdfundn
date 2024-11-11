@@ -1,17 +1,18 @@
 'use client';  // Make sure the page runs on the client side
 
 import React, { useEffect } from 'react';
-import { useSearchParams,useRouter } from 'next/navigation';  // For capturing query params
+import { useRouter } from 'next/router';  // Import useRouter to handle client-side navigation
+import { useSearchParams } from 'next/navigation';  // For capturing query params
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';  // Custom context for donations
 
 const ThankYouPage = () => {
   const router = useRouter();  // Access the router to handle navigation
   const { donations, verifyTransaction } = useDonationsContext();  // Get donations and verifyTransaction from context
-  
+
   // Get query parameters using useSearchParams
   const searchParams = useSearchParams();
   const reference = searchParams.get('reference') || searchParams.get('trxref');  // Capture reference or trxref from URL
-  
+
   // Effect to handle transaction verification once reference is found
   useEffect(() => {
     if (reference) {
