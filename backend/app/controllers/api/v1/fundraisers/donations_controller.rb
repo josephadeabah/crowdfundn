@@ -65,13 +65,8 @@ module Api
               render json: {
                 message: 'Donation successful',
                 donation: donation,
-                campaign: {
-                  id: campaign.id,
-                  title: campaign.title,
-                  goal_amount: campaign.goal_amount,
-                  current_amount: campaign.current_amount, # Updated current amount
-                  total_donations: total_donations
-                },
+                campaign: campaign,
+                total_donations: total_donations,
                 fundraiser: {
                   id: fundraiser.id,
                   name: fundraiser.full_name,
