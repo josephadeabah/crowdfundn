@@ -14,7 +14,7 @@ const ThankYouPage = () => {
   // Effect to handle transaction verification once reference is found
   useEffect(() => {
     if (reference) {
-      verifyTransaction(reference); // Verify the transaction when reference is available
+      verifyTransaction(reference);
     }
   }, [reference]);
 
@@ -100,12 +100,10 @@ const ThankYouPage = () => {
               <strong>Fundraiser Name:</strong> {fundraiserDetails.profile.name}
             </p>
             <p className="text-sm text-gray-600">
-              <strong>Funding Goal:</strong> $
-              {fundraiserDetails.profile?.funding_goal}
+              <strong>Funding Goal:</strong> ${campaignDetails.goal_amount}
             </p>
             <p className="text-sm text-gray-600">
-              <strong>Amount Raised:</strong> $
-              {fundraiserDetails.profile?.amount_raised}
+              <strong>Amount Raised:</strong> ${campaignDetails.current_amount}
             </p>
             <p className="text-sm text-gray-600">
               <strong>Status:</strong> {fundraiserDetails.profile?.status}

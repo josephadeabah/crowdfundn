@@ -11,9 +11,9 @@ import React, {
 // Refactored Donation interface
 interface Donation {
   id: number; // Donation ID
-  amount: number; // Donation amount (numeric type for calculation)
+  amount: number;
   donation: {
-    message: string; // Donation message
+    message: string;
     status: 'successful'; // Donation status as a fixed string
     amount: string; // Amount as string (if received as a string, otherwise change to number)
     campaign_id: number; // Campaign ID that the donation is for
@@ -44,7 +44,7 @@ interface DonationsState {
     campaignId: string,
     fundraiserId: string,
   ) => void;
-  verifyTransaction: (reference: string) => void; // Verify transaction method
+  verifyTransaction: (reference: string) => void;
 }
 
 const DonationsContext = createContext<DonationsState | undefined>(undefined);
@@ -53,7 +53,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [campaignID, setCampaignID] = useState<string | null>(null); // New state
+  const [campaignID, setCampaignID] = useState<string | null>(null);
 
   // Step 1: Create the donation transaction (send donation to backend)
   const createDonationTransaction = async (
@@ -62,8 +62,9 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     fundraiser_id: string,
     campaignId: string,
   ) => {
-    setCampaignID(campaignId); // Set the campaign ID in the state
+    setCampaignID(campaignId);
     try {
+      setLoading(true);
       // Step 1: Create the donation transaction in the backend
       const donationResponse = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
@@ -103,13 +104,15 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
 
       // Step 2: Redirect to Paystack using the authorization URL
       if (authorization_url) {
-        window.location.href = authorization_url; // Redirect the user to Paystack for payment
+        window.location.href = authorization_url;
       } else {
         throw new Error('Authorization URL not found');
       }
     } catch (error) {
       console.error('Error initiating donation:', error);
       setError('Error initiating donation');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -143,7 +146,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       loading,
       error,
       createDonationTransaction,
-      verifyTransaction, // Add verifyTransaction to the context
+      verifyTransaction,
     }),
     [donations, loading, error],
   );
