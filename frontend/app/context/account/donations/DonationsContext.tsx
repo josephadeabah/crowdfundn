@@ -40,6 +40,8 @@ interface DonationsState {
   error: string | null;
   createDonationTransaction: (
     email: string,
+    fullName: string,
+    phoneNumber: string,
     amount: number,
     campaignId: string,
     fundraiserId: string,
@@ -58,6 +60,8 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
   // Step 1: Create the donation transaction (send donation to backend)
   const createDonationTransaction = async (
     email: string,
+    fullName: string,
+    phoneNumber: string,
     amount: number,
     fundraiser_id: string,
     campaignId: string,
@@ -76,6 +80,8 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           body: JSON.stringify({
             amount: amount,
             email: email,
+            full_name: fullName,
+            phone: phoneNumber,
             metadata: {
               custom_fields: [
                 {

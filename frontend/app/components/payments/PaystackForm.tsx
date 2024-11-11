@@ -35,6 +35,8 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
     if (!loading) {
       createDonationTransaction(
         paymentEmail,
+        cardholderName,
+        paymentPhone,
         Number(paymentAmount),
         fundraiserId,
         campaignId,
