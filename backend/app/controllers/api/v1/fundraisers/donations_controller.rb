@@ -8,24 +8,35 @@ module Api
             unless campaign
               return render json: { error: 'Campaign not found' }, status: :not_found
             end
-  
+          
             # Create a new donation with the provided parameters
             donation = Donation.new(donation_params)
             
             # Set the campaign_id and status
             donation.campaign_id = campaign.id
             donation.status = 'pending'
-  
+            
             # Set user_id if authenticated, otherwise it will be nil
             donation.user_id = @current_user&.id
-  
+          
+            # Add campaign metadata to donation
+            donation.metadata[:campaign] = {
+              id: campaign.id,
+              title: campaign.title,
+              description: campaign.description.to_plain_text,
+              goal_amount: campaign.goal_amount,
+              current_amount: campaign.current_amount,
+              fundraiser_id: campaign.fundraiser_id,
+              fundraiser_name: campaign.fundraiser.full_name
+            }            
+          
             # Initialize Paystack transaction with the donation details
             response = initialize_paystack_transaction(donation)
-  
+          
             if response[:status] == true
               # Only save the donation if Paystack transaction initialization is successful
               donation.transaction_reference = response[:data][:reference]
-  
+          
               if donation.save
                 # Return the authorization URL and donation details on success
                 render json: { authorization_url: response[:data][:authorization_url], donation: donation }, status: :created
@@ -35,7 +46,7 @@ module Api
             else
               render json: { error: response[:message] }, status: :unprocessable_entity
             end
-          end
+          end          
   
           def verify
             # Find the donation by its transaction reference
