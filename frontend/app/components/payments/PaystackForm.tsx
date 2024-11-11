@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import PaystackPop from '@paystack/inline-js';
+import React, { useState } from 'react';
+import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
 
 interface PaystackFormProps {
   cardholderName: string;
@@ -23,134 +23,22 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   paymentAmount,
   fundraiserId,
   campaignId,
-  billingFrequency,
   errors,
   setCardholderName,
   setPaymentEmail,
   setPaymentPhone,
   setPaymentAmount,
 }) => {
-  const [loading, setLoading] = useState(false); // Loading state
-  const [verificationStatus, setVerificationStatus] = useState<string | null>(
-    null,
-  );
+  const { createDonationTransaction, loading } = useDonationsContext();
 
-  const verifyTransaction = async (reference: string) => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations/${reference}/verify`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
+  const handlePayment = () => {
+    if (!loading) {
+      createDonationTransaction(
+        paymentEmail,
+        Number(paymentAmount),
+        fundraiserId,
+        campaignId,
       );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert('Payment verification successful! Thank you for your donation.');
-        setVerificationStatus(
-          'Payment verification successful! Thank you for your donation.',
-        );
-      } else {
-        alert('Payment verification failed. Please try again.');
-        setVerificationStatus('Payment verification failed. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error verifying payment:', error);
-      alert('An error occurred during payment verification.');
-      setVerificationStatus('An error occurred during payment verification.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlePayment = async () => {
-    setLoading(true); // Set loading to true when starting the payment process
-
-    try {
-      // Step 1: Create the donation transaction in the backend
-      const donationResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            amount: paymentAmount,
-            email: paymentEmail,
-            metadata: {
-              custom_data: 'any additional info', // You can add additional metadata here
-            },
-          }),
-        },
-      );
-
-      const donationData = await donationResponse.json();
-
-      if (!donationResponse.ok) {
-        throw new Error(donationData.error || 'Failed to create donation');
-      }
-
-      const { authorization_url, donation } = donationData;
-
-      // Step 2: Redirect to Paystack using the authorization URL
-      if (authorization_url) {
-        window.location.href = authorization_url; // Redirect the user to Paystack for payment
-      } else {
-        throw new Error('Authorization URL not found');
-      }
-
-      // Initialize Paystack and create a new transaction
-      const paystack = new PaystackPop();
-      paystack.newTransaction({
-        key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
-        email: paymentEmail,
-        amount: Number(paymentAmount) * 100, // Convert to kobo
-        metadata: {
-          custom_fields: [
-            {
-              display_name: 'Donation ID',
-              variable_name: 'donation_id',
-              value: donation.id,
-            },
-            {
-              display_name: 'Campaign ID',
-              variable_name: 'campaign_id',
-              value: campaignId,
-            },
-            {
-              display_name: 'Fundraiser ID',
-              variable_name: 'fundraiser_id',
-              value: fundraiserId,
-            },
-          ],
-        },
-        onSuccess: async (transaction) => {
-          if (transaction && transaction.reference) {
-            console.log('Transaction successful:', transaction);
-            // Verify the transaction with the backend
-            await verifyTransaction(transaction.reference);
-          }
-        },
-        onCancel: () => {
-          alert('Transaction was canceled.');
-        },
-        onError: (error) => {
-          alert(`An error occurred: ${error.message}`);
-        },
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(`Error: ${error.message}`);
-      } else {
-        alert('An unknown error occurred.');
-      }
-    } finally {
-      setLoading(false); // Set loading to false after the process ends
     }
   };
 
