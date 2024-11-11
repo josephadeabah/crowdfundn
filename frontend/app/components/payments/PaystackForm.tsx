@@ -30,61 +30,42 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   setPaymentPhone,
   setPaymentAmount,
 }) => {
-  const [loading, setLoading] = useState(false); // Add loading state
-
+  const [loading, setLoading] = useState(false); // Loading state
   const [verificationStatus, setVerificationStatus] = useState<string | null>(
     null,
   );
 
-  useEffect(() => {
-    // Capture the reference from the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const reference = urlParams.get('reference') || urlParams.get('trxref');
-
-    const verifyTransaction = async (reference: string) => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations/${reference}/verify`,
-          {
-            method: 'GET', // Assuming GET is used to verify the payment
-            headers: {
-              'Content-Type': 'application/json',
-            },
+  const verifyTransaction = async (reference: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations/${reference}/verify`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
           },
+        },
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Payment verification successful! Thank you for your donation.');
+        setVerificationStatus(
+          'Payment verification successful! Thank you for your donation.',
         );
-
-        const data = await response.json();
-
-        if (response.ok) {
-          alert(
-            'Payment verification successful! Thank you for your donation.',
-          );
-          setVerificationStatus(
-            'Payment verification successful! Thank you for your donation.',
-          );
-        } else {
-          alert('Payment verification failed. Please try again.');
-          setVerificationStatus(
-            'Payment verification failed. Please try again.',
-          );
-        }
-      } catch (error) {
-        console.error('Error verifying payment:', error);
-        alert('An error occurred during payment verification.');
-        setVerificationStatus('An error occurred during payment verification.');
-      } finally {
-        setLoading(false);
+      } else {
+        alert('Payment verification failed. Please try again.');
+        setVerificationStatus('Payment verification failed. Please try again.');
       }
-    };
-
-    if (reference) {
-      verifyTransaction(reference);
-    } else {
-      alert('Transaction reference not found.');
-      setVerificationStatus('Transaction reference not found.');
+    } catch (error) {
+      console.error('Error verifying payment:', error);
+      alert('An error occurred during payment verification.');
+      setVerificationStatus('An error occurred during payment verification.');
+    } finally {
       setLoading(false);
     }
-  }, []); // Empty dependency array, runs once on component mount
+  };
 
   const handlePayment = async () => {
     setLoading(true); // Set loading to true when starting the payment process
@@ -149,9 +130,10 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
           ],
         },
         onSuccess: async (transaction) => {
-          if (transaction && transaction.redirecturl) {
+          if (transaction && transaction.reference) {
             console.log('Transaction successful:', transaction);
-            window.location.href = transaction.redirecturl;
+            // Verify the transaction with the backend
+            await verifyTransaction(transaction.reference);
           }
         },
         onCancel: () => {
