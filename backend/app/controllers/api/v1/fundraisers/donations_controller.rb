@@ -23,101 +23,75 @@ module Api
         end
 
         
-          def create
-            # Find the campaign based on the campaign_id provided
-            campaign = Campaign.find_by(id: params[:campaign_id])
-            unless campaign
-              return render json: { error: 'Campaign not found' }, status: :not_found
-            end
+        def create
+          campaign = Campaign.find_by(id: params[:campaign_id])
+          unless campaign
+            return render json: { error: 'Campaign not found' }, status: :not_found
+          end
           
-            # Create a new donation with the provided parameters
-            donation = Donation.new(donation_params)
-            
-            # Set the campaign_id and status
-            donation.campaign_id = campaign.id
-            donation.status = 'pending'
-            
-            # Set user_id if authenticated, otherwise it will be nil
-            donation.user_id = @current_user&.id
+          donation = Donation.new(donation_params)
+          donation.campaign_id = campaign.id
+          donation.status = 'pending'
+          donation.user_id = @current_user&.id
           
-            # Add campaign metadata to donation
-            donation.metadata[:campaign] = {
-              id: campaign.id,
-              title: campaign.title,
-              description: campaign.description.to_plain_text,
-              goal_amount: campaign.goal_amount,
-              current_amount: campaign.current_amount,
-              fundraiser_id: campaign.fundraiser_id,
-              fundraiser_name: campaign.fundraiser.full_name
-            }            
+          donation.metadata[:campaign] = {
+            id: campaign.id,
+            title: campaign.title,
+            description: campaign.description.to_plain_text,
+            goal_amount: campaign.goal_amount,
+            current_amount: campaign.current_amount,
+            fundraiser_id: campaign.fundraiser_id,
+            fundraiser_name: campaign.fundraiser.full_name
+          }
           
-            # Initialize Paystack transaction with the donation details
-            response = initialize_paystack_transaction(donation)
+          response = initialize_paystack_transaction(donation)
           
-            if response[:status] == true
-              # Only save the donation if Paystack transaction initialization is successful
-              donation.transaction_reference = response[:data][:reference]
-          
-              if donation.save
-                # Return the authorization URL and donation details on success
-                render json: { authorization_url: response[:data][:authorization_url], donation: donation }, status: :created
-              else
-                render json: { error: donation.errors.full_messages.join(", ") }, status: :unprocessable_entity
-              end
+          if response[:status] == true
+            donation.transaction_reference = response[:data][:reference]
+            if donation.save
+              total_donors = campaign.total_donors  # Fetch the total donors here
+              render json: { 
+                authorization_url: response[:data][:authorization_url], 
+                donation: donation,
+                total_donors: total_donors 
+              }, status: :created
             else
-              render json: { error: response[:message] }, status: :unprocessable_entity
+              render json: { error: donation.errors.full_messages.join(", ") }, status: :unprocessable_entity
             end
-          end          
+          else
+            render json: { error: response[:message] }, status: :unprocessable_entity
+          end
+        end         
   
-          def verify
-            # Find the donation by its transaction reference
-            donation = Donation.find_by(transaction_reference: params[:id])
+        def verify
+          donation = Donation.find_by(transaction_reference: params[:id])
+          if donation.nil?
+            return render json: { error: 'Donation not found' }, status: :not_found
+          end
           
-            if donation.nil?
-              return render json: { error: 'Donation not found' }, status: :not_found
-            end
+          response = verify_paystack_transaction(donation.transaction_reference)
           
-            # Verify the Paystack transaction
-            response = verify_paystack_transaction(donation.transaction_reference)
-          
-            if response[:status] == true && response[:data][:status] == 'success'
-              # Update the donation status and amount
-              donation.update(status: 'successful', amount: response[:data][:amount] / 100.0)
-          
-              # Calculate the total accumulated donations for the campaign
-              campaign = donation.campaign
-              total_donations = campaign.donations.where(status: 'successful').sum(:amount)
-          
-              # Update the campaign's current amount with the total donations
-              campaign.update(current_amount: total_donations)
-          
-              # Include campaign, fundraiser, and donor details in the response
-              fundraiser = campaign.fundraiser
-          
-              render json: {
-                message: 'Donation successful',
-                donation: {
-                  id: donation.id,
-                  amount: donation.amount,
-                  status: donation.status,
-                  full_name: donation.full_name,
-                  email: donation.email,
-                  phone: donation.phone
-                },
-                campaign: campaign,
-                total_donations: total_donations,
-                fundraiser: {
-                  id: fundraiser.id,
-                  name: fundraiser.full_name,
-                  profile: fundraiser.profile
-                }
-              }, status: :ok
-            else
-              # Mark the donation as failed if Paystack verification fails
-              donation.update(status: 'failed')
-              render json: { error: 'Donation verification failed' }, status: :unprocessable_entity
-            end
-          end          
+          if response[:status] == true && response[:data][:status] == 'success'
+            donation.update(status: 'successful', amount: response[:data][:amount] / 100.0)
+            campaign = donation.campaign
+            total_donations = campaign.donations.where(status: 'successful').sum(:amount)
+            campaign.update(current_amount: total_donations)
+            fundraiser = campaign.fundraiser
+            total_donors = campaign.total_donors  # Fetch the total donors here
+
+            render json: {
+              message: 'Donation successful',
+              donation: donation,
+              total_donors: total_donors,  # Return total donors
+              campaign: campaign,
+              total_donations: total_donations,
+              fundraiser: { id: fundraiser.id, name: fundraiser.full_name, profile: fundraiser.profile }
+            }, status: :ok
+          else
+            donation.update(status: 'failed')
+            render json: { error: 'Donation verification failed' }, status: :unprocessable_entity
+          end
+        end          
                          
   
           private

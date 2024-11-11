@@ -27,8 +27,6 @@ class Campaign < ApplicationRecord
   attribute :schedule_promotion, :boolean, default: false
   attribute :promotion_frequency, :string, default: 'daily'
   attribute :promotion_duration, :integer, default: 1
-
-
   # Attachments for images or videos
   has_one_attached :media # Use `has_many_attached` if there are multiple files
 
@@ -80,6 +78,18 @@ class Campaign < ApplicationRecord
         profile: fundraiser.profile
       }
     )
+  end
+
+  # Calculate the total number of unique donors (authenticated + anonymous)
+  def total_donors
+    # Count authenticated donors (distinct user_ids)
+    authenticated_donors = donations.where(status: 'successful').where.not(user_id: nil).distinct.count(:user_id)
+
+    # Count anonymous donors (donations without a user_id)
+    anonymous_donors = donations.where(status: 'successful', user_id: nil).count
+
+    # Return the sum of both
+    authenticated_donors + anonymous_donors
   end
 end
 

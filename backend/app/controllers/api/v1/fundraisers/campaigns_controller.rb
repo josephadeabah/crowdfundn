@@ -9,12 +9,18 @@ module Api
         def index
           page = params[:page] || 1
           page_size = params[:pageSize] || 12
-        
+          
           # Retrieve campaigns with pagination
           @campaigns = Campaign.page(page).per(page_size).reload
-        
+
+          # Include total_donors for each campaign in the response
+          campaigns_data = @campaigns.map do |campaign|
+            campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
+                   .merge(media: campaign.media_url, total_donors: campaign.total_donors)
+          end
+
           render json: {
-            campaigns: @campaigns,
+            campaigns: campaigns_data,
             current_page: @campaigns.current_page,
             total_pages: @campaigns.total_pages,
             total_count: @campaigns.total_count
@@ -22,18 +28,27 @@ module Api
         end
 
         def show
-          render json: @campaign.as_json(include: %i[rewards updates comments fundraiser: :profile]).merge(media: @campaign.media_url), status: :ok
+          # Include total_donors for the single campaign
+          render json: @campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
+                                .merge(media: @campaign.media_url, total_donors: @campaign.total_donors),
+                 status: :ok
         end
 
         def my_campaigns
           page = params[:page] || 1
           page_size = params[:pageSize] || 12
-        
+          
           # Retrieve user's campaigns with pagination
           @campaigns = @current_user.campaigns.page(page).per(page_size)
-        
+          
+          # Include total_donors for each campaign
+          campaigns_data = @campaigns.map do |campaign|
+            campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
+                   .merge(media: campaign.media_url, total_donors: campaign.total_donors)
+          end
+
           render json: {
-            campaigns: @campaigns,
+            campaigns: campaigns_data,
             current_page: @campaigns.current_page,
             total_pages: @campaigns.total_pages,
             total_count: @campaigns.total_count
