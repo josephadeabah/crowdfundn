@@ -11,13 +11,16 @@ module Backend
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.1
 
+    # Add services directory to autoload paths
+    config.autoload_paths << Rails.root.join('app/services')
+
     # Autoload lib settings
     config.autoload_lib(ignore: %w[assets tasks])
 
     # CORS configuration
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins 'https://crowdfundn.vercel.app',            # Replace with your production Next.js URL
+        origins 'https://www.bantuhive.com',            # Replace with your production Next.js URL
                 'http://localhost:3000',                         # Local development for Next.js
                 'https://bantuhive-api-dicht.ondigitalocean.app' # Rails API on DigitalOcean
 

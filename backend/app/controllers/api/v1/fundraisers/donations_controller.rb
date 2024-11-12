@@ -38,7 +38,7 @@ module Api
           donation = Donation.new(donation_params)
           donation.campaign_id = campaign.id
           donation.status = 'pending'
-          donation.user_id = @current_user&.id # Set user_id for authenticated users, nil for anonymous
+          donation.user_id = @current_user&.id
 
           donation.metadata[:campaign] = {
             id: campaign.id,
@@ -50,16 +50,21 @@ module Api
             fundraiser_name: campaign.fundraiser.full_name
           }
 
-          response = initialize_paystack_transaction(donation)
+          paystack_service = PaystackService.new
+          response = paystack_service.initialize_transaction(
+            email: donation.email,
+            amount: donation.amount,
+            metadata: { user_id: donation.user_id, campaign_id: donation.campaign_id }
+          )
 
           if response[:status] == true
             donation.transaction_reference = response[:data][:reference]
             if donation.save
               total_donors = campaign.total_donors
-              render json: { 
-                authorization_url: response[:data][:authorization_url], 
+              render json: {
+                authorization_url: response[:data][:authorization_url],
                 donation: donation,
-                total_donors: total_donors 
+                total_donors: total_donors
               }, status: :created
             else
               render json: { error: donation.errors.full_messages.join(", ") }, status: :unprocessable_entity
@@ -75,7 +80,8 @@ module Api
             return render json: { error: 'Donation not found' }, status: :not_found
           end
 
-          response = verify_paystack_transaction(donation.transaction_reference)
+          paystack_service = PaystackService.new
+          response = paystack_service.verify_transaction(donation.transaction_reference)
 
           if response[:status] == true && response[:data][:status] == 'success'
             donation.update(status: 'successful', amount: response[:data][:amount] / 100.0)
@@ -103,46 +109,6 @@ module Api
 
         def donation_params
           params.require(:donation).permit(:amount, :transaction_reference, :email, :full_name, :phone, metadata: {})
-        end
-
-        def initialize_paystack_transaction(donation)
-          donor_email = donation.email
-          if donor_email.blank?
-            return { status: 'error', message: 'Email address is required' }
-          end
-
-          url = URI("https://api.paystack.co/transaction/initialize")
-          http = Net::HTTP.new(url.host, url.port)
-          http.use_ssl = true
-
-          request = Net::HTTP::Post.new(url)
-          request["Authorization"] = "Bearer #{ENV['PAYSTACK_PRIVATE_KEY']}"
-          request["Content-Type"] = "application/json"
-
-          request.body = {
-            email: donor_email,
-            amount: (donation.amount * 100).to_i,
-            reference: SecureRandom.uuid,
-            metadata: {
-              user_id: donation.user_id, 
-              campaign_id: donation.campaign_id
-            }
-          }.to_json
-
-          response = http.request(request)
-          JSON.parse(response.body, symbolize_names: true)
-        end
-
-        def verify_paystack_transaction(reference)
-          url = URI("https://api.paystack.co/transaction/verify/#{reference}")
-          http = Net::HTTP.new(url.host, url.port)
-          http.use_ssl = true
-
-          request = Net::HTTP::Get.new(url)
-          request["Authorization"] = "Bearer #{ENV['PAYSTACK_PRIVATE_KEY']}"
-
-          response = http.request(request)
-          JSON.parse(response.body, symbolize_names: true)
         end
       end
     end
