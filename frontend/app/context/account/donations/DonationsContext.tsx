@@ -1,53 +1,13 @@
-import { SingleCampaignResponseDataType } from '@/app/types/campaigns.types';
-import { Profile } from '@/app/types/user_profiles.types';
+import { Donation, DonationsState } from '@/app/types/donations.types';
 import React, {
   createContext,
   useState,
   useContext,
   ReactNode,
   useMemo,
+  useCallback,
 } from 'react';
-
-// Refactored Donation interface
-interface Donation {
-  id: number; // Donation ID
-  amount: number;
-  donation: {
-    message: string;
-    status: 'successful'; // Donation status as a fixed string
-    amount: string; // Amount as string (if received as a string, otherwise change to number)
-    campaign_id: number; // Campaign ID that the donation is for
-    id: number; // Donation ID (duplicate, may be removed if redundant)
-    user_id: number | null; // User ID who made the donation, nullable
-    transaction_reference: string; // Unique reference for the transaction
-    total_donations: number; // Total donations received
-    metadata: {
-      custom_data: string; // Additional custom data for the donation
-    };
-    created_at: string; // Donation creation timestamp
-    updated_at: string; // Donation last updated timestamp
-  };
-  campaign: SingleCampaignResponseDataType; // Campaign details associated with the donation
-  reference: string; // Reference string (either `reference` or `trxref`)
-  fundraiser: {
-    profile: Profile; // Profile of the fundraiser associated with this donation
-  };
-}
-
-interface DonationsState {
-  donations: Donation[];
-  loading: boolean;
-  error: string | null;
-  createDonationTransaction: (
-    email: string,
-    fullName: string,
-    phoneNumber: string,
-    amount: number,
-    campaignId: string,
-    fundraiserId: string,
-  ) => void;
-  verifyTransaction: (reference: string) => void;
-}
+import { useAuth } from '../../auth/AuthContext';
 
 const DonationsContext = createContext<DonationsState | undefined>(undefined);
 
@@ -56,8 +16,49 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [campaignID, setCampaignID] = useState<string | null>(null);
+  const { token } = useAuth();
 
-  // Step 1: Create the donation transaction (send donation to backend)
+  const handleApiError = (errorText: string) => {
+    setError(`API Error: ${errorText}`);
+  };
+
+  // Function to fetch all donations for the fundraiser
+  const fetchDonations = useCallback(async () => {
+    if (!token) {
+      setError('Authentication token is missing');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/donations`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        handleApiError(errorText);
+        return;
+      }
+
+      const fetchedDonations: Donation[] = await response.json();
+      setDonations(fetchedDonations);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error fetching donations');
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  // Create Donation Transaction
   const createDonationTransaction = async (
     email: string,
     fullName: string,
@@ -69,7 +70,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     setCampaignID(campaignId);
     try {
       setLoading(true);
-      // Step 1: Create the donation transaction in the backend
       const donationResponse = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
         {
@@ -107,8 +107,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const { authorization_url } = donationData;
-
-      // Step 2: Redirect to Paystack using the authorization URL
       if (authorization_url) {
         window.location.href = authorization_url;
       } else {
@@ -122,7 +120,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Step 3: Verify the transaction (this should be called from the Thank You page)
+  // Verify Transaction
   const verifyTransaction = async (reference: string) => {
     try {
       setLoading(true);
@@ -133,7 +131,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
 
       const data = await response.json();
       if (response.ok) {
-        // Successfully verified, update the donation state with the verified data
         setDonations((prevDonations) => [...prevDonations, data]);
       } else {
         throw new Error('Verification failed');
@@ -153,8 +150,16 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       error,
       createDonationTransaction,
       verifyTransaction,
+      fetchDonations,
     }),
-    [donations, loading, error],
+    [
+      donations,
+      loading,
+      error,
+      createDonationTransaction,
+      verifyTransaction,
+      fetchDonations,
+    ],
   );
 
   return (

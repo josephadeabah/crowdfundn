@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Popover,
   PopoverTrigger,
@@ -8,10 +8,16 @@ import { RadioGroup, RadioGroupItem } from '../components/radio/RadioGroup';
 import { Checkbox } from '../components/checkbox/Checkbox';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { Button } from '../components/button/Button';
+import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
 
 export default function Donations() {
+  const { donations, loading, error, fetchDonations } = useDonationsContext();
   const [filter, setFilter] = useState<'all' | 'specific'>('all');
   const [selectedDonors, setSelectedDonors] = useState<number[]>([]);
+
+  useEffect(() => {
+    fetchDonations();
+  }, [fetchDonations]);
 
   const toggleDonorSelection = (id: number) => {
     if (filter === 'specific') {
@@ -74,26 +80,26 @@ export default function Donations() {
               <th className="py-3 px-4">Donor Name</th>
               <th className="py-3 px-4">Amount</th>
               <th className="py-3 px-4">Date</th>
+              <th className="py-3 px-4">Campaign Title</th>
               <th className="py-3 px-4">Status</th>
               <th className="py-3 px-4">Action</th>
             </tr>
           </thead>
           <tbody>
-            {Array(10)
-              .fill(0)
-              .map((_, idx) => (
-                <DonationRow
-                  key={idx}
-                  id={idx}
-                  donorName={`Donor ${idx + 1}`}
-                  amount={Math.floor(Math.random() * 100) + 10}
-                  date={`Aug ${20 - idx}, 2024`}
-                  status="Completed"
-                  filter={filter}
-                  isSelected={selectedDonors.includes(idx)}
-                  onToggle={() => toggleDonorSelection(idx)}
-                />
-              ))}
+            {donations.map((donation) => (
+              <DonationRow
+                key={donation.id}
+                id={donation.id}
+                donorName={donation.full_name || 'Anonymous'}
+                amount={parseFloat(donation.amount)}
+                date={new Date(donation.created_at).toLocaleDateString()}
+                campaignTitle={donation.metadata.campaign?.title || 'No Title'}
+                status={donation.status}
+                filter={filter}
+                isSelected={selectedDonors.includes(donation.id)}
+                onToggle={() => toggleDonorSelection(donation.id)}
+              />
+            ))}
           </tbody>
         </table>
       </div>
@@ -118,6 +124,7 @@ const DonationRow = ({
   donorName,
   amount,
   date,
+  campaignTitle,
   status,
   filter,
   isSelected,
@@ -127,6 +134,7 @@ const DonationRow = ({
   donorName: string;
   amount: number;
   date: string;
+  campaignTitle: string;
   status: string;
   filter: 'all' | 'specific';
   isSelected: boolean;
@@ -145,9 +153,12 @@ const DonationRow = ({
       )}
       <td className="py-3 px-4 text-gray-800 dark:text-white">{donorName}</td>
       <td className="py-3 px-4 text-gray-600 dark:text-neutral-300">
-        ${amount}
+        ${amount.toFixed(2)}
       </td>
       <td className="py-3 px-4 text-gray-500 dark:text-neutral-400">{date}</td>
+      <td className="py-3 px-4 text-gray-500 dark:text-neutral-400">
+        {campaignTitle}
+      </td>
       <td className="py-3 px-4 text-green-500 dark:text-green-400">{status}</td>
       <td className="py-3 px-4">
         <Button
