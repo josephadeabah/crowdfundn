@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
 import DonationsLoader from '../loaders/DonationsLoader';
 import ErrorPage from '../components/errorpage/ErrorPage';
+import Pagination from '../components/pagination/Pagination';
 import { Button } from '../components/button/Button';
 
 export default function Donations() {
@@ -16,9 +17,7 @@ export default function Donations() {
   }, [currentPage, perPage, fetchDonations]);
 
   const handlePageChange = (page: number) => {
-    if (page > 0 && page <= pagination.total_pages) {
-      setCurrentPage(page);
-    }
+    setCurrentPage(page);
   };
 
   if (loading) {
@@ -69,25 +68,12 @@ export default function Donations() {
           </tbody>
         </table>
       </div>
-
-      {/* Pagination Controls */}
-      <div className="flex justify-between items-center mt-4">
-        <Button
-          disabled={currentPage === 1}
-          onClick={() => handlePageChange(currentPage - 1)}
-        >
-          Previous
-        </Button>
-        <div className="text-gray-600">
-          Page {currentPage} of {pagination.total_pages}
-        </div>
-        <Button
-          disabled={currentPage === pagination.total_pages}
-          onClick={() => handlePageChange(currentPage + 1)}
-        >
-          Next
-        </Button>
-      </div>
+      {/* Use the Pagination component */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={pagination.total_pages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 }
