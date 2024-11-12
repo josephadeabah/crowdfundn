@@ -79,31 +79,37 @@ module Api
           if donation.nil?
             return render json: { error: 'Donation not found' }, status: :not_found
           end
-
+        
           paystack_service = PaystackService.new
           response = paystack_service.verify_transaction(donation.transaction_reference)
-
+        
           if response[:status] == true && response[:data][:status] == 'success'
-            donation.update(status: 'successful', amount: response[:data][:amount] / 100.0)
+            gross_amount = response[:data][:amount] / 100.0
+            net_amount = gross_amount * 0.985 # Deducting 1.5% platform fee
+        
+            donation.update(
+              status: 'successful',
+              gross_amount: gross_amount,
+              net_amount: net_amount,
+              amount: net_amount # Keep this if `amount` needs to reflect net for display
+            )
+        
             campaign = donation.campaign
-            total_donations = campaign.donations.where(status: 'successful').sum(:amount)
+            total_donations = campaign.donations.where(status: 'successful').sum(:net_amount)
             campaign.update(current_amount: total_donations)
-            fundraiser = campaign.fundraiser
-            total_donors = campaign.total_donors
-
+        
             render json: {
               message: 'Donation successful',
               donation: donation,
-              total_donors: total_donors,
-              campaign: campaign,
               total_donations: total_donations,
-              fundraiser: { id: fundraiser.id, name: fundraiser.full_name, profile: fundraiser.profile }
+              campaign: campaign
             }, status: :ok
           else
             donation.update(status: 'failed')
             render json: { error: 'Donation verification failed' }, status: :unprocessable_entity
           end
         end
+        
 
         private
 

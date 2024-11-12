@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_11_170212) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_12_080950) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -105,6 +105,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_11_170212) do
     t.string "full_name"
     t.string "email", default: "noemail@example.com", null: false
     t.string "phone"
+    t.decimal "gross_amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.decimal "net_amount", precision: 15, scale: 2, default: "0.0", null: false
     t.index ["campaign_id"], name: "index_donations_on_campaign_id"
     t.index ["user_id"], name: "index_donations_on_user_id"
   end
