@@ -9,6 +9,8 @@ import { Checkbox } from '../components/checkbox/Checkbox';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { Button } from '../components/button/Button';
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
+import DonationsLoader from '../loaders/DonationsLoader';
+import { Donation } from '../types/donations.types';
 
 export default function Donations() {
   const { donations, loading, error, fetchDonations } = useDonationsContext();
@@ -30,6 +32,10 @@ export default function Donations() {
   };
 
   const isThankYouButtonEnabled = filter === 'all' || selectedDonors.length > 0;
+
+  if (loading) {
+    return <DonationsLoader />;
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -86,7 +92,7 @@ export default function Donations() {
             </tr>
           </thead>
           <tbody>
-            {donations.map((donation) => (
+            {donations.map((donation: Donation) => (
               <DonationRow
                 key={donation.id}
                 id={donation.id}
@@ -94,6 +100,10 @@ export default function Donations() {
                 amount={parseFloat(donation.amount)}
                 date={new Date(donation.created_at).toLocaleDateString()}
                 campaignTitle={donation.metadata.campaign?.title || 'No Title'}
+                currency={
+                  donation?.metadata?.campaign.currency ||
+                  donation?.metadata?.campaign.currency_symbol
+                }
                 status={donation.status}
                 filter={filter}
                 isSelected={selectedDonors.includes(donation.id)}
@@ -125,6 +135,7 @@ const DonationRow = ({
   amount,
   date,
   campaignTitle,
+  currency,
   status,
   filter,
   isSelected,
@@ -135,6 +146,7 @@ const DonationRow = ({
   amount: number;
   date: string;
   campaignTitle: string;
+  currency: string | null;
   status: string;
   filter: 'all' | 'specific';
   isSelected: boolean;
@@ -153,7 +165,7 @@ const DonationRow = ({
       )}
       <td className="py-3 px-4 text-gray-800 dark:text-white">{donorName}</td>
       <td className="py-3 px-4 text-gray-600 dark:text-neutral-300">
-        ${amount.toFixed(2)}
+        {currency?.toLocaleUpperCase()} {amount.toFixed(2)}
       </td>
       <td className="py-3 px-4 text-gray-500 dark:text-neutral-400">{date}</td>
       <td className="py-3 px-4 text-gray-500 dark:text-neutral-400">
