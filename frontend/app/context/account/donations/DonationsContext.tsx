@@ -1,4 +1,8 @@
-import { Donation, DonationsState } from '@/app/types/donations.types';
+import {
+  Donation,
+  DonationsState,
+  Pagination,
+} from '@/app/types/donations.types';
 import React, {
   createContext,
   useState,
@@ -16,6 +20,12 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [campaignID, setCampaignID] = useState<string | null>(null);
+  const [pagination, setPagination] = useState<Pagination>({
+    current_page: 1,
+    total_pages: 1,
+    per_page: 10,
+    total_count: 0,
+  });
   const { token } = useAuth();
 
   const handleApiError = (errorText: string) => {
@@ -23,40 +33,52 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Function to fetch all donations for the fundraiser
-  const fetchDonations = useCallback(async () => {
-    if (!token) {
-      setError('Authentication token is missing');
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/donations`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        handleApiError(errorText);
+  const fetchDonations = useCallback(
+    async (currentPage: number = 1, perPage: number = 10) => {
+      if (!token) {
+        setError('Authentication token is missing');
         return;
       }
 
-      const fetchedDonations: Donation[] = await response.json();
-      setDonations(fetchedDonations);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error fetching donations');
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/donations?page=${currentPage}&per_page=${perPage}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          handleApiError(errorText);
+          return;
+        }
+
+        const data = await response.json();
+        // Update both donations and pagination
+        setDonations(data.donations);
+        setPagination({
+          current_page: data.pagination.current_page,
+          total_pages: data.pagination.total_pages,
+          per_page: data.pagination.per_page,
+          total_count: data.pagination.total_count,
+        });
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error fetching donations',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
 
   // Create Donation Transaction
   const createDonationTransaction = async (
@@ -151,6 +173,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       createDonationTransaction,
       verifyTransaction,
       fetchDonations,
+      pagination,
     }),
     [
       donations,
@@ -159,6 +182,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       createDonationTransaction,
       verifyTransaction,
       fetchDonations,
+      pagination,
     ],
   );
 

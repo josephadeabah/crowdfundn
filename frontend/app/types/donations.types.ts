@@ -1,5 +1,11 @@
 import { SingleCampaignResponseDataType } from './campaigns.types';
 
+export interface Pagination {
+  current_page: number;
+  total_pages: number;
+  per_page: number;
+  total_count: number;
+}
 // Refactored Donation interface
 export interface Donation {
   id: number; // Donation ID
@@ -42,6 +48,7 @@ export interface DonationsState {
   donations: Donation[];
   loading: boolean;
   error: string | null;
+  pagination: Pagination;
   createDonationTransaction: (
     email: string,
     fullName: string,
@@ -49,7 +56,7 @@ export interface DonationsState {
     amount: number,
     campaignId: string,
     fundraiserId: string,
-  ) => void;
+  ) => Promise<void>;
   verifyTransaction: (reference: string) => void;
-  fetchDonations: () => void;
+  fetchDonations: (currentPage: number, perPage: number) => Promise<void>;
 }
