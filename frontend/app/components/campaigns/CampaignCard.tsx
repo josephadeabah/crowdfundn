@@ -101,11 +101,14 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       <div className="w-full text-xs text-green-600">
                         {deslugify(campaign?.category)}
                       </div>
-                      <div className="w-full text-xs font-semibold text-right text-gray-600">
-                        {getRemainingDaysMessage(
-                          campaign.start_date,
-                          campaign.end_date,
-                        )}
+                      <div className="flex justify-between items-center w-full text-xs font-semibold text-right text-gray-600">
+                        <div>{campaign.total_donors || 0} Backers</div>
+                        <div>
+                          {getRemainingDaysMessage(
+                            campaign.start_date,
+                            campaign.end_date,
+                          )}
+                        </div>
                       </div>
                       <div className="w-full text-xs">
                         <Progress

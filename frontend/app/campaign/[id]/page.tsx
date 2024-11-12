@@ -91,13 +91,16 @@ const SingleCampaignPage: React.FC = () => {
             {/* Progress Bar and Stats */}
             <div className="bg-white rounded-lg shadow-sm py-6 px-2 mb-8">
               <div className="w-full flex flex-col gap-2 items-center mb-4">
-                <div className="w-full text-md font-semibold text-right text-gray-600">
-                  {currentCampaign?.start_date && currentCampaign?.end_date
-                    ? getRemainingDaysMessage(
-                        currentCampaign.start_date,
-                        currentCampaign.end_date,
-                      )
-                    : 'N/A days left'}
+                <div className="flex justify-between items-center w-full text-md font-semibold text-right text-gray-600">
+                  <div>{currentCampaign?.total_donors || 0} Backers</div>
+                  <div>
+                    {currentCampaign?.start_date && currentCampaign?.end_date
+                      ? getRemainingDaysMessage(
+                          currentCampaign.start_date,
+                          currentCampaign.end_date,
+                        )
+                      : 'N/A days left'}
+                  </div>
                 </div>
                 <div className="w-full flex justify-between items-center text-xl py-2">
                   <div className="font-medium">

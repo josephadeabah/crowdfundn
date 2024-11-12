@@ -36,44 +36,55 @@ export default function Donations() {
         </h2>
       </div>
 
-      {/* Donation Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white dark:bg-neutral-800 rounded-lg shadow-md">
-          <thead>
-            <tr className="text-left bg-gray-200 dark:bg-neutral-700 text-gray-800 dark:text-white">
-              <th className="py-3 px-4">Donor Name</th>
-              <th className="py-3 px-4">Amount</th>
-              <th className="py-3 px-4">Date</th>
-              <th className="py-3 px-4">Campaign Title</th>
-              <th className="py-3 px-4">Status</th>
-              <th className="py-3 px-4">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {donations.map((donation) => (
-              <DonationRow
-                key={donation.id}
-                id={donation.id}
-                donorName={donation.full_name || 'Anonymous'}
-                amount={parseFloat(donation.amount)}
-                currency={
-                  donation?.metadata?.campaign?.currency ||
-                  donation?.metadata?.campaign?.currency_symbol
-                }
-                date={new Date(donation.created_at).toLocaleDateString()}
-                campaignTitle={donation.metadata.campaign?.title || 'No Title'}
-                status={donation.status}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {/* Use the Pagination component */}
-      <Pagination
-        currentPage={currentPage}
-        totalPages={pagination.total_pages}
-        onPageChange={handlePageChange}
-      />
+      {/* Check if donations is empty */}
+      {donations.length === 0 ? (
+        <div className="text-center text-lg text-gray-600 dark:text-neutral-400">
+          You have not received any donations yet.
+        </div>
+      ) : (
+        <>
+          {/* Donation Table */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+              <thead>
+                <tr className="text-left bg-gray-200 dark:bg-neutral-700 text-gray-800 dark:text-white">
+                  <th className="py-3 px-4">Donor Name</th>
+                  <th className="py-3 px-4">Amount</th>
+                  <th className="py-3 px-4">Date</th>
+                  <th className="py-3 px-4">Campaign Title</th>
+                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {donations.map((donation) => (
+                  <DonationRow
+                    key={donation.id}
+                    id={donation.id}
+                    donorName={donation.full_name || 'Anonymous'}
+                    amount={parseFloat(donation.amount)}
+                    currency={
+                      donation?.metadata?.campaign?.currency ||
+                      donation?.metadata?.campaign?.currency_symbol
+                    }
+                    date={new Date(donation.created_at).toLocaleDateString()}
+                    campaignTitle={
+                      donation.metadata.campaign?.title || 'No Title'
+                    }
+                    status={donation.status}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {/* Pagination Controls */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={pagination.total_pages}
+            onPageChange={handlePageChange}
+          />
+        </>
+      )}
     </div>
   );
 }
