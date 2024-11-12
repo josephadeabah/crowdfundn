@@ -25,7 +25,16 @@ module Api
                               .page(page)
                               .per(per_page)
         
-          render json: donations, status: :ok
+          # Prepare pagination metadata
+          pagination = {
+            current_page: donations.current_page,
+            total_pages: donations.total_pages,
+            per_page: donations.limit_value,
+            total_count: donations.total_count
+          }
+        
+          # Return the donations along with pagination metadata
+          render json: { donations: donations, pagination: pagination }, status: :ok
         end
         
 
