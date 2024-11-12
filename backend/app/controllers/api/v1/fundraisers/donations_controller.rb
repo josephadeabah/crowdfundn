@@ -46,6 +46,8 @@ module Api
             description: campaign.description.to_plain_text,
             goal_amount: campaign.goal_amount,
             current_amount: campaign.current_amount,
+            currency: campaign.currency,
+            currency_symbol: campaign.currency_symbol,
             fundraiser_id: campaign.fundraiser_id,
             fundraiser_name: campaign.fundraiser.full_name
           }
