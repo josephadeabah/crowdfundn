@@ -102,7 +102,8 @@ module Api
             donation.update(
               status: 'successful',
               gross_amount: gross_amount,
-              net_amount: net_amount
+              net_amount: net_amount,
+              amount: net_amount 
             )
 
             # Add platform fee to the Balance table after successful verification

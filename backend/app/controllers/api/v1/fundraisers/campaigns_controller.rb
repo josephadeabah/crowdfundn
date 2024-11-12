@@ -11,7 +11,7 @@ module Api
           page_size = params[:pageSize] || 12
           
           # Retrieve campaigns with pagination and order by most recent
-          @campaigns = Campaign.order(created_at: :desc).page(page).per(page_size)
+          @campaigns = Campaign.order(created_at: :desc).page(page).per(page_size).reload
 
           # Include total_donors for each campaign in the response
           campaigns_data = @campaigns.map do |campaign|
