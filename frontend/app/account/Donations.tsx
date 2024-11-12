@@ -11,6 +11,7 @@ import { Button } from '../components/button/Button';
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
 import DonationsLoader from '../loaders/DonationsLoader';
 import { Donation } from '../types/donations.types';
+import ErrorPage from '../components/errorpage/ErrorPage';
 
 export default function Donations() {
   const { donations, loading, error, fetchDonations } = useDonationsContext();
@@ -35,6 +36,10 @@ export default function Donations() {
 
   if (loading) {
     return <DonationsLoader />;
+  }
+
+  if (error) {
+    return <ErrorPage />;
   }
 
   return (
@@ -101,8 +106,8 @@ export default function Donations() {
                 date={new Date(donation.created_at).toLocaleDateString()}
                 campaignTitle={donation.metadata.campaign?.title || 'No Title'}
                 currency={
-                  donation?.metadata?.campaign.currency ||
-                  donation?.metadata?.campaign.currency_symbol
+                  donation?.metadata?.campaign?.currency ||
+                  donation?.metadata?.campaign?.currency_symbol
                 }
                 status={donation.status}
                 filter={filter}
