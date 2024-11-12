@@ -10,8 +10,8 @@ module Api
           page = params[:page] || 1
           page_size = params[:pageSize] || 12
           
-          # Retrieve campaigns with pagination
-          @campaigns = Campaign.page(page).per(page_size).reload
+          # Retrieve campaigns with pagination and order by most recent
+          @campaigns = Campaign.order(created_at: :desc).page(page).per(page_size)
 
           # Include total_donors for each campaign in the response
           campaigns_data = @campaigns.map do |campaign|
@@ -38,8 +38,8 @@ module Api
           page = params[:page] || 1
           page_size = params[:pageSize] || 12
           
-          # Retrieve user's campaigns with pagination
-          @campaigns = @current_user.campaigns.page(page).per(page_size)
+          # Retrieve user's campaigns with pagination and order by most recent
+          @campaigns = @current_user.campaigns.order(created_at: :desc).page(page).per(page_size)
           
           # Include total_donors for each campaign
           campaigns_data = @campaigns.map do |campaign|
@@ -55,20 +55,17 @@ module Api
           }, status: :ok
         end
 
-        # GET /api/v1/fundraisers/campaigns/group_by_category
         def group_by_category
           page = params[:page] || 1
           page_size = params[:page_size] || 12
 
-          # Group campaigns by category
-          grouped_campaigns = Campaign.all.group_by do |campaign|
-            # Standardize category (downcase and replace spaces with dashes)
+          # Group campaigns by category and order each group by most recent
+          grouped_campaigns = Campaign.all.order(created_at: :desc).group_by do |campaign|
             campaign.category.downcase.gsub(/\s+/, '-')
           end
 
           # Paginate each category separately
           grouped_paginated_campaigns = grouped_campaigns.transform_values do |campaigns|
-            # Apply pagination to each category's campaigns
             Kaminari.paginate_array(campaigns).page(page).per(page_size)
           end
 

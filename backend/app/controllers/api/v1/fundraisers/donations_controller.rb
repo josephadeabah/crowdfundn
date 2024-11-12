@@ -8,23 +8,24 @@ module Api
           if @current_user.nil?
             return render json: { error: 'User not authenticated' }, status: :unauthorized
           end
-        
+          
           # Get the page number from params[:page], default to 1 if not present
           page = params[:page] || 1
-        
+          
           # Get the number of items per page, default to 10 if not provided
           per_page = params[:per_page] || 10
-        
+          
           # Fetch all campaigns run by the current user
           campaigns = Campaign.where(fundraiser_id: @current_user.id)
-        
-          # Fetch donations for those campaigns with status 'successful' and where user_id is either null or matches the current user's id
+          
+          # Fetch donations for those campaigns with status 'successful', ordered by creation date descending
           donations = Donation.where(status: 'successful')
                               .where('user_id IS NULL OR user_id = ?', @current_user.id)
-                              .where(campaign_id: campaigns.pluck(:id)) # Filter by campaigns run by the current user
+                              .where(campaign_id: campaigns.pluck(:id))
+                              .order(created_at: :desc)  # Order by most recent
                               .page(page)
                               .per(per_page)
-        
+          
           # Prepare pagination metadata
           pagination = {
             current_page: donations.current_page,
@@ -32,7 +33,7 @@ module Api
             per_page: donations.limit_value,
             total_count: donations.total_count
           }
-        
+          
           # Return the donations along with pagination metadata
           render json: { donations: donations, pagination: pagination }, status: :ok
         end
@@ -90,21 +91,20 @@ module Api
           if donation.nil?
             return render json: { error: 'Donation not found' }, status: :not_found
           end
-        
+
           paystack_service = PaystackService.new
           response = paystack_service.verify_transaction(donation.transaction_reference)
-        
+
           if response[:status] == true && response[:data][:status] == 'success'
             gross_amount = response[:data][:amount] / 100.0
             net_amount = gross_amount * 0.985 # Deducting 1.5% platform fee
-        
+
             donation.update(
               status: 'successful',
               gross_amount: gross_amount,
-              net_amount: net_amount,
-              amount: net_amount # Keep this if `amount` needs to reflect net for display
+              net_amount: net_amount
             )
-            
+
             # Add platform fee to the Balance table after successful verification
             Balance.create(
               amount: gross_amount - net_amount,
@@ -112,11 +112,10 @@ module Api
               status: "pending"
             )
 
-        
             campaign = donation.campaign
-            total_donations = campaign.donations.where(status: 'successful').sum(:net_amount)
+            total_donations = campaign.donations.where(status: 'successful').order(created_at: :desc).sum(:net_amount)  # Order by most recent
             campaign.update(current_amount: total_donations)
-        
+
             render json: {
               message: 'Donation successful',
               donation: donation,
