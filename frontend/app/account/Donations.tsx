@@ -58,8 +58,8 @@ export default function Donations() {
                 donorName={donation.full_name || 'Anonymous'}
                 amount={parseFloat(donation.amount)}
                 currency={
-                  donation.metadata.campaign.currency ||
-                  donation.metadata.campaign.currency_symbol
+                  donation?.metadata?.campaign?.currency ||
+                  donation?.metadata?.campaign?.currency_symbol
                 }
                 date={new Date(donation.created_at).toLocaleDateString()}
                 campaignTitle={donation.metadata.campaign?.title || 'No Title'}
