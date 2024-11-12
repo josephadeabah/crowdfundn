@@ -41,4 +41,25 @@ class PaystackService
     response = http.request(request)
     JSON.parse(response.body, symbolize_names: true)
   end
+
+  def initiate_transfer(amount)
+    recipient_code = "YOUR_RECIPIENT_CODE" # Obtain this code by registering your bank account as a recipient
+
+    url = URI("#{PAYSTACK_BASE_URL}/transfer")
+    http = Net::HTTP.new(url.host, url.port)
+    http.use_ssl = true
+
+    request = Net::HTTP::Post.new(url)
+    request['Authorization'] = "Bearer #{@secret_key}"
+    request['Content-Type'] = 'application/json'
+    request.body = {
+      source: "balance",
+      amount: (amount * 100).to_i, # Convert to kobo
+      recipient: recipient_code,
+      reason: "Platform fees transfer"
+    }.to_json
+
+    response = http.request(request)
+    JSON.parse(response.body, symbolize_names: true)
+  end
 end

@@ -93,6 +93,14 @@ module Api
               net_amount: net_amount,
               amount: net_amount # Keep this if `amount` needs to reflect net for display
             )
+            
+            # Add platform fee to the Balance table after successful verification
+            Balance.create(
+              amount: gross_amount - net_amount,
+              description: "Platform fee for donation #{donation.id}",
+              status: "pending"
+            )
+
         
             campaign = donation.campaign
             total_donations = campaign.donations.where(status: 'successful').sum(:net_amount)
