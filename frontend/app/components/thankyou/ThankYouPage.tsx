@@ -37,7 +37,7 @@ const ThankYouPage = () => {
   // Extracting donation details
   const donationDetails = donations[0]?.donation || {};
   const campaignDetails = donations[0]?.campaign || {};
-  const fundraiserDetails = donations[0]?.fundraiser || {};
+  // const fundraiserDetails = donations[0]?.fundraiser || {};
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-green-200 via-blue-200 to-purple-200 flex items-center justify-center p-6">
@@ -95,9 +95,9 @@ const ThankYouPage = () => {
             <h3 className="text-lg font-semibold text-blue-600">
               Fundraiser Details
             </h3>
-            <p className="text-sm text-gray-600">
+            {/* <p className="text-sm text-gray-600">
               <strong>Fundraiser Name:</strong> {fundraiserDetails.profile.name}
-            </p>
+            </p> */}
             <p className="text-sm text-gray-600">
               <strong>Funding Goal:</strong> {campaignDetails.currency}
               {campaignDetails.goal_amount}
@@ -106,13 +106,13 @@ const ThankYouPage = () => {
               <strong>Amount Raised:</strong> {campaignDetails.currency}
               {campaignDetails.current_amount}
             </p>
-            <p className="text-sm text-gray-600">
+            {/* <p className="text-sm text-gray-600">
               <strong>Status:</strong> {fundraiserDetails.profile?.status}
-            </p>
-            <p className="text-sm text-gray-600">
+            </p> */}
+            {/* <p className="text-sm text-gray-600">
               <strong>Fundraiser Created At:</strong>{' '}
               {new Date(fundraiserDetails.profile?.created_at).toLocaleString()}
-            </p>
+            </p> */}
           </div>
         </div>
 
