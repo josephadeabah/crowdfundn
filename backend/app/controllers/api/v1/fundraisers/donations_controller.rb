@@ -6,27 +6,21 @@ module Api
 
         def index
           if @current_user.nil?
-            return render json: { error: 'User not authenticated' }, status: :unauthorized
+            return render json: { error: 'You need to log in to access donations.' }, status: :unauthorized
           end
           
-          # Get the page number from params[:page], default to 1 if not present
           page = params[:page] || 1
-          
-          # Get the number of items per page, default to 10 if not provided
           per_page = params[:per_page] || 10
           
-          # Fetch all campaigns run by the current user
           campaigns = Campaign.where(fundraiser_id: @current_user.id)
           
-          # Fetch donations for those campaigns with status 'successful', ordered by creation date descending
           donations = Donation.where(status: 'successful')
                               .where('user_id IS NULL OR user_id = ?', @current_user.id)
                               .where(campaign_id: campaigns.pluck(:id))
-                              .order(created_at: :desc)  # Order by most recent
+                              .order(created_at: :desc)
                               .page(page)
                               .per(per_page)
           
-          # Prepare pagination metadata
           pagination = {
             current_page: donations.current_page,
             total_pages: donations.total_pages,
@@ -34,22 +28,20 @@ module Api
             total_count: donations.total_count
           }
           
-          # Return the donations along with pagination metadata
           render json: { donations: donations, pagination: pagination }, status: :ok
         end
-        
 
         def create
           campaign = Campaign.find_by(id: params[:campaign_id])
           unless campaign
-            return render json: { error: 'Campaign not found' }, status: :not_found
+            return render json: { error: 'The campaign you are trying to donate to no longer exists.' }, status: :not_found
           end
 
           donation = Donation.new(donation_params)
           donation.campaign_id = campaign.id
           donation.status = 'pending'
           donation.user_id = @current_user&.id
-
+          
           donation.metadata[:campaign] = {
             id: campaign.id,
             title: campaign.title,
@@ -79,17 +71,17 @@ module Api
                 total_donors: total_donors
               }, status: :created
             else
-              render json: { error: donation.errors.full_messages.join(", ") }, status: :unprocessable_entity
+              render json: { error: 'Donation creation failed: ' + donation.errors.full_messages.join(', ') }, status: :unprocessable_entity
             end
           else
-            render json: { error: response[:message] }, status: :unprocessable_entity
+            render json: { error: 'Payment initialization failed: ' + response[:message] }, status: :unprocessable_entity
           end
         end
 
         def verify
           donation = Donation.find_by(transaction_reference: params[:id])
           if donation.nil?
-            return render json: { error: 'Donation not found' }, status: :not_found
+            return render json: { error: 'We could not find the donation. Please check your transaction reference.' }, status: :not_found
           end
 
           paystack_service = PaystackService.new
@@ -97,16 +89,15 @@ module Api
 
           if response[:status] == true && response[:data][:status] == 'success'
             gross_amount = response[:data][:amount] / 100.0
-            net_amount = gross_amount * 0.985 # Deducting 1.5% platform fee
+            net_amount = gross_amount * 0.985
 
             donation.update(
               status: 'successful',
               gross_amount: gross_amount,
               net_amount: net_amount,
-              amount: net_amount 
+              amount: net_amount
             )
 
-            # Add platform fee to the Balance table after successful verification
             Balance.create(
               amount: gross_amount - net_amount,
               description: "Platform fee for donation #{donation.id}",
@@ -114,7 +105,7 @@ module Api
             )
 
             campaign = donation.campaign
-            total_donations = campaign.donations.where(status: 'successful').order(created_at: :desc).sum(:net_amount)  # Order by most recent
+            total_donations = campaign.donations.where(status: 'successful').order(created_at: :desc).sum(:net_amount)
             campaign.update(current_amount: total_donations)
 
             render json: {
@@ -125,10 +116,9 @@ module Api
             }, status: :ok
           else
             donation.update(status: 'failed')
-            render json: { error: 'Donation verification failed' }, status: :unprocessable_entity
+            render json: { error: 'Donation verification failed. Please try again later.' }, status: :unprocessable_entity
           end
         end
-        
 
         private
 
