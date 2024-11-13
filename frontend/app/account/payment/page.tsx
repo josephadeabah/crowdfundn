@@ -129,9 +129,7 @@ const PaymentPageContent = () => {
               </h2>
             </div>
           ) : (
-            <p className="text-gray-600">
-              No Payment Method Selected.
-            </p>
+            <p className="text-gray-600">No Payment Method Selected.</p>
           )}
         </div>
 
