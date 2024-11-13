@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
+import ToastComponent from '@/app/components/toast/Toast';
 
 interface PaystackFormProps {
   cardholderName: string;
   paymentEmail: string;
   paymentPhone: string;
   paymentAmount: string;
-  fundraiserId: string;
   campaignId: string;
   billingFrequency: string;
   errors: { [key: string]: string };
@@ -21,7 +21,6 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   paymentEmail,
   paymentPhone,
   paymentAmount,
-  fundraiserId,
   campaignId,
   errors,
   setCardholderName,
@@ -29,16 +28,26 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   setPaymentPhone,
   setPaymentAmount,
 }) => {
-  const { createDonationTransaction, loading } = useDonationsContext();
+  const { createDonationTransaction, loading, error } = useDonationsContext();
+  const [showToast, setShowToast] = useState(false);
+
+  // Trigger toast visibility when error changes
+  useEffect(() => {
+    if (error) {
+      setShowToast(true);
+    } else {
+      setShowToast(false);
+    }
+  }, [error]);
 
   const handlePayment = () => {
+    setShowToast(false);
     if (!loading) {
       createDonationTransaction(
         paymentEmail,
         cardholderName,
         paymentPhone,
         Number(paymentAmount),
-        fundraiserId,
         campaignId,
       );
     }
@@ -46,6 +55,14 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
 
   return (
     <>
+      {showToast && error && (
+        <ToastComponent
+          type="error"
+          isOpen={showToast}
+          onClose={() => setShowToast(false)}
+          description={error}
+        />
+      )}
       <div className="mb-4">
         <label
           htmlFor="cardholderName"
@@ -82,11 +99,21 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         <input
           type="email"
           id="paymentEmail"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+          className={`w-full px-3 py-2 border ${errors.paymentEmail ? 'border-red-500' : 'border-gray-300'} rounded-md`}
           placeholder="you@example.com"
           value={paymentEmail}
           onChange={(e) => setPaymentEmail(e.target.value)}
+          aria-invalid={!!errors.paymentEmail}
+          aria-describedby={
+            errors.paymentEmail ? 'paymentEmail-error' : undefined
+          }
+          required
         />
+        {errors.paymentEmail && (
+          <p id="paymentEmail-error" className="mt-1 text-sm text-red-500">
+            {errors.paymentEmail}
+          </p>
+        )}
       </div>
 
       <div className="mb-4">
@@ -127,7 +154,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         type="button"
         onClick={handlePayment}
         className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:bg-gray-400"
-        disabled={loading}
+        disabled={loading || Object.keys(errors).length > 0} // Disable if there are errors
       >
         {loading ? 'Processing...' : 'Proceed to Pay'}
       </button>

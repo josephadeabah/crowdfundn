@@ -55,7 +55,6 @@ export interface DonationsState {
     phoneNumber: string,
     amount: number,
     campaignId: string,
-    fundraiserId: string,
   ) => Promise<void>;
   verifyTransaction: (reference: string) => void;
   fetchDonations: (currentPage: number, perPage: number) => Promise<void>;

@@ -29,19 +29,18 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
   const { token } = useAuth();
 
   const handleApiError = (errorText: string) => {
-    setError(`API Error: ${errorText}`);
+    setError(`Oops!: ${errorText}`);
   };
 
-  // Function to fetch all donations for the fundraiser
+  // Fetch all donations for the fundraiser
   const fetchDonations = useCallback(
     async (currentPage: number = 1, perPage: number = 10) => {
       if (!token) {
-        setError('Authentication token is missing');
+        handleApiError('You need to log in to access donations.');
         return;
       }
 
       setLoading(true);
-      setError(null);
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/donations?page=${currentPage}&per_page=${perPage}`,
@@ -61,7 +60,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const data = await response.json();
-        // Update both donations and pagination
         setDonations(data.donations);
         setPagination({
           current_page: data.pagination.current_page,
@@ -70,9 +68,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           total_count: data.pagination.total_count,
         });
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Error fetching donations',
-        );
+        handleApiError('Error fetching donations. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -86,7 +82,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     fullName: string,
     phoneNumber: string,
     amount: number,
-    fundraiser_id: string,
     campaignId: string,
   ) => {
     setCampaignID(campaignId);
@@ -104,20 +99,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             email: email,
             full_name: fullName,
             phone: phoneNumber,
-            metadata: {
-              custom_fields: [
-                {
-                  display_name: 'Campaign ID',
-                  variable_name: 'campaign_id',
-                  value: campaignId,
-                },
-                {
-                  display_name: 'Fundraiser ID',
-                  variable_name: 'fundraiser_id',
-                  value: fundraiser_id,
-                },
-              ],
-            },
+            metadata: {},
           }),
         },
       );
@@ -125,18 +107,19 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       const donationData = await donationResponse.json();
 
       if (!donationResponse.ok) {
-        throw new Error(donationData.error || 'Failed to create donation');
+        handleApiError('Failed to create donation');
       }
 
       const { authorization_url } = donationData;
       if (authorization_url) {
         window.location.href = authorization_url;
       } else {
-        throw new Error('Authorization URL not found');
+        handleApiError(
+          'We could not initiate your payment at this time. Please try again later.',
+        );
       }
     } catch (error) {
-      console.error('Error initiating donation:', error);
-      setError('Error initiating donation');
+      handleApiError('Error initiating donation. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -144,6 +127,11 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
 
   // Verify Transaction
   const verifyTransaction = async (reference: string) => {
+    if (!campaignID) {
+      handleApiError('Campaign ID is missing.');
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await fetch(
@@ -155,11 +143,10 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       if (response.ok) {
         setDonations((prevDonations) => [...prevDonations, data]);
       } else {
-        throw new Error('Verification failed');
+        handleApiError(data.error || 'Verification failed. Please try again.');
       }
     } catch (err) {
-      setError('Verification error');
-      console.error('Verification error:', err);
+      handleApiError('Error verifying transaction. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -170,19 +157,19 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       donations,
       loading,
       error,
+      pagination,
+      fetchDonations,
       createDonationTransaction,
       verifyTransaction,
-      fetchDonations,
-      pagination,
     }),
     [
       donations,
       loading,
       error,
+      pagination,
+      fetchDonations,
       createDonationTransaction,
       verifyTransaction,
-      fetchDonations,
-      pagination,
     ],
   );
 
@@ -195,9 +182,8 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
 
 export const useDonationsContext = () => {
   const context = useContext(DonationsContext);
-  if (!context)
-    throw new Error(
-      'useDonationsContext must be used within a DonationsProvider',
-    );
+  if (!context) {
+    throw new Error('useDonations must be used within a DonationsProvider');
+  }
   return context;
 };

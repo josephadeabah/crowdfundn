@@ -159,7 +159,6 @@ const PaymentPageContent = () => {
               paymentEmail={paymentEmail}
               paymentPhone={paymentPhone}
               paymentAmount={paymentAmount}
-              fundraiserId={fundraiserId}
               campaignId={campaignId}
               billingFrequency={billingFrequency}
               errors={errors}
