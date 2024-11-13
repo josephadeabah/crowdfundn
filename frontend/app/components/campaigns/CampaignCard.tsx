@@ -50,11 +50,17 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     }
   }, [userProfile]);
 
-  // Filter campaigns by the user's country
-  const filteredCampaigns = campaigns?.filter(
-    (campaign) =>
-      campaign.location.toLowerCase() === userCountry?.toLowerCase(),
-  );
+  // Filter campaigns by the user's country and exclude campaigns with zero remaining days
+  const filteredCampaigns = campaigns?.filter((campaign) => {
+    const remainingDays = getRemainingDaysMessage(
+      campaign.start_date,
+      campaign.end_date,
+    );
+    return (
+      campaign.location.toLowerCase() === userCountry?.toLowerCase() &&
+      remainingDays !== 'No days left'
+    );
+  });
 
   if (loading || isLocationLoading) return <CampaignCardLoader />;
   if (error) return <ErrorPage />;
