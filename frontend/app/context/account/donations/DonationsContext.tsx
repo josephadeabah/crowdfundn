@@ -128,7 +128,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
   // Verify Transaction
   const verifyTransaction = async (reference: string) => {
     if (!campaignID) {
-      handleApiError('Campaign ID is missing.');
+      handleApiError('Campaign ID is missing. We could not verify your payment.');
       return;
     }
 
