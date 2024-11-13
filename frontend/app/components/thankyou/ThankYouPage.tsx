@@ -125,7 +125,7 @@ const ThankYouPage = () => {
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Funding Goal:</strong>{' '}
-                {campaignDetails?.currency.toLocaleUpperCase()}
+                {campaignDetails?.currency?.toUpperCase()}
                 {campaignDetails?.goal_amount}
               </p>
               <p className="text-sm text-gray-600">
