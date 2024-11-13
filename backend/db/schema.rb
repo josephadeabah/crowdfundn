@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_13_151659) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_13_153110) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -50,26 +50,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_13_151659) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
-  end
-
-  create_table "archived_campaigns", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.string "title"
-    t.text "description"
-    t.decimal "goal_amount"
-    t.decimal "current_amount"
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.integer "status"
-    t.string "category"
-    t.string "location"
-    t.string "currency"
-    t.string "currency_code"
-    t.string "currency_symbol"
-    t.string "media"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_archived_campaigns_on_user_id"
   end
 
   create_table "balances", force: :cascade do |t|
@@ -222,7 +202,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_13_151659) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "archived_campaigns", "users"
   add_foreign_key "campaigns", "users", column: "fundraiser_id"
   add_foreign_key "comments", "campaigns"
   add_foreign_key "comments", "users"
