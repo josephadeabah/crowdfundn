@@ -44,7 +44,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
 
   const handlePayment = () => {
     setShowToast(false);
-    if (!loading) {
+    if (validatePaystackForm()) {
       createDonationTransaction(
         paymentEmail,
         cardholderName,
