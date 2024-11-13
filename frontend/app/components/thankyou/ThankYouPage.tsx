@@ -105,12 +105,12 @@ const ThankYouPage = () => {
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Goal Amount:</strong>{' '}
-                {campaignDetails?.currency.toLocaleUpperCase()}
+                {campaignDetails?.currency?.toUpperCase()}
                 {campaignDetails?.goal_amount}
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Current Amount:</strong>{' '}
-                {campaignDetails?.currency.toLocaleUpperCase()}
+                {campaignDetails?.currency?.toUpperCase()}
                 {campaignDetails?.current_amount}
               </p>
             </div>
@@ -130,7 +130,7 @@ const ThankYouPage = () => {
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Amount Raised:</strong>{' '}
-                {campaignDetails?.currency.toLocaleUpperCase()}
+                {campaignDetails?.currency?.toUpperCase()}
                 {campaignDetails?.current_amount}
               </p>
               <p className="text-sm text-gray-600">
