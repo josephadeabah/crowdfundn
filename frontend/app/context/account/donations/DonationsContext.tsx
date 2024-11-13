@@ -143,7 +143,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       if (response.ok) {
         setDonations((prevDonations) => [...prevDonations, data]);
       } else {
-        handleApiError(data.error || 'Verification failed. Please try again.');
+        handleApiError('Verification failed. Please try again.');
       }
     } catch (err) {
       handleApiError('Error verifying transaction. Please try again later.');

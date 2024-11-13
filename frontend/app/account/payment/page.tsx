@@ -30,7 +30,6 @@ const PaymentPageContent = () => {
   const [campaignId, setCampaignId] = useState('');
   const [billingFrequency, setBillingFrequency] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isProcessing, setIsProcessing] = useState(false);
 
   const searchParams = useSearchParams();
 
@@ -106,16 +105,14 @@ const PaymentPageContent = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmitPayment = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const isValid = validatePaymentForm();
-    if (isValid) {
-      setIsProcessing(true);
-      setTimeout(() => {
-        setIsProcessing(false);
-        alert('Payment processed successfully!');
-      }, 2000);
-    }
+  const validatePayStackForm = () => {
+    const newErrors: {
+      paymentEmail?: string;
+    } = {};
+    if (!/\S+@\S+\.\S+/.test(paymentEmail))
+      newErrors.paymentEmail = 'Invalid email address';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   return (
@@ -132,11 +129,13 @@ const PaymentPageContent = () => {
               </h2>
             </div>
           ) : (
-            <p className="text-gray-600">No payment method selected.</p>
+            <p className="text-gray-600">
+              No Payment Method Selected.
+            </p>
           )}
         </div>
 
-        <form onSubmit={handleSubmitPayment}>
+        <form>
           {paymentMethod === 'creditCard' && (
             <CreditCardForm
               cardNumber={cardNumber}
@@ -162,6 +161,7 @@ const PaymentPageContent = () => {
               campaignId={campaignId}
               billingFrequency={billingFrequency}
               errors={errors}
+              isPaymentFormValidated={validatePayStackForm}
               setCardholderName={setCardholderName}
               setPaymentEmail={setPaymentEmail}
               setPaymentPhone={setPaymentPhone}

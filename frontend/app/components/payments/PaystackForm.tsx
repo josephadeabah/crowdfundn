@@ -10,6 +10,7 @@ interface PaystackFormProps {
   campaignId: string;
   billingFrequency: string;
   errors: { [key: string]: string };
+  isPaymentFormValidated: () => boolean;
   setCardholderName: React.Dispatch<React.SetStateAction<string>>;
   setPaymentEmail: React.Dispatch<React.SetStateAction<string>>;
   setPaymentPhone: React.Dispatch<React.SetStateAction<string>>;
@@ -23,6 +24,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   paymentAmount,
   campaignId,
   errors,
+  isPaymentFormValidated: validatePaystackForm,
   setCardholderName,
   setPaymentEmail,
   setPaymentPhone,
@@ -42,7 +44,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
 
   const handlePayment = () => {
     setShowToast(false);
-    if (!loading) {
+    if (validatePaystackForm()) {
       createDonationTransaction(
         paymentEmail,
         cardholderName,
@@ -154,7 +156,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         type="button"
         onClick={handlePayment}
         className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:bg-gray-400"
-        disabled={loading || Object.keys(errors).length > 0} // Disable if there are errors
+        disabled={loading}
       >
         {loading ? 'Processing...' : 'Proceed to Pay'}
       </button>
