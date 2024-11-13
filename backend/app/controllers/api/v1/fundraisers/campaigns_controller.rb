@@ -2,7 +2,7 @@ module Api
   module V1
     module Fundraisers
       class CampaignsController < ApplicationController
-        before_action :authenticate_request, only: %i[create update destroy my_campaigns]
+        before_action :authenticate_request, only: %i[create update destroy my_campaigns archived_campaigns]  # Ensure user is authenticated
         before_action :set_campaign, only: %i[show update destroy]
         before_action :authorize_campaign_user!, only: %i[update destroy]  # Ensure user authorization for these actions
 
@@ -52,6 +52,25 @@ module Api
             current_page: @campaigns.current_page,
             total_pages: @campaigns.total_pages,
             total_count: @campaigns.total_count
+          }, status: :ok
+        end
+
+        def archived_campaigns
+          page = params[:page] || 1
+          page_size = params[:pageSize] || 12
+      
+          # Fetch the archived campaigns for the current user
+          @archived_campaigns = ArchivedCampaign.where(user: @current_user).order(created_at: :desc).page(page).per(page_size)
+      
+          campaigns_data = @archived_campaigns.map do |campaign|
+            campaign.as_json(only: [:id, :title, :description, :goal_amount, :current_amount, :start_date, :end_date, :status, :category, :location, :currency, :currency_code, :currency_symbol, :media])
+          end
+      
+          render json: {
+            archived_campaigns: campaigns_data,
+            current_page: @archived_campaigns.current_page,
+            total_pages: @archived_campaigns.total_pages,
+            total_count: @archived_campaigns.total_count
           }, status: :ok
         end
 

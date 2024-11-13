@@ -91,6 +91,35 @@ class Campaign < ApplicationRecord
     # Return the sum of both
     authenticated_donors + anonymous_donors
   end
+
+    # Archive expired campaigns
+    def self.archive_expired_campaigns
+      where("end_date <= ?", Time.current).each do |campaign|
+        # Check if the campaign is already archived
+        next if ArchivedCampaign.exists?(campaign_id: campaign.id)
+  
+        # Archive the campaign by copying its data
+        ArchivedCampaign.create!(
+          user: campaign.fundraiser,
+          title: campaign.title,
+          description: campaign.description,
+          goal_amount: campaign.goal_amount,
+          current_amount: campaign.current_amount,
+          start_date: campaign.start_date,
+          end_date: campaign.end_date,
+          status: campaign.status,
+          category: campaign.category,
+          location: campaign.location,
+          currency: campaign.currency,
+          currency_code: campaign.currency_code,
+          currency_symbol: campaign.currency_symbol,
+          media: campaign.media_url
+        )
+  
+        # Mark the campaign as completed or archived
+        campaign.update(status: :completed)
+      end
+    end
 end
 
 class Update < ApplicationRecord
