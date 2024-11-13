@@ -23,7 +23,7 @@ export interface Donation {
   };
   created_at: string;
   updated_at: string;
-  gross_amount: number;
+  gross_amount: string;
   net_amount: number;
   donation: {
     message: string;

@@ -62,7 +62,7 @@ export default function Donations() {
                     key={donation.id}
                     id={donation.id}
                     donorName={donation.full_name || 'Anonymous'}
-                    amount={parseFloat(donation.amount)}
+                    amount={parseFloat(donation.gross_amount)}
                     currency={
                       donation?.metadata?.campaign?.currency ||
                       donation?.metadata?.campaign?.currency_symbol

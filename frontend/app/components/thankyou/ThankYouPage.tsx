@@ -75,24 +75,24 @@ const ThankYouPage = () => {
 
             <div className="mt-4 text-left">
               <p className="text-sm text-gray-600">
-                <strong>Status:</strong> {donationDetails.status}
+                <strong>Status:</strong> {donationDetails?.status}
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Amount:</strong>{' '}
-                {campaignDetails.currency.toLocaleUpperCase()}
-                {donationDetails.amount}
+                {campaignDetails?.currency?.toUpperCase()}
+                {donationDetails?.amount}
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Transaction Reference:</strong>{' '}
-                {donationDetails.transaction_reference}
+                {donationDetails?.transaction_reference}
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Created At:</strong>{' '}
-                {new Date(donationDetails.created_at).toLocaleString()}
+                {new Date(donationDetails?.created_at).toLocaleString()}
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Updated At:</strong>{' '}
-                {new Date(donationDetails.updated_at).toLocaleString()}
+                {new Date(donationDetails?.updated_at).toLocaleString()}
               </p>
             </div>
 
@@ -101,17 +101,17 @@ const ThankYouPage = () => {
                 Campaign Details
               </h3>
               <p className="text-sm text-gray-600">
-                <strong>Title:</strong> {campaignDetails.title}
+                <strong>Title:</strong> {campaignDetails?.title}
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Goal Amount:</strong>{' '}
-                {campaignDetails.currency.toLocaleUpperCase()}
-                {campaignDetails.goal_amount}
+                {campaignDetails?.currency.toLocaleUpperCase()}
+                {campaignDetails?.goal_amount}
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Current Amount:</strong>{' '}
-                {campaignDetails.currency.toLocaleUpperCase()}
-                {campaignDetails.current_amount}
+                {campaignDetails?.currency.toLocaleUpperCase()}
+                {campaignDetails?.current_amount}
               </p>
             </div>
 
@@ -121,26 +121,26 @@ const ThankYouPage = () => {
               </h3>
               <p className="text-sm text-gray-600">
                 <strong>Fundraiser Name:</strong>{' '}
-                {campaignDetails.fundraiser.profile.name}
+                {campaignDetails?.fundraiser?.profile.name}
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Funding Goal:</strong>{' '}
-                {campaignDetails.currency.toLocaleUpperCase()}
-                {campaignDetails.goal_amount}
+                {campaignDetails?.currency.toLocaleUpperCase()}
+                {campaignDetails?.goal_amount}
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Amount Raised:</strong>{' '}
-                {campaignDetails.currency.toLocaleUpperCase()}
-                {campaignDetails.current_amount}
+                {campaignDetails?.currency.toLocaleUpperCase()}
+                {campaignDetails?.current_amount}
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Status:</strong>{' '}
-                {campaignDetails.fundraiser.profile?.status}
+                {campaignDetails?.fundraiser?.profile?.status}
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Fundraiser Created At:</strong>{' '}
                 {new Date(
-                  campaignDetails.fundraiser.profile?.created_at,
+                  campaignDetails?.fundraiser?.profile?.created_at,
                 ).toLocaleString()}
               </p>
             </div>
