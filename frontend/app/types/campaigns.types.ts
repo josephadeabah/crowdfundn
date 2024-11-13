@@ -74,6 +74,7 @@ export interface CampaignState {
   error: string | null;
   addCampaign: (campaign: FormData) => Promise<CampaignResponseDataType>;
   fetchCampaigns: () => Promise<void>;
+  scheduleArchiveCampaigns: () => Promise<void>;
   fetchAllCampaigns: () => Promise<void>;
   deleteCampaign: (id: string) => Promise<void>;
   editCampaign: (

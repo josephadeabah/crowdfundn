@@ -7,6 +7,7 @@ import Providers from './Providers';
 import { ReactNode } from 'react';
 import { GlobalContextProvider } from './context/GlobalContextProvider';
 import Head from './head';
+import AutoArchiveCampaignsBackground from './components/archiver/archive';
 
 const roboto = Roboto({
   weight: ['400', '500', '700'],
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         className={`max-w-full bg-green-50 opacity-2 dark:bg-gray-900 mx-auto transition-all duration-150 ${roboto.variable} ${ubuntu.variable}`}
       >
         <GlobalContextProvider>
+          <AutoArchiveCampaignsBackground/>
           <Providers>
             <Navbar />
             <main className="w-full">{children}</main>

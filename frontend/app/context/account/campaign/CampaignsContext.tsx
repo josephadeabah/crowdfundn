@@ -98,6 +98,76 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [token]);
 
+  // New function to fetch all archived campaigns
+  const fetchArchivedCampaigns = useCallback(async (): Promise<void> => {
+    if (!token) {
+      setError('Authentication token is missing');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/archived_campaigns`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        handleApiError(errorText);
+        return;
+      }
+
+      const archivedCampaigns = await response.json();
+      setCampaigns(archivedCampaigns?.campaigns); // This could be stored separately if needed
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Error fetching archived campaigns',
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  // New function to schedule campaigns for archiving
+  const scheduleArchiveCampaigns = useCallback(async (): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/schedule_archive_campaigns`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        handleApiError(errorText);
+        return;
+      }
+
+       await response.json();
+  
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Error scheduling archive campaigns',
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   // New fetchAllCampaigns function
   const fetchAllCampaigns = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -261,6 +331,8 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       error,
       addCampaign,
       fetchCampaigns,
+      fetchArchivedCampaigns,
+      scheduleArchiveCampaigns,
       fetchAllCampaigns,
       fetchCampaignById,
       deleteCampaign,
@@ -273,6 +345,8 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       error,
       addCampaign,
       fetchCampaigns,
+      fetchArchivedCampaigns,
+      scheduleArchiveCampaigns,
       fetchAllCampaigns,
       fetchCampaignById,
       deleteCampaign,
