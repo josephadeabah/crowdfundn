@@ -74,6 +74,11 @@ module Api
           }, status: :ok
         end
 
+        def schedule_archive_campaigns
+          Campaign.archive_expired_campaigns
+          render json: { message: "Expired campaigns archived successfully." }, status: :ok
+        end
+
         def group_by_category
           page = params[:page] || 1
           page_size = params[:page_size] || 12
