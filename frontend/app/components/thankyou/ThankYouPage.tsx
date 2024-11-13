@@ -82,7 +82,7 @@ const ThankYouPage = () => {
                 </p>
                 <p className="text-sm text-gray-600">
                   <strong>Amount:</strong>{' '}
-                  {campaignDetails?.currency?.toUpperCase()}
+                  {campaignDetails?.currency?.toLocaleUpperCase()}
                   {donationDetails?.amount}
                 </p>
                 <p className="text-sm text-gray-600">
@@ -108,12 +108,12 @@ const ThankYouPage = () => {
                 </p>
                 <p className="text-sm text-gray-600">
                   <strong>Goal Amount:</strong>{' '}
-                  {campaignDetails?.currency?.toUpperCase()}
+                  {campaignDetails?.currency?.toLocaleUpperCase()}
                   {campaignDetails?.goal_amount}
                 </p>
                 <p className="text-sm text-gray-600">
                   <strong>Current Amount:</strong>{' '}
-                  {campaignDetails?.currency?.toUpperCase()}
+                  {campaignDetails?.currency?.toLocaleUpperCase()}
                   {campaignDetails?.current_amount}
                 </p>
               </div>
@@ -128,12 +128,12 @@ const ThankYouPage = () => {
                 </p>
                 <p className="text-sm text-gray-600">
                   <strong>Funding Goal:</strong>{' '}
-                  {campaignDetails?.currency?.toUpperCase()}
+                  {campaignDetails?.currency?.toLocaleUpperCase()}
                   {campaignDetails?.goal_amount}
                 </p>
                 <p className="text-sm text-gray-600">
                   <strong>Amount Raised:</strong>{' '}
-                  {campaignDetails?.currency?.toUpperCase()}
+                  {campaignDetails?.currency?.toLocaleUpperCase()}
                   {campaignDetails?.current_amount}
                 </p>
                 <p className="text-sm text-gray-600">

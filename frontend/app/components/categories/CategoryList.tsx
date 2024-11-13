@@ -50,6 +50,18 @@ const CategoryList: React.FC = () => {
     setSelectedCategory(null);
   };
 
+  // Filter campaigns to exclude those with 0 remaining days
+  const filteredCampaigns = (category: string) => {
+    const campaigns = campaignsGroupedByCategory[category]?.campaigns || [];
+    return campaigns.filter((campaign) => {
+      const remainingDays = getRemainingDaysMessage(
+        campaign.start_date,
+        campaign.end_date,
+      );
+      return remainingDays !== 'No days left';
+    });
+  };
+
   return (
     <div className="w-full px-2 py-4 bg-gradient-to-br from-gray-50 to-neutral-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto">
@@ -83,11 +95,8 @@ const CategoryList: React.FC = () => {
               Fundraisers
             </h3>
             <div className="space-y-6 mt-4">
-              {campaignsGroupedByCategory[selectedCategory || '']?.campaigns
-                ?.length > 0 ? (
-                campaignsGroupedByCategory[
-                  selectedCategory || ''
-                ]?.campaigns.map((campaign) => (
+              {filteredCampaigns(selectedCategory || '').length > 0 ? (
+                filteredCampaigns(selectedCategory || '').map((campaign) => (
                   <div
                     key={campaign.id}
                     className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 shadow-sm"
