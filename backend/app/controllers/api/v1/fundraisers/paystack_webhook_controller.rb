@@ -2,7 +2,6 @@ module Api
   module V1
     module Fundraisers
       class PaystackWebhookController < ApplicationController
-        # skip_before_action :verify_authenticity_token # Disable CSRF protection for API requests
 
         # This endpoint will receive webhook notifications
         def receive
@@ -24,27 +23,88 @@ module Api
               donation = Donation.find_by(transaction_reference: transaction_reference)
 
               if donation
-                # Call your verify method to update the donation status
+                # Verify the transaction status from Paystack
                 response = paystack_service.verify_transaction(transaction_reference)
 
                 if response[:status] == true
                   transaction_status = response[:data][:status]
-                  if transaction_status == 'success'
+
+                  case transaction_status
+                  when 'success'
                     # Proceed with marking the donation as successful
-                    donation.update(status: 'successful', amount: response[:data][:amount] / 100.0)
-                    # Optionally, update campaign, create balances, etc.
+                    gross_amount = response[:data][:amount] / 100.0
+                    net_amount = gross_amount * 0.985  # Assuming 1.5% platform fee
+
+                    # Update donation with the transaction details
+                    donation.update(
+                      status: 'successful',
+                      gross_amount: gross_amount,
+                      net_amount: net_amount,
+                      amount: net_amount
+                    )
+
+                    # Create the balance record (platform fee)
+                    Balance.create(
+                      amount: gross_amount - net_amount,
+                      description: "Platform fee for donation #{donation.id}",
+                      status: "pending"
+                    )
+
+                    # Update the campaign with the total donations
+                    campaign = donation.campaign
+                    total_donations = campaign.donations.where(status: 'successful').sum(:net_amount)
+                    campaign.update(current_amount: total_donations)
+
+                    # Respond with success message
+                    render json: {
+                      message: 'Donation successful',
+                      transaction_status: transaction_status,
+                      donation: donation,
+                      total_donations: total_donations,
+                      campaign: campaign
+                    }, status: :ok
+
+                  when 'failed', 'abandoned', 'reversed'
+                    # Update the donation status if failed
+                    donation.update(status: transaction_status)
+
+                    render json: {
+                      error: "Donation #{transaction_status}. Please try again later.",
+                      transaction_status: transaction_status
+                    }, status: :unprocessable_entity
+
+                  when 'ongoing', 'pending', 'processing', 'queued'
+                    # If the donation is still in progress
+                    donation.update(status: transaction_status)
+
+                    render json: {
+                      message: "Donation is #{transaction_status}. Please complete the required actions.",
+                      transaction_status: transaction_status
+                    }, status: :accepted
+
                   else
-                    donation.update(status: 'failed')
+                    # If an unknown status is returned
+                    donation.update(status: 'unknown')
+
+                    render json: {
+                      error: 'Donation verification returned an unknown status. Please contact support.',
+                      transaction_status: transaction_status
+                    }, status: :unprocessable_entity
                   end
+
                 else
-                  # If Paystack verification failed, update the donation status as failed
+                  # If Paystack verification failed
                   donation.update(status: 'failed')
+                  render json: { error: 'Donation verification failed. Please try again later.' }, status: :unprocessable_entity
                 end
+              else
+                render json: { error: 'Donation not found.' }, status: :not_found
               end
+            else
+              render json: { error: 'Invalid event type.' }, status: :unprocessable_entity
             end
           else
             render json: { error: 'Invalid signature' }, status: :forbidden
-            return
           end
 
           # Respond to Paystack to acknowledge receipt

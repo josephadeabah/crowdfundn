@@ -94,64 +94,6 @@ module Api
             render json: { error: 'Payment initialization failed: ' + response[:message] }, status: :unprocessable_entity
           end
         end        
-
-        def verify
-          donation = Donation.find_by(transaction_reference: params[:id])
-          return render json: { error: 'We could not find the donation. Please check your transaction reference.' }, status: :not_found if donation.nil?
-        
-          paystack_service = PaystackService.new
-          response = paystack_service.verify_transaction(donation.transaction_reference)
-        
-          if response[:status] == true
-            transaction_status = response[:data][:status]
-            
-            case transaction_status
-            when 'success'
-              gross_amount = response[:data][:amount] / 100.0
-              net_amount = gross_amount * 0.985
-              donation.update(
-                status: 'successful',
-                gross_amount: gross_amount,
-                net_amount: net_amount,
-                amount: net_amount
-              )
-        
-              Balance.create(
-                amount: gross_amount - net_amount,
-                description: "Platform fee for donation #{donation.id}",
-                status: "pending"
-              )
-        
-              campaign = donation.campaign
-              total_donations = campaign.donations.where(status: 'successful').sum(:net_amount)
-              campaign.update(current_amount: total_donations)
-        
-              render json: {
-                message: 'Donation successful',
-                transaction_status: transaction_status,
-                donation: donation,
-                total_donations: total_donations,
-                campaign: campaign
-              }, status: :ok
-        
-            when 'failed', 'abandoned', 'reversed'
-              donation.update(status: transaction_status)
-              render json: { error: "Donation #{transaction_status}. Please try again later.", transaction_status: transaction_status }, status: :unprocessable_entity
-        
-            when 'ongoing', 'pending', 'processing', 'queued'
-              donation.update(status: transaction_status)
-              render json: { message: "Donation is #{transaction_status}. Please complete the required actions.", transaction_status: transaction_status }, status: :accepted
-        
-            else
-              donation.update(status: 'unknown')
-              render json: { error: 'Donation verification returned an unknown status. Please contact support.', transaction_status: transaction_status }, status: :unprocessable_entity
-            end
-        
-          else
-            donation.update(status: 'failed')
-            render json: { error: 'Donation verification failed. Please try again later.', transaction_status: 'failed' }, status: :unprocessable_entity
-          end
-        end  
         
         
         def charge

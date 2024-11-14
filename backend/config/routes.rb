@@ -33,9 +33,9 @@ Rails.application.routes.draw do
             member do
               post :charge  # Ensure this route exists and uses `:id` as a transaction_reference
             end
-            member do
-              get :verify  # This makes 'verify' a member route
-            end
+            # member do
+            #   get :verify  # This makes 'verify' a member route
+            # end
           end
         end
       end
