@@ -13,12 +13,7 @@ module Authenticable
         render json: { error: 'Invalid token' }, status: :unauthorized
         return
       end
-    else
-      render json: { error: 'Authorization header missing' }, status: :unauthorized
-      return
     end
-
-    render json: { error: 'Not Authorized' }, status: :unauthorized unless @current_user
   end
 
   def authorize_role(role_name)

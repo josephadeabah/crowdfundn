@@ -2,7 +2,7 @@ module Api
   module V1
     module Fundraisers
       class DonationsController < ApplicationController
-        before_action :authenticate_request, only: %i[index]
+        before_action :authenticate_request, only: %i[index create]
 
         def index
           if @current_user.nil?
@@ -37,11 +37,20 @@ module Api
             return render json: { error: 'The campaign you are trying to donate to no longer exists.' }, status: :not_found
           end
 
+          # Create a new donation
           donation = Donation.new(donation_params)
           donation.campaign_id = campaign.id
           donation.status = 'pending'
-          donation.user_id = @current_user&.id
-          
+
+          # Assign user_id if authenticated, otherwise generate a session token for anonymous users
+          if @current_user
+            donation.user_id = @current_user.id
+          else
+            session_token = SecureRandom.hex(16) # Generate session token for anonymous users
+            donation.metadata[:session_token] = session_token
+          end
+
+          # Add campaign details to donation metadata
           donation.metadata[:campaign] = {
             id: campaign.id,
             title: campaign.title,
@@ -54,11 +63,19 @@ module Api
             fundraiser_name: campaign.fundraiser.full_name
           }
 
+          # Prepare metadata for Paystack initialization
+          metadata = { 
+            user_id: donation.user_id, 
+            campaign_id: donation.campaign_id,
+            session_token: donation.metadata[:session_token] # Only for anonymous users
+          }
+
+          # Initialize transaction with Paystack
           paystack_service = PaystackService.new
           response = paystack_service.initialize_transaction(
             email: donation.email,
             amount: donation.amount,
-            metadata: { user_id: donation.user_id, campaign_id: donation.campaign_id }
+            metadata: metadata
           )
 
           if response[:status] == true
@@ -76,7 +93,7 @@ module Api
           else
             render json: { error: 'Payment initialization failed: ' + response[:message] }, status: :unprocessable_entity
           end
-        end
+        end        
 
         def verify
           donation = Donation.find_by(transaction_reference: params[:id])
