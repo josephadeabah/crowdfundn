@@ -135,7 +135,12 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       );
 
       const data: Donation = await response.json();
-      if (data.transaction_status === 'success') {
+      if (
+        data.transaction_status === 'success' &&
+        !donations.some(
+          (d) => d.transaction_reference === data.transaction_reference,
+        )
+      ) {
         setDonations((prevDonations) => [...prevDonations, data]);
       } else {
         handleApiError(data.transaction_status);

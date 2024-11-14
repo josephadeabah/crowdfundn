@@ -46,6 +46,20 @@ const ThankYouPage = () => {
   // Extracting donation details
   const donationDetails = donations[0]?.donation || {};
   const campaignDetails = donations[0]?.campaign || {};
+  const amountFormatted = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: campaignDetails.currency?.toUpperCase(),
+  }).format(Number(donationDetails?.amount));
+
+  const goalAmountFormatted = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: campaignDetails.currency?.toUpperCase(),
+  }).format(Number(campaignDetails?.goal_amount));
+
+  const currentAmountFormatted = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: campaignDetails.currency?.toUpperCase(),
+  }).format(Number(campaignDetails?.current_amount));
 
   if (loading) {
     return <ThankyouLoader />;
@@ -81,9 +95,7 @@ const ThankYouPage = () => {
                   <strong>Status:</strong> {donations[0]?.transaction_status}
                 </p>
                 <p className="text-sm text-gray-600">
-                  <strong>Amount:</strong>{' '}
-                  {campaignDetails?.currency?.toLocaleUpperCase()}
-                  {donationDetails?.amount}
+                  <strong>Amount:</strong> {amountFormatted}
                 </p>
                 <p className="text-sm text-gray-600">
                   <strong>Transaction Reference:</strong>{' '}
@@ -107,14 +119,10 @@ const ThankYouPage = () => {
                   <strong>Title:</strong> {campaignDetails?.title}
                 </p>
                 <p className="text-sm text-gray-600">
-                  <strong>Goal Amount:</strong>{' '}
-                  {campaignDetails?.currency?.toLocaleUpperCase()}
-                  {campaignDetails?.goal_amount}
+                  <strong>Goal Amount:</strong> {goalAmountFormatted}
                 </p>
                 <p className="text-sm text-gray-600">
-                  <strong>Current Amount:</strong>{' '}
-                  {campaignDetails?.currency?.toLocaleUpperCase()}
-                  {campaignDetails?.current_amount}
+                  <strong>Current Amount:</strong> {currentAmountFormatted}
                 </p>
               </div>
 
@@ -127,14 +135,10 @@ const ThankYouPage = () => {
                   {campaignDetails?.fundraiser?.profile.name}
                 </p>
                 <p className="text-sm text-gray-600">
-                  <strong>Funding Goal:</strong>{' '}
-                  {campaignDetails?.currency?.toLocaleUpperCase()}
-                  {campaignDetails?.goal_amount}
+                  <strong>Funding Goal:</strong> {goalAmountFormatted}
                 </p>
                 <p className="text-sm text-gray-600">
-                  <strong>Amount Raised:</strong>{' '}
-                  {campaignDetails?.currency?.toLocaleUpperCase()}
-                  {campaignDetails?.current_amount}
+                  <strong>Amount Raised:</strong> {currentAmountFormatted}
                 </p>
                 <p className="text-sm text-gray-600">
                   <strong>Status:</strong>{' '}
