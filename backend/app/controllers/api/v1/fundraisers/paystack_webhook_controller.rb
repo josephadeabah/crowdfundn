@@ -2,13 +2,15 @@ module Api
   module V1
     module Fundraisers
       class PaystackWebhookController < ApplicationController
+        # skip_before_action :verify_authenticity_token # Disable CSRF protection for API requests
 
         # This endpoint will receive webhook notifications
         def receive
-            # Log the incoming payload for debugging
-           Rails.logger.debug "Received Paystack webhook: #{payload}"
-          # Get the request body (Paystack sends the event data in the request body)
+          # Read the raw request body (Paystack sends the event data in the request body)
           payload = request.body.read
+
+          # Log the incoming payload for debugging
+          Rails.logger.debug "Received Paystack webhook: #{payload}"
 
           # Extract the signature from the request headers
           signature = request.headers['X-Paystack-Signature']
@@ -18,34 +20,31 @@ module Api
           if paystack_service.verify_paystack_signature(payload, signature)
             # Parse the incoming JSON payload from Paystack
             event = JSON.parse(payload, symbolize_names: true)
-
+            
+            # Log the parsed event for debugging
             Rails.logger.debug "Parsed Event: #{event}"
 
             # Check if the event is of type "charge.success"
             if event[:event] == 'charge.success'
               transaction_reference = event[:data][:reference]
+              
+              # Log the transaction reference for debugging
+              Rails.logger.debug "Processing transaction: #{transaction_reference}"
 
-               # Log the transaction reference
-             Rails.logger.debug "Processing transaction: #{transaction_reference}"
               donation = Donation.find_by(transaction_reference: transaction_reference)
 
               if donation
                 # Verify the transaction status from Paystack
-                response = nil
-                begin
-                  response = paystack_service.verify_transaction(transaction_reference)
-                rescue StandardError => e
-                  Rails.logger.error "Error during transaction verification: #{e.message}"
-                  response = { status: false }
-                end
-                 Rails.logger.debug "Paystack Verification Response: #{response}"
+                response = paystack_service.verify_transaction(transaction_reference)
 
+                Rails.logger.debug "Paystack Verification Response: #{response}"
+
+                # Handle the response and further actions...
                 if response[:status] == true
                   transaction_status = response[:data][:status]
 
                   case transaction_status
                   when 'success'
-                    # Proceed with marking the donation as successful
                     gross_amount = response[:data][:amount] / 100.0
                     net_amount = gross_amount * 0.985  # Assuming 1.5% platform fee
 
@@ -112,15 +111,12 @@ module Api
                   render json: { error: 'Donation verification failed. Please try again later.' }, status: :unprocessable_entity
                 end
               else
-                Rails.logger.error "Donation not found for reference: #{transaction_reference}"
                 render json: { error: 'Donation not found.' }, status: :not_found
               end
             else
-               Rails.logger.error "Received unexpected event type: #{event[:event]}"
               render json: { error: 'Invalid event type.' }, status: :unprocessable_entity
             end
           else
-            Rails.logger.error "Invalid Paystack signature"
             render json: { error: 'Invalid signature' }, status: :forbidden
           end
 
