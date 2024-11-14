@@ -187,10 +187,6 @@ module Api
           end
         end
         
-        
-        
-               
-
         private
 
         def donation_params

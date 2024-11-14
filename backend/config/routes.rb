@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       end
 
       namespace :fundraisers do
+        post 'paystack_webhook/receive'
         resources :donations, only: [:index]
         resources :campaigns do
           get 'my_campaigns', on: :collection
