@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  authorization_code: MyString
+  card_type: MyString
+  last4: MyString
+  exp_month: MyString
+  exp_year: MyString
+  bank: MyString
+  brand: MyString
+  reusable: false
+
+two:
+  user: two
+  authorization_code: MyString
+  card_type: MyString
+  last4: MyString
+  exp_month: MyString
+  exp_year: MyString
+  bank: MyString
+  brand: MyString
+  reusable: false
