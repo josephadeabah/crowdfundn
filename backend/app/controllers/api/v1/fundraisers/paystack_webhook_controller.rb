@@ -5,6 +5,8 @@ module Api
 
         # This endpoint will receive webhook notifications
         def receive
+            # Log the incoming payload for debugging
+           Rails.logger.debug "Received Paystack webhook: #{payload}"
           # Get the request body (Paystack sends the event data in the request body)
           payload = request.body.read
 
@@ -17,14 +19,26 @@ module Api
             # Parse the incoming JSON payload from Paystack
             event = JSON.parse(payload, symbolize_names: true)
 
+            Rails.logger.debug "Parsed Event: #{event}"
+
             # Check if the event is of type "charge.success"
             if event[:event] == 'charge.success'
               transaction_reference = event[:data][:reference]
+
+               # Log the transaction reference
+             Rails.logger.debug "Processing transaction: #{transaction_reference}"
               donation = Donation.find_by(transaction_reference: transaction_reference)
 
               if donation
                 # Verify the transaction status from Paystack
-                response = paystack_service.verify_transaction(transaction_reference)
+                response = nil
+                begin
+                  response = paystack_service.verify_transaction(transaction_reference)
+                rescue StandardError => e
+                  Rails.logger.error "Error during transaction verification: #{e.message}"
+                  response = { status: false }
+                end
+                 Rails.logger.debug "Paystack Verification Response: #{response}"
 
                 if response[:status] == true
                   transaction_status = response[:data][:status]
@@ -98,12 +112,15 @@ module Api
                   render json: { error: 'Donation verification failed. Please try again later.' }, status: :unprocessable_entity
                 end
               else
+                Rails.logger.error "Donation not found for reference: #{transaction_reference}"
                 render json: { error: 'Donation not found.' }, status: :not_found
               end
             else
+               Rails.logger.error "Received unexpected event type: #{event[:event]}"
               render json: { error: 'Invalid event type.' }, status: :unprocessable_entity
             end
           else
+            Rails.logger.error "Invalid Paystack signature"
             render json: { error: 'Invalid signature' }, status: :forbidden
           end
 
