@@ -125,33 +125,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Verify Transaction
-  const verifyTransaction = async (reference: string) => {
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignID}/donations/${reference}/verify`,
-        { method: 'GET', headers: { 'Content-Type': 'application/json' } },
-      );
-
-      const data: Donation = await response.json();
-      if (
-        data.transaction_status === 'success' &&
-        !donations.some(
-          (d) => d.transaction_reference === data.transaction_reference,
-        )
-      ) {
-        setDonations((prevDonations) => [...prevDonations, data]);
-      } else {
-        handleApiError(data.transaction_status);
-      }
-    } catch (err) {
-      handleApiError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const contextValue = useMemo(
     () => ({
       donations,
@@ -160,7 +133,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       pagination,
       fetchDonations,
       createDonationTransaction,
-      verifyTransaction,
     }),
     [
       donations,
@@ -169,7 +141,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       pagination,
       fetchDonations,
       createDonationTransaction,
-      verifyTransaction,
     ],
   );
 
