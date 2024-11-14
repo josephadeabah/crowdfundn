@@ -1,8 +1,8 @@
 module Api
   module V1
     module Fundraisers
-      class PaystackWebhookController < ApplicationController
-        skip_before_action :verify_authenticity_token # Disable CSRF protection for API requests
+      class PaystackWebhookController < ActionController::API # Change to ActionController::API
+        skip_before_action :verify_authenticity_token # Explicitly skip CSRF protection
 
         # This endpoint will receive webhook notifications
         def receive
