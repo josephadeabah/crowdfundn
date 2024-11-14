@@ -1,11 +1,11 @@
 import React, { Suspense } from 'react';
-import ThankYouPage from '@/app/components/thankyou/ThankYouPage';
+import UnverifiedPayment from '../components/thankyou/UnverifiedPayment';
 import FullscreenLoader from '../loaders/FullscreenLoader';
 
-export default function ThankYouLayout() {
+export default function UnverifiedPaymentLayout() {
   return (
     <Suspense fallback={<FullscreenLoader />}>
-      <ThankYouPage />
+      <UnverifiedPayment />
     </Suspense>
   );
 }
