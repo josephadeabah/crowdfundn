@@ -61,7 +61,7 @@ const ThankYouPage = () => {
               <p className="text-sm text-gray-600">
                 <strong>Amount Donated:</strong>{' '}
                 {campaignDetails?.currency?.toLocaleUpperCase()}
-                {donations[0]?.gross_amount}
+                {donationDetails?.amount}
               </p>
               <p className="text-sm text-gray-600">
                 <strong>Transaction Reference:</strong>{' '}
