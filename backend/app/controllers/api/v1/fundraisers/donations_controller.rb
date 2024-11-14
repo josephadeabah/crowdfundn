@@ -2,7 +2,7 @@ module Api
   module V1
     module Fundraisers
       class DonationsController < ApplicationController
-        before_action :authenticate_request, only: %i[index create]
+        before_action :authenticate_request, only: %i[index create charge]
 
         def index
           if @current_user.nil?
@@ -104,8 +104,7 @@ module Api
         
           if response[:status] == true
             transaction_status = response[:data][:status]
-            payment_channel = response[:data][:authorization][:channel] if response[:data][:authorization]
-        
+            
             case transaction_status
             when 'success'
               gross_amount = response[:data][:amount] / 100.0
@@ -116,23 +115,6 @@ module Api
                 net_amount: net_amount,
                 amount: net_amount
               )
-        
-              # Store payment method if the payment channel is a card and user exists
-              if payment_channel == 'card' && donation.user
-                authorization = response[:data][:authorization]
-                user = donation.user
-        
-                payment_method = user.payment_methods.find_or_initialize_by(authorization_code: authorization[:authorization_code])
-                payment_method.update(
-                  card_type: authorization[:card_type],
-                  last4: authorization[:last4],
-                  exp_month: authorization[:exp_month],
-                  exp_year: authorization[:exp_year],
-                  bank: authorization[:bank],
-                  brand: authorization[:brand],
-                  reusable: authorization[:reusable]
-                )
-              end
         
               Balance.create(
                 amount: gross_amount - net_amount,
@@ -169,7 +151,45 @@ module Api
             donation.update(status: 'failed')
             render json: { error: 'Donation verification failed. Please try again later.', transaction_status: 'failed' }, status: :unprocessable_entity
           end
-        end                       
+        end  
+        
+        
+        def charge
+          donation = Donation.find_by(transaction_reference: params[:id])
+          return render json: { error: 'Donation not found' }, status: :not_found if donation.nil?
+        
+          # Get the bank details or mobile money details from params
+          bank = params[:bank]
+          payment_method = params[:payment_method]
+        
+          # Ensure correct data for the payment method
+          unless payment_method && ['bank', 'mobile_money'].include?(payment_method)
+            return render json: { error: 'Invalid payment method' }, status: :unprocessable_entity
+          end
+        
+          # Get metadata from the donation object
+          metadata = donation.metadata
+        
+          # Pass the bank or mobile money details accordingly
+          paystack_service = PaystackService.new
+          charge_response = paystack_service.charge_payment(
+            email: donation.email,
+            amount: donation.amount,
+            metadata: metadata,
+            bank: bank,  # Pass bank details if the method is bank
+            payment_method: payment_method
+          )
+        
+          if charge_response[:status] == true
+            render json: { status: 'success', message: 'Charging successful. Please verify payment.', data: charge_response[:data] }, status: :ok
+          else
+            render json: { error: 'Charging failed: ' + charge_response[:message] }, status: :unprocessable_entity
+          end
+        end
+        
+        
+        
+               
 
         private
 

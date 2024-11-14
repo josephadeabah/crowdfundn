@@ -30,6 +30,9 @@ Rails.application.routes.draw do
           
           resources :donations, only: [:create] do
             member do
+              post :charge  # Ensure this route exists and uses `:id` as a transaction_reference
+            end
+            member do
               get :verify  # This makes 'verify' a member route
             end
           end
