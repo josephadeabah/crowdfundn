@@ -141,7 +141,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       if (data.transaction_status !== 'success') {
         handleApiError(data.transaction_status);
         setDonations([]);
-        window.location.href = '/unprocessed-payment';
+        window.location.href = '/unproccessed-payment';
       }
     } catch (err) {
       handleApiError(err instanceof Error ? err.message : String(err));
