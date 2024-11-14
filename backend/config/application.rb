@@ -11,6 +11,8 @@ module Backend
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.1
 
+    config.api_only = true
+
     # Add services directory to autoload paths
     config.autoload_paths << Rails.root.join('app/services')
 
