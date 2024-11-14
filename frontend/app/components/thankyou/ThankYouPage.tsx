@@ -78,12 +78,12 @@ const ThankYouPage = () => {
 
               <div className="mt-4 text-left">
                 <p className="text-sm text-gray-600">
-                  <strong>Status:</strong> {donationDetails?.status}
+                  <strong>Status:</strong> {donations[0]?.transaction_status}
                 </p>
                 <p className="text-sm text-gray-600">
-                  <strong>Amount:</strong>{' '}
+                  <strong>Amount Donated:</strong>{' '}
                   {campaignDetails?.currency?.toLocaleUpperCase()}
-                  {donationDetails?.amount}
+                  {donations[0]?.gross_amount}
                 </p>
                 <p className="text-sm text-gray-600">
                   <strong>Transaction Reference:</strong>{' '}

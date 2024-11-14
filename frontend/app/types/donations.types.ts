@@ -17,14 +17,16 @@ export interface Donation {
   phone: string;
   transaction_reference: string;
   status: 'successful';
+  transaction_status: string;
+  gross_amount: string;
+  net_amount: number;
+  created_at: string;
+  updated_at: string;
   metadata: {
+    session_token: string;
     custom_data: string;
     campaign: SingleCampaignResponseDataType;
   };
-  created_at: string;
-  updated_at: string;
-  gross_amount: string;
-  net_amount: number;
   donation: {
     message: string;
     status: 'successful'; // Donation status as a fixed string

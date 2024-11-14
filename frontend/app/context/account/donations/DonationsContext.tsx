@@ -134,14 +134,14 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         { method: 'GET', headers: { 'Content-Type': 'application/json' } },
       );
 
-      const data = await response.json();
-      if (response.ok) {
+      const data: Donation = await response.json();
+      if (data.transaction_status === 'success') {
         setDonations((prevDonations) => [...prevDonations, data]);
       } else {
-        handleApiError('Verification failed. Please try again.');
+        handleApiError(data.transaction_status);
       }
     } catch (err) {
-      handleApiError('Error verifying transaction. Please try again later.');
+      handleApiError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
     }
