@@ -54,13 +54,19 @@ module Api
         def verify_paystack_signature(payload)
           secret_key = ENV['PAYSTACK_SECRET_KEY']
           signature = request.headers['X-Paystack-Signature']
-
+          # Log payload and signature for debugging
+          Rails.logger.debug("Paystack Payload: #{payload}")
+          Rails.logger.debug("Paystack Signature: #{signature}")
+          # Ensure signature and payload are present
+          if signature.nil? || payload.blank?
+            Rails.logger.error("Signature or payload missing.")
+            return false
+          end
           # Create the hash to verify the signature
           expected_signature = OpenSSL::HMAC.hexdigest('sha512', secret_key, payload)
-
           # Compare the signatures
           signature == expected_signature
-        end
+        end        
       end
     end
   end
