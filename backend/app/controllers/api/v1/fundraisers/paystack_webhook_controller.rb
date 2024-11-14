@@ -9,8 +9,12 @@ module Api
           # Get the request body (Paystack sends the event data in the request body)
           payload = request.body.read
 
+          # Extract the signature from the request headers
+          signature = request.headers['X-Paystack-Signature']
+
           # Verify the webhook signature (Paystack sends a signature in headers)
-          if verify_paystack_signature(payload)
+          paystack_service = PaystackService.new
+          if paystack_service.verify_paystack_signature(payload, signature)
             # Parse the incoming JSON payload from Paystack
             event = JSON.parse(payload, symbolize_names: true)
 
@@ -21,7 +25,6 @@ module Api
 
               if donation
                 # Call your verify method to update the donation status
-                paystack_service = PaystackService.new
                 response = paystack_service.verify_transaction(transaction_reference)
 
                 if response[:status] == true
@@ -47,26 +50,6 @@ module Api
           # Respond to Paystack to acknowledge receipt
           head :ok
         end
-
-        private
-
-        # Verify Paystack's webhook signature (using the signature in headers)
-        def verify_paystack_signature(payload)
-          secret_key = ENV['PAYSTACK_SECRET_KEY']
-          signature = request.headers['X-Paystack-Signature']
-          # Log payload and signature for debugging
-          Rails.logger.debug("Paystack Payload: #{payload}")
-          Rails.logger.debug("Paystack Signature: #{signature}")
-          # Ensure signature and payload are present
-          if signature.nil? || payload.blank?
-            Rails.logger.error("Signature or payload missing.")
-            return false
-          end
-          # Create the hash to verify the signature
-          expected_signature = OpenSSL::HMAC.hexdigest('sha512', secret_key, payload)
-          # Compare the signatures
-          signature == expected_signature
-        end        
       end
     end
   end

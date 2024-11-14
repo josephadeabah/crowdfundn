@@ -1,12 +1,27 @@
 require 'net/http'
 require 'uri'
 require 'json'
+require 'openssl'
 
 class PaystackService
   PAYSTACK_BASE_URL = 'https://api.paystack.co'
 
   def initialize
     @secret_key = ENV['PAYSTACK_PRIVATE_KEY']
+  end
+
+  def verify_paystack_signature(payload, signature)
+    # Ensure the secret key and signature are available
+    if @secret_key.nil? || signature.nil? || payload.blank?
+      Rails.logger.error("Missing secret key, signature, or payload.")
+      return false
+    end
+
+    # Create the hash to verify the signature
+    expected_signature = OpenSSL::HMAC.hexdigest('sha512', @secret_key, payload)
+
+    # Compare the signatures
+    signature == expected_signature
   end
 
   def initialize_transaction(email:, amount:, metadata: {})
