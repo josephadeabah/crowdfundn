@@ -23,6 +23,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   paymentPhone,
   paymentAmount,
   campaignId,
+  billingFrequency,
   errors,
   isPaymentFormValidated: validatePaystackForm,
   setCardholderName,
@@ -51,6 +52,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         paymentPhone,
         Number(paymentAmount),
         campaignId,
+        billingFrequency,
       );
     }
   };

@@ -19,7 +19,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [campaignID, setCampaignID] = useState<string | null>(null);
   const [pagination, setPagination] = useState<Pagination>({
     current_page: 1,
     total_pages: 1,
@@ -83,10 +82,45 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     phoneNumber: string,
     amount: number,
     campaignId: string,
+    billingFrequency: string,
   ) => {
-    setCampaignID(campaignId);
+  
     try {
       setLoading(true);
+  
+      // Step 1: Create a subscription plan (optional step)
+      let planCode = null;
+  
+      try {
+        const subscriptionResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/subscriptions/create_plan`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              amount: amount,
+              interval: billingFrequency, // Interval: "monthly", "yearly", etc.
+              name: 'donation subscriber', // Static name for the plan as requested
+            }),
+          },
+        );
+  
+        const subscriptionData = await subscriptionResponse.json();
+  
+        if (!subscriptionResponse.ok) {
+          throw new Error('Failed to create subscription plan');
+        }
+  
+        // Extract plan_code from subscription plan response
+        planCode = subscriptionData.data?.plan_code;
+      } catch (error) {
+        console.error('Subscription plan creation failed, proceeding without plan code.');
+        // If plan creation fails, proceed with the donation without the plan_code
+      }
+  
+      // Step 2: Create donation transaction (with or without plan_code)
       const donationResponse = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
         {
@@ -100,19 +134,22 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             full_name: fullName,
             phone: phoneNumber,
             metadata: {},
+            plan: planCode, // Pass the plan_code if available, otherwise it'll be undefined
           }),
         },
       );
-
+  
       const donationData = await donationResponse.json();
-
+  
       if (!donationResponse.ok) {
         handleApiError('Failed to create donation');
+        return;
       }
-
+  
       const { authorization_url } = donationData;
+  
       if (authorization_url) {
-        window.location.href = authorization_url;
+        window.location.href = authorization_url; // Redirect to Paystack authorization URL
       } else {
         handleApiError(
           'We could not initiate your payment at this time. Please try again later.',
@@ -124,6 +161,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   };
+  
 
   const contextValue = useMemo(
     () => ({
