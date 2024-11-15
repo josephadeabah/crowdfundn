@@ -2,7 +2,6 @@ module Api
   module V1
     module Fundraisers
       class PaystackWebhookController < ApplicationController
-        skip_before_action :verify_authenticity_token # Skip CSRF for API requests
 
         def receive
           # Read the raw request body (Paystack sends the event data in the request body)
