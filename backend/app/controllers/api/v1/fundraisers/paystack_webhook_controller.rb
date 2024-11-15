@@ -13,27 +13,19 @@ module Api
           # Verify the webhook signature (Paystack sends a signature in headers)
           paystack_service = PaystackService.new
           if paystack_service.verify_paystack_signature(payload, signature)
-            # Parse the incoming JSON payload from Paystack
-            event = JSON.parse(payload, symbolize_names: true)
-
-            # Handle the different event types
-            case event[:event]
-            when 'charge.success'
-              handle_charge_success(event[:data])
-            when 'charge.failed'
-              handle_charge_failed(event[:data])
-            when 'transfer.success'
-              handle_transfer_success(event[:data])
-            when 'balance.updated'
-              handle_balance_updated(event[:data])
-            when 'subscription.create'
-              handle_subscription_create(event[:data])
-            else
-              Rails.logger.warn "Unhandled event type: #{event[:event]}"
-              render json: { error: 'Unhandled event type' }, status: :unprocessable_entity
+            begin
+              # Parse the incoming JSON payload from Paystack
+              event = JSON.parse(payload, symbolize_names: true)
+              handle_event(event)
+            rescue JSON::ParserError => e
+              Rails.logger.error "Invalid JSON payload: #{e.message}"
+              render json: { error: 'Invalid JSON payload' }, status: :unprocessable_entity
+            rescue StandardError => e
+              Rails.logger.error "Unexpected error: #{e.message}"
+              render json: { error: 'Unexpected error occurred' }, status: :internal_server_error
             end
-
           else
+            Rails.logger.error "Invalid webhook signature"
             render json: { error: 'Invalid signature' }, status: :forbidden
           end
 
@@ -43,84 +35,210 @@ module Api
 
         private
 
+        def handle_event(event)
+          case event[:event]
+          when 'charge.success'
+            handle_charge_success(event[:data])
+          when 'charge.failed'
+            handle_charge_failed(event[:data])
+          when 'transfer.success'
+            handle_transfer_success(event[:data])
+          when 'balance.updated'
+            handle_balance_updated(event[:data])
+          when 'subscription.create'
+            handle_subscription_create(event[:data])
+          when 'subscription.disabled'
+            handle_subscription_disabled(event[:data])
+          when 'subscription.charge.failed'
+            handle_subscription_charge_failed(event[:data])
+          else
+            Rails.logger.warn "Unhandled event type: #{event[:event]}"
+            render json: { error: 'Unhandled event type' }, status: :unprocessable_entity
+          end
+        end
+
         # Handle charge success event
         def handle_charge_success(data)
           transaction_reference = data[:reference]
-          Rails.logger.debug "Processing charge success: #{transaction_reference}"
+          subscription_code = data[:subscription_code]
+          Rails.logger.debug "Processing charge success: #{transaction_reference} or subscription #{subscription_code}"
 
-          donation = Donation.find_by(transaction_reference: transaction_reference)
-
-          if donation
-            paystack_service = PaystackService.new
-            response = paystack_service.verify_transaction(transaction_reference)
-
-            if response[:status] == true
-              transaction_status = response[:data][:status]
-              if transaction_status == 'success'
-                gross_amount = response[:data][:amount] / 100.0
-                net_amount = gross_amount * 0.985  # Assuming 1.5% platform fee
-
-                # Update donation with the transaction details
-                donation.update(status: 'successful', gross_amount: gross_amount, net_amount: net_amount, amount: net_amount)
-
-                # Create the platform fee record
-                Balance.create(amount: gross_amount - net_amount, description: "Platform fee for donation #{donation.id}", status: "pending")
-
-                # Update the campaign with the total donations
-                campaign = donation.campaign
-                total_donations = campaign.donations.where(status: 'successful').sum(:net_amount)
-                campaign.update(current_amount: total_donations)
-
-                render json: { message: 'Donation successful', donation: donation, total_donations: total_donations, campaign: campaign }, status: :ok
-              else
-                donation.update(status: transaction_status)
-                render json: { error: "Donation failed: #{transaction_status}" }, status: :unprocessable_entity
-              end
-            else
-              donation.update(status: 'failed')
-              render json: { error: 'Transaction verification failed' }, status: :unprocessable_entity
-            end
-          else
-            render json: { error: 'Donation not found' }, status: :not_found
+          ActiveRecord::Base.transaction do
+            handle_donation_success(transaction_reference) if transaction_reference.present?
+            handle_subscription_success(subscription_code) if subscription_code.present?
           end
+        rescue StandardError => e
+          Rails.logger.error "Error processing charge success: #{e.message}"
+          render json: { error: 'Error processing charge success' }, status: :unprocessable_entity
+        end
+
+        def handle_donation_success(transaction_reference)
+          donation = Donation.find_by(transaction_reference: transaction_reference)
+          raise "Donation not found" unless donation
+
+          response = PaystackService.new.verify_transaction(transaction_reference)
+          raise "Transaction verification failed" unless response[:status] == true
+
+          transaction_status = response[:data][:status]
+          if transaction_status == 'success'
+            gross_amount = response[:data][:amount] / 100.0
+            net_amount = gross_amount * 0.985
+            donation.update!(status: 'successful', gross_amount: gross_amount, net_amount: net_amount, amount: net_amount)
+
+            Balance.create!(
+              amount: gross_amount - net_amount,
+              description: "Platform fee for donation #{donation.id}",
+              status: 'pending'
+            )
+
+            campaign = donation.campaign
+            campaign.update!(
+              current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
+            )
+          else
+            donation.update!(status: transaction_status)
+            raise "Transaction status is #{transaction_status}"
+          end
+        end
+
+        def handle_subscription_success(subscription_code)
+          subscription = Subscription.find_by(subscription_code: subscription_code)
+          raise "Subscription not found" unless subscription
+
+          subscription.update!(status: 'active')
         end
 
         # Handle charge failed event
         def handle_charge_failed(data)
           transaction_reference = data[:reference]
-          Rails.logger.debug "Processing charge failed: #{transaction_reference}"
+          subscription_code = data[:subscription_code]
+          Rails.logger.debug "Processing charge failed: #{transaction_reference} or subscription #{subscription_code}"
 
-          # You can handle charge failures here, for example, updating donation status
+          handle_donation_failure(transaction_reference) if transaction_reference.present?
+          handle_subscription_failure(subscription_code) if subscription_code.present?
+        end
+
+        def handle_donation_failure(transaction_reference)
           donation = Donation.find_by(transaction_reference: transaction_reference)
           if donation
-            donation.update(status: 'failed')
-            render json: { message: "Donation failed for transaction: #{transaction_reference}" }, status: :unprocessable_entity
+            donation.update!(status: 'failed')
           else
-            render json: { error: 'Donation not found' }, status: :not_found
+            Rails.logger.error "Donation not found for transaction: #{transaction_reference}"
+          end
+        end
+
+        def handle_subscription_failure(subscription_code)
+          subscription = Subscription.find_by(subscription_code: subscription_code)
+          if subscription
+            subscription.update!(status: 'failed')
+          else
+            Rails.logger.error "Subscription not found: #{subscription_code}"
           end
         end
 
         # Handle transfer success event
         def handle_transfer_success(data)
-          # Handle transfer-related actions here
           Rails.logger.debug "Processing transfer success: #{data[:reference]}"
-          # You can log the transfer or update relevant records like payout or platform fees
+          # Handle transfer logic here
           render json: { message: "Transfer success: #{data[:reference]}" }, status: :ok
         end
 
         # Handle balance updated event
-        def handle_balance_updated(data)
-          Rails.logger.debug "Processing balance update: #{data}"
-          # Here you can update your internal balance tracking, etc.
-          render json: { message: "Balance updated: #{data[:balance]}" }, status: :ok
+        def handle_subscription_create(data)
+          subscription_code = data[:subscription_code]
+          email = data[:customer][:email]
+          plan = data[:plan]
+          authorization = data[:authorization]
+          metadata = data[:metadata]
+          
+          # Extract user_id and campaign_id from metadata
+          user_id = metadata[:user_id]
+          campaign_id = metadata[:campaign_id]
+        
+          unless user_id && campaign_id
+            Rails.logger.error "Missing user_id or campaign_id in metadata: #{metadata}"
+            render json: { error: 'Invalid subscription metadata' }, status: :unprocessable_entity
+            return
+          end
+        
+          # Find associated user and campaign
+          user = User.find_by(id: user_id)
+          campaign = Campaign.find_by(id: campaign_id)
+        
+          unless user && campaign
+            Rails.logger.error "User or campaign not found. User ID: #{user_id}, Campaign ID: #{campaign_id}"
+            render json: { error: 'User or campaign not found' }, status: :not_found
+            return
+          end
+        
+          paystack_service = PaystackService.new
+          response = paystack_service.create_subscription(
+            email: email,
+            plan: plan,
+            authorization: authorization
+          )
+        
+          if response[:status] == false || response[:data].blank?
+            Rails.logger.error "Failed to create subscription on Paystack. Response: #{response}"
+            render json: { error: 'Failed to create subscription on Paystack' }, status: :unprocessable_entity
+            return
+          end
+        
+          # Assuming the response contains a valid subscription
+          # Create subscription record
+          subscription = Subscription.create!(
+            user: user,
+            campaign: campaign,
+            subscription_code: subscription_code,
+            email_token: data[:email_token],
+            status: 'active'
+          )
+        
+          render json: { message: "Subscription created successfully for User #{user.id} on Campaign #{campaign.id}", subscription: subscription }, status: :ok
+        rescue ActiveRecord::RecordInvalid => e
+          Rails.logger.error "Failed to create subscription: #{e.message}"
+          render json: { error: 'Failed to create subscription' }, status: :unprocessable_entity
+        end
+        
+        
+        # Handle subscription charge failed event
+        def handle_subscription_charge_failed(data)
+          subscription_code = data[:subscription_code]
+          Rails.logger.debug "Processing subscription charge failed: #{subscription_code}"
+
+          subscription = Subscription.find_by(subscription_code: subscription_code)
+          if subscription
+            subscription.update!(status: 'failed')
+          else
+            Rails.logger.error "Subscription not found: #{subscription_code}"
+          end
         end
 
-        # Handle subscription create event
-        def handle_subscription_create(data)
-          Rails.logger.debug "Processing subscription create: #{data[:subscription_code]}"
-          # Update subscription records or trigger actions based on the subscription data
-          render json: { message: "Subscription created: #{data[:subscription_code]}" }, status: :ok
+        # Handle subscription disabled event
+        def handle_subscription_disabled(data)
+          subscription_code = data[:subscription_code]
+          email_token = data[:email_token]
+
+          paystack_service = PaystackService.new
+          response = paystack_service.cancel_subscription(
+            subscription_code: subscription_code,
+            email_token: email_token
+          )
+
+          if response[:status]
+            subscription = Subscription.find_by(subscription_code: subscription_code)
+            if subscription
+              subscription.update!(status: 'inactive')
+              render json: { message: "Subscription disabled successfully: #{subscription_code}" }, status: :ok
+            else
+              render json: { error: 'Subscription not found' }, status: :not_found
+            end
+          else
+            Rails.logger.error "Failed to disable subscription: #{response[:message]}"
+            render json: { error: "Subscription disabling failed: #{response[:message]}" }, status: :unprocessable_entity
+          end
         end
+
       end
     end
   end

@@ -4,6 +4,8 @@ class User < ApplicationRecord
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
   has_many :payment_methods, dependent: :destroy
+  has_many :subscriptions, dependent: :destroy
+  has_many :subscribed_campaigns, through: :subscriptions, source: :campaign
 
   validates :email, presence: true, uniqueness: true
   validates :currency_symbol, presence: true
