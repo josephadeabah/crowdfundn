@@ -145,11 +145,15 @@ module Api
 
         # Handle balance updated event
         def handle_subscription_create(data)
+          Rails.logger.debug "Received subscription create data: #{data.inspect}"
+  
           subscription_code = data[:subscription_code]
           email = data[:customer][:email]
           plan = data[:plan]
           authorization = data[:authorization]
           metadata = data[:metadata]
+        
+          Rails.logger.debug "Subscription Code: #{subscription_code}, Email: #{email}, Plan: #{plan}, Metadata: #{metadata.inspect}"
           
           # Extract user_id and campaign_id from metadata
           user_id = metadata[:user_id]
