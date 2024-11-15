@@ -145,16 +145,12 @@ module Api
 
         # Handle balance updated event
         def handle_subscription_create(data)
-          Rails.logger.debug "Received subscription create data: #{data.inspect}"
-  
           subscription_code = data[:subscription_code]
           email = data[:customer][:email]
           plan = data[:plan]
           authorization = data[:authorization]
-          metadata = data[:metadata]
+          metadata = data[:metadata]  # Metadata should contain user_id and campaign_id
         
-          Rails.logger.debug "Subscription Code: #{subscription_code}, Email: #{email}, Plan: #{plan}, Metadata: #{metadata.inspect}"
-          
           # Extract user_id and campaign_id from metadata
           user_id = metadata[:user_id]
           campaign_id = metadata[:campaign_id]
@@ -165,7 +161,7 @@ module Api
             return
           end
         
-          # Find associated user and campaign
+          # Find associated user and campaign using user_id and campaign_id from metadata
           user = User.find_by(id: user_id)
           campaign = Campaign.find_by(id: campaign_id)
         
@@ -175,6 +171,7 @@ module Api
             return
           end
         
+          # Create subscription on Paystack (if needed)
           paystack_service = PaystackService.new
           response = paystack_service.create_subscription(
             email: email,
@@ -188,8 +185,7 @@ module Api
             return
           end
         
-          # Assuming the response contains a valid subscription
-          # Create subscription record
+          # Create the subscription record in the local database
           subscription = Subscription.create!(
             user: user,
             campaign: campaign,
@@ -202,7 +198,7 @@ module Api
         rescue ActiveRecord::RecordInvalid => e
           Rails.logger.error "Failed to create subscription: #{e.message}"
           render json: { error: 'Failed to create subscription' }, status: :unprocessable_entity
-        end
+        end        
         
         
         # Handle subscription charge failed event
