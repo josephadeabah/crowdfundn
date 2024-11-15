@@ -95,40 +95,6 @@ module Api
           end
         end        
         
-        
-        def charge
-          donation = Donation.find_by(transaction_reference: params[:id])
-          return render json: { error: 'Donation not found' }, status: :not_found if donation.nil?
-        
-          # Get the bank details or mobile money details from params
-          bank = params[:bank]
-          payment_method = params[:payment_method]
-        
-          # Ensure correct data for the payment method
-          unless payment_method && ['bank', 'mobile_money'].include?(payment_method)
-            return render json: { error: 'Invalid payment method' }, status: :unprocessable_entity
-          end
-        
-          # Get metadata from the donation object
-          metadata = donation.metadata
-        
-          # Pass the bank or mobile money details accordingly
-          paystack_service = PaystackService.new
-          charge_response = paystack_service.charge_payment(
-            email: donation.email,
-            amount: donation.amount,
-            metadata: metadata,
-            bank: bank,  # Pass bank details if the method is bank
-            payment_method: payment_method
-          )
-        
-          if charge_response[:status] == true
-            render json: { status: 'success', message: 'Charging successful. Please verify payment.', data: charge_response[:data] }, status: :ok
-          else
-            render json: { error: 'Charging failed: ' + charge_response[:message] }, status: :unprocessable_entity
-          end
-        end
-        
         private
 
         def donation_params

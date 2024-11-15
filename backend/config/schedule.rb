@@ -17,10 +17,6 @@
 #   runner "AnotherModel.prune_old_records"
 # end
 
-every 1.day, at: '14:00' do
-    runner "Campaign.archive_expired_campaigns"
-end
-
 every :day, at: '12:00 am' do
     runner "TransferPlatformFeeJob.perform_now"
 end

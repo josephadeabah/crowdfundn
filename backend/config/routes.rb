@@ -28,14 +28,7 @@ Rails.application.routes.draw do
           resources :updates, only: %i[create update destroy]
           resources :comments, only: %i[create index destroy]
           resources :rewards, only: %i[index show create update destroy]
-          
           resources :donations, only: [:create] do
-            member do
-              post :charge  # Ensure this route exists and uses `:id` as a transaction_reference
-            end
-            # member do
-            #   get :verify  # This makes 'verify' a member route
-            # end
           end
         end
       end
