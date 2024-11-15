@@ -20,6 +20,14 @@ Rails.application.routes.draw do
       end
 
       namespace :fundraisers do
+        resources :subscriptions, only: [] do
+          collection do
+            post :create_plan
+            post :create_subscription
+            post :cancel_subscription
+            get :fetch_subscription
+          end
+        end
         post 'paystack_webhook/receive'
         resources :donations, only: [:index]
         resources :campaigns do

@@ -45,7 +45,7 @@ class PaystackService
     JSON.parse(response.body, symbolize_names: true)
   end
   
-  
+
   def verify_transaction(reference)
     url = URI("#{PAYSTACK_BASE_URL}/transaction/verify/#{reference}")
     http = Net::HTTP.new(url.host, url.port)
@@ -75,6 +75,72 @@ class PaystackService
       reason: "Platform fees transfer"
     }.to_json
 
+    response = http.request(request)
+    JSON.parse(response.body, symbolize_names: true)
+  end
+
+  def create_subscription_plan(name:, interval:, amount:, currency: 'NGN')
+    url = URI("#{PAYSTACK_BASE_URL}/plan")
+    http = Net::HTTP.new(url.host, url.port)
+    http.use_ssl = true
+
+    request = Net::HTTP::Post.new(url)
+    request['Authorization'] = "Bearer #{@secret_key}"
+    request['Content-Type'] = 'application/json'
+    request.body = {
+      name: name,
+      interval: interval, # 'daily', 'weekly', 'monthly', or 'annually'
+      amount: (amount * 100).to_i, # Convert to kobo
+      currency: currency
+    }.to_json
+
+    response = http.request(request)
+    JSON.parse(response.body, symbolize_names: true)
+  end
+
+  def create_subscription(email:, plan:, authorization:)
+    url = URI("#{PAYSTACK_BASE_URL}/subscription")
+    http = Net::HTTP.new(url.host, url.port)
+    http.use_ssl = true
+
+    request = Net::HTTP::Post.new(url)
+    request['Authorization'] = "Bearer #{@secret_key}"
+    request['Content-Type'] = 'application/json'
+    request.body = {
+      customer: email,
+      plan: plan,
+      authorization: authorization
+    }.to_json
+
+    response = http.request(request)
+    JSON.parse(response.body, symbolize_names: true)
+  end
+
+  def cancel_subscription(subscription_code:, email_token:)
+    url = URI("#{PAYSTACK_BASE_URL}/subscription/disable")
+    http = Net::HTTP.new(url.host, url.port)
+    http.use_ssl = true
+  
+    request = Net::HTTP::Post.new(url)
+    request['Authorization'] = "Bearer #{@secret_key}"
+    request['Content-Type'] = 'application/json'
+    request.body = {
+      code: subscription_code,
+      token: email_token
+    }.to_json
+  
+    response = http.request(request)
+    JSON.parse(response.body, symbolize_names: true)
+  end
+  
+
+  def fetch_subscription(subscription_code)
+    url = URI("#{PAYSTACK_BASE_URL}/subscription/#{subscription_code}")
+    http = Net::HTTP.new(url.host, url.port)
+    http.use_ssl = true
+
+    request = Net::HTTP::Get.new(url)
+    request['Authorization'] = "Bearer #{@secret_key}"
     response = http.request(request)
     JSON.parse(response.body, symbolize_names: true)
   end
