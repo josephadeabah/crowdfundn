@@ -195,15 +195,21 @@ const DonationRow: React.FC<DonationRowProps> = ({
           />
         </td>
       )}
-      <td className="py-3 px-4 text-gray-800 dark:text-white">{donorName}</td>
-      <td className="py-3 px-4 text-gray-600 dark:text-neutral-300">
+      <td className="py-3 px-4 text-gray-800 dark:text-white whitespace-nowrap">
+        {donorName}
+      </td>
+      <td className="py-3 px-4 text-gray-600 dark:text-neutral-300 whitespace-nowrap">
         {currency?.toLocaleUpperCase()} {amount.toFixed(2)}
       </td>
-      <td className="py-3 px-4 text-gray-500 dark:text-neutral-400">{date}</td>
-      <td className="py-3 px-4 text-gray-500 dark:text-neutral-400">
+      <td className="py-3 px-4 text-gray-500 dark:text-neutral-400 whitespace-nowrap">
+        {date}
+      </td>
+      <td className="py-3 px-4 text-gray-500 dark:text-neutral-400 whitespace-nowrap">
         {campaignTitle}
       </td>
-      <td className="py-3 px-4 text-green-500 dark:text-green-400">{status}</td>
+      <td className="py-3 px-4 text-green-500 dark:text-green-400 whitespace-nowrap">
+        {status}
+      </td>
       <td className="py-3 px-4">
         <Button
           variant="outline"
