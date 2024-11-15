@@ -79,7 +79,7 @@ class PaystackService
     JSON.parse(response.body, symbolize_names: true)
   end
 
-  def create_subscription_plan(name:, interval:, amount:, currency: 'NGN')
+  def create_subscription_plan(name:, interval:, amount:)
     url = URI("#{PAYSTACK_BASE_URL}/plan")
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
@@ -91,7 +91,6 @@ class PaystackService
       name: name,
       interval: interval, # 'daily', 'weekly', 'monthly', or 'annually'
       amount: (amount * 100).to_i, # Convert to kobo
-      currency: currency
     }.to_json
 
     response = http.request(request)

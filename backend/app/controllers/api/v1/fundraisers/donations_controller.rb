@@ -2,7 +2,7 @@ module Api
   module V1
     module Fundraisers
       class DonationsController < ApplicationController
-        before_action :authenticate_request, only: %i[index create charge]
+        before_action :authenticate_request, only: %i[index create]
 
         def index
           if @current_user.nil?
