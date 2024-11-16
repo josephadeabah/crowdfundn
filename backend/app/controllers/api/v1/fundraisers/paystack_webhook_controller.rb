@@ -95,7 +95,7 @@ module Api
             campaign.update!(
               current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
             )
-            user = User.find(donation.user_id)
+            user = User.find_by(donation.user_id)
             # Enqueue the email
            UserMailer.charge_success_email(user, donation).deliver_later
           else
