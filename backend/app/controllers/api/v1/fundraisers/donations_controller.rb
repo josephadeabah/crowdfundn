@@ -70,6 +70,8 @@ module Api
             session_token: donation.metadata[:session_token] # Only for anonymous users
           }
 
+          donation.plan = params[:donation][:plan]
+
           # Initialize transaction with Paystack
           paystack_service = PaystackService.new
           response = paystack_service.initialize_transaction(
@@ -99,8 +101,8 @@ module Api
         private
 
         def donation_params
-          params.require(:donation).permit(:amount, :transaction_reference, :email, :full_name, :phone, metadata: {})
-        end
+          params.require(:donation).permit(:amount, :transaction_reference, :email, :full_name, :phone, :plan, metadata: {})
+        end        
       end
     end
   end
