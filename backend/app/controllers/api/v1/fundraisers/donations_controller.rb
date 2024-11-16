@@ -40,15 +40,16 @@ module Api
           # Create a new donation
           donation = Donation.new(donation_params)
           donation.campaign_id = campaign.id
+          donation.user_id = @current_user&.id
           donation.status = 'pending'
 
           # Assign user_id if authenticated, otherwise generate a session token for anonymous users
-          if @current_user
-            donation.user_id = @current_user.id
-          else
-            session_token = SecureRandom.hex(16) # Generate session token for anonymous users
-            donation.metadata[:session_token] = session_token
-          end
+          # if @current_user
+          #   donation.user_id = @current_user.id
+          # else
+          #   session_token = SecureRandom.hex(16) # Generate session token for anonymous users
+          #   donation.metadata[:session_token] = session_token
+          # end
 
           # Add campaign details to donation metadata
           donation.metadata[:campaign] = {
@@ -65,7 +66,7 @@ module Api
 
           # Prepare metadata for Paystack initialization
           metadata = { 
-            user_id: donation.donation.user_id, 
+            user_id: donation.user_id, 
             campaign_id: donation.campaign_id,
             session_token: donation.metadata[:session_token] # Only for anonymous users
           }
