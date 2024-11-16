@@ -10,7 +10,7 @@ module Api
             response = paystack_service.create_subscription_plan(
               name: params[:name],
               interval: params[:interval],
-              amount: params[:amount] * 100, # Convert to kobo
+              amount: params[:amount],
             )
     
             if response[:status]
