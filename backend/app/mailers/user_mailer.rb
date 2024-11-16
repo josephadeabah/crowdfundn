@@ -1,5 +1,5 @@
 class UserMailer < ApplicationMailer
-    default from: 'no-reply@yourdomain.com'
+    default from: 'no-reply@bantuhive-api-dicht.ondigitalocean.app'
   
     def charge_success_email(user, donation)
       @user = user
