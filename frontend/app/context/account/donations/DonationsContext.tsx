@@ -86,10 +86,9 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     campaignId: string,
     billingFrequency: string,
   ) => {
-  
     try {
       setLoading(true);
-  
+
       try {
         const subscriptionResponse = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/subscriptions/create_plan`,
@@ -105,21 +104,23 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             }),
           },
         );
-  
+
         const subscriptionData = await subscriptionResponse.json();
-          // Check if plan_code exists in the response and set it
-          planCodeRef.current = subscriptionData.plan?.plan_code;          
-  
+        // Check if plan_code exists in the response and set it
+        planCodeRef.current = subscriptionData.plan?.plan_code;
+
         if (!subscriptionResponse.ok) {
           throw new Error('Failed to create subscription plan');
         }
-  
+
         // Extract plan_code from subscription plan response
       } catch (error) {
-        console.error('Subscription plan creation failed, proceeding without plan code.');
+        console.error(
+          'Subscription plan creation failed, proceeding without plan code.',
+        );
         // If plan creation fails, proceed with the donation without the plan_code
       }
-  
+
       // Step 2: Create donation transaction (with or without plan_code)
       const donationResponse = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
@@ -138,16 +139,16 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           }),
         },
       );
-  
+
       const donationData = await donationResponse.json();
-  
+
       if (!donationResponse.ok) {
         handleApiError('Failed to create donation');
         return;
       }
-  
+
       const { authorization_url } = donationData;
-  
+
       if (authorization_url) {
         window.location.href = authorization_url; // Redirect to Paystack authorization URL
       } else {
@@ -161,7 +162,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   };
-  
 
   const contextValue = useMemo(
     () => ({
