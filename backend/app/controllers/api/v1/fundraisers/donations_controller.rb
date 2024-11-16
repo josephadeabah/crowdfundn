@@ -65,7 +65,7 @@ module Api
 
           # Prepare metadata for Paystack initialization
           metadata = { 
-            user_id: @current_user&.id, 
+            user_id: donation.donation.user_id, 
             campaign_id: donation.campaign_id,
             session_token: donation.metadata[:session_token] # Only for anonymous users
           }
