@@ -12,6 +12,8 @@ module Backend
     config.load_defaults 7.1
 
     config.api_only = true
+    config.active_job.queue_adapter = :async
+
 
     # Add services directory to autoload paths
     config.autoload_paths << Rails.root.join('app/services')

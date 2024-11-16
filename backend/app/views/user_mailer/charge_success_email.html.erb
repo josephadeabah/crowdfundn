@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .header {
+        background-color: #28a745; /* Green */
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+      }
+      .content {
+        padding: 20px;
+      }
+      .content p {
+        font-size: 16px;
+        line-height: 1.6;
+        margin: 10px 0;
+      }
+      .highlight {
+        color: #ff9800; /* Orange */
+        font-weight: bold;
+      }
+      .footer {
+        background-color: #f1f1f1;
+        text-align: center;
+        padding: 10px;
+        font-size: 14px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <div class="header">
+        Thank You for Your Support!
+      </div>
+      <div class="content">
+        <p>Hello <strong class="highlight"><%= @user.name %></strong>,</p>
+        <p>
+          Thank you for your donation to the campaign 
+          "<strong class="highlight"><%= @donation.campaign.name %></strong>".
+        </p>
+        <p>
+          <strong>Amount:</strong> 
+          <span class="highlight">$<%= @donation.net_amount %></span>
+        </p>
+        <p>We sincerely appreciate your generous support!</p>
+      </div>
+      <div>
+        <p>
+          <strong>Best Regards,</strong><br>
+          The BantuHive Team
+        </p>
+      </div>
+      <div class="footer">
+        &copy; 2024 BantuHive Ltd. | All Rights Reserved
+      </div>
+    </div>
+  </body>
+</html>

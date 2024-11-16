@@ -95,6 +95,8 @@ module Api
             campaign.update!(
               current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
             )
+            # Enqueue the email
+           UserMailer.charge_success_email(donation.user, donation).deliver_later
           else
             donation.update!(status: transaction_status)
             raise "Transaction status is #{transaction_status}"
