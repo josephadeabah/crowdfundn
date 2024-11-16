@@ -111,13 +111,15 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         planCodeRef.current = subscriptionData.plan?.plan_code;
 
         if (!subscriptionResponse.ok) {
-          throw new Error('Failed to create subscription plan');
+          handleApiError(
+            'Failed to create subscription plan. Proceeding with one time donation.',
+          );
         }
 
         // Extract plan_code from subscription plan response
       } catch (error) {
-        console.error(
-          'Subscription plan creation failed, proceeding without plan code.',
+        handleApiError(
+          'Creating your subscription failed!, proceeding with one time donation. You may restart the process to create your subscription.',
         );
         // If plan creation fails, proceed with the donation without the plan_code
       }
