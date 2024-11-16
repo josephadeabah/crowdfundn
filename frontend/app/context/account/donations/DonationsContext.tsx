@@ -84,6 +84,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     phoneNumber: string,
     amount: number,
     campaignId: string,
+    campaignTitle: string,
     billingFrequency: string,
   ) => {
     try {
@@ -100,7 +101,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             body: JSON.stringify({
               amount: amount,
               interval: billingFrequency, // Interval: "monthly", "yearly", etc.
-              name: 'donation subscriber', // Static name for the plan as requested
+              name: campaignTitle,
             }),
           },
         );

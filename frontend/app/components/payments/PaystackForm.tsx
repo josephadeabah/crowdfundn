@@ -8,6 +8,7 @@ interface PaystackFormProps {
   paymentPhone: string;
   paymentAmount: string;
   campaignId: string;
+  campaignTitle: string;
   billingFrequency: string;
   errors: { [key: string]: string };
   isPaymentFormValidated: () => boolean;
@@ -23,6 +24,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   paymentPhone,
   paymentAmount,
   campaignId,
+  campaignTitle,
   billingFrequency,
   errors,
   isPaymentFormValidated: validatePaystackForm,
@@ -52,6 +54,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         paymentPhone,
         Number(paymentAmount),
         campaignId,
+        campaignTitle,
         billingFrequency,
       );
     }

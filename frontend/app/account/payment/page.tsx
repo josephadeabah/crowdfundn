@@ -28,6 +28,7 @@ const PaymentPageContent = () => {
   const [paymentAmount, setPaymentAmount] = useState('');
   const [fundraiserId, setFundraiserId] = useState('');
   const [campaignId, setCampaignId] = useState('');
+  const [campaignTitle, setCampaignTitle] = useState('');
   const [billingFrequency, setBillingFrequency] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -45,6 +46,7 @@ const PaymentPageContent = () => {
     const phone = searchParams.get('phone');
     const fundraiserIdParam = searchParams.get('fundraiserId') ?? '';
     const campaignIdParam = searchParams.get('campaignId') ?? '';
+    const campaignTitleParam = searchParams.get('campaignTitle') ?? '';
     const billingFrequencyParam = searchParams.get('billingFrequency') ?? '';
 
     if (method) setPaymentMethod(method);
@@ -57,6 +59,7 @@ const PaymentPageContent = () => {
     if (phone) setPaymentPhone(phone);
     if (fundraiserIdParam) setFundraiserId(fundraiserIdParam);
     if (campaignIdParam) setCampaignId(campaignIdParam);
+    if (campaignTitleParam) setCampaignTitle(campaignTitleParam);
     if (billingFrequencyParam) setBillingFrequency(billingFrequencyParam);
   }, [searchParams]);
 
@@ -157,6 +160,7 @@ const PaymentPageContent = () => {
               paymentPhone={paymentPhone}
               paymentAmount={paymentAmount}
               campaignId={campaignId}
+              campaignTitle={campaignTitle}
               billingFrequency={billingFrequency}
               errors={errors}
               isPaymentFormValidated={validatePayStackForm}

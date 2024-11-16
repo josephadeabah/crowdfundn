@@ -14,6 +14,7 @@ interface DonationButtonProps {
   fundraiserDetails: {
     id: string;
     campaignId: string;
+    campaignTitle?: string;
   };
 }
 
@@ -206,6 +207,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
             fundraiserDetails={{
               id: String(fundraiserDetails?.id),
               campaignId: String(fundraiserDetails?.campaignId),
+              campaignTitle: fundraiserDetails?.campaignTitle,
             }}
           />
         </Modal>

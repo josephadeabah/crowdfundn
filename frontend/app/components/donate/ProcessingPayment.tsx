@@ -12,6 +12,7 @@ interface ProcessingPaymentProps {
   fundraiserDetails: {
     id: string;
     campaignId: string;
+    campaignTitle?: string;
   };
   paymentDetails: {
     cardNumber: string;
@@ -70,9 +71,10 @@ const ProcessingPayment: React.FC<ProcessingPaymentProps> = ({
           email: paymentDetails.email,
           fundraiserId: fundraiserDetails.id, // Add fundraiser details here
           campaignId: fundraiserDetails.campaignId,
+          campaignTitle: fundraiserDetails.campaignTitle,
           billingFrequency: billing.frequency,
           tier: billing.tier,
-        }).toString();
+        } as Record<string, string>).toString();
 
         window.location.href = `/account/payment?${query}`;
       }, 3000);
