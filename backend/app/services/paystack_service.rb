@@ -24,7 +24,7 @@ class PaystackService
     signature == expected_signature
   end
 
-  def initialize_transaction(email:, amount:, metadata: {})
+  def initialize_transaction(email:, amount:, plan:, metadata: {})
     return { status: 'error', message: 'Email address is required' } if email.blank?
 
     url = URI("#{PAYSTACK_BASE_URL}/transaction/initialize")
@@ -37,6 +37,7 @@ class PaystackService
     request.body = {
       email: email,
       amount: (amount * 100).to_i,
+      plan: plan,
       reference: SecureRandom.uuid,
       metadata: metadata
     }.to_json

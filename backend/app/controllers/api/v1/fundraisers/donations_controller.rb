@@ -70,11 +70,14 @@ module Api
             session_token: donation.metadata[:session_token] # Only for anonymous users
           }
 
+          plan_code = params[:plan] 
+
           # Initialize transaction with Paystack
           paystack_service = PaystackService.new
           response = paystack_service.initialize_transaction(
             email: donation.email,
             amount: donation.amount,
+            plan: plan_code,
             metadata: metadata
           )
 
