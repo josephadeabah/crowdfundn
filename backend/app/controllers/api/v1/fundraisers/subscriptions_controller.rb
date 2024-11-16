@@ -7,10 +7,16 @@ module Api
     
           def create_plan
             paystack_service = PaystackService.new
+             # Fetch the campaign by the campaign_id from the parameters
+            campaign = Campaign.find(params[:campaign_id])
+
+            # Fetch the title of the campaign to use as the subscription name
+            campaign_title = campaign.title
+
             response = paystack_service.create_subscription_plan(
-              name: params[:name],
+              name: campaign_title, 
               interval: params[:interval],
-              amount: params[:amount] * 100, # Convert to kobo
+              amount: params[:amount],
             )
     
             if response[:status]
