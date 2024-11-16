@@ -10,6 +10,7 @@ import React, {
   ReactNode,
   useMemo,
   useCallback,
+  useRef,
 } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 
@@ -19,6 +20,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const planCodeRef = useRef<string | null>(null);
   const [pagination, setPagination] = useState<Pagination>({
     current_page: 1,
     total_pages: 1,
@@ -88,9 +90,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     try {
       setLoading(true);
   
-      // Step 1: Create a subscription plan (optional step)
-      let planCode = null;
-  
       try {
         const subscriptionResponse = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/subscriptions/create_plan`,
@@ -108,13 +107,14 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         );
   
         const subscriptionData = await subscriptionResponse.json();
+          // Check if plan_code exists in the response and set it
+          planCodeRef.current = subscriptionData.plan?.plan_code;          
   
         if (!subscriptionResponse.ok) {
           throw new Error('Failed to create subscription plan');
         }
   
         // Extract plan_code from subscription plan response
-        planCode = subscriptionData.data?.plan_code;
       } catch (error) {
         console.error('Subscription plan creation failed, proceeding without plan code.');
         // If plan creation fails, proceed with the donation without the plan_code
@@ -134,7 +134,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             full_name: fullName,
             phone: phoneNumber,
             metadata: {},
-            plan: planCode, // Pass the plan_code if available, otherwise it'll be undefined
+            plan: planCodeRef.current, // Pass the plan_code if available, otherwise it'll be undefined
           }),
         },
       );
