@@ -65,19 +65,17 @@ module Api
 
           # Prepare metadata for Paystack initialization
           metadata = { 
-            user_id: campaign.fundraiser_id, 
+            user_id: donation.metadata[:campaign][:fundraiser_id], 
             campaign_id: donation.campaign_id,
             session_token: donation.metadata[:session_token] # Only for anonymous users
           }
-
-          plan_code = params[:plan] 
 
           # Initialize transaction with Paystack
           paystack_service = PaystackService.new
           response = paystack_service.initialize_transaction(
             email: donation.email,
             amount: donation.amount,
-            plan: plan_code,
+            plan: donation.plan,
             metadata: metadata
           )
 
