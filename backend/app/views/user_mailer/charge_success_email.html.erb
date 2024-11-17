@@ -52,10 +52,10 @@
         Thank You for Your Support!
       </div>
       <div class="content">
-        <p>Hello <strong class="highlight"><%= @user.first_name %></strong>,</p>
+        <p>Hello <strong class="highlight"><%= @user.first_name || 'Valued Supporter' %></strong>,</p>
         <p>
           Thank you for your donation to the campaign 
-          "<strong class="highlight"><%= @donation.campaign.title %></strong>".
+          "<strong class="highlight"><%= @donation.metadata.campaign.title %></strong>".
         </p>
         <p>
           <strong>Amount:</strong> 

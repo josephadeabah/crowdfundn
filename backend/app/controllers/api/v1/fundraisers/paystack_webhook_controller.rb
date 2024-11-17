@@ -74,7 +74,7 @@ module Api
 
         def handle_donation_success(data)
           transaction_reference = data[:reference]
-          user = data[:customer]
+          user = data['customer']
           donation = Donation.find_by(transaction_reference: transaction_reference)
           raise "Donation not found" unless donation
 

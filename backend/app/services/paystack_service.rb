@@ -21,7 +21,7 @@ class PaystackService
     expected_signature = OpenSSL::HMAC.hexdigest('sha512', @secret_key, payload)
 
     # Compare the signatures
-    signature == expected_signature
+    Rack::Utils.secure_compare(expected_signature, signature)
   end
 
   def initialize_transaction(email:, amount:, plan:, metadata: {})
