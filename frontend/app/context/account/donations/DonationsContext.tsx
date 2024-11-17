@@ -104,7 +104,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         handleApiError(
           'Failed to create subscription plan. Proceeding with one-time donation.',
         );
-        return null; // No plan created
+        return null;
       }
 
       // Extract plan_code from subscription plan response
