@@ -142,7 +142,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           }),
         },
       );
-
       const donationData = await donationResponse.json();
 
       if (!donationResponse.ok) {
