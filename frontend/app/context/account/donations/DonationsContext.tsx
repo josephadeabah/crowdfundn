@@ -77,46 +77,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  const createPlan = async (
-    amount: number,
-    billingFrequency: string,
-    campaignTitle: string,
-  ): Promise<string | null> => {
-    try {
-      const subscriptionResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/subscriptions/create_plan`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            amount: amount,
-            interval: billingFrequency,
-            name: campaignTitle,
-          }),
-        },
-      );
-
-      const subscriptionData = await subscriptionResponse.json();
-
-      if (!subscriptionResponse.ok) {
-        handleApiError(
-          'Failed to create subscription plan. Proceeding with one-time donation.',
-        );
-        return null;
-      }
-      // Extract plan_code from subscription plan response
-      const planCode = subscriptionData.plan?.plan_code;
-      return planCode || null;
-    } catch (error) {
-      handleApiError(
-        'Creating your subscription failed! Proceeding with one-time donation.',
-      );
-      return null; // No plan created
-    }
-  };
-
   // Create Donation Transaction
   const createDonationTransaction = async (
     email: string,
@@ -130,12 +90,39 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     try {
       setLoading(true);
 
-      // Step 1: Create a subscription plan (if needed)
-      const planCode = await createPlan(
-        amount,
-        billingFrequency,
-        campaignTitle,
-      );
+      try {
+        const subscriptionResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/subscriptions/create_plan`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              amount: amount,
+              interval: billingFrequency, // Interval: "monthly", "yearly", etc.
+              name: campaignTitle,
+            }),
+          },
+        );
+
+        const subscriptionData = await subscriptionResponse.json();
+        // Check if plan_code exists in the response and set it
+        planCodeRef.current = subscriptionData.plan?.plan_code;
+
+        if (!subscriptionResponse.ok) {
+          handleApiError(
+            'Failed to create subscription plan. Proceeding with one time donation.',
+          );
+        }
+
+        // Extract plan_code from subscription plan response
+      } catch (error) {
+        handleApiError(
+          'Creating your subscription failed!, proceeding with one time donation. You may restart the process to create your subscription.',
+        );
+        // If plan creation fails, proceed with the donation without the plan_code
+      }
 
       // Step 2: Create donation transaction (with or without plan_code)
       const donationResponse = await fetch(
@@ -151,7 +138,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             full_name: fullName,
             phone: phoneNumber,
             metadata: {},
-            plan: planCode, // Pass the plan_code if available, otherwise it'll be null
+            plan: planCodeRef.current, // Pass the plan_code if available, otherwise it'll be undefined
           }),
         },
       );
