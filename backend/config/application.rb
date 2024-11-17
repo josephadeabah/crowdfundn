@@ -14,6 +14,9 @@ module Backend
     config.api_only = true
     config.active_job.queue_adapter = :async
 
+    config.active_record.migration_error = :page_load
+
+
 
     # Add services directory to autoload paths
     config.autoload_paths << Rails.root.join('app/services')
