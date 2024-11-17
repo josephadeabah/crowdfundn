@@ -94,18 +94,24 @@ Rails.application.configure do
   config.action_dispatch.trusted_proxies = ['127.0.0.1', '::1']
   config.middleware.insert_before 0, Rack::SSL if ENV['FORCE_SSL'] == 'true'
 
-  # config.action_mailer.delivery_method = :smtp
-  # config.action_mailer.smtp_settings = {
-  #   address: 'smtp.gmail.com',
-  #   port: 587,
-  #   domain: 'yourdomain.com',
-  #   user_name: ENV['GMAIL_USERNAME'], # Ensure these environment variables are set
-  #   password: ENV['GMAIL_PASSWORD'], # and correctly loaded in your app
-  #   authentication: 'plain',
-  #   enable_starttls_auto: true
-  # }
+  config.action_mailer.raise_delivery_errors = true  # Set to true for logging errors
+  config.action_mailer.delivery_method = :smtp  # Using SMTP for delivery
+  
+  config.action_mailer.smtp_settings = {
+    address:              'smtp-relay.brevo.com',  # Brevo SMTP server address
+    port:                 587,  # You can use 465 for SSL or 587 for TLS
+    domain:               'smtp-relay.brevo.com',  # Use your domain or the domain you're sending from
+    user_name:            'ansahadeabaj45@gmail.com',  # Your Brevo account email
+    password:             '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',  # The SMTP key from Brevo (not your account password)
+    authentication:       'login',  # Authentication method (Brevo uses 'login')
+    enable_starttls_auto: true  # Enable TLS (Transport Layer Security)
+  }
 
-  # config.action_mailer.default_url_options = { host: 'bantuhive-api-dicht.ondigitalocean.app' }
+  # If you're using email previews, add this line (optional):
+  # config.action_mailer.preview_path = "#{Rails.root}/lib/mailer_previews"
+  
+  config.action_mailer.default_url_options = { host: 'smtp-relay.brevo.com' }
+  
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
