@@ -74,10 +74,14 @@ module Api
 
         def handle_donation_success(data)
           transaction_reference = data[:reference]
+          return unless transaction_reference
           user_data = data[:customer]
           donation = Donation.find_by(transaction_reference: transaction_reference)
         
-          raise "Donation not found for reference #{transaction_reference}" unless donation
+          unless donation
+            Rails.logger.error "Donation not found for reference #{transaction_reference}"
+            return render json: { error: "Donation not found" }, status: :not_found
+          end
         
           response = PaystackService.new.verify_transaction(transaction_reference)
           unless response[:status]
