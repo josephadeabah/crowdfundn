@@ -103,7 +103,7 @@ module Api
             campaign.update!(
               current_amount: campaign.donations.successful.sum(:net_amount)
             )
-            UserMailer.charge_success_email(user_data, donation).deliver_later
+            UserMailer.charge_success_email(user_data, donation).deliver_now
           else
             donation.update!(status: transaction_status)
             raise "Transaction failed with status: #{transaction_status}"

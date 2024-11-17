@@ -94,6 +94,19 @@ Rails.application.configure do
   config.action_dispatch.trusted_proxies = ['127.0.0.1', '::1']
   config.middleware.insert_before 0, Rack::SSL if ENV['FORCE_SSL'] == 'true'
 
+  # config.action_mailer.delivery_method = :smtp
+  # config.action_mailer.smtp_settings = {
+  #   address: 'smtp.gmail.com',
+  #   port: 587,
+  #   domain: 'yourdomain.com',
+  #   user_name: ENV['GMAIL_USERNAME'], # Ensure these environment variables are set
+  #   password: ENV['GMAIL_PASSWORD'], # and correctly loaded in your app
+  #   authentication: 'plain',
+  #   enable_starttls_auto: true
+  # }
+
+  # config.action_mailer.default_url_options = { host: 'bantuhive-api-dicht.ondigitalocean.app' }
+
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
   #   "example.com",     # Allow requests from example.com
