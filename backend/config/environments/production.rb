@@ -12,6 +12,8 @@ Rails.application.configure do
   # Rake tasks automatically ignore this option for performance.
   config.eager_load = true
 
+  config.active_job.queue_adapter = :delayed_job
+
   Rails.application.routes.default_url_options[:host] = 'https://bantuhive-space-media.nyc3.digitaloceanspaces.com'
 
   # Full error reports are disabled and caching is turned on.
@@ -104,7 +106,8 @@ Rails.application.configure do
     user_name:            'ansahadeabaj45@gmail.com',  # Your Brevo account email
     password:              ENV['BREVO_API_KEY'],  # The SMTP key from Brevo (not your account password)
     authentication:       'login',  # Authentication method (Brevo uses 'login')
-    enable_starttls_auto: true  # Enable TLS (Transport Layer Security)
+    enable_starttls_auto: true,  # Enable TLS (Transport Layer Security)
+    debug:                true 
   }
 
   # If you're using email previews, add this line (optional):

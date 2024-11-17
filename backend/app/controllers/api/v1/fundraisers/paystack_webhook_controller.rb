@@ -75,40 +75,20 @@ module Api
         def handle_donation_success(data)
           transaction_reference = data[:reference]
           return unless transaction_reference
+        
           user_data = data[:customer]
           donation = Donation.find_by(transaction_reference: transaction_reference)
-        
+          
           unless donation
             Rails.logger.error "Donation not found for reference #{transaction_reference}"
             return render json: { error: "Donation not found" }, status: :not_found
           end
+          
+          # Enqueue the background job for processing donation success
+          DonationSuccessJob.perform_later(donation.id, user_data)
         
-          response = PaystackService.new.verify_transaction(transaction_reference)
-          unless response[:status]
-            raise "Transaction verification failed for reference #{transaction_reference}"
-          end
-        
-          transaction_status = response.dig(:data, :status)
-          if transaction_status == 'success'
-            gross_amount = response.dig(:data, :amount).to_f / 100
-            net_amount = gross_amount * 0.985
-            donation.update!(status: 'successful', gross_amount: gross_amount, net_amount: net_amount, amount: net_amount)
-
-            Balance.create!(
-              amount: gross_amount - net_amount,
-              description: "Platform fee for donation #{donation.id}",
-              status: 'pending'
-            )
-            campaign = donation.campaign
-            campaign.update!(
-              current_amount: campaign.donations.successful.sum(:net_amount)
-            )
-            UserMailer.charge_success_email(user_data, donation).deliver_now
-          else
-            donation.update!(status: transaction_status)
-            raise "Transaction failed with status: #{transaction_status}"
-          end
-        end
+          render json: { message: "Donation processing is queued for background execution" }, status: :ok
+        end        
         
 
         def handle_subscription_success(subscription_code)
