@@ -18,7 +18,7 @@ class PaystackService
     end
 
     # Create the hash to verify the signature
-    expected_signature = OpenSSL::HMAC.hexdigest('sha512', @secret_key, payload)
+    expected_signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha512'), @secret_key, payload)
 
     # Compare the signatures
     Rack::Utils.secure_compare(expected_signature, signature)
