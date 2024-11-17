@@ -74,16 +74,19 @@ module Api
 
         def handle_donation_success(data)
           transaction_reference = data[:reference]
-          user = data['customer']
+          user_data = data[:customer]
           donation = Donation.find_by(transaction_reference: transaction_reference)
-          raise "Donation not found" unless donation
-
+        
+          raise "Donation not found for reference #{transaction_reference}" unless donation
+        
           response = PaystackService.new.verify_transaction(transaction_reference)
-          raise "Transaction verification failed" unless response[:status] == true
-
-          transaction_status = response[:data][:status]
+          unless response[:status]
+            raise "Transaction verification failed for reference #{transaction_reference}"
+          end
+        
+          transaction_status = response.dig(:data, :status)
           if transaction_status == 'success'
-            gross_amount = response[:data][:amount] / 100.0
+            gross_amount = response.dig(:data, :amount).to_f / 100
             net_amount = gross_amount * 0.985
             donation.update!(status: 'successful', gross_amount: gross_amount, net_amount: net_amount, amount: net_amount)
 
@@ -92,18 +95,17 @@ module Api
               description: "Platform fee for donation #{donation.id}",
               status: 'pending'
             )
-
             campaign = donation.campaign
             campaign.update!(
-              current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
+              current_amount: campaign.donations.successful.sum(:net_amount)
             )
-            # Enqueue the email
-           UserMailer.charge_success_email(user, donation).deliver_later
+            UserMailer.charge_success_email(user_data, donation).deliver_later
           else
             donation.update!(status: transaction_status)
-            raise "Transaction status is #{transaction_status}"
+            raise "Transaction failed with status: #{transaction_status}"
           end
         end
+        
 
         def handle_subscription_success(subscription_code)
           subscription = Subscription.find_by(subscription_code: subscription_code)
