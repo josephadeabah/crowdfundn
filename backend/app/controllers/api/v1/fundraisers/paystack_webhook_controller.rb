@@ -72,7 +72,9 @@ module Api
           render json: { error: 'Error processing charge success' }, status: :unprocessable_entity
         end
 
-        def handle_donation_success(transaction_reference)
+        def handle_donation_success(data)
+          transaction_reference = data[:reference]
+          user = data[:customer]
           donation = Donation.find_by(transaction_reference: transaction_reference)
           raise "Donation not found" unless donation
 
@@ -96,8 +98,7 @@ module Api
               current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
             )
             # Enqueue the email
-          #   user = User.find_by(donation.user_id)
-          #  UserMailer.charge_success_email(user, donation).deliver_later
+           UserMailer.charge_success_email(user, donation).deliver_later
           else
             donation.update!(status: transaction_status)
             raise "Transaction status is #{transaction_status}"
