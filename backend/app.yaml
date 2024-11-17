@@ -1,0 +1,31 @@
+name: bantuhive-backend
+region: nyc
+services:
+  - name: web
+    environment_slug: ruby
+    git:
+      repo_clone_url: https://github.com/josephadeabah/crowdfundn.git
+      branch: main
+    build:
+      build_command: bundle install
+      run_command: bundle exec rails s -b '0.0.0.0'
+    routes:
+      - path: /
+    scaling:
+      min_count: 1
+      max_count: 3
+
+  - name: worker
+    environment_slug: ruby
+    git:
+      repo_clone_url: https://github.com/josephadeabah/crowdfundn.git
+      branch: main
+    build:
+      build_command: bundle install
+      run_command: bundle exec bin/delayed_job run
+    scaling:
+      min_count: 1
+      max_count: 2
+    environment_variables:
+      PAYSTACK_SECRET_KEY: ${PAYSTACK_PRIVATE_KEY}  # References the environment variable set in App Platform
+      DATABASE_URL: ${DATABASE_URL}  # References the environment variable set in App Platform
