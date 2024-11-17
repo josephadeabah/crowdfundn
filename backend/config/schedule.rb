@@ -17,9 +17,9 @@
 #   runner "AnotherModel.prune_old_records"
 # end
 
-every :day, at: '12:00 am' do
-    runner "TransferPlatformFeeJob.perform_now"
-end
+# every :day, at: '12:00 am' do
+#     runner "TransferPlatformFeeJob.perform_now"
+# end
 
 # Run [whenever --update-crontab] command to update your crontab with the schedule.
   

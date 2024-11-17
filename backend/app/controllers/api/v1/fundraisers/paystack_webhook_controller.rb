@@ -72,24 +72,34 @@ module Api
           render json: { error: 'Error processing charge success' }, status: :unprocessable_entity
         end
 
-        def handle_donation_success(data)
-          transaction_reference = data[:reference]
-          return unless transaction_reference
-        
-          user_data = data[:customer]
+        def handle_donation_success(transaction_reference)
           donation = Donation.find_by(transaction_reference: transaction_reference)
-          
-          unless donation
-            Rails.logger.error "Donation not found for reference #{transaction_reference}"
-            return render json: { error: "Donation not found" }, status: :not_found
+          raise "Donation not found" unless donation
+
+          response = PaystackService.new.verify_transaction(transaction_reference)
+          raise "Transaction verification failed" unless response[:status] == true
+
+          transaction_status = response[:data][:status]
+          if transaction_status == 'success'
+            gross_amount = response[:data][:amount] / 100.0
+            net_amount = gross_amount * 0.985
+            donation.update!(status: 'successful', gross_amount: gross_amount, net_amount: net_amount, amount: net_amount)
+
+            Balance.create!(
+              amount: gross_amount - net_amount,
+              description: "Platform fee for donation #{donation.id}",
+              status: 'pending'
+            )
+
+            campaign = donation.campaign
+            campaign.update!(
+              current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
+            )
+          else
+            donation.update!(status: transaction_status)
+            raise "Transaction status is #{transaction_status}"
           end
-          
-          # Enqueue the background job for processing donation success
-          DonationSuccessJob.perform_later(donation.id, user_data)
-        
-          render json: { message: "Donation processing is queued for background execution" }, status: :ok
-        end        
-        
+        end
 
         def handle_subscription_success(subscription_code)
           subscription = Subscription.find_by(subscription_code: subscription_code)

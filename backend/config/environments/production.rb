@@ -12,8 +12,6 @@ Rails.application.configure do
   # Rake tasks automatically ignore this option for performance.
   config.eager_load = true
 
-  config.active_job.queue_adapter = :delayed_job
-
   Rails.application.routes.default_url_options[:host] = 'https://bantuhive-space-media.nyc3.digitaloceanspaces.com'
 
   # Full error reports are disabled and caching is turned on.
