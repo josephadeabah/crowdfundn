@@ -92,7 +92,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           },
           body: JSON.stringify({
             amount: amount,
-            interval: billingFrequency, // Interval: "monthly", "yearly", etc.
+            interval: billingFrequency,
             name: campaignTitle,
           }),
         },
@@ -106,10 +106,8 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         );
         return null;
       }
-
       // Extract plan_code from subscription plan response
       const planCode = subscriptionData.plan?.plan_code;
-
       return planCode || null;
     } catch (error) {
       handleApiError(
