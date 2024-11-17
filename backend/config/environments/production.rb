@@ -100,9 +100,9 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = {
     address:              'smtp-relay.brevo.com',  # Brevo SMTP server address
     port:                 587,  # You can use 465 for SSL or 587 for TLS
-    domain:               'smtp-relay.brevo.com',  # Use your domain or the domain you're sending from
+    domain:               'bantuhive-space-media.nyc3.digitaloceanspaces.com',  # Use your domain or the domain you're sending from
     user_name:            'ansahadeabaj45@gmail.com',  # Your Brevo account email
-    password:             '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',  # The SMTP key from Brevo (not your account password)
+    password:             ENV['BREVO_API_KEY'],  # The SMTP key from Brevo (not your account password)
     authentication:       'login',  # Authentication method (Brevo uses 'login')
     enable_starttls_auto: true  # Enable TLS (Transport Layer Security)
   }
@@ -110,7 +110,7 @@ Rails.application.configure do
   # If you're using email previews, add this line (optional):
   # config.action_mailer.preview_path = "#{Rails.root}/lib/mailer_previews"
   
-  config.action_mailer.default_url_options = { host: 'smtp-relay.brevo.com' }
+  config.action_mailer.default_url_options = { host: 'bantuhive-space-media.nyc3.digitaloceanspaces.com' }
   
 
   # Enable DNS rebinding protection and other `Host` header attacks.
