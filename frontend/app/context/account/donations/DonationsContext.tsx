@@ -110,11 +110,11 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         // Check if plan_code exists in the response and set it
         planCodeRef.current = subscriptionData.plan?.plan_code;
 
-        if (!subscriptionResponse.ok) {
-          handleApiError(
-            'Failed to create subscription plan. Proceeding with one time donation.',
-          );
-        }
+        // if (!subscriptionResponse.ok) {
+        //   handleApiError(
+        //     'Failed to create subscription plan. Proceeding with one time donation.',
+        //   );
+        // }
 
         // Extract plan_code from subscription plan response
       } catch (error) {
