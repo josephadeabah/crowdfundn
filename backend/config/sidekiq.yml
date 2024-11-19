@@ -1,7 +1,7 @@
-:concurrency: 8
+:concurrency: 5
 :queues:
-  - [mailers, 5]
-  - [default, 10]
+  - default
+  - mailers
 :redis:
   url: <%= ENV.fetch("UPSTASH_REDIS_REST_URL").strip %>
   password: <%= ENV.fetch("UPSTASH_REDIS_REST_TOKEN").strip %>
