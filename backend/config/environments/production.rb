@@ -112,6 +112,7 @@ Rails.application.configure do
   # config.action_mailer.preview_path = "#{Rails.root}/lib/mailer_previews"
   
   config.action_mailer.default_url_options = { host: 'bantuhive.com' }
+  config.action_mailer.default_options = { from: "help@bantuhive.com" }
   
 
   # Enable DNS rebinding protection and other `Host` header attacks.

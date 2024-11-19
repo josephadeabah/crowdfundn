@@ -95,8 +95,13 @@ module Api
             campaign.update!(
               current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
             )
+
             # Enqueue email job
             # DonationEmailJob.perform_later(donation)
+
+            # Send a confirmation email to the donor
+            DonationConfirmationEmailJob.perform_later(donation.id)  # Enqueue the email job
+            
           else
             donation.update!(status: transaction_status)
             raise "Transaction status is #{transaction_status}"
