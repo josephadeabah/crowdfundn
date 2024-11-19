@@ -1,7 +1,9 @@
----
+
 :concurrency: 5
 :queues:
   - default
   - mailers
 :redis:
-  :url: redis://localhost:6379/0
+  url: <%= ENV.fetch("UPSTASH_REDIS_REST_URL") %>
+  password: <%= ENV.fetch("UPSTASH_REDIS_REST_TOKEN") %>
+
