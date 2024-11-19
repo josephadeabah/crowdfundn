@@ -136,6 +136,7 @@ GEM
       tzinfo
     ffi (1.17.0-x64-mingw-ucrt)
     ffi (1.17.0-x86_64-linux-gnu)
+    foreman (0.88.1)
     fugit (1.11.1)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
@@ -331,6 +332,7 @@ DEPENDENCIES
   delayed_job
   delayed_job_active_record
   dotenv-rails
+  foreman
   image_processing (~> 1.2)
   importmap-rails
   jbuilder

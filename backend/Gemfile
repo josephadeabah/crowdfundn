@@ -49,6 +49,9 @@ gem 'sidekiq-cron'
 gem 'mail'
 gem 'actionmailer', require: 'action_mailer'
 
+gem 'foreman'
+
+
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 
