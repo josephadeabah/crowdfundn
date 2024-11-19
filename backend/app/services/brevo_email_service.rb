@@ -15,7 +15,7 @@ class BrevoEmailService
 
     email = Brevo::SendSmtpEmail.new(
       to: [{ email: @to }],
-      sender: { email: 'your_email@example.com' }, # Set your sender email
+      sender: { email: 'help@bantuhive.com' }, # Set your sender email
       subject: @subject,
       html_content: @html_content,
       text_content: @text_content
