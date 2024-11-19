@@ -6,7 +6,7 @@ class UserMailer < ApplicationMailer
       @campaign = donation.campaign
   
       mail(
-        to: donation.email, # Correctly access email from the donation object
+        to: @donation.email, # Correctly access email from the donation object
         subject: 'Thank you for your donation!'
       )
     end
