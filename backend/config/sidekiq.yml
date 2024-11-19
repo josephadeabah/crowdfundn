@@ -5,3 +5,5 @@
 :redis:
   url: <%= ENV.fetch("UPSTASH_REDIS_REST_URL").strip %>
   password: <%= ENV.fetch("UPSTASH_REDIS_REST_TOKEN").strip %>
+  size: 10  # Increase the pool size
+  network_timeout: 5
