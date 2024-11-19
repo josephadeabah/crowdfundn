@@ -2,11 +2,9 @@ class UserMailer < ApplicationMailer
     default from: 'help@bantuhive.com'
   
     def donation_success_email(donation)
-      @donation = donation
-      @campaign = donation.campaign
-  
+      @donation = donation  
       mail(
-        to: @donation.email, # Correctly access email from the donation object
+        to: @donation.customer.email, # Correctly access email from the donation object
         subject: 'Thank you for your donation!'
       )
     end
