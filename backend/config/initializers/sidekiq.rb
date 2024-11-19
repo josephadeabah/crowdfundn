@@ -2,7 +2,7 @@ Sidekiq.configure_server do |config|
     config.redis = {
       url: ENV.fetch("UPSTASH_REDIS_REST_URL").strip,
       password: ENV.fetch("UPSTASH_REDIS_REST_TOKEN").strip,
-      size: 5 # Limit connection pool size
+      size: 10 # Limit connection pool size
     }
   end
   
