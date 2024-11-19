@@ -96,7 +96,7 @@ module Api
               current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
             )
             # Enqueue email job
-            DonationEmailJob.perform_later(donation)
+            # DonationEmailJob.perform_later(donation)
           else
             donation.update!(status: transaction_status)
             raise "Transaction status is #{transaction_status}"
