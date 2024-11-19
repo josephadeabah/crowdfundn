@@ -1,5 +1,5 @@
 class UserMailer < ApplicationMailer
-    default from: 'no-reply@bantuhive.com'
+    default from: 'help@bantuhive.com'
   
     def donation_success_email(donation)
       @donation = donation
