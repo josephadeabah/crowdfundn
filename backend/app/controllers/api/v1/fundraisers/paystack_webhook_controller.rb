@@ -95,6 +95,8 @@ module Api
             campaign.update!(
               current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
             )
+            # Enqueue email job
+            DonationEmailJob.perform_later(donation)
           else
             donation.update!(status: transaction_status)
             raise "Transaction status is #{transaction_status}"
@@ -106,6 +108,8 @@ module Api
           raise "Subscription not found" unless subscription
 
           subscription.update!(status: 'active')
+          # Enqueue email job
+          SubscriptionEmailJob.perform_later(subscription.id)
         end
 
         # Handle charge failed event

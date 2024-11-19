@@ -1,32 +1,24 @@
 class UserMailer < ApplicationMailer
-    default from: 'no-reply@bantuhive-api-dicht.ondigitalocean.app'
+    default from: 'no-reply@bantuhive.com'
   
-    def charge_success_email(user, donation)
-      @user = user
+    def donation_success_email(donation)
       @donation = donation
-      mail(to: @user.email, subject: 'Your Donation Was Successful!')
+      @campaign = donation.campaign
+  
+      mail(
+        to: donation.email, # Correctly access email from the donation object
+        subject: 'Thank you for your donation!'
+      )
     end
   
-    def charge_failed_email(user, donation)
-      @user = user
-      @donation = donation
-      mail(to: @user.email, subject: 'Your Donation Failed')
-    end
+    def subscription_success_email(subscription)
+      @subscription = subscription
+      @user = subscription.user
   
-    def subscription_created_email(user, campaign)
-      @user = user
-      @campaign = campaign
-      mail(to: @user.email, subject: 'Subscription Created Successfully')
-    end
-  
-    def subscription_failed_email(user)
-      @user = user
-      mail(to: @user.email, subject: 'Subscription Charge Failed')
-    end
-  
-    def subscription_disabled_email(user)
-      @user = user
-      mail(to: @user.email, subject: 'Subscription Disabled')
+      mail(
+        to: @user.email,
+        subject: 'Subscription Activated'
+      )
     end
 end
   

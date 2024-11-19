@@ -44,6 +44,11 @@ gem 'delayed_job_active_record'
 gem 'delayed_job'
 gem 'daemons'
 
+gem 'sidekiq'
+gem 'sidekiq-cron'
+gem 'mail'
+gem 'actionmailer', require: 'action_mailer'
+
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 
