@@ -48,7 +48,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           {
             method: 'GET',
             headers: {
-              'Content-Type': 'application/json',
+              // 'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
           },
@@ -95,9 +95,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/subscriptions/create_plan`,
           {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
             body: JSON.stringify({
               amount: amount,
               interval: billingFrequency,
@@ -121,9 +118,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
         {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify({
             amount: amount,
             email: email,
