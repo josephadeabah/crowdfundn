@@ -106,8 +106,6 @@ module Api
           raise "Subscription not found" unless subscription
 
           subscription.update!(status: 'active')
-          # Enqueue email job
-          SubscriptionEmailJob.perform_later(subscription.id)
         end
 
         # Handle charge failed event
