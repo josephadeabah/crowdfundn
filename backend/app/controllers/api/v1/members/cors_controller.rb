@@ -1,4 +1,7 @@
-class CorsController < ApplicationController
+module Api
+    module V1
+      module Members
+        class CorsController < ApplicationController
 
     def cors_preflight_check
         if request.method == 'OPTIONS'
@@ -32,5 +35,7 @@ class CorsController < ApplicationController
             render json: { error: "Origin not permitted" }
         end
     end
-
+        end
+      end
+    end
 end
