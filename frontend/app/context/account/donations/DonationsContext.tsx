@@ -109,7 +109,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         const subscriptionData = await subscriptionResponse.json();
         // Check if plan_code exists in the response and set it
         planCodeRef.current = subscriptionData.plan?.plan_code;
-
         // Extract plan_code from subscription plan response
       } catch (error) {
         handleApiError(
@@ -133,7 +132,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             full_name: fullName,
             phone: phoneNumber,
             metadata: {},
-            plan: planCodeRef.current, // Pass the plan_code if available, otherwise it'll be undefined
+            plan: planCodeRef.current,
           }),
         },
       );
@@ -147,7 +146,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       const { authorization_url } = donationData;
 
       if (authorization_url) {
-        window.location.href = authorization_url; // Redirect to Paystack authorization URL
+        window.location.href = authorization_url;
       } else {
         handleApiError(
           'We could not initiate your payment at this time. Please try again later.',

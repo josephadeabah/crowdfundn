@@ -81,7 +81,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          credentials: 'include'
+          credentials: 'include',
         },
       );
 
@@ -113,7 +113,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          credentials: 'include'
+          credentials: 'include',
         },
       );
 
@@ -147,7 +147,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
-            credentials: 'include'
+            credentials: 'include',
           },
         );
 
@@ -189,7 +189,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-            credentials: 'include'
+            credentials: 'include',
           },
         );
 
