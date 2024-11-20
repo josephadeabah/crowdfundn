@@ -48,7 +48,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           {
             method: 'GET',
             headers: {
-              // 'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
           },
@@ -77,7 +76,15 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  // Create Donation Transaction
+  // Specific handling for subscription creation errors:
+  const handleSubscriptionError = (error: any) => {
+    if (error?.response?.data?.message) {
+      return error.response.data.message;
+    }
+    return 'Creating your subscription failed, proceeding with one-time donation.';
+  };
+  
+   // Create Donation Transaction
   const createDonationTransaction = async (
     email: string,
     fullName: string,
@@ -88,8 +95,8 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     billingFrequency: string,
   ) => {
     try {
-      setLoading(true);
-
+      setLoading(true);  
+      // Step 1: Try to create the subscription plan
       try {
         const subscriptionResponse = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/subscriptions/create_plan`,
@@ -100,20 +107,24 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
               interval: billingFrequency,
               name: campaignTitle,
             }),
-          },
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
         );
-
+  
         const subscriptionData = await subscriptionResponse.json();
+        if (!subscriptionResponse.ok) {
+          handleApiError(handleSubscriptionError(subscriptionData));
+          return;
+        }
+        
         planCodeRef.current = subscriptionData.plan?.plan_code;
-        // Extract plan_code from subscription plan response
       } catch (error) {
-        handleApiError(
-          'Creating your subscription failed!, proceeding with one time donation. You may restart the process to create your subscription.',
-        );
-        // If plan creation fails, proceed with the donation without the plan_code
+        handleApiError('Error creating subscription plan');
       }
-
-      // Step 2: Create donation transaction (with or without plan_code)
+  
+      // Step 2: Proceed with the donation (with or without planCode)
       const donationResponse = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
         {
@@ -126,30 +137,30 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             metadata: {},
             plan: planCodeRef.current,
           }),
-        },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
       );
+  
       const donationData = await donationResponse.json();
-
       if (!donationResponse.ok) {
-        handleApiError('Failed to create donation');
+        handleApiError('Failed to create donation transaction');
         return;
       }
-
+  
       const { authorization_url } = donationData;
-
       if (authorization_url) {
         window.location.href = authorization_url;
       } else {
-        handleApiError(
-          'We could not initiate your payment at this time. Please try again later.',
-        );
+        handleApiError('We could not initiate your payment at this time. Please try again later.');
       }
     } catch (error) {
       handleApiError('Error initiating donation. Please try again later.');
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   const contextValue = useMemo(
     () => ({
