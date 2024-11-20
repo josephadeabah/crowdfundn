@@ -105,13 +105,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        },
       );
 
       if (!response.ok) {
