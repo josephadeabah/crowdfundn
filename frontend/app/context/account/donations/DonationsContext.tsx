@@ -124,7 +124,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           headers: {
             'Content-Type': 'application/json',
           },
-          credentials: 'include',
           body: JSON.stringify({
             amount: amount,
             email: email,
