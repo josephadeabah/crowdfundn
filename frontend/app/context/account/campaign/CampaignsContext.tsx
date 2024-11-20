@@ -15,6 +15,14 @@ import { useAuth } from '../../auth/AuthContext';
 
 const CampaignContext = createContext<CampaignState | undefined>(undefined);
 
+// Custom wrapper for Next.js fetch
+const nextFetch = async (
+  url: string,
+  options: RequestInit & { cache?: RequestCache } = {},
+) => {
+  return fetch(url, { ...options, next: { revalidate: 10 } });
+};
+
 export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const [campaigns, setCampaigns] = useState<CampaignResponseDataType[]>([]);
   const [currentCampaign, setCurrentCampaign] =
@@ -37,7 +45,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(
+        const response = await nextFetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns`,
           {
             method: 'POST',
@@ -45,6 +53,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
               Authorization: `Bearer ${token}`,
             },
             body: campaign,
+            cache: 'no-store', // No caching for POST
           },
         );
 
@@ -69,7 +78,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(
+      const response = await nextFetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/my_campaigns`,
         {
           method: 'GET',
@@ -93,13 +102,13 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [token]);
 
-  // New fetchAllCampaigns function
   const fetchAllCampaigns = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(
+      const response = await nextFetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns`,
+        { method: 'GET' },
       );
 
       if (!response.ok) {
@@ -121,8 +130,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(
+        const response = await nextFetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}`,
+          { method: 'GET' },
         );
 
         if (!response.ok) {
@@ -153,13 +163,14 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(
+        const response = await nextFetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}/`,
           {
             method: 'DELETE',
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            cache: 'no-store', // No caching for DELETE
           },
         );
 
@@ -191,7 +202,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(
+        const response = await nextFetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}`,
           {
             method: 'PUT',
@@ -199,6 +210,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
               Authorization: `Bearer ${token}`,
             },
             body: updatedCampaignData,
+            cache: 'no-store', // No caching for PUT
           },
         );
 
@@ -209,13 +221,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
         const updatedCampaign = await response.json();
 
-        // Update both campaigns list and currentCampaign
         setCampaigns((prevCampaigns) =>
           prevCampaigns.map((campaign) =>
             campaign.id === Number(id) ? updatedCampaign : campaign,
           ),
         );
-        setCurrentCampaign(updatedCampaign); // Update currentCampaign directly in context
+        setCurrentCampaign(updatedCampaign);
         return updatedCampaign;
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error editing campaign');
@@ -229,7 +240,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const contextValue = useMemo(
     () => ({
       campaigns,
-      currentCampaign, // Expose currentCampaign to context
+      currentCampaign,
       loading,
       error,
       addCampaign,
@@ -241,7 +252,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     }),
     [
       campaigns,
-      currentCampaign, // Include it in the dependencies
+      currentCampaign,
       loading,
       error,
       addCampaign,
