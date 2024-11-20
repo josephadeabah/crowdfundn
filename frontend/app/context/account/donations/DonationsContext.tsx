@@ -114,12 +114,13 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         );
   
         const subscriptionData = await subscriptionResponse.json();
+        planCodeRef.current = subscriptionData.plan?.plan_code;
+        
         if (!subscriptionResponse.ok) {
           handleApiError(handleSubscriptionError(subscriptionData));
           return;
         }
         
-        planCodeRef.current = subscriptionData.plan?.plan_code;
       } catch (error) {
         handleApiError('Error creating subscription plan');
       }
