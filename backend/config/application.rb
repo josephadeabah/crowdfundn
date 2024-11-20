@@ -27,16 +27,13 @@ module Backend
     # CORS configuration
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins 'https://www.bantuhive.com',            # Replace with your production Next.js URL
-                'http://localhost:3000',                         # Local development for Next.js
-                'https://bantuhive.com',                          # Replace with your production Next.js URL
-                'https://bantuhive-api-dicht.ondigitalocean.app'
+        origins '*'
 
         resource '*',
                  headers: :any,
-                 methods: [:get, :post, :put, :patch, :delete, :options, :head],
-                 expose: ['Authorization'],
-                 credentials: true
+                 methods: [:get, :post, :put, :patch, :delete, :options, :head]
+                #  expose: ['Authorization'],
+                #  credentials: true
       end
     end
 
