@@ -63,6 +63,7 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
+            credentials: 'include'
           },
         );
 
@@ -96,6 +97,7 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
+            credentials: 'include'
           },
         );
 
@@ -136,6 +138,7 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            credentials: 'include',
             body: rewardData,
           },
         );
@@ -179,6 +182,7 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            credentials: 'include',
             body: updatedRewardData,
           },
         );
@@ -222,6 +226,7 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            credentials: 'include'
           },
         );
 

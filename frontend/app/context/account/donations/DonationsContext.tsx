@@ -51,6 +51,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
+            credentials: 'include'
           },
         );
 
@@ -98,6 +99,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             headers: {
               'Content-Type': 'application/json',
             },
+            credentials: 'include',
             body: JSON.stringify({
               amount: amount,
               interval: billingFrequency, // Interval: "monthly", "yearly", etc.
@@ -132,6 +134,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify({
             amount: amount,
             email: email,
