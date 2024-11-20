@@ -60,7 +60,6 @@ export const CampaignUpdatesProvider = ({
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
-            credentials: 'include'
           },
         );
 

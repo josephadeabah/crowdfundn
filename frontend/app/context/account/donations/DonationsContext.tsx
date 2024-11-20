@@ -51,7 +51,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
-            credentials: 'include'
           },
         );
 
@@ -99,7 +98,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             headers: {
               'Content-Type': 'application/json',
             },
-            credentials: 'include',
             body: JSON.stringify({
               amount: amount,
               interval: billingFrequency, // Interval: "monthly", "yearly", etc.
@@ -111,12 +109,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         const subscriptionData = await subscriptionResponse.json();
         // Check if plan_code exists in the response and set it
         planCodeRef.current = subscriptionData.plan?.plan_code;
-
-        // if (!subscriptionResponse.ok) {
-        //   handleApiError(
-        //     'Failed to create subscription plan. Proceeding with one time donation.',
-        //   );
-        // }
 
         // Extract plan_code from subscription plan response
       } catch (error) {
