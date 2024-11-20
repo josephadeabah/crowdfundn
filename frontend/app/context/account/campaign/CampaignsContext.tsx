@@ -129,16 +129,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}`);
 
         if (!response.ok) {
           const errorText = await response.text();
