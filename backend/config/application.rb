@@ -29,7 +29,8 @@ module Backend
       allow do
         origins 'https://www.bantuhive.com',            # Replace with your production Next.js URL
                 'http://localhost:3000',                         # Local development for Next.js
-                'https://bantuhive.com'                          # Replace with your production Next.js URL
+                'https://bantuhive.com',                          # Replace with your production Next.js URL
+                'https://bantuhive-api-dicht.ondigitalocean.app'
 
         resource '*',
                  headers: :any,
