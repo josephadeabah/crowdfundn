@@ -1,5 +1,8 @@
 
 Rails.application.routes.draw do
+  match 'auth/login', controller: 'cors', action: 'cors_preflight_check', via: [:options]
+  match 'auth/signup', controller: 'cors', action: 'cors_preflight_check', via: [:options]
+
   namespace :api do
     namespace :v1 do
       namespace :members do
