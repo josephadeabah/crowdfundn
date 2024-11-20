@@ -29,12 +29,28 @@ module Backend
       allow do
         origins 'https://www.bantuhive.com',            # Replace with your production Next.js URL
                 'http://localhost:3000',                         # Local development for Next.js
-                'https://bantuhive-api-dicht.ondigitalocean.app' # Rails API on DigitalOcean
+                'https://bantuhive.com'                          # Replace with your production Next.js URL
 
         resource '*',
                  headers: :any,
                  methods: [:get, :post, :put, :patch, :delete, :options, :head],
-                 expose: ['Authorization']
+                 expose: ['Authorization'],
+                 credentials: true
+      end
+    end
+
+    # Log the CORS headers to track issues
+    config.middleware.insert_after Rack::Cors, 'RequestLogger' # Custom logging middleware
+
+    # Example RequestLogger middleware (for logging)
+    class RequestLogger
+      def initialize(app)
+        @app = app
+      end
+
+      def call(env)
+        Rails.logger.info("Request Headers: #{env['HTTP_ORIGIN']}")
+        @app.call(env)
       end
     end
 
