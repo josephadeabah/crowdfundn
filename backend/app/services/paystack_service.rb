@@ -25,39 +25,62 @@ class PaystackService
   end
 
   def initialize_transaction(email:, amount:, plan:, metadata: {})
-    return { status: 'error', message: 'Email address is required' } if email.blank?
-
+    if email.blank? || amount.nil? || amount <= 0
+      return { status: 'error', message: 'Email and amount are required' }
+    end
+  
     url = URI("#{PAYSTACK_BASE_URL}/transaction/initialize")
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
-
+  
     request = Net::HTTP::Post.new(url)
     request['Authorization'] = "Bearer #{@secret_key}"
     request['Content-Type'] = 'application/json'
     request.body = {
       email: email,
-      amount: (amount * 100).to_i,
+      amount: (amount * 100).to_i,  # Convert to kobo
       plan: plan,
       reference: SecureRandom.uuid,
       metadata: metadata
     }.to_json
-
-    response = http.request(request)
-    JSON.parse(response.body, symbolize_names: true)
-  end
   
+    begin
+      response = http.request(request)
+      parsed_response = JSON.parse(response.body, symbolize_names: true)
+  
+      if parsed_response[:status] == 'error'
+        Rails.logger.error("Paystack API Error: #{parsed_response[:message]}")
+      end
+  
+      parsed_response
+    rescue StandardError => e
+      Rails.logger.error("Error initializing transaction: #{e.message}")
+      { status: 'error', message: 'An error occurred while initializing the transaction' }
+    end
+  end
 
   def verify_transaction(reference)
     url = URI("#{PAYSTACK_BASE_URL}/transaction/verify/#{reference}")
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
-
+  
     request = Net::HTTP::Get.new(url)
     request['Authorization'] = "Bearer #{@secret_key}"
-
-    response = http.request(request)
-    JSON.parse(response.body, symbolize_names: true)
+  
+    begin
+      response = http.request(request)
+      parsed_response = JSON.parse(response.body, symbolize_names: true)
+  
+      # Log the response for debugging
+      Rails.logger.debug("Paystack Response: #{parsed_response.inspect}")
+  
+      parsed_response
+    rescue StandardError => e
+      Rails.logger.error("Error verifying transaction: #{e.message}")
+      { status: 'error', message: 'An error occurred while verifying the transaction' }
+    end
   end
+  
 
   def initiate_transfer(amount)
     recipient_code = "YOUR_RECIPIENT_CODE" # Obtain this code by registering your bank account as a recipient
@@ -81,22 +104,39 @@ class PaystackService
   end
 
   def create_subscription_plan(name:, interval:, amount:)
+    if amount.nil? || amount <= 0
+      return { status: 'error', message: 'Amount must be greater than zero' }
+    end
+  
     url = URI("#{PAYSTACK_BASE_URL}/plan")
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
-
+  
     request = Net::HTTP::Post.new(url)
     request['Authorization'] = "Bearer #{@secret_key}"
     request['Content-Type'] = 'application/json'
     request.body = {
       name: name,
-      interval: interval, # 'daily', 'weekly', 'monthly', or 'annually'
-      amount: (amount * 100).to_i, # Convert to kobo
+      interval: interval,  # 'daily', 'weekly', 'monthly', or 'annually'
+      amount: (amount * 100).to_i,  # Convert to kobo (check that amount is valid)
     }.to_json
-
-    response = http.request(request)
-    JSON.parse(response.body, symbolize_names: true)
+  
+    begin
+      response = http.request(request)
+      parsed_response = JSON.parse(response.body, symbolize_names: true)
+  
+      # Log if response indicates error
+      if parsed_response[:status] == 'error'
+        Rails.logger.error("Paystack API Error: #{parsed_response[:message]}")
+      end
+  
+      parsed_response
+    rescue StandardError => e
+      Rails.logger.error("Error creating subscription plan: #{e.message}")
+      { status: 'error', message: 'An error occurred while creating the subscription plan' }
+    end
   end
+  
 
   def create_subscription(email:, plan:, authorization:)
     url = URI("#{PAYSTACK_BASE_URL}/subscription")
