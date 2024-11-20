@@ -100,14 +100,13 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             },
             body: JSON.stringify({
               amount: amount,
-              interval: billingFrequency, // Interval: "monthly", "yearly", etc.
+              interval: billingFrequency,
               name: campaignTitle,
             }),
           },
         );
 
         const subscriptionData = await subscriptionResponse.json();
-        // Check if plan_code exists in the response and set it
         planCodeRef.current = subscriptionData.plan?.plan_code;
         // Extract plan_code from subscription plan response
       } catch (error) {
