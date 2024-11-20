@@ -39,21 +39,6 @@ module Backend
       end
     end
 
-    # Log the CORS headers to track issues
-    config.middleware.insert_after Rack::Cors, 'RequestLogger' # Custom logging middleware
-
-    # Example RequestLogger middleware (for logging)
-    class RequestLogger
-      def initialize(app)
-        @app = app
-      end
-
-      def call(env)
-        Rails.logger.info("Request Headers: #{env['HTTP_ORIGIN']}")
-        @app.call(env)
-      end
-    end
-
     # Configuration for the application, engines, and railties goes here.
     #
     # config.time_zone = "Central Time (US & Canada)"
