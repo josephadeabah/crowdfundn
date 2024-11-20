@@ -12,18 +12,25 @@ module Api
         end
 
         def login
-          user = User.find_by(email: params[:email])
-          if user&.authenticate(params[:password])
-            render json: { token: encode_token(user.id), user: user }, status: :ok
-          else
-            render json: { error: 'Invalid email or password' }, status: :unauthorized
+          begin
+            user = User.find_by(email: params[:email])
+            if user&.authenticate(params[:password])
+              render json: { token: encode_token(user.id), user: user }, status: :ok
+            else
+              render json: { error: 'Invalid email or password' }, status: :unauthorized
+            end
+          rescue => e
+            Rails.logger.error "Login error: #{e.message}"
+            render json: { error: 'Internal server error' }, status: :internal_server_error
           end
         end
 
         def password_reset
           user = User.find_by(email: params[:email])
           if user
-            # Implement password reset logic (e.g., send email with reset instructions)
+            token = SecureRandom.hex(10)
+            user.update(password_reset_token: token, password_reset_sent_at: Time.current)
+            UserMailer.password_reset(user).deliver_now
             render json: { message: 'Password reset instructions sent' }, status: :ok
           else
             render json: { error: 'Email not found' }, status: :not_found
@@ -31,8 +38,17 @@ module Api
         end
 
         def reset_password
-          # Find user by reset token and update password
-          # Implement actual reset password logic
+          user = User.find_by(password_reset_token: params[:token])
+          if user && user.password_reset_sent_at > 2.hours.ago
+            if user.update(password: params[:password], password_confirmation: params[:password_confirmation])
+              user.update(password_reset_token: nil)
+              render json: { message: 'Password has been reset' }, status: :ok
+            else
+              render json: { error: 'Password reset failed' }, status: :unprocessable_entity
+            end
+          else
+            render json: { error: 'Invalid or expired reset token' }, status: :unprocessable_entity
+          end
         end
 
         private
