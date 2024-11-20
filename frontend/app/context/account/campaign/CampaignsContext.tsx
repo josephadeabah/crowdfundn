@@ -24,7 +24,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const { token } = useAuth();
 
   const handleApiError = (errorText: string) => {
-    setError(`API Error: ${errorText}`);
+    setError(errorText);
   };
 
   const addCampaign = useCallback(
@@ -49,8 +49,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
-          handleApiError(errorText);
+          handleApiError("Couldn't create campaign. Please try again.");
           return;
         }
 
@@ -58,9 +57,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         setCampaigns((prevRewards) => [...prevRewards, createdCampaign]);
         return createdCampaign;
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Error creating campaign',
-        );
+        setError('Error creating campaign');
       } finally {
         setLoading(false);
       }
@@ -77,15 +74,13 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         },
       );
 
       if (!response.ok) {
-        const errorText = await response.text();
-        handleApiError(errorText);
+        handleApiError("Couldn't fetch campaigns. Please refresh the page.");
         return;
       }
 
@@ -108,17 +103,14 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       );
 
       if (!response.ok) {
-        const errorText = await response.text();
-        handleApiError(errorText);
+        handleApiError("Couldn't fetch campaigns. Please refresh the page.");
         return;
       }
 
       const allCampaigns = await response.json();
       setCampaigns(allCampaigns?.campaigns);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Error fetching all campaigns',
-      );
+      setError('Error fetching campaigns. Please refresh the page.');
     } finally {
       setLoading(false);
     }
@@ -129,11 +121,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}`);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}`,
+        );
 
         if (!response.ok) {
-          const errorText = await response.text();
-          handleApiError(errorText);
+          handleApiError('Failed to fetch campaign. Please try again.');
           return null;
         }
 
@@ -141,9 +134,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         setCurrentCampaign(fetchedCampaign);
         return fetchedCampaign;
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Error fetching campaign by ID',
-        );
+        setError('Error fetching campaign. Please refresh the page.');
         return null;
       } finally {
         setLoading(false);
@@ -173,8 +164,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
-          handleApiError(errorText);
+          handleApiError('Failed to delete campaign. Please try again.');
           return;
         }
       } catch (err) {
@@ -213,8 +203,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
-          handleApiError(errorText);
+          handleApiError('Failed to update campaign. Please try again.');
           return;
         }
 

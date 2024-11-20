@@ -83,8 +83,8 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     }
     return 'Creating your subscription failed, proceeding with one-time donation.';
   };
-  
-   // Create Donation Transaction
+
+  // Create Donation Transaction
   const createDonationTransaction = async (
     email: string,
     fullName: string,
@@ -95,7 +95,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     billingFrequency: string,
   ) => {
     try {
-      setLoading(true);  
+      setLoading(true);
       // Step 1: Try to create the subscription plan
       try {
         const subscriptionResponse = await fetch(
@@ -107,24 +107,20 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
               interval: billingFrequency,
               name: campaignTitle,
             }),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
+          },
         );
-  
+
         const subscriptionData = await subscriptionResponse.json();
         planCodeRef.current = subscriptionData.plan?.plan_code;
-        
+
         if (!subscriptionResponse.ok) {
           handleApiError(handleSubscriptionError(subscriptionData));
           return;
         }
-        
       } catch (error) {
         handleApiError('Error creating subscription plan');
       }
-  
+
       // Step 2: Proceed with the donation (with or without planCode)
       const donationResponse = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
@@ -138,30 +134,29 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             metadata: {},
             plan: planCodeRef.current,
           }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+        },
       );
-  
+
       const donationData = await donationResponse.json();
       if (!donationResponse.ok) {
         handleApiError('Failed to create donation transaction');
         return;
       }
-  
+
       const { authorization_url } = donationData;
       if (authorization_url) {
         window.location.href = authorization_url;
       } else {
-        handleApiError('We could not initiate your payment at this time. Please try again later.');
+        handleApiError(
+          'We could not initiate your payment at this time. Please try again later.',
+        );
       }
     } catch (error) {
       handleApiError('Error initiating donation. Please try again later.');
     } finally {
       setLoading(false);
     }
-  };  
+  };
 
   const contextValue = useMemo(
     () => ({
