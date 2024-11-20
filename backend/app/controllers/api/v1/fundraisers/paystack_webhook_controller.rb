@@ -100,7 +100,7 @@ module Api
             # DonationEmailJob.perform_later(donation)
 
             # Send a confirmation email to the donor
-            # DonationConfirmationEmailJob.perform_later(donation.id)  # Enqueue the email job
+            DonationConfirmationEmailJob.perform_later(donation.id)  # Enqueue the email job
             
           else
             donation.update!(status: transaction_status)
