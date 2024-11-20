@@ -11,9 +11,9 @@ export async function registerUser(
     `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/auth/signup`,
     {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      // headers: {
+      //   'Content-Type': 'application/json',
+      // },
       body: JSON.stringify({ user }),
     },
   );
