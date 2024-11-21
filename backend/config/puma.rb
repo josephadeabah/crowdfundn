@@ -16,6 +16,9 @@ if ENV['RAILS_ENV'] == 'production'
   require 'concurrent-ruby'
   worker_count = Integer(ENV.fetch('WEB_CONCURRENCY') { Concurrent.physical_processor_count })
   workers worker_count if worker_count > 1
+
+  # Increase worker timeout for production
+  worker_timeout 120 # Set timeout to 120 seconds (adjust as needed)
 end
 
 # Specifies the `worker_timeout` threshold that Puma will use to wait before
@@ -31,5 +34,5 @@ environment ENV.fetch('RAILS_ENV') { 'development' }
 # Specifies the `pidfile` that Puma will use.
 pidfile ENV.fetch('PIDFILE') { 'tmp/pids/server.pid' }
 
-# Allow puma to be restarted by `bin/rails restart` command.
+# Allow Puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
