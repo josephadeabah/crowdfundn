@@ -1,5 +1,6 @@
 class DonationEmailJob < ApplicationJob
   queue_as :mailers
+  # default to: -> { Admin.pluck(:email) }, from: 'help@bantuhive.com'
 
   def perform(donation)
     Rails.logger.info "Starting DonationEmailJob for donation ID: #{donation.id}"
