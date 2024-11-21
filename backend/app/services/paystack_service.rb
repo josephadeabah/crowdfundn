@@ -81,22 +81,25 @@ class PaystackService
   end
 
   def create_subscription_plan(name:, interval:, amount:)
+    return { status: 'error', message: 'Amount is required and must be a number' } if amount.nil? || amount <= 0
+  
     url = URI("#{PAYSTACK_BASE_URL}/plan")
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
-
+  
     request = Net::HTTP::Post.new(url)
     request['Authorization'] = "Bearer #{@secret_key}"
     request['Content-Type'] = 'application/json'
     request.body = {
       name: name,
-      interval: interval, # 'daily', 'weekly', 'monthly', or 'annually'
+      interval: interval,
       amount: (amount * 100).to_i, # Convert to kobo
     }.to_json
-
+  
     response = http.request(request)
     JSON.parse(response.body, symbolize_names: true)
   end
+  
 
   def create_subscription(email:, plan:, authorization:)
     url = URI("#{PAYSTACK_BASE_URL}/subscription")
