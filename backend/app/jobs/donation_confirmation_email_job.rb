@@ -1,6 +1,6 @@
 # app/jobs/donation_confirmation_email_job.rb
 class DonationConfirmationEmailJob < ApplicationJob
-    queue_as :default
+    queue_as :mailers
   
     def perform(donation_id)
       donation = Donation.find(donation_id)

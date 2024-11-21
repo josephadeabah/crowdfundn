@@ -1,6 +1,6 @@
 # app/jobs/transfer_platform_fee_job.rb
 class TransferPlatformFeeJob < ApplicationJob
-  queue_as :default
+  queue_as :mailers
 
   def perform
     # Calculate total balance pending for transfer
