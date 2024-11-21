@@ -89,7 +89,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     try {
       setLoading(true);
-
+  
       // Step 1: Create subscription plan (if applicable)
       try {
         const subscriptionResponse = await fetch(
@@ -97,71 +97,52 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           {
             method: 'POST',
             body: JSON.stringify({
-              amount: amount,
-              interval: billingFrequency,
               name: campaignTitle,
+              interval: billingFrequency,
+              amount: amount,
             }),
           },
         );
 
-        if (!subscriptionResponse.ok) {
-          const errorText = await subscriptionResponse.text();
-          console.error('Subscription creation error:', errorText);
-          throw new Error(errorText);
-        }
+        console.log("subscriptionResponse", subscriptionResponse);
+  
 
-        const subscriptionData = await subscriptionResponse.json();
-        console.log('Full subscription response:', subscriptionData);
-
-        // Extract plan code from the response
-        if (subscriptionData.plan && subscriptionData.plan.plan_code) {
-          planCodeRef.current = subscriptionData.plan.plan_code;
-        } else {
-          handleApiError(
-            'Plan creation failed. Proceeding without a subscription.',
-          );
-        }
       } catch (error) {
         console.error('Error creating subscription:', error);
-        handleApiError(
-          'Creating your subscription failed! Proceeding with a one-time donation.',
-        );
+        handleApiError('Error creating your subscription. Proceeding with a one-time donation.');
       }
-
-      console.log('Plan code (current):', planCodeRef.current);
-
+  
       // Step 2: Create donation transaction (with or without plan code)
       const donationResponse = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
         {
           method: 'POST',
           body: JSON.stringify({
-            amount: amount,
-            email: email,
-            full_name: fullName,
-            phone: phoneNumber,
-            metadata: {}, // Include any metadata if needed
-            plan: planCodeRef.current || undefined, // Send plan only if it exists
+            donation: {
+              amount: amount,
+              email: email,
+              full_name: fullName,
+              phone: phoneNumber,
+              metadata: {},
+            },
           }),
         },
       );
-
-      const donationData = await donationResponse.json();
-
+  
       if (!donationResponse.ok) {
         const errorText = await donationResponse.text();
+        console.error('Donation request error:', errorText);
         handleApiError(`Failed to create donation: ${errorText}`);
         return;
       }
-
+  
+      const donationData = await donationResponse.json();
       const { authorization_url } = donationData;
-
+  
       if (authorization_url) {
         // window.location.href = authorization_url;
       } else {
-        handleApiError(
-          'We could not initiate your payment at this time. Please try again later.',
-        );
+        handleApiError('We could not initiate your payment at this time. Please try again later.');
       }
     } catch (error) {
       console.error('Error initiating donation transaction:', error);
@@ -170,6 +151,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   };
+  
 
   const contextValue = useMemo(
     () => ({
