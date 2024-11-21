@@ -50,6 +50,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           {
             method: 'POST',
             headers: {
+              'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
             body: campaign,
@@ -83,6 +84,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         {
           method: 'GET',
           headers: {
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         },
@@ -168,6 +170,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           {
             method: 'DELETE',
             headers: {
+              'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
             cache: 'no-store', // No caching for DELETE
@@ -207,6 +210,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           {
             method: 'PUT',
             headers: {
+              'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
             body: updatedCampaignData,

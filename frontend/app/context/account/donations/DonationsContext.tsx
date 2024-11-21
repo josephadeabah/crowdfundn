@@ -20,14 +20,14 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const planCodeRef = useRef<string | null>(null); // Holds the subscription plan code
+  const planCodeRef = useRef<string | null>(null);
   const [pagination, setPagination] = useState<Pagination>({
     current_page: 1,
     total_pages: 1,
     per_page: 10,
     total_count: 0,
   });
-  const { token } = useAuth(); // Token for authorization
+  const { token } = useAuth();
 
   const handleApiError = (errorText: string) => {
     setError(`Oops!: ${errorText}`);
@@ -48,8 +48,8 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           {
             method: 'GET',
             headers: {
-              Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
             },
           },
         );
@@ -89,69 +89,73 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     try {
       setLoading(true);
-  
-      // Step 1: Create subscription plan (if applicable)
+
+      try {
         const subscriptionResponse = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/subscriptions/create_plan`,
           {
             method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
             body: JSON.stringify({
-              name: campaignTitle,
+              amount: amount,
               interval: billingFrequency,
-              amount: Number(amount),
+              name: campaignTitle,
             }),
           },
         );
 
-        const rawResponse = await subscriptionResponse.text();
-        console.log("rawResponse", rawResponse);
-        const planResponse = JSON.parse(rawResponse);
-        console.log("subscriptionResponse", planResponse);
+        const subscriptionData = await subscriptionResponse.json();
+        planCodeRef.current = subscriptionData.plan?.plan_code;
+        // Extract plan_code from subscription plan response
+      } catch (error) {
+        handleApiError(
+          'Creating your subscription failed!, proceeding with one time donation. You may restart the process to create your subscription.',
+        );
+        // If plan creation fails, proceed with the donation without the plan_code
+      }
 
-
-        console.log("planCodeRef", planCodeRef.current);
-  
-  
-      // Step 2: Create donation transaction (with or without plan code)
+      // Step 2: Create donation transaction (with or without plan_code)
       const donationResponse = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
         {
           method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify({
-            donation: {
-              amount: amount,
-              email: email,
-              full_name: fullName,
-              phone: phoneNumber,
-              metadata: {},
-            },
+            amount: amount,
+            email: email,
+            full_name: fullName,
+            phone: phoneNumber,
+            metadata: {},
+            plan: planCodeRef.current,
           }),
         },
       );
-  
+      const donationData = await donationResponse.json();
+
       if (!donationResponse.ok) {
-        const errorText = await donationResponse.text();
-        console.error('Donation request error:', errorText);
-        handleApiError(`Failed to create donation: ${errorText}`);
+        handleApiError('Failed to create donation');
         return;
       }
-  
-      const donationData = await donationResponse.json();
+
       const { authorization_url } = donationData;
-  
+
       if (authorization_url) {
-        // window.location.href = authorization_url;
+        window.location.href = authorization_url;
       } else {
-        handleApiError('We could not initiate your payment at this time. Please try again later.');
+        handleApiError(
+          'We could not initiate your payment at this time. Please try again later.',
+        );
       }
     } catch (error) {
-      console.error('Error initiating donation transaction:', error);
       handleApiError('Error initiating donation. Please try again later.');
     } finally {
       setLoading(false);
     }
   };
-  
 
   const contextValue = useMemo(
     () => ({
