@@ -91,7 +91,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
   
       // Step 1: Create subscription plan (if applicable)
-      try {
         const subscriptionResponse = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/subscriptions/create_plan`,
           {
@@ -99,18 +98,19 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             body: JSON.stringify({
               name: campaignTitle,
               interval: billingFrequency,
-              amount: amount,
+              amount: Number(amount),
             }),
           },
         );
 
-        console.log("subscriptionResponse", subscriptionResponse);
-  
+        const rawResponse = await subscriptionResponse.text();
+        console.log("rawResponse", rawResponse);
+        const planResponse = JSON.parse(rawResponse);
+        console.log("subscriptionResponse", planResponse);
 
-      } catch (error) {
-        console.error('Error creating subscription:', error);
-        handleApiError('Error creating your subscription. Proceeding with a one-time donation.');
-      }
+
+        console.log("planCodeRef", planCodeRef.current);
+  
   
       // Step 2: Create donation transaction (with or without plan code)
       const donationResponse = await fetch(
