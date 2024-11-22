@@ -126,6 +126,7 @@ module Api
             'campaign_name' => campaign_name
           },
           sender: {
+            'name' => 'Bantuhive Ltd', # Replace with your Brevo verified sender name
             'email' => 'help@bantuhive.com' # Replace with your Brevo verified sender email
           },
           subject: "Thank you for your donation",  # Add the subject here
