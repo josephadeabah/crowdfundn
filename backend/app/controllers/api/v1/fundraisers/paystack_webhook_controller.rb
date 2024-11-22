@@ -110,7 +110,7 @@ module Api
       # Create a method to send confirmation email using Brevo API
       def send_confirmation_email(donation)
         user = donation.full_name
-        campaign = donation.metadata.campaign
+        # campaign = donation.metadata.campaign
 
         email = donation.email
 
@@ -125,7 +125,7 @@ module Api
             'name' => user.first_name,
             # 'surname' => user.last_name,
             'amount' => donation.amount,
-            'campaign_name' => campaign.title
+            'campaign_name' => 'campaign title here'
           },
           headers: {
             'X-Mailin-custom' => 'donation:success'
