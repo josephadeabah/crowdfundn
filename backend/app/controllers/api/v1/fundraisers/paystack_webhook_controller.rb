@@ -118,12 +118,12 @@ module Api
         send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
           to: [{
             'email' => email,
-            'name' => "#{user}"
+            'name' => user
           }],
           template_id: 1,  # Replace with your actual template ID
           params: {
             'name' => donation.full_name,
-            # 'surname' => user.last_name,
+            'surname' => donation.full_name,
             'amount' => donation.amount,
             'campaign_name' => 'campaign title here'
           },
