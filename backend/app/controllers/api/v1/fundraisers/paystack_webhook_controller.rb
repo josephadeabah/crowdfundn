@@ -128,7 +128,10 @@ module Api
             'campaign_name' => 'campaign title here'
           },
           headers: {
-            'X-Mailin-custom' => 'donation:success'
+            'X-Mailin-custom' => {
+              'custom_header_1' => 'custom_value_1',
+              'custom_header_2' => 'custom_value_2'
+            }
           }
         )
 
