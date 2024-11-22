@@ -36,7 +36,7 @@ class DonationConfirmationEmailService
               <h1>Thank You for Your Donation!</h1>
               <p>Dear #{user},</p>
               <p>We deeply appreciate your generous donation of <strong>#{donation.campaign.currency_symbol} #{donation.amount}</strong> to support the <strong>#{campaign_name}</strong> campaign.</p>
-              <p>Your contribution is making a difference in achieving our goals.</p>
+              <p>Your contribution is making a difference for <strong>#{donation.campaign.fundraiser_name}</strong> in achieving their goals.</p>
               <p>If you have any questions, feel free to reply to this email.</p>
               <br>
               <p>Best Regards,</p>
