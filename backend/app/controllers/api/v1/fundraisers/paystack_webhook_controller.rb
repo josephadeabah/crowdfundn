@@ -74,7 +74,9 @@ module Api
 
         # Assuming you're within the handle_donation_success method
 
-      def handle_donation_success(transaction_reference)
+      def handle_donation_success(data)
+        campaign_data = data[:metadata]
+        transaction_reference = data[:reference]
         donation = Donation.find_by(transaction_reference: transaction_reference)
         raise "Donation not found" unless donation
 
@@ -98,7 +100,7 @@ module Api
             current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
           )
           # Send a confirmation email to the donor via Brevo
-          DonationConfirmationEmailService.send_confirmation_email(donation)
+          DonationConfirmationEmailService.send_confirmation_email(donation, campaign_data)
         else
           donation.update!(status: transaction_status)
           raise "Transaction status is #{transaction_status}"

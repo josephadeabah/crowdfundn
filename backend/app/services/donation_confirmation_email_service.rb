@@ -1,7 +1,7 @@
 # app/services/donation_confirmation_email_service.rb
 
 class DonationConfirmationEmailService
-    def self.send_confirmation_email(donation)
+    def self.send_confirmation_email(donation, campaign_data)
       user = donation.full_name
       email = donation.email
       campaign_name = donation.campaign.title
@@ -36,7 +36,7 @@ class DonationConfirmationEmailService
                 <h3>Thank You for Your Donation!</h3>
                 <p>Hello #{user}, Our Valued Backer!</p>
                 <p>We deeply appreciate your generous donation of <strong>#{donation.campaign.currency_symbol} #{donation.amount}</strong> to support the <strong>#{campaign_name}</strong> campaign.</p>
-                <p>Your contribution is making a difference for <strong>#{donation.campaign.fundraiser.name}</strong> in achieving their goals.</p>
+                <p>Your contribution is making a difference for <strong>#{campaign_data.metadata.campaign.fundraiser_name}</strong> in achieving their goals.</p>
                 <p>If you have any questions, feel free to reply to this email.</p>
                 <br>
                 <p>Thanks,</p>
