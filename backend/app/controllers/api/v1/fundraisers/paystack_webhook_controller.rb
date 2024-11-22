@@ -110,10 +110,9 @@ module Api
       # Create a method to send confirmation email using Brevo API
       def send_confirmation_email(donation)
         user = donation.full_name
-        # campaign = donation.metadata.campaign
-
         email = donation.email
-
+        # campaign = donation.metadata.campaign
+      
         # Create the email parameters
         send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
           to: [{
@@ -123,9 +122,11 @@ module Api
           template_id: 1,  # Replace with your actual template ID
           params: {
             'name' => donation.full_name,
-            'surname' => '',
             'amount' => donation.amount,
-            'campaign_name' => 'campaign title here'
+            'campaign_name' => "campaign title" # Dynamic campaign title
+          },
+          sender: {
+            'email' => 'help@bantuhive.com' # Replace with your Brevo verified sender email
           },
           headers: {
             'X-Mailin-custom' => 'custom_header_1:custom_value_1|custom_header_2:custom_value_2|custom_header_3:custom_value_3',
@@ -146,6 +147,7 @@ module Api
           Rails.logger.error "Error details: #{e.message}, Response body: #{e.response_body}"
         end
       end
+      
 
 
         def handle_subscription_success(subscription_code)
