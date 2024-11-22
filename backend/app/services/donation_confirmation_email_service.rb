@@ -16,7 +16,7 @@ class DonationConfirmationEmailService
         template_id: 1, # Replace with your actual template ID
         params: {
           'name' => donation.full_name,
-          'amount' => donation.net_amount,
+          'amount' => donation.amount,
           'campaign_name' => campaign_name
         },
         sender: {
@@ -35,9 +35,9 @@ class DonationConfirmationEmailService
             <body>
               <h1>Thank You for Your Donation!</h1>
               <p>Dear #{user},</p>
-              <p>We deeply appreciate your generous donation of <strong>#{donation.campaign.currency_symbol} #{donation.net_amount}</strong> to support the <strong>#{campaign_name}</strong> campaign.</p>
+              <p>We deeply appreciate your generous donation of <strong>#{donation.campaign.currency_symbol} #{donation.amount}</strong> to support the <strong>#{campaign_name}</strong> campaign.</p>
               <p>Your contribution is making a difference in achieving our goals.</p>
-              <p>If you have any questions, feel free to reach out to us at <a href="mailto:help@bantuhive.com">help@bantuhive.com</a>.</p>
+              <p>If you have any questions, feel free to reply to this email.</p>
               <br>
               <p>Best Regards,</p>
               <p><strong>The Bantuhive Team</strong></p>
