@@ -72,36 +72,76 @@ module Api
           render json: { error: 'Error processing charge success' }, status: :unprocessable_entity
         end
 
-        def handle_donation_success(transaction_reference)
-          donation = Donation.find_by(transaction_reference: transaction_reference)
-          raise "Donation not found" unless donation
+        # Assuming you're within the handle_donation_success method
 
-          response = PaystackService.new.verify_transaction(transaction_reference)
-          raise "Transaction verification failed" unless response[:status] == true
+      def handle_donation_success(transaction_reference)
+        donation = Donation.find_by(transaction_reference: transaction_reference)
+        raise "Donation not found" unless donation
 
-          transaction_status = response[:data][:status]
-          if transaction_status == 'success'
-            gross_amount = response[:data][:amount] / 100.0
-            net_amount = gross_amount * 0.985
-            donation.update!(status: 'successful', gross_amount: gross_amount, net_amount: net_amount, amount: net_amount)
+        response = PaystackService.new.verify_transaction(transaction_reference)
+        raise "Transaction verification failed" unless response[:status] == true
 
-            Balance.create!(
-              amount: gross_amount - net_amount,
-              description: "Platform fee for donation #{donation.id}",
-              status: 'pending'
-            )
+        transaction_status = response[:data][:status]
+        if transaction_status == 'success'
+          gross_amount = response[:data][:amount] / 100.0
+          net_amount = gross_amount * 0.985
+          donation.update!(status: 'successful', gross_amount: gross_amount, net_amount: net_amount, amount: net_amount)
 
-            campaign = donation.campaign
-            campaign.update!(
-              current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
-            )
-             # Send a confirmation email to the donor
-            DonationConfirmationEmailJob.perform_later(donation.id) 
-          else
-            donation.update!(status: transaction_status)
-            raise "Transaction status is #{transaction_status}"
-          end
+          Balance.create!(
+            amount: gross_amount - net_amount,
+            description: "Platform fee for donation #{donation.id}",
+            status: 'pending'
+          )
+
+          campaign = donation.campaign
+          campaign.update!(
+            current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
+          )
+
+          # Send a confirmation email to the donor via Brevo
+          send_confirmation_email(donation)
+
+        else
+          donation.update!(status: transaction_status)
+          raise "Transaction status is #{transaction_status}"
         end
+      end
+
+      # Create a method to send confirmation email using Brevo API
+      def send_confirmation_email(donation)
+        user = donation.full_name
+        campaign = donation.metadata.campaign
+
+        email = donation.email
+
+        # Create the email parameters
+        send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
+          to: [{
+            'email' => email,
+            'name' => "#{user}"
+          }],
+          template_id: 1,  # Replace with your actual template ID
+          params: {
+            'name' => user.first_name,
+            # 'surname' => user.last_name,
+            'amount' => donation.amount,
+            'campaign_name' => campaign.title
+          },
+          headers: {
+            'X-Mailin-custom' => 'donation:success'
+          }
+        )
+
+        # Send the email using Brevo's API
+        api_instance = SibApiV3Sdk::TransactionalEmailsApi.new
+        begin
+          result = api_instance.send_transac_email(send_smtp_email)
+          Rails.logger.info "Donation confirmation email sent successfully: #{result}"
+        rescue SibApiV3Sdk::ApiError => e
+          Rails.logger.error "Error sending confirmation email: #{e}"
+        end
+      end
+
 
         def handle_subscription_success(subscription_code)
           subscription = Subscription.find_by(subscription_code: subscription_code)

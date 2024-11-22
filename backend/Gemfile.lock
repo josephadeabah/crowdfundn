@@ -281,6 +281,10 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
+    sib-api-v3-sdk (9.1.0)
+      addressable (~> 2.3, >= 2.3.0)
+      json (~> 2.1, >= 2.1.0)
+      typhoeus (~> 1.0, >= 1.0.1)
     sidekiq (7.3.5)
       connection_pool (>= 2.3.0)
       logger
@@ -359,6 +363,7 @@ DEPENDENCIES
   rack-cors
   rails (~> 7.1.3, >= 7.1.3.4)
   selenium-webdriver
+  sib-api-v3-sdk
   sidekiq
   sidekiq-cron
   sprockets-rails
