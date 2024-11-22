@@ -135,7 +135,8 @@ module Api
             'Content-Type' => 'text/html; charset=iso-8859-1',
             'Accept' => 'application/json'
           },
-          html_content: "<html><body><h1>Thank you for your donation!</h1><p>Name: #{donation.full_name}</p><p>Amount: #{donation.amount}</p><p>Campaign: #{campaign_name}</p></body></html>"
+          html_content: "<html><body><h1>Thank you for your donation!</h1><p>Name: #{donation.full_name}</p><p>Amount: #{donation.amount}</p><p>Campaign: #{campaign_name}</p></body></html>",
+          text_content: "<html><body><h1>Thank you for your donation!</h1><p>Name: #{donation.full_name}</p><p>Amount: #{donation.amount}</p><p>Campaign: #{campaign_name}</p></body></html>"
         )
       
         # Send the email using Brevo's API
