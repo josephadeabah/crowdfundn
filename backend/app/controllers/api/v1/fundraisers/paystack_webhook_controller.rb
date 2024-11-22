@@ -122,7 +122,7 @@ module Api
           }],
           template_id: 1,  # Replace with your actual template ID
           params: {
-            'name' => user.first_name,
+            'name' => donation.full_name,
             # 'surname' => user.last_name,
             'amount' => donation.amount,
             'campaign_name' => 'campaign title here'
