@@ -112,7 +112,7 @@ module Api
         user = donation.full_name
         email = donation.email
         # campaign = donation.metadata.campaign
-      
+        
         # Create the email parameters
         send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
           to: [{
@@ -128,6 +128,7 @@ module Api
           sender: {
             'email' => 'help@bantuhive.com' # Replace with your Brevo verified sender email
           },
+          subject: "Thank you for your donation",  # Add the subject here
           headers: {
             'X-Mailin-custom' => 'custom_header_1:custom_value_1|custom_header_2:custom_value_2|custom_header_3:custom_value_3',
             'charset' => 'iso-8859-1',
@@ -147,6 +148,7 @@ module Api
           Rails.logger.error "Error details: #{e.message}, Response body: #{e.response_body}"
         end
       end
+      
       
 
 
