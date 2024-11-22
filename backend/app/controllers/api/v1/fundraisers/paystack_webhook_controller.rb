@@ -123,18 +123,18 @@ module Api
           template_id: 1,  # Replace with your actual template ID
           params: {
             'name' => donation.full_name,
-            'surname' => donation.full_name,
+            'surname' => '',
             'amount' => donation.amount,
             'campaign_name' => 'campaign title here'
           },
           headers: {
-            'X-Mailin-custom' => {
-              'custom_header_1' => 'custom_value_1',
-              'custom_header_2' => 'custom_value_2'
-            }
+            'X-Mailin-custom' => 'custom_header_1:custom_value_1|custom_header_2:custom_value_2|custom_header_3:custom_value_3',
+            'charset' => 'iso-8859-1',
+            'Content-Type' => 'text/html; charset=iso-8859-1',
+            'Accept' => 'application/json'
           }
         )
-
+      
         # Send the email using Brevo's API
         api_instance = SibApiV3Sdk::TransactionalEmailsApi.new
         begin
@@ -142,6 +142,8 @@ module Api
           Rails.logger.info "Donation confirmation email sent successfully: #{result}"
         rescue SibApiV3Sdk::ApiError => e
           Rails.logger.error "Error sending confirmation email: #{e}"
+          # Log the full error message for better diagnostics
+          Rails.logger.error "Error details: #{e.message}, Response body: #{e.response_body}"
         end
       end
 
