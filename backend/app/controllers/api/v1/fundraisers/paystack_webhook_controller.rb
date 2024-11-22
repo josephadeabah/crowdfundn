@@ -111,7 +111,7 @@ module Api
       def send_confirmation_email(donation)
         user = donation.full_name
         email = donation.email
-        campaign_name = "campaign title" # Replace with the actual campaign title or dynamic data
+        campaign_name = donation.campaign.title # Replace with the actual campaign title or dynamic data
       
         # Create the email parameters with htmlContent
         send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
@@ -135,9 +135,21 @@ module Api
             'Content-Type' => 'text/html; charset=iso-8859-1',
             'Accept' => 'application/json'
           },
-          htmlContent: "<html><body><h1>Thank you for your donation!</h1><p>Name: #{donation.full_name}</p><p>Amount: #{donation.amount}</p><p>Campaign: #{campaign_name}</p></body></html>",
-          textContent: "<html><body><h1>Thank you for your donation!</h1><p>Name: #{donation.full_name}</p><p>Amount: #{donation.amount}</p><p>Campaign: #{campaign_name}</p></body></html>"
-        )
+          htmlContent: <<~HTML
+          <html>
+            <body>
+              <h1>Thank You for Your Donation!</h1>
+              <p>Dear #{user},</p>
+              <p>We deeply appreciate your generous donation of <strong>#{donation.campaign.currency_symbol} #{donation.amount}</strong> to support the <strong>#{campaign_name}</strong> campaign.</p>
+              <p>Your contribution is making a difference in achieving our goals.</p>
+              <p>If you have any questions, feel free to reach out to us at <a href="mailto:help@bantuhive.com">help@bantuhive.com</a>.</p>
+              <br>
+              <p>Best Regards,</p>
+              <p><strong>The Bantuhive Team</strong></p>
+            </body>
+          </html>
+        HTML
+      )
       
         # Send the email using Brevo's API
         api_instance = SibApiV3Sdk::TransactionalEmailsApi.new
