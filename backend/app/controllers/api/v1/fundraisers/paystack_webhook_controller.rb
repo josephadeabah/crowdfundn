@@ -64,7 +64,7 @@ module Api
           Rails.logger.debug "Processing charge success: #{transaction_reference} or subscription #{subscription_code}"
 
           ActiveRecord::Base.transaction do
-            handle_donation_success(transaction_reference) if transaction_reference.present?
+            handle_donation_success(data) if data.present?
             handle_subscription_success(subscription_code) if subscription_code.present?
           end
         rescue StandardError => e
