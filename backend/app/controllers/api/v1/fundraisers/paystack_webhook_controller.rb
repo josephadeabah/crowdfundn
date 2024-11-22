@@ -111,9 +111,9 @@ module Api
       def send_confirmation_email(donation)
         user = donation.full_name
         email = donation.email
-        # campaign = donation.metadata.campaign
-        
-        # Create the email parameters
+        campaign_name = "campaign title" # Replace with the actual campaign title or dynamic data
+      
+        # Create the email parameters with htmlContent
         send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
           to: [{
             'email' => email,
@@ -123,7 +123,7 @@ module Api
           params: {
             'name' => donation.full_name,
             'amount' => donation.amount,
-            'campaign_name' => "campaign title" # Dynamic campaign title
+            'campaign_name' => campaign_name
           },
           sender: {
             'email' => 'help@bantuhive.com' # Replace with your Brevo verified sender email
@@ -134,7 +134,8 @@ module Api
             'charset' => 'iso-8859-1',
             'Content-Type' => 'text/html; charset=iso-8859-1',
             'Accept' => 'application/json'
-          }
+          },
+          html_content: "<html><body><h1>Thank you for your donation!</h1><p>Name: #{donation.full_name}</p><p>Amount: #{donation.amount}</p><p>Campaign: #{campaign_name}</p></body></html>"
         )
       
         # Send the email using Brevo's API
@@ -147,7 +148,7 @@ module Api
           # Log the full error message for better diagnostics
           Rails.logger.error "Error details: #{e.message}, Response body: #{e.response_body}"
         end
-      end
+      end      
       
       
 
