@@ -60,7 +60,8 @@ module Api
             currency: campaign.currency,
             currency_symbol: campaign.currency_symbol,
             fundraiser_id: campaign.fundraiser_id,
-            fundraiser_name: campaign.fundraiser.full_name
+            fundraiser_name: campaign.fundraiser.full_name,
+            campaign: campaign # Include the full campaign object for email notifications
           }
 
           # Prepare metadata for Paystack initialization
