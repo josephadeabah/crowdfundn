@@ -75,7 +75,7 @@ module Api
         # Assuming you're within the handle_donation_success method
 
       def handle_donation_success(data)
-        campaign_data = data[:metadata]
+        campaign_data = data['metadata']['fundraiserName']
         transaction_reference = data[:reference]
         donation = Donation.find_by(transaction_reference: transaction_reference)
         raise "Donation not found" unless donation
