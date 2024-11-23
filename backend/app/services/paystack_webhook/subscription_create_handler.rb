@@ -4,53 +4,43 @@ class PaystackWebhook::SubscriptionCreateHandler
     end
   
     def call
+      # Extract necessary data from the webhook payload
       subscription_code = @data[:subscription_code]
-      email = @data[:customer][:email]
+      email = @data.dig(:customer, :email)
       plan = @data[:plan]
       authorization = @data[:authorization]
-      metadata = @data[:metadata] # Metadata should contain user_id and campaign_id
-  
+      metadata = @data[:metadata] || {}
+      
+      # Extract metadata (user and campaign)
       user_id = metadata[:user_id]
       campaign_id = metadata[:campaign_id]
   
-      unless user_id && campaign_id
-        Rails.logger.error "Missing user_id or campaign_id in metadata: #{metadata}"
-        raise "Invalid subscription metadata"
-      end
-  
+      # Find associated user and campaign
       user = User.find_by(id: user_id)
       campaign = Campaign.find_by(id: campaign_id)
+      raise "User or Campaign not found" unless user && campaign
   
-      unless user && campaign
-        Rails.logger.error "User or campaign not found. User ID: #{user_id}, Campaign ID: #{campaign_id}"
-        raise "User or campaign not found"
-      end
-  
-      create_subscription_on_paystack(email, plan, authorization, subscription_code, user, campaign)
-    end
-  
-    private
-  
-    def create_subscription_on_paystack(email, plan, authorization, subscription_code, user, campaign)
-      paystack_service = PaystackService.new
-      response = paystack_service.create_subscription(
+      # Find or create a subscription record
+      subscription = Subscription.find_or_initialize_by(subscription_code: subscription_code)
+      subscription.update!(
+        user_id: user.id,
+        campaign_id: campaign.id,
         email: email,
-        plan: plan,
-        authorization: authorization
+        interval: plan[:interval],
+        amount: @data[:amount],
+        next_payment_date: @data[:next_payment_date],
+        status: @data[:status],
+        card_type: authorization[:card_type],
+        last4: authorization[:last4],
+        plan_code: plan[:plan_code],
+        created_at: @data[:createdAt]
       )
   
-      if response[:status] == false || response[:data].blank?
-        Rails.logger.error "Failed to create subscription on Paystack. Response: #{response}"
-        raise "Failed to create subscription on Paystack"
-      end
-  
-      Subscription.create!(
-        user: user,
-        campaign: campaign,
-        subscription_code: subscription_code,
-        email_token: @data[:email_token],
-        status: 'active'
-      )
+      # Send a confirmation email
+      SubscriptionConfirmationEmailService.send_confirmation_email(subscription)
+    rescue => e
+      Rails.logger.error "Error handling subscription.create webhook: #{e.message}"
+      raise
     end
 end
   

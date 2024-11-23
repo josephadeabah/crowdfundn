@@ -50,13 +50,5 @@ class PaystackWebhook::ChargeSuccessHandler
         raise "Transaction status is #{transaction_status}"
       end
     end
-  
-    def handle_subscription_success
-      subscription_code = @data[:subscription_code]
-      subscription = Subscription.find_by(subscription_code: subscription_code)
-      raise "Subscription not found" unless subscription
-  
-      subscription.update!(status: 'active')
-    end
 end
   
