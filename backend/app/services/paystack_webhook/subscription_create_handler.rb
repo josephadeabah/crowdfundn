@@ -5,7 +5,7 @@ class PaystackWebhook::SubscriptionCreateHandler
 
     def call
         subscription_code = @data[:subscription_code]
-        Rails.logger.debug "Processing charge success: #{transaction_reference} or subscription #{subscription_code}"
+        Rails.logger.debug "Processing charge success: subscription #{subscription_code}"
     
         ActiveRecord::Base.transaction do
           handle_subscription_success if @data.present?
