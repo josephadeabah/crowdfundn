@@ -6,6 +6,10 @@ class DonationConfirmationEmailService
       email = donation.email
       campaign_name = donation.campaign.title
       fundraiser_name = donation.campaign.fundraiser.full_name
+      transaction_reference = donation.transaction_reference
+      transaction_amount = donation.amount.to_f
+      transaction_date = donation.created_at.strftime('%B %d, %Y')
+      currency_symbol = donation.campaign.currency_symbol
   
       send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
         to: [
@@ -36,8 +40,10 @@ class DonationConfirmationEmailService
                 <body>
                 <h3>Thank You for Your Donation!</h3>
                 <p>Hello #{user}, Our Valued Backer!</p>
-                <p>We deeply appreciate your generous donation of <strong>#{donation.campaign.currency_symbol} #{donation.amount}</strong> to support the <strong>#{campaign_name}</strong> campaign.</p>
+                <p>We deeply appreciate your generous donation of <strong>#{currency_symbol} #{transaction_amount}</strong> to support the <strong>#{campaign_name}</strong> campaign.</p>
                 <p>Your contribution is making a difference for <strong>#{fundraiser_name}</strong> in achieving their goals.</p>
+                <p>The transaction reference for your donation is: <strong>#{transaction_reference}</strong></p>
+                <p>Date: <strong>#{transaction_date}</strong></p>
                 <p>If you have any questions, feel free to reply to this email.</p>
                 <br>
                 <p>Thanks,</p>
