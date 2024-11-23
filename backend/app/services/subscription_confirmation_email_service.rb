@@ -2,14 +2,13 @@
 
 class SubscriptionConfirmationEmailService
     def self.send_confirmation_email(subscription)
-      user = subscription.user.full_name
-      email = subscription.user.email
-      campaign_name = subscription.campaign.title
+      email = subscription.email
+    #   subscriber_name = subscription.dig(:customer, :first_name)
       fundraiser_name = subscription.campaign.fundraiser.full_name
-      transaction_reference = subscription.transaction_reference
+      currency_symbol = subscription.campaign.currency_symbol
+      transaction_reference = subscription.subscription_code
       transaction_amount = subscription.amount.to_f
       transaction_date = subscription.created_at.strftime('%B %d, %Y')
-      currency_symbol = subscription.campaign.currency_symbol
       interval = subscription.interval
       card_type = subscription.card_type
       last4 = subscription.last4
@@ -18,20 +17,20 @@ class SubscriptionConfirmationEmailService
         to: [
           {
             'email' => email,
-            'name' => user
+            'name' => 'Donor Name'
           }
         ],
         template_id: 1, # Replace with your actual template ID
         params: {
-          'name' => user,
+          'name' => 'Donor Name',
           'amount' => transaction_amount,
-          'campaign_name' => campaign_name
+          'campaign_name' => 'Some campaign name'
         },
         sender: {
           'name' => 'Bantuhive Ltd',
           'email' => 'help@bantuhive.com'
         },
-        subject: "Your subscription to #{campaign_name} is now active",
+        subject: "Your subscription to Plan Name is now active",
         headers: {
           'X-Mailin-custom' => 'custom_header_1:custom_value_1|custom_header_2:custom_value_2|custom_header_3:custom_value_3',
           'charset' => 'iso-8859-1',
@@ -41,9 +40,9 @@ class SubscriptionConfirmationEmailService
         htmlContent: <<~HTML
           <html>
           <body>
-            <p>Hello #{user}, Our Valued Backer!</p>
-            <p>You have subscribed to <strong>#{campaign_name}</strong> by <strong>#{fundraiser_name}</strong>.</p>
-            <p>You will be charged <strong>#{currency_symbol}#{transaction_amount}</strong> every #{interval}.</p>
+            <p>Hello Backer,</p>
+            <p>You have subscribed to <strong>Plan Name</strong>.</p>
+            <p>You will be charged <strong>#{currency_symbol} #{transaction_amount}</strong> every #{interval}.</p>
             <p>See details of your subscription below:</p>
             <ul>
               <li>Transaction Reference: <strong>#{transaction_reference}</strong></li>

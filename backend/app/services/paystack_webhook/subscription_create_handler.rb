@@ -4,7 +4,6 @@ class PaystackWebhook::SubscriptionCreateHandler
     end
 
     def call
-        transaction_reference = @data[:reference]
         subscription_code = @data[:subscription_code]
         Rails.logger.debug "Processing charge success: #{transaction_reference} or subscription #{subscription_code}"
     
@@ -17,23 +16,18 @@ class PaystackWebhook::SubscriptionCreateHandler
     end
 
     def handle_subscription_success
-        transaction_reference = @data[:reference]
         subscription_code = @data[:subscription_code]
         email = @data.dig(:customer, :email)
+        customer_id = @data.dig(:customer, :id)
         plan = @data[:plan]
         authorization = @data[:authorization]
-        donation = Donation.find_by(subscription_code: subscription_code)
-        raise "Donation not found" unless donation
     
-        response = PaystackService.new.verify_transaction(transaction_reference)
-        raise "Transaction verification failed" unless response[:status] == true
-    
-        transaction_status = response[:data][:status]
-        if transaction_status == 'success'
+       subscription_status = @data[:status]
+        if subscription_status == 'active'
             subscription = Subscription.find_or_initialize_by(subscription_code: subscription_code)
             subscription.update!(
-              user_id: donation.campaign.fundraiser.id,
-              campaign_id: donation.campaign.id,
+              user_id: customer_id,
+              campaign_id: plan[:id],
               subscription_code: subscription_code,
               email_token: @data[:email_token],
               email: email,
