@@ -61,7 +61,6 @@ module Api
             currency_symbol: campaign.currency_symbol,
             fundraiser_id: campaign.fundraiser_id,
             fundraiser_name: campaign.fundraiser.full_name,
-            campaign: campaign # Include the full campaign object for email notifications
           }
 
           # Prepare metadata for Paystack initialization
@@ -69,7 +68,7 @@ module Api
             user_id: donation.metadata[:campaign][:fundraiser_id], 
             campaign_id: donation.campaign_id,
             session_token: donation.metadata[:session_token], # Only for anonymous users
-            campaign: donation.metadata[:campaign]
+            campaign: campaign
           }
 
           donation.plan = params[:donation][:plan]
