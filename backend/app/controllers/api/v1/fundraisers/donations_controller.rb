@@ -60,7 +60,7 @@ module Api
             currency: campaign.currency,
             currency_symbol: campaign.currency_symbol,
             fundraiser_id: campaign.fundraiser_id,
-            fundraiser_name: campaign.fundraiser.name,
+            fundraiser_name: campaign.fundraiser.full_name,
           }
 
           # Prepare metadata for Paystack initialization
