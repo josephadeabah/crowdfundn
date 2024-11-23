@@ -10,7 +10,6 @@ class PaystackWebhook::ChargeSuccessHandler
   
       ActiveRecord::Base.transaction do
         handle_donation_success if @data.present?
-        handle_subscription_success if subscription_code.present?
       end
     rescue StandardError => e
       Rails.logger.error "Error processing charge success: #{e.message}"
