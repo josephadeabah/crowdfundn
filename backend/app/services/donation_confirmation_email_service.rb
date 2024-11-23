@@ -54,7 +54,7 @@ class DonationConfirmationEmailService
                     <hr style="border: none; height: 1px; background-color: black; margin: 10px 0;">
                     <p style="font-size: 12px; margin: 0;">
                      IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana. <br>
-                    <a href="https://bantuhive.com" style="color: black;">BantuHive Ltd</a>
+                    <a href="https://bantuhive.com" style="color: black;">© BantuHive Ltd 2024</a>
                     </p>
                 </div>
                 </body>
