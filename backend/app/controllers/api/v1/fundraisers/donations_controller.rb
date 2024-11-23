@@ -60,7 +60,7 @@ module Api
             currency: campaign.currency,
             currency_symbol: campaign.currency_symbol,
             fundraiser_id: campaign.fundraiser_id,
-            fundraiser_name: campaign.fundraiser.full_name,
+            fundraiser_name: campaign.fundraiser.name,
           }
 
           # Prepare metadata for Paystack initialization
@@ -68,7 +68,7 @@ module Api
             user_id: donation.metadata[:campaign][:fundraiser_id], 
             campaign_id: donation.campaign_id,
             session_token: donation.metadata[:session_token], # Only for anonymous users
-            campaign: campaign
+            campaign: campaign.metadata[:campaign][:fundraiser_name],
           }
 
           donation.plan = params[:donation][:plan]
