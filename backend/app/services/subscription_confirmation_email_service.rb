@@ -6,6 +6,7 @@ class SubscriptionConfirmationEmailService
     #   subscriber_name = subscription.dig(:customer, :first_name)
       fundraiser_name = subscription.campaign.fundraiser.full_name
       currency_symbol = subscription.campaign.currency_symbol
+      campaign_name = subscription.campaign.title
       transaction_reference = subscription.subscription_code
       transaction_amount = subscription.amount.to_f
       transaction_date = subscription.created_at.strftime('%B %d, %Y')
@@ -24,13 +25,13 @@ class SubscriptionConfirmationEmailService
         params: {
           'name' => 'Donor Name',
           'amount' => transaction_amount,
-          'campaign_name' => 'Some campaign name'
+          'campaign_name' => campaign_name
         },
         sender: {
           'name' => 'Bantuhive Ltd',
           'email' => 'help@bantuhive.com'
         },
-        subject: "Your subscription to Plan Name is now active",
+        subject: "Your subscription to #{campaign_name} is now active",
         headers: {
           'X-Mailin-custom' => 'custom_header_1:custom_value_1|custom_header_2:custom_value_2|custom_header_3:custom_value_3',
           'charset' => 'iso-8859-1',
