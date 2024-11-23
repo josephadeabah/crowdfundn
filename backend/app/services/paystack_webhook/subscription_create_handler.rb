@@ -22,7 +22,7 @@ class PaystackWebhook::SubscriptionCreateHandler
         email = @data.dig(:customer, :email)
         plan = @data[:plan]
         authorization = @data[:authorization]
-        donation = Donation.find_by(transaction_reference: transaction_reference)
+        donation = Donation.find_by(subscription_code: subscription_code)
         raise "Donation not found" unless donation
     
         response = PaystackService.new.verify_transaction(transaction_reference)

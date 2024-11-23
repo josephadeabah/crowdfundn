@@ -84,6 +84,7 @@ module Api
 
           if response[:status] == true
             donation.transaction_reference = response[:data][:reference]
+            donation.subscription_code = response[:data][:subscription_code] if response[:data][:subscription_code].present?
             if donation.save
               total_donors = campaign.total_donors
               render json: {
