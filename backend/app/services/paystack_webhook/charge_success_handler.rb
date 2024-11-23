@@ -21,6 +21,10 @@ class PaystackWebhook::ChargeSuccessHandler
   
     def handle_donation_success
       transaction_reference = @data[:reference]
+      subscription_code = @data[:subscription_code]
+      email = @data.dig(:customer, :email)
+      plan = @data[:plan]
+      authorization = @data[:authorization]
       donation = Donation.find_by(transaction_reference: transaction_reference)
       raise "Donation not found" unless donation
   
@@ -38,15 +42,36 @@ class PaystackWebhook::ChargeSuccessHandler
           description: "Platform fee for donation #{donation.id}",
           status: 'pending'
         )
+
+        subscription = Subscription.find_or_initialize_by(subscription_code: subscription_code)
+
+        subscription.update!(
+            user_id: donation.campaign.fundraiser.id,
+            campaign_id: donation.campaign.id,
+            subscription_code: subscription_code,
+            email_token: @data[:email_token],
+            email: email,
+            interval: plan[:interval],
+            amount: @data[:amount],
+            next_payment_date: @data[:next_payment_date],
+            status: @data[:status],
+            card_type: authorization[:card_type],
+            last4: authorization[:last4],
+            plan_code: plan[:plan_code],
+            created_at: @data[:createdAt]
+          )
   
         campaign = donation.campaign
         campaign.update!(
           current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
         )
-        # Send a confirmation email to the donor via Brevo
+        # Send a donation confirmation email to the donor via Brevo
         DonationConfirmationEmailService.send_confirmation_email(donation)
+        # Send a subscription confirmation email to the donor via Brevo
+        SubscriptionConfirmationEmailService.send_confirmation_email(subscription)
       else
         donation.update!(status: transaction_status)
+        subscription.update!(status: transaction_status)
         raise "Transaction status is #{transaction_status}"
       end
     end
