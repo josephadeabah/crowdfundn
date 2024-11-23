@@ -7,7 +7,7 @@ class SubscriptionConfirmationEmailService
       fundraiser_name = subscription.campaign.fundraiser.full_name
       currency_symbol = subscription.campaign.currency_symbol
       campaign_name = subscription.campaign.title
-      transaction_reference = subscription.subscription_code
+      subscription_code = subscription.subscription_code
       transaction_amount = subscription.amount.to_f
       transaction_date = subscription.created_at.strftime('%B %d, %Y')
       interval = subscription.interval
@@ -46,7 +46,7 @@ class SubscriptionConfirmationEmailService
             <p>You will be charged <strong>#{currency_symbol} #{transaction_amount}</strong> every #{interval}.</p>
             <p>See details of your subscription below:</p>
             <ul>
-              <li>Transaction Reference: <strong>#{transaction_reference}</strong></li>
+              <li>Transaction Reference: <strong>#{subscription_code}</strong></li>
               <li>Next Charge Date: <strong>#{transaction_date}</strong></li>
               <li>Card: <strong>#{card_type}</strong> ending with <strong>#{last4}</strong></li>
             </ul>
@@ -82,7 +82,7 @@ class SubscriptionConfirmationEmailService
         result = api_instance.send_transac_email(send_smtp_email)
         Rails.logger.info "Subscription confirmation email sent successfully: #{result}"
       rescue SibApiV3Sdk::ApiError => e
-        Rails.logger.error "Error sending confirmation email: #{e}"
+        Rails.logger.error "Error sending subscription confirmation email: #{e}"
         Rails.logger.error "Error details: #{e.message}, Response body: #{e.response_body}"
       end
     end
