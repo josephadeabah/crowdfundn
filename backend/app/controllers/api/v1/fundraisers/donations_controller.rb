@@ -68,7 +68,7 @@ module Api
             user_id: donation.metadata[:campaign][:fundraiser_id], 
             campaign_id: donation.campaign_id,
             session_token: donation.metadata[:session_token], # Only for anonymous users
-            campaign: campaign.metadata[:campaign][:fundraiser_name],
+            fundraiserName: campaign.fundraiser.full_name,
           }
 
           donation.plan = params[:donation][:plan]
