@@ -18,6 +18,7 @@ class PaystackWebhook::SubscriptionCreateHandler
     def handle_subscription_success
         subscription_code = @data[:subscription_code]
         email = @data.dig(:customer, :email)
+        subscriber_name = @data.dig(:customer, :first_name)
         plan = @data[:plan]
         authorization = @data[:authorization]
     
@@ -34,6 +35,7 @@ class PaystackWebhook::SubscriptionCreateHandler
               subscription_code: subscription_code,
               email_token: @data[:email_token],
               email: email,
+              subscriber_name: subscriber_name,
               interval: plan[:interval],
               amount: @data[:amount],
               next_payment_date: @data[:next_payment_date],

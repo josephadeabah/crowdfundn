@@ -3,12 +3,13 @@
 class SubscriptionConfirmationEmailService
     def self.send_confirmation_email(subscription)
       email = subscription.email
-    #   subscriber_name = subscription.dig(:customer, :first_name)
+      subscription_code = subscription.subscription_code
+      subscriber_name = subscription.subscriber_name
       fundraiser_name = subscription.campaign.fundraiser.full_name
       currency_symbol = subscription.campaign.currency_symbol
       campaign_name = subscription.campaign.title
       transaction_amount = subscription.amount.to_f
-      transaction_date = subscription.created_at.strftime('%B %d, %Y')
+      transaction_date = subscription.next_payment_date.strftime('%B %d, %Y')
       interval = subscription.interval
       card_type = subscription.card_type
       last4 = subscription.last4
@@ -17,12 +18,12 @@ class SubscriptionConfirmationEmailService
         to: [
           {
             'email' => email,
-            'name' => 'Donor Name'
+            'name' => subscriber_name
           }
         ],
         template_id: 1, # Replace with your actual template ID
         params: {
-          'name' => 'Donor Name',
+          'name' => subscriber_name,
           'amount' => transaction_amount,
           'campaign_name' => campaign_name
         },
@@ -30,7 +31,7 @@ class SubscriptionConfirmationEmailService
           'name' => 'Bantuhive Ltd',
           'email' => 'help@bantuhive.com'
         },
-        subject: "Your subscription to #{campaign_name} is now active",
+        subject: "Your subscription to #{campaign_name} is now active [#{subscription_code}] 🎉",
         headers: {
           'X-Mailin-custom' => 'custom_header_1:custom_value_1|custom_header_2:custom_value_2|custom_header_3:custom_value_3',
           'charset' => 'iso-8859-1',
@@ -40,8 +41,8 @@ class SubscriptionConfirmationEmailService
         htmlContent: <<~HTML
           <html>
           <body>
-            <p>Hello Backer,</p>
-            <p>You have subscribed to <strong>Plan Name</strong>.</p>
+            <p>Hello #{subscriber_name},</p>
+            <p>You have subscribed to <strong>#{campaign_name}</strong> by <strong>#{fundraiser_name}</strong>.</p>
             <p>You will be charged <strong>#{currency_symbol} #{transaction_amount}</strong> every #{interval}.</p>
             <p>See details of your subscription below:</p>
             <ul>
