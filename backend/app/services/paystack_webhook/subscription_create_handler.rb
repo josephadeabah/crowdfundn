@@ -37,7 +37,7 @@ class PaystackWebhook::SubscriptionCreateHandler
               email: email,
               subscriber_name: subscriber_name,
               interval: plan[:interval],
-              amount: (@data[:amount]  * 100).to_i,
+              amount: (@data[:amount]  / 100).to_i,
               next_payment_date: @data[:next_payment_date],
               status: @data[:status],
               card_type: authorization[:card_type],
