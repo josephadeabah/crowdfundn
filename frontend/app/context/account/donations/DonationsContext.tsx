@@ -144,7 +144,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       const { authorization_url } = donationData;
 
       if (authorization_url) {
-        // window.location.href = authorization_url;
+        window.location.href = authorization_url;
       } else {
         handleApiError(
           'We could not initiate your payment at this time. Please try again later.',
