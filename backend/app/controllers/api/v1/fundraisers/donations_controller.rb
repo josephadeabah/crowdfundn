@@ -84,7 +84,10 @@ module Api
 
           if response[:status] == true
             donation.transaction_reference = response[:data][:reference]
-            donation.subscription_code = response[:data][:subscription_code] if response[:data][:subscription_code].present?
+              # Assign the plan to the subscription_code if it exists
+            if donation.plan.present?
+              donation.subscription_code = donation.plan
+            end
             if donation.save
               total_donors = campaign.total_donors
               render json: {
