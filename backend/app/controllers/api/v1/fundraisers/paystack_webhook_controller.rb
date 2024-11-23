@@ -99,7 +99,7 @@ module Api
             current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
           )
           # Send a confirmation email to the donor via Brevo
-          DonationConfirmationEmailService.send_confirmation_email(donation, response)
+          DonationConfirmationEmailService.send_confirmation_email(donation)
         else
           donation.update!(status: transaction_status)
           raise "Transaction status is #{transaction_status}"
