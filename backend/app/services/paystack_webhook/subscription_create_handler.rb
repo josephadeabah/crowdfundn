@@ -18,16 +18,19 @@ class PaystackWebhook::SubscriptionCreateHandler
     def handle_subscription_success
         subscription_code = @data[:subscription_code]
         email = @data.dig(:customer, :email)
-        customer_id = @data.dig(:customer, :id)
         plan = @data[:plan]
         authorization = @data[:authorization]
     
-       subscription_status = @data[:status]
+        # Find the campaign by plan ID
+        campaign = Campaign.find_by(title: plan[:name])
+        raise "Campaign with ID #{plan[:name]} not found" unless campaign
+
+        subscription_status = @data[:status]
         if subscription_status == 'active'
             subscription = Subscription.find_or_initialize_by(subscription_code: subscription_code)
             subscription.update!(
-              user_id: customer_id,
-              campaign_id: plan[:id],
+              user_id: campaign.fundraiser_id,
+              campaign_id: campaign.id,
               subscription_code: subscription_code,
               email_token: @data[:email_token],
               email: email,
