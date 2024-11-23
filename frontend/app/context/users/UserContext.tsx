@@ -40,6 +40,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         {
           method: 'GET',
           headers: {
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         },
