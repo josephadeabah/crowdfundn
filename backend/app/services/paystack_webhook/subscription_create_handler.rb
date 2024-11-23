@@ -9,22 +9,17 @@ class PaystackWebhook::SubscriptionCreateHandler
       email = @data.dig(:customer, :email)
       plan = @data[:plan]
       authorization = @data[:authorization]
-      metadata = @data[:metadata] || {}
-      
-      # Extract metadata (user and campaign)
-      user_id = metadata[:user_id]
-      campaign_id = metadata[:campaign_id]
   
-      # Find associated user and campaign
-      user = User.find_by(id: user_id)
-      campaign = Campaign.find_by(id: campaign_id)
-      raise "User or Campaign not found" unless user && campaign
+      # Find associated donation record
+      transaction_reference = @data[:reference]
+      donation = Donation.find_by(transaction_reference: transaction_reference)
+      raise "Donation not found" unless donation
   
       # Find or create a subscription record
       subscription = Subscription.find_or_initialize_by(subscription_code: subscription_code)
       subscription.update!(
-        user_id: user.id,
-        campaign_id: campaign.id,
+        user_id: donation.campaign.fundraiser.id,
+        campaign_id: donation.campaign.id,
         email: email,
         interval: plan[:interval],
         amount: @data[:amount],
