@@ -35,7 +35,7 @@ class PaystackWebhook::ChargeSuccessHandler
       if transaction_status == 'success'
         gross_amount = response[:data][:amount] / 100.0
         net_amount = gross_amount * 0.985
-        donation.update!(status: 'successful', gross_amount: gross_amount, net_amount: net_amount, amount: net_amount)
+        donation.update!(status: 'successful', gross_amount: gross_amount, net_amount: net_amount, amount: net_amount, subscription_code: subscription_code)
   
         Balance.create!(
           amount: gross_amount - net_amount,
