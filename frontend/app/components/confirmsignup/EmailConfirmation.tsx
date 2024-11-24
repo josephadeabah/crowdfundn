@@ -1,22 +1,23 @@
+// Import from next/navigation
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router'; // Adjust based on your router library
+import { usePathname, useSearchParams } from 'next/navigation';  // For navigation-related logic
 import { confirmEmail } from '@/app/utils/api/api.confirm_email';
 
 const EmailConfirmation: React.FC = () => {
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
-    'loading',
-  );
-  const router = useRouter();
-  const { token } = router.query;
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const pathname = usePathname(); 
+  const searchParams = useSearchParams();  // Get search params (e.g., query params like token)
 
   useEffect(() => {
+    const token = searchParams?.get('token');  // Get the token from the query params
+
     const confirmUserEmail = async () => {
       if (!token) return;
 
       try {
-        const response = await confirmEmail(token as string);
+        const response = await confirmEmail(token);
         if (response.status === 200) {
           setStatus('success');
         } else {
@@ -29,7 +30,7 @@ const EmailConfirmation: React.FC = () => {
     };
 
     confirmUserEmail();
-  }, [token]);
+  }, [searchParams]);  // Dependency on searchParams to rerun when token changes
 
   return (
     <div className="confirmation-container">
