@@ -92,7 +92,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       style={{ paddingTop: '100%' }}
                     >
                       <Image
-                        src={campaign?.media}
+                        src={campaign?.media|| '/bantuhive.svg'}
                         alt="media thumbnail"
                         sizes="100vw"
                         layout="fill"
