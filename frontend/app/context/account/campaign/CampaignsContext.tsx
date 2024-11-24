@@ -50,11 +50,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
             body: campaign,
-            cache: 'no-store', // No caching for POST
           },
         );
 

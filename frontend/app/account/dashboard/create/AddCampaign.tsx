@@ -114,8 +114,10 @@ const CreateCampaign = () => {
 
   const handleSubmit = async () => {
     if (validateForm()) {
+      // Prepare formData for submission
       const formData = new FormData();
 
+      // Append each field to the FormData object using the correct keys
       formData.append('campaign[title]', title);
       formData.append('campaign[description]', content);
       formData.append('campaign[goal_amount]', goalAmount);
@@ -124,42 +126,41 @@ const CreateCampaign = () => {
         parseFloat(currentAmount).toString(),
       );
       formData.append('campaign[start_date]', startDate);
-      formData.append('campaign[end_date]', endDate);
+      formData.append('campaign[end_date]', endDate); 
       formData.append('campaign[category]', category);
       formData.append('campaign[location]', location);
       formData.append('campaign[currency]', currency);
       formData.append('campaign[currency_symbol]', currency_symbol);
-      formData.append('campaign[is_public]', isPublic.toString());
-      // Permissions must match Rails' expected format
+      // Handle booleans properly
+      formData.append('campaign[is_public]', isPublic ? 'true' : 'false');
       formData.append(
         'campaign[permissions][accept_donations]',
-        permissions.acceptDonations.toString(),
+        permissions.acceptDonations ? 'true' : 'false',
       );
       formData.append(
         'campaign[permissions][leave_words_of_support]',
-        permissions.leaveWordsOfSupport.toString(),
+        permissions.leaveWordsOfSupport ? 'true' : 'false',
       );
       formData.append(
         'campaign[permissions][appear_in_search_results]',
-        permissions.appearInSearchResults.toString(),
+        permissions.appearInSearchResults ? 'true' : 'false',
       );
       formData.append(
         'campaign[permissions][suggested_fundraiser_lists]',
-        permissions.suggestedFundraiserLists.toString(),
+        permissions.suggestedFundraiserLists ? 'true' : 'false',
       );
       formData.append(
         'campaign[permissions][receive_donation_email]',
-        permissions.receiveDonationEmail.toString(),
+        permissions.receiveDonationEmail ? 'true' : 'false',
       );
       formData.append(
         'campaign[permissions][receive_daily_summary]',
-        permissions.receiveDailySummary.toString(),
+        permissions.receiveDailySummary ? 'true' : 'false',
       );
 
       if (selectedImage) {
         formData.append('campaign[media]', selectedImage);
       }
-
       try {
         const createdCampaign = await addCampaign(formData);
         setAlertTitle(createdCampaign.message);
