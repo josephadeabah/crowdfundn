@@ -1,18 +1,20 @@
 'use client';
 
 import React, { useEffect, useState, Suspense } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation'; // For navigation-related logic
+import { usePathname, useParams } from 'next/navigation';
 import { confirmEmail } from '@/app/utils/api/api.confirm_email';
 import FullscreenLoader from '@/app/loaders/FullscreenLoader';
 
 const EmailConfirmationContent = () => {
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const pathname = usePathname();
-  const searchParams = useSearchParams(); // Get search params (e.g., query params like token)
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
+    'loading',
+  );
+  const params = useParams(); // Get dynamic segment parameters
+  const token = Array.isArray(params?.token)
+    ? params.token[0]
+    : params?.token || ''; // Ensure token is a string
 
   useEffect(() => {
-    const token = searchParams?.get('token'); // Get the token from the query params
-
     const confirmUserEmail = async () => {
       if (!token) return;
 
@@ -30,7 +32,7 @@ const EmailConfirmationContent = () => {
     };
 
     confirmUserEmail();
-  }, [searchParams]); // Dependency on searchParams to rerun when token changes
+  }, [token]); // Dependency on token
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
@@ -67,7 +69,7 @@ const EmailConfirmationContent = () => {
 
 const EmailConfirmation = () => {
   return (
-    <Suspense fallback={<FullscreenLoader/>}>
+    <Suspense fallback={<FullscreenLoader />}>
       <EmailConfirmationContent />
     </Suspense>
   );
