@@ -1,14 +1,12 @@
-// Import from next/navigation
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation'; // For navigation-related logic
 import { confirmEmail } from '@/app/utils/api/api.confirm_email';
+import FullscreenLoader from '@/app/loaders/FullscreenLoader';
 
-const EmailConfirmation: React.FC = () => {
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
-    'loading',
-  );
+const EmailConfirmationContent = () => {
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const pathname = usePathname();
   const searchParams = useSearchParams(); // Get search params (e.g., query params like token)
 
@@ -64,6 +62,14 @@ const EmailConfirmation: React.FC = () => {
         </div>
       )}
     </div>
+  );
+};
+
+const EmailConfirmation = () => {
+  return (
+    <Suspense fallback={<FullscreenLoader/>}>
+      <EmailConfirmationContent />
+    </Suspense>
   );
 };
 
