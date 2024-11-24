@@ -33,16 +33,28 @@ const EmailConfirmation: React.FC = () => {
   }, [searchParams]);  // Dependency on searchParams to rerun when token changes
 
   return (
-    <div className="confirmation-container">
-      {status === 'loading' && <p>Confirming your email...</p>}
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
+      {status === 'loading' && <p className="text-lg text-blue-500">Confirming your email...</p>}
       {status === 'success' && (
-        <p>
-          Email successfully confirmed! You can now{' '}
-          <a href="/auth/login">login</a>.
-        </p>
+        <div className="text-center bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+          <p className="text-xl font-semibold text-green-500">
+            Email successfully confirmed!
+          </p>
+          <p className="mt-4">
+            You can now{' '}
+            <a href="/auth/login" className="text-blue-500 hover:underline">login</a>.
+          </p>
+        </div>
       )}
       {status === 'error' && (
-        <p>Failed to confirm email. The link might be invalid or expired.</p>
+        <div className="text-center bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+          <p className="text-xl font-semibold text-red-500">
+            Failed to confirm email.
+          </p>
+          <p className="mt-4 text-gray-700">
+            The link might be invalid or expired.
+          </p>
+        </div>
       )}
     </div>
   );
