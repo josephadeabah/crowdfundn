@@ -24,7 +24,8 @@ class User < ApplicationRecord
   after_create :create_default_profile
 
   def send_confirmation_email
-    UserConfirmationEmailService.send_confirmation_email(self, Rails.application.config.host)
+    host = Rails.application.routes.default_url_options[:host]
+    UserConfirmationEmailService.send_confirmation_email(self, host)
   end
 
   # Generate a confirmation token before creating the user
