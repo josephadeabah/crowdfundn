@@ -1,10 +1,11 @@
 
 Rails.application.routes.draw do
+  # Route for confirming email
+  get 'auth/confirm_email/:token', to: 'api/v1/members/auth#confirm_email', as: :confirm_email
 
   namespace :api do
     namespace :v1 do
       namespace :members do
-        get 'auth/confirm_email/:token', to: 'auth#confirm_email', as: :confirm_email
         resources :profiles, only: [:update]
         resources :roles, only: [:create]
         post 'auth/signup', to: 'auth#signup'
