@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_15_175817) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_23_123456) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -115,6 +115,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_15_175817) do
     t.string "phone"
     t.decimal "gross_amount", precision: 15, scale: 2, default: "0.0", null: false
     t.decimal "net_amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.string "plan"
+    t.string "subscription_code"
     t.index ["campaign_id"], name: "index_donations_on_campaign_id"
     t.index ["user_id"], name: "index_donations_on_user_id"
   end
@@ -185,6 +187,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_15_175817) do
     t.string "status", default: "active"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "interval"
+    t.string "card_type"
+    t.string "last4"
+    t.datetime "next_payment_date"
+    t.string "plan_code"
+    t.string "email"
+    t.decimal "amount"
+    t.string "subscriber_name"
     t.index ["campaign_id"], name: "index_subscriptions_on_campaign_id"
     t.index ["subscription_code"], name: "index_subscriptions_on_subscription_code", unique: true
     t.index ["user_id"], name: "index_subscriptions_on_user_id"
