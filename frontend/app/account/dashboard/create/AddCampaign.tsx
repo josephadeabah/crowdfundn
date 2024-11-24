@@ -126,7 +126,7 @@ const CreateCampaign = () => {
         parseFloat(currentAmount).toString(),
       );
       formData.append('campaign[start_date]', startDate);
-      formData.append('campaign[end_date]', endDate); 
+      formData.append('campaign[end_date]', endDate);
       formData.append('campaign[category]', category);
       formData.append('campaign[location]', location);
       formData.append('campaign[currency]', currency);

@@ -231,15 +231,17 @@ const RegisterForm: React.FC = () => {
           setError('An unknown error occurred.');
         }
         setShowToast(true);
-      } else if ('token' in response) {
-        setSuccess('Successful!, proceed to login.');
+      } else {
+        setSuccess(
+          'Registration successful! Please check your email to confirm your account.',
+        );
         setShowToast(true);
-        setTimeout(() => {
-          window.location.href = '/auth/login';
-        }, 2000);
       }
     } catch (error) {
       console.error('Registration error:', error);
+      setError('An error occurred during registration. Please try again.');
+      setIsLoading(false);
+      setShowToast(true);
     }
   };
 
