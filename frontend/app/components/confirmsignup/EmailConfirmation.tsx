@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router'; // Adjust based on your router library
 import { confirmEmail } from '@/app/utils/api/api.confirm_email';
