@@ -1,7 +1,7 @@
 # app/services/user_confirmation_email_service.rb
 class UserConfirmationEmailService
     def self.send_confirmation_email(user, host)
-      confirmation_url = Rails.application.routes.url_helpers.confirm_email_url(user.confirmation_token, host: host)
+      confirmation_url = Rails.application.routes.url_helpers.api_v1_members_confirm_email_url(token: user.confirmation_token, host: host)
       email = user.email
       full_name = user.full_name
   
