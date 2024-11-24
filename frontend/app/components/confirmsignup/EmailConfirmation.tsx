@@ -1,17 +1,19 @@
 // Import from next/navigation
-"use client"
+'use client';
 
 import React, { useEffect, useState } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';  // For navigation-related logic
+import { usePathname, useSearchParams } from 'next/navigation'; // For navigation-related logic
 import { confirmEmail } from '@/app/utils/api/api.confirm_email';
 
 const EmailConfirmation: React.FC = () => {
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const pathname = usePathname(); 
-  const searchParams = useSearchParams();  // Get search params (e.g., query params like token)
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
+    'loading',
+  );
+  const pathname = usePathname();
+  const searchParams = useSearchParams(); // Get search params (e.g., query params like token)
 
   useEffect(() => {
-    const token = searchParams?.get('token');  // Get the token from the query params
+    const token = searchParams?.get('token'); // Get the token from the query params
 
     const confirmUserEmail = async () => {
       if (!token) return;
@@ -30,11 +32,13 @@ const EmailConfirmation: React.FC = () => {
     };
 
     confirmUserEmail();
-  }, [searchParams]);  // Dependency on searchParams to rerun when token changes
+  }, [searchParams]); // Dependency on searchParams to rerun when token changes
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
-      {status === 'loading' && <p className="text-lg text-blue-500">Confirming your email...</p>}
+      {status === 'loading' && (
+        <p className="text-lg text-blue-500">Confirming your email...</p>
+      )}
       {status === 'success' && (
         <div className="text-center bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
           <p className="text-xl font-semibold text-green-500">
@@ -42,7 +46,10 @@ const EmailConfirmation: React.FC = () => {
           </p>
           <p className="mt-4">
             You can now{' '}
-            <a href="/auth/login" className="text-blue-500 hover:underline">login</a>.
+            <a href="/auth/login" className="text-blue-500 hover:underline">
+              login
+            </a>
+            .
           </p>
         </div>
       )}
