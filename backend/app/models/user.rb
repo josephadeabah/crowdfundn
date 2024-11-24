@@ -18,8 +18,25 @@ class User < ApplicationRecord
   has_many :archived_campaigns
   accepts_nested_attributes_for :profile
 
+  before_create :generate_confirmation_token
+  after_create :send_confirmation_email
   after_create :assign_default_role
   after_create :create_default_profile
+
+  def send_confirmation_email
+    UserConfirmationEmailService.send_confirmation_email(self)
+  end
+
+  # Generate a confirmation token before creating the user
+  def generate_confirmation_token
+    self.confirmation_token = SecureRandom.urlsafe_base64
+    self.email_confirmed = false
+  end
+
+  # Mark the user as confirmed
+  def confirm_email!
+    update(email_confirmed: true, confirmed_at: Time.current, confirmation_token: nil)
+  end
 
   def assign_default_role
     roles << Role.find_by(name: 'User') unless has_role?('User')
@@ -38,7 +55,7 @@ class User < ApplicationRecord
   def create_default_profile
     profile = build_profile(
       name: full_name,
-      description: 'This is the default profile description.',
+      description: 'This is the default fundraiser profile description.',
       funding_goal: 1000,
       amount_raised: 0,
       status: 'active'
@@ -47,9 +64,4 @@ class User < ApplicationRecord
       Rails.logger.error "Failed to create profile for user #{id}: #{profile.errors.full_messages}"
     end
   end
-
-  # Create a profile for existing users who don't have one
-  User.where.missing(:profile).find_each do |user|
-    user.create_default_profile
-  end  
 end

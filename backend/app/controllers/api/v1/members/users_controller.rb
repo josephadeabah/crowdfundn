@@ -5,6 +5,7 @@ module Api
         before_action :authenticate_request, except: [:index]
         before_action :authorize_admin, only: [:make_admin]
         before_action :set_user, only: %i[make_admin make_admin_role show_by_id assign_role] # Added :assign_role
+        rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
         def index
           @users = User.includes(:profile, :roles).all
@@ -67,7 +68,23 @@ module Api
           end
         end
 
+        def confirm_email
+          user = User.find_by(confirmation_token: params[:token])
+          if user && !user.email_confirmed
+            user.confirm_email!
+            redirect_to root_path, notice: 'Your email has been confirmed. You can now log in.'
+          else
+            Rails.logger.info "Invalid token or email already confirmed for user #{user&.id || 'unknown'}"
+            redirect_to root_path, alert: 'Invalid or expired confirmation token.'
+          end
+        end
+        
+
         private
+
+        def record_not_found
+          render json: { error: 'User not found' }, status: :not_found
+        end
 
         def set_user
           @user = User.includes(:profile, :roles).find(params[:id])
