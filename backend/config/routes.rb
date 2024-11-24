@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       namespace :members do
+        get 'auth/confirm_email/:token', to: 'auth#confirm_email', as: :confirm_email
         resources :profiles, only: [:update]
         resources :roles, only: [:create]
         post 'auth/signup', to: 'auth#signup'
@@ -12,7 +13,6 @@ Rails.application.routes.draw do
         put 'auth/password/reset', to: 'auth#reset_password'
         
         # User management routes
-        get 'users/confirm_email/:token', to: 'users#confirm_email', as: :confirm_email
         get 'users', to: 'users#index'                   # Route to get all users
         get 'users/me', to: 'users#show'                 # Route for the current authenticated user
         put 'users/me', to: 'users#update'
