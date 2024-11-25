@@ -14,9 +14,24 @@ module Api
         def login
           user = User.find_by(email: params[:email])
           if user&.authenticate(params[:password])
-            render json: { token: encode_token(user.id), user: user }, status: :ok
+            if user.email_confirmed
+              render json: { token: encode_token(user.id), user: user }, status: :ok
+            else
+              render json: { error: 'Email not confirmed. Please confirm your email to log in.' }, status: :unauthorized
+            end
           else
             render json: { error: 'Invalid email or password' }, status: :unauthorized
+          end
+        end 
+        
+        
+        def resend_confirmation
+          user = User.find_by(email: params[:email])
+          if user && !user.email_confirmed
+            user.send_confirmation_email
+            render json: { message: 'Confirmation email resent successfully' }, status: :ok
+          else
+            render json: { error: 'Invalid email or email already confirmed' }, status: :unprocessable_entity
           end
         end
         

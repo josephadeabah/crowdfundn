@@ -6,6 +6,9 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       namespace :members do
+        resource :auth, only: [] do
+          post :resend_confirmation
+        end
         resources :profiles, only: [:update]
         resources :roles, only: [:create]
         post 'auth/signup', to: 'auth#signup'

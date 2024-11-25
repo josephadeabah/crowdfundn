@@ -6,13 +6,6 @@ module Authenticable
       begin
         decoded = decode_token(token)
         @current_user = User.find(decoded[:user_id]) if decoded[:user_id]
-
-        # Restrict login for unconfirmed users
-        if @current_user && !@current_user.email_confirmed
-          render json: { error: 'Email not confirmed. Please confirm your email to proceed.' }, status: :unauthorized
-          return
-        end
-
       rescue ActiveRecord::RecordNotFound
         render json: { error: 'User not found' }, status: :not_found
         return
