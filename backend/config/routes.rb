@@ -7,14 +7,14 @@ Rails.application.routes.draw do
     namespace :v1 do
       namespace :members do
         resource :auth, only: [] do
+          post :signup
+          post :login
+          post :password_reset
+          put :reset_password
           post :resend_confirmation
         end
         resources :profiles, only: [:update]
         resources :roles, only: [:create]
-        post 'auth/signup', to: 'auth#signup'
-        post 'auth/login', to: 'auth#login'
-        post 'auth/password/reset', to: 'auth#password_reset'
-        put 'auth/password/reset', to: 'auth#reset_password'
         
         # User management routes
         get 'users', to: 'users#index'                   # Route to get all users
