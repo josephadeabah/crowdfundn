@@ -36,31 +36,31 @@ module Api
           end
         end 
 
-      def confirm_email
-        user = User.find_by(confirmation_token: params[:token])
-
-        if user.nil?
-          # Redirect to frontend with error if token is invalid
-          redirect_to "https://www.bantuhive.com/auth/confirm_email/#{params[:token]}?status=error"
-          return
-        end
-
-        if user.email_confirmed
-          # Redirect to frontend with error if email is already confirmed
-          redirect_to "https://www.bantuhive.com/auth/confirm_email/#{params[:token]}?status=already_confirmed"
-          return
-        end
-
-        if user.confirmation_token_expired?
-          # Redirect to frontend with token expiry error
-          redirect_to "https://www.bantuhive.com/auth/confirm_email/#{params[:token]}?status=expired"
-          return
-        end
-
-        user.confirm_email!
-        # Redirect to frontend with success message
-        redirect_to "https://www.bantuhive.com/auth/confirm_email/#{params[:token]}?status=success"
-      end
+        def confirm_email
+          user = User.find_by(confirmation_token: params[:token])
+        
+          if user.nil?
+            # Redirect to frontend with error if token is invalid
+            redirect_to "https://www.bantuhive.com/auth/confirm_email/#{params[:token]}?status=error", allow_other_host: true
+            return
+          end
+        
+          if user.email_confirmed
+            # Redirect to frontend with error if email is already confirmed
+            redirect_to "https://www.bantuhive.com/auth/confirm_email/#{params[:token]}?status=already_confirmed", allow_other_host: true
+            return
+          end
+        
+          if user.confirmation_token_expired?
+            # Redirect to frontend with token expiry error
+            redirect_to "https://www.bantuhive.com/auth/confirm_email/#{params[:token]}?status=expired", allow_other_host: true
+            return
+          end
+        
+          user.confirm_email!
+          # Redirect to frontend with success message
+          redirect_to "https://www.bantuhive.com/auth/confirm_email/#{params[:token]}?status=success", allow_other_host: true
+        end        
 
       # def resend_confirmation
       #   user = User.find_by(email: params[:email])
