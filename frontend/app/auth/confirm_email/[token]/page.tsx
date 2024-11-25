@@ -21,10 +21,19 @@ const EmailConfirmationContent = () => {
 
       try {
         const response = await confirmEmail(token);
+        console.log('confirmed email response', response);
 
+        // Check for success (status code 200)
         if (response.status === 200) {
-          setStatus('success');
-        } else if (response.status === 422) {
+          const responseData = await response.json();
+          if (responseData.message) {
+            setStatus('success');
+          } else {
+            setStatus('error');
+          }
+        }
+        // Check for error (status code 422)
+        else if (response.status === 422) {
           const errorData = await response.json();
           if (errorData.error.includes('expired')) {
             setStatus('expired_token');
@@ -51,6 +60,8 @@ const EmailConfirmationContent = () => {
     setResendStatus('loading');
     try {
       const response = await resendConfirmationEmail(email);
+
+      console.log('resend confirmation email response', response);
 
       if (response.status === 200) {
         setResendStatus('success');
