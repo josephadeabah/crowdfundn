@@ -180,27 +180,27 @@ const RegisterForm: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+  
     if (!isStepValid()) return;
-    setError(null);
-    setSuccess(null);
-    setShowToast(false);
+  
+    setError(null); // Clear previous errors
+    setSuccess(null); // Clear previous success messages
+    setShowToast(false); // Hide any previous toasts
     setIsLoading(true);
-
+  
+    // Validate the form fields before sending data
     const newErrors: Errors = {};
     Object.keys(formData).forEach((key) => {
-      const error = validateField(
-        key as keyof FormData,
-        formData[key as keyof FormData],
-      );
+      const error = validateField(key as keyof FormData, formData[key as keyof FormData]);
       if (error) newErrors[key as keyof FormData] = error;
     });
-
+  
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      setIsLoading(false);
+      setErrors(newErrors); // Set the validation errors
+      setIsLoading(false); // Stop loading
       return;
     }
-
+  
     try {
       const registrationData: UserRegistrationData = {
         email: formData.email,
@@ -220,30 +220,47 @@ const RegisterForm: React.FC = () => {
         duration_in_days: parseInt(formData.durationDays, 10),
         national_id: formData.nationalId,
       };
-
+  
+      // Make the API call to register the user
       const response = await registerUser(registrationData);
+  
       setIsLoading(false);
-
-      if ('errors' in response) {
-        if (Array.isArray(response.errors)) {
-          setError(response.errors.join(', '));
+  
+      if (response.error) {
+        // Handle specific error messages returned from backend without repetition
+        const errorMessages = {
+          'This email is already confirmed. Please log in instead.': 'This email is already confirmed. Please log in instead.',
+          'This email is already registered but not confirmed. Please check your email for the confirmation link or request a new one.': 'This email is already registered but not confirmed. Please check your email for the confirmation link or request a new one.',
+          'Invalid or expired confirmation token': 'Invalid or expired confirmation token.',
+          'Confirmation token has expired. Please request a new confirmation email.': 'Confirmation token has expired. Please request a new confirmation email.',
+          'Email already confirmed. You can log in now.': 'Email already confirmed. You can log in now.',
+          'Invalid email or password': 'Invalid email or password.',
+          'Email is already confirmed.': 'Email is already confirmed.',
+          'Confirmation email resent successfully': 'Confirmation email resent successfully.',
+          'Password reset instructions sent': 'Password reset instructions sent.',
+        };
+  
+        const backendErrorMessage = errorMessages[response.error as keyof typeof errorMessages];
+        
+        if (backendErrorMessage) {
+          setError(backendErrorMessage); // Set the error from the backend
+          setShowToast(true); // Show the error message as a toast
         } else {
-          setError('An unknown error occurred.');
+          setError('An unknown error occurred.'); // Generic error message if not matched
+          setShowToast(true); // Show the error message
         }
-        setShowToast(true);
       } else {
-        setSuccess(
-          'Registration successful! Please check your email to confirm your account.',
-        );
-        setShowToast(true);
+        // Success case (assuming no error key in response)
+        setSuccess('Registration successful! Please check your email to confirm your account.');
+        setShowToast(true); // Show the success message
       }
     } catch (error) {
       console.error('Registration error:', error);
       setError('An error occurred during registration. Please try again.');
       setIsLoading(false);
-      setShowToast(true);
+      setShowToast(true); // Show error toast
     }
-  };
+  };  
 
   const StepIndicator = () => (
     <div className="mb-8">

@@ -62,6 +62,7 @@ export type RegisterUserResponse =
 // Adjusted ApiResponse type
 export interface ApiResponse {
   success: boolean;
+  error?: string; // For error messages
   message?: string;
   data?: RegisterUserResponse;
 }
