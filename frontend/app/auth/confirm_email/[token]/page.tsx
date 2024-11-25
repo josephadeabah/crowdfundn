@@ -19,6 +19,8 @@ const EmailConfirmationContent = () => {
         return;
       }
 
+      console.log("token", token);
+
       try {
         const response = await confirmEmail(token);
         console.log('confirmed email response', response);
