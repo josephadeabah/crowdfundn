@@ -1,7 +1,7 @@
 export const confirmEmail = async (token: string) => {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/auth/confirm/${token}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/auth/confirm_email/${token}`,
       {
         method: 'GET',
         headers: {
