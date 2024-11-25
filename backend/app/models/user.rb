@@ -23,14 +23,22 @@ class User < ApplicationRecord
   after_create :assign_default_role
   after_create :create_default_profile
 
-  def send_confirmation_email
-    host = Rails.application.routes.default_url_options[:host]
-    UserConfirmationEmailService.send_confirmation_email(self, host)
+  def confirmation_token_expired?
+    confirmation_sent_at.present? && confirmation_sent_at < 2.days.ago
   end
 
-  # Generate a confirmation token before creating the user
+  def send_confirmation_email
+    host = Rails.application.routes.default_url_options[:host] || 'bantuhive.com'
+    UserConfirmationEmailService.send_confirmation_email(self, host)
+  rescue StandardError => e
+    Rails.logger.error "Failed to send confirmation email to user #{id}: #{e.message}"
+  end
+  
+
+  # Override the generate_confirmation_token method to set `confirmation_sent_at`
   def generate_confirmation_token
     self.confirmation_token = SecureRandom.urlsafe_base64
+    self.confirmation_sent_at = Time.current
     self.email_confirmed = false
   end
 

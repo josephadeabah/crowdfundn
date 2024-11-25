@@ -3,13 +3,24 @@ module Api
     module Members
       class AuthController < ApplicationController
         def signup
-          user = User.new(user_params)
-          if user.save
-            render json: { token: encode_token(user.id), user: user.as_json(include: :roles) }, status: :created
+          existing_user = User.find_by(email: user_params[:email])
+        
+          if existing_user
+            if existing_user.email_confirmed
+              render json: { error: 'This email is already confirmed. Please log in instead.' }, status: :unprocessable_entity
+            else
+              render json: { error: 'This email is already registered but not confirmed. Please check your email for the confirmation link or request a new one.' }, status: :unprocessable_entity
+            end
           else
-            render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+            user = User.new(user_params)
+            if user.save
+              render json: { token: encode_token(user.id), user: user.as_json(include: :roles) }, status: :created
+            else
+              render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+            end
           end
         end
+        
 
         def login
           user = User.find_by(email: params[:email])
@@ -23,19 +34,45 @@ module Api
             render json: { error: 'Invalid email or password' }, status: :unauthorized
           end
         end 
-        
-        
-        def resend_confirmation
-          user = User.find_by(email: params[:email])
-          if user && !user.email_confirmed
-            user.send_confirmation_email
-            render json: { message: 'Confirmation email resent successfully' }, status: :ok
-          else
-            render json: { error: 'Invalid email or email already confirmed' }, status: :unprocessable_entity
-          end
-        end
-        
 
+      def confirm_email
+        user = User.find_by(confirmation_token: params[:token])
+
+        if user.nil?
+          # Redirect to frontend with error if token is invalid
+          redirect_to "https://www.bantuhive.com/auth/confirm_email/#{params[:token]}?status=error"
+          return
+        end
+
+        if user.email_confirmed
+          # Redirect to frontend with error if email is already confirmed
+          redirect_to "https://www.bantuhive.com/auth/confirm_email/#{params[:token]}?status=already_confirmed"
+          return
+        end
+
+        if user.confirmation_token_expired?
+          # Redirect to frontend with token expiry error
+          redirect_to "https://www.bantuhive.com/auth/confirm_email/#{params[:token]}?status=expired"
+          return
+        end
+
+        user.confirm_email!
+        # Redirect to frontend with success message
+        redirect_to "https://www.bantuhive.com/auth/confirm_email/#{params[:token]}?status=success"
+      end
+
+      def resend_confirmation
+        user = User.find_by(email: params[:email])
+        if user && !user.email_confirmed
+          user.generate_confirmation_token
+          user.save!
+          user.send_confirmation_email
+          render json: { message: 'Confirmation email resent successfully' }, status: :ok
+        else
+          render json: { error: 'Invalid email or email already confirmed' }, status: :unprocessable_entity
+        end
+      end
+      
         def password_reset
           user = User.find_by(email: params[:email])
           if user
@@ -50,6 +87,7 @@ module Api
           # Find user by reset token and update password
           # Implement actual reset password logic
         end
+
 
         private
 

@@ -68,18 +68,6 @@ module Api
           end
         end
 
-        def confirm_email
-          user = User.find_by(confirmation_token: params[:token])
-          if user && !user.email_confirmed
-            user.confirm_email!
-            redirect_to root_path, notice: 'Your email has been confirmed. You can now log in.'
-          else
-            Rails.logger.info "Invalid token or email already confirmed for user #{user&.id || 'unknown'}"
-            redirect_to root_path, alert: 'Invalid or expired confirmation token.'
-          end
-        end
-        
-
         private
 
         def record_not_found
