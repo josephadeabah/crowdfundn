@@ -17,3 +17,16 @@ export const confirmEmail = async (token: string) => {
     throw error;
   }
 };
+
+export const resendConfirmationEmail = async (email: string) => {
+  return fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/auth/resend_confirmation`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    },
+  );
+};
