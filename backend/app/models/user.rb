@@ -24,8 +24,14 @@ class User < ApplicationRecord
   after_create :create_default_profile
 
   def confirmation_token_expired?
-    confirmation_sent_at.present? && confirmation_sent_at < 2.days.ago
+    begin
+      decoded = JWT.decode(confirmation_token, Rails.application.secret_key_base).first
+      decoded['exp'] < Time.current.to_i
+    rescue JWT::DecodeError, JWT::ExpiredSignature
+      true
+    end
   end
+  
 
   def send_confirmation_email
     host = Rails.application.routes.default_url_options[:host] || 'https://bantuhive.com'
@@ -35,9 +41,13 @@ class User < ApplicationRecord
   end
   
 
-  # Override the generate_confirmation_token method to set `confirmation_sent_at`
+  # Override to generate JWT confirmation token with expiration
   def generate_confirmation_token
-    self.confirmation_token = SecureRandom.urlsafe_base64
+    payload = {
+      user_id: id,
+      exp: 2.days.from_now.to_i # Token expires in 2 days
+    }
+    self.confirmation_token = JWT.encode(payload, Rails.application.secret_key_base)
     self.confirmation_sent_at = Time.current
     self.email_confirmed = false
   end

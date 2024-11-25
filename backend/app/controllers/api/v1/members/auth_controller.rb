@@ -24,32 +24,22 @@ module Api
 
         def confirm_email
           user = User.find_by(confirmation_token: params[:token])
-          
-          if user.nil?
+        
+          if user && !user.confirmation_token_expired?
+            user.confirm_email!
+            render json: { message: 'Email confirmed successfully' }, status: :ok
+          else
             render json: { error: 'Invalid or expired confirmation token' }, status: :unprocessable_entity
-            return
           end
-        
-          if user.email_confirmed
-            render json: { message: 'Email already confirmed. You can log in now.' }, status: :ok
-            return
-          end
-        
-          if user.confirmation_token_expired?
-            render json: { error: 'Confirmation token has expired. Please request a new confirmation email.' }, status: :unprocessable_entity
-            return
-          end
-        
-          user.confirm_email!
-          render json: { message: 'Email confirmed successfully. You can now log in.' }, status: :ok
-        end        
+        end              
         
 
         def login
           user = User.find_by(email: params[:email])
+          
           if user&.authenticate(params[:password])
             if user.email_confirmed
-              render json: { token: encode_token(user.id), user: user }, status: :ok
+              render json: { token: encode_token(user.id), user: user.as_json(include: :roles) }, status: :ok
             else
               user.send_confirmation_email
               render json: { error: 'Email not confirmed. Please confirm with the link sent to your email to log in.' }, status: :unauthorized
@@ -57,26 +47,33 @@ module Api
           else
             render json: { error: 'Invalid email or password' }, status: :unauthorized
           end
-        end        
+        end
+              
 
-      def resend_confirmation
-        user = User.find_by(email: params[:email])
-        if user && !user.email_confirmed
+        def resend_confirmation
+          user = User.find_by(email: params[:email])
+          
+          if user.nil?
+            render json: { error: 'Invalid email' }, status: :unprocessable_entity
+            return
+          end
+        
+          if user.email_confirmed
+            render json: { error: 'Email is already confirmed.' }, status: :unprocessable_entity
+            return
+          end
+        
+          if user.confirmation_sent_at && user.confirmation_sent_at > 1.hour.ago
+            render json: { error: 'Confirmation email already sent recently. Please check your inbox or try again later.' }, status: :too_many_requests
+            return
+          end
+        
           user.generate_confirmation_token
           user.save!
           user.send_confirmation_email
+        
           render json: { message: 'Confirmation email resent successfully' }, status: :ok
-        end
-        if user.email_confirmed
-          render json: { error: 'Email is already confirmed.' }, status: :unprocessable_entity
-          return
-        end
-        if user.confirmation_sent_at && user.confirmation_sent_at > 1.hour.ago
-          render json: { error: 'Confirmation email already sent recently. Please check your inbox or try again later.' }, status: :too_many_requests
-          return
-        end
-          render json: { error: 'Invalid email' }, status: :unprocessable_entity
-      end
+        end        
       
       
         def password_reset
