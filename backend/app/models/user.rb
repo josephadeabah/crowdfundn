@@ -28,7 +28,7 @@ class User < ApplicationRecord
   end
 
   def send_confirmation_email
-    host = Rails.application.routes.default_url_options[:host] || 'bantuhive.com'
+    host = Rails.application.routes.default_url_options[:host] || 'https://bantuhive.com'
     UserConfirmationEmailService.send_confirmation_email(self, host)
   rescue StandardError => e
     Rails.logger.error "Failed to send confirmation email to user #{id}: #{e.message}"

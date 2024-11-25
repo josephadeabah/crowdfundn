@@ -1,15 +1,13 @@
 
 Rails.application.routes.draw do
 
-  get 'auth/confirm_email/:token', to: 'auth#confirm_email', as: :confirm_email
-
   namespace :api do
     namespace :v1 do
       namespace :members do
         resources :profiles, only: [:update]
         resources :roles, only: [:create]
         post 'auth/signup', to: 'auth#signup'
-        get 'auth/confirm/:token', to: 'auth#confirm'
+        get 'auth/confirm_email/:token', to: 'auth#confirm_email', as: :confirm_email
         post 'auth/login', to: 'auth#login'
         post 'auth/password/reset', to: 'auth#password_reset'
         post 'auth/resend_confirmation', to: 'auth#resend_confirmation'
