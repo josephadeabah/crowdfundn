@@ -4,6 +4,9 @@ export const confirmEmail = async (token: string) => {
       `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/auth/confirm_email/${token}`,
       {
         method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       },
     );
 
