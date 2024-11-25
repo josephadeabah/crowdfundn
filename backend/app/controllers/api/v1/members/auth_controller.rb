@@ -23,8 +23,8 @@ module Api
         
 
         def login
-          user = User.find_by(email: params[:email])
-          if user&.authenticate(params[:password])
+          if user && user.authenticate(params[:password])
+            Rails.logger.debug "User found: #{user.email_confirmed ? 'confirmed' : 'not confirmed'}"
             if user.email_confirmed
               render json: { token: encode_token(user.id), user: user }, status: :ok
             else
@@ -33,7 +33,7 @@ module Api
             end
           else
             render json: { error: 'Invalid email or password' }, status: :unauthorized
-          end
+          end          
         end 
 
         def confirm_email
@@ -76,7 +76,6 @@ module Api
 
       def resend_confirmation
         user = User.find_by(email: params[:email])
-        
         if user
           if user.email_confirmed
             render json: { error: 'Email is already confirmed.' }, status: :unprocessable_entity
@@ -95,7 +94,7 @@ module Api
         else
           render json: { error: 'Invalid email.' }, status: :unprocessable_entity
         end
-      end
+      end      
       
       
         def password_reset
