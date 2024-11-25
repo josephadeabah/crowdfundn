@@ -79,6 +79,7 @@ const EmailConfirmationContent = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
       {status === 'loading' && <p className="text-lg text-blue-500">Confirming your email...</p>}
+      
       {status === 'success' && (
         <div className="text-center bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
           <p className="text-xl font-semibold text-green-500">Email successfully confirmed!</p>
@@ -91,22 +92,36 @@ const EmailConfirmationContent = () => {
           </p>
         </div>
       )}
-      {status === 'already_confirmed' && (
+
+      {/* Already Confirmed */}
+      {(status === 'already_confirmed' || status === 'expired_token' || status === 'error') && (
         <div className="text-center bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-          <p className="text-xl font-semibold text-blue-500">Email already confirmed!</p>
-          <p className="mt-4">
-            You can{' '}
-            <a href="/auth/login" className="text-blue-500 hover:underline">
-              log in
-            </a>{' '}
-            now.
-          </p>
-        </div>
-      )}
-      {status === 'expired_token' && (
-        <div className="text-center bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-          <p className="text-xl font-semibold text-orange-500">Confirmation link expired.</p>
-          <p className="mt-4">Please enter your email to resend the confirmation link:</p>
+          {status === 'already_confirmed' && (
+            <>
+              <p className="text-xl font-semibold text-blue-500">Email already confirmed!</p>
+              <p className="mt-4">
+                You can{' '}
+                <a href="/auth/login" className="text-blue-500 hover:underline">
+                  log in
+                </a>{' '}
+                now.
+              </p>
+            </>
+          )}
+          {status === 'expired_token' && (
+            <>
+              <p className="text-xl font-semibold text-orange-500">Confirmation link expired.</p>
+              <p className="mt-4">Please enter your email to resend the confirmation link:</p>
+            </>
+          )}
+          {status === 'error' && (
+            <>
+              <p className="text-xl font-semibold text-red-500">Failed to confirm email.</p>
+              <p className="mt-4 text-gray-700">The link might be invalid or there was an error processing your request.</p>
+            </>
+          )}
+
+          {/* Resend Confirmation Form */}
           <div className="mt-6">
             <input
               type="email"
@@ -129,12 +144,6 @@ const EmailConfirmationContent = () => {
               <p className="mt-4 text-red-500">Failed to resend confirmation email. Please try again later.</p>
             )}
           </div>
-        </div>
-      )}
-      {status === 'error' && (
-        <div className="text-center bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-          <p className="text-xl font-semibold text-red-500">Failed to confirm email.</p>
-          <p className="mt-4 text-gray-700">The link might be invalid or there was an error processing your request.</p>
         </div>
       )}
     </div>
