@@ -28,7 +28,8 @@ module Api
             if user.email_confirmed
               render json: { token: encode_token(user.id), user: user }, status: :ok
             else
-              render json: { error: 'Email not confirmed. Please confirm your email to log in.' }, status: :unauthorized
+              user.send_confirmation_email
+              render json: { error: 'Email not confirmed. Please confirm with the link sent to your email to log in.' }, status: :unauthorized
             end
           else
             render json: { error: 'Invalid email or password' }, status: :unauthorized
@@ -61,17 +62,41 @@ module Api
         redirect_to "https://www.bantuhive.com/auth/confirm_email/#{params[:token]}?status=success"
       end
 
+      # def resend_confirmation
+      #   user = User.find_by(email: params[:email])
+      #   if user && !user.email_confirmed
+      #     user.generate_confirmation_token
+      #     user.save!
+      #     user.send_confirmation_email
+      #     render json: { message: 'Confirmation email resent successfully' }, status: :ok
+      #   else
+      #     render json: { error: 'Invalid email or email already confirmed' }, status: :unprocessable_entity
+      #   end
+      # end
+
       def resend_confirmation
         user = User.find_by(email: params[:email])
-        if user && !user.email_confirmed
+        
+        if user
+          if user.email_confirmed
+            render json: { error: 'Email is already confirmed.' }, status: :unprocessable_entity
+            return
+          end
+      
+          if user.confirmation_sent_at && user.confirmation_sent_at > 1.hour.ago
+            render json: { error: 'Confirmation email already sent recently. Please check your inbox or try again later.' }, status: :too_many_requests
+            return
+          end
+      
           user.generate_confirmation_token
           user.save!
           user.send_confirmation_email
           render json: { message: 'Confirmation email resent successfully' }, status: :ok
         else
-          render json: { error: 'Invalid email or email already confirmed' }, status: :unprocessable_entity
+          render json: { error: 'Invalid email.' }, status: :unprocessable_entity
         end
       end
+      
       
         def password_reset
           user = User.find_by(email: params[:email])
