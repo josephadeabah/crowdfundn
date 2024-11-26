@@ -31,16 +31,24 @@ module Api
           elsif user.confirmation_token_expired?
             render json: { error: 'Confirmation token has expired. Please request a new confirmation email.' }, status: :unprocessable_entity
           else
-            user.confirmed_email!
-            render json: { message: 'Email confirmed successfully' }, status: :ok
+            begin
+              # Directly update the user fields
+              user.update!(email_confirmed: true, confirmed_at: Time.current, confirmation_token: nil)
+              render json: { message: 'Email confirmed successfully' }, status: :ok
+            rescue => e
+              Rails.logger.error "Failed to confirm email for user #{user.id}: #{e.message}"
+              render json: { error: 'Error confirming email. Please try again later.' }, status: :unprocessable_entity
+            end
           end
-        end                   
+        end
+                        
         
 
         def login
           user = User.find_by(email: params[:email])
           
           if user&.authenticate(params[:password])
+            Rails.logger.debug "User email confirmed: #{user.email_confirmed}" # Debugging line
             if user.email_confirmed
               render json: { token: encode_token(user.id), user: user.as_json(include: :roles) }, status: :ok
             else
@@ -51,6 +59,8 @@ module Api
             render json: { error: 'Invalid email or password' }, status: :unauthorized
           end
         end
+        
+        
               
 
         def resend_confirmation

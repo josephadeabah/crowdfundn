@@ -45,9 +45,18 @@ class User < ApplicationRecord
   end
   
   # Mark the user as confirmed
-  def confirmed_email!
-    update(email_confirmed: true, confirmed_at: Time.current, confirmation_token: nil)
-  end
+  # def confirm_email!
+  #   Rails.logger.debug "Confirming email for user #{id}..."
+  #   begin
+  #     # Update the user status to confirm email
+  #     user.update!(email_confirmed: true, confirmed_at: Time.current, confirmation_token: nil)
+  #     # Re-fetch the user to ensure the update worked
+  #     reload
+  #     Rails.logger.debug "User email confirmed successfully: #{email_confirmed}"
+  #   rescue => e
+  #     Rails.logger.error "Failed to confirm email for user #{id}: #{e.message}"
+  #   end
+  # end  
 
   def assign_default_role
     roles << Role.find_by(name: 'User') unless has_role?('User')
