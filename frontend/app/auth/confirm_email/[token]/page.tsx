@@ -1,5 +1,3 @@
-//app/auth/confirm_email/[token]/page.tsx
-
 'use client';
 
 import React, { useEffect, useState, Suspense } from 'react';
@@ -8,54 +6,48 @@ import { confirmEmail, resendConfirmationEmail } from '@/app/utils/api/api.confi
 import FullscreenLoader from '@/app/loaders/FullscreenLoader';
 
 const EmailConfirmationContent = () => {
-  const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'already_confirmed' | 'expired_token'>('loading');
-  const [resendStatus, setResendStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<string>('');
+  const [resendStatus, setResendStatus] = useState<string>('');
   const params = useParams(); // Get dynamic segment parameters
   const token = Array.isArray(params?.token) ? params.token[0] : params?.token || ''; // Ensure token is a string
   const [email, setEmail] = useState(''); // To capture the email for resending confirmation
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const confirmUserEmail = async () => {
       if (!token) {
         setStatus('error');
+        setLoading(false);
         return;
       }
-
-      console.log("token", token);
 
       try {
         const response = await confirmEmail(token);
         console.log('confirmed email response', response);
-
-        // Check for success (status code 200)
-        if (response.status === 200) {
-          const responseData = await response.json();
-          if (responseData.message) {
-            setStatus('success');
-          } else {
-            setStatus('error');
-          }
+        if (response.message) {
+          setStatus(response.message);
         }
-        // Check for error (status code 422)
-        else if (response.status === 422) {
-          const errorData = await response.json();
-          if (errorData.error.includes('expired')) {
-            setStatus('expired_token');
-          } else if (errorData.error.includes('already confirmed')) {
-            setStatus('already_confirmed');
-          } else {
-            setStatus('error');
-          }
-        } else {
-          setStatus('error');
+        if (response.error) {
+          setStatus(response.error);
         }
       } catch (error) {
         console.error('Error confirming email:', error);
         setStatus('error');
+      } finally {
+        setLoading(false); // Ensure loading state is set to false when done
       }
     };
 
+    // Set a timeout to simulate loading for 2 seconds
+    const timeout = setTimeout(() => {
+      if (loading) {
+        setLoading(false); // Stop loading if still loading after 2 seconds
+      }
+    }, 2000);
+
     confirmUserEmail();
+
+    return () => clearTimeout(timeout); // Clear timeout if the component unmounts
   }, [token]);
 
   const handleResend = async () => {
@@ -64,13 +56,14 @@ const EmailConfirmationContent = () => {
     setResendStatus('loading');
     try {
       const response = await resendConfirmationEmail(email);
+      const data = await response.json();
 
-      console.log('resend confirmation email response', response);
+      console.log('resend confirmation email response', data);
 
-      if (response.status === 200) {
-        setResendStatus('success');
+      if (data.message) {
+        setResendStatus(data.message);
       } else {
-        setResendStatus('error');
+        setResendStatus(data.error);
       }
     } catch (error) {
       console.error('Error resending confirmation email:', error);
@@ -80,9 +73,9 @@ const EmailConfirmationContent = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
-      {status === 'loading' && <p className="text-lg text-blue-500">Confirming your email...</p>}
+      {loading && <p className="text-lg text-blue-500">Confirming your email...</p>}
       
-      {status === 'success' && (
+      {status === 'Email confirmed successfully' && (
         <div className="text-center bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
           <p className="text-xl font-semibold text-green-500">Email successfully confirmed!</p>
           <p className="mt-4">
@@ -96,9 +89,9 @@ const EmailConfirmationContent = () => {
       )}
 
       {/* Already Confirmed */}
-      {(status === 'already_confirmed' || status === 'expired_token' || status === 'error') && (
+      {(status === 'Email is already confirmed.' || status === 'Invalid confirmation token' || status === 'Confirmation token has expired. Please request a new confirmation email.' || status === 'Invalid email' || status === 'Confirmation email already sent recently. Please check your inbox or try again later.' || status === 'Confirmation email resent successfully') && (
         <div className="text-center bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-          {status === 'already_confirmed' && (
+          {status === 'Email is already confirmed.' && (
             <>
               <p className="text-xl font-semibold text-blue-500">Email already confirmed!</p>
               <p className="mt-4">
@@ -110,13 +103,13 @@ const EmailConfirmationContent = () => {
               </p>
             </>
           )}
-          {status === 'expired_token' && (
+          {status === 'Confirmation token has expired. Please request a new confirmation email.' && (
             <>
               <p className="text-xl font-semibold text-orange-500">Confirmation link expired.</p>
               <p className="mt-4">Please enter your email to resend the confirmation link:</p>
             </>
           )}
-          {status === 'error' && (
+          {status === 'Invalid confirmation token' && (
             <>
               <p className="text-xl font-semibold text-red-500">Failed to confirm email.</p>
               <p className="mt-4 text-gray-700">The link might be invalid or there was an error processing your request.</p>
@@ -135,14 +128,14 @@ const EmailConfirmationContent = () => {
             <button
               onClick={handleResend}
               className="bg-blue-100 text-indigo-600 py-2 px-4 rounded hover:bg-blue-200 w-full"
-              disabled={resendStatus === 'loading'}
+              disabled={loading}
             >
               {resendStatus === 'loading' ? 'Resending...' : 'Resend Confirmation Email'}
             </button>
-            {resendStatus === 'success' && (
+            {resendStatus === 'Confirmation email resent successfully' && (
               <p className="mt-4 text-green-500">Confirmation email resent successfully.</p>
             )}
-            {resendStatus === 'error' && (
+            {resendStatus === 'Invalid Email' && (
               <p className="mt-4 text-red-500">Failed to resend confirmation email. Please try again later.</p>
             )}
           </div>
