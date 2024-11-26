@@ -23,6 +23,7 @@ module Api
 
 
         def confirm_email
+          Rails.logger.debug "Confirmation token: #{params[:token]}"
           user = User.find_by(confirmation_token: params[:token])
         
           if user.nil?
