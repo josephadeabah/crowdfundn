@@ -22,28 +22,44 @@ module Api
         end
 
 
-        def confirm_email
-          Rails.logger.debug "Confirmation token: #{params[:token]}"
-          user = User.find_by(confirmation_token: params[:token])
-        
-          if user.nil?
-            render json: { error: 'Invalid confirmation token' }, status: :unprocessable_entity
-          elsif user.confirmation_token_expired?
-            render json: { error: 'Confirmation token has expired. Please request a new confirmation email.' }, status: :unprocessable_entity
-          else
-            begin
-              # Directly update the user fields
-              user.update!(email_confirmed: true, confirmed_at: Time.current, confirmation_token: nil)
-              render json: { message: 'Email confirmed successfully' }, status: :ok
-            rescue => e
-              Rails.logger.error "Failed to confirm email for user #{user.id}: #{e.message}"
-              render json: { error: 'Error confirming email. Please try again later.' }, status: :unprocessable_entity
-            end
-          end
+        def decode_confirmation_token(token)
+          JWT.decode(token, Rails.application.secret_key_base).first rescue nil
         end
-                        
-        
 
+        def confirm_email
+          # Decode the token from the URL
+          decoded = decode_confirmation_token(params[:confirmation_token])
+          
+          # Log the decoded token for debugging purposes
+          Rails.logger.debug "Decoded token: #{decoded.inspect}" if decoded.present?
+        
+          if decoded.nil?
+            render json: { error: 'Invalid confirmation token' }, status: :unprocessable_entity
+            return
+          end
+        
+          # Find the user based on the decoded user_id
+          user = User.find_by(id: decoded['user_id'])
+          if user.nil?
+            render json: { error: 'User not found' }, status: :unprocessable_entity
+            return
+          end
+        
+          # Check if the token has expired
+          if decoded['exp'] < Time.current.to_i
+            render json: { error: 'Confirmation token has expired. Please request a new confirmation email.' }, status: :unprocessable_entity
+            return
+          end
+        
+          # Mark the user's email as confirmed
+          user.update_columns(email_confirmed: true, confirmed_at: Time.current, confirmation_token: nil)
+          render json: { message: 'Email confirmed successfully' }, status: :ok
+        rescue JWT::DecodeError => e
+          Rails.logger.error "JWT DecodeError: #{e.message}" # Log the error message if token decoding fails
+          render json: { error: 'Invalid token format' }, status: :unprocessable_entity
+        end
+        
+                
         def login
           user = User.find_by(email: params[:email])
           
@@ -61,8 +77,6 @@ module Api
         end
         
         
-              
-
         def resend_confirmation
           user = User.find_by(email: params[:email])
           

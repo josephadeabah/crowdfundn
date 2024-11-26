@@ -18,19 +18,10 @@ class User < ApplicationRecord
   has_many :archived_campaigns
   accepts_nested_attributes_for :profile
 
-  before_create :generate_confirmation_token
+  after_create :generate_confirmation_token
   after_create :send_confirmation_email
   after_create :assign_default_role
   after_create :create_default_profile
-
-  def confirmation_token_expired?
-    decoded = decode_confirmation_token
-    decoded.present? && decoded['exp'] < Time.current.to_i
-  end
-  
-  def decode_confirmation_token
-    JWT.decode(confirmation_token, Rails.application.secret_key_base).first rescue nil
-  end
   
   def generate_confirmation_token
     self.confirmation_token = UserConfirmationService.generate_confirmation_token(self)
@@ -42,21 +33,7 @@ class User < ApplicationRecord
     UserConfirmationService.send_confirmation_email(self)
   rescue StandardError => e
     Rails.logger.error "Failed to send confirmation email to user #{id}: #{e.message}"
-  end
-  
-  # Mark the user as confirmed
-  # def confirm_email!
-  #   Rails.logger.debug "Confirming email for user #{id}..."
-  #   begin
-  #     # Update the user status to confirm email
-  #     user.update!(email_confirmed: true, confirmed_at: Time.current, confirmation_token: nil)
-  #     # Re-fetch the user to ensure the update worked
-  #     reload
-  #     Rails.logger.debug "User email confirmed successfully: #{email_confirmed}"
-  #   rescue => e
-  #     Rails.logger.error "Failed to confirm email for user #{id}: #{e.message}"
-  #   end
-  # end  
+  end 
 
   def assign_default_role
     roles << Role.find_by(name: 'User') unless has_role?('User')
