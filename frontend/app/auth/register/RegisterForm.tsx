@@ -223,7 +223,7 @@ const RegisterForm: React.FC = () => {
         national_id: formData.nationalId,
       };
 
-      const response = await registerUser(registrationData);
+      const response: ApiResponse = await registerUser(registrationData);
       setIsLoading(false);
 
       if ('errors' in response) {
