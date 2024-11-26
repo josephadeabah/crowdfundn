@@ -1,3 +1,5 @@
+//app/auth/confirm_email/[token]/page.tsx
+
 'use client';
 
 import React, { useEffect, useState, Suspense } from 'react';
