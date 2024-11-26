@@ -24,6 +24,7 @@ const EmailConfirmationContent = () => {
       try {
         const response = await confirmEmail(token);
         console.log('confirmed email response', response);
+
         if (response.message) {
           setStatus(response.message);
         }
@@ -32,7 +33,11 @@ const EmailConfirmationContent = () => {
         }
       } catch (error) {
         console.error('Error confirming email:', error);
-        setStatus('error');
+        if ((error as Error)?.message) {
+          setStatus('Error confirming email. Please try again later.');
+        } else {
+          setStatus('Unexpected error occurred. Please try again later.');
+        }
       } finally {
         setLoading(false); // Ensure loading state is set to false when done
       }
@@ -62,12 +67,18 @@ const EmailConfirmationContent = () => {
 
       if (data.message) {
         setResendStatus(data.message);
-      } else {
+      } else if (data.error) {
         setResendStatus(data.error);
+      } else {
+        setResendStatus('Unexpected error occurred. Please try again later.');
       }
     } catch (error) {
       console.error('Error resending confirmation email:', error);
-      setResendStatus('error');
+      if ((error as Error)?.message) {
+        setResendStatus('Failed to resend confirmation email. Please try again later.');
+      } else {
+        setResendStatus('Unexpected error occurred. Please try again later.');
+      }
     }
   };
 
@@ -88,8 +99,13 @@ const EmailConfirmationContent = () => {
         </div>
       )}
 
-      {/* Already Confirmed */}
-      {(status === 'Email is already confirmed.' || status === 'Invalid confirmation token' || status === 'Confirmation token has expired. Please request a new confirmation email.' || status === 'Error confirming email. Please try again later.' || status === 'Confirmation email already sent recently. Please check your inbox or try again later.' || status === 'Confirmation email resent successfully') && (
+      {/* Already Confirmed / Invalid Token */}
+      {(status === 'Email is already confirmed.' ||
+        status === 'Invalid confirmation token' ||
+        status === 'Confirmation token has expired. Please request a new confirmation email.' ||
+        status === 'Invalid token format' ||
+        status === 'Error confirming email. Please try again later.' ||
+        status === 'Unexpected error occurred. Please try again later.') && (
         <div className="text-center bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
           {status === 'Email is already confirmed.' && (
             <>
@@ -103,16 +119,28 @@ const EmailConfirmationContent = () => {
               </p>
             </>
           )}
+          {status === 'Invalid confirmation token' && (
+            <>
+              <p className="text-xl font-semibold text-red-500">Failed to confirm email.</p>
+              <p className="mt-4 text-gray-700">The link might be invalid or there was an error processing your request.</p>
+            </>
+          )}
           {status === 'Confirmation token has expired. Please request a new confirmation email.' && (
             <>
               <p className="text-xl font-semibold text-orange-500">Confirmation link expired.</p>
               <p className="mt-4">Please enter your email to resend the confirmation link:</p>
             </>
           )}
-          {status === 'Invalid confirmation token' && (
+          {status === 'Invalid token format' && (
             <>
-              <p className="text-xl font-semibold text-red-500">Failed to confirm email.</p>
-              <p className="mt-4 text-gray-700">The link might be invalid or there was an error processing your request.</p>
+              <p className="text-xl font-semibold text-red-500">Error with confirmation link.</p>
+              <p className="mt-4">The token format seems to be incorrect. Please try again.</p>
+            </>
+          )}
+          {status === 'Unexpected error occurred. Please try again later.' && (
+            <>
+              <p className="text-xl font-semibold text-red-500">Something went wrong.</p>
+              <p className="mt-4">An unexpected error occurred. Please try again later.</p>
             </>
           )}
 
@@ -137,6 +165,15 @@ const EmailConfirmationContent = () => {
             )}
             {resendStatus === 'Error confirming email. Please try again later.' && (
               <p className="mt-4 text-red-500">Failed to resend confirmation email. Please try again later.</p>
+            )}
+            {resendStatus === 'Invalid email' && (
+              <p className="mt-4 text-red-500">The email address provided is invalid. Please check and try again.</p>
+            )}
+            {resendStatus === 'Confirmation email already sent recently. Please check your inbox or try again later.' && (
+              <p className="mt-4 text-yellow-500">A confirmation email was already sent recently. Please check your inbox or try again later.</p>
+            )}
+            {resendStatus === 'Unexpected error occurred. Please try again later.' && (
+              <p className="mt-4 text-red-500">An unexpected error occurred while resending the confirmation email. Please try again later.</p>
             )}
           </div>
         </div>
