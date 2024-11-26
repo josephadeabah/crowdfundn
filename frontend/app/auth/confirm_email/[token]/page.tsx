@@ -128,7 +128,7 @@ const EmailConfirmationContent = () => {
             <button
               onClick={handleResend}
               className="bg-blue-100 text-indigo-600 py-2 px-4 rounded hover:bg-blue-200 w-full"
-              disabled={loading}
+              disabled={loading || resendStatus === 'loading'} // Disable if loading or resend is in progress
             >
               {resendStatus === 'loading' ? 'Resending...' : 'Resend Confirmation Email'}
             </button>
