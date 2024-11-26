@@ -10,11 +10,14 @@ import { LoginUserResponseSuccess } from '@/app/types/auth.login.types';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import { ApiResponse } from '@/app/types/auth.register.types';
 
 type AuthContextType = {
   user: LoginUserType | null;
   token: string | null;
+  signupEmailConfirmationToken: string | null;
   login: (response: LoginUserResponseSuccess) => void;
+  signup: (response: ApiResponse) => void;
   logout: () => void;
 };
 
@@ -23,6 +26,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<LoginUserType | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [signupEmailConfirmationToken, setSignupEmailConfirmationToken] = useState<string | null>(null);
   const router = useRouter();
 
   const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
@@ -76,6 +80,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     resetLogoutTimer(); // Reset timer on login
   };
 
+  const signup = (response: ApiResponse) => {
+    setSignupEmailConfirmationToken(response.user.confirmation_token);
+  }
+
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -93,7 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const value = React.useMemo(
-    () => ({ user, token, login, logout }),
+    () => ({ user, token, signupEmailConfirmationToken, login, logout, signup }),
     [user, token],
   );
 

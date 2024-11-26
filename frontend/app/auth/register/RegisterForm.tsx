@@ -1,9 +1,10 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { FaSpinner, FaEye, FaEyeSlash } from 'react-icons/fa';
-import { UserRegistrationData } from '@/app/types/auth.register.types';
+import { ApiResponse, UserRegistrationData } from '@/app/types/auth.register.types';
 import { registerUser } from '@/app/utils/api/api.register';
 import ToastComponent from '@/app/components/toast/Toast';
 import { categories } from '@/app/utils/helpers/categories';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 type FormData = {
   email: string;
@@ -58,6 +59,7 @@ const RegisterForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
+  const { signup } = useAuth();
 
   const paymentMethods = [
     'Credit Card',
@@ -232,6 +234,7 @@ const RegisterForm: React.FC = () => {
         }
         setShowToast(true);
       } else {
+        signup(response);
         setSuccess(
           'Registration successful! Please check your email to confirm your account.',
         );

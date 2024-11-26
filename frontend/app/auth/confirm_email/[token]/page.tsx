@@ -3,28 +3,27 @@
 'use client';
 
 import React, { useEffect, useState, Suspense } from 'react';
-import { useParams } from 'next/navigation';
 import { confirmEmail, resendConfirmationEmail } from '@/app/utils/api/api.confirm_email';
 import FullscreenLoader from '@/app/loaders/FullscreenLoader';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 const EmailConfirmationContent = () => {
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'already_confirmed' | 'expired_token'>('loading');
   const [resendStatus, setResendStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const params = useParams(); // Get dynamic segment parameters
-  const token = Array.isArray(params?.token) ? params.token[0] : params?.token || ''; // Ensure token is a string
+  const { signupEmailConfirmationToken } = useAuth();
   const [email, setEmail] = useState(''); // To capture the email for resending confirmation
 
   useEffect(() => {
     const confirmUserEmail = async () => {
-      if (!token) {
+      if (!signupEmailConfirmationToken) {
         setStatus('error');
         return;
       }
 
-      console.log("token", token);
+      console.log("token", signupEmailConfirmationToken);
 
       try {
-        const response = await confirmEmail(token);
+        const response = await confirmEmail(signupEmailConfirmationToken);
         console.log('confirmed email response', response);
 
         // Check for success (status code 200)
@@ -56,7 +55,7 @@ const EmailConfirmationContent = () => {
     };
 
     confirmUserEmail();
-  }, [token]);
+  }, [signupEmailConfirmationToken]);
 
   const handleResend = async () => {
     if (!email) return;

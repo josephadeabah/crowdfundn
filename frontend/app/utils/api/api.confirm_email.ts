@@ -1,6 +1,12 @@
 export const confirmEmail = async (token: string) => {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/auth/confirm_email/${token}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/auth/confirm_email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ confirmation_token: token }),
+    },);
 
     if (!response.ok) {
       throw new Error('Failed to confirm email');
