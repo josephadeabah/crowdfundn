@@ -7,7 +7,7 @@ Rails.application.routes.draw do
         resources :profiles, only: [:update]
         resources :roles, only: [:create]
         post 'auth/signup', to: 'auth#signup'
-        get 'auth/confirm_email/:token', to: 'auth#confirm_email', as: :confirm_email
+        post 'auth/confirm_email', to: 'auth#confirm_email', as: :confirm_email
         post 'auth/login', to: 'auth#login'
         post 'auth/password/reset', to: 'auth#password_reset'
         post 'auth/resend_confirmation', to: 'auth#resend_confirmation'

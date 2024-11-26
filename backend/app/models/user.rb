@@ -45,7 +45,7 @@ class User < ApplicationRecord
   end
   
   # Mark the user as confirmed
-  def confirm_email!
+  def confirmed_email!
     update(email_confirmed: true, confirmed_at: Time.current, confirmation_token: nil)
   end
 

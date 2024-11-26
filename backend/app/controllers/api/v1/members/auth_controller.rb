@@ -31,7 +31,7 @@ module Api
           elsif user.confirmation_token_expired?
             render json: { error: 'Confirmation token has expired. Please request a new confirmation email.' }, status: :unprocessable_entity
           else
-            user.confirm_email!
+            user.confirmed_email!
             render json: { message: 'Email confirmed successfully' }, status: :ok
           end
         end                   
