@@ -24,34 +24,26 @@ class User < ApplicationRecord
   after_create :create_default_profile
 
   def confirmation_token_expired?
-    begin
-      decoded = JWT.decode(confirmation_token, Rails.application.secret_key_base).first
-      decoded['exp'] < Time.current.to_i
-    rescue JWT::DecodeError, JWT::ExpiredSignature
-      true
-    end
+    decoded = decode_confirmation_token
+    decoded.present? && decoded['exp'] < Time.current.to_i
   end
   
-
+  def decode_confirmation_token
+    JWT.decode(confirmation_token, Rails.application.secret_key_base).first rescue nil
+  end
+  
+  def generate_confirmation_token
+    self.confirmation_token = UserConfirmationService.generate_confirmation_token(self)
+    self.confirmation_sent_at = Time.current
+    self.email_confirmed = false
+  end
+  
   def send_confirmation_email
-    host = Rails.application.routes.default_url_options[:host] || 'https://bantuhive.com'
-    UserConfirmationEmailService.send_confirmation_email(self, host)
+    UserConfirmationService.send_confirmation_email(self)
   rescue StandardError => e
     Rails.logger.error "Failed to send confirmation email to user #{id}: #{e.message}"
   end
   
-
-  # Override to generate JWT confirmation token with expiration
-  def generate_confirmation_token
-    payload = {
-      user_id: id,
-      exp: 2.days.from_now.to_i # Token expires in 2 days
-    }
-    self.confirmation_token = JWT.encode(payload, Rails.application.secret_key_base)
-    self.confirmation_sent_at = Time.current
-    self.email_confirmed = false
-  end
-
   # Mark the user as confirmed
   def confirm_email!
     update(email_confirmed: true, confirmed_at: Time.current, confirmation_token: nil)

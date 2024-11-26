@@ -25,13 +25,15 @@ module Api
         def confirm_email
           user = User.find_by(confirmation_token: params[:token])
         
-          if user && !user.confirmation_token_expired?
+          if user.nil?
+            render json: { error: 'Invalid confirmation token' }, status: :unprocessable_entity
+          elsif user.confirmation_token_expired?
+            render json: { error: 'Confirmation token has expired. Please request a new confirmation email.' }, status: :unprocessable_entity
+          else
             user.confirm_email!
             render json: { message: 'Email confirmed successfully' }, status: :ok
-          else
-            render json: { error: 'Invalid or expired confirmation token' }, status: :unprocessable_entity
           end
-        end              
+        end                   
         
 
         def login
