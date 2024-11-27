@@ -124,6 +124,10 @@ const Footer = () => {
             &copy; {new Date().getFullYear()} BantuHive Ltd. All rights
             reserved.
           </p>
+          {/* Company Registration Number */}
+          <p className="text-sm text-center md:text-right mt-2">
+            Company Registration Number: <strong>CS185241124</strong>
+          </p>
         </div>
       </div>
     </footer>
