@@ -220,22 +220,22 @@ const ContactUs = () => {
             <div className="flex items-start space-x-4">
               <FiMapPin className="text-theme-color-primary text-xl flex-shrink-0 mt-1" />
               <p className="text-neutral-600 dark:text-gray-300">
-                123 Mbabane Road
+                Tiled House, Near Kingstel Hotel
                 <br />
-                Manzini, H100
+                30 Meters from Apollo Traffic Light, Off Dupaul Road
                 <br />
-                Eswatini
+                Takoradi, Ghana
               </p>
             </div>
 
             <div className="flex items-start space-x-4">
               <FiMapPin className="text-theme-color-primary text-xl flex-shrink-0 mt-1" />
               <p className="text-neutral-600 dark:text-gray-300">
-                456 Independence Avenue
+                149 Vovovo Street
                 <br />
-                Accra, Greater Accra Region
+                Mbabane
                 <br />
-                Ghana
+                Eswatini
               </p>
             </div>
           </div>
@@ -243,13 +243,13 @@ const ContactUs = () => {
           <div className="mt-4 flex items-center space-x-4">
             <FiPhone className="text-theme-color-primary text-xl" />
             <p className="text-neutral-600 dark:text-gray-300">
-              (555) 123-4567
+              (233) 200415683/ (268) 78039973
             </p>
           </div>
           <div className="mt-2 flex items-center space-x-4">
             <FiMail className="text-theme-color-primary text-xl" />
             <p className="text-neutral-600 dark:text-gray-300">
-              info@bantuhive.com
+              help@bantuhive.com
             </p>
           </div>
         </div>
