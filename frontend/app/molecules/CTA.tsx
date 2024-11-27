@@ -5,7 +5,7 @@ import {
   FaShieldAlt,
   FaTrophy,
   FaRecycle,
-  FaHandsHelping,
+  FaCreditCard, // Changed to FaCreditCard
 } from 'react-icons/fa';
 import data from '../../data.json';
 
@@ -68,10 +68,10 @@ const Cta = () => {
         'Unique subscription-based features that allow for recurring donations to support ongoing causes or businesses.',
     },
     {
-      icon: FaHandsHelping,
-      title: 'Dedicated Support Team',
+      icon: FaCreditCard, // Updated icon to FaCreditCard
+      title: 'We Support All Your Payment Gateways',
       description:
-        'Our dedicated support team ensures donors feel valued and connected, providing personalized assistance and guidance every step of the way.',
+        'We support Mobile Money, bank payments, and various digital payment gateways, ensuring seamless transactions for everyone.',
     },
   ];
 
