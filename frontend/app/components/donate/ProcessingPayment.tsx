@@ -58,8 +58,8 @@ const ProcessingPayment: React.FC<ProcessingPaymentProps> = ({
       setTimeout(() => {
         setIsProcessing(false);
       }, 1000);
-  
-      setTimeout(async() => {
+
+      setTimeout(async () => {
         const payload = {
           method: selectedPaymentMethod,
           paymentDetails: {
@@ -84,13 +84,19 @@ const ProcessingPayment: React.FC<ProcessingPaymentProps> = ({
             campaignTitle: fundraiserDetails.campaignTitle,
           },
         };
-  
+
         // Generate JWT token
         const token = await generateToken(payload, secretKey);
         window.location.href = `/account/payment?token=${token}`;
       }, 3000);
     }
-  }, [progress, selectedPaymentMethod, paymentDetails, billing, fundraiserDetails]);
+  }, [
+    progress,
+    selectedPaymentMethod,
+    paymentDetails,
+    billing,
+    fundraiserDetails,
+  ]);
 
   return (
     <div className="flex flex-col items-center justify-center">

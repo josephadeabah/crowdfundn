@@ -39,17 +39,17 @@ const PaymentPageContent = () => {
 
   useEffect(() => {
     const token = searchParams.get('token');
-  
+
     if (token) {
       const decodeToken = async () => {
         try {
           // Prepare the secret key
           const encoder = new TextEncoder();
           const encodedSecret = encoder.encode(secretKey);
-  
+
           // Verify and decode the token
           const { payload } = await jwtVerify(token, encodedSecret);
-  
+
           // Populate state with decoded token data
           if (payload.method) setPaymentMethod(payload.method as string);
           if (payload.paymentDetails) {
@@ -62,7 +62,7 @@ const PaymentPageContent = () => {
               email,
               phone,
             } = payload.paymentDetails as any;
-  
+
             setCardNumber(cardNumber || '');
             setExpiryDate(expirationDate || '');
             setCvv(cvv || '');
@@ -70,12 +70,18 @@ const PaymentPageContent = () => {
             setPaymentEmail(email || '');
             setPaymentPhone(phone || '');
           }
-          if (payload.billing && typeof payload.billing === 'object' && 'amount' in payload.billing && 'frequency' in payload.billing) {
+          if (
+            payload.billing &&
+            typeof payload.billing === 'object' &&
+            'amount' in payload.billing &&
+            'frequency' in payload.billing
+          ) {
             setPaymentAmount(String(payload.billing.amount) || '');
             setBillingFrequency(String(payload.billing.frequency) || '');
           }
           if (payload.fundraiserDetails) {
-            const { id, campaignId, campaignTitle } = payload.fundraiserDetails as any;
+            const { id, campaignId, campaignTitle } =
+              payload.fundraiserDetails as any;
             setFundraiserId(id || '');
             setCampaignId(campaignId || '');
             setCampaignTitle(campaignTitle || '');
@@ -84,7 +90,7 @@ const PaymentPageContent = () => {
           console.error('Invalid or expired token:', error);
         }
       };
-  
+
       decodeToken();
     }
   }, [searchParams]);

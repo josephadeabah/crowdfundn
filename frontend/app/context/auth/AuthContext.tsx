@@ -26,7 +26,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<LoginUserType | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [signupEmailConfirmationToken, setSignupEmailConfirmationToken] = useState<string | null>(null);
+  const [signupEmailConfirmationToken, setSignupEmailConfirmationToken] =
+    useState<string | null>(null);
   const router = useRouter();
 
   const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
@@ -82,7 +83,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signup = (response: ApiResponse) => {
     setSignupEmailConfirmationToken(response.user.confirmation_token);
-  }
+  };
 
   const logout = () => {
     setUser(null);
@@ -101,7 +102,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const value = React.useMemo(
-    () => ({ user, token, signupEmailConfirmationToken, login, logout, signup }),
+    () => ({
+      user,
+      token,
+      signupEmailConfirmationToken,
+      login,
+      logout,
+      signup,
+    }),
     [user, token],
   );
 

@@ -1,6 +1,9 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { FaSpinner, FaEye, FaEyeSlash } from 'react-icons/fa';
-import { ApiResponse, UserRegistrationData } from '@/app/types/auth.register.types';
+import {
+  ApiResponse,
+  UserRegistrationData,
+} from '@/app/types/auth.register.types';
 import { registerUser } from '@/app/utils/api/api.register';
 import ToastComponent from '@/app/components/toast/Toast';
 import { categories } from '@/app/utils/helpers/categories';

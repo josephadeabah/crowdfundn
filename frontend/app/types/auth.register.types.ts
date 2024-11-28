@@ -18,7 +18,6 @@ export interface UserRegistrationData {
   national_id: string;
 }
 
-
 interface Role {
   id: number;
   name: string;
