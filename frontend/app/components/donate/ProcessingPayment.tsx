@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaSpinner } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { generateToken } from '@/app/utils/helpers/jwt.sign';
 
 interface ProcessingPaymentProps {
   selectedPaymentMethod: string;
@@ -29,6 +30,8 @@ interface ProcessingPaymentProps {
   };
 }
 
+const secretKey = process.env.NEXT_PUBLIC_JWT_SECRET!;
+
 const ProcessingPayment: React.FC<ProcessingPaymentProps> = ({
   selectedPaymentMethod,
   paymentDetails,
@@ -55,37 +58,39 @@ const ProcessingPayment: React.FC<ProcessingPaymentProps> = ({
       setTimeout(() => {
         setIsProcessing(false);
       }, 1000);
-
-      setTimeout(() => {
-        const query = new URLSearchParams({
+  
+      setTimeout(async() => {
+        const payload = {
           method: selectedPaymentMethod,
-          cardNumber: paymentDetails.cardNumber,
-          expirationDate: paymentDetails.expirationDate,
-          cvv: paymentDetails.cvv,
-          billingAddress: paymentDetails.billingAddress,
-          country: paymentDetails.country,
-          firstName: paymentDetails.first_name,
-          lastName: paymentDetails.last_name,
-          phone: paymentDetails.phone,
-          amount: billing.amount,
-          email: paymentDetails.email,
-          fundraiserId: fundraiserDetails.id, // Add fundraiser details here
-          campaignId: fundraiserDetails.campaignId,
-          campaignTitle: fundraiserDetails.campaignTitle,
-          billingFrequency: billing.frequency,
-          tier: billing.tier,
-        } as Record<string, string>).toString();
-
-        window.location.href = `/account/payment?${query}`;
+          paymentDetails: {
+            cardNumber: paymentDetails.cardNumber,
+            expirationDate: paymentDetails.expirationDate,
+            cvv: paymentDetails.cvv,
+            billingAddress: paymentDetails.billingAddress,
+            country: paymentDetails.country,
+            firstName: paymentDetails.first_name,
+            lastName: paymentDetails.last_name,
+            phone: paymentDetails.phone,
+            email: paymentDetails.email,
+          },
+          billing: {
+            amount: billing.amount,
+            frequency: billing.frequency,
+            tier: billing.tier,
+          },
+          fundraiserDetails: {
+            id: fundraiserDetails.id,
+            campaignId: fundraiserDetails.campaignId,
+            campaignTitle: fundraiserDetails.campaignTitle,
+          },
+        };
+  
+        // Generate JWT token
+        const token = await generateToken(payload, secretKey);
+        window.location.href = `/account/payment?token=${token}`;
       }, 3000);
     }
-  }, [
-    progress,
-    selectedPaymentMethod,
-    paymentDetails,
-    billing,
-    fundraiserDetails,
-  ]);
+  }, [progress, selectedPaymentMethod, paymentDetails, billing, fundraiserDetails]);
 
   return (
     <div className="flex flex-col items-center justify-center">

@@ -10,11 +10,14 @@ import CreditCardForm from '@/app/components/payments/CreditCardForm';
 import StripeForm from '@/app/components/payments/StripeForm';
 import FlutterwaveForm from '@/app/components/payments/FlutterwaveForm';
 import PayPalForm from '@/app/components/payments/PayPalForm';
+import { jwtVerify } from 'jose';
 
 const PaystackForm = dynamic(
   () => import('@/app/components/payments/PaystackForm'),
   { ssr: false },
 );
+
+const secretKey = process.env.NEXT_PUBLIC_JWT_SECRET!;
 
 const PaymentPageContent = () => {
   const [paymentMethod, setPaymentMethod] = useState('');
@@ -35,32 +38,55 @@ const PaymentPageContent = () => {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const method = searchParams.get('method');
-    const cardNumberParam = searchParams.get('cardNumber') ?? '';
-    const expiryDateParam = searchParams.get('expirationDate') ?? '';
-    const cvvParam = searchParams.get('cvv') ?? '';
-    const firstName = searchParams.get('firstName') ?? '';
-    const lastName = searchParams.get('lastName') ?? '';
-    const paymentEmailParam = searchParams.get('email') ?? '';
-    const payAmount = searchParams.get('amount');
-    const phone = searchParams.get('phone');
-    const fundraiserIdParam = searchParams.get('fundraiserId') ?? '';
-    const campaignIdParam = searchParams.get('campaignId') ?? '';
-    const campaignTitleParam = searchParams.get('campaignTitle') ?? '';
-    const billingFrequencyParam = searchParams.get('billingFrequency') ?? '';
-
-    if (method) setPaymentMethod(method);
-    if (cardNumberParam) setCardNumber(cardNumberParam);
-    if (expiryDateParam) setExpiryDate(expiryDateParam);
-    if (cvvParam) setCvv(cvvParam);
-    if (firstName || lastName) setCardholderName(`${firstName} ${lastName}`);
-    if (paymentEmailParam) setPaymentEmail(paymentEmailParam);
-    if (payAmount) setPaymentAmount(payAmount);
-    if (phone) setPaymentPhone(phone);
-    if (fundraiserIdParam) setFundraiserId(fundraiserIdParam);
-    if (campaignIdParam) setCampaignId(campaignIdParam);
-    if (campaignTitleParam) setCampaignTitle(campaignTitleParam);
-    if (billingFrequencyParam) setBillingFrequency(billingFrequencyParam);
+    const token = searchParams.get('token');
+  
+    if (token) {
+      const decodeToken = async () => {
+        try {
+          // Prepare the secret key
+          const encoder = new TextEncoder();
+          const encodedSecret = encoder.encode(secretKey);
+  
+          // Verify and decode the token
+          const { payload } = await jwtVerify(token, encodedSecret);
+  
+          // Populate state with decoded token data
+          if (payload.method) setPaymentMethod(payload.method as string);
+          if (payload.paymentDetails) {
+            const {
+              cardNumber,
+              expirationDate,
+              cvv,
+              firstName,
+              lastName,
+              email,
+              phone,
+            } = payload.paymentDetails as any;
+  
+            setCardNumber(cardNumber || '');
+            setExpiryDate(expirationDate || '');
+            setCvv(cvv || '');
+            setCardholderName(`${firstName || ''} ${lastName || ''}`.trim());
+            setPaymentEmail(email || '');
+            setPaymentPhone(phone || '');
+          }
+          if (payload.billing && typeof payload.billing === 'object' && 'amount' in payload.billing && 'frequency' in payload.billing) {
+            setPaymentAmount(String(payload.billing.amount) || '');
+            setBillingFrequency(String(payload.billing.frequency) || '');
+          }
+          if (payload.fundraiserDetails) {
+            const { id, campaignId, campaignTitle } = payload.fundraiserDetails as any;
+            setFundraiserId(id || '');
+            setCampaignId(campaignId || '');
+            setCampaignTitle(campaignTitle || '');
+          }
+        } catch (error) {
+          console.error('Invalid or expired token:', error);
+        }
+      };
+  
+      decodeToken();
+    }
   }, [searchParams]);
 
   const paymentMethods: {
