@@ -1,8 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
 const NotificationBar = () => {
   const [isVisible, setIsVisible] = useState(true);
+  const [daysLeft, setDaysLeft] = useState(30);
+
+  useEffect(() => {
+    // Countdown logic
+    const interval = setInterval(() => {
+      setDaysLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 86400000); // Update every 24 hours (86400000 ms)
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
 
   const handleClose = () => {
     setIsVisible(false);
@@ -11,17 +22,18 @@ const NotificationBar = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed top-0 left-0 w-full bg-orange-50 dark:bg-orange-900 text-md text-orange-600 dark:text-white font-medium py-0.5 px-9 z-50 flex justify-between items-center">
+    <div className="fixed top-0 left-0 w-full bg-green-100 text-green-800 font-medium py-2 px-9 z-50 flex justify-between items-center">
       <div className="flex items-center gap-2">
         <span className="text-sm">
-          Thanks for visiting! We're in BETA, and we'd appreciate your feedback.
+          We're now official with Paystack. We're accepting payment in{' '}
+          <strong>{daysLeft} days</strong>! Stay tuned!
         </span>
       </div>
       <button
         onClick={handleClose}
-        className="p-2 rounded-full hover:bg-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-600"
+        className="p-2 rounded-full hover:bg-green-300 focus:outline-none focus:ring-2 focus:ring-green-500"
       >
-        <XMarkIcon className="h-5 w-5 hover:text-white text-orange-400" />
+        <XMarkIcon className="h-5 w-5 text-green-500 hover:text-green-800" />
       </button>
     </div>
   );
