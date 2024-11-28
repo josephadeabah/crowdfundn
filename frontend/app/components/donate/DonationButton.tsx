@@ -121,7 +121,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
         closeOnBackdropClick={true}
       >
         <h2 className="text-2xl font-bold mb-1">Select Payment Type</h2>
-        <div className="text-gray-400 text-xs">
+        <div className="text-orange-500 text-xs">
           We currently support payment with PayStack. If your preferred payment
           method is disabled, kindly wait for future availability.
         </div>
@@ -133,8 +133,8 @@ const DonationButton: React.FC<DonationButtonProps> = ({
                 key={method.id}
                 className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 ${
                   selectedPaymentMethod === method.id
-                    ? 'border-black bg-gray-100'
-                    : 'border-gray-200 hover:border-gray-800'
+                    ? 'border-green bg-green-100'
+                    : 'border-green-200 hover:border-green-800'
                 } ${method.id !== 'paystack' ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <input
@@ -157,8 +157,8 @@ const DonationButton: React.FC<DonationButtonProps> = ({
                 <span
                   className={`ml-auto w-5 h-5 border-2 rounded-full ${
                     selectedPaymentMethod === method.id
-                      ? 'border-black bg-black'
-                      : 'border-gray-300'
+                      ? 'border-green-600 bg-green-600'
+                      : 'border-green-300'
                   }`}
                 ></span>
               </label>

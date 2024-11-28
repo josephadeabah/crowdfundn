@@ -88,7 +88,9 @@ const PaymentPageContent = () => {
             setCampaignTitle(campaignTitle || '');
           }
         } catch (error) {
-          setTokenState('Invalid or expired token. Please restart the payment process.');
+          setTokenState(
+            'Invalid or expired token. Please restart the payment process.',
+          );
         }
       };
 
@@ -166,8 +168,8 @@ const PaymentPageContent = () => {
             </div>
           ) : (
             <>
-            <p className="text-gray-600">No Payment Method Selected.</p>
-            <p className="text-red-500 text-sm">{tokenState}</p>
+              <p className="text-gray-600">No Payment Method Selected.</p>
+              <p className="text-red-500 text-sm">{tokenState}</p>
             </>
           )}
         </div>

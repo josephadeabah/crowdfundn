@@ -99,7 +99,8 @@ const ProfileTabs = () => {
     {
       label: 'Donations',
       icon: <HandIcon />,
-      description: 'Manage your donations and charity activities.',
+      description:
+        'Manage your donations and send thank you to your backers here.',
     },
     {
       label: 'Transfers',
