@@ -27,37 +27,38 @@ module Api
         end
 
         def confirm_email
-          # Decode the token from the URL
           decoded = decode_confirmation_token(params[:confirmation_token])
-          
-          # Log the decoded token for debugging purposes
-          Rails.logger.debug "Decoded token: #{decoded.inspect}" if decoded.present?
         
           if decoded.nil?
             render json: { error: 'Invalid confirmation token' }, status: :unprocessable_entity
             return
           end
         
-          # Find the user based on the decoded user_id
           user = User.find_by(id: decoded['user_id'])
           if user.nil?
             render json: { error: 'User not found' }, status: :unprocessable_entity
             return
           end
         
-          # Check if the token has expired
-          if decoded['exp'] < Time.current.to_i
-            render json: { error: 'Confirmation token has expired. Please request a new confirmation email.' }, status: :unprocessable_entity
+          if user.email_confirmed
+            render json: { message: 'Email is already confirmed' }, status: :ok
             return
           end
         
-          # Mark the user's email as confirmed
-          user.update_columns(email_confirmed: true, confirmed_at: Time.current, confirmation_token: nil)
+          if decoded['exp'] < Time.current.to_i
+            render json: { error: 'Token expired. Request a new confirmation email.' }, status: :unprocessable_entity
+            return
+          end
+        
+          user.update!(email_confirmed: true, confirmed_at: Time.current, confirmation_token: nil)
           render json: { message: 'Email confirmed successfully' }, status: :ok
         rescue JWT::DecodeError => e
-          Rails.logger.error "JWT DecodeError: #{e.message}" # Log the error message if token decoding fails
+          Rails.logger.error "JWT DecodeError: #{e.message}"
           render json: { error: 'Invalid token format' }, status: :unprocessable_entity
-        end
+        rescue StandardError => e
+          Rails.logger.error "Error confirming email: #{e.message}"
+          render json: { error: 'Failed to confirm email' }, status: :internal_server_error
+        end        
         
                 
         def login
@@ -96,7 +97,7 @@ module Api
           end
         
           user.generate_confirmation_token
-          user.save!
+          user.save!(validate: false)
           user.send_confirmation_email
         
           render json: { message: 'Confirmation email resent successfully' }, status: :ok
