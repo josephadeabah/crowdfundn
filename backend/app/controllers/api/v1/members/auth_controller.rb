@@ -55,9 +55,6 @@ module Api
         rescue JWT::DecodeError => e
           Rails.logger.error "JWT DecodeError: #{e.message}"
           render json: { error: 'Invalid token format' }, status: :unprocessable_entity
-        rescue StandardError => e
-          Rails.logger.error "Error confirming email: #{e.message}"
-          render json: { error: 'Failed to confirm email' }, status: :internal_server_error
         end        
         
                 
@@ -97,7 +94,7 @@ module Api
           end
         
           user.generate_confirmation_token
-          user.save!(validate: false)
+          user.save!
           user.send_confirmation_email
         
           render json: { message: 'Confirmation email resent successfully' }, status: :ok
