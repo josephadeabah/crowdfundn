@@ -50,7 +50,7 @@ module Api
             return
           end
         
-          user.update!(email_confirmed: true, confirmed_at: Time.current, confirmation_token: nil)
+          user.update_columns!(email_confirmed: true, confirmed_at: Time.current, confirmation_token: nil)
           render json: { message: 'Email confirmed successfully' }, status: :ok
         rescue JWT::DecodeError => e
           Rails.logger.error "JWT DecodeError: #{e.message}"
