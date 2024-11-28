@@ -11,7 +11,7 @@ import FullscreenLoader from '@/app/loaders/FullscreenLoader';
 const EmailConfirmationContent = () => {
   const [status, setStatus] = useState<string>('');
   const [resendStatus, setResendStatus] = useState<string>('');
-  const params = useParams(); // Get dynamic segment parameters
+  const params = useParams();
   const token = Array.isArray(params?.token)
     ? params.token[0]
     : params?.token || ''; // Ensure token is a string
@@ -28,7 +28,6 @@ const EmailConfirmationContent = () => {
 
       try {
         const response = await confirmEmail(token);
-        console.log('confirmed email response', response);
 
         if (response.message) {
           setStatus(response.message);
@@ -67,8 +66,6 @@ const EmailConfirmationContent = () => {
     try {
       const response = await resendConfirmationEmail(email);
       const data = await response.json();
-
-      console.log('resend confirmation email response', data);
 
       if (data.message) {
         setResendStatus(data.message);
