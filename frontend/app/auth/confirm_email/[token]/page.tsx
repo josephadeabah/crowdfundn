@@ -11,11 +11,11 @@ import FullscreenLoader from '@/app/loaders/FullscreenLoader';
 const EmailConfirmationContent = () => {
   const [status, setStatus] = useState<string>('');
   const [resendStatus, setResendStatus] = useState<string>('');
-  const params = useParams(); // Get dynamic segment parameters
+  const params = useParams(); 
   const token = Array.isArray(params?.token)
     ? params.token[0]
     : params?.token || ''; // Ensure token is a string
-  const [email, setEmail] = useState(''); // To capture the email for resending confirmation
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,7 +28,6 @@ const EmailConfirmationContent = () => {
 
       try {
         const response = await confirmEmail(token);
-        console.log('confirmed email response', response);
 
         if (response.message) {
           setStatus(response.message);
@@ -37,7 +36,6 @@ const EmailConfirmationContent = () => {
           setStatus(response.error);
         }
       } catch (error) {
-        console.error('Error confirming email:', error);
         if ((error as Error)?.message) {
           setStatus('Error confirming email. Please try again later.');
         } else {
@@ -68,8 +66,6 @@ const EmailConfirmationContent = () => {
       const response = await resendConfirmationEmail(email);
       const data = await response.json();
 
-      console.log('resend confirmation email response', data);
-
       if (data.message) {
         setResendStatus(data.message);
       } else if (data.error) {
@@ -78,7 +74,6 @@ const EmailConfirmationContent = () => {
         setResendStatus('Unexpected error occurred. Please try again later.');
       }
     } catch (error) {
-      console.error('Error resending confirmation email:', error);
       if ((error as Error)?.message) {
         setResendStatus(
           'Failed to resend confirmation email. Please try again later.',
