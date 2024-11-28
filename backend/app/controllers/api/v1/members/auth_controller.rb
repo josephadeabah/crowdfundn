@@ -41,7 +41,7 @@ module Api
           end
         
           if user.email_confirmed
-            render json: { message: 'Email is already confirmed' }, status: :ok
+            render json: { message: 'Email is already confirmed.' }, status: :ok
             return
           end
         
