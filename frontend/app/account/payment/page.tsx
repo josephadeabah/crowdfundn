@@ -33,6 +33,7 @@ const PaymentPageContent = () => {
   const [campaignId, setCampaignId] = useState('');
   const [campaignTitle, setCampaignTitle] = useState('');
   const [billingFrequency, setBillingFrequency] = useState('');
+  const [tokenState, setTokenState] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const searchParams = useSearchParams();
@@ -87,7 +88,7 @@ const PaymentPageContent = () => {
             setCampaignTitle(campaignTitle || '');
           }
         } catch (error) {
-          console.error('Invalid or expired token:', error);
+          setTokenState('Invalid or expired token. Please restart the payment process.');
         }
       };
 
@@ -164,7 +165,10 @@ const PaymentPageContent = () => {
               </h2>
             </div>
           ) : (
+            <>
             <p className="text-gray-600">No Payment Method Selected.</p>
+            <p className="text-red-500 text-sm">{tokenState}</p>
+            </>
           )}
         </div>
 
