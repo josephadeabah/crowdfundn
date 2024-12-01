@@ -1,19 +1,31 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
 const NotificationBar = () => {
+  // Check if there is a stored countdown value in localStorage
+  const savedDaysLeft = localStorage.getItem('daysLeft');
+  const initialDaysLeft = savedDaysLeft ? parseInt(savedDaysLeft, 10) : 30;
+
   const [isVisible, setIsVisible] = useState(true);
-  const [daysLeft, setDaysLeft] = useState(30);
+  const [daysLeft, setDaysLeft] = useState(initialDaysLeft);
 
   useEffect(() => {
-    // Countdown logic
+    if (daysLeft <= 0) return; // Don't start interval if countdown is already finished
+
     const interval = setInterval(() => {
-      setDaysLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      setDaysLeft((prev) => {
+        const newDaysLeft = prev > 0 ? prev - 1 : 0;
+        // Persist the new value in localStorage
+        localStorage.setItem('daysLeft', newDaysLeft.toString());
+        return newDaysLeft;
+      });
     }, 86400000); // Update every 24 hours (86400000 ms)
 
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
-  }, []);
+  }, [daysLeft]); // Re-run the effect when daysLeft changes
 
   const handleClose = () => {
     setIsVisible(false);

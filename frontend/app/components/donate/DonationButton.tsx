@@ -53,7 +53,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
   });
 
   const paymentMethods = [
-    { id: 'creditCard', name: 'Credit Card', icon: <FaCreditCard /> },
+    { id: 'creditCard', name: 'Bank Payment', icon: <FaCreditCard /> },
     { id: 'paypal', name: 'PayPal', icon: <FaPaypal /> },
     { id: 'flutterwave', name: 'Flutterwave', icon: <SiFlutter /> },
     { id: 'paystack', name: 'PayStack', icon: <PaystackIcon /> },
