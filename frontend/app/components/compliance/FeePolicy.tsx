@@ -13,7 +13,7 @@ const FeePolicy: React.FC = () => {
   };
 
   return (
-    <section className="max-w-5xl mx-auto p-12 bg-white">
+    <section className="max-w-7xl mx-auto p-12 bg-white">
       <h1 className="text-3xl font-semibold text-center text-gray-800 mb-8">
         Fee Policy
       </h1>
