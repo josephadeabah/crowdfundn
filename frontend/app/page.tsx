@@ -176,7 +176,7 @@ const HomePage = () => {
                       whileTap={{ scale: 0.95 }}
                       className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300 "
                     >
-                      <a href="/about-us">Learn More</a>
+                      <a href="/faqs">Learn More</a>
                     </motion.button>
                   </div>
                 </div>

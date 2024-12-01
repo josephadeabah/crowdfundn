@@ -58,10 +58,36 @@ const Navbar = () => {
         href: '/individuals/personal-fundraising',
       },
       { label: 'Support Local Businesses', href: '/individuals/support-local' },
+      {
+        label: 'Non-Profit Initiatives',
+        href: '/charities/non-profit-initiatives',
+      },
+      {
+        label: 'Community Development Projects',
+        href: '/charities/community-development',
+      },
+      {
+        label: 'Education & Health Funding',
+        href: '/charities/education-health',
+      },
     ],
     donate: [
       { label: 'One-Time Donation', href: '/donate/one-time' },
-      { label: 'Recurring Support', href: '/donate/recurring' },
+      { label: 'Monthly Support', href: '/donate/monthly' },
+      {
+        label: 'Sponsor an Entrepreneur',
+        href: '/donate/sponsor-entrepreneur',
+      },
+      { label: 'Crisis Relief Fund', href: '/donate/crisis-relief' },
+      { label: 'Impact Investing', href: '/donate/impact-investing' },
+      {
+        label: 'Support Community Projects',
+        href: '/donate/community-projects',
+      },
+      {
+        label: 'Fundraising Tips for NGOs',
+        href: '/how-to/fundraising-tips-ngos',
+      },
       { label: 'Corporate Giving Programs', href: '/how-to/corporate-giving' },
       {
         label: 'Fundraising Ideas for Africa',
@@ -71,6 +97,20 @@ const Navbar = () => {
     'for Diaspora': [
       { label: 'Cultural Events', href: '/african-diaspora/cultural-events' },
       { label: 'Diaspora Support', href: '/african-diaspora/diaspora-support' },
+      {
+        label: 'Networking Opportunities',
+        href: '/african-diaspora/networking',
+      },
+      {
+        label: 'Fundraising Campaigns',
+        href: '/african-diaspora/fundraising-campaigns',
+      },
+      { label: 'Donation Drives', href: '/african-diaspora/donation-drives' },
+      {
+        label: 'Community Projects',
+        href: '/african-diaspora/community-projects',
+      },
+      { label: 'Volunteer Opportunities', href: '/african-diaspora/volunteer' },
     ],
   };
 

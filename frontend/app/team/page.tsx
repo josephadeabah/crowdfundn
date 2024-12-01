@@ -162,48 +162,7 @@ const TeamCarousel = () => {
   }, []);
 
   return (
-    <div className="relative w-full max-w-7xl h-full mx-auto py-16">
-      <h1 className="text-4xl font-bold text-center mb-8">About Us</h1>
-      <section className="mb-16 bg-white p-12">
-        <p className="text-lg leading-8 text-gray-700 mb-6">
-          Bantuhive is an innovative crowdfunding platform aimed at empowering
-          individuals, organizations, and communities across Africa and its
-          global diaspora. Our mission is to harness the collective strength of
-          people ("Bantu") and create impactful, lasting change across Africa.
-          By bridging the gap between ideas and the financial support they need
-          to flourish, Bantu Hive is enabling individuals and organizations to
-          fund their dreams.
-        </p>
-        <p className="text-lg leading-8 text-gray-700 mb-6">
-          Our focus is on addressing the unique challenges faced by Africans. We
-          aim to drive meaningful change by fostering a culture of giving,
-          collaboration, and support within our communities. Whether you're
-          funding a business idea, supporting a charitable cause, or making
-          someone's education possible, Bantuhive is here to amplify your
-          efforts.
-        </p>
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Story</h2>
-        <p className="text-lg leading-8 text-gray-700 mb-6">
-          The idea for Bantuhive was born out of personal experience. One of our
-          cofounders, on the verge of fulfilling a lifelong dream to study
-          abroad, found himself needing to raise 30% of his tuition despite
-          already securing a 70% scholarship. His attempts to fundraise on
-          foreign platforms, like GoFundMe, fell short due to the lack of
-          familiarity and participation from the African community.
-        </p>
-        <p className="text-lg leading-8 text-gray-700">
-          This challenge inspired a question:{' '}
-          <em>
-            Why isn’t there a crowdfunding platform tailored to Africa’s unique
-            needs?
-          </em>{' '}
-          A platform where Africans can support each other and invest in their
-          collective growth. With this vision, Bantuhive was created. The
-          cofounders met through YCombinator and united their skills to build a
-          platform dedicated to empowering African dreams, businesses, and
-          causes.
-        </p>
-      </section>
+    <div className="relative w-full max-w-6xl h-screen mx-auto px-4 py-16">
       <h2 className="text-3xl font-bold text-center mb-12">Our Team</h2>
       <div
         ref={carouselRef}
@@ -232,6 +191,7 @@ const TeamCarousel = () => {
                   alt={member.name}
                   className="w-full h-64 object-cover object-[50%_30%]" // Adjust based on image needs
                 />
+
                 <div className="p-6">
                   <h3 className="text-xl font-semibold mb-2">{member.name}</h3>
                   <p className="text-gray-600 dark:text-gray-50 mb-2">
@@ -245,24 +205,21 @@ const TeamCarousel = () => {
             </div>
           ))}
         </div>
-        {/* Updated button styles */}
-        <button
-          className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 z-10"
-          onClick={prevSlide}
-          aria-label="Previous team member"
-          style={{ width: '40px', height: '40px' }} // Ensures the button size
-        >
-          <FaArrowLeft className="text-gray-600" />
-        </button>
-        <button
-          className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 z-10"
-          onClick={nextSlide}
-          aria-label="Next team member"
-          style={{ width: '40px', height: '40px' }} // Ensures the button size
-        >
-          <FaArrowRight className="text-gray-600" />
-        </button>
       </div>
+      <button
+        className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md focus:outline-none focus:ring-2 focus:ring-red-500"
+        onClick={prevSlide}
+        aria-label="Previous team member"
+      >
+        <FaArrowLeft className="text-gray-600" />
+      </button>
+      <button
+        className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md focus:outline-none focus:ring-2 focus:ring-red-500"
+        onClick={nextSlide}
+        aria-label="Next team member"
+      >
+        <FaArrowRight className="text-gray-600" />
+      </button>
 
       <AnimatePresence>
         {isModalOpen && selectedMember && (
