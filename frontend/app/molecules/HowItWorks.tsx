@@ -1,6 +1,9 @@
 import React from 'react';
+import { useAuth } from '../context/auth/AuthContext';
 
 const HowItWorks = () => {
+    const { user } = useAuth();
+
   return (
     <div className="p-6 md:p-12 bg-gray-50 text-gray-800">
       <div className="max-w-7xl mx-auto">
@@ -137,7 +140,7 @@ const HowItWorks = () => {
         {/* Call to Action */}
         <div className="text-center mt-12">
           <a
-            href="/auth/register"
+            href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
             className="px-6 py-3 bg-green-600 text-white rounded-lg text-lg font-semibold shadow-lg hover:bg-green-700"
           >
             Start Your Fundraiser Today
