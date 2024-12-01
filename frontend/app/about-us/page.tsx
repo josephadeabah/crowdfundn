@@ -9,7 +9,7 @@ import {
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/button/Button';
-import AboutBantuHivePage from '../molecules/AboutBantuHivePage';
+import AboutBantuHivePage from '../molecules/AboutBantuHivePage ';
 
 const TeamCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -164,7 +164,7 @@ const TeamCarousel = () => {
 
   return (
     <div className="relative w-full max-w-7xl h-full mx-auto py-16">
-      <h1 className="text-4xl font-bold text-center mb-8 text-green-800">
+        <h1 className="text-4xl font-bold text-center mb-8 text-green-800">
         Welcome to BantuHive
       </h1>
       <section className="mb-16 bg-white p-12">
@@ -207,10 +207,8 @@ const TeamCarousel = () => {
           causes.
         </p>
       </section>
-
       <AboutBantuHivePage />
-
-      <h2 className="text-3xl font-bold text-center mb-12 mt-8">Our Team</h2>
+      <h2 className="text-3xl font-bold text-center mb-12">Our Team</h2>
       <div
         ref={carouselRef}
         className="relative overflow-hidden"

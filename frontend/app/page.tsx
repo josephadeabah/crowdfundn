@@ -6,6 +6,7 @@ import { useInView } from 'react-intersection-observer';
 
 import { CarouselPlugin } from './molecules/CarouselPlugin';
 import { BrandsLogoSlider } from './molecules/BrandsLogoSlider';
+// import FAQsPage from './molecules/faqs';
 import DownloadApp from './molecules/DownloadApp';
 import CTa from './molecules/CTA';
 import ChatbotComponent from './chatbot/ChatbotComponent';
