@@ -82,9 +82,6 @@ const Cta = () => {
           <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-green-700 py-8">
             Discover BantuHive
           </h1>
-          <h1 className="m-4 text-gray-800 dark:text-gray-50 py-6 font-semibold">
-            {data.name}
-          </h1>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

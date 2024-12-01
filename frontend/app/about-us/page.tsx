@@ -9,6 +9,7 @@ import {
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/button/Button';
+import AboutBantuHivePage from '../molecules/AboutBantuHivePage';
 
 const TeamCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -163,7 +164,9 @@ const TeamCarousel = () => {
 
   return (
     <div className="relative w-full max-w-7xl h-full mx-auto py-16">
-      <h1 className="text-4xl font-bold text-center mb-8">About Us</h1>
+      <h1 className="text-4xl font-bold text-center mb-8 text-green-800">
+        Welcome to BantuHive
+      </h1>
       <section className="mb-16 bg-white p-12">
         <p className="text-lg leading-8 text-gray-700 mb-6">
           Bantuhive is an innovative crowdfunding platform aimed at empowering
@@ -204,7 +207,10 @@ const TeamCarousel = () => {
           causes.
         </p>
       </section>
-      <h2 className="text-3xl font-bold text-center mb-12">Our Team</h2>
+
+      <AboutBantuHivePage />
+
+      <h2 className="text-3xl font-bold text-center mb-12 mt-8">Our Team</h2>
       <div
         ref={carouselRef}
         className="relative overflow-hidden"
