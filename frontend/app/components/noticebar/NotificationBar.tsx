@@ -37,7 +37,7 @@ const NotificationBar = () => {
     <div className="fixed top-0 left-0 w-full bg-green-100 text-green-800 font-medium py-2 px-9 z-50 flex justify-between items-center">
       <div className="flex items-center gap-2">
         <span className="text-sm">
-          We're now official with Paystack. We're accepting payment in{' '}
+          We're now accepting payment with Paystack. Fundraising begins in{' '}
           <strong>{daysLeft} days</strong>! Stay tuned!
         </span>
       </div>
