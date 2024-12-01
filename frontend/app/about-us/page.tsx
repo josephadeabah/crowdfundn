@@ -164,7 +164,7 @@ const TeamCarousel = () => {
 
   return (
     <div className="relative w-full max-w-7xl h-full mx-auto py-16">
-        <h1 className="text-4xl font-bold text-center mb-8 text-green-800">
+      <h1 className="text-4xl font-bold text-center mb-8 text-green-800">
         Welcome to BantuHive
       </h1>
       <section className="mb-16 bg-white p-12">

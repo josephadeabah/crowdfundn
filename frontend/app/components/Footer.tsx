@@ -17,16 +17,16 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Product</h3>
             <ul className="space-y-2">
-            {['How It Works', 'Pricing', 'Case Studies'].map((item) => (
-              <li key={item}>
-                <a
-                  href={`/${item.toLowerCase().replace(/\s+/g, '-')}`} // Regular expression to handle multiple spaces
-                  className="hover:text-orange-300 transition duration-300"
-                >
-                  {item}
-                </a>
-              </li>
-            ))}
+              {['How It Works', 'Pricing', 'Case Studies'].map((item) => (
+                <li key={item}>
+                  <a
+                    href={`/${item.toLowerCase().replace(/\s+/g, '-')}`} // Regular expression to handle multiple spaces
+                    className="hover:text-orange-300 transition duration-300"
+                  >
+                    {item}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
           <div>

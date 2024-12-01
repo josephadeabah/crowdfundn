@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../context/auth/AuthContext';
 
 const HowItWorks = () => {
-    const { user } = useAuth();
+  const { user } = useAuth();
 
   return (
     <div className="p-6 md:p-12 bg-gray-50 text-gray-800">
