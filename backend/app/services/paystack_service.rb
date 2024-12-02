@@ -4,10 +4,10 @@ require 'json'
 require 'openssl'
 
 class PaystackService
-  PAYSTACK_BASE_URL = 'https://api.paystack.co'
+  PAYSTACK_BASE_URL = Rails.application.config.paystack[:base_url]
 
   def initialize
-    @secret_key = ENV['PAYSTACK_PRIVATE_KEY']
+    @secret_key = Rails.application.config.paystack[:private_key]
     raise "PAYSTACK_PRIVATE_KEY is not set in the environment variables." if @secret_key.nil?
     @http = Net::HTTP.new(URI(PAYSTACK_BASE_URL).host, URI(PAYSTACK_BASE_URL).port)
     @http.use_ssl = true
@@ -186,8 +186,29 @@ class PaystackService
     parse_response(response)
   end
 
+  def check_balance
+    uri = URI("#{PAYSTACK_BASE_URL}/balance")
+    response = make_get_request(uri)
+    parse_response(response)
+  end
+  
+  def sufficient_balance?(amount)
+    balance_response = check_balance
+    if balance_response[:status]
+      available_balance = balance_response[:data].first[:balance] / 100.0 # Convert from kobo to your currency
+      available_balance >= amount
+    else
+      Rails.logger.error("Failed to retrieve balance: #{balance_response[:message]}")
+      false
+    end
+  end
+  
   # Initiate a transfer
   def initiate_transfer(amount:, recipient:, reason: nil, user:, campaign:, currency: "NGN")
+    unless sufficient_balance?(amount)
+      raise StandardError, "Insufficient Paystack balance to initiate transfer."
+    end
+
     uri = URI("#{PAYSTACK_BASE_URL}/transfer")
     body = {
       source: "balance",

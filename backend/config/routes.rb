@@ -34,6 +34,8 @@ Rails.application.routes.draw do
         post 'transfers/initiate_bulk_transfer', to: 'transfers#initiate_bulk_transfer'
         get 'transfers/fetch_transfer', to: 'transfers#fetch_transfer'
         get 'transfers/verify_transfer', to: 'transfers#verify_transfer'
+        post 'paystack_webhook/receive'
+        post 'transfers/approve_transfer', to: 'transfers#approve_transfer'
         resources :subscriptions, only: [] do
           collection do
             post :create_plan
@@ -42,7 +44,6 @@ Rails.application.routes.draw do
             get :fetch_subscription
           end
         end
-        post 'paystack_webhook/receive'
         resources :donations, only: [:index]
         resources :campaigns do
           get 'my_campaigns', on: :collection
