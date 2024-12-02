@@ -34,18 +34,17 @@ const NotificationBar = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed top-0 left-0 w-full bg-green-100 text-green-800 font-medium py-2 px-9 z-50 flex justify-between items-center">
+    <div className="fixed top-0 left-0 w-full bg-orange-100 text-orange-800 font-medium py-2 px-9 z-50 flex justify-between items-center">
       <div className="flex items-center gap-2">
         <span className="text-sm">
-          We're now accepting payment with Paystack. Fundraising begins in{' '}
-          <strong>{daysLeft} days</strong>! Stay tuned!
+          We're in Beta. Soon Launching. Stay tuned!
         </span>
       </div>
       <button
         onClick={handleClose}
-        className="p-2 rounded-full hover:bg-green-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+        className="p-2 rounded-full hover:bg-orange-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
       >
-        <XMarkIcon className="h-5 w-5 text-green-500 hover:text-green-800" />
+        <XMarkIcon className="h-5 w-5 text-orange-500 hover:text-orange-800" />
       </button>
     </div>
   );
