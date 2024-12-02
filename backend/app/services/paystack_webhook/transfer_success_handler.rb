@@ -1,5 +1,4 @@
-module PaystackWebhook
-  class TransferSuccessHandler
+class PaystackWebhook::TransferSuccessHandler
     def initialize(data)
       @data = data
     end
@@ -21,5 +20,4 @@ module PaystackWebhook
         Rails.logger.warn "Transfer #{transfer_code} not found."
       end
     end
-  end
 end

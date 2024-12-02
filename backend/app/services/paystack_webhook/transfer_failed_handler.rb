@@ -1,10 +1,9 @@
-module PaystackWebhook
-    class TransferFailedHandler
-      def initialize(data)
+class PaystackWebhook::TransferFailedHandler
+    def initialize(data)
         @data = data
-      end
+    end
   
-      def call
+    def call
         transfer_code = @data[:transfer_code]
         reason = @data[:failures] || "Unknown reason"
   
@@ -17,7 +16,6 @@ module PaystackWebhook
         else
           Rails.logger.warn "Failed transfer #{transfer_code} not found."
         end
-      end
     end
 end
   

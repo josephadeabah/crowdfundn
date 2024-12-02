@@ -1,10 +1,9 @@
-module PaystackWebhook
-    class TransferReversedHandler
-      def initialize(data)
+class PaystackWebhook::TransferReversedHandler
+    def initialize(data)
         @data = data
-      end
+    end
   
-      def call
+    def call
         transfer_code = @data[:transfer_code]
   
         # Find the transfer in your database
@@ -16,7 +15,6 @@ module PaystackWebhook
         else
           Rails.logger.warn "Reversed transfer #{transfer_code} not found."
         end
-      end
     end
 end
   
