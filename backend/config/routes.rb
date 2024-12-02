@@ -24,6 +24,16 @@ Rails.application.routes.draw do
       end
 
       namespace :fundraisers do
+        # Transfer Routes
+        post 'transfers/create_transfer_recipient', to: 'transfers#create_transfer_recipient'
+        post 'transfers/bulk_create_transfer_recipients', to: 'transfers#bulk_create_transfer_recipients'
+        get 'transfers/list_transfer_recipients', to: 'transfers#list_transfer_recipients'
+        get 'transfers/fetch_transfer_recipient', to: 'transfers#fetch_transfer_recipient'
+        post 'transfers/initialize_transfer', to: 'transfers#initialize_transfer'
+        post 'transfers/finalize_transfer', to: 'transfers#finalize_transfer'
+        post 'transfers/initiate_bulk_transfer', to: 'transfers#initiate_bulk_transfer'
+        get 'transfers/fetch_transfer', to: 'transfers#fetch_transfer'
+        get 'transfers/verify_transfer', to: 'transfers#verify_transfer'
         resources :subscriptions, only: [] do
           collection do
             post :create_plan

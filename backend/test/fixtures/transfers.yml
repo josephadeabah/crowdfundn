@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  transfer_code: MyString
+  recipient_code: MyString
+  amount: 1
+  status: MyString
+  failure_reason: MyString
+  completed_at: 2024-12-02 11:39:06
+  reversed_at: 2024-12-02 11:39:06
+
+two:
+  transfer_code: MyString
+  recipient_code: MyString
+  amount: 1
+  status: MyString
+  failure_reason: MyString
+  completed_at: 2024-12-02 11:39:06
+  reversed_at: 2024-12-02 11:39:06

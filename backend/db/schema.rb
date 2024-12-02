@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_25_071805) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_02_113905) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -200,6 +200,23 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_25_071805) do
     t.index ["user_id"], name: "index_subscriptions_on_user_id"
   end
 
+  create_table "transfers", force: :cascade do |t|
+    t.string "transfer_code", null: false
+    t.string "recipient_code", null: false
+    t.integer "amount", null: false
+    t.string "status", default: "pending"
+    t.string "failure_reason"
+    t.datetime "completed_at"
+    t.datetime "reversed_at"
+    t.bigint "user_id", null: false
+    t.bigint "campaign_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id"], name: "index_transfers_on_campaign_id"
+    t.index ["transfer_code"], name: "index_transfers_on_transfer_code", unique: true
+    t.index ["user_id"], name: "index_transfers_on_user_id"
+  end
+
   create_table "updates", force: :cascade do |t|
     t.text "content"
     t.bigint "campaign_id", null: false
@@ -256,6 +273,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_25_071805) do
   add_foreign_key "rewards", "campaigns"
   add_foreign_key "subscriptions", "campaigns"
   add_foreign_key "subscriptions", "users"
+  add_foreign_key "transfers", "campaigns"
+  add_foreign_key "transfers", "users"
   add_foreign_key "updates", "campaigns"
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
