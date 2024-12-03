@@ -41,23 +41,52 @@ module Api
 
         # Fetch list of banks
         def get_bank_list
-          response = @paystack_service.get_bank_list(
-            country: params[:country],
-            use_cursor: params[:use_cursor],
-            per_page: params[:per_page] || 50,
-            next_cursor: params[:next],
-            previous_cursor: params[:previous],
-            pay_with_bank_transfer: params[:pay_with_bank_transfer],
-            pay_with_bank: params[:pay_with_bank],
-            enabled_for_verification: params[:enabled_for_verification],
-            gateway: params[:gateway],
-            type: params[:type],
-            currency: params[:currency]
+          response = @paystack_service.get_bank_list(filter_bank_params)
+          render json: response, status: :ok
+        rescue => e
+          render json: { error: e.message }, status: :unprocessable_entity
+        end
+
+        # Create a subaccount
+        def create_subaccount
+          response = @paystack_service.create_subaccount(
+            business_name: params[:business_name],
+            bank_code: params[:bank_code],
+            account_number: params[:account_number],
+            percentage_charge: params[:percentage_charge],
+            description: params[:description],
+            metadata: params[:metadata],
+            settlement_bank: params[:settlement_bank]
           )
           render json: response, status: :ok
         rescue => e
           render json: { error: e.message }, status: :unprocessable_entity
         end
+
+        def create_split
+          response = @paystack_service.create_split(
+            name: params[:name],
+            type: params[:type],
+            currency: params[:currency],
+            subaccounts: params[:subaccounts],
+            bearer_type: params[:bearer_type],
+            bearer_subaccount: params[:bearer_subaccount]
+          )
+          render json: response, status: :ok
+        rescue => e
+          render json: { error: e.message }, status: :unprocessable_entity
+        end
+        
+        def add_subaccount_to_split
+          response = @paystack_service.add_subaccount_to_split(
+            split_id: params[:split_id],
+            subaccount: params[:subaccount],
+            share: params[:share]
+          )
+          render json: response, status: :ok
+        rescue => e
+          render json: { error: e.message }, status: :unprocessable_entity
+        end        
 
         # Check Paystack balance
         def check_balance
@@ -166,6 +195,14 @@ module Api
         end
 
         private
+
+        def filter_bank_params
+          params.permit(
+            :country, :use_cursor, :per_page, :next, :previous,
+            :pay_with_bank_transfer, :pay_with_bank, :enabled_for_verification, 
+            :gateway, :type, :currency
+          )
+        end
 
         def process_transfer_approval(transfer_details)
           # Add your logic to decide whether to approve or reject the transfer.

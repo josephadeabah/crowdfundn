@@ -28,14 +28,17 @@ class PaystackWebhook::ChargeSuccessHandler
 
     transaction_status = response[:data][:status]
     if transaction_status == 'success'
-      gross_amount = response[:data][:amount] / 100.0
-      net_amount = gross_amount * 0.985
-      donation.update!(status: 'successful', gross_amount: gross_amount, net_amount: net_amount, amount: net_amount)
-
-      Balance.create!(
-        amount: gross_amount - net_amount,
-        description: "Platform fee for donation #{donation.id}",
-        status: 'pending'
+      gross_amount = response[:data][:amount] / 100.0  # Gross amount from Paystack
+      platform_fee = response[:data][:split][0][:amount] / 100.0 # Platform fee from the split
+      net_amount = response[:data][:split][1][:amount] / 100.0  # Amount for the campaign
+  
+      # Update the donation with the gross amount, platform fee, and net amount
+      donation.update!(
+        status: 'successful',
+        gross_amount: gross_amount,
+        net_amount: net_amount,
+        platform_fee: platform_fee,  # Store the platform fee
+        amount: net_amount
       )
 
       campaign = donation.campaign

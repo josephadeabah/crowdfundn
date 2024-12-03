@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_02_171715) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_02_235617) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -50,14 +50,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_171715) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
-  end
-
-  create_table "balances", force: :cascade do |t|
-    t.decimal "amount"
-    t.string "description"
-    t.string "status"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "campaigns", force: :cascade do |t|
@@ -117,6 +109,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_171715) do
     t.decimal "net_amount", precision: 15, scale: 2, default: "0.0", null: false
     t.string "plan"
     t.string "subscription_code"
+    t.decimal "platform_fee", precision: 10, scale: 2, default: "0.0"
     t.index ["campaign_id"], name: "index_donations_on_campaign_id"
     t.index ["user_id"], name: "index_donations_on_user_id"
   end

@@ -34,18 +34,77 @@ class PaystackService
     Rack::Utils.secure_compare(expected_signature, signature)
   end
 
-  def initialize_transaction(email:, amount:, plan: nil, metadata: {})
-    return { status: 'error', message: 'Email address is required' } if email.blank?
+    # Create a subaccount
+    def create_subaccount(
+      business_name:, 
+      settlement_bank:, 
+      account_number:, 
+      percentage_charge:, 
+      description: nil, 
+      primary_contact_email: nil, 
+      primary_contact_name: nil, 
+      primary_contact_phone: nil, 
+      metadata: nil
+    )
+      uri = URI("#{PAYSTACK_BASE_URL}/subaccount")
+      body = {
+        business_name: business_name,
+        settlement_bank: settlement_bank,
+        account_number: account_number,
+        percentage_charge: percentage_charge,
+        description: description,
+        primary_contact_email: primary_contact_email,
+        primary_contact_name: primary_contact_name,
+        primary_contact_phone: primary_contact_phone,
+        metadata: metadata
+      }.compact.to_json # Remove nil values
   
+      response = make_post_request(uri, body)
+      parse_response(response)
+    end
+
+  # 1. Create Transaction Split (Add Subaccounts and Shares)
+  def create_split(name:, type:, currency:, subaccounts:, bearer_type:, bearer_subaccount:)
+    uri = URI("#{PAYSTACK_BASE_URL}/split")
+    body = {
+      name: name,
+      type: type,  # "percentage" or "flat"
+      currency: currency,
+      subaccounts: subaccounts,
+      bearer_type: bearer_type,
+      bearer_subaccount: bearer_subaccount
+    }.to_json
+
+    response = make_post_request(uri, body)
+    parse_response(response)
+  end
+
+  # 2. Add/Update Subaccount in Split
+  def add_subaccount_to_split(split_id:, subaccount:, share:)
+    uri = URI("#{PAYSTACK_BASE_URL}/split/#{split_id}/subaccount/add")
+    body = {
+      subaccount: subaccount,
+      share: share
+    }.to_json
+
+    response = make_post_request(uri, body)
+    parse_response(response)
+  end
+
+  # 3. Initialize Transaction with Split Code
+  def initialize_transaction(email:, amount:, plan: nil, metadata: {}, split_code:)
+    return { status: 'error', message: 'Email address is required' } if email.blank?
+
     uri = URI("#{PAYSTACK_BASE_URL}/transaction/initialize")
     body = {
       email: email,
       amount: (amount * 100).to_i, # Convert to kobo
       plan: plan,
       reference: SecureRandom.uuid,
-      metadata: metadata
+      metadata: metadata,
+      split_code: split_code  # Add the split code here
     }.compact.to_json
-  
+
     response = make_post_request(uri, body)
     parse_response(response)
   end
