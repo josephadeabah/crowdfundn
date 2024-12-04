@@ -14,31 +14,38 @@ Rails.application.routes.draw do
         put 'auth/password/reset', to: 'auth#reset_password'
         
         # User management routes
-        get 'users', to: 'users#index'                   # Route to get all users
-        get 'users/me', to: 'users#show'                 # Route for the current authenticated user
+        get 'users', to: 'users#index'
+        get 'users/me', to: 'users#show'
         put 'users/me', to: 'users#update'
         put 'users/me/password', to: 'users#change_password'
-        get 'users/:id', to: 'users#show_by_id'          # Route to get user by ID
-        put 'users/:id/make_admin', to: 'users#make_admin' # Route to make user an admin
-        put 'users/:id/assign_role', to: 'users#assign_role' # Added route for assign_role
+        get 'users/:id', to: 'users#show_by_id'
+        put 'users/:id/make_admin', to: 'users#make_admin'
+        put 'users/:id/assign_role', to: 'users#assign_role'
+        post 'users/:user_id/create_subaccount', to: 'users#create_subaccount'
+        get 'users/:user_id/subaccount', to: 'users#show_subaccount'
       end
 
       namespace :fundraisers do
-        # Transfer Routes
-        post 'transfers/create_transfer_recipient', to: 'transfers#create_transfer_recipient'
-        post 'transfers/bulk_create_transfer_recipients', to: 'transfers#bulk_create_transfer_recipients'
-        get 'transfers/list_transfer_recipients', to: 'transfers#list_transfer_recipients'
-        get 'transfers/fetch_transfer_recipient', to: 'transfers#fetch_transfer_recipient'
-        post 'transfers/create_subaccount', to: 'transfers#create_subaccount'
-        post 'transfers/create_split', to: 'transfers#create_split'
-        post 'transfers/add_subaccount_to_split', to: 'transfers#add_subaccount_to_split'
-        post 'transfers/initialize_transfer', to: 'transfers#initialize_transfer'
-        post 'transfers/finalize_transfer', to: 'transfers#finalize_transfer'
-        post 'transfers/initiate_bulk_transfer', to: 'transfers#initiate_bulk_transfer'
-        get 'transfers/fetch_transfer', to: 'transfers#fetch_transfer'
-        get 'transfers/verify_transfer', to: 'transfers#verify_transfer'
+        resources :transfers, only: [] do
+          collection do
+            post :create_transfer_recipient
+            post :bulk_create_transfer_recipients
+            get :get_bank_list
+            get :list_transfer_recipients
+            get :fetch_transfer_recipient
+            # post :create_split
+            post :add_subaccount_to_split
+            post :initialize_transfer
+            post :finalize_transfer
+            post :initiate_bulk_transfer
+            get :fetch_transfer
+            get :verify_transfer
+            post :approve_transfer
+          end
+        end
+
         post 'paystack_webhook/receive'
-        post 'transfers/approve_transfer', to: 'transfers#approve_transfer'
+
         resources :subscriptions, only: [] do
           collection do
             post :create_plan
@@ -47,6 +54,7 @@ Rails.application.routes.draw do
             get :fetch_subscription
           end
         end
+
         resources :donations, only: [:index]
         resources :campaigns do
           get 'my_campaigns', on: :collection
@@ -54,8 +62,7 @@ Rails.application.routes.draw do
           resources :updates, only: %i[create update destroy]
           resources :comments, only: %i[create index destroy]
           resources :rewards, only: %i[index show create update destroy]
-          resources :donations, only: [:create] do
-          end
+          resources :donations, only: [:create]
         end
       end
     end
@@ -63,4 +70,6 @@ Rails.application.routes.draw do
 
   # Health check route
   get 'up' => 'rails/health#show', as: :rails_health_check
+  # Catch-all route for unmatched requests (must be the last route)
+  match '*unmatched', to: 'application#not_found', via: :all
 end

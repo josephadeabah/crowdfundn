@@ -3,7 +3,7 @@ module Api
     module Fundraisers
       class TransfersController < ApplicationController
         include ErrorHandler
-        before_action :authenticate_request!, except: [:approve_transfer]
+        # before_action :authenticate_request!, except: [:approve_transfer, :get_supported_countries, :get_bank_list, :add_subaccount_to_split, :check_balance, :create_transfer_recipient, :bulk_create_transfer_recipients, :list_transfer_recipients, :fetch_transfer_recipient, :initiate_transfer, :finalize_transfer, :initiate_bulk_transfer, :fetch_transfer, :verify_transfer]
         before_action :set_transfer_service
 
 
@@ -41,41 +41,11 @@ module Api
 
         # Fetch list of banks
         def get_bank_list
-          response = @paystack_service.get_bank_list(filter_bank_params)
+          response = @paystack_service.get_bank_list(**filter_bank_params.to_h.symbolize_keys)
           render json: response, status: :ok
         rescue => e
           render json: { error: e.message }, status: :unprocessable_entity
-        end
-
-        # Create a subaccount
-        def create_subaccount
-          response = @paystack_service.create_subaccount(
-            business_name: params[:business_name],
-            bank_code: params[:bank_code],
-            account_number: params[:account_number],
-            percentage_charge: params[:percentage_charge],
-            description: params[:description],
-            metadata: params[:metadata],
-            settlement_bank: params[:settlement_bank]
-          )
-          render json: response, status: :ok
-        rescue => e
-          render json: { error: e.message }, status: :unprocessable_entity
-        end
-
-        def create_split
-          response = @paystack_service.create_split(
-            name: params[:name],
-            type: params[:type],
-            currency: params[:currency],
-            subaccounts: params[:subaccounts],
-            bearer_type: params[:bearer_type],
-            bearer_subaccount: params[:bearer_subaccount]
-          )
-          render json: response, status: :ok
-        rescue => e
-          render json: { error: e.message }, status: :unprocessable_entity
-        end
+        end        
         
         def add_subaccount_to_split
           response = @paystack_service.add_subaccount_to_split(
@@ -197,12 +167,8 @@ module Api
         private
 
         def filter_bank_params
-          params.permit(
-            :country, :use_cursor, :per_page, :next, :previous,
-            :pay_with_bank_transfer, :pay_with_bank, :enabled_for_verification, 
-            :gateway, :type, :currency
-          )
-        end
+          params.permit(:country, :use_cursor, :per_page, :next, :previous).except(:format)
+        end            
 
         def process_transfer_approval(transfer_details)
           # Add your logic to decide whether to approve or reject the transfer.

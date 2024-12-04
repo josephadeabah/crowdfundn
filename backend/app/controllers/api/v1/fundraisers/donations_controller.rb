@@ -37,19 +37,27 @@ module Api
             return render json: { error: 'The campaign you are trying to donate to no longer exists.' }, status: :not_found
           end
 
+          subaccount = Subaccount.find_by(user_id: campaign.fundraiser_id)
+        
+          # Ensure subaccount exists and has a valid subaccount code
+          if subaccount.nil? || subaccount.subaccount_code.blank?
+            return render json: { error: 'Fundraiser does not have a subaccount associated.' }, status: :unprocessable_entity
+          end
+        
+          subaccount_code = subaccount.subaccount_code
+        
           # Create a new donation
           donation = Donation.new(donation_params)
           donation.campaign_id = campaign.id
           donation.status = 'pending'
-
-          # Assign user_id if authenticated, otherwise generate a session token for anonymous users
+        
           if @current_user
             donation.user_id = @current_user.id
           else
-            session_token = SecureRandom.hex(16) # Generate session token for anonymous users
+            session_token = SecureRandom.hex(16)
             donation.metadata[:session_token] = session_token
           end
-
+        
           # Add campaign details to donation metadata
           donation.metadata[:campaign] = {
             id: campaign.id,
@@ -60,40 +68,36 @@ module Api
             currency: campaign.currency,
             currency_symbol: campaign.currency_symbol,
             fundraiser_id: campaign.fundraiser_id,
-            fundraiser_name: campaign.fundraiser.full_name,
+            fundraiser_name: campaign.fundraiser.full_name
           }
-
-          # Prepare metadata for Paystack initialization
+        
           metadata = { 
             user_id: donation.metadata[:campaign][:fundraiser_id], 
             campaign_id: donation.campaign_id,
             session_token: donation.metadata[:session_token], # Only for anonymous users
             fundraiserName: campaign.fundraiser.full_name,
           }
-
+        
           donation.plan = params[:donation][:plan]
-
-          # Initialize transaction with Paystack
+        
           paystack_service = PaystackService.new
           response = paystack_service.initialize_transaction(
             email: donation.email,
             amount: donation.amount,
             plan: donation.plan,
-            metadata: metadata
+            metadata: metadata,
+            subaccount: subaccount_code
           )
-
+        
           if response[:status] == true
             donation.transaction_reference = response[:data][:reference]
-              # Assign the plan to the subscription_code if it exists
-            if donation.plan.present?
-              donation.subscription_code = donation.plan
-            end
+            donation.subscription_code = donation.plan if donation.plan.present?
+        
             if donation.save
-              total_donors = campaign.total_donors
               render json: {
                 authorization_url: response[:data][:authorization_url],
                 donation: donation,
-                total_donors: total_donors
+                total_donors: campaign.total_donors
               }, status: :created
             else
               render json: { error: 'Donation creation failed: ' + donation.errors.full_messages.join(', ') }, status: :unprocessable_entity
@@ -101,7 +105,7 @@ module Api
           else
             render json: { error: 'Payment initialization failed: ' + response[:message] }, status: :unprocessable_entity
           end
-        end        
+        end                
         
         private
 

@@ -16,6 +16,7 @@ class User < ApplicationRecord
   has_many :campaigns, foreign_key: 'fundraiser_id', dependent: :destroy
   has_many :donations
   has_many :archived_campaigns
+  has_one :subaccount, dependent: :destroy
   accepts_nested_attributes_for :profile
 
   after_create :generate_confirmation_token
@@ -60,5 +61,5 @@ class User < ApplicationRecord
     unless profile.save
       Rails.logger.error "Failed to create profile for user #{id}: #{profile.errors.full_messages}"
     end
-  end
+  end 
 end

@@ -36,10 +36,11 @@ class PaystackService
 
     # Create a subaccount
     def create_subaccount(
-      business_name:, 
-      settlement_bank:, 
-      account_number:, 
-      percentage_charge:, 
+      business_name: nil, 
+      settlement_bank: nil, 
+      account_number: nil, 
+      bank_code: nil, 
+      percentage_charge: nil, 
       description: nil, 
       primary_contact_email: nil, 
       primary_contact_name: nil, 
@@ -51,6 +52,7 @@ class PaystackService
         business_name: business_name,
         settlement_bank: settlement_bank,
         account_number: account_number,
+        bank_code: bank_code,
         percentage_charge: percentage_charge,
         description: description,
         primary_contact_email: primary_contact_email,
@@ -63,36 +65,8 @@ class PaystackService
       parse_response(response)
     end
 
-  # 1. Create Transaction Split (Add Subaccounts and Shares)
-  def create_split(name:, type:, currency:, subaccounts:, bearer_type:, bearer_subaccount:)
-    uri = URI("#{PAYSTACK_BASE_URL}/split")
-    body = {
-      name: name,
-      type: type,  # "percentage" or "flat"
-      currency: currency,
-      subaccounts: subaccounts,
-      bearer_type: bearer_type,
-      bearer_subaccount: bearer_subaccount
-    }.to_json
-
-    response = make_post_request(uri, body)
-    parse_response(response)
-  end
-
-  # 2. Add/Update Subaccount in Split
-  def add_subaccount_to_split(split_id:, subaccount:, share:)
-    uri = URI("#{PAYSTACK_BASE_URL}/split/#{split_id}/subaccount/add")
-    body = {
-      subaccount: subaccount,
-      share: share
-    }.to_json
-
-    response = make_post_request(uri, body)
-    parse_response(response)
-  end
-
   # 3. Initialize Transaction with Split Code
-  def initialize_transaction(email:, amount:, plan: nil, metadata: {}, split_code:)
+  def initialize_transaction(email:, amount:, plan: nil, metadata: {}, subaccount:)
     return { status: 'error', message: 'Email address is required' } if email.blank?
 
     uri = URI("#{PAYSTACK_BASE_URL}/transaction/initialize")
@@ -102,7 +76,7 @@ class PaystackService
       plan: plan,
       reference: SecureRandom.uuid,
       metadata: metadata,
-      split_code: split_code  # Add the split code here
+      subaccount: subaccount  # Add the subaccount_code here
     }.compact.to_json
 
     response = make_post_request(uri, body)
@@ -115,7 +89,6 @@ class PaystackService
     parse_response(response)
   end
 
-  
   def create_subscription_plan(name:, interval:, amount:)
     return { status: 'error', message: 'Amount is required and must be a number' } if amount.nil? || amount <= 0
   
@@ -124,18 +97,6 @@ class PaystackService
       name: name,
       interval: interval,
       amount: (amount * 100).to_i # Convert to kobo
-    }.to_json
-  
-    response = make_post_request(uri, body)
-    parse_response(response)
-  end
-  
-  def create_subscription(email:, plan:, authorization:)
-    uri = URI("#{PAYSTACK_BASE_URL}/subscription")
-    body = {
-      customer: email,
-      plan: plan,
-      authorization: authorization
     }.to_json
   
     response = make_post_request(uri, body)
