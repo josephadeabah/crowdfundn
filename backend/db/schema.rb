@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_04_111601) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_04_212913) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -123,21 +123,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_04_111601) do
     t.index ["user_id"], name: "index_fundraisers_on_user_id"
   end
 
-  create_table "payment_methods", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.string "authorization_code"
-    t.string "card_type"
-    t.string "last4"
-    t.string "exp_month"
-    t.string "exp_year"
-    t.string "bank"
-    t.string "brand"
-    t.boolean "reusable"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_payment_methods_on_user_id"
-  end
-
   create_table "profiles", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "name"
@@ -185,6 +170,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_04_111601) do
     t.string "settlement_bank"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "authorization_code"
+    t.string "card_type"
+    t.string "last4"
+    t.string "exp_month"
+    t.string "exp_year"
+    t.string "bank"
+    t.string "brand"
+    t.boolean "reusable"
     t.index ["user_id"], name: "index_subaccounts_on_user_id"
   end
 
@@ -278,7 +271,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_04_111601) do
   add_foreign_key "donations", "campaigns"
   add_foreign_key "donations", "users"
   add_foreign_key "fundraisers", "users"
-  add_foreign_key "payment_methods", "users"
   add_foreign_key "profiles", "users"
   add_foreign_key "rewards", "campaigns"
   add_foreign_key "subaccounts", "users"

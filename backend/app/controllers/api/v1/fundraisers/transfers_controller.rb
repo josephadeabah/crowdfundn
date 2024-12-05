@@ -168,7 +168,7 @@ module Api
 
         def filter_bank_params
           params.permit(:country, :use_cursor, :per_page, :next, :previous).except(:format)
-        end            
+        end                  
 
         def process_transfer_approval(transfer_details)
           # Add your logic to decide whether to approve or reject the transfer.

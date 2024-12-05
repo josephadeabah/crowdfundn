@@ -32,6 +32,9 @@ module Api
             bank_code: params[:subaccount][:bank_code],
             percentage_charge: params[:subaccount][:percentage_charge],
             description: params[:subaccount][:description],
+            primary_contact_email: user.email,
+            primary_contact_name: user.full_name,
+            primary_contact_phone: user.phone_number,
             metadata: params[:subaccount][:metadata]
           )
                 
