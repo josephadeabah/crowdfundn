@@ -90,6 +90,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     try {
       setLoading(true);
 
+      // Step 1: Create subscription plan
       try {
         const subscriptionResponse = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/subscriptions/create_plan`,
@@ -134,9 +135,18 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           }),
         },
       );
+
       const donationData = await donationResponse.json();
 
       if (!donationResponse.ok) {
+        // If the donation request fails, check for a specific error message
+        if (
+          donationData.error ===
+          'Fundraiser does not meet requirements for raising funds.'
+        ) {
+          handleApiError(donationData.error); // Display the backend error message to the user
+          return;
+        }
         handleApiError('Failed to create donation');
         return;
       }
