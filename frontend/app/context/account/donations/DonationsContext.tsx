@@ -147,7 +147,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           handleApiError(donationData.error); // Display the backend error message to the user
           return;
         }
-        handleApiError('Failed to create donation');
+        handleApiError('Failed to create donation. Fundraiser might not meet requirements for fundraising at this time!');
         return;
       }
 
