@@ -10,30 +10,6 @@ type Bank = {
   value: string; // Settlement bank code
 };
 
-type SubaccountData = {
-  id: number;
-  user_id: number;
-  subaccount_code: string;
-  subaccount_bank_code: string | null;
-  business_name: string;
-  bank_code: string | null;
-  account_number: string;
-  percentage_charge: string;
-  description: string | null;
-  metadata: string;
-  settlement_bank: string;
-  created_at: string;
-  updated_at: string;
-  authorization_code: string | null;
-  card_type: string | null;
-  last4: string | null;
-  exp_month: string | null;
-  exp_year: string | null;
-  bank: string | null;
-  brand: string | null;
-  reusable: string | null;
-};
-
 const PaymentMethod = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -46,9 +22,7 @@ const PaymentMethod = () => {
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
   const [accountNumber, setAccountNumber] = useState('');
   const [isLoadingBanks, setIsLoadingBanks] = useState(true);
-  const [subaccountData, setSubaccountData] = useState<SubaccountData | null>(
-    null,
-  ); // New state to store subaccount details
+  const [subaccountData, setSubaccountData] = useState<any>(null); // New state to store subaccount details
   const [toast, setToast] = useState({
     isOpen: false,
     title: '',
@@ -159,21 +133,6 @@ const PaymentMethod = () => {
     fetchSubaccount();
   }, [user]); // Run this effect when the `user` changes
 
-  // Check if subaccount data is valid
-  const hasValidSubaccount = (
-    subaccountData: SubaccountData | null,
-  ): boolean => {
-    if (!subaccountData) return false;
-
-    return (
-      !!subaccountData.account_number && // Ensure account_number is not null or empty
-      !!subaccountData.bank_code && // Ensure bank_code is not null or empty
-      !!subaccountData.subaccount_code && // Ensure subaccount_code is not null or empty
-      !!subaccountData.business_name // Ensure business_name is not empty
-    );
-  };
-
-  // Handle add subaccount form submission
   const handleAddSubaccount = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedBank) {
@@ -260,8 +219,8 @@ const PaymentMethod = () => {
           This is where we'll pay your money to.
         </div>
 
-        {hasValidSubaccount(subaccountData) ? (
-          // Show subaccount details if subaccount exists and is valid
+        {Object.keys(subaccountData).length > 0 ? (
+          // Show subaccount details if subaccount exists
           <div className="bg-theme-color-base rounded-md p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-md">
             <div className="mb-2 sm:mr-4">
               <p className="font-medium">Business Name</p>
@@ -297,66 +256,77 @@ const PaymentMethod = () => {
         </button>
       </div>
 
-      {isModalOpen && (
-        <Modal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          size="medium"
-        >
-          <form onSubmit={handleAddSubaccount}>
-            <div className="mb-4">
-              <label
-                htmlFor="bankSelect"
-                className="block text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Select Bank
-              </label>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        size="medium"
+      >
+        <h2 className="text-2xl font-bold mb-4 text-theme-color-primary">
+          Add Subaccount
+        </h2>
+        <form onSubmit={handleAddSubaccount}>
+          <div className="mb-4">
+            <label htmlFor="bank" className="block mb-1 font-medium">
+              Select Your Bank
+            </label>
+            {isLoadingBanks ? (
+              <p>Loading banks...</p>
+            ) : (
               <select
-                id="bankSelect"
-                className="w-full p-2 border border-gray-300 rounded"
-                onChange={(e) =>
+                id="bank"
+                value={selectedBank?.value || ''}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                   setSelectedBank(
                     banks.find((bank) => bank.value === e.target.value) || null,
                   )
                 }
+                className="w-full p-2 border rounded-md border-gray-300"
                 required
               >
-                <option value="">Select a bank</option>
+                <option value="" disabled>
+                  Select a bank
+                </option>
                 {banks.map((bank) => (
                   <option key={bank.value} value={bank.value}>
                     {bank.display_name}
                   </option>
                 ))}
               </select>
-            </div>
+            )}
+          </div>
+          <div className="mb-4">
+            <label htmlFor="accountNumber" className="block mb-1 font-medium">
+              Account Number
+            </label>
+            <input
+              type="text"
+              id="accountNumber"
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value)}
+              className="w-full p-2 border rounded-md border-gray-300"
+              placeholder="123456789012"
+              required
+            />
+          </div>
 
-            <div className="mb-4">
-              <label
-                htmlFor="accountNumber"
-                className="block text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Account Number
-              </label>
-              <input
-                type="text"
-                id="accountNumber"
-                value={accountNumber}
-                onChange={(e) => setAccountNumber(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-              />
-            </div>
-
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="mr-4 bg-gray-100 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md transition-colors"
+            >
+              Cancel
+            </button>
             <button
               type="submit"
+              className="bg-theme-color-primary text-gray-800 px-4 py-2 rounded-md hover:bg-theme-color-primary-dark transition-colors"
               disabled={isLoading}
-              className="w-full p-3 bg-theme-color-primary text-gray-800 rounded-md hover:bg-theme-color-primary-dark transition-colors"
             >
               {isLoading ? 'Adding...' : 'Add Subaccount'}
             </button>
-          </form>
-        </Modal>
-      )}
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };
