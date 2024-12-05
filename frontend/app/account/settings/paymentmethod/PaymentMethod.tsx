@@ -262,7 +262,7 @@ const PaymentMethod = () => {
         size="small"
       >
         <h2 className="text-2xl font-bold mb-4 text-theme-color-primary">
-          Add Subaccount
+          Add Bank Account Number
         </h2>
         <form onSubmit={handleAddSubaccount}>
           <div className="mb-4">
