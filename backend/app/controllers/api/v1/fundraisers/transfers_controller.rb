@@ -45,18 +45,7 @@ module Api
           render json: response, status: :ok
         rescue => e
           render json: { error: e.message }, status: :unprocessable_entity
-        end        
-        
-        def add_subaccount_to_split
-          response = @paystack_service.add_subaccount_to_split(
-            split_id: params[:split_id],
-            subaccount: params[:subaccount],
-            share: params[:share]
-          )
-          render json: response, status: :ok
-        rescue => e
-          render json: { error: e.message }, status: :unprocessable_entity
-        end        
+        end             
 
         # Check Paystack balance
         def check_balance
