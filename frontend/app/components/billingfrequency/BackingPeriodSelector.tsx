@@ -1,6 +1,6 @@
-// components/BackingPeriodSelector.tsx
 import React from 'react';
 import { RadioGroup, RadioGroupItem } from '@/app/components/radio/RadioGroup';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface BackingPeriodSelectorProps {
   billingFrequency: string;
@@ -11,41 +11,53 @@ const BackingPeriodSelector: React.FC<BackingPeriodSelectorProps> = ({
   billingFrequency,
   setBillingFrequency,
 }) => {
+  const { user } = useAuth();
+
   return (
-    <div className="mb-4">
-      <h5 className="font-semibold mb-2">Choose Backing Period</h5>
+    <div className="mb-6 px-4 py-6 bg-white rounded-lg shadow-sm">
+      <h5 className="font-semibold text-xl mb-4 text-gray-800">
+        Choose Backing Period
+      </h5>
+
       <RadioGroup value={billingFrequency} onValueChange={setBillingFrequency}>
-        <div className="flex gap-1 items-center">
-          <RadioGroupItem value="once" id="once" className="mr-2" />
-          <label htmlFor="once">One-Time</label>
+        {/* One-Time option is always enabled */}
+        <div className="flex items-center space-x-3 mb-4">
+          <RadioGroupItem value="once" id="once" className="h-5 w-5" />
+          <label htmlFor="once" className="text-gray-700">
+            One-Time
+          </label>
         </div>
-        <div className="flex gap-1 items-center">
-          <RadioGroupItem value="hourly" id="hourly" className="mr-2" />
-          <label htmlFor="hourly">Hourly</label>
-        </div>
-        <div className="flex gap-1 items-center">
-          <RadioGroupItem value="daily" id="daily" className="mr-2" />
-          <label htmlFor="daily">Daily</label>
-        </div>
-        <div className="flex gap-1 items-center">
-          <RadioGroupItem value="weekly" id="weekly" className="mr-2" />
-          <label htmlFor="weekly">Weekly</label>
-        </div>
-        <div className="flex gap-1 items-center">
-          <RadioGroupItem value="monthly" id="monthly" className="mr-2" />
-          <label htmlFor="monthly">Monthly</label>
-        </div>
-        <div className="flex gap-1 items-center">
-          <RadioGroupItem value="quartely" id="quartely" className="mr-2" />
-          <label htmlFor="quartely">Quarterly</label>
-        </div>
-        <div className="flex gap-1 items-center">
-          <RadioGroupItem value="biannually" id="biannually" className="mr-2" />
-          <label htmlFor="biannually">Bi-Annually</label>
-        </div>
-        <div className="flex gap-1 items-center">
-          <RadioGroupItem value="annualy" id="annualy" className="mr-2" />
-          <label htmlFor="annualy">Annually</label>
+
+        {/* Message for non-logged-in users */}
+        {!user && (
+          <p className="text-sm text-gray-500 mb-4">
+            You must be logged in to support the fundraiser using these options.
+          </p>
+        )}
+
+        {/* Other options, disabled for non-logged-in users */}
+        <div className="space-y-3">
+          {[
+            'hourly',
+            'daily',
+            'weekly',
+            'monthly',
+            'quartely',
+            'biannually',
+            'annualy',
+          ].map((option) => (
+            <div key={option} className="flex items-center space-x-3">
+              <RadioGroupItem
+                value={option}
+                id={option}
+                className="h-5 w-5"
+                disabled={!user}
+              />
+              <label htmlFor={option} className="text-gray-700 capitalize">
+                {option}
+              </label>
+            </div>
+          ))}
         </div>
       </RadioGroup>
     </div>
