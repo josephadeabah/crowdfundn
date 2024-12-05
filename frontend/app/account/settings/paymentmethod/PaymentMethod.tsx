@@ -144,7 +144,7 @@ const PaymentMethod = () => {
       if (data.status) {
         return data.data.account_name;
       } else {
-        showToast('Error', data.message || 'Invalid account number.', 'error');
+        showToast('Error', 'Invalid account number.', 'error');
       }
     } catch (error) {
       console.error('Error verifying account number:', error);
