@@ -19,43 +19,7 @@ module Api
               render json: { error: response[:message] }, status: :unprocessable_entity
             end
           end
-    
-        #   def create_subscription
-        #     paystack_service = PaystackService.new
-        #     campaign = Campaign.find(params[:campaign_id])
-    
-        #     # Handle anonymous user subscription
-        #     customer_email = params[:email] || @current_user&.email # If no current user, get email from params
-    
-        #     if customer_email.nil?
-        #       return render json: { error: 'Email is required for subscription' }, status: :unprocessable_entity
-        #     end
-    
-        #     # Create customer in Paystack if not authenticated (anonymous)
-        #     response = paystack_service.create_subscription(
-        #       email: customer_email,
-        #       plan: params[:plan],
-        #       authorization: params[:authorization] # assuming authorization data is provided
-        #     )
-    
-        #     if response[:status]
-        #       subscription = Subscription.new(
-        #         user: @current_user,  # This will be nil if the user is anonymous
-        #         campaign: campaign,
-        #         subscription_code: response[:data]['subscription_code'],
-        #         email_token: response[:data]['email_token'],
-        #         status: response[:data]['status']
-        #       )
-    
-        #       if subscription.save
-        #         render json: { subscription: subscription }, status: :created
-        #       else
-        #         render json: { error: subscription.errors.full_messages }, status: :unprocessable_entity
-        #       end
-        #     else
-        #       render json: { error: response[:message] }, status: :unprocessable_entity
-        #     end
-        #   end
+ 
     
           def cancel_subscription
             paystack_service = PaystackService.new

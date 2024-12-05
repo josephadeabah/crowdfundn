@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_25_071805) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_04_212913) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -50,14 +50,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_25_071805) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
-  end
-
-  create_table "balances", force: :cascade do |t|
-    t.decimal "amount"
-    t.string "description"
-    t.string "status"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "campaigns", force: :cascade do |t|
@@ -117,6 +109,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_25_071805) do
     t.decimal "net_amount", precision: 15, scale: 2, default: "0.0", null: false
     t.string "plan"
     t.string "subscription_code"
+    t.decimal "platform_fee", precision: 10, scale: 2, default: "0.0"
     t.index ["campaign_id"], name: "index_donations_on_campaign_id"
     t.index ["user_id"], name: "index_donations_on_user_id"
   end
@@ -128,21 +121,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_25_071805) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_fundraisers_on_user_id"
-  end
-
-  create_table "payment_methods", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.string "authorization_code"
-    t.string "card_type"
-    t.string "last4"
-    t.string "exp_month"
-    t.string "exp_year"
-    t.string "bank"
-    t.string "brand"
-    t.boolean "reusable"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_payment_methods_on_user_id"
   end
 
   create_table "profiles", force: :cascade do |t|
@@ -179,6 +157,30 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_25_071805) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "subaccounts", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "subaccount_code"
+    t.string "subaccount_bank_code"
+    t.string "business_name"
+    t.string "bank_code"
+    t.string "account_number"
+    t.decimal "percentage_charge"
+    t.string "description"
+    t.text "metadata"
+    t.string "settlement_bank"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "authorization_code"
+    t.string "card_type"
+    t.string "last4"
+    t.string "exp_month"
+    t.string "exp_year"
+    t.string "bank"
+    t.string "brand"
+    t.boolean "reusable"
+    t.index ["user_id"], name: "index_subaccounts_on_user_id"
+  end
+
   create_table "subscriptions", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "campaign_id", null: false
@@ -198,6 +200,24 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_25_071805) do
     t.index ["campaign_id"], name: "index_subscriptions_on_campaign_id"
     t.index ["subscription_code"], name: "index_subscriptions_on_subscription_code", unique: true
     t.index ["user_id"], name: "index_subscriptions_on_user_id"
+  end
+
+  create_table "transfers", force: :cascade do |t|
+    t.string "transfer_code", null: false
+    t.string "recipient_code", null: false
+    t.integer "amount", null: false
+    t.string "status", default: "pending"
+    t.string "failure_reason"
+    t.datetime "completed_at"
+    t.datetime "reversed_at"
+    t.bigint "user_id", null: false
+    t.bigint "campaign_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "otp_required", default: false, null: false
+    t.index ["campaign_id"], name: "index_transfers_on_campaign_id"
+    t.index ["transfer_code"], name: "index_transfers_on_transfer_code", unique: true
+    t.index ["user_id"], name: "index_transfers_on_user_id"
   end
 
   create_table "updates", force: :cascade do |t|
@@ -251,11 +271,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_25_071805) do
   add_foreign_key "donations", "campaigns"
   add_foreign_key "donations", "users"
   add_foreign_key "fundraisers", "users"
-  add_foreign_key "payment_methods", "users"
   add_foreign_key "profiles", "users"
   add_foreign_key "rewards", "campaigns"
+  add_foreign_key "subaccounts", "users"
   add_foreign_key "subscriptions", "campaigns"
   add_foreign_key "subscriptions", "users"
+  add_foreign_key "transfers", "campaigns"
+  add_foreign_key "transfers", "users"
   add_foreign_key "updates", "campaigns"
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"

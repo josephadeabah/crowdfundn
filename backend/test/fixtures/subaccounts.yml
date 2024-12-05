@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  subaccount_code: MyString
+  subaccount_bank_code: MyString
+  business_name: MyString
+  bank_code: MyString
+  account_number: MyString
+  percentage_charge: 9.99
+  description: MyString
+  metadata: MyText
+  settlement_bank: MyString
+
+two:
+  user: two
+  subaccount_code: MyString
+  subaccount_bank_code: MyString
+  business_name: MyString
+  bank_code: MyString
+  account_number: MyString
+  percentage_charge: 9.99
+  description: MyString
+  metadata: MyText
+  settlement_bank: MyString

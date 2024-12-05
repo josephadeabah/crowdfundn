@@ -1,6 +1,6 @@
-class CreateBalances < ActiveRecord::Migration[7.1]
+class DropBalancesTable < ActiveRecord::Migration[7.1]
   def change
-    create_table :balances do |t|
+    drop_table :balances do |t|
       t.decimal :amount
       t.string :description
       t.string :status

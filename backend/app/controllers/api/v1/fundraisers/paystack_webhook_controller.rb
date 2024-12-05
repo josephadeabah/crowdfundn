@@ -36,6 +36,10 @@ module Api
             PaystackWebhook::ChargeFailedHandler.new(event[:data]).call
           when 'transfer.success'
             PaystackWebhook::TransferSuccessHandler.new(event[:data]).call
+          when 'transfer.failed'
+            PaystackWebhook::TransferFailedHandler.new(event[:data]).call
+          when 'transfer.reversed'
+            PaystackWebhook::TransferReversedHandler.new(event[:data]).call
           when 'subscription.create'
             PaystackWebhook::SubscriptionCreateHandler.new(event[:data]).call
           when 'subscription.disabled'
