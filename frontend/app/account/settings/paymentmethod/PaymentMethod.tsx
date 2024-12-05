@@ -259,7 +259,7 @@ const PaymentMethod = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        size="medium"
+        size="small"
       >
         <h2 className="text-2xl font-bold mb-4 text-theme-color-primary">
           Add Subaccount
