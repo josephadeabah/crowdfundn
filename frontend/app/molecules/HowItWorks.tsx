@@ -219,56 +219,56 @@ const HowItWorks = () => {
               together. Shared dashboards and team goals make fundraising a
               collaborative effort.
             </li>
-              <p className="text-3xl leading-8 font-semibold py-6 text-green-600">
-                Earn an honorable Award for your Impact.
-              </p>
-              <ul className="mt-2 ml-6 list-disc space-y-2">
-                <li>
-                  <span className="font-semibold">
-                    Certificate of Generosity:
-                  </span>{' '}
-                  Highlights your commitment to spreading kindness and
-                  supporting meaningful causes.
-                </li>
-                <li>
-                  <span className="font-semibold">
-                    Ambassador of Impact Award:
-                  </span>{' '}
-                  Celebrates individuals who actively amplify campaigns and
-                  drive meaningful change.
-                </li>
-                <li>
-                  <span className="font-semibold">
-                    Community Champion Certificate:
-                  </span>{' '}
-                  Honors those who lead by example in creating a supportive and
-                  engaged community.
-                </li>
-                <li>
-                  <span className="font-semibold">Honor of Advocacy:</span>{' '}
-                  Recognizes passionate individuals advocating for diverse
-                  causes through sharing.
-                </li>
-                <li>
-                  <span className="font-semibold">Beacon of Hope Award:</span>{' '}
-                  Symbolizes your role in bringing hope and visibility to
-                  important causes.
-                </li>
-                <li>
-                  <span className="font-semibold">
-                    Certificate of Social Impact:
-                  </span>{' '}
-                  Emphasizes the tangible difference you have made by supporting
-                  and sharing campaigns.
-                </li>
-                <li>
-                  <span className="font-semibold">
-                    Certificate of Empowerment:
-                  </span>{' '}
-                  Highlights how you empower others by amplifying their stories
-                  and campaigns.
-                </li>
-              </ul>
+            <p className="text-3xl leading-8 font-semibold py-6 text-green-600">
+              Earn an honorable Award for your Impact.
+            </p>
+            <ul className="mt-2 ml-6 list-disc space-y-2">
+              <li>
+                <span className="font-semibold">
+                  Certificate of Generosity:
+                </span>{' '}
+                Highlights your commitment to spreading kindness and supporting
+                meaningful causes.
+              </li>
+              <li>
+                <span className="font-semibold">
+                  Ambassador of Impact Award:
+                </span>{' '}
+                Celebrates individuals who actively amplify campaigns and drive
+                meaningful change.
+              </li>
+              <li>
+                <span className="font-semibold">
+                  Community Champion Certificate:
+                </span>{' '}
+                Honors those who lead by example in creating a supportive and
+                engaged community.
+              </li>
+              <li>
+                <span className="font-semibold">Honor of Advocacy:</span>{' '}
+                Recognizes passionate individuals advocating for diverse causes
+                through sharing.
+              </li>
+              <li>
+                <span className="font-semibold">Beacon of Hope Award:</span>{' '}
+                Symbolizes your role in bringing hope and visibility to
+                important causes.
+              </li>
+              <li>
+                <span className="font-semibold">
+                  Certificate of Social Impact:
+                </span>{' '}
+                Emphasizes the tangible difference you have made by supporting
+                and sharing campaigns.
+              </li>
+              <li>
+                <span className="font-semibold">
+                  Certificate of Empowerment:
+                </span>{' '}
+                Highlights how you empower others by amplifying their stories
+                and campaigns.
+              </li>
+            </ul>
           </ul>
           <p className="text-lg leading-8 font-semibold mb-6 text-green-600">
             These upcoming features are just the beginning. At BantuHive, we’re
