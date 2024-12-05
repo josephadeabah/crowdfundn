@@ -36,13 +36,21 @@ module Api
             account_number: params[:account_number],
             bank_code: params[:bank_code]
           )
-          render json: response, status: :ok
+          if response[:status]
+            render json: response, status: :ok
+          else
+            error_message = response[:message]
+            meta_info = response.dig(:body, :meta, :nextStep) || "Please double-check the details and try again."
+            render json: { 
+              error: "Account resolution failed: #{error_message}. #{meta_info}" 
+            }, status: :unprocessable_entity
+          end
         rescue StandardError => e
           Rails.logger.error "Failed to resolve account details: #{e.message}"
           render json: { 
-            error: "Sorry, Your Account Number must be Invalid or not supported! Please check and try again." 
+            error: "An unexpected error occurred while resolving the account details. Please try again later or contact support."
           }, status: :unprocessable_entity
-        end
+        end        
         
 
         # Fetch list of supported countries
