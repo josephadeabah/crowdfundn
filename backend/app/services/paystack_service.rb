@@ -165,6 +165,15 @@ class PaystackService
     parse_response(response)
   end
 
+  # PaystackService
+  def resolve_account_details(account_number:, bank_code:)
+    uri = URI("#{PAYSTACK_BASE_URL}/bank/resolve")
+    uri.query = URI.encode_www_form(account_number: account_number, bank_code: bank_code)
+    response = make_get_request(uri)
+    parse_response(response)
+  end
+
+
    # Create a single transfer recipient
   def create_transfer_recipient(type:, name:, account_number: nil, bank_code: nil, currency:, authorization_code: nil, description: nil, metadata: nil)
     uri = URI("#{PAYSTACK_BASE_URL}/transferrecipient")

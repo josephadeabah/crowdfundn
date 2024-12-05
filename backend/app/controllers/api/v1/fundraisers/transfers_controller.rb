@@ -31,6 +31,16 @@ module Api
           end
         end
 
+        def resolve_account_details
+          response = @paystack_service.resolve_account_details(
+            account_number: params[:account_number],
+            bank_code: params[:bank_code]
+          )
+          render json: response, status: :ok
+        rescue => e
+          render json: { error: e.message }, status: :unprocessable_entity
+        end
+
         # Fetch list of supported countries
         def get_supported_countries
           response = @paystack_service.get_supported_countries
