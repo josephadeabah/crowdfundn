@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { FaPlus, FaTimes, FaEdit } from 'react-icons/fa';
+import { FaPlus } from 'react-icons/fa';
 import Modal from '@/app/components/modal/Modal';
-import AlertPopup from '@/app/components/alertpopup/AlertPopup';
-
-import PaymentMethodIcons from './PaymethodIcons';
-import { validateField } from './validatedfield';
 import { useAuth } from '@/app/context/auth/AuthContext';
+import ToastComponent from '@/app/components/toast/Toast';
 
 type Bank = {
   display_name: string;
@@ -14,48 +11,57 @@ type Bank = {
 };
 
 const PaymentMethod = () => {
-  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newPayment, setNewPayment] = useState({
-    cardNumber: '',
-    expirationDate: '',
-    cvv: '',
-    billingAddress: '',
-    country: '',
-    first_name: '',
-    last_name: '',
-    phone: '',
-    email: '',
-    type: '',
-  });
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingPaymentId, setEditingPaymentId] = useState<number | null>(null);
-  const [errors, setErrors] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [paymentToRemove, setPaymentToRemove] = useState<number | null>(null);
-  const [banks, setBanks] = useState<Bank[]>([]);
-  const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
-  const [accountNumber, setAccountNumber] = useState('');
-  const [businessName, setBusinessName] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoadingBanks, setIsLoadingBanks] = useState(true);
-
-  const { user } = useAuth();
-
   const [userDetails, setUserDetails] = useState({
     accountId: '',
     name: '',
     userEmail: '',
   });
+  const [banks, setBanks] = useState<Bank[]>([]);
+  const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
+  const [accountNumber, setAccountNumber] = useState('');
+  const [isLoadingBanks, setIsLoadingBanks] = useState(true);
+  const [subaccountData, setSubaccountData] = useState<any>(null); // New state to store subaccount details
+  const [toast, setToast] = useState({
+    isOpen: false,
+    title: '',
+    description: '',
+    type: 'success' as 'success' | 'error' | 'warning',
+  });
+
+  const { user } = useAuth();
+
+  // Show toast function
+  const showToast = (
+    title: string,
+    description: string,
+    type: 'success' | 'error' | 'warning',
+  ) => {
+    setToast({
+      isOpen: true,
+      title,
+      description,
+      type,
+    });
+  };
+
+  // Close toast
+  const closeToast = () => {
+    setToast((prevState) => ({
+      ...prevState,
+      isOpen: false,
+    }));
+  };
 
   // Fetch the bank list on component mount
   useEffect(() => {
     const fetchBanks = async () => {
       try {
         setIsLoadingBanks(true);
+
         if (!user) {
-          console.error('User is not authenticated.');
+          showToast('Error', 'You are not authenticated.', 'error');
           return;
         }
 
@@ -78,12 +84,14 @@ const PaymentMethod = () => {
           value: bank.code, // Settlement bank code
         }));
 
-        console.log('Formatted Banks:', formattedBanks);
-
         setBanks(formattedBanks);
       } catch (error) {
         console.error('Failed to fetch banks', error);
-        alert('Failed to load the bank list. Please try again.');
+        showToast(
+          'Error',
+          'Failed to load the bank list. Please try again.',
+          'error',
+        );
       } finally {
         setIsLoadingBanks(false);
       }
@@ -92,46 +100,59 @@ const PaymentMethod = () => {
     fetchBanks();
   }, []);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    const { name, value } = e.target;
-    setNewPayment({ ...newPayment, [name]: value });
+  // Fetch subaccount details every time the page is loaded or visited
+  useEffect(() => {
+    const fetchSubaccount = async () => {
+      if (user) {
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user.id}/subaccount`,
+            {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            },
+          );
+          const subaccountData = await response.json();
+          setSubaccountData(subaccountData); // Store subaccount details
 
-    // Update errors state by passing current errors and the field being validated
-    // const updatedErrors = validateField(name, value, errors);
-    // setErrors(updatedErrors); // Update the errors state
-  };
+          // Set user details for display
+          setUserDetails({
+            name: user.full_name,
+            userEmail: user.email,
+            accountId: subaccountData.account_id || '',
+          });
+        } catch (error) {
+          console.error('Error fetching account:', error);
+          showToast('Error', 'Failed to fetch account details.', 'error');
+        }
+      }
+    };
 
-  const handleAddPayment = async (e: React.FormEvent<HTMLFormElement>) => {
+    fetchSubaccount();
+  }, [user]); // Run this effect when the `user` changes
+
+  const handleAddSubaccount = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Check if there are errors
-    if (Object.values(errors).some((error) => error)) {
+    if (!selectedBank) {
+      showToast('Error', 'Please select a bank.', 'error');
       return;
     }
 
     setIsLoading(true);
 
-    // Ensure bank is selected and user is authenticated
-    if (!selectedBank) {
-      alert('Please select a bank.');
-      return;
-    }
-
+    // Prepare the payload for the subaccount creation
     if (!user) {
-      alert('User is not authenticated.');
+      showToast('Error', 'You are not authenticated.', 'error');
       return;
     }
 
-    // Add a delay to simulate a loading state
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    // Prepare the payload for the payment method and subaccount creation
     const payload = {
       subaccount: {
         business_name: user.full_name,
         settlement_bank: selectedBank.value,
-        account_number: newPayment.cardNumber,
+        account_number: accountNumber,
         percentage_charge: 20,
         metadata: {
           custom_fields: [
@@ -145,50 +166,7 @@ const PaymentMethod = () => {
       },
     };
 
-    // Handle editing or adding payment method to the state
-    if (isEditing && editingPaymentId) {
-      setPaymentMethods((prevMethods) =>
-        prevMethods.map((method) =>
-          method.id === editingPaymentId
-            ? {
-                ...method,
-                last4: newPayment.cardNumber.slice(-4),
-                email: newPayment.email,
-                expirationDate: newPayment.expirationDate,
-                billingAddress: newPayment.billingAddress,
-                country: newPayment.country,
-                type: newPayment.type,
-                cardNumber: newPayment.cardNumber,
-                first_name: newPayment.first_name,
-                last_name: newPayment.last_name,
-                phone: newPayment.phone,
-              }
-            : method,
-        ),
-      );
-    } else {
-      const newMethod = {
-        id: paymentMethods.length + 1,
-        type: newPayment.type, // Use the type from newPayment
-        last4: newPayment.cardNumber.slice(-4),
-        email: newPayment.email,
-        first_name: newPayment.first_name,
-        last_name: newPayment.last_name,
-      };
-      setPaymentMethods([...paymentMethods, newMethod]);
-
-      // Set user details to display
-      setUserDetails({
-        name: newMethod.first_name + ' ' + newMethod.last_name,
-        userEmail: newMethod.email, // or any other name field you might have
-        accountId: newMethod.id.toString(), // using ID as account ID for demo
-      });
-    }
-
-    // Call the API to create the subaccount
     try {
-      setIsSubmitting(true);
-      setIsLoading(true);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user.id}/create_subaccount`,
         {
@@ -200,174 +178,84 @@ const PaymentMethod = () => {
         },
       );
 
-      const data = await response.json();
-      alert('Subaccount created successfully!');
-      console.log(data);
+      await response.json();
+      showToast('Success', 'Subaccount created successfully!', 'success');
+      // After the subaccount is created, fetch the subaccount details again
+      const subaccountResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user.id}/subaccount`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      const subaccountData = await subaccountResponse.json();
+      setSubaccountData(subaccountData); // Update subaccount data
     } catch (error) {
-      alert('Error creating subaccount. Please try again.');
+      showToast('Error', 'Error creating account. Please try again.', 'error');
       console.error(error);
     } finally {
-      setIsSubmitting(false);
       setIsLoading(false);
+      setIsModalOpen(false);
     }
-
-    // Close the modal and reset form data
-    setIsModalOpen(false);
-    setNewPayment({
-      cardNumber: '',
-      expirationDate: '',
-      cvv: '',
-      billingAddress: '',
-      country: '',
-      first_name: '',
-      last_name: '',
-      phone: '',
-      email: '',
-      type: '',
-    });
-    setIsEditing(false);
-    setEditingPaymentId(null);
-    setIsLoading(false);
-  };
-
-  const handleRemovePayment = (id: number) => {
-    setPaymentToRemove(id);
-    setIsAlertOpen(true);
-  };
-
-  const confirmRemovePayment = async () => {
-    if (paymentToRemove !== null) {
-      setIsLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setPaymentMethods(
-        paymentMethods.filter((method) => method.id !== paymentToRemove),
-      );
-      setIsLoading(false);
-    }
-    setIsAlertOpen(false);
-    setPaymentToRemove(null);
-  };
-
-  const cancelRemovePayment = () => {
-    setIsAlertOpen(false);
-    setPaymentToRemove(null);
-  };
-
-  const handleEditPayment = (method: any) => {
-    setNewPayment({
-      cardNumber: '**** **** **** ' + method.last4,
-      expirationDate: '',
-      cvv: '',
-      billingAddress: '',
-      country: '',
-      first_name: method.first_name,
-      last_name: method.last_name,
-      phone: method.phone,
-      email: method.email,
-      type: method.type,
-    });
-    setIsEditing(true);
-    setEditingPaymentId(method.id);
-    setIsModalOpen(true);
   };
 
   return (
     <div className="mx-auto bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-50">
+      <ToastComponent
+        isOpen={toast.isOpen}
+        onClose={closeToast}
+        title={toast.title}
+        description={toast.description}
+        type={toast.type}
+      />
+
       <div className="rounded-lg mb-6">
-        <h2 className="text-xl font-semibold mb-4 text-theme-color-primary-content">
-          Payment Information
+        <h2 className="text-xl font-semibold mb-4 text-theme-color-primary-content md:text-2xl">
+          Bank Account Information
         </h2>
+        <div className="py-3 text-green-600">
+          This is where we'll pay your money to.
+        </div>
 
-        {userDetails.name && userDetails.accountId ? (
-          <>
-            <p className="mb-2">
-              <span className="font-medium">Name:</span> {userDetails.name}
-            </p>
-            <p className="mb-4">
-              <span className="font-medium">Account ID:</span>{' '}
-              {userDetails.accountId}
-            </p>
-          </>
-        ) : (
-          <p>No payment method found. Please add one.</p>
-        )}
-
-        {paymentMethods.length > 0 && (
-          <>
-            <h3 className="text-lg font-semibold mb-3 text-theme-color-primary-content">
-              Payment Methods
-            </h3>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {paymentMethods.map((method) => (
-                <div
-                  key={method.id}
-                  className="bg-theme-color-base rounded-md p-4 flex items-center justify-between shadow-md"
-                >
-                  <div className="flex items-center">
-                    {PaymentMethodIcons(method.type)}
-                    <div>
-                      <p className="font-medium">{method.type}</p>
-                      <p className="text-sm text-gray-600">
-                        {method.type === 'Credit Card'
-                          ? `**** ${method.last4}`
-                          : method.email}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex">
-                    <button
-                      onClick={() => handleEditPayment(method)}
-                      className="text-theme-color-primary hover:text-theme-color-primary-dark transition-colors mr-3"
-                      aria-label={`Edit ${method.type}`}
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={() => handleRemovePayment(method.id)}
-                      aria-label={`Remove ${method.type}`}
-                    >
-                      <FaTimes />
-                    </button>
-                  </div>
-                </div>
-              ))}
+        {subaccountData ? (
+          // Show subaccount details if subaccount exists
+          <div className="bg-theme-color-base rounded-md p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-md">
+            <div className="mb-2 sm:mr-4">
+              <p className="font-medium">Business Name</p>
+              <p>{subaccountData?.business_name}</p>
             </div>
-          </>
+            <div className="mb-2 sm:mr-4">
+              <p className="font-medium">Account Number</p>
+              <p>{subaccountData?.account_number}</p>
+            </div>
+            <div className="mb-4 sm:mr-4">
+              <p className="font-medium">Settlement Bank</p>
+              <p>
+                {subaccountData?.metadata
+                  ? JSON.parse(subaccountData.metadata.replace(/=>/g, ':'))
+                      ?.custom_fields?.[0]?.display_name || 'Not Available'
+                  : 'Not Available'}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <p>No Bank Account Added. Please add one.</p>
         )}
 
-        {/* Button to add a new payment method */}
-        <button
-          onClick={() => {
-            setIsModalOpen(true);
-            setIsEditing(false);
-            setNewPayment({
-              cardNumber: '',
-              expirationDate: '',
-              cvv: '',
-              billingAddress: '',
-              country: '',
-              first_name: '',
-              last_name: '',
-              phone: '',
-              email: '',
-              type: '',
-            });
-          }}
-          className="mt-6 bg-theme-color-primary text-gray-800 px-4 py-2 rounded-md hover:bg-theme-color-primary-dark transition-colors flex items-center"
-          aria-label="Add Payment Method"
-        >
-          <FaPlus className="mr-2" />
-          Add Payment
-        </button>
-
-        <AlertPopup
-          title="Confirm Removal"
-          message="Are you sure you want to remove this payment method?"
-          isOpen={isAlertOpen}
-          setIsOpen={setIsAlertOpen}
-          onConfirm={confirmRemovePayment}
-          onCancel={cancelRemovePayment}
-        />
+        {!subaccountData && ( // Only show "Add Subaccount" button if no subaccount exists
+          <button
+            onClick={() => {
+              setIsModalOpen(true);
+            }}
+            className="mt-6 bg-theme-color-primary text-gray-800 px-6 py-3 rounded-md hover:bg-theme-color-primary-dark transition-colors flex items-center justify-center w-full sm:w-auto"
+            aria-label="Add Subaccount"
+          >
+            <FaPlus className="mr-2" />
+            Add Bank Account
+          </button>
+        )}
       </div>
 
       <Modal
@@ -376,80 +264,52 @@ const PaymentMethod = () => {
         size="medium"
       >
         <h2 className="text-2xl font-bold mb-4 text-theme-color-primary">
-          {isEditing ? 'Edit Payment Method' : 'Add Payment Method'}
+          Add Subaccount
         </h2>
-
-        <div className="mb-4">
-          <label htmlFor="type" className="block mb-1 font-medium">
-            Add where to receive your money
-          </label>
-          <select
-            id="type"
-            name="type"
-            value={newPayment.type}
-            onChange={handleInputChange}
-            className="w-full p-2 border rounded-md border-gray-300"
-            required
-          >
-            <option value="">Select Payment Method</option>
-            <option value="Credit Card">Credit Card</option>
-          </select>
-        </div>
-
-        <form onSubmit={handleAddPayment}>
-          {/* Conditional Fields Rendering */}
-          {newPayment.type === 'Credit Card' ? (
-            <>
-              <div className="mb-4">
-                <label htmlFor="bank">Select Your Bank</label>
-                {isLoadingBanks ? (
-                  <p>Loading banks...</p>
-                ) : (
-                  <select
-                    id="bank"
-                    value={selectedBank?.value || ''}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                      setSelectedBank(
-                        banks.find((bank) => bank.value === e.target.value) ||
-                          null,
-                      )
-                    }
-                    className="w-full p-2 border rounded-md border-gray-300"
-                    required
-                  >
-                    <option value="" disabled>
-                      Select a bank
-                    </option>
-                    {banks.map((bank) => (
-                      <option key={bank.value} value={bank.value}>
-                        {bank.display_name}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </div>
-              <div className="mb-4">
-                <label htmlFor="cardNumber" className="block mb-1 font-medium">
-                  Account Number
-                </label>
-                <input
-                  type="text"
-                  id="cardNumber"
-                  name="cardNumber"
-                  value={newPayment.cardNumber}
-                  onChange={handleInputChange}
-                  className={`w-full p-2 border rounded-md ${errors.cardNumber ? 'border-red-500' : 'border-gray-300'}`}
-                  placeholder="1234 5678 9012 3456"
-                  required
-                />
-                {errors.cardNumber && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.cardNumber}
-                  </p>
-                )}
-              </div>
-            </>
-          ) : null}
+        <form onSubmit={handleAddSubaccount}>
+          <div className="mb-4">
+            <label htmlFor="bank" className="block mb-1 font-medium">
+              Select Your Bank
+            </label>
+            {isLoadingBanks ? (
+              <p>Loading banks...</p>
+            ) : (
+              <select
+                id="bank"
+                value={selectedBank?.value || ''}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  setSelectedBank(
+                    banks.find((bank) => bank.value === e.target.value) || null,
+                  )
+                }
+                className="w-full p-2 border rounded-md border-gray-300"
+                required
+              >
+                <option value="" disabled>
+                  Select a bank
+                </option>
+                {banks.map((bank) => (
+                  <option key={bank.value} value={bank.value}>
+                    {bank.display_name}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+          <div className="mb-4">
+            <label htmlFor="accountNumber" className="block mb-1 font-medium">
+              Account Number
+            </label>
+            <input
+              type="text"
+              id="accountNumber"
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value)}
+              className="w-full p-2 border rounded-md border-gray-300"
+              placeholder="123456789012"
+              required
+            />
+          </div>
 
           <div className="flex justify-end">
             <button
@@ -464,11 +324,7 @@ const PaymentMethod = () => {
               className="bg-theme-color-primary text-gray-800 px-4 py-2 rounded-md hover:bg-theme-color-primary-dark transition-colors"
               disabled={isLoading}
             >
-              {isLoading
-                ? 'Processing...'
-                : isEditing
-                  ? 'Update Payment'
-                  : 'Add Payment'}
+              {isLoading ? 'Processing...' : 'Add Subaccount'}
             </button>
           </div>
         </form>
