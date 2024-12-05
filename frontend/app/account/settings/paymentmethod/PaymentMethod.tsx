@@ -224,11 +224,11 @@ const PaymentMethod = () => {
           <div className="bg-theme-color-base rounded-md p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-md">
             <div className="mb-2 sm:mr-4">
               <p className="font-medium">Business Name</p>
-              <p>{subaccountData?.business_name}</p>
+              <p>{subaccountData?.business_name || 'Not Available'}</p>
             </div>
             <div className="mb-2 sm:mr-4">
               <p className="font-medium">Account Number</p>
-              <p>{subaccountData?.account_number}</p>
+              <p>{subaccountData?.account_number || 'Not Available'}</p>
             </div>
             <div className="mb-4 sm:mr-4">
               <p className="font-medium">Settlement Bank</p>
