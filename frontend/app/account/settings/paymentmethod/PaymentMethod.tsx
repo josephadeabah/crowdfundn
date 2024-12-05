@@ -244,18 +244,16 @@ const PaymentMethod = () => {
           <p>No Bank Account Added. Please add one.</p>
         )}
 
-        {!subaccountData && ( // Only show "Add Subaccount" button if no subaccount exists
-          <button
-            onClick={() => {
-              setIsModalOpen(true);
-            }}
-            className="mt-6 bg-theme-color-primary text-gray-800 px-6 py-3 rounded-md hover:bg-theme-color-primary-dark transition-colors flex items-center justify-center w-full sm:w-auto"
-            aria-label="Add Subaccount"
-          >
-            <FaPlus className="mr-2" />
-            Add Bank Account
-          </button>
-        )}
+        <button
+          onClick={() => {
+            setIsModalOpen(true);
+          }}
+          className="mt-6 bg-theme-color-primary text-gray-800 px-6 py-3 rounded-md hover:bg-theme-color-primary-dark transition-colors flex items-center justify-center w-full sm:w-auto"
+          aria-label="Add Subaccount"
+        >
+          <FaPlus className="mr-2" />
+          Add Bank Account
+        </button>
       </div>
 
       <Modal

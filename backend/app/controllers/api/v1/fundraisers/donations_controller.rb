@@ -41,7 +41,7 @@ module Api
         
           # Ensure subaccount exists and has a valid subaccount code
           if subaccount.nil? || subaccount.subaccount_code.blank?
-            return render json: { error: 'Fundraiser does not have a subaccount associated.' }, status: :unprocessable_entity
+            return render json: { error: 'Fundraiser does not meet requirememnts for raising funds.' }, status: :unprocessable_entity
           end
         
           subaccount_code = subaccount.subaccount_code
