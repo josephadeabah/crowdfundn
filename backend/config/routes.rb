@@ -33,7 +33,7 @@ Rails.application.routes.draw do
             get :get_bank_list
             get :list_transfer_recipients
             get :fetch_transfer_recipient
-            # post :create_split
+            get :resolve_account_details
             post :add_subaccount_to_split
             post :initialize_transfer
             post :finalize_transfer

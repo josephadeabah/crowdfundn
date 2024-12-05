@@ -32,7 +32,6 @@ const PaymentMethod = () => {
 
   const { user } = useAuth();
 
-  // Show toast function
   const showToast = (
     title: string,
     description: string,
@@ -46,7 +45,6 @@ const PaymentMethod = () => {
     });
   };
 
-  // Close toast
   const closeToast = () => {
     setToast((prevState) => ({
       ...prevState,
@@ -54,7 +52,6 @@ const PaymentMethod = () => {
     }));
   };
 
-  // Fetch the bank list on component mount
   useEffect(() => {
     const fetchBanks = async () => {
       try {
@@ -70,18 +67,17 @@ const PaymentMethod = () => {
           {
             method: 'GET',
             headers: {
-              'Content-Type': 'application/json', // Ensure content type is set to JSON
-              Accept: 'application/json', // Accept JSON responses
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
             },
           },
         );
         const data = await response.json();
 
-        // Assuming `data` is the array of bank details
         const formattedBanks = data.data.map((bank: any) => ({
           display_name: bank.name,
           variable_name: bank.slug,
-          value: bank.code, // Settlement bank code
+          value: bank.code,
         }));
 
         setBanks(formattedBanks);
@@ -100,7 +96,6 @@ const PaymentMethod = () => {
     fetchBanks();
   }, []);
 
-  // Fetch subaccount details every time the page is loaded or visited
   useEffect(() => {
     const fetchSubaccount = async () => {
       if (user) {
@@ -115,9 +110,8 @@ const PaymentMethod = () => {
             },
           );
           const subaccountData = await response.json();
-          setSubaccountData(subaccountData); // Store subaccount details
+          setSubaccountData(subaccountData);
 
-          // Set user details for display
           setUserDetails({
             name: user.full_name,
             userEmail: user.email,
@@ -131,7 +125,37 @@ const PaymentMethod = () => {
     };
 
     fetchSubaccount();
-  }, [user]); // Run this effect when the `user` changes
+  }, [user]);
+
+  const verifyAccountNumber = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/resolve_account_details?account_number=${accountNumber}&bank_code=${selectedBank?.value}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      if (data.status) {
+        return data.data.account_name;
+      } else {
+        showToast('Error', data.message || 'Invalid account number.', 'error');
+      }
+    } catch (error) {
+      console.error('Error verifying account number:', error);
+      showToast(
+        'Error',
+        (error as any).message || 'Failed to verify account number.',
+        'error',
+      );
+      return null;
+    }
+  };
 
   const handleAddSubaccount = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -142,9 +166,15 @@ const PaymentMethod = () => {
 
     setIsLoading(true);
 
-    // Prepare the payload for the subaccount creation
     if (!user) {
       showToast('Error', 'You are not authenticated.', 'error');
+      return;
+    }
+
+    const accountName = await verifyAccountNumber();
+
+    if (!accountName) {
+      setIsLoading(false);
       return;
     }
 
@@ -179,8 +209,8 @@ const PaymentMethod = () => {
       );
 
       await response.json();
-      showToast('Success', 'Subaccount created successfully!', 'success');
-      // After the subaccount is created, fetch the subaccount details again
+      showToast('Success', 'Account added successfully!', 'success');
+
       const subaccountResponse = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user.id}/subaccount`,
         {
@@ -191,7 +221,7 @@ const PaymentMethod = () => {
         },
       );
       const subaccountData = await subaccountResponse.json();
-      setSubaccountData(subaccountData); // Update subaccount data
+      setSubaccountData(subaccountData);
     } catch (error) {
       showToast('Error', 'Error creating account. Please try again.', 'error');
       console.error(error);

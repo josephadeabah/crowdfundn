@@ -16,5 +16,6 @@ class CreateTransfers < ActiveRecord::Migration[7.1]
     
     # Add unique index for transfer_code
     add_index :transfers, :transfer_code, unique: true
+    add_index :transfers, :recipient_code, unique: true
   end
 end
