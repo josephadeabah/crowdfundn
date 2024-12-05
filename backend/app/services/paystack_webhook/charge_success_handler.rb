@@ -28,9 +28,9 @@ class PaystackWebhook::ChargeSuccessHandler
 
     transaction_status = response[:data][:status]
     if transaction_status == 'success'
-      gross_amount = response[:data][:amount] / 100.0  # Gross amount from Paystack
-      platform_fee = response[:data][:split][0][:amount] / 100.0 # Platform fee from the split
-      net_amount = response[:data][:split][1][:amount] / 100.0  # Amount for the campaign
+      gross_amount = response[:data][:amount] / 100.0  # Gross amount from Paystack (in GHS)
+      platform_fee = gross_amount * 0.20  # Platform fee (20% of the gross amount)
+      net_amount = gross_amount - platform_fee  # Net amount (80% of the gross amount)
   
       # Update the donation with the gross amount, platform fee, and net amount
       donation.update!(
