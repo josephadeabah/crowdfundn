@@ -219,7 +219,7 @@ const PaymentMethod = () => {
           This is where we'll pay your money to.
         </div>
 
-        {Object.keys(subaccountData).length > 0 ? (
+        {subaccountData && Object.keys(subaccountData).length > 0 ? (
           // Show subaccount details if subaccount exists
           <div className="bg-theme-color-base rounded-md p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-md">
             <div className="mb-2 sm:mr-4">
