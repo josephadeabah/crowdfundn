@@ -37,9 +37,13 @@ module Api
             bank_code: params[:bank_code]
           )
           render json: response, status: :ok
-        rescue => e
-          render json: { error: e.message }, status: :unprocessable_entity
+        rescue StandardError => e
+          Rails.logger.error "Failed to resolve account details: #{e.message}"
+          render json: { 
+            error: "Sorry, Your Account Number must be Invalid or not supported! Please check and try again." 
+          }, status: :unprocessable_entity
         end
+        
 
         # Fetch list of supported countries
         def get_supported_countries
