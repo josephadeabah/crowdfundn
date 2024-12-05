@@ -53,14 +53,14 @@ module Api
             if subaccount.save
               render json: { success: true, subaccount_code: subaccount.subaccount_code, percentage_charge: subaccount.percentage_charge }, status: :ok
             else
-              Rails.logger.error "Subaccount save failed: #{subaccount.errors.full_messages}"
+              Rails.logger.error "account save failed: #{subaccount.errors.full_messages}"
               render json: { success: false, error: subaccount.errors.full_messages }, status: :unprocessable_entity
             end
           else
             render json: { success: false, error: response[:message] }, status: :unprocessable_entity
           end          
         rescue => e
-          Rails.logger.error "Error during subaccount creation: #{e.message}"
+          Rails.logger.error "Error during account creation: #{e.message}"
           render json: { success: false, error: e.message }, status: :unprocessable_entity
         end
         
@@ -69,7 +69,7 @@ module Api
           if @user.subaccount
             render json: @user.subaccount, status: :ok
           else
-            render json: { error: "Subaccount not found" }, status: :not_found
+            render json: { error: "account not found" }, status: :not_found
           end
         end
 
