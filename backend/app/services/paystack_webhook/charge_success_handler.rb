@@ -49,7 +49,7 @@ class PaystackWebhook::ChargeSuccessHandler
       DonationConfirmationEmailService.send_confirmation_email(donation)
 
       # Process payout for the campaign
-      CampaignPayoutService.new(campaign, @data).process_payout
+      # CampaignPayoutService.new(campaign, @data).process_payout
     else
       donation.update!(status: transaction_status)
       raise "Transaction status is #{transaction_status}"
