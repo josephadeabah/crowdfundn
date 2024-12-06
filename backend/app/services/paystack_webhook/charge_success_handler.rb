@@ -47,7 +47,7 @@ class PaystackWebhook::ChargeSuccessHandler
       )
 
       # Process payout for the campaign
-      CampaignPayoutService.new(campaign).process_payout
+      # CampaignPayoutService.new(campaign).process_payout
       
       # Send a confirmation email to the donor via Brevo
       DonationConfirmationEmailService.send_confirmation_email(donation)
