@@ -74,14 +74,20 @@ class CampaignPayoutService
     )
     Rails.logger.debug "Paystack recipient response: #{response.inspect}"
   
-    if response['status']
-      recipient_code = response['data']['recipient_code']
-      @fundraiser.subaccount.update!(recipient_code: recipient_code)
-      recipient_code
-    else
+    unless response['status']
+      Rails.logger.error "Failed to create recipient: #{response.inspect}"
       raise "Failed to create transfer recipient: #{response['message'] || 'Unknown error'}"
     end
-  end
+  
+    recipient_code = response['data']&.fetch('recipient_code', nil)
+    unless recipient_code
+      Rails.logger.error "Recipient code missing in response: #{response.inspect}"
+      raise "Recipient code missing from Paystack response"
+    end
+  
+    @fundraiser.subaccount.update!(recipient_code: recipient_code)
+    recipient_code
+  end  
   
 
   def verify_transfer_status(transfer)
