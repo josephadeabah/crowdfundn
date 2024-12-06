@@ -77,7 +77,7 @@ class CampaignPayoutService
     Rails.logger.debug "Paystack recipient response: #{response.inspect}"
   
     # Check if the response is successful
-    if response['status']
+    if response['status'] == true
       recipient_code = response['data']['recipient_code']
       
       unless recipient_code
