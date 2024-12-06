@@ -1,20 +1,20 @@
-class PaystackWebhook::TransferFailedHandler
+# app/services/paystack_webhook/transfer_failed_handler.rb
+module PaystackWebhook
+  class TransferFailedHandler
     def initialize(data)
-      @data = data
+      @transfer_data = data
     end
-  
+
     def call
-      transfer_code = @data[:transfer_code]
-      reason = @data[:failures] || "Unknown reason"
-  
-      transfer = Transfer.find_by(transfer_code: transfer_code)
-  
-      if transfer
-        transfer.update!(status: 'failed', failure_reason: reason)
-        Rails.logger.info "Transfer #{transfer_code} marked as failed. Reason: #{reason}."
-      else
-        Rails.logger.warn "Failed transfer #{transfer_code} not found."
-      end
+      transfer = Transfer.find_by(reference: @transfer_data[:reference])
+      return unless transfer
+
+      transfer.update!(
+        status: 'failed',
+        failed_at: Time.current,
+        failure_reason: @transfer_data[:reason]
+      )
+      Rails.logger.error "Transfer failed: #{transfer.id} (Reason: #{@transfer_data[:reason]})"
     end
+  end
 end
-  

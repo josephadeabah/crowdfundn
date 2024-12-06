@@ -50,7 +50,7 @@ class PaystackWebhook::ChargeSuccessHandler
 
       # Attempt to process the payout for the campaign
       begin
-        CampaignPayoutService.new(campaign, @data).process_payout
+        CampaignPayoutService.new(campaign).process_payout
       rescue StandardError => e
         Rails.logger.error "Error processing campaign payout: #{e.message}. Skipping payout."
       end

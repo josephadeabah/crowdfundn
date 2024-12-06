@@ -1,6 +1,5 @@
 class CampaignPayoutService
-  def initialize(campaign, data)
-    @data = data
+  def initialize(campaign)
     @campaign = campaign
     @fundraiser = campaign.fundraiser
     @paystack_service = PaystackService.new
@@ -11,25 +10,9 @@ class CampaignPayoutService
       validate_campaign_eligibility
       payout_amount = calculate_payout_amount
 
-      response = @paystack_service.create_transfer_recipient(
-        type: @fundraiser.subaccount&.subaccount_type,
-        name: @fundraiser.full_name,
-        account_number: @fundraiser.subaccount&.account_number,
-        bank_code: @fundraiser.subaccount&.settlement_bank,
-        currency: @campaign.currency.upcase,
-        authorization_code: @fundraiser.subaccount&.authorization_code,
-        description: "Transfer recipient for campaign payouts",
-        metadata: { user_id: @fundraiser.id }
-      )
-    
-      if response['status'] == true
-      recipient_code = response['data']['recipient_code']
-      @fundraiser.subaccount.update!(recipient_code: recipient_code) unless @fundraiser.subaccount&.recipient_code == recipient_code
+      recipient_code = create_or_fetch_recipient_code
       initiate_transfer(payout_amount, recipient_code)
       finalize_campaign
-      else
-      raise "Failed to create transfer recipient: #{response['message']}"
-      end
     end
   rescue StandardError => e
     Rails.logger.error "Error processing payout for campaign #{@campaign.id}: #{e.message}"
@@ -54,30 +37,56 @@ class CampaignPayoutService
 
     total_donations
   end
-  
+
+  def create_or_fetch_recipient_code
+    existing_recipient_code = @fundraiser.subaccount&.recipient_code
+
+    return existing_recipient_code if existing_recipient_code.present?
+
+    response = @paystack_service.create_transfer_recipient(
+      type: @fundraiser.subaccount&.subaccount_type,
+      name: @fundraiser.full_name,
+      account_number: @fundraiser.subaccount&.account_number,
+      bank_code: @fundraiser.subaccount&.settlement_bank,
+      currency: @campaign.currency.upcase,
+      description: "Transfer recipient for campaign payouts",
+      metadata: { user_id: @fundraiser.id }
+    )
+
+    unless response['status']
+      raise "Failed to create transfer recipient: #{response['message']}"
+    end
+
+    recipient_code = response.dig('data', 'recipient_code')
+    @fundraiser.subaccount.update!(recipient_code: recipient_code)
+    recipient_code
+  end
+
   def initiate_transfer(payout_amount, recipient_code)
-    transfer_response = @paystack_service.initiate_transfer(
+    response = @paystack_service.initiate_transfer(
       amount: payout_amount,
       recipient: recipient_code,
       reason: "Payout for campaign: #{@campaign.title}",
       currency: @campaign.currency
     )
-  
-    Rails.logger.debug "Paystack transfer response: #{transfer_response.inspect}"
-  
-    raise "Invalid transfer initiation response" if transfer_response.dig('data', 'transfer_code').nil?
-  
+
+    Rails.logger.debug "Paystack transfer response: #{response.inspect}"
+
+    unless response['status'] && response.dig('data', 'transfer_code').present?
+      raise "Failed to initiate transfer: #{response['message']}"
+    end
+
     Transfer.create!(
-      transfer_code: transfer_response['data']['transfer_code'],
+      transfer_code: response.dig('data', 'transfer_code'),
       recipient_code: recipient_code,
       amount: payout_amount,
       user: @fundraiser,
       campaign: @campaign,
-      status: transfer_response['data']['status'],
-      otp_required: transfer_response['data']['requires_otp'],
-      reference: transfer_response['data']['reference']
+      status: response.dig('data', 'status'),
+      otp_required: response.dig('data', 'requires_otp'),
+      reference: response.dig('data', 'reference')
     )
-  end  
+  end
 
   def finalize_campaign
     @campaign.update!(status: 'completed')
