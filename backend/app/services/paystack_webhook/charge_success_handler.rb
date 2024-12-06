@@ -48,8 +48,12 @@ class PaystackWebhook::ChargeSuccessHandler
       # Send a confirmation email to the donor via Brevo
       DonationConfirmationEmailService.send_confirmation_email(donation)
 
-      # Process payout for the campaign
-      # CampaignPayoutService.new(campaign, @data).process_payout
+      # Attempt to process the payout for the campaign
+      begin
+        CampaignPayoutService.new(campaign, @data).process_payout
+      rescue StandardError => e
+        Rails.logger.error "Error processing campaign payout: #{e.message}. Skipping payout."
+      end
     else
       donation.update!(status: transaction_status)
       raise "Transaction status is #{transaction_status}"
