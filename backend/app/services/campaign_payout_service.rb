@@ -13,7 +13,7 @@ class CampaignPayoutService
   
       recipient_code = find_or_create_recipient
   
-      transfer = @paystack_service.initiate_transfer(
+      transfer_response = @paystack_service.initiate_transfer(
         amount: payout_amount,
         recipient: recipient_code,
         reason: "Payout for campaign: #{@campaign.title}",
@@ -27,20 +27,20 @@ class CampaignPayoutService
       end
   
       created_transfer = Transfer.create!(
-        transfer_code: @data[:transfer_code],
+        transfer_code: transfer_response[:data][:transfer_code],
         recipient_code: recipient_code,
         amount: payout_amount,
         user: @fundraiser,
         campaign: @campaign,
-        status: @data[:status],
-        otp_required: @data[:otp_required],
-        reference: transfer[:data][:reference]
+        status: transfer_response[:data][:status],
+        otp_required: transfer_response[:data][:requires_otp],
+        reference: transfer_response[:data][:reference]
       )
   
       verify_transfer_status(created_transfer)
       @campaign.update!(status: 'completed')
       Rails.logger.info "Payout processed successfully for campaign #{@campaign.id}."
-      transfer
+      transfer_response
     end
   rescue StandardError => e
     Rails.logger.error "Error processing payout for campaign #{@campaign.id}: #{e.message}"
