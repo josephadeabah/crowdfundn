@@ -13,12 +13,20 @@ class CampaignPayoutService
   
       recipient_code = find_or_create_recipient
   
+      # Ensure recipient_code is valid before initiating the transfer
+      unless recipient_code
+        raise "Failed to create transfer recipient."
+      end
+  
       transfer_response = @paystack_service.initiate_transfer(
         amount: payout_amount,
         recipient: recipient_code,
         reason: "Payout for campaign: #{@campaign.title}",
         currency: @campaign.currency
       )
+  
+      # Log the full transfer response for better insight
+      Rails.logger.debug "Paystack transfer response: #{transfer_response.inspect}"
   
       created_transfer = Transfer.create!(
         transfer_code: transfer_response['data']['transfer_code'],
@@ -63,33 +71,17 @@ class CampaignPayoutService
   def find_or_create_recipient
     Rails.logger.debug "Creating transfer recipient for fundraiser #{@fundraiser.full_name}"
     
-    # Log the request data before calling Paystack API
-    Rails.logger.debug "Sending request to create transfer recipient with the following details: 
-      Type: #{@fundraiser.subaccount&.subaccount_type}, 
-      Name: #{@fundraiser.full_name}, 
-      Account Number: #{@fundraiser.subaccount&.account_number}, 
-      Bank Code: #{@fundraiser.subaccount&.settlement_bank}, 
-      Currency: #{@campaign.currency.upcase}, 
-      Authorization Code: #{@fundraiser.subaccount&.authorization_code}"
+    response = @paystack_service.create_transfer_recipient(
+      type: @fundraiser.subaccount&.subaccount_type,
+      name: @fundraiser.full_name,
+      account_number: @fundraiser.subaccount&.account_number,
+      bank_code: @fundraiser.subaccount&.settlement_bank,
+      currency: @campaign.currency.upcase,
+      authorization_code: @fundraiser.subaccount&.authorization_code,
+      description: "Transfer recipient for campaign payouts",
+      metadata: { user_id: @fundraiser.id }
+    )
     
-    begin
-      response = @paystack_service.create_transfer_recipient(
-        type: @fundraiser.subaccount&.subaccount_type,
-        name: @fundraiser.full_name,
-        account_number: @fundraiser.subaccount&.account_number,
-        bank_code: @fundraiser.subaccount&.settlement_bank,
-        currency: @campaign.currency.upcase,
-        authorization_code: @fundraiser.subaccount&.authorization_code,
-        description: "Transfer recipient for campaign payouts",
-        metadata: { user_id: @fundraiser.id }
-      )
-      
-    rescue StandardError => e
-      Rails.logger.error "Error creating transfer recipient: #{e.message}"
-      raise "Error creating transfer recipient: #{e.message}"
-    end
-    
-    # Log the full response from Paystack
     Rails.logger.debug "Paystack recipient response: #{response.inspect}"
   
     # Check if the response is successful
@@ -103,14 +95,14 @@ class CampaignPayoutService
   
       # Update the subaccount with the recipient code
       @fundraiser.subaccount.update!(recipient_code: recipient_code)
-      recipient_code
+      return recipient_code
     else
       # Log the failure if status is not true
       Rails.logger.error "Failed to create recipient: #{response.inspect}"
       raise "Failed to create transfer recipient: #{response['message'] || 'Unknown error'}"
     end
   end  
-
+  
   def verify_transfer_status(transfer)
     verify_result = @paystack_service.verify_transfer(transfer.reference)
     Rails.logger.debug "Verification result for transfer #{transfer.reference}: #{verify_result.inspect}"
