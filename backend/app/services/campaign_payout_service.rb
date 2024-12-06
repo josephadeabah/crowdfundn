@@ -10,10 +10,9 @@ class CampaignPayoutService
     ActiveRecord::Base.transaction do
       validate_campaign_eligibility
       payout_amount = calculate_payout_amount
-
+  
       recipient_code = find_or_create_recipient
-
-      # Initiate transfer
+  
       transfer = @paystack_service.initiate_transfer(
         amount: payout_amount,
         recipient: recipient_code,
@@ -22,23 +21,23 @@ class CampaignPayoutService
         campaign: @campaign,
         currency: @campaign.currency
       )
-
-      # Save transfer details to the database
+  
+      unless transfer.is_a?(Hash) && transfer[:status]
+        raise "Unexpected transfer response: #{transfer.inspect}"
+      end
+  
       created_transfer = Transfer.create!(
-        transfer_code: transfer.dig(:data, :transfer_code), # Safe access using dig
+        transfer_code: transfer.dig(:data, :transfer_code),
         recipient_code: recipient_code,
         amount: payout_amount,
         user: @fundraiser,
         campaign: @campaign,
-        status: transfer[:status], # Status might be available directly, not in :data
+        status: transfer[:status],
         otp_required: transfer.dig(:data, :otp),
-        reference: transfer.dig(:data, :reference) # Save the generated reference in your database
+        reference: transfer.dig(:data, :reference)
       )
-
-      # Verify the transfer status using the reference
+  
       verify_transfer_status(created_transfer)
-
-      # Update campaign and transfer records
       @campaign.update!(status: 'completed')
       Rails.logger.info "Payout processed successfully for campaign #{@campaign.id}."
       transfer
@@ -46,7 +45,7 @@ class CampaignPayoutService
   rescue StandardError => e
     Rails.logger.error "Error processing payout for campaign #{@campaign.id}: #{e.message}"
     raise e
-  end
+  end  
 
   private
 
