@@ -11,9 +11,25 @@ class CampaignPayoutService
       validate_campaign_eligibility
       payout_amount = calculate_payout_amount
 
-      recipient_code = find_or_create_recipient(payout_amount)
+      response = @paystack_service.create_transfer_recipient(
+        type: @fundraiser.subaccount&.subaccount_type,
+        name: @fundraiser.full_name,
+        account_number: @fundraiser.subaccount&.account_number,
+        bank_code: @fundraiser.subaccount&.settlement_bank,
+        currency: @campaign.currency.upcase,
+        authorization_code: @fundraiser.subaccount&.authorization_code,
+        description: "Transfer recipient for campaign payouts",
+        metadata: { user_id: @fundraiser.id }
+      )
+    
+      if response['status'] == true
+      recipient_code = response['data']['recipient_code']
+      @fundraiser.subaccount.update!(recipient_code: recipient_code) unless @fundraiser.subaccount&.recipient_code == recipient_code
       initiate_transfer(payout_amount, recipient_code)
       finalize_campaign
+      else
+      raise "Failed to create transfer recipient: #{response['message']}"
+      end
     end
   rescue StandardError => e
     Rails.logger.error "Error processing payout for campaign #{@campaign.id}: #{e.message}"
@@ -37,28 +53,6 @@ class CampaignPayoutService
     raise "No funds available for payout." if total_donations <= 0
 
     total_donations
-  end
-
-  def find_or_create_recipient(payout_amount)
-    response = @paystack_service.create_transfer_recipient(
-      type: @fundraiser.subaccount&.subaccount_type,
-      name: @fundraiser.full_name,
-      account_number: @fundraiser.subaccount&.account_number,
-      bank_code: @fundraiser.subaccount&.settlement_bank,
-      currency: @campaign.currency.upcase,
-      authorization_code: @fundraiser.subaccount&.authorization_code,
-      description: "Transfer recipient for campaign payouts",
-      metadata: { user_id: @fundraiser.id }
-    )
-  
-    Rails.logger.debug "Paystack recipient response: #{response.inspect}"
-  
-    raise "Invalid recipient creation response" if response.dig('data', 'recipient_code').nil?
-  
-    recipient_code = response['data']['recipient_code']
-    @fundraiser.subaccount.update!(recipient_code: recipient_code) unless @fundraiser.subaccount&.recipient_code == recipient_code
-  
-    recipient_code
   end
   
   def initiate_transfer(payout_amount, recipient_code)
