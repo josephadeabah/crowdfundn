@@ -1,6 +1,7 @@
 class PaystackWebhook::TransferSuccessHandler
   def initialize(data)
     @data = data
+    @paystack_service = PaystackService.new
   end
 
   def call
