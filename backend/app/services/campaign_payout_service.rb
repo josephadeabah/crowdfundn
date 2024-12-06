@@ -53,13 +53,11 @@ class CampaignPayoutService
       metadata: { user_id: @fundraiser.id }
     )
 
-    unless response['status']
-      raise "Failed to create transfer recipient: #{response['message']}"
+    unless response['status'] && response.dig('data', 'recipient_code').present? 
+      recipient_code = response.dig('data', 'recipient_code')
+      @fundraiser.subaccount.update!(recipient_code: recipient_code)
+      recipient_code
     end
-
-    recipient_code = response.dig('data', 'recipient_code')
-    @fundraiser.subaccount.update!(recipient_code: recipient_code)
-    recipient_code
   end
 
   def initiate_transfer(payout_amount, recipient_code)
