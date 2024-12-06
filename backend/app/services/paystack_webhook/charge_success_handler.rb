@@ -1,6 +1,6 @@
 class PaystackWebhook::ChargeSuccessHandler
   def initialize(data)
-    @data = data
+    @data = data.deep_symbolize_keys # Ensure all keys are symbols for consistency
   end
 
   def call
@@ -26,18 +26,17 @@ class PaystackWebhook::ChargeSuccessHandler
     response = PaystackService.new.verify_transaction(transaction_reference)
     raise "Transaction verification failed" unless response[:status] == true
 
-    transaction_status = response[:data][:status]
+    transaction_status = response.dig(:data, :status)
     if transaction_status == 'success'
-      gross_amount = response[:data][:amount] / 100.0  # Gross amount from Paystack (in GHS)
-      platform_fee = gross_amount * 0.20  # Platform fee (20% of the gross amount)
-      net_amount = gross_amount - platform_fee  # Net amount (80% of the gross amount)
-  
-      # Update the donation with the gross amount, platform fee, and net amount
+      gross_amount = response.dig(:data, :amount).to_f / 100.0 # Gross amount from Paystack (in GHS)
+      platform_fee = gross_amount * 0.20 # Platform fee (20% of the gross amount)
+      net_amount = gross_amount - platform_fee # Net amount (80% of the gross amount)
+
       donation.update!(
         status: 'successful',
         gross_amount: gross_amount,
         net_amount: net_amount,
-        platform_fee: platform_fee,  # Store the platform fee
+        platform_fee: platform_fee, # Store the platform fee
         amount: net_amount
       )
 
@@ -48,7 +47,7 @@ class PaystackWebhook::ChargeSuccessHandler
 
       # Process payout for the campaign
       CampaignPayoutService.new(campaign, @data).process_payout
-      
+
       # Send a confirmation email to the donor via Brevo
       DonationConfirmationEmailService.send_confirmation_email(donation)
     else
