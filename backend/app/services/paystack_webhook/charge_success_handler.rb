@@ -45,11 +45,11 @@ class PaystackWebhook::ChargeSuccessHandler
         current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
       )
 
-      # Process payout for the campaign
-      CampaignPayoutService.new(campaign, @data).process_payout
-
       # Send a confirmation email to the donor via Brevo
       DonationConfirmationEmailService.send_confirmation_email(donation)
+
+      # Process payout for the campaign
+      CampaignPayoutService.new(campaign, @data).process_payout
     else
       donation.update!(status: transaction_status)
       raise "Transaction status is #{transaction_status}"
