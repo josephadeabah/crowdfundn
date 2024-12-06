@@ -40,7 +40,6 @@ class CampaignPayoutService
   end
 
   def find_or_create_recipient(payout_amount)
-    Rails.logger.debug "Creating transfer recipient for fundraiser #{@fundraiser.full_name}"
 
     response = @paystack_service.create_transfer_recipient(
       type: @fundraiser.subaccount&.subaccount_type,
@@ -55,7 +54,6 @@ class CampaignPayoutService
 
     Rails.logger.debug "Paystack recipient response: #{response.inspect}"
 
-    raise "Failed to create transfer recipient: #{response['message'] || 'Unknown error'}" unless response['status']
 
     recipient_code = response['data']['recipient_code']
     @fundraiser.subaccount.update!(recipient_code: recipient_code) unless @fundraiser.subaccount&.recipient_code == recipient_code
