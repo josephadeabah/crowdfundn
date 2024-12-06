@@ -71,19 +71,17 @@ class CampaignPayoutService
     Rails.logger.debug "Paystack transfer response: #{response.inspect}"
 
     unless response['status'] && response.dig('data', 'transfer_code').present?
-      raise "Failed to initiate transfer: #{response['message']}"
+      Transfer.create!(
+        transfer_code: response.dig('data', 'transfer_code'),
+        recipient_code: recipient_code,
+        amount: payout_amount,
+        user: @fundraiser,
+        campaign: @campaign,
+        status: response.dig('data', 'status'),
+        otp_required: response.dig('data', 'requires_otp'),
+        reference: response.dig('data', 'reference')
+      )
     end
-
-    Transfer.create!(
-      transfer_code: response.dig('data', 'transfer_code'),
-      recipient_code: recipient_code,
-      amount: payout_amount,
-      user: @fundraiser,
-      campaign: @campaign,
-      status: response.dig('data', 'status'),
-      otp_required: response.dig('data', 'requires_otp'),
-      reference: response.dig('data', 'reference')
-    )
   end
 
   def finalize_campaign
