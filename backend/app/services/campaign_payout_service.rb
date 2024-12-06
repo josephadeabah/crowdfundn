@@ -27,14 +27,14 @@ class CampaignPayoutService
       end
   
       created_transfer = Transfer.create!(
-        transfer_code: transfer.dig(:data, :transfer_code),
+        transfer_code: @data[:transfer_code],
         recipient_code: recipient_code,
         amount: payout_amount,
         user: @fundraiser,
         campaign: @campaign,
-        status: transfer.dig(:data, :status),
-        otp_required: transfer.dig(:data, :otp),
-        reference: transfer.dig(:data, :reference)
+        status: @data[:status],
+        otp_required: @data[:otp_required],
+        reference: transfer[:data][:reference]
       )
   
       verify_transfer_status(created_transfer)
@@ -70,7 +70,7 @@ class CampaignPayoutService
     recipient = @paystack_service.fetch_transfer_recipient(@fundraiser.subaccount&.recipient_code)
 
     if recipient && recipient[:status]
-      recipient.dig(:data, :recipient_code)
+      recipient[:data][:recipient_code]
     else
       response = @paystack_service.create_transfer_recipient(
         type: @fundraiser.subaccount&.subaccount_type,
