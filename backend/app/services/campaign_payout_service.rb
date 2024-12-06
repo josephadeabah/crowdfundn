@@ -24,14 +24,14 @@ class CampaignPayoutService
   
         # Save transfer details to the database
         created_transfer = Transfer.create!(
-          transfer_code: transfer[:data][:transfer_code],
+          transfer_code: transfer.dig(:data, :transfer_code), # Safe access using dig
           recipient_code: recipient_code,
           amount: payout_amount,
           user: @fundraiser,
           campaign: @campaign,
-          status: transfer[:status],
-          otp_required: transfer[:data][:otp],
-          reference: transfer[:data][:reference]  # Save the generated reference in your database (optional)
+          status: transfer[:status],  # Status might be available directly, not in :data
+          otp_required: transfer.dig(:data, :otp),
+          reference: transfer.dig(:data, :reference)  # Save the generated reference in your database
         )
   
         # Now, verify the transfer status using the reference
@@ -99,15 +99,17 @@ class CampaignPayoutService
   
     def verify_transfer_status(transfer)
       verify_result = @paystack_service.verify_transfer(transfer.reference)
-  
-      if verify_result[:status] == 'success' && verify_result[:data][:status] == 'success'
+    
+      # Log the verification response
+      Rails.logger.debug "Verification result for transfer #{transfer.reference}: #{verify_result.inspect}"
+    
+      if verify_result.dig(:status) == 'success' && verify_result.dig(:data, :status) == 'success'
         Rails.logger.info "Transfer #{transfer.reference} verified as successful."
         transfer.update!(status: 'completed')
       else
-        Rails.logger.warn "Transfer verification failed for reference #{transfer.reference}."
-        # You may want to handle failure (maybe update the transfer status to "failed" or retry)
+        Rails.logger.warn "Transfer verification failed for reference #{transfer.reference}. Status: #{verify_result.dig(:data, :status)}"
         transfer.update!(status: 'failed')
       end
-    end
+    end    
 end
   
