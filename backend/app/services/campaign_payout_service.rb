@@ -1,5 +1,6 @@
 class CampaignPayoutService
-    def initialize(campaign)
+    def initialize(campaign, data)
+      @data = data
       @campaign = campaign
       @fundraiser = campaign.fundraiser
       @paystack_service = PaystackService.new
