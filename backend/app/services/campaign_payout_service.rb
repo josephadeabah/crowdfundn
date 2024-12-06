@@ -63,17 +63,33 @@ class CampaignPayoutService
   def find_or_create_recipient
     Rails.logger.debug "Creating transfer recipient for fundraiser #{@fundraiser.full_name}"
     
-    response = @paystack_service.create_transfer_recipient(
-      type: @fundraiser.subaccount&.subaccount_type,
-      name: @fundraiser.full_name,
-      account_number: @fundraiser.subaccount&.account_number,
-      bank_code: @fundraiser.subaccount&.settlement_bank,
-      currency: @campaign.currency.upcase,
-      authorization_code: @fundraiser.subaccount&.authorization_code,
-      description: "Transfer recipient for campaign payouts",
-      metadata: { user_id: @fundraiser.id }
-    )
+    # Log the request data before calling Paystack API
+    Rails.logger.debug "Sending request to create transfer recipient with the following details: 
+      Type: #{@fundraiser.subaccount&.subaccount_type}, 
+      Name: #{@fundraiser.full_name}, 
+      Account Number: #{@fundraiser.subaccount&.account_number}, 
+      Bank Code: #{@fundraiser.subaccount&.settlement_bank}, 
+      Currency: #{@campaign.currency.upcase}, 
+      Authorization Code: #{@fundraiser.subaccount&.authorization_code}"
     
+    begin
+      response = @paystack_service.create_transfer_recipient(
+        type: @fundraiser.subaccount&.subaccount_type,
+        name: @fundraiser.full_name,
+        account_number: @fundraiser.subaccount&.account_number,
+        bank_code: @fundraiser.subaccount&.settlement_bank,
+        currency: @campaign.currency.upcase,
+        authorization_code: @fundraiser.subaccount&.authorization_code,
+        description: "Transfer recipient for campaign payouts",
+        metadata: { user_id: @fundraiser.id }
+      )
+      
+    rescue StandardError => e
+      Rails.logger.error "Error creating transfer recipient: #{e.message}"
+      raise "Error creating transfer recipient: #{e.message}"
+    end
+    
+    # Log the full response from Paystack
     Rails.logger.debug "Paystack recipient response: #{response.inspect}"
   
     # Check if the response is successful
@@ -94,7 +110,6 @@ class CampaignPayoutService
       raise "Failed to create transfer recipient: #{response['message'] || 'Unknown error'}"
     end
   end  
-  
 
   def verify_transfer_status(transfer)
     verify_result = @paystack_service.verify_transfer(transfer.reference)
