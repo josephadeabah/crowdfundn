@@ -23,6 +23,18 @@ module Api
         def create_subaccount
           user = User.find(params[:user_id])
           raise "User not found" unless user
+
+            # Prepare metadata
+            metadata = params[:subaccount][:metadata]
+            if metadata && metadata[:custom_fields]
+              # Sanitize custom fields (ensure they have the required keys and valid data)
+              metadata[:custom_fields] = metadata[:custom_fields].map do |field|
+                # Ensure the field only contains necessary attributes and valid data
+                field.slice(:display_name, :variable_name, :value, :type)
+              end
+            else
+              metadata = { custom_fields: [] }  # Default to empty custom fields if not provided
+            end
         
           # Call Paystack service to create the subaccount
           response = PaystackService.new.create_subaccount(
@@ -35,7 +47,7 @@ module Api
             primary_contact_email: user.email,
             primary_contact_name: user.full_name,
             primary_contact_phone: user.phone_number,
-            metadata: params[:subaccount][:metadata]
+            metadata: metadata
           )
                 
           if response[:status] == true
@@ -47,11 +59,12 @@ module Api
               percentage_charge: params[:subaccount][:percentage_charge],
               description: params[:subaccount][:description],
               metadata: params[:subaccount][:metadata],
-              settlement_bank: params[:subaccount][:settlement_bank]
+              settlement_bank: params[:subaccount][:settlement_bank],
+              subaccount_type: metadata[:custom_fields].first[:type]
             )
           
             if subaccount.save
-              render json: { success: true, subaccount_code: subaccount.subaccount_code, percentage_charge: subaccount.percentage_charge }, status: :ok
+              render json: { success: true, subaccount_code: subaccount.subaccount_code }, status: :ok
             else
               Rails.logger.error "account save failed: #{subaccount.errors.full_messages}"
               render json: { success: false, error: subaccount.errors.full_messages }, status: :unprocessable_entity

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_04_212913) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_06_014636) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -166,7 +166,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_04_212913) do
     t.string "account_number"
     t.decimal "percentage_charge"
     t.string "description"
-    t.text "metadata"
+    t.jsonb "metadata", default: {}
     t.string "settlement_bank"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -178,6 +178,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_04_212913) do
     t.string "bank"
     t.string "brand"
     t.boolean "reusable"
+    t.string "subaccount_type"
+    t.string "recipient_code"
     t.index ["user_id"], name: "index_subaccounts_on_user_id"
   end
 
@@ -215,6 +217,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_04_212913) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "otp_required", default: false, null: false
+    t.string "reference"
     t.index ["campaign_id"], name: "index_transfers_on_campaign_id"
     t.index ["transfer_code"], name: "index_transfers_on_transfer_code", unique: true
     t.index ["user_id"], name: "index_transfers_on_user_id"

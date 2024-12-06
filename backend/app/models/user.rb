@@ -14,6 +14,7 @@ class User < ApplicationRecord
   has_one :profile, dependent: :destroy
   has_many :campaigns, foreign_key: 'fundraiser_id', dependent: :destroy
   has_many :donations
+  has_many :transfers
   has_many :archived_campaigns
   has_one :subaccount, dependent: :destroy
   accepts_nested_attributes_for :profile
