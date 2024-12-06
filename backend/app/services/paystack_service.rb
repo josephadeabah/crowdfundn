@@ -175,7 +175,7 @@ class PaystackService
 
 
    # Create a single transfer recipient
-  def create_transfer_recipient(type:, name:, account_number: nil, bank_code: nil, currency:, authorization_code: nil, description: nil, metadata: nil)
+  def create_transfer_recipient(type:, name:, account_number:, bank_code:, currency:, authorization_code: nil, description: nil, metadata: nil)
     uri = URI("#{PAYSTACK_BASE_URL}/transferrecipient")
     body = {
       type: type,
