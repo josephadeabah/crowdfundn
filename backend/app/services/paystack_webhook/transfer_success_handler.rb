@@ -4,24 +4,30 @@ class PaystackWebhook::TransferSuccessHandler
   end
 
   def call
-    transfer_code = @data[:transfer_code]
+    transfer_reference = @data[:reference]  # Use reference, not transfer_code
     recipient_code = @data.dig(:recipient, :recipient_code)
     amount = @data[:amount]
     status = @data[:status]
 
-    transfer = Transfer.find_by(transfer_code: transfer_code)
+    # Find transfer by the reference
+    transfer = Transfer.find_by(reference: transfer_reference)
 
     if transfer
-      # Update only the fields that can change (status, completed_at, recipient_code, amount)
-      transfer.update!(
-        status: status,
-        completed_at: Time.current,
-        recipient_code: recipient_code,
-        amount: amount
-      )
-      Rails.logger.info "Transfer #{transfer_code} marked as successful."
+      # Verify transfer status using the reference
+      verify_result = @paystack_service.verify_transfer(transfer_reference)
+      if verify_result[:status] == 'success' && verify_result[:data][:status] == 'success'
+        transfer.update!(
+          status: status,
+          completed_at: Time.current,
+          recipient_code: recipient_code,
+          amount: amount
+        )
+        Rails.logger.info "Transfer #{transfer_reference} marked as successful."
+      else
+        Rails.logger.warn "Transfer verification failed for reference #{transfer_reference}. Data might be inconsistent."
+      end
     else
-      Rails.logger.warn "Transfer #{transfer_code} not found."
+      Rails.logger.warn "Transfer #{transfer_reference} not found."
     end
   end
 end

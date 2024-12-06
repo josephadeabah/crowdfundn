@@ -165,7 +165,7 @@ class PaystackService
     parse_response(response)
   end
 
-  # PaystackService
+  # verifies validity of an account number for users in ghana & nigeria
   def resolve_account_details(account_number:, bank_code:)
     uri = URI("#{PAYSTACK_BASE_URL}/bank/resolve")
     uri.query = URI.encode_www_form(account_number: account_number, bank_code: bank_code)
@@ -233,10 +233,14 @@ class PaystackService
   end
   
   # Initiate a transfer
-  def initiate_transfer(amount:, recipient:, reason: nil, user:, campaign:, currency: "NGN")
+  def initiate_transfer(amount:, recipient:, reason: nil, user:, campaign:, currency: "GHS")
+    # Ensure sufficient balance
     unless sufficient_balance?(amount)
       raise StandardError, "Insufficient Paystack balance to initiate transfer."
     end
+
+    # Generate a unique transfer reference (UUID)
+    transfer_reference = SecureRandom.uuid
 
     uri = URI("#{PAYSTACK_BASE_URL}/transfer")
     body = {
@@ -244,41 +248,31 @@ class PaystackService
       amount: amount * 100, # Convert to kobo
       recipient: recipient,
       reason: reason,
-      currency: currency
+      currency: currency,
+      reference: transfer_reference  # Add the generated reference to the body
     }.compact.to_json
-  
+
     response = make_post_request(uri, body)
     result = parse_response(response)
-  
+
     unless result["status"]
       Rails.logger.error "Failed to initiate transfer: #{result['message']}"
       raise StandardError, "Transfer initiation failed: #{result['message']}"
     end
-  
+
     transfer_code = result.dig("data", "transfer_code")
     transfer_status = result.dig("data", "status")
     otp_required = transfer_status == "otp"
-  
+
     if otp_required
       puts "Transfer requires OTP confirmation."
       handle_otp_confirmation(transfer_code)
     else
       puts "Transfer is in progress or completed with status: #{transfer_status}."
     end
-  
-    # Save transfer details to the database
-    Transfer.create!(
-      transfer_code: transfer_code,
-      recipient_code: recipient,
-      amount: amount,
-      user: user,
-      campaign: campaign,
-      status: transfer_status,
-      otp_required: otp_required
-    )
-  
+
     result
-  end  
+  end
   
   # Handle OTP confirmation using finalize_transfer
   def handle_otp_confirmation(transfer_code)

@@ -8,6 +8,7 @@ type Bank = {
   display_name: string;
   variable_name: string;
   value: string; // Settlement bank code
+  type: string; // nuban or ghipss
 };
 
 const PaymentMethod = () => {
@@ -78,6 +79,7 @@ const PaymentMethod = () => {
           display_name: bank.name,
           variable_name: bank.slug,
           value: bank.code,
+          type: bank.type,
         }));
 
         setBanks(formattedBanks);
@@ -190,6 +192,7 @@ const PaymentMethod = () => {
               display_name: selectedBank.display_name,
               variable_name: selectedBank.variable_name,
               value: selectedBank.value,
+              type: selectedBank.type,
             },
           ],
         },
@@ -263,10 +266,8 @@ const PaymentMethod = () => {
             <div className="mb-4 sm:mr-4">
               <p className="font-medium">Settlement Bank</p>
               <p>
-                {subaccountData?.metadata
-                  ? JSON.parse(subaccountData.metadata.replace(/=>/g, ':'))
-                      ?.custom_fields?.[0]?.display_name || 'Not Available'
-                  : 'Not Available'}
+                {subaccountData?.metadata?.custom_fields?.[0]?.display_name ||
+                  'Not Available'}
               </p>
             </div>
           </div>
@@ -352,7 +353,7 @@ const PaymentMethod = () => {
               className="bg-theme-color-primary text-gray-800 px-4 py-2 rounded-md hover:bg-theme-color-primary-dark transition-colors"
               disabled={isLoading}
             >
-              {isLoading ? 'Adding...' : 'Add Subaccount'}
+              {isLoading ? 'Adding...' : 'Add Account'}
             </button>
           </div>
         </form>
