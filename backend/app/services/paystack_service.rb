@@ -253,25 +253,25 @@ class PaystackService
     }.compact.to_json
 
     response = make_post_request(uri, body)
-    result = parse_response(response)
+    parse_response(response)
 
-    unless result["status"]
-      Rails.logger.error "Failed to initiate transfer: #{result['message']}"
-      raise StandardError, "Transfer initiation failed: #{result['message']}"
-    end
+    # unless result["status"]
+    #   Rails.logger.error "Failed to initiate transfer: #{result['message']}"
+    #   raise StandardError, "Transfer initiation failed: #{result['message']}"
+    # end
 
-    transfer_code = result.dig("data", "transfer_code")
-    transfer_status = result.dig("data", "status")
-    otp_required = transfer_status == "otp"
+    # transfer_code = result.dig("data", "transfer_code")
+    # transfer_status = result.dig("data", "status")
+    # otp_required = transfer_status == "otp"
 
-    if otp_required
-      puts "Transfer requires OTP confirmation."
-      handle_otp_confirmation(transfer_code)
-    else
-      puts "Transfer is in progress or completed with status: #{transfer_status}."
-    end
+    # if otp_required
+    #   puts "Transfer requires OTP confirmation."
+    #   handle_otp_confirmation(transfer_code)
+    # else
+    #   puts "Transfer is in progress or completed with status: #{transfer_status}."
+    # end
 
-    result
+    # result
   end
   
   # Handle OTP confirmation using finalize_transfer
