@@ -17,24 +17,18 @@ class CampaignPayoutService
         amount: payout_amount,
         recipient: recipient_code,
         reason: "Payout for campaign: #{@campaign.title}",
-        user: @fundraiser,
-        campaign: @campaign,
         currency: @campaign.currency
       )
   
-      unless transfer.is_a?(Hash) && transfer[:status]
-        raise "Unexpected transfer response: #{transfer.inspect}"
-      end
-  
       created_transfer = Transfer.create!(
-        transfer_code: transfer_response[:data][:transfer_code],
+        transfer_code: transfer_response['data']['transfer_code'],
         recipient_code: recipient_code,
         amount: payout_amount,
         user: @fundraiser,
         campaign: @campaign,
-        status: transfer_response[:data][:status],
-        otp_required: transfer_response[:data][:requires_otp],
-        reference: transfer_response[:data][:reference]
+        status: transfer_response['data']['status'],
+        otp_required: transfer_response['data']['requires_otp'],
+        reference: transfer_response['data']['reference']
       )
   
       verify_transfer_status(created_transfer)
@@ -69,8 +63,8 @@ class CampaignPayoutService
   def find_or_create_recipient
     recipient = @paystack_service.fetch_transfer_recipient(@fundraiser.subaccount&.recipient_code)
 
-    if recipient && recipient[:status]
-      recipient[:data][:recipient_code]
+    if recipient && recipient['status']
+      recipient['data']['recipient_code']
     else
       response = @paystack_service.create_transfer_recipient(
         type: @fundraiser.subaccount&.subaccount_type,
@@ -83,8 +77,8 @@ class CampaignPayoutService
         metadata: { user_id: @fundraiser.id }
       )
 
-      if response[:status]
-        recipient_code = response[:data][:recipient_code]
+      if response['status']
+        recipient_code = response['data']['recipient_code']
         @fundraiser.subaccount.update!(recipient_code: recipient_code)
         recipient_code
       else
