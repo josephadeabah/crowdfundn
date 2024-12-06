@@ -32,7 +32,7 @@ class CampaignPayoutService
         amount: payout_amount,
         user: @fundraiser,
         campaign: @campaign,
-        status: transfer[:status],
+        status: transfer.dig(:data, :status),
         otp_required: transfer.dig(:data, :otp),
         reference: transfer.dig(:data, :reference)
       )
