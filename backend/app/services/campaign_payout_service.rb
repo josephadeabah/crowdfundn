@@ -40,7 +40,6 @@ class CampaignPayoutService
   end
 
   def find_or_create_recipient(payout_amount)
-
     response = @paystack_service.create_transfer_recipient(
       type: @fundraiser.subaccount&.subaccount_type,
       name: @fundraiser.full_name,
@@ -51,16 +50,17 @@ class CampaignPayoutService
       description: "Transfer recipient for campaign payouts",
       metadata: { user_id: @fundraiser.id }
     )
-
+  
     Rails.logger.debug "Paystack recipient response: #{response.inspect}"
-
-
+  
+    raise "Invalid recipient creation response" if response.dig('data', 'recipient_code').nil?
+  
     recipient_code = response['data']['recipient_code']
     @fundraiser.subaccount.update!(recipient_code: recipient_code) unless @fundraiser.subaccount&.recipient_code == recipient_code
-
+  
     recipient_code
   end
-
+  
   def initiate_transfer(payout_amount, recipient_code)
     transfer_response = @paystack_service.initiate_transfer(
       amount: payout_amount,
@@ -68,9 +68,11 @@ class CampaignPayoutService
       reason: "Payout for campaign: #{@campaign.title}",
       currency: @campaign.currency
     )
-
+  
     Rails.logger.debug "Paystack transfer response: #{transfer_response.inspect}"
-
+  
+    raise "Invalid transfer initiation response" if transfer_response.dig('data', 'transfer_code').nil?
+  
     Transfer.create!(
       transfer_code: transfer_response['data']['transfer_code'],
       recipient_code: recipient_code,
@@ -81,7 +83,7 @@ class CampaignPayoutService
       otp_required: transfer_response['data']['requires_otp'],
       reference: transfer_response['data']['reference']
     )
-  end
+  end  
 
   def finalize_campaign
     @campaign.update!(status: 'completed')
