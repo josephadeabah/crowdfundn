@@ -62,6 +62,7 @@ class CampaignPayoutService
 
   def find_or_create_recipient
     Rails.logger.debug "Creating transfer recipient for fundraiser #{@fundraiser.full_name}"
+    
     response = @paystack_service.create_transfer_recipient(
       type: @fundraiser.subaccount&.subaccount_type,
       name: @fundraiser.full_name,
@@ -72,21 +73,26 @@ class CampaignPayoutService
       description: "Transfer recipient for campaign payouts",
       metadata: { user_id: @fundraiser.id }
     )
+    
     Rails.logger.debug "Paystack recipient response: #{response.inspect}"
   
-    # unless response['status']
-    #   Rails.logger.error "Failed to create recipient: #{response.inspect}"
-    #   raise "Failed to create transfer recipient: #{response['message'] || 'Unknown error'}"
-    # end
+    # Check if the response is successful
+    if response['status']
+      recipient_code = response['data']['recipient_code']
+      
+      unless recipient_code
+        Rails.logger.error "Recipient code missing in response: #{response.inspect}"
+        raise "Recipient code missing from Paystack response"
+      end
   
-    recipient_code = response['data']['recipient_code']
-    unless recipient_code
-      Rails.logger.error "Recipient code missing in response: #{response.inspect}"
-      raise "Recipient code missing from Paystack response"
+      # Update the subaccount with the recipient code
+      @fundraiser.subaccount.update!(recipient_code: recipient_code)
+      recipient_code
+    else
+      # Log the failure if status is not true
+      Rails.logger.error "Failed to create recipient: #{response.inspect}"
+      raise "Failed to create transfer recipient: #{response['message'] || 'Unknown error'}"
     end
-  
-    @fundraiser.subaccount.update!(recipient_code: recipient_code)
-    recipient_code
   end  
   
 
