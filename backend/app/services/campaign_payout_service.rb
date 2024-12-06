@@ -1,6 +1,6 @@
 class CampaignPayoutService
   def initialize(campaign, data)
-    @data = data.deep_symbolize_keys # Ensure all keys are symbols for consistency
+    @data = data
     @campaign = campaign
     @fundraiser = campaign.fundraiser
     @paystack_service = PaystackService.new
@@ -84,7 +84,7 @@ class CampaignPayoutService
       )
 
       if response[:status]
-        recipient_code = response.dig(:data, :recipient_code)
+        recipient_code = response[:data][:recipient_code]
         @fundraiser.subaccount.update!(recipient_code: recipient_code)
         recipient_code
       else
@@ -96,7 +96,7 @@ class CampaignPayoutService
   def verify_transfer_status(transfer)
     verify_result = @paystack_service.verify_transfer(transfer.reference)
     Rails.logger.debug "Verification result for transfer #{transfer.reference}: #{verify_result.inspect}"
-    unless verify_result[:status] && verify_result.dig(:data, :status) == 'success'
+    unless verify_result[:status] && verify_result[:data][:status] == 'success'
       raise "Transfer verification failed for reference #{transfer.reference}"
     end
   end

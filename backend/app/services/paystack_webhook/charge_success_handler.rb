@@ -1,6 +1,6 @@
 class PaystackWebhook::ChargeSuccessHandler
   def initialize(data)
-    @data = data.deep_symbolize_keys # Ensure all keys are symbols for consistency
+    @data = data
   end
 
   def call
