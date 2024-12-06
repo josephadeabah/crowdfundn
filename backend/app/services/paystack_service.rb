@@ -233,7 +233,7 @@ class PaystackService
   end
   
   # Initiate a transfer
-  def initiate_transfer(amount:, recipient:, reason: nil, currency: "GHS")
+  def initiate_transfer(amount:, recipient:, reason:, currency:)
     # Ensure sufficient balance
     unless sufficient_balance?(amount)
       raise StandardError, "Insufficient Paystack balance to initiate transfer."
