@@ -61,31 +61,28 @@ class CampaignPayoutService
   end
 
   def find_or_create_recipient
-    recipient = @paystack_service.fetch_transfer_recipient(@fundraiser.subaccount&.recipient_code)
-
-    if recipient && recipient['status']
-      recipient['data']['recipient_code']
+    Rails.logger.debug "Creating transfer recipient for fundraiser #{@fundraiser.full_name}"
+    response = @paystack_service.create_transfer_recipient(
+      type: @fundraiser.subaccount&.subaccount_type,
+      name: @fundraiser.full_name,
+      account_number: @fundraiser.subaccount&.account_number,
+      bank_code: @fundraiser.subaccount&.settlement_bank,
+      currency: @campaign.currency.upcase,
+      authorization_code: @fundraiser.subaccount&.authorization_code,
+      description: "Transfer recipient for campaign payouts",
+      metadata: { user_id: @fundraiser.id }
+    )
+    Rails.logger.debug "Paystack recipient response: #{response.inspect}"
+  
+    if response['status']
+      recipient_code = response['data']['recipient_code']
+      @fundraiser.subaccount.update!(recipient_code: recipient_code)
+      recipient_code
     else
-      response = @paystack_service.create_transfer_recipient(
-        type: @fundraiser.subaccount&.subaccount_type,
-        name: @fundraiser.full_name,
-        account_number: @fundraiser.subaccount&.account_number,
-        bank_code: @fundraiser.subaccount&.settlement_bank,
-        currency: @campaign.currency.upcase,
-        authorization_code: @fundraiser.subaccount&.authorization_code,
-        description: "Transfer recipient for campaign payouts",
-        metadata: { user_id: @fundraiser.id }
-      )
-
-      if response['status']
-        recipient_code = response['data']['recipient_code']
-        @fundraiser.subaccount.update!(recipient_code: recipient_code)
-        recipient_code
-      else
-        raise "Failed to create transfer recipient."
-      end
+      raise "Failed to create transfer recipient: #{response['message'] || 'Unknown error'}"
     end
   end
+  
 
   def verify_transfer_status(transfer)
     verify_result = @paystack_service.verify_transfer(transfer.reference)
