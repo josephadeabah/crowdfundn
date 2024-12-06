@@ -71,6 +71,7 @@ class CampaignPayoutService
     Rails.logger.debug "Paystack transfer response: #{response.inspect}"
 
     unless response['status'] && response.dig('data', 'transfer_code').present?
+      Rails.logger.debug "Transfer failed: #{response.inspect}"
       Transfer.create!(
         transfer_code: response.dig('data', 'transfer_code'),
         recipient_code: recipient_code,
