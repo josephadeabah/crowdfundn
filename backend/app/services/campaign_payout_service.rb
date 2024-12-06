@@ -11,36 +11,9 @@ class CampaignPayoutService
       validate_campaign_eligibility
       payout_amount = calculate_payout_amount
 
-      recipient_code = find_or_create_recipient
-
-      # Ensure recipient_code is valid before initiating the transfer
-      unless recipient_code
-        raise "Failed to create transfer recipient."
-      end
-
-      transfer_response = @paystack_service.initiate_transfer(
-        amount: payout_amount,
-        recipient: recipient_code,
-        reason: "Payout for campaign: #{@campaign.title}",
-        currency: @campaign.currency
-      )
-
-      # Log the full transfer response for better insight
-      Rails.logger.debug "Paystack transfer response: #{transfer_response.inspect}"
-
-      Transfer.create!(
-        transfer_code: transfer_response['data']['transfer_code'],
-        recipient_code: recipient_code,
-        amount: payout_amount,
-        user: @fundraiser,
-        campaign: @campaign,
-        status: transfer_response['data']['status'],
-        otp_required: transfer_response['data']['requires_otp'],
-        reference: transfer_response['data']['reference']
-      )
-
-      @campaign.update!(status: 'completed')
-      Rails.logger.info "Payout processed successfully for campaign #{@campaign.id}."
+      recipient_code = find_or_create_recipient(payout_amount)
+      initiate_transfer(payout_amount, recipient_code)
+      finalize_campaign
     end
   rescue StandardError => e
     Rails.logger.error "Error processing payout for campaign #{@campaign.id}: #{e.message}"
@@ -50,7 +23,7 @@ class CampaignPayoutService
   private
 
   def validate_campaign_eligibility
-    unless @campaign.completed? || @campaign.current_amount >= @campaign.goal_amount || days_left <= 0
+    if !@campaign.completed? && @campaign.current_amount < @campaign.goal_amount && days_left > 0
       raise "Campaign is not eligible for payout."
     end
   end
@@ -66,7 +39,7 @@ class CampaignPayoutService
     total_donations
   end
 
-  def find_or_create_recipient
+  def find_or_create_recipient(payout_amount)
     Rails.logger.debug "Creating transfer recipient for fundraiser #{@fundraiser.full_name}"
 
     response = @paystack_service.create_transfer_recipient(
@@ -82,22 +55,38 @@ class CampaignPayoutService
 
     Rails.logger.debug "Paystack recipient response: #{response.inspect}"
 
-    # Check if the response is successful
-    if response['status'] == true
-      recipient_code = response['data']['recipient_code']
+    raise "Failed to create transfer recipient: #{response['message'] || 'Unknown error'}" unless response['status']
 
-      unless recipient_code
-        Rails.logger.error "Recipient code missing in response: #{response.inspect}"
-        raise "Recipient code missing from Paystack response"
-      end
+    recipient_code = response['data']['recipient_code']
+    @fundraiser.subaccount.update!(recipient_code: recipient_code) unless @fundraiser.subaccount&.recipient_code == recipient_code
 
-      # Update the subaccount with the recipient code
-      @fundraiser.subaccount.update!(recipient_code: recipient_code)
-      return recipient_code
-    else
-      # Log the failure if status is not true
-      Rails.logger.error "Failed to create recipient: #{response.inspect}"
-      raise "Failed to create transfer recipient: #{response['message'] || 'Unknown error'}"
-    end
+    recipient_code
+  end
+
+  def initiate_transfer(payout_amount, recipient_code)
+    transfer_response = @paystack_service.initiate_transfer(
+      amount: payout_amount,
+      recipient: recipient_code,
+      reason: "Payout for campaign: #{@campaign.title}",
+      currency: @campaign.currency
+    )
+
+    Rails.logger.debug "Paystack transfer response: #{transfer_response.inspect}"
+
+    Transfer.create!(
+      transfer_code: transfer_response['data']['transfer_code'],
+      recipient_code: recipient_code,
+      amount: payout_amount,
+      user: @fundraiser,
+      campaign: @campaign,
+      status: transfer_response['data']['status'],
+      otp_required: transfer_response['data']['requires_otp'],
+      reference: transfer_response['data']['reference']
+    )
+  end
+
+  def finalize_campaign
+    @campaign.update!(status: 'completed')
+    Rails.logger.info "Payout processed successfully for campaign #{@campaign.id}."
   end
 end
