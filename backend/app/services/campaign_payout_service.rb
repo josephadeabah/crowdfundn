@@ -74,12 +74,12 @@ class CampaignPayoutService
     )
     Rails.logger.debug "Paystack recipient response: #{response.inspect}"
   
-    unless response['status']
-      Rails.logger.error "Failed to create recipient: #{response.inspect}"
-      raise "Failed to create transfer recipient: #{response['message'] || 'Unknown error'}"
-    end
+    # unless response['status']
+    #   Rails.logger.error "Failed to create recipient: #{response.inspect}"
+    #   raise "Failed to create transfer recipient: #{response['message'] || 'Unknown error'}"
+    # end
   
-    recipient_code = response['data']&.fetch('recipient_code', nil)
+    recipient_code = response['data']['recipient_code']
     unless recipient_code
       Rails.logger.error "Recipient code missing in response: #{response.inspect}"
       raise "Recipient code missing from Paystack response"
@@ -94,7 +94,8 @@ class CampaignPayoutService
     verify_result = @paystack_service.verify_transfer(transfer.reference)
     Rails.logger.debug "Verification result for transfer #{transfer.reference}: #{verify_result.inspect}"
     unless verify_result[:status] && verify_result[:data][:status] == 'success'
+      Rails.logger.error "Transfer verification failed for reference #{transfer.reference}: #{verify_result.inspect}"
       raise "Transfer verification failed for reference #{transfer.reference}"
     end
-  end
+  end  
 end
