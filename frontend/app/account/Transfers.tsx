@@ -5,13 +5,14 @@ import { useCampaignContext } from '../context/account/campaign/CampaignsContext
 import { useTransferContext } from '../context/account/transfers/TransfersContext';
 
 export default function Transfers() {
-  const { campaigns } = useCampaignContext(); // Fetch campaigns data
+  const { campaigns, fetchCampaigns } = useCampaignContext(); // Fetch campaigns data
   const { fetchTransfers, createTransferRecipient, transfers, loading } =
     useTransferContext();
 
   useEffect(() => {
     fetchTransfers();
-  }, [fetchTransfers]);
+    fetchCampaigns();
+  }, [fetchTransfers, fetchCampaigns]);
 
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
