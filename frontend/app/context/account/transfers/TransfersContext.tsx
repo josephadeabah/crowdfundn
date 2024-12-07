@@ -4,6 +4,7 @@ import React, {
   useContext,
   ReactNode,
   useMemo,
+  useCallback,
 } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 
@@ -86,7 +87,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
-  const fetchTransfers = async (): Promise<void> => {
+  const fetchTransfers = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
@@ -102,95 +103,96 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
       const data: { data: TransferData[] } = await response.json();
-      const mappedTransfers: TransferData[] = data.data.map((transfer) => ({
-        ...transfer,
-      }));
-      setTransfers(mappedTransfers);
+      setTransfers(data.data);
     } catch (err: any) {
       setError(err?.message || 'Error fetching transfers');
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  const createTransferRecipient = async (
-    campaignId: string | number,
-  ): Promise<string | null> => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/create_transfer_recipient`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+  // Memoize initiateTransfer using useCallback
+  const initiateTransfer = useCallback(
+    async (campaignId: string | number): Promise<string | null> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/initiate_transfer`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ campaign_id: campaignId }),
           },
-          body: JSON.stringify({
-            fundraiser_id: user?.id,
-            campaign_id: campaignId,
-          }),
-        },
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || 'Failed to create transfer recipient',
         );
-      }
 
-      const data = await response.json();
-      const recipientCode = data.recipient_code || null;
-
-      if (recipientCode) {
-        // Immediately initiate the transfer after successfully creating the recipient
-        const transferCode = await initiateTransfer(campaignId);
-        if (!transferCode) {
-          setError('Failed to initiate transfer after creating recipient');
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to initiate transfer');
         }
+
+        const data = await response.json();
+        return data.transfer_code || null;
+      } catch (err: any) {
+        setError(err?.message || 'Error initiating transfer');
+        return null;
+      } finally {
+        setLoading(false);
       }
+    },
+    [],
+  );
 
-      return recipientCode;
-    } catch (err: any) {
-      setError(err?.message || 'Error creating transfer recipient');
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const initiateTransfer = async (
-    campaignId: string | number,
-  ): Promise<string | null> => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/initiate_transfer`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+  // Memoize createTransferRecipient using useCallback
+  const createTransferRecipient = useCallback(
+    async (campaignId: string | number): Promise<string | null> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/create_transfer_recipient`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              fundraiser_id: user?.id,
+              campaign_id: campaignId,
+            }),
           },
-          body: JSON.stringify({ campaign_id: campaignId }),
-        },
-      );
+        );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to initiate transfer');
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.error || 'Failed to create transfer recipient',
+          );
+        }
+
+        const data = await response.json();
+        const recipientCode = data.recipient_code || null;
+
+        if (recipientCode) {
+          // Immediately initiate the transfer after successfully creating the recipient
+          const transferCode = await initiateTransfer(campaignId);
+          if (!transferCode) {
+            setError('Failed to initiate transfer after creating recipient');
+          }
+        }
+
+        return recipientCode;
+      } catch (err: any) {
+        setError(err?.message || 'Error creating transfer recipient');
+        return null;
+      } finally {
+        setLoading(false);
       }
-
-      const data = await response.json();
-      return data.transfer_code || null;
-    } catch (err: any) {
-      setError(err?.message || 'Error initiating transfer');
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [user, initiateTransfer], // Use user and initiateTransfer as dependencies
+  );
 
   const contextValue = useMemo(
     () => ({
@@ -201,7 +203,14 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       createTransferRecipient,
       initiateTransfer,
     }),
-    [transfers, loading, error],
+    [
+      transfers,
+      loading,
+      error,
+      fetchTransfers,
+      createTransferRecipient,
+      initiateTransfer,
+    ],
   );
 
   return (

@@ -86,6 +86,18 @@ export default function Transfers() {
                 <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
                   Status
                 </th>
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
+                  Reason
+                </th>
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
+                  Reference
+                </th>
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
+                  Account Number
+                </th>
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
+                  Bank Name
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -105,6 +117,12 @@ export default function Transfers() {
                   </td>
                   <td className="px-4 py-2 text-gray-800 dark:text-white">
                     {transfer.reference}
+                  </td>
+                  <td className="px-4 py-2 text-gray-800 dark:text-white">
+                    {transfer.recipient.details.account_number}
+                  </td>
+                  <td className="px-4 py-2 text-gray-800 dark:text-white">
+                    {transfer.recipient.details.bank_name}
                   </td>
                 </tr>
               ))}
