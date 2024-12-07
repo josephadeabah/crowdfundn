@@ -71,7 +71,7 @@ module Api
         def create_transfer_recipient
           @fundraiser = User.find(params[:fundraiser_id])
           subaccount = @fundraiser.subaccount
-          campaign_id = Campaign.find(params[:campaign_id])
+          campaign = Campaign.find(params[:campaign_id])
 
           raise "Fundraiser does not have a subaccount configured." unless subaccount
 
@@ -88,7 +88,7 @@ module Api
             bank_code: subaccount.settlement_bank,
             currency: "GHS",
             description: "Transfer recipient for campaign payouts",
-            metadata: { user_id: @fundraiser.id }
+            metadata: { user_id: @fundraiser.id, campaign_id: campaign.id }
           )
 
           if response[:status]
@@ -116,22 +116,33 @@ module Api
           raise "You do not have a account number configured." unless subaccount
           raise "Recipient code not found for this fundraiser" unless subaccount.recipient_code
 
-          total_donations = @campaign.donations.where(status: 'successful').sum(:net_amount)
+          total_donations = @campaign.current_amount
           raise "You have no funds available for payout." if total_donations <= 0.0
 
           # Check if there is sufficient balance
-          # balance_response = @paystack_service.check_balance
-          # if !balance_response[:status] || balance_response.dig(:body, :data, :available_balance).to_f < total_donations
-          #   render json: { error: "Sorry, this is an issue on our side. We'll resolve it soon. Kindly try again later" }, status: :unprocessable_entity
-          #   return
-          # end
+          balance_response = @paystack_service.check_balance
+
+          if balance_response[:status]
+
+            currency = @campaign.currency.upcase 
+            available_balance = balance_response[:data].find { |b| b[:currency] == currency }&.dig(:balance).to_f
+
+            if available_balance < total_donations
+              render json: { error: "Sorry, this is an issue on our side. We'll resolve it soon. Kindly try again later" }, status: :unprocessable_entity
+              return
+            end
+          else
+            render json: { error: "We cannot perform your transaction at this time. Please try again later." }, status: :unprocessable_entity
+            return
+          end
+
 
           # Proceed with the transfer
           response = @paystack_service.initiate_transfer(
-            amount: 200,
+            amount: total_donations.round,
             recipient: subaccount.recipient_code,
             reason: "Payout for campaign: #{@campaign.title}",
-            currency: "GHS"
+            currency: @campaign.currency.upcase
           )
 
           if response[:status]
@@ -214,28 +225,20 @@ module Api
 
       # Fetch all transfers for the current user
       def fetch_user_transfers
-        # Ensure the current user has a subaccount set up
-        @fundraiser = @current_user  # Assuming current_user is the fundraiser
+        @fundraiser = @current_user  # current_user is the fundraiser
       
-        subaccount = @fundraiser.subaccount
+        # Fetch all transfers for the current user
+        transfers = @fundraiser.transfers
       
-        if subaccount.nil?
-          render json: { error: "No subaccount found for this user" }, status: :not_found
-          return
-        end
-      
-        # Fetch the transfers related to this subaccount (the user's transfer-related data)
-        response = @paystack_service.fetch_transfer(subaccount.transfer_code)
-      
-        if response[:status]
-          render json: response, status: :ok
+        if transfers.present?
+          render json: transfers, status: :ok
         else
           render json: { error: "No transfers found for this user" }, status: :not_found
         end
       rescue => e
         Rails.logger.error "Error fetching user transfers: #{e.message}"
         render json: { error: "An error occurred while fetching transfers: #{e.message}" }, status: :unprocessable_entity
-      end
+      end      
       
 
         private

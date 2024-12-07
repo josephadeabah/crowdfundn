@@ -5,6 +5,7 @@ class Campaign < ApplicationRecord
   has_many :comments, dependent: :destroy
   has_many :backers, through: :donations # assuming a Backer model related to donations
   has_many :donations, dependent: :destroy
+  has_many :transfers, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :subscribers, through: :subscriptions, source: :user
   has_rich_text :description
