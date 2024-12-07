@@ -97,7 +97,7 @@ export default function Transfers() {
                   Account Number
                 </th>
                 <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  Bank Name
+                  Settlement Bank
                 </th>
               </tr>
             </thead>
