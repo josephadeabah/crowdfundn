@@ -6,8 +6,13 @@ import { useTransferContext } from '../context/account/transfers/TransfersContex
 
 export default function Transfers() {
   const { campaigns, fetchCampaigns } = useCampaignContext(); // Fetch campaigns data
-  const { fetchTransfers, createTransferRecipient, transfers, loading, loadingCampaigns} =
-    useTransferContext();
+  const {
+    fetchTransfers,
+    createTransferRecipient,
+    transfers,
+    loading,
+    loadingCampaigns,
+  } = useTransferContext();
 
   useEffect(() => {
     fetchCampaigns();
@@ -61,12 +66,14 @@ export default function Transfers() {
                 </p>
               </div>
               <Button
-            onClick={() => handleRequestTransfer(campaign.id)}
-            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500 dark:hover:bg-red-700"
-            disabled={loadingCampaigns[campaign.id]} // Disable button if the specific campaign is loading
-          >
-            {loadingCampaigns[campaign.id] ? 'Processing...' : 'Request Transfer'}
-          </Button>
+                onClick={() => handleRequestTransfer(campaign.id)}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500 dark:hover:bg-red-700"
+                disabled={loadingCampaigns[campaign.id]} // Disable button if the specific campaign is loading
+              >
+                {loadingCampaigns[campaign.id]
+                  ? 'Processing...'
+                  : 'Request Transfer'}
+              </Button>
             </div>
           </div>
         ))}
@@ -77,11 +84,15 @@ export default function Transfers() {
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
           Transaction History
         </h3>
-        <div className="overflow-x-auto"> {/* This makes the table scrollable horizontally */}
+        <div className="overflow-x-auto">
+          {' '}
+          {/* This makes the table scrollable horizontally */}
           <table className="min-w-full bg-white dark:bg-neutral-800 rounded-lg">
             <thead className="bg-gray-50 dark:bg-neutral-700">
               <tr>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap"> {/* Prevent text wrapping */}
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+                  {' '}
+                  {/* Prevent text wrapping */}
                   Amount
                 </th>
                 <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
@@ -132,9 +143,7 @@ export default function Transfers() {
               ))}
               {transfers?.length === 0 && (
                 <tr>
-                  <td
-                    className="px-4 py-2 text-gray-500 dark:text-neutral-400 text-center"
-                  >
+                  <td className="px-4 py-2 text-gray-500 dark:text-neutral-400 text-center">
                     No transfers found.
                   </td>
                 </tr>

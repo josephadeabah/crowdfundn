@@ -85,7 +85,9 @@ const TransferContext = createContext<TransferState | undefined>(undefined);
 export const TransferProvider = ({ children }: { children: ReactNode }) => {
   const [transfers, setTransfers] = useState<TransferData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [loadingCampaigns, setLoadingCampaigns] = useState<Record<string | number, boolean>>({});
+  const [loadingCampaigns, setLoadingCampaigns] = useState<
+    Record<string | number, boolean>
+  >({});
   const [error, setError] = useState<string | null>(null);
   const { user, token } = useAuth();
 
@@ -113,10 +115,22 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       }
       const responseData = await response.json();
 
-      // Check if the response contains the 'data' field and it is an object
       if (responseData && responseData.data) {
-        // If the 'transfers' array is already populated, append the new transfer
-        setTransfers((prevTransfers) => [...prevTransfers, responseData.data]);
+        setTransfers((prevTransfers) => {
+          // Ensure the new transfer data is not already in the state
+          const newTransfers = Array.isArray(responseData.data)
+            ? responseData.data
+            : [responseData.data]; // Ensure it's always an array
+          const existingTransfers = prevTransfers.map(
+            (transfer) => transfer.id,
+          ); // Collect existing transfer IDs
+          const filteredTransfers = newTransfers.filter(
+            (transfer: TransferData) =>
+              !existingTransfers.includes(transfer.id),
+          ); // Filter out duplicates
+
+          return [...prevTransfers, ...filteredTransfers]; // Add only new transfers
+        });
       } else {
         setError('No transfer data found');
       }
@@ -125,14 +139,15 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
-
-  
+  }, [user, token]); // Include token in dependencies if it may change
 
   // Memoize initiateTransfer using useCallback
   const initiateTransfer = useCallback(
     async (campaignId: string | number): Promise<string | null> => {
-      setLoadingCampaigns((prevState) => ({ ...prevState, [campaignId]: true }));
+      setLoadingCampaigns((prevState) => ({
+        ...prevState,
+        [campaignId]: true,
+      }));
       setError(null);
       try {
         const response = await fetch(
@@ -157,7 +172,10 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         setError(err?.message || 'Error initiating transfer');
         return null;
       } finally {
-        setLoadingCampaigns((prevState) => ({ ...prevState, [campaignId]: false }));
+        setLoadingCampaigns((prevState) => ({
+          ...prevState,
+          [campaignId]: false,
+        }));
       }
     },
     [],
