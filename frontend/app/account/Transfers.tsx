@@ -6,7 +6,7 @@ import { useTransferContext } from '../context/account/transfers/TransfersContex
 
 export default function Transfers() {
   const { campaigns, fetchCampaigns } = useCampaignContext(); // Fetch campaigns data
-  const { fetchTransfers, createTransferRecipient, transfers, loading } =
+  const { fetchTransfers, createTransferRecipient, transfers, loading, loadingCampaigns} =
     useTransferContext();
 
   useEffect(() => {
@@ -58,12 +58,12 @@ export default function Transfers() {
                 </p>
               </div>
               <Button
-                onClick={() => handleRequestTransfer(campaign.id)}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500 dark:hover:bg-red-700"
-                disabled={loading}
-              >
-                {loading ? 'Processing...' : 'Request Transfer'}
-              </Button>
+            onClick={() => handleRequestTransfer(campaign.id)}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500 dark:hover:bg-red-700"
+            disabled={loadingCampaigns[campaign.id]} // Disable button if the specific campaign is loading
+          >
+            {loadingCampaigns[campaign.id] ? 'Processing...' : 'Request Transfer'}
+          </Button>
             </div>
           </div>
         ))}

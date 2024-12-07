@@ -71,6 +71,7 @@ interface TransferData {
 interface TransferState {
   transfers: TransferData[];
   loading: boolean;
+  loadingCampaigns: Record<string | number, boolean>;
   error: string | null;
   fetchTransfers: () => void;
   createTransferRecipient: (
@@ -84,6 +85,7 @@ const TransferContext = createContext<TransferState | undefined>(undefined);
 export const TransferProvider = ({ children }: { children: ReactNode }) => {
   const [transfers, setTransfers] = useState<TransferData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingCampaigns, setLoadingCampaigns] = useState<Record<string | number, boolean>>({});
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
@@ -114,7 +116,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
   // Memoize initiateTransfer using useCallback
   const initiateTransfer = useCallback(
     async (campaignId: string | number): Promise<string | null> => {
-      setLoading(true);
+      setLoadingCampaigns((prevState) => ({ ...prevState, [campaignId]: true }));
       setError(null);
       try {
         const response = await fetch(
@@ -139,7 +141,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         setError(err?.message || 'Error initiating transfer');
         return null;
       } finally {
-        setLoading(false);
+        setLoadingCampaigns((prevState) => ({ ...prevState, [campaignId]: false }));
       }
     },
     [],
@@ -198,6 +200,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       transfers,
       loading,
+      loadingCampaigns,
       error,
       fetchTransfers,
       createTransferRecipient,
@@ -206,6 +209,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
     [
       transfers,
       loading,
+      loadingCampaigns,
       error,
       fetchTransfers,
       createTransferRecipient,
