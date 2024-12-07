@@ -113,6 +113,8 @@ module Api
           @fundraiser = @campaign.fundraiser
           subaccount = @fundraiser.subaccount
 
+          Rails.logger.debug "Currency: #{@campaign.currency.upcase}"
+
           raise "You do not have a account number configured." unless subaccount
           raise "Recipient code not found for this fundraiser" unless subaccount.recipient_code
 
@@ -124,7 +126,7 @@ module Api
 
           if balance_response[:status]
 
-            currency = @campaign.currency.upcase 
+            currency = "GHS" 
             available_balance = balance_response[:data].find { |b| b[:currency] == currency }&.dig(:balance).to_f
 
             if available_balance < total_donations
@@ -142,7 +144,7 @@ module Api
             amount: total_donations.round,
             recipient: subaccount.recipient_code,
             reason: "Payout for campaign: #{@campaign.title}",
-            currency: @campaign.currency.upcase
+            currency: "GHS"
           )
 
           if response[:status]
