@@ -225,7 +225,7 @@ module Api
         end
       
         # Fetch the transfers related to this subaccount (the user's transfer-related data)
-        response = @paystack_service.fetch_transfer(subaccount.transfer_code)
+        response = @paystack_service.fetch_transfer(@fundraiser.id)
       
         if response[:status]
           render json: response, status: :ok
