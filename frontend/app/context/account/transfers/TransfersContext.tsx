@@ -5,12 +5,77 @@ import React, {
   ReactNode,
   useMemo,
 } from 'react';
+import { useAuth } from '../../auth/AuthContext';
 
+// Define the detailed interfaces for the transfer data structure
+interface TransferDetails {
+  authorization_code: string | null;
+  account_number: string;
+  account_name: string | null;
+  bank_code: string;
+  bank_name: string;
+}
+
+interface Recipient {
+  active: boolean;
+  createdAt: string;
+  currency: string;
+  description: string;
+  domain: string;
+  email: string;
+  id: number;
+  integration: number;
+  metadata: {
+    user_id: number;
+  };
+  name: string;
+  recipient_code: string;
+  type: string;
+  updatedAt: string;
+  is_deleted: boolean;
+  isDeleted: boolean;
+  details: TransferDetails;
+}
+
+interface Session {
+  provider: string | null;
+  id: string | null;
+}
+
+interface TransferData {
+  amount: number;
+  createdAt: string;
+  currency: string;
+  domain: string;
+  failures: string | null;
+  id: number;
+  integration: number;
+  reason: string;
+  reference: string;
+  source: string;
+  source_details: string | null;
+  status: string;
+  titan_code: string | null;
+  transfer_code: string;
+  request: number;
+  transferred_at: string | null;
+  updatedAt: string;
+  recipient: Recipient;
+  session: Session;
+  fee_charged: number;
+  fees_breakdown: string | null;
+  gateway_response: string | null;
+}
+
+// Updated Transfer interface for simplicity in UI
 interface Transfer {
   id: number;
   amount: number;
   recipient: string;
   date: string;
+  status: string;
+  reason: string;
+  reference: string;
 }
 
 interface TransferState {
@@ -18,6 +83,10 @@ interface TransferState {
   loading: boolean;
   error: string | null;
   fetchTransfers: () => void;
+  createTransferRecipient: (
+    campaignId: string | number,
+  ) => Promise<string | null>;
+  initiateTransfer: (campaignId: string | number) => Promise<string | null>;
 }
 
 const TransferContext = createContext<TransferState | undefined>(undefined);
@@ -26,18 +95,34 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   const fetchTransfers = async (): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
-      // Mock API call - replace this with your actual API call
-      const response = await fetch('/api/transfers'); // Replace with your actual endpoint
-      if (!response.ok) {
-        throw new Error('Failed to fetch transfers');
+      if (!user) {
+        setError('You are not authenticated');
+        return;
       }
-      const data = await response.json();
-      setTransfers(data.transfers); // Assuming response contains a `transfers` field
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/fetch_transfers?fundraiser_id=${user?.id}`,
+      );
+      if (!response.ok) {
+        setError('Failed to fetch transfers');
+        return;
+      }
+      const data: { transfers: TransferData[] } = await response.json();
+      const mappedTransfers: Transfer[] = data.transfers.map((transfer) => ({
+        id: transfer.id,
+        status: transfer.status,
+        amount: transfer.amount,
+        recipient: transfer.recipient.name,
+        reason: transfer.reason,
+        reference: transfer.reference,
+        date: transfer.createdAt,
+      }));
+      setTransfers(mappedTransfers);
     } catch (err: any) {
       setError(err?.message || 'Error fetching transfers');
     } finally {
@@ -45,8 +130,94 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const createTransferRecipient = async (
+    campaignId: string | number,
+  ): Promise<string | null> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/create_transfer_recipient`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            fundraiser_id: user?.id,
+            campaign_id: campaignId,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || 'Failed to create transfer recipient',
+        );
+      }
+
+      const data = await response.json();
+      const recipientCode = data.recipient_code || null;
+
+      if (recipientCode) {
+        // Immediately initiate the transfer after successfully creating the recipient
+        const transferCode = await initiateTransfer(campaignId);
+        if (!transferCode) {
+          setError('Failed to initiate transfer after creating recipient');
+        }
+      }
+
+      return recipientCode;
+    } catch (err: any) {
+      setError(err?.message || 'Error creating transfer recipient');
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const initiateTransfer = async (
+    campaignId: string | number,
+  ): Promise<string | null> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/initiate_transfer`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ campaign_id: campaignId }),
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to initiate transfer');
+      }
+
+      const data = await response.json();
+      return data.transfer_code || null;
+    } catch (err: any) {
+      setError(err?.message || 'Error initiating transfer');
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const contextValue = useMemo(
-    () => ({ transfers, loading, error, fetchTransfers }),
+    () => ({
+      transfers,
+      loading,
+      error,
+      fetchTransfers,
+      createTransferRecipient,
+      initiateTransfer,
+    }),
     [transfers, loading, error],
   );
 
