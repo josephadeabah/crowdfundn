@@ -225,28 +225,20 @@ module Api
 
       # Fetch all transfers for the current user
       def fetch_user_transfers
-        # Ensure the current user has a subaccount set up
-        @fundraiser = @current_user  # Assuming current_user is the fundraiser
+        @fundraiser = @current_user  # current_user is the fundraiser
       
-        subaccount = @fundraiser.subaccount
+        # Fetch all transfers for the current user
+        transfers = @fundraiser.transfers
       
-        if subaccount.nil?
-          render json: { error: "No subaccount found for this user" }, status: :not_found
-          return
-        end
-      
-        # Fetch the transfers related to this subaccount (the user's transfer-related data)
-        response = @paystack_service.fetch_transfer(subaccount.transfer_code)
-      
-        if response[:status]
-          render json: response, status: :ok
+        if transfers.present?
+          render json: transfers, status: :ok
         else
           render json: { error: "No transfers found for this user" }, status: :not_found
         end
       rescue => e
         Rails.logger.error "Error fetching user transfers: #{e.message}"
         render json: { error: "An error occurred while fetching transfers: #{e.message}" }, status: :unprocessable_entity
-      end
+      end      
       
 
         private
