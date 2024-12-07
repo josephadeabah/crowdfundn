@@ -69,30 +69,80 @@ module Api
           render json: { error: e.message }, status: :unprocessable_entity
         end             
 
-        # Check Paystack balance
-        def check_balance
-          response = @paystack_service.check_balance
-          render json: response, status: :ok
-        rescue => e
-          render json: { error: e.message }, status: :unprocessable_entity
-        end
-
         # Create a transfer recipient
         def create_transfer_recipient
+          @fundraiser = User.find(params[:fundraiser_id])
+          subaccount = @fundraiser.subaccount
+          campaign_id = Campaign.find(params[:campaign_id])
+        
+          raise "Fundraiser does not have a subaccount configured." unless subaccount
+        
+          # Check if a recipient code already exists
+          if subaccount.recipient_code.present?
+            render json: { recipient_code: subaccount.recipient_code, message: "Recipient code already exists." }, status: :ok
+            return
+          end
+        
           response = @paystack_service.create_transfer_recipient(
-            type: transfer_recipient_params[:type],
-            name: transfer_recipient_params[:name],
-            account_number: transfer_recipient_params[:account_number],
-            bank_code: transfer_recipient_params[:bank_code],
-            currency: transfer_recipient_params[:currency],
-            authorization_code: transfer_recipient_params[:authorization_code],
-            description: transfer_recipient_params[:description],
-            metadata: transfer_recipient_params[:metadata]
+            type: subaccount.subaccount_type,
+            name: subaccount.business_name,
+            account_number: subaccount.account_number,
+            bank_code: subaccount.settlement_bank,
+            currency: "GHS",
+            description: "Transfer recipient for campaign payouts",
+            metadata: { user_id: @fundraiser.id }
           )
-          render json: response, status: :ok
+        
+          if response[:status]
+            subaccount.update!(recipient_code: response.dig(:data, :recipient_code))
+            
+            render json: { message: "Recipient created successfully.", recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign_id  }, status: :ok
+          else
+            render json: { error: "Provide a valid data" }, status: :unprocessable_entity
+          end
+        rescue ActiveRecord::RecordInvalid => e
+          render json: { error: "Failed to save recipient code: #{e.message}" }, status: :internal_server_error
         rescue => e
+          Rails.logger.error "Error creating transfer recipient: #{e.message}"
           render json: { error: e.message }, status: :unprocessable_entity
-        end
+        end        
+        
+        # Initiate a transfer
+        def initialize_transfer
+          @campaign = Campaign.find(params[:campaign_id])
+          @fundraiser = @campaign.fundraiser
+          subaccount = @fundraiser.subaccount
+        
+          raise "You do not have a subaccount configured." unless subaccount
+          raise "Recipient code not found for this fundraiser." unless subaccount.recipient_code
+        
+          total_donations = @campaign.donations.where(status: 'successful').sum(:net_amount)
+          raise "You have no funds available for payout." if total_donations <= 0.0
+
+            # Check if there is sufficient balance
+          balance_response = @paystack_service.check_balance
+          if !balance_response[:status] || balance_response[:body][:data][:available_balance].to_f < total_donations
+            render json: { error: "Sorry, this is an issue on our side. We'll resolve it soon. Kindly try again later" }, status: :unprocessable_entity
+            return
+          end
+        
+          response = @paystack_service.initiate_transfer(
+            amount: total_donations.round,
+            recipient: subaccount.recipient_code,
+            reason: "Payout for campaign: #{@campaign.title}",
+            currency: "GHS"
+          )
+
+          if response[:status]
+            subaccount.update!(reference: response.dig(:data, :reference), transfer_code: response.dig(:data, :transfer_code), amount: total_donations.round)
+            render json: { transfer_code: response.dig(:data, :transfer_code), reference: response.dig(:data, :reference) , message: "Transfer initiated successfully." }, status: :ok
+          else
+            render json: { error: response[:message] }, status: :unprocessable_entity
+          end
+        rescue => e
+          Rails.logger.error "Error initiating transfer: #{e.message}"
+          render json: { error: e.message }, status: :unprocessable_entity
+        end        
 
         # Bulk create transfer recipients
         def bulk_create_transfer_recipients
@@ -123,21 +173,6 @@ module Api
           render json: { error: e.message }, status: :not_found
         end
 
-        # Initiate a transfer
-        def initiate_transfer
-          response = @paystack_service.initiate_transfer(
-            amount: transfer_params[:amount],
-            recipient: transfer_params[:recipient],
-            reason: transfer_params[:reason],
-            user: current_user,
-            campaign: params[:campaign],
-            currency: transfer_params[:currency] || "NGN"
-          )
-          render json: response, status: :ok
-        rescue => e
-          render json: { error: e.message }, status: :unprocessable_entity
-        end
-
         # Finalize a transfer
         def finalize_transfer
           response = @paystack_service.finalize_transfer(
@@ -160,12 +195,22 @@ module Api
         end
 
         # Fetch transfer details
-        def fetch_transfer
-          response = @paystack_service.fetch_transfer(params[:id_or_code])
+        def fetch_transfers
+          @fundraiser = User.find_by(id: params[:fundraiser_id])
+          raise ActiveRecord::RecordNotFound, "Fundraiser not found" unless @fundraiser
+        
+          subaccount = @fundraiser.subaccount
+          raise ActiveRecord::RecordNotFound, "Subaccount not found for this fundraiser" unless subaccount
+        
+          response = @paystack_service.fetch_transfer(subaccount.transfer_code)
           render json: response, status: :ok
-        rescue => e
+        rescue ActiveRecord::RecordNotFound => e
           render json: { error: e.message }, status: :not_found
+        rescue => e
+          Rails.logger.error "Error fetching transfers: #{e.message}"
+          render json: { error: e.message }, status: :unprocessable_entity
         end
+        
 
         # Verify transfer status
         def verify_transfer

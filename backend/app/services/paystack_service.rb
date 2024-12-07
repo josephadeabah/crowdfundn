@@ -175,7 +175,7 @@ class PaystackService
 
 
    # Create a single transfer recipient
-  def create_transfer_recipient(type:, name:, account_number:, bank_code:, currency:, authorization_code: nil, description: nil, metadata: nil)
+  def create_transfer_recipient(type:, name:, account_number:, bank_code:, currency:, description: nil, metadata: nil)
     uri = URI("#{PAYSTACK_BASE_URL}/transferrecipient")
     body = {
       type: type,
@@ -183,7 +183,6 @@ class PaystackService
       account_number: account_number,
       bank_code: bank_code,
       currency: currency,
-      authorization_code: authorization_code,
       description: description,
       metadata: metadata
     }.compact.to_json # Removes nil values from the hash
@@ -254,24 +253,6 @@ class PaystackService
 
     response = make_post_request(uri, body)
     parse_response(response)
-
-    # unless result["status"]
-    #   Rails.logger.error "Failed to initiate transfer: #{result['message']}"
-    #   raise StandardError, "Transfer initiation failed: #{result['message']}"
-    # end
-
-    # transfer_code = result.dig("data", "transfer_code")
-    # transfer_status = result.dig("data", "status")
-    # otp_required = transfer_status == "otp"
-
-    # if otp_required
-    #   puts "Transfer requires OTP confirmation."
-    #   handle_otp_confirmation(transfer_code)
-    # else
-    #   puts "Transfer is in progress or completed with status: #{transfer_status}."
-    # end
-
-    # result
   end
   
   # Handle OTP confirmation using finalize_transfer

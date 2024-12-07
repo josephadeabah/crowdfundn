@@ -38,7 +38,7 @@ Rails.application.routes.draw do
             post :initialize_transfer
             post :finalize_transfer
             post :initiate_bulk_transfer
-            get :fetch_transfer
+            get :fetch_transfers
             get :verify_transfer
             post :approve_transfer
           end
