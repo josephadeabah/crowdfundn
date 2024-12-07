@@ -67,19 +67,8 @@ interface TransferData {
   gateway_response: string | null;
 }
 
-// Updated Transfer interface for simplicity in UI
-interface Transfer {
-  id: number;
-  amount: number;
-  recipient: string;
-  date: string;
-  status: string;
-  reason: string;
-  reference: string;
-}
-
 interface TransferState {
-  transfers: Transfer[];
+  transfers: TransferData[];
   loading: boolean;
   error: string | null;
   fetchTransfers: () => void;
@@ -92,7 +81,7 @@ interface TransferState {
 const TransferContext = createContext<TransferState | undefined>(undefined);
 
 export const TransferProvider = ({ children }: { children: ReactNode }) => {
-  const [transfers, setTransfers] = useState<Transfer[]>([]);
+  const [transfers, setTransfers] = useState<TransferData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
@@ -112,15 +101,9 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         setError('Failed to fetch transfers');
         return;
       }
-      const data: { transfers: TransferData[] } = await response.json();
-      const mappedTransfers: Transfer[] = data.transfers.map((transfer) => ({
-        id: transfer.id,
-        status: transfer.status,
-        amount: transfer.amount,
-        recipient: transfer.recipient.name,
-        reason: transfer.reason,
-        reference: transfer.reference,
-        date: transfer.createdAt,
+      const data: { data: TransferData[] } = await response.json();
+      const mappedTransfers: TransferData[] = data.data.map((transfer) => ({
+        ...transfer,
       }));
       setTransfers(mappedTransfers);
     } catch (err: any) {
