@@ -226,23 +226,25 @@ module Api
         end
 
       # Fetch all transfers for the current user
-        def fetch_user_transfers
-          @fundraiser = @current_user  # current_user is the fundraiser
-          
-          # Fetch all transfers for the current user using PaystackService
-          response = @paystack_service.fetch_transfer(@fundraiser.subaccount.transfer_code)
+      # Fetch all transfers for the current user
+      def fetch_user_transfers
+        @fundraiser = @current_user  # current_user is the fundraiser
+        
+        # Fetch all transfers for the current user using PaystackService
+        response = @paystack_service.fetch_transfer(@fundraiser.subaccount.transfer_code)
 
-          if response[:status] && response[:data].present?
-            render json: response[:data], status: :ok
-          else
-            render json: { error: "No transfers found for this user" }, status: :not_found
-          end
-        rescue => e
-          Rails.logger.error "Error fetching user transfers: #{e.message}"
-          render json: { error: "An error occurred while fetching transfers: #{e.message}" }, status: :unprocessable_entity
+        if response[:status] == true
+          render json: response[:data], status: :ok
+        else
+          render json: { error: "No transfers found for this user" }, status: :not_found
         end
-    
+      rescue => e
+        Rails.logger.error "Error fetching user transfers: #{e.message}"
+        render json: { error: "An error occurred while fetching transfers: #{e.message}" }, status: :unprocessable_entity
+      end
       
+      
+
         private
 
         def filter_bank_params
