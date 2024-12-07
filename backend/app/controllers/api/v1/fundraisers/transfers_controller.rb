@@ -120,11 +120,11 @@ module Api
           raise "You have no funds available for payout." if total_donations <= 0.0
 
           # Check if there is sufficient balance
-          balance_response = @paystack_service.check_balance
-          if !balance_response[:status] || balance_response.dig(:body, :data, :available_balance).to_f < total_donations
-            render json: { error: "Sorry, this is an issue on our side. We'll resolve it soon. Kindly try again later" }, status: :unprocessable_entity
-            return
-          end
+          # balance_response = @paystack_service.check_balance
+          # if !balance_response[:status] || balance_response.dig(:body, :data, :available_balance).to_f < total_donations
+          #   render json: { error: "Sorry, this is an issue on our side. We'll resolve it soon. Kindly try again later" }, status: :unprocessable_entity
+          #   return
+          # end
 
           # Proceed with the transfer
           response = @paystack_service.initiate_transfer(
