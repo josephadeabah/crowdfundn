@@ -74,29 +74,29 @@ export default function Transfers() {
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
           Transaction History
         </h3>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto"> {/* This makes the table scrollable horizontally */}
           <table className="min-w-full bg-white dark:bg-neutral-800 rounded-lg">
             <thead className="bg-gray-50 dark:bg-neutral-700">
               <tr>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap"> {/* Prevent text wrapping */}
                   Amount
                 </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
                   Date
                 </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
                   Status
                 </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
                   Reason
                 </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
                   Reference
                 </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
                   Account Number
                 </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
                   Bank Name
                 </th>
               </tr>
@@ -104,25 +104,25 @@ export default function Transfers() {
             <tbody>
               {transfers?.map((transfer) => (
                 <tr key={transfer.id}>
-                  <td className="px-4 py-2 text-gray-800 dark:text-white">
+                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
                     ${transfer.amount}
                   </td>
-                  <td className="px-4 py-2 text-gray-800 dark:text-white">
+                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
                     {new Date(transfer.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-2 text-green-500 dark:text-green-400">
+                  <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
                     {transfer.status}
                   </td>
-                  <td className="px-4 py-2 text-gray-800 dark:text-white">
+                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
                     {transfer.reason}
                   </td>
-                  <td className="px-4 py-2 text-gray-800 dark:text-white">
+                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
                     {transfer.reference}
                   </td>
-                  <td className="px-4 py-2 text-gray-800 dark:text-white">
+                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
                     {transfer.recipient.details.account_number}
                   </td>
-                  <td className="px-4 py-2 text-gray-800 dark:text-white">
+                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
                     {transfer.recipient.details.bank_name}
                   </td>
                 </tr>
@@ -130,7 +130,6 @@ export default function Transfers() {
               {transfers?.length === 0 && (
                 <tr>
                   <td
-                    colSpan={3}
                     className="px-4 py-2 text-gray-500 dark:text-neutral-400 text-center"
                   >
                     No transfers found.
