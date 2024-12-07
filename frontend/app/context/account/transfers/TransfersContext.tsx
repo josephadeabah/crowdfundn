@@ -118,7 +118,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       setError(null);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/initiate_transfer`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/initialize_transfer`,
           {
             method: 'POST',
             headers: {
