@@ -10,9 +10,12 @@ export default function Transfers() {
     useTransferContext();
 
   useEffect(() => {
-    fetchTransfers();
     fetchCampaigns();
-  }, [fetchTransfers, fetchCampaigns]);
+  }, [fetchCampaigns]);
+
+  useEffect(() => {
+    fetchTransfers();
+  }, [fetchTransfers]);
 
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {

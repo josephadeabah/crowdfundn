@@ -87,7 +87,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingCampaigns, setLoadingCampaigns] = useState<Record<string | number, boolean>>({});
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const fetchTransfers = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -98,7 +98,14 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/fetch_transfers?fundraiser_id=${user?.id}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/fetch_user_transfers`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
       if (!response.ok) {
         setError('Failed to fetch transfers');
@@ -112,6 +119,8 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   }, [user]);
+
+  
 
   // Memoize initiateTransfer using useCallback
   const initiateTransfer = useCallback(
