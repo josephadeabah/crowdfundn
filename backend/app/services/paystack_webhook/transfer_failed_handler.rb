@@ -20,9 +20,10 @@ module PaystackWebhook
           failure_reason: @data[:reason],
           recipient_code: @data.dig(:recipient, :recipient_code),
           amount: @data[:amount],
-          transfer_code: verify_result[:data][:transfer_code],
-          account_number: verify_result.dig(:data, :recipient, :details, :account_number),
-          bank_name: verify_result.dig(:data, :recipient, :details, :bank_name),
+          transfer_code: @data[:transfer_code],
+          reference: @data[:reference],
+          account_number: @data.dig(:recipient, :details, :account_number),
+          bank_name: @data.dig(:recipient, :details, :bank_name),
           completed_at: nil # Ensure completed_at is nil for failed transfers
         )
 
