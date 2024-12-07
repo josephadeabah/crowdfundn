@@ -128,7 +128,7 @@ module Api
 
           # Proceed with the transfer
           response = @paystack_service.initiate_transfer(
-            amount: 100,
+            amount: 200,
             recipient: subaccount.recipient_code,
             reason: "Payout for campaign: #{@campaign.title}",
             currency: "GHS"
