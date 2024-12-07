@@ -151,7 +151,7 @@ module Api
             subaccount.update!(reference: response.dig(:data, :reference), transfer_code: response.dig(:data, :transfer_code), amount: total_donations.round)
             render json: { transfer_code: response.dig(:data, :transfer_code), reference: response.dig(:data, :reference), message: "Transfer initiated successfully." }, status: :ok
           else
-            render json: { error: response[:message] }, status: :unprocessable_entity
+            render json: { error: "This is an error on our side." }, status: :unprocessable_entity
           end
         rescue => e
           Rails.logger.error "Error initiating transfer: #{e.message}"
