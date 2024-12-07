@@ -111,8 +111,12 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         setError('Failed to fetch transfers');
         return;
       }
-      const data: { data: TransferData[] } = await response.json();
-      setTransfers(data.data);
+      const responseData: { data: TransferData[] } = await response.json();
+      if (responseData && responseData.data) {
+        setTransfers((prevTransfers) => [...prevTransfers, ...responseData.data]);
+      } else {
+        setError('No transfer data found');
+      }
     } catch (err: any) {
       setError(err?.message || 'Error fetching transfers');
     } finally {
