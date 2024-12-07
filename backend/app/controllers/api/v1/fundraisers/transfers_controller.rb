@@ -126,7 +126,7 @@ module Api
 
           if balance_response[:status]
 
-            currency = "GHS" 
+            currency = @campaign.currency.upcase 
             available_balance = balance_response[:data].find { |b| b[:currency] == currency }&.dig(:balance).to_f
 
             if available_balance < total_donations
@@ -231,16 +231,20 @@ module Api
       
         # Fetch all transfers for the current user
         transfers = @fundraiser.transfers
-      
-        if transfers.present?
-          render json: transfers, status: :ok
+        # Fetch the first transfer's transfer_code (you might want to adjust this logic based on your use case)
+        if transfers.any?
+          response = @paystack_service.fetch_transfer(transfers.first.transfer_code)
+          render json: response, status: :ok
         else
           render json: { error: "No transfers found for this user" }, status: :not_found
         end
+        
+      rescue ActiveRecord::RecordNotFound => e
+          render json: { error: e.message }, status: :not_found
       rescue => e
-        Rails.logger.error "Error fetching user transfers: #{e.message}"
-        render json: { error: "An error occurred while fetching transfers: #{e.message}" }, status: :unprocessable_entity
-      end      
+          Rails.logger.error "Error fetching transfers: #{e.message}"
+          render json: { error: e.message }, status: :unprocessable_entity
+      end     
       
 
         private
