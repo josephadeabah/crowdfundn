@@ -244,7 +244,7 @@ class PaystackService
     uri = URI("#{PAYSTACK_BASE_URL}/transfer")
     body = {
       source: "balance",
-      amount: amount,
+      amount: amount * 100,
       recipient: recipient,
       reason: reason,
       currency: currency,
