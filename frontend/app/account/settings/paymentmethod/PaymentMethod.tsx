@@ -23,7 +23,7 @@ const PaymentMethod = () => {
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
   const [accountNumber, setAccountNumber] = useState('');
   const [isLoadingBanks, setIsLoadingBanks] = useState(true);
-  const [subaccountData, setSubaccountData] = useState<any>(null); // New state to store subaccount details
+  const [subaccountData, setSubaccountData] = useState<any>(null); // Updated to handle subaccount structure
   const [toast, setToast] = useState({
     isOpen: false,
     title: '',
@@ -96,7 +96,7 @@ const PaymentMethod = () => {
     };
 
     fetchBanks();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const fetchSubaccount = async () => {
@@ -112,12 +112,12 @@ const PaymentMethod = () => {
             },
           );
           const subaccountData = await response.json();
-          setSubaccountData(subaccountData);
+          setSubaccountData(subaccountData[0]); // Assuming the response is an array and we use the first object
 
           setUserDetails({
             name: user.full_name,
             userEmail: user.email,
-            accountId: subaccountData.account_id || '',
+            accountId: subaccountData[0]?.account_number || '', // Update to access the first item
           });
         } catch (error) {
           console.error('Error fetching account:', error);
@@ -224,7 +224,7 @@ const PaymentMethod = () => {
         },
       );
       const subaccountData = await subaccountResponse.json();
-      setSubaccountData(subaccountData);
+      setSubaccountData(subaccountData[0]); // Assuming the response is an array and we use the first item
     } catch (error) {
       showToast('Error', 'Error creating account. Please try again.', 'error');
       console.error(error);
@@ -257,16 +257,16 @@ const PaymentMethod = () => {
           <div className="bg-theme-color-base rounded-md p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-md">
             <div className="mb-2 sm:mr-4">
               <p className="font-medium">Business Name</p>
-              <p>{subaccountData?.business_name || 'Not Available'}</p>
+              <p>{subaccountData.business_name || 'Not Available'}</p>
             </div>
             <div className="mb-2 sm:mr-4">
               <p className="font-medium">Account Number</p>
-              <p>{subaccountData?.account_number || 'Not Available'}</p>
+              <p>{subaccountData.account_number || 'Not Available'}</p>
             </div>
             <div className="mb-4 sm:mr-4">
               <p className="font-medium">Settlement Bank</p>
               <p>
-                {subaccountData?.metadata?.custom_fields?.[0]?.display_name ||
+                {subaccountData.metadata?.custom_fields?.[0]?.display_name ||
                   'Not Available'}
               </p>
             </div>

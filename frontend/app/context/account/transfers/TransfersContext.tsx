@@ -94,11 +94,13 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
   const fetchTransfers = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
+
     try {
       if (!user) {
         setError('You are not authenticated');
         return;
       }
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/fetch_user_transfers`,
         {
@@ -109,27 +111,34 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
           },
         },
       );
+
       if (!response.ok) {
         setError('Failed to fetch transfers');
         return;
       }
+
       const responseData = await response.json();
 
-      if (responseData && responseData.data) {
+      if (responseData && responseData.transfers) {
         setTransfers((prevTransfers) => {
           // Ensure the new transfer data is not already in the state
-          const newTransfers = Array.isArray(responseData.data)
-            ? responseData.data
-            : [responseData.data]; // Ensure it's always an array
+          const newTransfers = Array.isArray(responseData.transfers)
+            ? responseData.transfers
+            : [responseData.transfers]; // Ensure it's always an array
+
+          // Collect existing transfer IDs
           const existingTransfers = prevTransfers.map(
             (transfer) => transfer.id,
-          ); // Collect existing transfer IDs
-          const filteredTransfers = newTransfers.filter(
-            (transfer: TransferData) =>
-              !existingTransfers.includes(transfer.id),
-          ); // Filter out duplicates
+          );
 
-          return [...prevTransfers, ...filteredTransfers]; // Add only new transfers
+          // Filter out the new transfers that are already in the state
+          const filteredTransfers = newTransfers.filter(
+            (transfer: { transfer_response: { data: { id: number } } }) =>
+              !existingTransfers.includes(transfer.transfer_response.data.id),
+          );
+
+          // Return the updated transfers list
+          return [...prevTransfers, ...filteredTransfers];
         });
       } else {
         setError('No transfer data found');
