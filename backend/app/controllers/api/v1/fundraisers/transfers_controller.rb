@@ -141,10 +141,10 @@ module Api
 
           # Proceed with the transfer
           response = @paystack_service.initiate_transfer(
-            amount: 50,
+            amount: total_donations.round,
             recipient: subaccount.recipient_code,
             reason: "Payout for campaign: #{@campaign.title}",
-            currency: "GHS"
+            currency: @campaign.currency.upcase
           )
 
           if response[:status]
