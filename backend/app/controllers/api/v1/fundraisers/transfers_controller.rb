@@ -3,6 +3,7 @@ module Api
     module Fundraisers
       class TransfersController < ApplicationController
         include ErrorHandler
+        before_action :authenticate_request, only: %i[fetch_user_transfers]
         before_action :set_transfer_service
 
         # Approve or reject a transfer based on the payload
@@ -211,13 +212,31 @@ module Api
           render json: { error: e.message }, status: :unprocessable_entity
         end
 
-        # Verify transfer status
-        def verify_transfer
-          response = @paystack_service.verify_transfer(params[:reference])
-          render json: response, status: :ok
-        rescue => e
-          render json: { error: e.message }, status: :not_found
+      # Fetch all transfers for the current user
+      def fetch_user_transfers
+        # Ensure the current user has a subaccount set up
+        @fundraiser = @current_user  # Assuming current_user is the fundraiser
+      
+        subaccount = @fundraiser.subaccount
+      
+        if subaccount.nil?
+          render json: { error: "No subaccount found for this user" }, status: :not_found
+          return
         end
+      
+        # Fetch the transfers related to this subaccount (the user's transfer-related data)
+        response = @paystack_service.fetch_transfer(subaccount.transfer_code)
+      
+        if response[:status]
+          render json: response, status: :ok
+        else
+          render json: { error: "No transfers found for this user" }, status: :not_found
+        end
+      rescue => e
+        Rails.logger.error "Error fetching user transfers: #{e.message}"
+        render json: { error: "An error occurred while fetching transfers: #{e.message}" }, status: :unprocessable_entity
+      end
+      
 
         private
 
