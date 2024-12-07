@@ -3,9 +3,7 @@ module Api
     module Fundraisers
       class TransfersController < ApplicationController
         include ErrorHandler
-        # before_action :authenticate_request!, except: [:approve_transfer, :get_supported_countries, :get_bank_list, :add_subaccount_to_split, :check_balance, :create_transfer_recipient, :bulk_create_transfer_recipients, :list_transfer_recipients, :fetch_transfer_recipient, :initiate_transfer, :finalize_transfer, :initiate_bulk_transfer, :fetch_transfer, :verify_transfer]
         before_action :set_transfer_service
-
 
         # Approve or reject a transfer based on the payload
         def approve_transfer
@@ -51,7 +49,6 @@ module Api
             error: "An unexpected error occurred while resolving the account details. Please try again later or contact support."
           }, status: :unprocessable_entity
         end        
-        
 
         # Fetch list of supported countries
         def get_supported_countries
@@ -74,15 +71,15 @@ module Api
           @fundraiser = User.find(params[:fundraiser_id])
           subaccount = @fundraiser.subaccount
           campaign_id = Campaign.find(params[:campaign_id])
-        
+
           raise "Fundraiser does not have a subaccount configured." unless subaccount
-        
+
           # Check if a recipient code already exists
           if subaccount.recipient_code.present?
             render json: { recipient_code: subaccount.recipient_code, message: "Recipient code already exists." }, status: :ok
             return
           end
-        
+
           response = @paystack_service.create_transfer_recipient(
             type: subaccount.subaccount_type,
             name: subaccount.business_name,
@@ -92,10 +89,9 @@ module Api
             description: "Transfer recipient for campaign payouts",
             metadata: { user_id: @fundraiser.id }
           )
-        
+
           if response[:status]
             subaccount.update!(recipient_code: response.dig(:data, :recipient_code))
-            
             render json: { message: "Recipient created successfully.", recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign_id  }, status: :ok
           else
             render json: { error: "Provide a valid data" }, status: :unprocessable_entity
@@ -106,26 +102,30 @@ module Api
           Rails.logger.error "Error creating transfer recipient: #{e.message}"
           render json: { error: e.message }, status: :unprocessable_entity
         end        
-        
-        # Initiate a transfer
+
+        # Initialize a transfer
         def initialize_transfer
+          # Check that necessary parameters are present
+          raise "Campaign ID is missing" unless params[:campaign_id]
+
           @campaign = Campaign.find(params[:campaign_id])
           @fundraiser = @campaign.fundraiser
           subaccount = @fundraiser.subaccount
-        
-          raise "You do not have a subaccount configured." unless subaccount
-          raise "Recipient code not found for this fundraiser." unless subaccount.recipient_code
-        
+
+          raise "You do not have a account number configured." unless subaccount
+          raise "Recipient code not found for this fundraiser" unless subaccount.recipient_code
+
           total_donations = @campaign.donations.where(status: 'successful').sum(:net_amount)
           raise "You have no funds available for payout." if total_donations <= 0.0
 
-            # Check if there is sufficient balance
+          # Check if there is sufficient balance
           balance_response = @paystack_service.check_balance
-          if !balance_response[:status] || balance_response[:body][:data][:available_balance].to_f < total_donations
+          if !balance_response[:status] || balance_response.dig(:body, :data, :available_balance).to_f < total_donations
             render json: { error: "Sorry, this is an issue on our side. We'll resolve it soon. Kindly try again later" }, status: :unprocessable_entity
             return
           end
-        
+
+          # Proceed with the transfer
           response = @paystack_service.initiate_transfer(
             amount: total_donations.round,
             recipient: subaccount.recipient_code,
@@ -135,7 +135,7 @@ module Api
 
           if response[:status]
             subaccount.update!(reference: response.dig(:data, :reference), transfer_code: response.dig(:data, :transfer_code), amount: total_donations.round)
-            render json: { transfer_code: response.dig(:data, :transfer_code), reference: response.dig(:data, :reference) , message: "Transfer initiated successfully." }, status: :ok
+            render json: { transfer_code: response.dig(:data, :transfer_code), reference: response.dig(:data, :reference), message: "Transfer initiated successfully." }, status: :ok
           else
             render json: { error: response[:message] }, status: :unprocessable_entity
           end
@@ -198,10 +198,10 @@ module Api
         def fetch_transfers
           @fundraiser = User.find_by(id: params[:fundraiser_id])
           raise ActiveRecord::RecordNotFound, "Fundraiser not found" unless @fundraiser
-        
+
           subaccount = @fundraiser.subaccount
           raise ActiveRecord::RecordNotFound, "Subaccount not found for this fundraiser" unless subaccount
-        
+
           response = @paystack_service.fetch_transfer(subaccount.transfer_code)
           render json: response, status: :ok
         rescue ActiveRecord::RecordNotFound => e
@@ -210,7 +210,6 @@ module Api
           Rails.logger.error "Error fetching transfers: #{e.message}"
           render json: { error: e.message }, status: :unprocessable_entity
         end
-        
 
         # Verify transfer status
         def verify_transfer
@@ -228,8 +227,7 @@ module Api
 
         def process_transfer_approval(transfer_details)
           # Add your logic to decide whether to approve or reject the transfer.
-          # For example:
-          if transfer_details[:amount] > 1_000_000 # example condition
+          if transfer_details[:amount] > 1_000_000
             { approve: false, reason: 'Amount exceeds approval limit' }
           else
             { approve: true }
