@@ -13,14 +13,14 @@ interface Recipient {
   recipient_code: string;
   name: string;
   details: {
-    account_number: string;
-    bank_name: string;
+    recipient_account_number: string;
+    recipient_bank_name: string;
   };
 }
 
 interface TransferData {
   amount: number;
-  createdAt: string;
+  created_at: string;
   currency: string;
   reason: string;
   status: string;
