@@ -87,7 +87,7 @@ module Api
             bank_code: subaccount.settlement_bank,
             currency: campaign.currency.upcase,
             description: "Transfer recipient for campaign payouts",
-            metadata: { user_id: @fundraiser.id, campaign_id: @fundraiser.campaign_id }
+            metadata: { user_id: @fundraiser.id, campaign_id: campaign.id }
           )
         
           if response[:status]
