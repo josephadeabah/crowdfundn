@@ -116,7 +116,7 @@ export default function Transfers() {
                 subaccount?.transfers?.map((transfer) => (
                   <tr key={transfer.transfer_code}>
                     <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      GHS {transfer.amount}
+                      {transfer.currency} {transfer.amount}
                     </td>
                     <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
                       {new Date(transfer.created_at).toLocaleDateString()}
