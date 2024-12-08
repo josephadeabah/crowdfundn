@@ -239,7 +239,7 @@ class PaystackService
     uri = URI("#{PAYSTACK_BASE_URL}/transfer")
     body = {
       source: "balance",
-      amount: amount,
+      amount: amount.to_i * 100, # Convert to kobo
       recipient: recipient,
       reason: reason,
       currency: currency,
