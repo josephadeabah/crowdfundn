@@ -4,9 +4,15 @@ import { HiShieldCheck } from 'react-icons/hi';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
 import { useTransferContext } from '../context/account/transfers/TransfersContext';
 import ToastComponent from '../components/toast/Toast';
+import TransferLoader from '../loaders/TransferLoader ';
+import TransferCampaignLoader from '../loaders/TransferCampaignLoader';
 
 export default function Transfers() {
-  const { campaigns, fetchCampaigns } = useCampaignContext(); // Fetch campaigns data
+  const {
+    campaigns,
+    fetchCampaigns,
+    loading: isLoadingCampaigns,
+  } = useCampaignContext(); // Fetch campaigns data
   const {
     fetchTransfers,
     createTransferRecipient,
@@ -120,35 +126,39 @@ export default function Transfers() {
 
         {/* Campaigns Section */}
         <div className="space-y-4">
-          {campaigns?.map((campaign) => (
-            <div
-              key={campaign.id}
-              className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow w-full"
-            >
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                    {campaign.title}
-                  </h3>
-                  <p className="text-gray-500 dark:text-neutral-400">
-                    Raised: {campaign.currency.toUpperCase()}
-                    {campaign.current_amount} /{' '}
-                    {campaign.currency.toUpperCase()}
-                    {campaign.goal_amount}
-                  </p>
+          {isLoadingCampaigns ? (
+            <TransferCampaignLoader />
+          ) : (
+            campaigns?.map((campaign) => (
+              <div
+                key={campaign.id}
+                className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow w-full"
+              >
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                      {campaign.title}
+                    </h3>
+                    <p className="text-gray-500 dark:text-neutral-400">
+                      Raised: {campaign.currency.toUpperCase()}
+                      {campaign.current_amount} /{' '}
+                      {campaign.currency.toUpperCase()}
+                      {campaign.goal_amount}
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => handleRequestTransfer(campaign.id)}
+                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500 dark:hover:bg-red-700"
+                    disabled={loadingCampaigns[campaign.id]}
+                  >
+                    {loadingCampaigns[campaign.id]
+                      ? 'Processing...'
+                      : 'Request Transfer'}
+                  </Button>
                 </div>
-                <Button
-                  onClick={() => handleRequestTransfer(campaign.id)}
-                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500 dark:hover:bg-red-700"
-                  disabled={loadingCampaigns[campaign.id]} // Disable button if the specific campaign is loading
-                >
-                  {loadingCampaigns[campaign.id]
-                    ? 'Processing...'
-                    : 'Request Transfer'}
-                </Button>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         {/* Transfer History Section */}
@@ -184,31 +194,44 @@ export default function Transfers() {
                 </tr>
               </thead>
               <tbody>
-                {transfers?.map((transfer) => (
-                  <tr key={transfer.id}>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.currency} {transfer.amount}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {new Date(transfer.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
-                      {transfer.status}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.reference}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.account_number || 'N/A'}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.bank_name || 'N/A'}
-                    </td>
-                    <td className="px-4 py-2 truncate text-gray-800 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis">
-                      {transfer.reason}
+                {loading ? (
+                  <TransferLoader />
+                ) : transfers?.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={7}
+                      className="px-4 py-2 text-center text-gray-800 dark:text-white"
+                    >
+                      You have no transfer history.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  transfers?.map((transfer) => (
+                    <tr key={transfer.id}>
+                      <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                        {transfer.currency} {transfer.amount}
+                      </td>
+                      <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                        {new Date(transfer.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
+                        {transfer.status}
+                      </td>
+                      <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                        {transfer.reference}
+                      </td>
+                      <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                        {transfer.account_number || 'N/A'}
+                      </td>
+                      <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                        {transfer.bank_name || 'N/A'}
+                      </td>
+                      <td className="px-4 py-2 truncate text-gray-800 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis">
+                        {transfer.reason}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
