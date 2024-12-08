@@ -228,43 +228,67 @@ module Api
       # Fetch all transfers for the current user
       def fetch_user_transfers
         @fundraiser = @current_user  # current_user is the fundraiser (User)
-      
+        
         # Fetch all subaccounts for the current user
         subaccounts = @fundraiser.subaccount
-      
+        
         if subaccounts.empty?
           render json: { error: "No subaccounts found for this user" }, status: :not_found
           return
         end
-      
+        
         # Assuming you want to fetch transfers for each subaccount
         transfer_responses = subaccounts.map do |subaccount|
           response = @paystack_service.fetch_transfer(subaccount.transfer_code)
       
           if response[:status]
-            # Extract and simplify the data for each transfer
-            simplified_data = response[:data].map do |transfer|
-              {
-                subaccount_id: subaccount.id,
-                transfer_code: transfer[:transfer_code],
-                reference: transfer[:reference],
-                amount: transfer[:amount],
-                reason: transfer[:reason],
-                recipient_name: transfer[:recipient][:name],
-                recipient_code: transfer[:recipient][:recipient_code],
-                recipient_account_number: transfer[:recipient][:details][:account_number],
-                recipient_bank_name: transfer[:recipient][:details][:bank_name],
-                status: transfer[:status],
-                currency: transfer[:currency],
-                created_at: transfer[:createdAt]
-              }
-            end
+            # Log the response for debugging
+            Rails.logger.debug("API Response: #{response.inspect}")
+            
+            simplified_data = if response[:data].is_a?(Array)
+                                response[:data].map do |transfer|
+                                  {
+                                    subaccount_id: subaccount.id,
+                                    transfer_code: transfer[:transfer_code],
+                                    reference: transfer[:reference],
+                                    amount: transfer[:amount],
+                                    reason: transfer[:reason],
+                                    recipient_name: transfer[:recipient][:name],
+                                    recipient_code: transfer[:recipient][:recipient_code],
+                                    recipient_account_number: transfer[:recipient][:details][:account_number],
+                                    recipient_bank_name: transfer[:recipient][:details][:bank_name],
+                                    status: transfer[:status],
+                                    currency: transfer[:currency],
+                                    created_at: transfer[:createdAt]
+                                  }
+                                end
+                              elsif response[:data].is_a?(Hash)
+                                # Handle the case where response[:data] is a single transfer object
+                                transfer = response[:data]
+                                [{
+                                  subaccount_id: subaccount.id,
+                                  transfer_code: transfer[:transfer_code],
+                                  reference: transfer[:reference],
+                                  amount: transfer[:amount],
+                                  reason: transfer[:reason],
+                                  recipient_name: transfer[:recipient][:name],
+                                  recipient_code: transfer[:recipient][:recipient_code],
+                                  recipient_account_number: transfer[:recipient][:details][:account_number],
+                                  recipient_bank_name: transfer[:recipient][:details][:bank_name],
+                                  status: transfer[:status],
+                                  currency: transfer[:currency],
+                                  created_at: transfer[:createdAt]
+                                }]
+                              else
+                                [] # Empty array if neither an array nor a hash
+                              end
+      
             { subaccount_id: subaccount.id, transfers: simplified_data }
           else
             { subaccount_id: subaccount.id, error: "No transfers found" }
           end
         end
-      
+        
         # Render the simplified response
         render json: { transfers: transfer_responses }, status: :ok
       rescue => e
