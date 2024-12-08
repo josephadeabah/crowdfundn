@@ -84,7 +84,7 @@ export default function Transfers() {
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
           Transaction History
         </h3>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
           <table className="min-w-full bg-white dark:bg-neutral-800 rounded-lg">
             <thead className="bg-gray-50 dark:bg-neutral-700">
               <tr>
