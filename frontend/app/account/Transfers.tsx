@@ -112,30 +112,32 @@ export default function Transfers() {
               </tr>
             </thead>
             <tbody>
-              {transfers?.map((transfer) => (
-                <tr key={transfer.subaccount_id}>
-                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    ${transfer?.transfers?.[0]?.amount}
-                  </td>
-                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {new Date(transfer?.transfers?.[0]?.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
-                    {transfer?.transfers?.[0]?.status}
-                  </td>
-                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {transfer?.transfers?.[0]?.reason}
-                  </td>
-                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {transfer?.transfers?.[0]?.reference}
-                  </td>
-                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {transfer?.transfers?.[0]?.account_number || 'N/A'}
-                  </td>
-                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {transfer?.transfers?.[0]?.bank_name || 'N/A'}
-                  </td>
-                </tr>
+              {transfers?.map((subaccount) => (
+                subaccount?.transfers?.map((transfer) => (
+                  <tr key={transfer.transfer_code}>
+                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                      GHS {transfer.amount}
+                    </td>
+                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                      {new Date(transfer.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
+                      {transfer.status}
+                    </td>
+                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                      {transfer.reason}
+                    </td>
+                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                      {transfer.reference}
+                    </td>
+                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                      {transfer.account_number || 'N/A'}
+                    </td>
+                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                      {transfer.bank_name || 'N/A'}
+                    </td>
+                  </tr>
+                ))
               ))}
             </tbody>
           </table>
