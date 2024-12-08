@@ -49,17 +49,28 @@ export default function Transfers() {
     try {
       // Step 1: Create the transfer recipient
       const response = await createTransferRecipient(campaignId);
-  
+
       // Step 2: Check if recipient creation was successful
       if (response && response.recipient_code) {
         // Step 3: If successful, initiate the transfer
-        const initiateResponse = await initiateTransfer(campaignId, response.recipient_code);
-  
+        const initiateResponse = await initiateTransfer(
+          campaignId,
+          response.recipient_code,
+        );
+
         if (typeof initiateResponse === 'object' && initiateResponse !== null) {
           // Check if the response from initiateTransfer contains an error
-          if (initiateResponse && typeof initiateResponse === 'object' && 'error' in initiateResponse) {
+          if (
+            initiateResponse &&
+            typeof initiateResponse === 'object' &&
+            'error' in initiateResponse
+          ) {
             // Show error toast if there's an error from the backend
-            showToast('Error', (initiateResponse as { error: string }).error, 'error');
+            showToast(
+              'Error',
+              (initiateResponse as { error: string }).error,
+              'error',
+            );
           } else {
             // Success toast if transfer initiation is successful
             showToast('Success', 'Transfer initiated successfully', 'success');
@@ -78,7 +89,6 @@ export default function Transfers() {
       showToast('Error', String(err), 'error');
     }
   };
-  
 
   return (
     <>
@@ -121,7 +131,10 @@ export default function Transfers() {
                     {campaign.title}
                   </h3>
                   <p className="text-gray-500 dark:text-neutral-400">
-                    Raised: {campaign.currency.toUpperCase()}{campaign.current_amount} / {campaign.currency.toUpperCase()}{campaign.goal_amount}
+                    Raised: {campaign.currency.toUpperCase()}
+                    {campaign.current_amount} /{' '}
+                    {campaign.currency.toUpperCase()}
+                    {campaign.goal_amount}
                   </p>
                 </div>
                 <Button

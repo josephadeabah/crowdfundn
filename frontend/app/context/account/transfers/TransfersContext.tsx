@@ -42,7 +42,10 @@ interface TransferState {
   createTransferRecipient: (
     campaignId: string | number,
   ) => Promise<CreateTransferRecipientResponseType>;
-  initiateTransfer: (campaignId: string | number, recipientCode: string) => Promise<string | null>;
+  initiateTransfer: (
+    campaignId: string | number,
+    recipientCode: string,
+  ) => Promise<string | null>;
 }
 
 const TransferContext = createContext<TransferState | undefined>(undefined);
@@ -97,7 +100,10 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
   }, [user, token]);
 
   const initiateTransfer = useCallback(
-    async (campaignId: string | number, recipientCode: string): Promise<string | null> => {
+    async (
+      campaignId: string | number,
+      recipientCode: string,
+    ): Promise<string | null> => {
       setLoadingCampaigns((prevState) => ({
         ...prevState,
         [campaignId]: true,
@@ -111,7 +117,10 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ campaign_id: campaignId, recipient_code: recipientCode }),
+            body: JSON.stringify({
+              campaign_id: campaignId,
+              recipient_code: recipientCode,
+            }),
           },
         );
 
@@ -131,7 +140,9 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const createTransferRecipient = useCallback(
-    async (campaignId: string | number): Promise<CreateTransferRecipientResponseType> => {
+    async (
+      campaignId: string | number,
+    ): Promise<CreateTransferRecipientResponseType> => {
       setLoading(true);
       setLoadingCampaigns((prevState) => ({
         ...prevState,
@@ -163,7 +174,10 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         return data;
       } catch (err: any) {
         setError(err || 'Error creating transfer recipient');
-        return { message: 'Error creating transfer recipient', recipient_code: '' };
+        return {
+          message: 'Error creating transfer recipient',
+          recipient_code: '',
+        };
       } finally {
         setLoading(false);
         setLoadingCampaigns((prevState) => ({
