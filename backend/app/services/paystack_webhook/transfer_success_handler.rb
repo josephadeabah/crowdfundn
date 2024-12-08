@@ -15,6 +15,7 @@ class PaystackWebhook::TransferSuccessHandler
       status: @data[:status], 
       completed_at: Time.current,
       recipient_code: @data.dig(:recipient, :recipient_code),
+      currency: @data[:currency],
       amount: @data[:amount],
       reason: @data[:reason],
       transfer_code: @data[:transfer_code],
