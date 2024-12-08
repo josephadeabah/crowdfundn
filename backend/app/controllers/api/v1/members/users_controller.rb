@@ -64,7 +64,10 @@ module Api
             )
           
             if subaccount.save
-              render json: { success: true, subaccount_code: subaccount.subaccount_code }, status: :ok
+              # Fetch the newly created subaccount (this is now the first in order)
+              latest_subaccount = user.subaccount.order(created_at: :desc).first
+            
+              render json: { success: true, subaccount_code: latest_subaccount.subaccount_code }, status: :ok
             else
               Rails.logger.error "account save failed: #{subaccount.errors.full_messages}"
               render json: { success: false, error: subaccount.errors.full_messages }, status: :unprocessable_entity
