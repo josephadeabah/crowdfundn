@@ -6,6 +6,16 @@ require 'openssl'
 class PaystackService
   PAYSTACK_BASE_URL = Rails.application.config.paystack[:base_url]
 
+  CURRENCY_UNIT_MULTIPLIERS = {
+    "NGN" => 100,  # Naira (100 Kobo)
+    "USD" => 100,  # US Dollar (100 Cents)
+    "EUR" => 100,  # Euro (100 Cents)
+    "GBP" => 100,  # British Pound (100 Pence)
+    "KES" => 100,  # Kenyan Shilling (100 Cents)
+    "GHS" => 100,  # Ghanaian Cedi (100 Pesewa)
+    # Add more currencies here as necessary
+  }
+
   def initialize
     @secret_key = Rails.application.config.paystack[:private_key]
     raise "PAYSTACK_PRIVATE_KEY is not set in the environment variables." if @secret_key.nil?
@@ -230,16 +240,28 @@ class PaystackService
       false
     end
   end
+
+  def convert_to_smallest_unit(amount:, currency:)
+    # Get the multiplier for the given currency
+    multiplier = CURRENCY_UNIT_MULTIPLIERS[currency.upcase]
+    raise "Unsupported currency: #{currency}" if multiplier.nil?
+
+    # Convert the amount to the smallest unit (e.g., cents or kobo)
+    amount_in_smallest_unit = (amount.to_f * multiplier).to_i
+    amount_in_smallest_unit
+  end
   
   # Initiate a transfer
   def initiate_transfer(amount:, recipient:, reason:, currency:)
+
+    amount_in_smallest_unit = convert_to_smallest_unit(amount: amount, currency: currency)
     # Generate a unique transfer reference (UUID)
     transfer_reference = SecureRandom.uuid
 
     uri = URI("#{PAYSTACK_BASE_URL}/transfer")
     body = {
       source: "balance",
-      amount: amount.to_i * 100, # Convert to kobo
+      amount: amount_in_smallest_unit,
       recipient: recipient,
       reason: reason,
       currency: currency,
