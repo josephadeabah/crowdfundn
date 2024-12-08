@@ -111,7 +111,7 @@ module Api
 
           @campaign = Campaign.find(params[:campaign_id])
           @fundraiser = @campaign.fundraiser
-          subaccount = @fundraiser.subaccount
+          subaccount = @fundraiser.subaccounts.first
 
           Rails.logger.debug "Currency: #{@campaign.currency.upcase}"
 
