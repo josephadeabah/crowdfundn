@@ -37,8 +37,8 @@ class PaystackWebhook::TransferSuccessHandler
     donation = Donation.find_by(campaign_id: @data.dig(:recipient, :metadata, :campaign_id))
 
     # Calculate the donation amounts
-    gross_amount = @data[:amount].to_f / 100.0 # Gross amount from Paystack (in GHS)
-    platform_fee = gross_amount * 0.20 # Platform fee (20% of the gross amount)
+    gross_amount = 0 # Gross amount from Paystack (in GHS)
+    platform_fee = gross_amount * 0 # Platform fee (20% of the gross amount)
     net_amount = gross_amount - platform_fee # Net amount (80% of the gross amount)
 
     # Update the donation with the calculated values
@@ -68,7 +68,7 @@ class PaystackWebhook::TransferSuccessHandler
         status: @data[:status], 
         completed_at: Time.current,
         recipient_code: @data.dig(:recipient, :recipient_code),
-        amount: gross_amount, # Use gross amount, assuming it's the total value transferred
+        amount: 0, # Use gross amount, assuming it's the total value transferred
         transfer_code: @data[:transfer_code],
         reference: @data[:reference],
         account_number: @data.dig(:recipient, :details, :account_number),
