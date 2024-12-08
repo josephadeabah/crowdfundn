@@ -52,7 +52,7 @@ module Api
                 
           if response[:status] == true
             # Proceed with saving the subaccount
-            subaccount = user.build_subaccount(
+            subaccount = user.subaccount.build(
               business_name: params[:subaccount][:business_name],
               account_number: params[:subaccount][:account_number],
               subaccount_code: response[:data][:subaccount_code],  # Use the subaccount_code from response[:data]
