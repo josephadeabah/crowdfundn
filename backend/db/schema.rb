@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_07_224907) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_08_043921) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -215,7 +215,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_07_224907) do
 
   create_table "transfers", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.bigint "campaign_id", null: false
+    t.bigint "campaign_id"
     t.string "bank_name"
     t.string "account_number"
     t.decimal "amount"
