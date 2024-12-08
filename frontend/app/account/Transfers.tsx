@@ -3,6 +3,9 @@ import { Button } from '../components/button/Button';
 import { HiShieldCheck } from 'react-icons/hi';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
 import { useTransferContext } from '../context/account/transfers/TransfersContext';
+import DonationsLoader from '../loaders/DonationsLoader';
+import ToastComponent from '../components/toast/Toast';
+
 
 export default function Transfers() {
   const { campaigns, fetchCampaigns } = useCampaignContext(); // Fetch campaigns data
@@ -11,8 +14,16 @@ export default function Transfers() {
     createTransferRecipient,
     transfers,
     loading,
+    error,
     loadingCampaigns,
   } = useTransferContext();
+
+  const [toast, setToast] = useState({
+    isOpen: false,
+    title: '',
+    description: '',
+    type: 'error' as 'success' | 'error' | 'warning',
+  });
 
   useEffect(() => {
     fetchCampaigns();
@@ -26,13 +37,30 @@ export default function Transfers() {
     try {
       await createTransferRecipient(campaignId);
       fetchTransfers(); // Fetch updated transfers after initiating a new transfer
-    } catch (error) {
-      console.error('Error requesting transfer:', error);
+    } catch {
+      setToast({
+        isOpen: true,
+        title: 'Transfer Error',
+        description: String(error),
+        type: 'error',
+      });
     }
   };
 
+  if (loading) {
+    return <DonationsLoader />;
+  }
+
   return (
     <div className="h-full mb-20">
+      {/* Toast component to show notifications */}
+      <ToastComponent
+        isOpen={toast.isOpen}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
+        title={toast.title}
+        description={toast.description}
+        type={toast.type}
+      />
       {/* Header Section */}
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">
         Transfers
@@ -84,59 +112,59 @@ export default function Transfers() {
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
           Transaction History
         </h3>
-        <div className="overflow-x-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
+        <div className="overflow-x-auto">
           <table className="min-w-full bg-white dark:bg-neutral-800 rounded-lg">
             <thead className="bg-gray-50 dark:bg-neutral-700">
               <tr>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
                   Amount
                 </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
                   Date
                 </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
                   Status
                 </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
                   Reference
                 </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
                   Account Number
                 </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
                   Settlement Bank
                 </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300">
                   Reason
                 </th>
               </tr>
             </thead>
             <tbody>
               {transfers?.map((transfer) => (
-                  <tr key={transfer.id}>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.currency} {transfer.amount}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {new Date(transfer.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
-                      {transfer.status}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.reference}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.account_number || 'N/A'}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.bank_name || 'N/A'}
-                    </td>
-                    <td className="px-4 py-2 truncate text-gray-800 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis">
-                      {transfer.reason}
-                    </td>
-                  </tr>
-                ))}
+                <tr key={transfer.id}>
+                  <td className="px-4 py-2 text-gray-800 dark:text-white">
+                    {transfer.currency} {transfer.amount}
+                  </td>
+                  <td className="px-4 py-2 text-gray-800 dark:text-white">
+                    {new Date(transfer.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-2 text-green-500 dark:text-green-400">
+                    {transfer.status}
+                  </td>
+                  <td className="px-4 py-2 text-gray-800 dark:text-white">
+                    {transfer.reference}
+                  </td>
+                  <td className="px-4 py-2 text-gray-800 dark:text-white">
+                    {transfer.account_number || 'N/A'}
+                  </td>
+                  <td className="px-4 py-2 text-gray-800 dark:text-white">
+                    {transfer.bank_name || 'N/A'}
+                  </td>
+                  <td className="px-4 py-2 truncate text-gray-800 dark:text-white">
+                    {transfer.reason}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

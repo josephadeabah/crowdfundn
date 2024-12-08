@@ -85,7 +85,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         setError('No transfer data found');
       }
     } catch (err: any) {
-      setError(err?.message || 'Error fetching transfers');
+      setError(err?.error || 'Error fetching transfers');
     } finally {
       setLoading(false);
     }
@@ -112,13 +112,13 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to initiate transfer');
+          setError(errorData.error || 'Failed to initiate transfer');
         }
 
         const data = await response.json();
         return data.transfer_code || null;
       } catch (err: any) {
-        setError(err?.message || 'Error initiating transfer');
+        setError(err?.error || 'Error initiating transfer');
         return null;
       } finally {
         setLoadingCampaigns((prevState) => ({
@@ -151,7 +151,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(
+          setError(
             errorData.error || 'Failed to create transfer recipient',
           );
         }
@@ -162,13 +162,13 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         if (recipientCode) {
           const transferCode = await initiateTransfer(campaignId);
           if (!transferCode) {
-            setError('Failed to initiate transfer after creating recipient');
+            setError('Failed to initiate transfer');
           }
         }
 
         return recipientCode;
       } catch (err: any) {
-        setError(err?.message || 'Error creating transfer recipient');
+        setError(err?.error || 'Error creating transfer recipient');
         return null;
       } finally {
         setLoading(false);
