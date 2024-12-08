@@ -36,30 +36,11 @@ class PaystackWebhook::TransferSuccessHandler
     # Find the related donation by campaign_id
     donation = Donation.find_by(campaign_id: @data.dig(:recipient, :metadata, :campaign_id))
 
-    # Calculate the donation amounts
-    gross_amount = 0 # Gross amount from Paystack (in GHS)
-    platform_fee = gross_amount * 0 # Platform fee (20% of the gross amount)
-    net_amount = gross_amount - platform_fee # Net amount (80% of the gross amount)
-
-    # Update the donation with the calculated values
-    donation.update!(
-      status: 'successful',
-      gross_amount: gross_amount,
-      net_amount: net_amount,
-      platform_fee: platform_fee, # Store the platform fee
-      amount: net_amount
-    )
-
     # Get the associated campaign
     campaign = donation.campaign
 
     # Reset the current_amount to zero before adding the new successful donation amount
     campaign.update!(current_amount: 0)
-
-    # Update the campaign with the total successful donations
-    campaign.update!(
-      current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
-    )
 
     # Link transfer to subaccount
     subaccount = Subaccount.find_by(recipient_code: transfer.recipient_code)
