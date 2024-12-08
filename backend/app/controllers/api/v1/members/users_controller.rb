@@ -79,12 +79,15 @@ module Api
         
         # GET /api/v1/members/users/:user_id/subaccount
         def show_subaccount
-          if @user.subaccount
-            render json: @user.subaccount, status: :ok
+          if @user.subaccount.any?
+            # Sort all subaccounts by their creation time
+            subaccounts = @user.subaccount.order(created_at: :desc)
+            render json: subaccounts, status: :ok  # Return all sorted subaccounts
           else
             render json: { error: "account not found" }, status: :not_found
           end
         end
+        
 
         # PUT /api/v1/members/users/:id/make_admin
         def make_admin
