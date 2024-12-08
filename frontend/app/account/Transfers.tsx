@@ -46,11 +46,17 @@ export default function Transfers() {
 
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
-      await createTransferRecipient(campaignId);
-      fetchTransfers(); // Fetch updated transfers after initiating a new transfer
+      const response = await createTransferRecipient(campaignId);
+      if (response) {
+        showToast('Success', 'Recipient created successfully', 'success');
+         fetchTransfers();
+      }else{
+        showToast('Error', 'You do not have enough funds for payout', 'error');
+      }
+      
     } catch (err) {
       console.log("Error from api", err);
-      showToast('Error', "You do not have enough funds for payout", 'error');
+      showToast('Error', String(err), 'error');
     }
   };
 
