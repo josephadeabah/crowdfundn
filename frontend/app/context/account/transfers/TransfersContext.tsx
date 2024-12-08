@@ -112,6 +112,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
 
         if (!response.ok) {
           const errorData = await response.json();
+          console.log(errorData);
           setError(errorData || 'Failed to initiate transfer');
         }
 

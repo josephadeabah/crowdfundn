@@ -49,12 +49,14 @@ export default function Transfers() {
       await createTransferRecipient(campaignId);
       fetchTransfers(); // Fetch updated transfers after initiating a new transfer
     } catch (err) {
+      console.log("Error from api", err);
       // Handle error: Check if there is a specific error from the context or a generic one
       const errorMessage = error
         ? error
         : err instanceof Error
           ? err.message
           : 'An unknown error occurred';
+          console.log("Error Message:", errorMessage); 
       showToast('Error', errorMessage, 'error');
     }
   };
