@@ -112,7 +112,7 @@ const PaymentMethod = () => {
             },
           );
           const subaccountData = await response.json();
-          setSubaccountData(subaccountData[0]); // Assuming the response is an array and we use the first object
+          setSubaccountData(subaccountData); // Assuming the response is an array and we use the first object
 
           setUserDetails({
             name: user.full_name,
