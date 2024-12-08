@@ -148,7 +148,7 @@ export default function Transfers() {
                   <Button
                     onClick={() => handleRequestTransfer(campaign.id)}
                     className="px-4 py-2 bg-green-400 text-white rounded-full hover:bg-green-600 dark:hover:bg-green-700"
-                    disabled={loadingCampaigns[campaign.id] || (parseFloat(campaign.current_amount) === 0.0)}
+                    disabled={loadingCampaigns[campaign.id] || (parseFloat(campaign.current_amount) < 10.0)}
                   >
                     {loadingCampaigns[campaign.id]
                       ? 'Processing...'
