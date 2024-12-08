@@ -113,7 +113,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         if (!response.ok) {
           const errorData = await response.json();
           console.log(errorData);
-          setError(errorData || 'Failed to initiate transfer');
+          setError(errorData.error);
         }
 
         const data = await response.json();
@@ -156,7 +156,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
 
         if (!response.ok) {
           const errorData = await response.json();
-          setError(errorData.error || 'Failed to create transfer recipient');
+          setError(errorData.error);
         }
 
         const data = await response.json();

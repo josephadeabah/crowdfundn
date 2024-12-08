@@ -45,21 +45,17 @@ export default function Transfers() {
   }, [fetchTransfers]);
 
   const handleRequestTransfer = async (campaignId: string | number) => {
-    try {
-      await createTransferRecipient(campaignId);
-      fetchTransfers(); // Fetch updated transfers after initiating a new transfer
-    } catch (err) {
-      console.log("Error from api", err);
-      // Handle error: Check if there is a specific error from the context or a generic one
-      const errorMessage = error
-        ? error
-        : err instanceof Error
-          ? err.message
-          : 'An unknown error occurred';
-          console.log("Error Message:", errorMessage); 
+    const result: any = await createTransferRecipient(campaignId);
+    
+    // If result contains an error, show the toast
+    if (typeof result === 'object' && result instanceof Error || result?.error) {
+      const errorMessage = error || (result instanceof Error ? result.message : 'An unknown error occurred');
+      console.log("Error Message:", errorMessage);
       showToast('Error', errorMessage, 'error');
+    } else {
+      fetchTransfers(); // Fetch updated transfers after initiating a new transfer
     }
-  };
+  };  
 
   return (
     <>
