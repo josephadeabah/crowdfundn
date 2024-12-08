@@ -8,17 +8,6 @@ import React, {
 } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 
-// Define simplified interfaces for the transfer data structure
-interface Recipient {
-  recipient_code: string;
-  name: string;
-  details: {
-    account_name: string;
-    account_number: string;
-    bank_name: string;
-  };
-}
-
 interface TransferData {
   amount: number;
   created_at: string;
@@ -27,7 +16,11 @@ interface TransferData {
   status: string;
   transfer_code: string;
   reference: string;
-  recipient: Recipient;
+  account_name: string;
+  account_number: string;
+  bank_name: string;
+  recipient_code: string;
+  name: string;
 }
 
 interface TransferResponse {
