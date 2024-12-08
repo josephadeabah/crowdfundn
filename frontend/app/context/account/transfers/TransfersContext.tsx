@@ -85,7 +85,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         setError('No transfer data found');
       }
     } catch (err: any) {
-      setError(err?.error || 'Error fetching transfers');
+      setError(err || 'Error fetching transfers');
     } finally {
       setLoading(false);
     }
@@ -112,13 +112,13 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
 
         if (!response.ok) {
           const errorData = await response.json();
-          setError(errorData.error || 'Failed to initiate transfer');
+          setError(errorData || 'Failed to initiate transfer');
         }
 
         const data = await response.json();
         return data.transfer_code || null;
       } catch (err: any) {
-        setError(err?.error || 'Error initiating transfer');
+        setError(err || 'Error initiating transfer');
         return null;
       } finally {
         setLoadingCampaigns((prevState) => ({
@@ -133,6 +133,10 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
   const createTransferRecipient = useCallback(
     async (campaignId: string | number): Promise<string | null> => {
       setLoading(true);
+      setLoadingCampaigns((prevState) => ({
+        ...prevState,
+        [campaignId]: true,
+      }));
       setError(null);
       try {
         const response = await fetch(
@@ -160,16 +164,20 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         if (recipientCode) {
           const transferCode = await initiateTransfer(campaignId);
           if (!transferCode) {
-            setError('Failed to initiate transfer');
+            setError(transferCode);
           }
         }
 
         return recipientCode;
       } catch (err: any) {
-        setError(err?.error || 'Error creating transfer recipient');
+        setError(err || 'Error creating transfer recipient');
         return null;
       } finally {
         setLoading(false);
+        setLoadingCampaigns((prevState) => ({
+          ...prevState,
+          [campaignId]: false,
+        }));
       }
     },
     [user, initiateTransfer],
