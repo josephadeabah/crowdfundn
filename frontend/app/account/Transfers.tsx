@@ -114,27 +114,27 @@ export default function Transfers() {
             </thead>
             <tbody>
               {transfers?.map((transfer) => (
-                <tr key={transfer.id}>
+                <tr key={transfer.transfers_response.data.id}>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    ${transfer.amount}
+                    ${transfer.transfers_response.data.amount}
                   </td>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {new Date(transfer.createdAt).toLocaleDateString()}
+                    {new Date(transfer.transfers_response.data.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
-                    {transfer.status}
+                    {transfer.transfers_response.data.status}
                   </td>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {transfer.reason}
+                    {transfer.transfers_response.data.reason}
                   </td>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {transfer.reference}
+                    {transfer.transfers_response.data.reference}
                   </td>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {transfer?.recipient?.details?.account_number || 'N/A'}
+                    {transfer?.transfers_response.data.recipient?.details?.account_number || 'N/A'}
                   </td>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {transfer?.recipient?.details?.bank_name || 'N/A'}
+                    {transfer?.transfers_response.data.recipient?.details?.bank_name || 'N/A'}
                   </td>
                 </tr>
               ))}

@@ -17,6 +17,10 @@ interface TransferDetails {
   bank_name: string;
 }
 
+interface Metadata {
+  user_id: number;
+}
+
 interface Recipient {
   active: boolean;
   createdAt: string;
@@ -26,9 +30,7 @@ interface Recipient {
   email: string;
   id: number;
   integration: number;
-  metadata: {
-    user_id: number;
-  };
+  metadata: Metadata;
   name: string;
   recipient_code: string;
   type: string;
@@ -68,8 +70,17 @@ interface TransferData {
   gateway_response: string | null;
 }
 
+interface TransferResponse {
+  subaccount_id: number
+  transfers_response: {
+    status: boolean;
+    message: string;
+    data: TransferData;
+  };
+}
+
 interface TransferState {
-  transfers: TransferData[];
+  transfers: TransferResponse[];
   loading: boolean;
   loadingCampaigns: Record<string | number, boolean>;
   error: string | null;
@@ -83,7 +94,7 @@ interface TransferState {
 const TransferContext = createContext<TransferState | undefined>(undefined);
 
 export const TransferProvider = ({ children }: { children: ReactNode }) => {
-  const [transfers, setTransfers] = useState<TransferData[]>([]);
+  const [transfers, setTransfers] = useState<TransferResponse[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingCampaigns, setLoadingCampaigns] = useState<
     Record<string | number, boolean>
@@ -120,7 +131,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       const responseData = await response.json();
 
       if (responseData && responseData.transfers) {
-        // Directly update the state with the data
+        console.log(responseData.transfers); // Verify the structure of the response
         setTransfers(responseData.transfers);
       } else {
         setError('No transfer data found');
