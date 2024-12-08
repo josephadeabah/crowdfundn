@@ -78,9 +78,10 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const responseData = await response.json();
+      console.log("responseData", responseData)
 
-      if (responseData && responseData.transfers) {
-        setTransfers(responseData.transfers);
+      if (responseData && responseData.data) {
+        setTransfers(responseData.data);
       } else {
         setError('No transfer data found');
       }
