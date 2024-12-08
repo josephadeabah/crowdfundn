@@ -72,37 +72,38 @@ module Api
           @fundraiser = User.find(params[:fundraiser_id])
           subaccount = @fundraiser.subaccount.first
           campaign = Campaign.find(params[:campaign_id])
-
+        
           raise "Fundraiser does not have a subaccount configured." unless subaccount
-
+        
           # Check if a recipient code already exists
           if subaccount.recipient_code.present?
             render json: { recipient_code: subaccount.recipient_code, message: "Recipient code already exists." }, status: :ok
             return
           end
-
+        
+          # Here, we will utilize the recently created subaccount for the recipient
           response = @paystack_service.create_transfer_recipient(
-            type: subaccount.subaccount_type,
-            name: subaccount.business_name,
-            account_number: subaccount.account_number,
-            bank_code: subaccount.settlement_bank,
-            currency: "GHS",
+            type: subaccount.subaccount_type,           # Use the subaccount type from the subaccount
+            name: subaccount.business_name,             # Use the business name from the subaccount
+            account_number: subaccount.account_number,  # Use the account number from the subaccount
+            bank_code: subaccount.settlement_bank,      # Use the settlement bank from the subaccount
+            currency: campaign.currency.upcase,                            # You may use the currency from the campaign if necessary
             description: "Transfer recipient for campaign payouts",
             metadata: { user_id: @fundraiser.id, campaign_id: campaign.id }
           )
-
+        
           if response[:status]
             subaccount.update!(recipient_code: response.dig(:data, :recipient_code))
-            render json: { message: "Recipient created successfully.", recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign_id  }, status: :ok
+            render json: { message: "Recipient created successfully.", recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id }, status: :ok
           else
-            render json: { error: "Provide a valid data" }, status: :unprocessable_entity
+            render json: { error: "Provide valid data" }, status: :unprocessable_entity
           end
         rescue ActiveRecord::RecordInvalid => e
           render json: { error: "Failed to save recipient code: #{e.message}" }, status: :internal_server_error
         rescue => e
           Rails.logger.error "Error creating transfer recipient: #{e.message}"
           render json: { error: e.message }, status: :unprocessable_entity
-        end        
+        end               
 
         # Initialize a transfer
         def initialize_transfer
@@ -224,77 +225,6 @@ module Api
           Rails.logger.error "Error fetching transfers: #{e.message}"
           render json: { error: e.message }, status: :unprocessable_entity
         end
-
-      # Fetch all transfers for the current user
-      # def fetch_user_transfers
-      #   @fundraiser = @current_user  # current_user is the fundraiser (User)
-        
-      #   # Fetch all subaccounts for the current user
-      #   subaccounts = @fundraiser.subaccount
-        
-      #   if subaccounts.empty?
-      #     render json: { error: "No subaccounts found for this user" }, status: :not_found
-      #     return
-      #   end
-        
-      #   # Assuming you want to fetch transfers for each subaccount
-      #   transfer_responses = subaccounts.map do |subaccount|
-      #     response = @paystack_service.fetch_transfer(subaccount.transfer_code)
-      
-      #     if response[:status]
-      #       # Log the response for debugging
-      #       Rails.logger.debug("API Response: #{response.inspect}")
-            
-      #       simplified_data = if response[:data].is_a?(Array)
-      #                           response[:data].map do |transfer|
-      #                             {
-      #                               subaccount_id: subaccount.id,
-      #                               transfer_code: transfer[:transfer_code],
-      #                               reference: transfer[:reference],
-      #                               amount: transfer[:amount],
-      #                               reason: transfer[:reason],
-      #                               account_name: transfer[:recipient][:name],
-      #                               recipient_code: transfer[:recipient][:recipient_code],
-      #                               account_number: transfer[:recipient][:details][:account_number],
-      #                               bank_name: transfer[:recipient][:details][:bank_name],
-      #                               status: transfer[:status],
-      #                               currency: transfer[:currency],
-      #                               created_at: transfer[:createdAt]
-      #                             }
-      #                           end
-      #                         elsif response[:data].is_a?(Hash)
-      #                           # Handle the case where response[:data] is a single transfer object
-      #                           transfer = response[:data]
-      #                           [{
-      #                             subaccount_id: subaccount.id,
-      #                             transfer_code: transfer[:transfer_code],
-      #                             reference: transfer[:reference],
-      #                             amount: transfer[:amount],
-      #                             reason: transfer[:reason],
-      #                             account_name: transfer[:recipient][:name],
-      #                             recipient_code: transfer[:recipient][:recipient_code],
-      #                             account_number: transfer[:recipient][:details][:account_number],
-      #                             bank_name: transfer[:recipient][:details][:bank_name],
-      #                             status: transfer[:status],
-      #                             currency: transfer[:currency],
-      #                             created_at: transfer[:createdAt]
-      #                           }]
-      #                         else
-      #                           [] # Empty array if neither an array nor a hash
-      #                         end
-      
-      #       { subaccount_id: subaccount.id, transfers: simplified_data }
-      #     else
-      #       { subaccount_id: subaccount.id, error: "No transfers found" }
-      #     end
-      #   end
-        
-      #   # Render the simplified response
-      #   render json: { transfers: transfer_responses }, status: :ok
-      # rescue => e
-      #   Rails.logger.error "Error fetching user transfers: #{e.message}"
-      #   render json: { error: "An error occurred while fetching transfers: #{e.message}" }, status: :unprocessable_entity
-      # end
 
        # Fetch transfers for the logged-in user
         def fetch_user_transfers
