@@ -124,7 +124,7 @@ export default function Transfers() {
                     <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
                       {transfer.status}
                     </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                    <td className="px-4 py-2 truncate text-gray-800 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis">
                       {transfer.reason}
                     </td>
                     <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
