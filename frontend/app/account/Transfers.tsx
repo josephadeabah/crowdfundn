@@ -98,9 +98,6 @@ export default function Transfers() {
                   Status
                 </th>
                 <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  Reason
-                </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
                   Reference
                 </th>
                 <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
@@ -108,6 +105,9 @@ export default function Transfers() {
                 </th>
                 <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
                   Settlement Bank
+                </th>
+                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+                  Reason
                 </th>
               </tr>
             </thead>
@@ -123,9 +123,6 @@ export default function Transfers() {
                     <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
                       {transfer.status}
                     </td>
-                    <td className="px-4 py-2 truncate text-gray-800 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis">
-                      {transfer.reason}
-                    </td>
                     <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
                       {transfer.reference}
                     </td>
@@ -134,6 +131,9 @@ export default function Transfers() {
                     </td>
                     <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
                       {transfer.bank_name || 'N/A'}
+                    </td>
+                    <td className="px-4 py-2 truncate text-gray-800 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis">
+                      {transfer.reason}
                     </td>
                   </tr>
                 ))}
