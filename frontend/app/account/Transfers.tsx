@@ -130,10 +130,10 @@ export default function Transfers() {
                     {transfer?.transfers?.[0]?.reference}
                   </td>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {transfer?.transfers?.[0]?.recipient?.details.recipient_account_number || 'N/A'}
+                    {transfer?.transfers?.[0]?.recipient?.details.account_number || 'N/A'}
                   </td>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {transfer?.transfers?.[0]?.recipient?.details.recipient_bank_name || 'N/A'}
+                    {transfer?.transfers?.[0]?.recipient?.details.bank_name || 'N/A'}
                   </td>
                 </tr>
               ))}

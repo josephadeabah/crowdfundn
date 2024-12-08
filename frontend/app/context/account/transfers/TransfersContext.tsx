@@ -13,8 +13,9 @@ interface Recipient {
   recipient_code: string;
   name: string;
   details: {
-    recipient_account_number: string;
-    recipient_bank_name: string;
+    account_name: string;
+    account_number: string;
+    bank_name: string;
   };
 }
 
