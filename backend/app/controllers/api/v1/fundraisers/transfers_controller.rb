@@ -226,7 +226,6 @@ module Api
         end
 
       # Fetch all transfers for the current user
-      # Fetch all transfers for the current user
       def fetch_user_transfers
         @fundraiser = @current_user  # current_user is the fundraiser (User)
       
@@ -243,17 +242,36 @@ module Api
           response = @paystack_service.fetch_transfer(subaccount.transfer_code)
       
           if response[:status]
-            { subaccount_id: subaccount.id, transfer_response: response }
+            # Extract and simplify the data for each transfer
+            simplified_data = response[:data].map do |transfer|
+              {
+                subaccount_id: subaccount.id,
+                transfer_code: transfer[:transfer_code],
+                reference: transfer[:reference],
+                amount: transfer[:amount],
+                reason: transfer[:reason],
+                recipient_name: transfer[:recipient][:name],
+                recipient_code: transfer[:recipient][:recipient_code],
+                recipient_account_number: transfer[:recipient][:details][:account_number],
+                recipient_bank_name: transfer[:recipient][:details][:bank_name],
+                status: transfer[:status],
+                currency: transfer[:currency],
+                created_at: transfer[:createdAt]
+              }
+            end
+            { subaccount_id: subaccount.id, transfers: simplified_data }
           else
             { subaccount_id: subaccount.id, error: "No transfers found" }
           end
         end
       
+        # Render the simplified response
         render json: { transfers: transfer_responses }, status: :ok
       rescue => e
         Rails.logger.error "Error fetching user transfers: #{e.message}"
         render json: { error: "An error occurred while fetching transfers: #{e.message}" }, status: :unprocessable_entity
       end
+      
       
       
       
