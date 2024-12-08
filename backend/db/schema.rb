@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_08_043921) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_08_105854) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -228,6 +228,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_08_043921) do
     t.datetime "updated_at", null: false
     t.string "recipient_code"
     t.string "status", default: "pending", null: false
+    t.string "reason"
     t.index ["campaign_id"], name: "index_transfers_on_campaign_id"
     t.index ["status"], name: "index_transfers_on_status"
     t.index ["user_id"], name: "index_transfers_on_user_id"

@@ -327,7 +327,7 @@ module Api
             created_at: transfer_data[:createdAt]
           }
 
-          campaign = Campaign.find_by(id: transfer_data.dig(:metadata, :campaign_id))
+          campaign = Subaccount.find_by(user_id: transfer_data.dig(:metadata, :campaign_id))
 
           # Create or update the transfer in the database
           transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer[:transfer_code])
