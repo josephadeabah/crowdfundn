@@ -112,8 +112,7 @@ export default function Transfers() {
               </tr>
             </thead>
             <tbody>
-              {transfers?.map((subaccount) => (
-                subaccount?.transfers?.map((transfer) => (
+              {transfers?.map((transfer) => (
                   <tr key={transfer.transfer_code}>
                     <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
                       {transfer.currency} {transfer.amount}
@@ -137,8 +136,7 @@ export default function Transfers() {
                       {transfer.bank_name || 'N/A'}
                     </td>
                   </tr>
-                ))
-              ))}
+                ))}
             </tbody>
           </table>
         </div>
