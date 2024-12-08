@@ -3,7 +3,6 @@ import { Button } from '../components/button/Button';
 import { HiShieldCheck } from 'react-icons/hi';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
 import { useTransferContext } from '../context/account/transfers/TransfersContext';
-import DonationsLoader from '../loaders/DonationsLoader';
 import ToastComponent from '../components/toast/Toast';
 
 
@@ -25,6 +24,19 @@ export default function Transfers() {
     type: 'error' as 'success' | 'error' | 'warning',
   });
 
+  const showToast = (
+    title: string,
+    description: string,
+    type: 'success' | 'error' | 'warning',
+  ) => {
+    setToast({
+      isOpen: true,
+      title,
+      description,
+      type,
+    });
+  };
+
   useEffect(() => {
     fetchCampaigns();
   }, [fetchCampaigns]);
@@ -38,12 +50,7 @@ export default function Transfers() {
       await createTransferRecipient(campaignId);
       fetchTransfers(); // Fetch updated transfers after initiating a new transfer
     } catch {
-      setToast({
-        isOpen: true,
-        title: 'Transfer Error',
-        description: String(error),
-        type: 'error',
-      });
+      showToast('Error', String(error), 'error');
     }
   };
 
