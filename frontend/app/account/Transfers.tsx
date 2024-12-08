@@ -12,14 +12,13 @@ export default function Transfers() {
     campaigns,
     fetchCampaigns,
     loading: isLoadingCampaigns,
-  } = useCampaignContext(); // Fetch campaigns data
+  } = useCampaignContext();
   const {
     fetchTransfers,
     createTransferRecipient,
     initiateTransfer,
     transfers,
     loading,
-    error,
     loadingCampaigns,
   } = useTransferContext();
 
