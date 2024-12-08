@@ -233,18 +233,13 @@ class PaystackService
   
   # Initiate a transfer
   def initiate_transfer(amount:, recipient:, reason:, currency:)
-    # Ensure sufficient balance
-    unless sufficient_balance?(amount)
-      raise StandardError, "Insufficient Paystack balance to initiate transfer."
-    end
-
     # Generate a unique transfer reference (UUID)
     transfer_reference = SecureRandom.uuid
 
     uri = URI("#{PAYSTACK_BASE_URL}/transfer")
     body = {
       source: "balance",
-      amount: amount * 100,
+      amount: amount,
       recipient: recipient,
       reason: reason,
       currency: currency,
