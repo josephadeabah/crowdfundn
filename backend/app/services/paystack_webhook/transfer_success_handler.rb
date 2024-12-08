@@ -43,7 +43,9 @@ class PaystackWebhook::TransferSuccessHandler
     campaign.update!(transferred_amount: campaign.transferred_amount + (@data[:amount]).to_f / 100)
 
     # Reset the current_amount to exclude transferred amount
-    campaign.update!(current_amount: campaign.donations.where(status: 'successful').sum(:net_amount) - campaign.transferred_amount)
+    new_current_amount = campaign.donations.where(status: 'successful').sum(:net_amount) - campaign.transferred_amount
+    campaign.update!(current_amount: [new_current_amount, 0].max)
+
 
     # Link transfer to subaccount
     subaccount = Subaccount.find_by(recipient_code: transfer.recipient_code)
