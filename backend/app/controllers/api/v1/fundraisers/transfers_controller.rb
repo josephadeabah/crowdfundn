@@ -70,7 +70,7 @@ module Api
         # Create a transfer recipient
         def create_transfer_recipient
           @fundraiser = User.find(params[:fundraiser_id])
-          subaccount = @fundraiser.subaccounts.first
+          subaccount = @fundraiser.subaccount.first
           campaign = Campaign.find(params[:campaign_id])
 
           raise "Fundraiser does not have a subaccount configured." unless subaccount
@@ -111,7 +111,7 @@ module Api
 
           @campaign = Campaign.find(params[:campaign_id])
           @fundraiser = @campaign.fundraiser
-          subaccount = @fundraiser.subaccounts.first
+          subaccount = @fundraiser.subaccount.first
 
           Rails.logger.debug "Currency: #{@campaign.currency.upcase}"
 
