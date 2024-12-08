@@ -327,11 +327,13 @@ module Api
             created_at: transfer_data[:createdAt]
           }
 
+          campaign = Campaign.find_by(id: transfer_data.dig(:metadata, :campaign_id))
+
           # Create or update the transfer in the database
           transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer[:transfer_code])
           transfer_record.update(
             user: current_user,  # Associate with the logged-in user
-            campaign: transfer_data[:campaign],  # Associate with the campaign
+            campaign: campaign,  # Associate with the campaign
             bank_name: transfer[:bank_name],
             account_number: transfer[:account_number],
             amount: transfer[:amount],
