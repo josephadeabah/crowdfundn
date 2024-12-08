@@ -16,7 +16,7 @@ class PaystackWebhook::TransferSuccessHandler
       completed_at: Time.current,
       recipient_code: @data.dig(:recipient, :recipient_code),
       currency: @data[:currency],
-      amount: (@data[:amount]).to_f / 100, # Convert amount to naira
+      amount: (@data[:amount]).to_f / 100, # Convert amount to cedis
       reason: @data[:reason],
       transfer_code: @data[:transfer_code],
       reference: @data[:reference],
@@ -39,8 +39,11 @@ class PaystackWebhook::TransferSuccessHandler
     # Get the associated campaign
     campaign = donation.campaign
 
-    # Reset the current_amount to zero before adding the new successful donation amount
-    campaign.update!(current_amount: 0)
+    # Add transferred amount to total transferred amount
+    campaign.update!(transferred_amount: campaign.transferred_amount + (@data[:amount]).to_f / 100)
+
+    # Reset the current_amount to exclude transferred amount
+    campaign.update!(current_amount: campaign.donations.where(status: 'successful').sum(:net_amount) - campaign.transferred_amount)
 
     # Link transfer to subaccount
     subaccount = Subaccount.find_by(recipient_code: transfer.recipient_code)
@@ -49,7 +52,7 @@ class PaystackWebhook::TransferSuccessHandler
         status: @data[:status], 
         completed_at: Time.current,
         recipient_code: @data.dig(:recipient, :recipient_code),
-        amount: 0, # Use gross amount, assuming it's the total value transferred
+        amount: @data[:amount], # Use gross amount, assuming it's the total value transferred
         transfer_code: @data[:transfer_code],
         reference: @data[:reference],
         account_number: @data.dig(:recipient, :details, :account_number),

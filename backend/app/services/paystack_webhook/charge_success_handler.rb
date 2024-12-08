@@ -41,8 +41,10 @@ class PaystackWebhook::ChargeSuccessHandler
       )
 
       campaign = donation.campaign
+
+      # Update the current_amount by excluding the transferred amount
       campaign.update!(
-        current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
+        current_amount: campaign.donations.where(status: 'successful').sum(:net_amount) - campaign.transferred_amount
       )
 
       # Send a confirmation email to the donor via Brevo

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_08_115505) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_08_211417) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -80,6 +80,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_08_115505) do
     t.boolean "schedule_promotion"
     t.string "promotion_frequency"
     t.integer "promotion_duration"
+    t.decimal "transferred_amount", default: "0.0", null: false
     t.index ["fundraiser_id"], name: "index_campaigns_on_fundraiser_id"
   end
 
