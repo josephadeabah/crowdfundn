@@ -147,7 +147,7 @@ export default function Transfers() {
                   </div>
                   <Button
                     onClick={() => handleRequestTransfer(campaign.id)}
-                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500 dark:hover:bg-red-700"
+                    className="px-4 py-2 bg-green-400 text-white rounded-full hover:bg-green-600 dark:hover:bg-green-700"
                     disabled={loadingCampaigns[campaign.id]}
                   >
                     {loadingCampaigns[campaign.id]
