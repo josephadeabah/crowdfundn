@@ -5,7 +5,6 @@ import { useCampaignContext } from '../context/account/campaign/CampaignsContext
 import { useTransferContext } from '../context/account/transfers/TransfersContext';
 import ToastComponent from '../components/toast/Toast';
 
-
 export default function Transfers() {
   const { campaigns, fetchCampaigns } = useCampaignContext(); // Fetch campaigns data
   const {
@@ -47,16 +46,18 @@ export default function Transfers() {
 
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
-      await createTransferRecipient(campaignId); 
+      await createTransferRecipient(campaignId);
       fetchTransfers(); // Fetch updated transfers after initiating a new transfer
     } catch (err) {
-      // If error is present in the context, show it, otherwise, show a generic error message
-      const errorMessage = error || (err instanceof Error ? err.message : 'An unknown error occurred');
+      // Handle error: Check if there is a specific error from the context or a generic one
+      const errorMessage = error
+        ? error
+        : err instanceof Error
+        ? err.message
+        : 'An unknown error occurred';
       showToast('Error', errorMessage, 'error');
     }
   };
-  
-
 
   return (
     <div className="h-full mb-20">
@@ -148,30 +149,30 @@ export default function Transfers() {
             </thead>
             <tbody>
               {transfers?.map((transfer) => (
-                  <tr key={transfer.id}>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.currency} {transfer.amount}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {new Date(transfer.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
-                      {transfer.status}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.reference}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.account_number || 'N/A'}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.bank_name || 'N/A'}
-                    </td>
-                    <td className="px-4 py-2 truncate text-gray-800 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis">
-                      {transfer.reason}
-                    </td>
-                  </tr>
-                ))}
+                <tr key={transfer.id}>
+                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                    {transfer.currency} {transfer.amount}
+                  </td>
+                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                    {new Date(transfer.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
+                    {transfer.status}
+                  </td>
+                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                    {transfer.reference}
+                  </td>
+                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                    {transfer.account_number || 'N/A'}
+                  </td>
+                  <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+                    {transfer.bank_name || 'N/A'}
+                  </td>
+                  <td className="px-4 py-2 truncate text-gray-800 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis">
+                    {transfer.reason}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
