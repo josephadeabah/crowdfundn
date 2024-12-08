@@ -28,6 +28,11 @@ interface TransferData {
   reversed_at: string;
 }
 
+interface CreateTransferRecipientResponseType {
+  message: string;
+  recipient_code: string;
+}
+
 interface TransferState {
   transfers: TransferData[];
   loading: boolean;
@@ -36,8 +41,8 @@ interface TransferState {
   fetchTransfers: () => void;
   createTransferRecipient: (
     campaignId: string | number,
-  ) => Promise<string | null>;
-  initiateTransfer: (campaignId: string | number) => Promise<string | null>;
+  ) => Promise<CreateTransferRecipientResponseType>;
+  initiateTransfer: (campaignId: string | number, recipientCode: string) => Promise<string | null>;
 }
 
 const TransferContext = createContext<TransferState | undefined>(undefined);
@@ -92,7 +97,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
   }, [user, token]);
 
   const initiateTransfer = useCallback(
-    async (campaignId: string | number): Promise<string | null> => {
+    async (campaignId: string | number, recipientCode: string): Promise<string | null> => {
       setLoadingCampaigns((prevState) => ({
         ...prevState,
         [campaignId]: true,
@@ -106,18 +111,12 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ campaign_id: campaignId }),
+            body: JSON.stringify({ campaign_id: campaignId, recipient_code: recipientCode }),
           },
         );
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.log(errorData);
-          setError(errorData.error);
-        }
-
         const data = await response.json();
-        return data.transfer_code || null;
+        return data;
       } catch (err: any) {
         setError(err || 'Error initiating transfer');
         return null;
@@ -132,7 +131,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const createTransferRecipient = useCallback(
-    async (campaignId: string | number): Promise<string | null> => {
+    async (campaignId: string | number): Promise<CreateTransferRecipientResponseType> => {
       setLoading(true);
       setLoadingCampaigns((prevState) => ({
         ...prevState,
@@ -160,19 +159,11 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const data = await response.json();
-        const recipientCode = data.recipient_code || null;
-
-        if (recipientCode) {
-          const transferCode = await initiateTransfer(campaignId);
-          if (!transferCode) {
-            setError(transferCode);
-          }
-        }
 
         return data;
       } catch (err: any) {
         setError(err || 'Error creating transfer recipient');
-        return null;
+        return { message: 'Error creating transfer recipient', recipient_code: '' };
       } finally {
         setLoading(false);
         setLoadingCampaigns((prevState) => ({

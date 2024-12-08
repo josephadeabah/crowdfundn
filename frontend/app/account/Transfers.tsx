@@ -10,6 +10,7 @@ export default function Transfers() {
   const {
     fetchTransfers,
     createTransferRecipient,
+    initiateTransfer,
     transfers,
     loading,
     error,
@@ -47,15 +48,29 @@ export default function Transfers() {
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
       const response = await createTransferRecipient(campaignId);
-      if (response) {
-        showToast('Success', 'Recipient created successfully', 'success');
-         fetchTransfers();
-      }else{
-        showToast('Error', 'You do not have enough funds for payout', 'error');
+    // Step 2: Check if recipient creation was successful
+      try {
+        if (response) {
+          // Step 3: Try to initiate the transfer
+          const initiateResponse = await initiateTransfer(campaignId, response.recipient_code);
+
+          if (initiateResponse) {
+            // Step 4: Show success toast if initiation was successful
+            showToast('Success', 'Transfer initiated successfully', 'success');
+            fetchTransfers(); // Refresh the transfers
+          } else {
+            // Step 5: Show error toast if initiation failed
+            showToast('Error', 'Failed to initiate transfer', 'error');
+          }
+        } else {
+          // Step 6: Handle the case where the recipient creation failed
+          showToast('Error', 'We could not process your request. Please try again.', 'error');
+        }
+      } catch (err) {
+        showToast('Error', String(err), 'error');
       }
-      
+
     } catch (err) {
-      console.log("Error from api", err);
       showToast('Error', String(err), 'error');
     }
   };
