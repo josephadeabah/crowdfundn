@@ -34,15 +34,15 @@ class PaystackWebhook::TransferSuccessHandler
     Rails.logger.info "Transfer #{transfer_reference} has been #{transfer.persisted? ? 'created' : 'updated'} successfully."
 
     # Update the current_amount of the associated campaign to 0
-    if transfer.campaign_id
-      campaign = Campaign.find_by(id: transfer.campaign_id)
-      if campaign
-        campaign.update!(current_amount: 0)
-        Rails.logger.info "Campaign #{campaign.id} current_amount reset to 0 after successful transfer."
-      else
-        Rails.logger.warn "Campaign not found for transfer #{transfer_reference}."
-      end
-    end
+    # if transfer.campaign_id
+    #   campaign = Campaign.find_by(id: transfer.campaign_id)
+    #   if campaign
+    #     campaign.update!(current_amount: 0)
+    #     Rails.logger.info "Campaign #{campaign.id} current_amount reset to 0 after successful transfer."
+    #   else
+    #     Rails.logger.warn "Campaign not found for transfer #{transfer_reference}."
+    #   end
+    # end
 
     # Link transfer to subaccount
     subaccount = Subaccount.find_by(recipient_code: transfer.recipient_code)
