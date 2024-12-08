@@ -71,7 +71,7 @@ interface TransferData {
 }
 
 interface TransferResponse {
-  subaccount_id: number
+  subaccount_id: number;
   transfers_response: {
     status: boolean;
     message: string;

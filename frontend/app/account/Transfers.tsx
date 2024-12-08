@@ -119,7 +119,9 @@ export default function Transfers() {
                     ${transfer?.transfers_response?.data?.amount}
                   </td>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {new Date(transfer?.transfers_response?.data?.createdAt).toLocaleDateString()}
+                    {new Date(
+                      transfer?.transfers_response?.data?.createdAt,
+                    ).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
                     {transfer?.transfers_response?.data?.status}
@@ -131,10 +133,12 @@ export default function Transfers() {
                     {transfer?.transfers_response?.data?.reference}
                   </td>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {transfer?.transfers_response.data.recipient?.details?.account_number || 'N/A'}
+                    {transfer?.transfers_response.data.recipient?.details
+                      ?.account_number || 'N/A'}
                   </td>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {transfer?.transfers_response?.data?.recipient?.details?.bank_name || 'N/A'}
+                    {transfer?.transfers_response?.data?.recipient?.details
+                      ?.bank_name || 'N/A'}
                   </td>
                 </tr>
               ))}
