@@ -142,7 +142,6 @@ module Api
         
           if response[:status]
             subaccount.update!(reference: response.dig(:data, :reference), transfer_code: response.dig(:data, :transfer_code), amount: total_donations.round)
-            @campaign.update!(current_amount: 0.0)
             render json: { transfer_code: response.dig(:data, :transfer_code), reference: response.dig(:data, :reference), message: "Transfer initiated successfully." }, status: :ok
           else
             render json: { error: "This is an error on our side. Please try again later or contact support." }, status: :unprocessable_entity
