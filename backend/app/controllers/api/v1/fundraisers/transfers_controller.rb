@@ -71,7 +71,7 @@ module Api
         def create_transfer_recipient
           @fundraiser = User.find(params[:fundraiser_id])
           subaccount = @fundraiser.subaccount.order(created_at: :desc).first
-          @campaign = Campaign.find(params[:campaign_id])
+          campaign = Campaign.find(params[:campaign_id])
         
           raise "Fundraiser does not have a subaccount configured." unless subaccount
         
@@ -89,7 +89,7 @@ module Api
             bank_code: subaccount.settlement_bank,      # Use the settlement bank from the subaccount
             currency: campaign.currency.upcase,                            # You may use the currency from the campaign if necessary
             description: "Transfer recipient for campaign payouts",
-            metadata: { user_id: @fundraiser.id, campaign_id: @campaign.id }
+            metadata: { user_id: @fundraiser.id, campaign_id: @fundraiser.campaign_id }
           )
         
           if response[:status]
