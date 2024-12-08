@@ -53,7 +53,7 @@ class PaystackWebhook::TransferSuccessHandler
         transfer_code: @data[:transfer_code],
         reference: @data[:reference],
         account_number: @data.dig(:recipient, :details, :account_number),
-        bank_name: @data.dig(:recipient, :details, :bank_name)
+        business_name: @data.dig(:recipient, :details, :bank_name)
       )
       Rails.logger.info "Subaccount #{subaccount.id} updated with transfer reference #{transfer_reference}."
     else
