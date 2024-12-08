@@ -226,75 +226,155 @@ module Api
         end
 
       # Fetch all transfers for the current user
-      def fetch_user_transfers
-        @fundraiser = @current_user  # current_user is the fundraiser (User)
+      # def fetch_user_transfers
+      #   @fundraiser = @current_user  # current_user is the fundraiser (User)
         
-        # Fetch all subaccounts for the current user
-        subaccounts = @fundraiser.subaccount
+      #   # Fetch all subaccounts for the current user
+      #   subaccounts = @fundraiser.subaccount
         
-        if subaccounts.empty?
-          render json: { error: "No subaccounts found for this user" }, status: :not_found
-          return
-        end
+      #   if subaccounts.empty?
+      #     render json: { error: "No subaccounts found for this user" }, status: :not_found
+      #     return
+      #   end
         
-        # Assuming you want to fetch transfers for each subaccount
-        transfer_responses = subaccounts.map do |subaccount|
-          response = @paystack_service.fetch_transfer(subaccount.transfer_code)
+      #   # Assuming you want to fetch transfers for each subaccount
+      #   transfer_responses = subaccounts.map do |subaccount|
+      #     response = @paystack_service.fetch_transfer(subaccount.transfer_code)
       
-          if response[:status]
-            # Log the response for debugging
-            Rails.logger.debug("API Response: #{response.inspect}")
+      #     if response[:status]
+      #       # Log the response for debugging
+      #       Rails.logger.debug("API Response: #{response.inspect}")
             
-            simplified_data = if response[:data].is_a?(Array)
-                                response[:data].map do |transfer|
-                                  {
-                                    subaccount_id: subaccount.id,
-                                    transfer_code: transfer[:transfer_code],
-                                    reference: transfer[:reference],
-                                    amount: transfer[:amount],
-                                    reason: transfer[:reason],
-                                    account_name: transfer[:recipient][:name],
-                                    recipient_code: transfer[:recipient][:recipient_code],
-                                    account_number: transfer[:recipient][:details][:account_number],
-                                    bank_name: transfer[:recipient][:details][:bank_name],
-                                    status: transfer[:status],
-                                    currency: transfer[:currency],
-                                    created_at: transfer[:createdAt]
-                                  }
-                                end
-                              elsif response[:data].is_a?(Hash)
-                                # Handle the case where response[:data] is a single transfer object
-                                transfer = response[:data]
-                                [{
-                                  subaccount_id: subaccount.id,
-                                  transfer_code: transfer[:transfer_code],
-                                  reference: transfer[:reference],
-                                  amount: transfer[:amount],
-                                  reason: transfer[:reason],
-                                  account_name: transfer[:recipient][:name],
-                                  recipient_code: transfer[:recipient][:recipient_code],
-                                  account_number: transfer[:recipient][:details][:account_number],
-                                  bank_name: transfer[:recipient][:details][:bank_name],
-                                  status: transfer[:status],
-                                  currency: transfer[:currency],
-                                  created_at: transfer[:createdAt]
-                                }]
-                              else
-                                [] # Empty array if neither an array nor a hash
-                              end
+      #       simplified_data = if response[:data].is_a?(Array)
+      #                           response[:data].map do |transfer|
+      #                             {
+      #                               subaccount_id: subaccount.id,
+      #                               transfer_code: transfer[:transfer_code],
+      #                               reference: transfer[:reference],
+      #                               amount: transfer[:amount],
+      #                               reason: transfer[:reason],
+      #                               account_name: transfer[:recipient][:name],
+      #                               recipient_code: transfer[:recipient][:recipient_code],
+      #                               account_number: transfer[:recipient][:details][:account_number],
+      #                               bank_name: transfer[:recipient][:details][:bank_name],
+      #                               status: transfer[:status],
+      #                               currency: transfer[:currency],
+      #                               created_at: transfer[:createdAt]
+      #                             }
+      #                           end
+      #                         elsif response[:data].is_a?(Hash)
+      #                           # Handle the case where response[:data] is a single transfer object
+      #                           transfer = response[:data]
+      #                           [{
+      #                             subaccount_id: subaccount.id,
+      #                             transfer_code: transfer[:transfer_code],
+      #                             reference: transfer[:reference],
+      #                             amount: transfer[:amount],
+      #                             reason: transfer[:reason],
+      #                             account_name: transfer[:recipient][:name],
+      #                             recipient_code: transfer[:recipient][:recipient_code],
+      #                             account_number: transfer[:recipient][:details][:account_number],
+      #                             bank_name: transfer[:recipient][:details][:bank_name],
+      #                             status: transfer[:status],
+      #                             currency: transfer[:currency],
+      #                             created_at: transfer[:createdAt]
+      #                           }]
+      #                         else
+      #                           [] # Empty array if neither an array nor a hash
+      #                         end
       
-            { subaccount_id: subaccount.id, transfers: simplified_data }
+      #       { subaccount_id: subaccount.id, transfers: simplified_data }
+      #     else
+      #       { subaccount_id: subaccount.id, error: "No transfers found" }
+      #     end
+      #   end
+        
+      #   # Render the simplified response
+      #   render json: { transfers: transfer_responses }, status: :ok
+      # rescue => e
+      #   Rails.logger.error "Error fetching user transfers: #{e.message}"
+      #   render json: { error: "An error occurred while fetching transfers: #{e.message}" }, status: :unprocessable_entity
+      # end
+
+       # Fetch transfers for the logged-in user
+        def fetch_user_transfers
+          @fundraiser = @current_user
+
+          # Query the database for transfers belonging to the current user
+          @transfers = @fundraiser.transfers.includes(:campaign).order(created_at: :desc)
+
+          if @transfers.empty?
+            render json: { error: "No transfers found for this user" }, status: :not_found
           else
-            { subaccount_id: subaccount.id, error: "No transfers found" }
+            render json: @transfers, status: :ok
           end
         end
-        
-        # Render the simplified response
-        render json: { transfers: transfer_responses }, status: :ok
-      rescue => e
-        Rails.logger.error "Error fetching user transfers: #{e.message}"
-        render json: { error: "An error occurred while fetching transfers: #{e.message}" }, status: :unprocessable_entity
-      end
+
+        # Save a transfer from Paystack to the database
+        def save_transfer_from_paystack(transfer_data)
+          # Here we extract the relevant transfer data from the Paystack API response
+          transfer = {
+            transfer_code: transfer_data[:transfer_code],
+            reference: transfer_data[:reference],
+            amount: transfer_data[:amount],
+            reason: transfer_data[:reason],
+            account_name: transfer_data[:recipient][:name],
+            recipient_code: transfer_data[:recipient][:recipient_code],
+            account_number: transfer_data[:recipient][:details][:account_number],
+            bank_name: transfer_data[:recipient][:details][:bank_name],
+            status: transfer_data[:status],
+            currency: transfer_data[:currency],
+            created_at: transfer_data[:createdAt]
+          }
+
+          # Create or update the transfer in the database
+          transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer[:transfer_code])
+          transfer_record.update(
+            user: current_user,  # Associate with the logged-in user
+            campaign: transfer_data[:campaign],  # Associate with the campaign
+            bank_name: transfer[:bank_name],
+            account_number: transfer[:account_number],
+            amount: transfer[:amount],
+            currency: transfer[:currency],
+            status: transfer[:status],
+            reason: transfer[:reason],
+            recipient_code: transfer[:recipient_code],
+            failure_reason: transfer[:failure_reason],
+            completed_at: transfer[:completed_at],
+            reversed_at: transfer[:reversed_at],
+            reference: transfer[:reference]
+          )
+
+          if transfer_record.save
+            render json: { message: "Transfer saved successfully" }, status: :ok
+          else
+            render json: { error: "Failed to save transfer" }, status: :unprocessable_entity
+          end
+        end
+
+        # Fetch transfers from Paystack for the logged-in user
+        def fetch_transfers_from_paystack
+          @fundraiser = current_user
+          subaccounts = @fundraiser.subaccount
+
+          # Fetch transfers for each subaccount
+          subaccounts.each do |subaccount|
+            # Assuming `@paystack_service` is a service class that interacts with the Paystack API
+            response = @paystack_service.fetch_transfers(subaccount.transfer_code)
+            
+            if response[:status] && response[:data].present?
+              # Loop through each transfer and save it to the database
+              response[:data].each do |transfer_data|
+                save_transfer_from_paystack(transfer_data)
+              end
+            else
+              render json: { error: "No transfers found or an error occurred" }, status: :unprocessable_entity
+              return
+            end
+          end
+
+          render json: { message: "Transfers fetched and saved successfully" }, status: :ok
+        end
       
       
       
