@@ -20,7 +20,7 @@ export default function Transfers() {
     isOpen: false,
     title: '',
     description: '',
-    type: 'error' as 'success' | 'error' | 'warning',
+    type: 'success' as 'success' | 'error' | 'warning',
   });
 
   const showToast = (
@@ -100,7 +100,7 @@ export default function Transfers() {
                     {campaign.title}
                   </h3>
                   <p className="text-gray-500 dark:text-neutral-400">
-                    Raised: ${campaign.current_amount} / ${campaign.goal_amount}
+                    Raised: {campaign.currency.toUpperCase()}{campaign.current_amount} / {campaign.currency.toUpperCase()}{campaign.goal_amount}
                   </p>
                 </div>
                 <Button
