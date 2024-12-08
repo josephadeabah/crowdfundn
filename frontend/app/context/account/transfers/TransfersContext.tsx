@@ -9,8 +9,8 @@ import React, {
 import { useAuth } from '../../auth/AuthContext';
 
 interface TransferData {
-  id: number
-  user_id: number
+  id: number;
+  user_id: number;
   campaign_id: number | null;
   amount: number;
   created_at: string;
@@ -109,12 +109,12 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
             body: JSON.stringify({ campaign_id: campaignId }),
           },
         );
-  
+
         if (!response.ok) {
           const errorData = await response.json();
           setError(errorData.error || 'Failed to initiate transfer');
         }
-  
+
         const data = await response.json();
         return data.transfer_code || null;
       } catch (err: any) {
@@ -128,7 +128,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       }
     },
     [],
-  );  
+  );
 
   const createTransferRecipient = useCallback(
     async (campaignId: string | number): Promise<string | null> => {
@@ -148,22 +148,22 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
             }),
           },
         );
-  
+
         if (!response.ok) {
           const errorData = await response.json();
           setError(errorData.error || 'Failed to create transfer recipient');
         }
-  
+
         const data = await response.json();
         const recipientCode = data.recipient_code || null;
-  
+
         if (recipientCode) {
           const transferCode = await initiateTransfer(campaignId);
           if (!transferCode) {
             setError('Failed to initiate transfer');
           }
         }
-  
+
         return recipientCode;
       } catch (err: any) {
         setError(err?.error || 'Error creating transfer recipient');
@@ -173,7 +173,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       }
     },
     [user, initiateTransfer],
-  );  
+  );
 
   const contextValue = useMemo(
     () => ({
@@ -185,7 +185,15 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       createTransferRecipient,
       initiateTransfer,
     }),
-    [transfers, loading, loadingCampaigns, error, fetchTransfers, createTransferRecipient, initiateTransfer],
+    [
+      transfers,
+      loading,
+      loadingCampaigns,
+      error,
+      fetchTransfers,
+      createTransferRecipient,
+      initiateTransfer,
+    ],
   );
 
   return (

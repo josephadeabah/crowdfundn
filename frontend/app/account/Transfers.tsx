@@ -53,8 +53,8 @@ export default function Transfers() {
       const errorMessage = error
         ? error
         : err instanceof Error
-        ? err.message
-        : 'An unknown error occurred';
+          ? err.message
+          : 'An unknown error occurred';
       showToast('Error', errorMessage, 'error');
     }
   };
