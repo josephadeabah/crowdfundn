@@ -110,9 +110,10 @@ module Api
           @campaign = Campaign.find(params[:campaign_id])
           @fundraiser = @campaign.fundraiser
           subaccount = @fundraiser.subaccount.order(created_at: :desc).first
+          recipient_code = params[:recipient_code]
         
           raise "You do not have a account number configured." unless subaccount
-          raise "Recipient code not found for this fundraiser" unless subaccount.recipient_code
+          raise "Recipient code not found for this fundraiser" unless recipient_code.present?
         
           total_donations = @campaign.current_amount
           raise "You have no funds available for payout." if total_donations <= 0.0
@@ -134,7 +135,7 @@ module Api
         
           response = @paystack_service.initiate_transfer(
             amount: total_donations.round,
-            recipient: subaccount.recipient_code,
+            recipient: recipient_code,
             reason: "Payout for campaign: #{@campaign.title}",
             currency: @campaign.currency.upcase
           )
