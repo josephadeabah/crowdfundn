@@ -4,7 +4,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 const TransferLoader = () => {
   return (
-    <>
+    <table>
       <thead className="bg-gray-50 dark:bg-neutral-700">
         <tr>
           <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
@@ -59,7 +59,7 @@ const TransferLoader = () => {
             </tr>
           ))}
       </tbody>
-    </>
+    </table>
   );
 };
 
