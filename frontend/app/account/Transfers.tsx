@@ -113,7 +113,7 @@ export default function Transfers() {
             </thead>
             <tbody>
               {transfers?.map((transfer) => (
-                  <tr key={transfer.transfer_code}>
+                  <tr key={transfer.id}>
                     <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
                       {transfer.currency} {transfer.amount}
                     </td>

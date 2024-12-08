@@ -9,27 +9,27 @@ import React, {
 import { useAuth } from '../../auth/AuthContext';
 
 interface TransferData {
+  id: number
+  user_id: number
+  campaign_id: number | null;
   amount: number;
   created_at: string;
   currency: string;
   reason: string;
   status: string;
+  failure_reason: string;
   transfer_code: string;
   reference: string;
   account_name: string;
   account_number: string;
   bank_name: string;
   recipient_code: string;
-  name: string;
-}
-
-interface TransferResponse {
-  subaccount_id: number;
-  transfers: TransferData[]; // Simplified to a flat structure
+  completed_at: string;
+  reversed_at: string;
 }
 
 interface TransferState {
-  transfers: TransferResponse[];
+  transfers: TransferData[];
   loading: boolean;
   loadingCampaigns: Record<string | number, boolean>;
   error: string | null;
@@ -43,7 +43,7 @@ interface TransferState {
 const TransferContext = createContext<TransferState | undefined>(undefined);
 
 export const TransferProvider = ({ children }: { children: ReactNode }) => {
-  const [transfers, setTransfers] = useState<TransferResponse[]>([]);
+  const [transfers, setTransfers] = useState<TransferData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingCampaigns, setLoadingCampaigns] = useState<
     Record<string | number, boolean>
