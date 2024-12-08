@@ -75,19 +75,17 @@ module Api
         
           raise "Fundraiser does not have a subaccount configured." unless subaccount
         
-          # Check if a recipient code already exists
           if subaccount.recipient_code.present?
             render json: { recipient_code: subaccount.recipient_code, message: "Recipient code already exists." }, status: :ok
             return
           end
         
-          # Here, we will utilize the recently created subaccount for the recipient
           response = @paystack_service.create_transfer_recipient(
-            type: subaccount.subaccount_type,           # Use the subaccount type from the subaccount
-            name: subaccount.business_name,             # Use the business name from the subaccount
-            account_number: subaccount.account_number,  # Use the account number from the subaccount
-            bank_code: subaccount.settlement_bank,      # Use the settlement bank from the subaccount
-            currency: campaign.currency.upcase,                            # You may use the currency from the campaign if necessary
+            type: subaccount.subaccount_type,
+            name: subaccount.business_name,
+            account_number: subaccount.account_number,
+            bank_code: subaccount.settlement_bank,
+            currency: campaign.currency.upcase,
             description: "Transfer recipient for campaign payouts",
             metadata: { user_id: @fundraiser.id, campaign_id: @fundraiser.campaign_id }
           )
@@ -103,33 +101,28 @@ module Api
         rescue => e
           Rails.logger.error "Error creating transfer recipient: #{e.message}"
           render json: { error: e.message }, status: :unprocessable_entity
-        end               
+        end                     
 
         # Initialize a transfer
         def initialize_transfer
-          # Check that necessary parameters are present
           raise "Campaign ID is missing" unless params[:campaign_id]
-
+        
           @campaign = Campaign.find(params[:campaign_id])
           @fundraiser = @campaign.fundraiser
           subaccount = @fundraiser.subaccount.order(created_at: :desc).first
-
-          Rails.logger.debug "Currency: #{@campaign.currency.upcase}"
-
+        
           raise "You do not have a account number configured." unless subaccount
           raise "Recipient code not found for this fundraiser" unless subaccount.recipient_code
-
+        
           total_donations = @campaign.current_amount
           raise "You have no funds available for payout." if total_donations <= 0.0
-
-          # Check if there is sufficient balance
+        
           balance_response = @paystack_service.check_balance
-
+        
           if balance_response[:status]
-
-            currency = @campaign.currency.upcase 
+            currency = @campaign.currency.upcase
             available_balance = balance_response[:data].find { |b| b[:currency] == currency }&.dig(:balance).to_f
-
+        
             if available_balance < total_donations
               render json: { error: "Sorry, this is an issue on our side. We'll resolve it soon. Kindly try again later" }, status: :unprocessable_entity
               return
@@ -138,19 +131,17 @@ module Api
             render json: { error: "We cannot perform your transaction at this time. Please try again later." }, status: :unprocessable_entity
             return
           end
-
-
-          # Proceed with the transfer
+        
           response = @paystack_service.initiate_transfer(
             amount: total_donations.round,
             recipient: subaccount.recipient_code,
             reason: "Payout for campaign: #{@campaign.title}",
             currency: @campaign.currency.upcase
           )
-
+        
           if response[:status]
             subaccount.update!(reference: response.dig(:data, :reference), transfer_code: response.dig(:data, :transfer_code), amount: total_donations.round)
-            @campaign.update!(current_amount: 0.0)  # Reset the current amount to zero
+            @campaign.update!(current_amount: 0.0)
             render json: { transfer_code: response.dig(:data, :transfer_code), reference: response.dig(:data, :reference), message: "Transfer initiated successfully." }, status: :ok
           else
             render json: { error: "This is an error on our side." }, status: :unprocessable_entity
@@ -158,7 +149,7 @@ module Api
         rescue => e
           Rails.logger.error "Error initiating transfer: #{e.message}"
           render json: { error: e.message }, status: :unprocessable_entity
-        end        
+        end               
 
         # Bulk create transfer recipients
         def bulk_create_transfer_recipients
