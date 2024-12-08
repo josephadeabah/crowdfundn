@@ -45,22 +45,12 @@ export default function Transfers() {
   }, [fetchTransfers]);
 
   const handleRequestTransfer = async (campaignId: string | number) => {
-    const result: any = await createTransferRecipient(campaignId);
-
-    // If result contains an error, show the toast
-    if (
-      (typeof result === 'object' && result instanceof Error) ||
-      result?.error
-    ) {
-      const errorMessage =
-        error ||
-        (result instanceof Error
-          ? result.message
-          : 'An unknown error occurred');
-      console.log('Error Message:', errorMessage);
-      showToast('Error', errorMessage, 'error');
-    } else {
+    try {
+      await createTransferRecipient(campaignId);
       fetchTransfers(); // Fetch updated transfers after initiating a new transfer
+    } catch (err) {
+      console.log("Error from api", err);
+      showToast('Error', "You do not have enough funds for payout", 'error');
     }
   };
 
@@ -105,10 +95,7 @@ export default function Transfers() {
                     {campaign.title}
                   </h3>
                   <p className="text-gray-500 dark:text-neutral-400">
-                    Raised: {campaign.currency.toUpperCase()}
-                    {campaign.current_amount} /{' '}
-                    {campaign.currency.toUpperCase()}
-                    {campaign.goal_amount}
+                    Raised: {campaign.currency.toUpperCase()}{campaign.current_amount} / {campaign.currency.toUpperCase()}{campaign.goal_amount}
                   </p>
                 </div>
                 <Button
