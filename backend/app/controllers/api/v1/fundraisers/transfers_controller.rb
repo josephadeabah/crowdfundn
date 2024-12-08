@@ -70,7 +70,7 @@ module Api
         # Create a transfer recipient
         def create_transfer_recipient
           @fundraiser = User.find(params[:fundraiser_id])
-          subaccount = @fundraiser.subaccount
+          subaccount = @fundraiser.subaccounts.first
           campaign = Campaign.find(params[:campaign_id])
 
           raise "Fundraiser does not have a subaccount configured." unless subaccount
