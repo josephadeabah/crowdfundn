@@ -114,7 +114,7 @@ export default function Transfers() {
             </thead>
             <tbody>
               {transfers?.map((transfer) => (
-                <tr key={transfer.transfers_response.data.id}>
+                <tr key={transfer.subaccount_id}>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
                     ${transfer.transfers_response.data.amount}
                   </td>
