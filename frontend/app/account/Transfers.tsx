@@ -47,33 +47,38 @@ export default function Transfers() {
 
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
+      // Step 1: Create the transfer recipient
       const response = await createTransferRecipient(campaignId);
-    // Step 2: Check if recipient creation was successful
-      try {
-        if (response) {
-          // Step 3: Try to initiate the transfer
-          const initiateResponse = await initiateTransfer(campaignId, response.recipient_code);
-
-          if (initiateResponse) {
-            // Step 4: Show success toast if initiation was successful
-            showToast('Success', 'Transfer initiated successfully', 'success');
-            fetchTransfers(); // Refresh the transfers
+  
+      // Step 2: Check if recipient creation was successful
+      if (response && response.recipient_code) {
+        // Step 3: If successful, initiate the transfer
+        const initiateResponse = await initiateTransfer(campaignId, response.recipient_code);
+  
+        if (typeof initiateResponse === 'object' && initiateResponse !== null) {
+          // Check if the response from initiateTransfer contains an error
+          if (initiateResponse && typeof initiateResponse === 'object' && 'error' in initiateResponse) {
+            // Show error toast if there's an error from the backend
+            showToast('Error', (initiateResponse as { error: string }).error, 'error');
           } else {
-            // Step 5: Show error toast if initiation failed
-            showToast('Error', 'Failed to initiate transfer', 'error');
+            // Success toast if transfer initiation is successful
+            showToast('Success', 'Transfer initiated successfully', 'success');
+            fetchTransfers(); // Refresh the transfers list
           }
         } else {
-          // Step 6: Handle the case where the recipient creation failed
-          showToast('Error', 'We could not process your request. Please try again.', 'error');
+          // Error toast if the initiateTransfer response is invalid
+          showToast('Error', 'Failed to initiate transfer', 'error');
         }
-      } catch (err) {
-        showToast('Error', String(err), 'error');
+      } else {
+        // Error toast if creating transfer recipient fails
+        showToast('Error', 'Failed to create transfer recipient', 'error');
       }
-
     } catch (err) {
+      // Catch any unexpected errors and show an error toast
       showToast('Error', String(err), 'error');
     }
   };
+  
 
   return (
     <>
