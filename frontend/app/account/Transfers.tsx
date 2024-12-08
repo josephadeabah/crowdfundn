@@ -85,7 +85,6 @@ export default function Transfers() {
           Transaction History
         </h3>
         <div className="overflow-x-auto">
-          {' ' /* This makes the table scrollable horizontally */}
           <table className="min-w-full bg-white dark:bg-neutral-800 rounded-lg">
             <thead className="bg-gray-50 dark:bg-neutral-700">
               <tr>
@@ -116,46 +115,32 @@ export default function Transfers() {
               {transfers?.map((transfer) => (
                 <tr key={transfer.subaccount_id}>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    ${transfer?.transfer_response?.data?.amount}
+                    ${transfer?.transfers?.[0]?.amount}
                   </td>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {new Date(
-                      transfer?.transfer_response?.data?.createdAt,
-                    ).toLocaleDateString()}
+                    {new Date(transfer?.transfers?.[0]?.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
-                    {transfer?.transfer_response?.data?.status}
+                    {transfer?.transfers?.[0]?.status}
                   </td>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {transfer?.transfer_response?.data?.reason}
+                    {transfer?.transfers?.[0]?.reason}
                   </td>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {transfer?.transfer_response?.data?.reference}
+                    {transfer?.transfers?.[0]?.reference}
                   </td>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {transfer?.transfer_response.data.recipient?.details
-                      ?.account_number || 'N/A'}
+                    {transfer?.transfers?.[0]?.recipient?.details.account_number || 'N/A'}
                   </td>
                   <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                    {transfer?.transfer_response?.data?.recipient?.details
-                      ?.bank_name || 'N/A'}
+                    {transfer?.transfers?.[0]?.recipient?.details.bank_name || 'N/A'}
                   </td>
                 </tr>
               ))}
-              {transfers?.length === 0 && (
-                <tr>
-                  <td className="px-4 py-2 text-gray-500 dark:text-neutral-400 text-center">
-                    No transfers found.
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
       </div>
-
-      {/* Space Below the Page */}
-      <div className="h-20"></div>
     </div>
   );
 }

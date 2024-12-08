@@ -8,75 +8,30 @@ import React, {
 } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 
-// Define the detailed interfaces for the transfer data structure
-interface TransferDetails {
-  authorization_code: string | null;
-  account_number: string;
-  account_name: string | null;
-  bank_code: string;
-  bank_name: string;
-}
-
-interface Metadata {
-  user_id: number;
-}
-
+// Define simplified interfaces for the transfer data structure
 interface Recipient {
-  active: boolean;
-  createdAt: string;
-  currency: string;
-  description: string;
-  domain: string;
-  email: string;
-  id: number;
-  integration: number;
-  metadata: Metadata;
-  name: string;
   recipient_code: string;
-  type: string;
-  updatedAt: string;
-  is_deleted: boolean;
-  isDeleted: boolean;
-  details: TransferDetails;
-}
-
-interface Session {
-  provider: string | null;
-  id: string | null;
+  name: string;
+  details: {
+    account_number: string;
+    bank_name: string;
+  };
 }
 
 interface TransferData {
   amount: number;
   createdAt: string;
   currency: string;
-  domain: string;
-  failures: string | null;
-  id: number;
-  integration: number;
   reason: string;
-  reference: string;
-  source: string;
-  source_details: string | null;
   status: string;
-  titan_code: string | null;
   transfer_code: string;
-  request: number;
-  transferred_at: string | null;
-  updatedAt: string;
+  reference: string;
   recipient: Recipient;
-  session: Session;
-  fee_charged: number;
-  fees_breakdown: string | null;
-  gateway_response: string | null;
 }
 
 interface TransferResponse {
   subaccount_id: number;
-  transfer_response: {
-    status: boolean;
-    message: string;
-    data: TransferData;
-  };
+  transfers: TransferData[]; // Simplified to a flat structure
 }
 
 interface TransferState {
@@ -131,7 +86,6 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       const responseData = await response.json();
 
       if (responseData && responseData.transfers) {
-        console.log(responseData.transfers); // Verify the structure of the response
         setTransfers(responseData.transfers);
       } else {
         setError('No transfer data found');
@@ -143,7 +97,6 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user, token]);
 
-  // Memoize initiateTransfer using useCallback
   const initiateTransfer = useCallback(
     async (campaignId: string | number): Promise<string | null> => {
       setLoadingCampaigns((prevState) => ({
@@ -183,7 +136,6 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
     [],
   );
 
-  // Memoize createTransferRecipient using useCallback
   const createTransferRecipient = useCallback(
     async (campaignId: string | number): Promise<string | null> => {
       setLoading(true);
@@ -214,7 +166,6 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         const recipientCode = data.recipient_code || null;
 
         if (recipientCode) {
-          // Immediately initiate the transfer after successfully creating the recipient
           const transferCode = await initiateTransfer(campaignId);
           if (!transferCode) {
             setError('Failed to initiate transfer after creating recipient');
@@ -229,7 +180,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [user, initiateTransfer], // Use user and initiateTransfer as dependencies
+    [user, initiateTransfer],
   );
 
   const contextValue = useMemo(
@@ -242,15 +193,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       createTransferRecipient,
       initiateTransfer,
     }),
-    [
-      transfers,
-      loading,
-      loadingCampaigns,
-      error,
-      fetchTransfers,
-      createTransferRecipient,
-      initiateTransfer,
-    ],
+    [transfers, loading, loadingCampaigns, error, fetchTransfers, createTransferRecipient, initiateTransfer],
   );
 
   return (
