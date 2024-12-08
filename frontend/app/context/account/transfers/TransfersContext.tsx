@@ -120,26 +120,8 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       const responseData = await response.json();
 
       if (responseData && responseData.transfers) {
-        setTransfers((prevTransfers) => {
-          // Ensure the new transfer data is not already in the state
-          const newTransfers = Array.isArray(responseData.transfers)
-            ? responseData.transfers
-            : [responseData.transfers]; // Ensure it's always an array
-
-          // Collect existing transfer IDs
-          const existingTransfers = prevTransfers.map(
-            (transfer) => transfer.id,
-          );
-
-          // Filter out the new transfers that are already in the state
-          const filteredTransfers = newTransfers.filter(
-            (transfer: { transfer_response: { data: { id: number } } }) =>
-              !existingTransfers.includes(transfer.transfer_response.data.id),
-          );
-
-          // Return the updated transfers list
-          return [...prevTransfers, ...filteredTransfers];
-        });
+        // Directly update the state with the data
+        setTransfers(responseData.transfers);
       } else {
         setError('No transfer data found');
       }
@@ -148,7 +130,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [user, token]); // Include token in dependencies if it may change
+  }, [user, token]);
 
   // Memoize initiateTransfer using useCallback
   const initiateTransfer = useCallback(

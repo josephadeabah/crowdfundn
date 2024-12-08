@@ -25,7 +25,7 @@ export default function Transfers() {
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
       await createTransferRecipient(campaignId);
-      fetchTransfers();
+      fetchTransfers(); // Fetch updated transfers after initiating a new transfer
     } catch (error) {
       console.error('Error requesting transfer:', error);
     }
@@ -85,14 +85,11 @@ export default function Transfers() {
           Transaction History
         </h3>
         <div className="overflow-x-auto">
-          {' '}
-          {/* This makes the table scrollable horizontally */}
+          {' ' /* This makes the table scrollable horizontally */}
           <table className="min-w-full bg-white dark:bg-neutral-800 rounded-lg">
             <thead className="bg-gray-50 dark:bg-neutral-700">
               <tr>
                 <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  {' '}
-                  {/* Prevent text wrapping */}
                   Amount
                 </th>
                 <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
