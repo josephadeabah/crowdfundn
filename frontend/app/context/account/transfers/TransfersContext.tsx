@@ -169,7 +169,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
           }
         }
 
-        return recipientCode;
+        return data;
       } catch (err: any) {
         setError(err || 'Error creating transfer recipient');
         return null;
