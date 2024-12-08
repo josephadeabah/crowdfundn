@@ -47,12 +47,15 @@ export default function Transfers() {
 
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
-      await createTransferRecipient(campaignId);
+      await createTransferRecipient(campaignId); 
       fetchTransfers(); // Fetch updated transfers after initiating a new transfer
-    } catch {
-      showToast('Error', String(error), 'error');
+    } catch (err) {
+      // If error is present in the context, show it, otherwise, show a generic error message
+      const errorMessage = error || (err instanceof Error ? err.message : 'An unknown error occurred');
+      showToast('Error', errorMessage, 'error');
     }
   };
+  
 
 
   return (
