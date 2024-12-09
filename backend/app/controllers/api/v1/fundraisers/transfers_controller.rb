@@ -132,7 +132,17 @@ module Api
             render json: { error: "We cannot perform your transaction at this time. Please try again later." }, status: :unprocessable_entity
             return
           end
-        
+
+          transfer = Transfer.find_or_initialize_by(campaign_id: @campaign.id)
+          raise "Campaign not found for transfer #{transfer_reference}" unless campaign
+              
+          transfer_amount = transfer.amount
+      
+          # Ensure transfer does not exceed current amount
+          if campaign.current_amount < transfer_amount
+            raise "Insufficient funds for transfer"
+          end
+      
           response = @paystack_service.initiate_transfer(
             amount: total_donations.round,
             recipient: recipient_code,
@@ -141,6 +151,10 @@ module Api
           )
         
           if response[:status]
+          campaign.update!(
+            transferred_amount: campaign.transferred_amount + transfer_amount,
+            current_amount: campaign.current_amount - transfer_amount
+          )
             subaccount.update!(reference: response.dig(:data, :reference), transfer_code: response.dig(:data, :transfer_code), amount: total_donations.round)
             render json: { transfer_code: response.dig(:data, :transfer_code), reference: response.dig(:data, :reference), message: "Transfer initiated successfully." }, status: :ok
           else

@@ -24,16 +24,6 @@ class PaystackWebhook::TransferSuccessHandler
     transfer.campaign_id = @data.dig(:recipient, :metadata, :campaign_id)
     transfer.save!
   
-    campaign = Campaign.find_by(id: transfer.campaign_id)
-    raise "Campaign not found for transfer #{transfer_reference}" unless campaign
-  
-    # Update transferred amount
-    campaign.update!(transferred_amount: campaign.transferred_amount + transfer.amount)
-  
-    # Safely recalculate current amount
-    total_successful_donations = campaign.donations.where(status: 'successful').sum(:net_amount)
-    new_current_amount = [total_successful_donations - campaign.transferred_amount, 0].max
-    campaign.update!(current_amount: new_current_amount)
 
     # Link transfer to subaccount
     subaccount = Subaccount.find_by(recipient_code: transfer.recipient_code)
