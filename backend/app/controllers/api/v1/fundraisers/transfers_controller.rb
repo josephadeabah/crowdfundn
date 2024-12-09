@@ -115,8 +115,8 @@ module Api
           raise "You do not have a account number configured." unless subaccount
           raise "Recipient code not found for this fundraiser" unless recipient_code.present?
         
-          total_donations = @campaign.current_amount
-          raise "You have no funds available for payout." if total_donations <= 0.0
+          # total_donations = @campaign.current_amount
+          # raise "You have no funds available for payout." if total_donations <= 0.0
         
           balance_response = @paystack_service.check_balance
         
@@ -135,11 +135,9 @@ module Api
 
           transfer = Transfer.find_or_initialize_by(campaign_id: @campaign.id)
           raise "Campaign not found for transfer #{transfer_reference}" unless campaign
-              
-          transfer_amount = transfer.amount
-      
+                    
           # Ensure transfer does not exceed current amount
-          if campaign.current_amount < transfer_amount
+          if total_donations < transfer.amount
             raise "Insufficient funds for transfer"
           end
       
