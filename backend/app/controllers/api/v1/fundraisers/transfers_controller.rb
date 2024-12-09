@@ -178,6 +178,7 @@ module Api
           @fundraiser = @campaign.fundraiser
           subaccount = @fundraiser.subaccount.order(created_at: :desc).first
           recipient_code = params[:recipient_code]
+          # @donation = Donation.find(@campaign.id)
         
           raise "You do not have a account number configured." unless subaccount
           raise "Recipient code not found for this fundraiser" unless recipient_code.present?
@@ -199,7 +200,7 @@ module Api
             render json: { error: "We cannot perform your transaction at this time. Please try again later." }, status: :unprocessable_entity
             return
           end
-              
+          update_balance_on_deposit(@fundraiser.id, total_donations)    
           process_transfer(@fundraiser.id, subaccount, recipient_code, @campaign.title, @campaign.currency.upcase)
         end               
 
