@@ -133,16 +133,16 @@ module Api
             return
           end
 
-          transfer = Transfer.find_or_initialize_by(campaign_id: @campaign.id)
-              # Find the associated campaign
-          campaign = Campaign.find(transfer.campaign_id)
+          # transfer = Transfer.find_or_initialize_by(campaign_id: @campaign.id)
+          #     # Find the associated campaign
+          # campaign = Campaign.find(transfer.campaign_id)
 
-          transfer_amount = transfer.amount
+          # transfer_amount = transfer.amount
 
-          # Ensure transfer does not exceed current amount
-          if campaign.current_amount < transfer_amount
-            raise "Insufficient funds for transfer"
-          end
+          # # Ensure transfer does not exceed current amount
+          # if campaign.current_amount < transfer_amount
+          #   raise "Insufficient funds for transfer"
+          # end
               
           response = @paystack_service.initiate_transfer(
             amount: total_donations.round,
