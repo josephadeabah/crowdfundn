@@ -33,6 +33,23 @@ module PaystackWebhook
         end
 
         transfer.save!
+            # Link transfer to subaccount
+        subaccount = Subaccount.find_by(recipient_code: transfer.recipient_code)
+        if subaccount
+          subaccount.update!(      
+            status: @data[:status], 
+            completed_at: Time.current,
+            recipient_code: @data.dig(:recipient, :recipient_code),
+            amount: @data[:amount], # Use gross amount, assuming it's the total value transferred
+            transfer_code: @data[:transfer_code],
+            reference: @data[:reference],
+            account_number: @data.dig(:recipient, :details, :account_number),
+            business_name: @data.dig(:recipient, :details, :bank_name)
+          )
+          Rails.logger.info "Subaccount #{subaccount.id} updated with transfer reference #{transfer_reference}."
+        else
+          Rails.logger.warn "Subaccount not found for transfer #{transfer_reference}."
+        end
 
         Rails.logger.info "Transfer #{transfer_reference} has been #{transfer.persisted? ? 'created' : 'updated'} with reversed status."
       else
