@@ -189,7 +189,7 @@ module Api
           subaccount = @fundraiser.subaccount.order(created_at: :desc).first
           recipient_code = params[:recipient_code]
         
-          raise "You do not have a subaccount configured." unless subaccount
+          raise "You do not have a account number added." unless subaccount
           raise "Recipient code not found for this fundraiser" unless recipient_code.present?
         
           total_donations = @campaign.current_amount
@@ -351,7 +351,6 @@ module Api
 
           # Fetch transfers for each subaccount
           subaccounts.each do |subaccount|
-            # Assuming `@paystack_service` is a service class that interacts with the Paystack API
             response = @paystack_service.fetch_transfers(subaccount.transfer_code)
             
             if response[:status] && response[:data].present?
@@ -368,10 +367,6 @@ module Api
           render json: { message: "Transfers fetched and saved successfully" }, status: :ok
         end
       
-      
-      
-      
-
         private
 
         def filter_bank_params
