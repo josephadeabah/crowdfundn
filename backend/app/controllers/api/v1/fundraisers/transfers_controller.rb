@@ -145,8 +145,8 @@ module Api
             )
 
             if transfer_response[:status]
-                subaccount.update!(reference: response.dig(:data, :reference), transfer_code: response.dig(:data, :transfer_code), amount: total_donations.round)
-                render json: { transfer_code: response.dig(:data, :transfer_code), reference: response.dig(:data, :reference), message: "Transfer initiated successfully." }, status: :ok
+                subaccount.update!(reference: transfer_response.dig(:data, :reference), transfer_code: transfer_response.dig(:data, :transfer_code), amount: customer_balance.round)
+                render json: { transfer_code: transfer_response.dig(:data, :transfer_code), reference: transfer_response.dig(:data, :reference), message: "Transfer initiated successfully." }, status: :ok
               reset_customer_balance(customer_id)
             else
               render json: { error: "This is an error on our side. Please try again later or contact support." }, status: :unprocessable_entity
