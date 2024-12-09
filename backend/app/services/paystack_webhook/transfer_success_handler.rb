@@ -24,22 +24,6 @@ class PaystackWebhook::TransferSuccessHandler
     transfer.campaign_id = @data.dig(:recipient, :metadata, :campaign_id)
     transfer.save!
   
-    # Find the associated campaign
-    campaign = Campaign.find(transfer.campaign_id)
-
-    transfer_amount = transfer.amount
-
-    # Ensure transfer does not exceed current amount
-    # if campaign.current_amount < transfer_amount
-    #   raise "Insufficient funds for transfer"
-    # end
-    
-    # Update campaign amounts
-    campaign.update!(
-      transferred_amount: campaign.transferred_amount + transfer_amount,
-      current_amount: 0.0
-    )
-
     # Link transfer to subaccount
     subaccount = Subaccount.find_by(recipient_code: transfer.recipient_code)
     if subaccount
