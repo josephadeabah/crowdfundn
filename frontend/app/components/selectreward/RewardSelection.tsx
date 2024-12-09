@@ -81,7 +81,13 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
           className="w-full p-2 border rounded-md mb-4 mt-2"
           placeholder="Enter pledge amount"
           value={pledgeAmount}
-          onChange={(e) => setPledgeAmount(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (!isNaN(Number(value)) && Number(value) >= 0) {
+              setPledgeAmount(value);
+            }
+          }}
+          min="0" // Prevent negative numbers from being entered
           required
         />
         {/* Assuming BackingPeriodSelector is another reusable component */}
