@@ -140,7 +140,7 @@ export default function Transfers() {
                       {campaign.title}
                     </h3>
                     <p className="text-gray-500 dark:text-neutral-400">
-                      Raised:
+                     <span className="mr-1"> Raised:</span>
                       <span
                         className={`${
                           campaign.current_amount === campaign.goal_amount
@@ -148,13 +148,13 @@ export default function Transfers() {
                             : 'text-orange-500'
                         }`}
                       >
-                        {campaign.currency.toUpperCase()}
-                        {campaign.current_amount}
+                        <span className="text-gray-900 dark:text-gray-100 mr-1">{campaign.currency.toUpperCase()}</span>
+                        {parseFloat(campaign.current_amount).toLocaleString()}
                       </span>{' '}
                       /{' '}
                       <span className="text-green-500">
                         {campaign.currency.toUpperCase()}
-                        {campaign.goal_amount}
+                        {parseFloat(campaign.goal_amount).toLocaleString()}
                       </span>
                     </p>
                   </div>
