@@ -140,16 +140,31 @@ export default function Transfers() {
                       {campaign.title}
                     </h3>
                     <p className="text-gray-500 dark:text-neutral-400">
-                      Raised: {campaign.currency.toUpperCase()}
-                      {campaign.current_amount} /{' '}
-                      {campaign.currency.toUpperCase()}
-                      {campaign.goal_amount}
+                      Raised:
+                      <span
+                        className={`${
+                          campaign.current_amount === campaign.goal_amount
+                            ? 'text-green-500'
+                            : 'text-orange-500'
+                        }`}
+                      >
+                        {campaign.currency.toUpperCase()}
+                        {campaign.current_amount}
+                      </span>{' '}
+                      /{' '}
+                      <span className="text-green-500">
+                        {campaign.currency.toUpperCase()}
+                        {campaign.goal_amount}
+                      </span>
                     </p>
                   </div>
                   <Button
                     onClick={() => handleRequestTransfer(campaign.id)}
                     className="px-4 py-2 bg-green-400 text-white rounded-full hover:bg-green-600 dark:hover:bg-green-700"
-                    disabled={loadingCampaigns[campaign.id] || (parseFloat(campaign.current_amount) < 10.0)}
+                    disabled={
+                      loadingCampaigns[campaign.id] ||
+                      parseFloat(campaign.current_amount) < 10.0
+                    }
                   >
                     {loadingCampaigns[campaign.id]
                       ? 'Processing...'
