@@ -30,9 +30,9 @@ class PaystackWebhook::TransferSuccessHandler
     transfer_amount = transfer.amount
 
     # Ensure transfer does not exceed current amount
-    if campaign.current_amount < transfer_amount
-      raise "Insufficient funds for transfer"
-    end
+    # if campaign.current_amount < transfer_amount
+    #   raise "Insufficient funds for transfer"
+    # end
     
     # Update campaign amounts
     campaign.update!(
