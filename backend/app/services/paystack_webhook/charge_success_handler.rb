@@ -40,14 +40,12 @@ class PaystackWebhook::ChargeSuccessHandler
         amount: net_amount
       )
   
+      donation.update!(status: 'successful', gross_amount: gross_amount, net_amount: net_amount, amount: net_amount)
+
       campaign = donation.campaign
-  
-      # Update total successful donations
-      total_successful_donations = campaign.donations.where(status: 'successful').sum(:net_amount)
-  
-      # Safely recalculate current amount
-      new_current_amount = [total_successful_donations - campaign.transferred_amount, 0].max
-      campaign.update!(current_amount: new_current_amount)
+      campaign.update!(
+        current_amount: campaign.donations.where(status: 'successful').sum(:net_amount)
+      )
   
       # Send confirmation email
       DonationConfirmationEmailService.send_confirmation_email(donation)
