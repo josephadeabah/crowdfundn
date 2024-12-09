@@ -80,6 +80,7 @@ export default function Transfers() {
             // Success toast if transfer initiation is successful
             showToast('Success', 'Transfer initiated successfully', 'success');
             fetchTransfers(); // Refresh the transfers list
+            fetchCampaigns(); // Refresh the campaigns list
           }
         } else {
           // Error toast if the initiateTransfer response is invalid
