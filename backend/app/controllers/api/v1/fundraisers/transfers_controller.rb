@@ -137,7 +137,7 @@ module Api
           end
         
           transfer_response = @paystack_service.initiate_transfer(
-            amount: (customer_balance * 100).to_i, # Convert to kobo
+            amount: (customer_balance.round * 100).to_i, # Convert to kobo
             recipient: recipient_account,
             reason: "Payout for campaign: #{campaign_title}",
             currency: currency
