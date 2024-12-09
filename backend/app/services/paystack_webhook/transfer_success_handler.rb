@@ -31,7 +31,7 @@ class PaystackWebhook::TransferSuccessHandler
 
     # Ensure transfer does not exceed current amount
     if campaign.current_amount < transfer_amount
-      campaign.update!(current_amount: campaign.total_successful_donations)
+      campaign.update!(current_amount: 0.0)
     end
     
     # Update campaign amounts
