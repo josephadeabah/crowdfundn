@@ -37,7 +37,7 @@ class PaystackWebhook::TransferSuccessHandler
     # Update campaign amounts
     campaign.update!(
       transferred_amount: campaign.transferred_amount + transfer_amount,
-      current_amount: campaign.current_amount
+      current_amount: 0.0
     )
 
     # Link transfer to subaccount
