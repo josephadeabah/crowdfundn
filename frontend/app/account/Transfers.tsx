@@ -143,7 +143,7 @@ export default function Transfers() {
                      <span className="mr-1"> Raised:</span>
                       <span
                         className={`${
-                          campaign.current_amount === campaign.goal_amount
+                          campaign.current_amount >= campaign.goal_amount
                             ? 'text-green-600'
                             : 'text-orange-500'
                         }`}
