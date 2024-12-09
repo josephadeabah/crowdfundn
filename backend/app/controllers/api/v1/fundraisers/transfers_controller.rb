@@ -128,33 +128,43 @@ module Api
         end
 
         # Handle the process of transferring funds and resetting the balance
-        def process_transfer(customer_id, subaccount, recipient_account, campaign_title, currency)
-          customer_balance = get_customer_balance(customer_id)
-
-          if customer_balance.nil?
-            puts "Transfer aborted: Unable to retrieve customer balance."
+        def process_transfer(campaign_id, subaccount, recipient_account, campaign_title, currency)
+          customer_balance = get_customer_balance(campaign_id)
+        
+          if customer_balance.nil? || customer_balance <= 0
+            render json: { error: "Insufficient funds for transfer." }, status: :unprocessable_entity
             return
           end
-
-          if customer_balance > 0
-            transfer_response = @paystack_service.initiate_transfer(
-              amount: customer_balance.round,
-              recipient: recipient_account,
-              reason: "Payout for campaign: #{campaign_title}",
-              currency: currency
+        
+          transfer_response = @paystack_service.initiate_transfer(
+            amount: (customer_balance * 100).to_i, # Convert to kobo
+            recipient: recipient_account,
+            reason: "Payout for campaign: #{campaign_title}",
+            currency: currency
+          )
+        
+          if transfer_response[:status]
+            transfer_data = transfer_response[:data]
+            subaccount.update!(
+              reference: transfer_data[:reference],
+              transfer_code: transfer_data[:transfer_code],
+              amount: customer_balance
             )
-
-            if transfer_response[:status]
-                subaccount.update!(reference: transfer_response.dig(:data, :reference), transfer_code: transfer_response.dig(:data, :transfer_code), amount: customer_balance.round)
-                render json: { transfer_code: transfer_response.dig(:data, :transfer_code), reference: transfer_response.dig(:data, :reference), message: "Transfer initiated successfully." }, status: :ok
-              reset_customer_balance(customer_id)
-            else
-              render json: { error: "This is an error on our side. Please try again later or contact support." }, status: :unprocessable_entity
-            end
+            reset_customer_balance(campaign_id)
+            render json: {
+              transfer_code: transfer_data[:transfer_code],
+              reference: transfer_data[:reference],
+              message: "Transfer initiated successfully."
+            }, status: :ok
           else
-            puts "Insufficient balance for transfer."
+            Rails.logger.error "Transfer failed: #{transfer_response[:message]}"
+            render json: { error: "Unable to process transfer. Please try again later." }, status: :unprocessable_entity
           end
+        rescue StandardError => e
+          Rails.logger.error "Error processing transfer: #{e.message}"
+          render json: { error: e.message }, status: :unprocessable_entity
         end
+        
 
         # Handle a new deposit, updating the balance
         def update_balance_on_deposit(customer_id, deposit_amount)
@@ -178,9 +188,8 @@ module Api
           @fundraiser = @campaign.fundraiser
           subaccount = @fundraiser.subaccount.order(created_at: :desc).first
           recipient_code = params[:recipient_code]
-          # @donation = Donation.find(@campaign.id)
         
-          raise "You do not have a account number configured." unless subaccount
+          raise "You do not have a subaccount configured." unless subaccount
           raise "Recipient code not found for this fundraiser" unless recipient_code.present?
         
           total_donations = @campaign.current_amount
@@ -188,21 +197,27 @@ module Api
         
           balance_response = @paystack_service.check_balance
         
-          if balance_response[:status]
-            currency = @campaign.currency.upcase
-            available_balance = balance_response[:data].find { |b| b[:currency] == currency }&.dig(:balance).to_f
-        
-            if available_balance < total_donations
-              render json: { error: "Sorry, this is an issue on our side. We'll resolve it soon. Kindly try again later" }, status: :unprocessable_entity
-              return
-            end
-          else
-            render json: { error: "We cannot perform your transaction at this time. Please try again later." }, status: :unprocessable_entity
+          unless balance_response[:status]
+            render json: { error: "Unable to perform transaction at this time. Please try again later." }, status: :unprocessable_entity
             return
           end
-          update_balance_on_deposit(@fundraiser.id, total_donations)    
-          process_transfer(@fundraiser.id, subaccount, recipient_code, @campaign.title, @campaign.currency.upcase)
-        end               
+        
+          currency = @campaign.currency.upcase
+          available_balance = balance_response[:data].find { |b| b[:currency] == currency }&.dig(:balance).to_f
+        
+          if available_balance < total_donations
+            render json: { error: "Insufficient balance on our side. Kindly try again later." }, status: :unprocessable_entity
+            return
+          end
+        
+          process_transfer(@campaign.id, subaccount, recipient_code, @campaign.title, currency)
+        rescue ActiveRecord::RecordNotFound => e
+          render json: { error: e.message }, status: :not_found
+        rescue StandardError => e
+          Rails.logger.error "Error initializing transfer: #{e.message}"
+          render json: { error: e.message }, status: :unprocessable_entity
+        end
+                     
 
         # Bulk create transfer recipients
         def bulk_create_transfer_recipients
