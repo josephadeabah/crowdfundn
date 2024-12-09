@@ -10,7 +10,7 @@ import {
   RocketIcon,
   ChatBubbleIcon,
 } from '@radix-ui/react-icons';
-import { BiTransfer } from "react-icons/bi";
+import { BiTransfer } from 'react-icons/bi';
 import Rewards from '@/app/account/Rewards';
 import Campaigns from '@/app/account/Campaigns';
 import Transfers from '@/app/account/Transfers';
