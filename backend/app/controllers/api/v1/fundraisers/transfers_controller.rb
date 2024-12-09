@@ -167,18 +167,18 @@ module Api
         
 
         # Handle a new deposit, updating the balance
-        def update_balance_on_deposit(customer_id, deposit_amount)
-          customer_balance = get_customer_balance(customer_id)
+        # def update_balance_on_deposit(customer_id, deposit_amount)
+        #   customer_balance = get_customer_balance(customer_id)
 
-          if customer_balance.nil?
-            puts "Deposit aborted: Unable to retrieve customer balance."
-            return
-          end
+        #   if customer_balance.nil?
+        #     puts "Deposit aborted: Unable to retrieve customer balance."
+        #     return
+        #   end
 
-          new_balance = customer_balance + deposit_amount
-          update_customer_balance(customer_id, new_balance)
-          puts "Customer balance updated to #{new_balance}"
-        end
+        #   new_balance = customer_balance + deposit_amount
+        #   update_customer_balance(customer_id, new_balance)
+        #   puts "Customer balance updated to #{new_balance}"
+        # end
 
         # Initialize a transfer
         def initialize_transfer
