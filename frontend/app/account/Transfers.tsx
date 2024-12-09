@@ -144,7 +144,7 @@ export default function Transfers() {
                       <span
                         className={`${
                           campaign.current_amount === campaign.goal_amount
-                            ? 'text-green-500'
+                            ? 'text-green-600'
                             : 'text-orange-500'
                         }`}
                       >
@@ -152,8 +152,8 @@ export default function Transfers() {
                         {parseFloat(campaign.current_amount).toLocaleString()}
                       </span>{' '}
                       /{' '}
-                      <span className="text-green-500">
-                        {campaign.currency.toUpperCase()}
+                      <span className="text-green-600">
+                      <span className="text-gray-900 dark:text-gray-100 mr-1">{campaign.currency.toUpperCase()}</span>
                         {parseFloat(campaign.goal_amount).toLocaleString()}
                       </span>
                     </p>
