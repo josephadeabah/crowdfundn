@@ -38,7 +38,6 @@ class DonationConfirmationEmailService
         htmlContent: <<~HTML
                 <html>
                 <body>
-                <h3>Thank You for Your Donation!</h3>
                 <p>Hello #{user}, Our Valued Backer!</p>
                 <p>We deeply appreciate your generous donation of <strong>#{currency_symbol} #{transaction_amount}</strong> to support the <strong>#{campaign_name}</strong> campaign.</p>
                 <p>Your contribution is making a difference for <strong>#{fundraiser_name}</strong> in achieving their goals.</p>
