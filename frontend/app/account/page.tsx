@@ -10,6 +10,7 @@ import {
   RocketIcon,
   ChatBubbleIcon,
 } from '@radix-ui/react-icons';
+import { BiTransfer } from "react-icons/bi";
 import Rewards from '@/app/account/Rewards';
 import Campaigns from '@/app/account/Campaigns';
 import Transfers from '@/app/account/Transfers';
@@ -104,7 +105,7 @@ const ProfileTabs = () => {
     },
     {
       label: 'Transfers',
-      icon: <SymbolIcon />,
+      icon: <BiTransfer />,
       description: 'View and manage your transfers.',
     },
     {
