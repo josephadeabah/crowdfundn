@@ -30,14 +30,14 @@ class PaystackWebhook::TransferSuccessHandler
     transfer_amount = transfer.amount
 
     # Ensure transfer does not exceed current amount
-    if campaign.current_amount < transfer_amount
-      campaign.update!(current_amount: campaign.current_amount)
-    end
+    # if campaign.current_amount < transfer_amount
+    #   campaign.update!(current_amount: campaign.current_amount)
+    # end
     
     # Update campaign amounts
     campaign.update!(
       transferred_amount: campaign.transferred_amount + transfer_amount,
-      current_amount: campaign.current_amount - transfer_amount
+      current_amount: (campaign.current_amount - transfer_amount).abs
     )
 
     # Link transfer to subaccount
