@@ -7,12 +7,9 @@ class PaystackWebhook::TransferSuccessHandler
   def call
     transfer_reference = @data[:reference]
 
-    # Find existing transfer or initialize a new one
     transfer = Transfer.find_or_initialize_by(reference: transfer_reference)
-
-    # Assign attributes to the transfer
     transfer.assign_attributes(
-      status: @data[:status], 
+      status: @data[:status],
       completed_at: Time.current,
       recipient_code: @data.dig(:recipient, :recipient_code),
       currency: @data[:currency],
@@ -23,27 +20,20 @@ class PaystackWebhook::TransferSuccessHandler
       account_number: @data.dig(:recipient, :details, :account_number),
       bank_name: @data.dig(:recipient, :details, :bank_name)
     )
-
-    # Optionally assign user_id and campaign_id if needed from the metadata
     transfer.user_id = @data.dig(:recipient, :metadata, :user_id)
     transfer.campaign_id = @data.dig(:recipient, :metadata, :campaign_id)
-
-    # Save the transfer details to the database
     transfer.save!
-
-    Rails.logger.info "Transfer #{transfer_reference} has been #{transfer.persisted? ? 'created' : 'updated'} successfully."
-
-    # Find the related donation by campaign_id
-    donation = Donation.find_by(campaign_id: @data.dig(:recipient, :metadata, :campaign_id))
-
-    # Get the associated campaign
-    campaign = donation.campaign
-
-    # Add transferred amount to total transferred amount
-    campaign.update!(transferred_amount: campaign.transferred_amount + (@data[:amount]).to_f / 100)
-
-    # Reset the current_amount to exclude transferred amount
-    campaign.update!(current_amount: campaign.donations.where(status: 'successful').sum(:net_amount) - campaign.transferred_amount)
+  
+    campaign = Campaign.find_by(id: transfer.campaign_id)
+    raise "Campaign not found for transfer #{transfer_reference}" unless campaign
+  
+    # Update transferred amount
+    campaign.update!(transferred_amount: campaign.transferred_amount + transfer.amount)
+  
+    # Safely recalculate current amount
+    total_successful_donations = campaign.donations.where(status: 'successful').sum(:net_amount)
+    new_current_amount = [total_successful_donations - campaign.transferred_amount, 0].max
+    campaign.update!(current_amount: new_current_amount)
 
     # Link transfer to subaccount
     subaccount = Subaccount.find_by(recipient_code: transfer.recipient_code)

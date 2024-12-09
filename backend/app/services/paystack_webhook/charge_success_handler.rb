@@ -22,32 +22,34 @@ class PaystackWebhook::ChargeSuccessHandler
     transaction_reference = @data[:reference]
     donation = Donation.find_by(transaction_reference: transaction_reference)
     raise "Donation not found" unless donation
-
+  
     response = PaystackService.new.verify_transaction(transaction_reference)
     raise "Transaction verification failed" unless response[:status] == true
-
+  
     transaction_status = response.dig(:data, :status)
     if transaction_status == 'success'
-      gross_amount = response.dig(:data, :amount).to_f / 100.0 # Gross amount from Paystack (in GHS)
-      platform_fee = gross_amount * 0.20 # Platform fee (20% of the gross amount)
-      net_amount = gross_amount - platform_fee # Net amount (80% of the gross amount)
-
+      gross_amount = response.dig(:data, :amount).to_f / 100.0 # Gross amount from Paystack
+      platform_fee = gross_amount * 0.20 # Platform fee
+      net_amount = gross_amount - platform_fee # Net amount
+  
       donation.update!(
         status: 'successful',
         gross_amount: gross_amount,
         net_amount: net_amount,
-        platform_fee: platform_fee, # Store the platform fee
+        platform_fee: platform_fee, # Store platform fee
         amount: net_amount
       )
-
+  
       campaign = donation.campaign
-
-      # Update the current_amount by excluding the transferred amount
-      campaign.update!(
-        current_amount: campaign.donations.where(status: 'successful').sum(:net_amount) - campaign.transferred_amount
-      )
-
-      # Send a confirmation email to the donor via Brevo
+  
+      # Update total successful donations
+      total_successful_donations = campaign.donations.where(status: 'successful').sum(:net_amount)
+  
+      # Safely recalculate current amount
+      new_current_amount = [total_successful_donations - campaign.transferred_amount, 0].max
+      campaign.update!(current_amount: new_current_amount)
+  
+      # Send confirmation email
       DonationConfirmationEmailService.send_confirmation_email(donation)
     else
       donation.update!(status: transaction_status)
