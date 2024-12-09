@@ -124,14 +124,13 @@ const SingleCampaignPage: React.FC = () => {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2.5">
                   <div
-                    className="bg-green-600 h-2.5 rounded-full"
+                    className="bg-green-600 h-2.5 rounded-full max-w-full"
                     style={{
                       width: `${(Number(currentCampaign?.current_amount) / Number(currentCampaign?.goal_amount)) * 100}%`,
                     }}
                   ></div>
                 </div>
               </div>
-
               <div className="prose max-w-none">
                 <div
                   className="text-gray-800 dark:text-neutral-200 flex-grow"
