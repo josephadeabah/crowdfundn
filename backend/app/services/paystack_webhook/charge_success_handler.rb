@@ -20,9 +20,11 @@ class PaystackWebhook::ChargeSuccessHandler
 
   def handle_donation_success
     transaction_reference = @data[:reference]
+    # Find the related donation based on the transaction reference
     donation = Donation.find_by(transaction_reference: transaction_reference)
     raise "Donation not found" unless donation
 
+    # Verify the transaction with Paystack
     response = PaystackService.new.verify_transaction(transaction_reference)
     raise "Transaction verification failed" unless response[:status] == true
 
@@ -32,24 +34,29 @@ class PaystackWebhook::ChargeSuccessHandler
       platform_fee = gross_amount * 0.20 # Platform fee (20% of the gross amount)
       net_amount = gross_amount - platform_fee # Net amount (80% of the gross amount)
 
+      # Update donation record with transaction details
       donation.update!(
         status: 'successful',
         gross_amount: gross_amount,
         net_amount: net_amount,
-        platform_fee: platform_fee, # Store the platform fee
+        platform_fee: platform_fee, # Store the platform fee for reporting
         amount: net_amount
       )
 
       campaign = donation.campaign
 
-      # Update the current_amount by excluding the transferred amount
+      # Update the campaign's current_amount by excluding the transferred amount
       new_current_amount = campaign.donations.where(status: 'successful').sum(:net_amount) - campaign.transferred_amount
+
+      # Ensure current_amount does not go negative
       campaign.update!(current_amount: [new_current_amount, 0].max)
 
-
-      # Send a confirmation email to the donor via Brevo
+      # Send a confirmation email to the donor via Brevo or another email service
       DonationConfirmationEmailService.send_confirmation_email(donation)
+
+      Rails.logger.info "Donation #{transaction_reference} marked as successful and campaign updated."
     else
+      # If the transaction wasn't successful, update the donation status accordingly
       donation.update!(status: transaction_status)
       raise "Transaction status is #{transaction_status}"
     end

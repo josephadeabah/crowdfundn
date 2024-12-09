@@ -1,4 +1,4 @@
-class PaystackWebhook::TransferSuccessHandler
+class PaystackWebhook::TransferSuccessHandler 
   def initialize(data)
     @data = data
     @paystack_service = PaystackService.new
@@ -39,13 +39,27 @@ class PaystackWebhook::TransferSuccessHandler
     # Get the associated campaign
     campaign = donation.campaign
 
-    # Add transferred amount to total transferred amount
-    campaign.update!(transferred_amount: campaign.transferred_amount + (@data[:amount]).to_f / 100)
+    # Calculate the new transferred amount
+    new_transferred_amount = campaign.transferred_amount + (@data[:amount]).to_f / 100
 
-    # Reset the current_amount to exclude transferred amount
-    new_current_amount = campaign.donations.where(status: 'successful').sum(:net_amount) - campaign.transferred_amount
-    campaign.update!(current_amount: [new_current_amount, 0].max)
+    # Calculate the new current_amount (this will be recalculated after successful donations)
+    # You need to calculate the net_amount for each successful donation before summing it
+    new_current_amount = campaign.donations.where(status: 'successful').sum do |donation|
+      # Calculate the net amount for each donation if it's not already calculated
+      gross_amount = donation.gross_amount # or fetch this from the donation object
+      platform_fee = gross_amount * 0.20 # Assuming a 20% platform fee
+      net_amount = gross_amount - platform_fee
+      net_amount
+    end - new_transferred_amount
 
+    # Use a transaction to update both `transferred_amount` and `current_amount`
+    ActiveRecord::Base.transaction do
+      # Update the transferred_amount and current_amount atomically
+      campaign.update!(transferred_amount: new_transferred_amount)
+      campaign.update!(current_amount: [new_current_amount, 0].max) # Ensures no negative current_amount
+    end
+
+    Rails.logger.info "Campaign current_amount updated to: #{campaign.current_amount}"
 
     # Link transfer to subaccount
     subaccount = Subaccount.find_by(recipient_code: transfer.recipient_code)
