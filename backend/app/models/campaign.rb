@@ -50,7 +50,7 @@ class Campaign < ApplicationRecord
 
   def as_json(_options = {})
     super(only: %i[
-      id title goal_amount current_amount start_date end_date
+      id title goal_amount current_amount transferred_amount start_date end_date
       category location currency currency_code currency_symbol status
       fundraiser_id created_at updated_at
     ]).merge(
