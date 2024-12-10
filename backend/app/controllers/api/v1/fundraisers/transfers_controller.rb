@@ -112,20 +112,22 @@ module Api
           nil
         end
 
-        # Update the customer's balance in the database
-        def update_customer_balance(customer_id, new_balance)
-          campaign = Campaign.find(customer_id)
-          if campaign
-            campaign.update(current_amount: new_balance)
-          else
-            puts "Failed to update balance: Customer with ID #{customer_id} not found."
-          end
+      # Update the customer's balance in the database
+      def update_customer_balance(customer_id, new_balance)
+        campaign = Campaign.find(customer_id)
+        if campaign
+          old_balance = campaign.current_amount  # Capture the current balance before updating
+          campaign.update(current_amount: new_balance)
+          campaign.update(transferred_amount: old_balance)  # Set transferred_amount to the old balance
+        else
+          puts "Failed to update balance: Customer with ID #{customer_id} not found."
         end
+      end
 
-        # Reset the customer's balance to zero after a successful transfer
-        def reset_customer_balance(customer_id)
-          update_customer_balance(customer_id, 0)
-        end
+      # Reset the customer's balance to zero after a successful transfer
+      def reset_customer_balance(customer_id)
+        update_customer_balance(customer_id, 0)
+      end
 
         # Handle the process of transferring funds and resetting the balance
         def process_transfer(campaign_id, subaccount, recipient_account, campaign_title, currency)
