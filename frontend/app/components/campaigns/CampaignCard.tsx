@@ -130,7 +130,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                           }%`}
                         />
                       </div>
-                      <div className="w-full text-xs text-gray-600">
+                      <div className="w-full text-xs text-gray-600 mb-2">
                         <p className="flex justify-between items-center text-sm font-semibold mt-2">
                           <span className="font-medium">
                             {fundraiserCurrency}
