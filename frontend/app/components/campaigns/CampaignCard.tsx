@@ -145,7 +145,8 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                           </span>
                         </p>
                         <span className="text-xs py-1 mr-0.5">Raised</span>{' '}
-                        <span className="text-red-500 mr-1 italic">-</span>
+                        {fundraiserCurrency}
+                        <span className="text-red-500 mr-1">-</span>
                         {!isNaN(parseFloat(campaign.transferred_amount)) ? parseFloat(campaign.transferred_amount).toLocaleString() : 0}
                       </div>
                     </div>
