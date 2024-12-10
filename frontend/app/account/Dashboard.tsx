@@ -8,10 +8,12 @@ import {
 import { HiOutlinePlus } from 'react-icons/hi';
 import Link from 'next/link';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
+import { useAuth } from '../context/auth/AuthContext';
 
 export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
     useCampaignContext();
+  const { user } = useAuth();
 
   // Fetch statistics data when the component mounts
   useEffect(() => {
@@ -68,7 +70,9 @@ export default function Dashboard() {
               Fundraising Goal
             </CardTitle>
             <CardDescription className="text-yellow-500 dark:text-yellow-400">
-              ${statistics?.total_donated_amount}
+              {user?.currency?.toUpperCase()}{' '}
+              {statistics &&
+                parseFloat(statistics.total_donated_amount).toLocaleString()}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -92,7 +96,11 @@ export default function Dashboard() {
               Total Donations
             </CardTitle>
             <CardDescription className="text-green-500 dark:text-green-400">
-              ${statistics?.total_donations_received}
+              {user?.currency?.toUpperCase()}{' '}
+              {statistics &&
+                parseFloat(
+                  statistics.total_donations_received,
+                ).toLocaleString()}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -104,7 +112,9 @@ export default function Dashboard() {
               Pending Withdrawals
             </CardTitle>
             <CardDescription className="text-yellow-600 dark:text-yellow-300">
-              ${statistics?.total_donated_amount} {/* Adjust as necessary */}
+              {user?.currency?.toUpperCase()}{' '}
+              {statistics &&
+                parseFloat(statistics?.total_donated_amount).toLocaleString()}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -130,7 +140,7 @@ export default function Dashboard() {
               Campaign Performance
             </CardTitle>
             <CardDescription className="text-green-500 dark:text-green-400">
-              {statistics?.campaign_performance[0]?.performance_percentage} of
+              {statistics?.campaign_performance[0]?.performance_percentage}% of
               goal achieved
             </CardDescription>
           </CardHeader>
