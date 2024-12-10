@@ -134,7 +134,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                         <p className="flex justify-between items-center text-sm font-semibold mt-2">
                           <span className="font-medium">
                             {fundraiserCurrency}
-                            <span className="text-green-500">+</span>
+                            <span className="text-green-500 text-xs">+</span>
                             {parseFloat(
                               campaign.current_amount,
                             ).toLocaleString()}
