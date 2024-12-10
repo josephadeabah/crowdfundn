@@ -110,10 +110,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       <div className="flex justify-between items-center w-full text-xs font-semibold text-right text-gray-600">
                         <div>{campaign.total_donors || 0} Backers</div>
                         <div>
-                          {getRemainingDaysMessage(
-                            campaign.start_date,
-                            campaign.end_date,
-                          )}
+                          {campaign.remaining_days} days left
                         </div>
                       </div>
                       <div className="w-full text-xs">

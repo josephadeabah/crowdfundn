@@ -36,6 +36,7 @@ export interface CampaignResponseDataType {
   transferred_amount: string;
   start_date: string;
   end_date: string;
+  remaining_days: string;
   category: string;
   location: string;
   currency: string;
