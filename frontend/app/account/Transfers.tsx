@@ -196,33 +196,31 @@ export default function Transfers() {
           </h3>
           <div className="overflow-x-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
             <table className="min-w-full bg-white dark:bg-neutral-800 rounded-lg">
-              {!loading && (
-                <thead className="bg-gray-50 dark:bg-neutral-700">
-                  <tr>
-                    <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                      Amount
-                    </th>
-                    <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                      Date
-                    </th>
-                    <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                      Status
-                    </th>
-                    <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                      Reference
-                    </th>
-                    <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                      Account Number
-                    </th>
-                    <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                      Settlement Bank
-                    </th>
-                    <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                      Reason
-                    </th>
-                  </tr>
-                </thead>
-              )}
+              <thead className="bg-gray-50 dark:bg-neutral-700">
+                <tr>
+                  <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+                    Amount
+                  </th>
+                  <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+                    Date
+                  </th>
+                  <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+                    Status
+                  </th>
+                  <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+                    Reference
+                  </th>
+                  <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+                    Account Number
+                  </th>
+                  <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+                    Settlement Bank
+                  </th>
+                  <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+                    Reason
+                  </th>
+                </tr>
+              </thead>
               <tbody>
                 {loading ? (
                   <TransferLoader /> // Loader only for the body (without header)
