@@ -25,7 +25,7 @@ class PaystackWebhook::TransferSuccessHandler
     transfer.email = @data.dig(:recipient, :metadata, :email)
     transfer.user_name = @data.dig(:recipient, :metadata, :user_name)
     transfer.save!
-    TransferStatusEmailService.send_transfer_email(transfer)
+    TransferNotificationEmailService.send_transfer_email(transfer)
   
     # Link transfer to subaccount
     subaccount = Subaccount.find_by(recipient_code: transfer.recipient_code)

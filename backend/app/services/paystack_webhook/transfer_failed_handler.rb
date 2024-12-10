@@ -35,7 +35,7 @@ module PaystackWebhook
         end
 
         transfer.save!
-        TransferStatusEmailService.send_transfer_email(transfer)
+        TransferNotificationEmailService.send_transfer_email(transfer)
 
             # Link transfer to subaccount
         subaccount = Subaccount.find_by(recipient_code: transfer.recipient_code)
