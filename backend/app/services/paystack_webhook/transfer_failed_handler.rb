@@ -30,9 +30,12 @@ module PaystackWebhook
         if transfer.new_record?
           transfer.user_id = verify_result.dig(:data, :recipient, :metadata, :user_id)  # Example: Set user_id if available
           transfer.campaign_id = verify_result.dig(:data, :recipient, :metadata, :campaign_id)                 # Set campaign_id if applicable
+          transfer.email = @data.dig(:recipient, :metadata, :email)
+          transfer.user_name = @data.dig(:recipient, :metadata, :user_name)
         end
 
         transfer.save!
+        TransferStatusEmailService.send_transfer_email(transfer)
 
             # Link transfer to subaccount
         subaccount = Subaccount.find_by(recipient_code: transfer.recipient_code)

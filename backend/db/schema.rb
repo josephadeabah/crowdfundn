@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_08_211417) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_09_235403) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -81,6 +81,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_08_211417) do
     t.string "promotion_frequency"
     t.integer "promotion_duration"
     t.decimal "transferred_amount", default: "0.0", null: false
+    t.decimal "total_successful_donations", precision: 15, scale: 2, default: "0.0", null: false
     t.index ["fundraiser_id"], name: "index_campaigns_on_fundraiser_id"
   end
 
@@ -231,6 +232,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_08_211417) do
     t.string "status", default: "pending", null: false
     t.string "reason"
     t.string "currency"
+    t.string "email"
+    t.string "user_name"
     t.index ["campaign_id"], name: "index_transfers_on_campaign_id"
     t.index ["status"], name: "index_transfers_on_status"
     t.index ["user_id"], name: "index_transfers_on_user_id"
