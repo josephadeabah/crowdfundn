@@ -2,6 +2,7 @@ import {
   CampaignResponseDataType,
   CampaignState,
   SingleCampaignResponseDataType,
+  CampaignStatisticsDataType, // Add the type for statistics data
 } from '@/app/types/campaigns.types';
 import React, {
   createContext,
@@ -29,6 +30,8 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     useState<SingleCampaignResponseDataType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [statistics, setStatistics] =
+    useState<CampaignStatisticsDataType | null>(null); // Add state for statistics
   const { token } = useAuth();
 
   const handleApiError = (errorText: string) => {
@@ -97,6 +100,37 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       setCampaigns(fetchedCampaigns?.campaigns);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error fetching campaigns');
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  const fetchCampaignStatistics = useCallback(async (): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await nextFetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/statistics`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        handleApiError("Couldn't fetch statistics. Please try again.");
+        return;
+      }
+
+      const stats = await response.json();
+      setStatistics(stats); // Store statistics in state
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Error fetching statistics',
+      );
     } finally {
       setLoading(false);
     }
@@ -245,8 +279,10 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       currentCampaign,
       loading,
       error,
+      statistics, // Add statistics to context
       addCampaign,
       fetchCampaigns,
+      fetchCampaignStatistics, // Add fetchStatistics to context
       fetchAllCampaigns,
       fetchCampaignById,
       deleteCampaign,
@@ -257,8 +293,10 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       currentCampaign,
       loading,
       error,
+      statistics, // Include statistics in memoization
       addCampaign,
       fetchCampaigns,
+      fetchCampaignStatistics, // Include fetchStatistics in memoization
       fetchAllCampaigns,
       fetchCampaignById,
       deleteCampaign,

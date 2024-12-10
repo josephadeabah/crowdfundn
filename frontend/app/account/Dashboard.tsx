@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   Card,
   CardHeader,
@@ -7,8 +7,28 @@ import {
 } from '../components/card/Card';
 import { HiOutlinePlus } from 'react-icons/hi';
 import Link from 'next/link';
+import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
 
 export default function Dashboard() {
+  const { statistics, loading, error, fetchCampaignStatistics } =
+    useCampaignContext();
+
+  // Fetch statistics data when the component mounts
+  useEffect(() => {
+    fetchCampaignStatistics();
+  }, [fetchCampaignStatistics]);
+
+  // Display a loading state if data is still being fetched
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  // Display an error message if there was an error fetching data
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  // If statistics data is available, display it
   return (
     <div className="space-y-6 p-4">
       <h2 className="text-2xl font-semibold text-gray-700 dark:text-red-300">
@@ -36,7 +56,7 @@ export default function Dashboard() {
               Total Backers
             </CardTitle>
             <CardDescription className="text-purple-500 dark:text-purple-400">
-              150 Backers
+              {statistics?.total_backers} Backers
             </CardDescription>
           </CardHeader>
         </Card>
@@ -48,7 +68,7 @@ export default function Dashboard() {
               Fundraising Goal
             </CardTitle>
             <CardDescription className="text-yellow-500 dark:text-yellow-400">
-              $25,000
+              ${statistics?.total_donated_amount}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -60,7 +80,7 @@ export default function Dashboard() {
               Active Campaigns
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-neutral-400">
-              3 Campaigns
+              {statistics?.total_active_campaigns} Campaigns
             </CardDescription>
           </CardHeader>
         </Card>
@@ -72,7 +92,7 @@ export default function Dashboard() {
               Total Donations
             </CardTitle>
             <CardDescription className="text-green-500 dark:text-green-400">
-              $12,300
+              ${statistics?.total_donations_received}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -84,7 +104,7 @@ export default function Dashboard() {
               Pending Withdrawals
             </CardTitle>
             <CardDescription className="text-yellow-600 dark:text-yellow-300">
-              $2,400
+              ${statistics?.total_donated_amount} {/* Adjust as necessary */}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -96,7 +116,9 @@ export default function Dashboard() {
               Recent Activity
             </CardTitle>
             <CardDescription className="text-purple-500 dark:text-purple-400">
-              5 new donations this week
+              {statistics?.new_donations_this_week &&
+                Object.keys(statistics?.new_donations_this_week).length}{' '}
+              new donations this week
             </CardDescription>
           </CardHeader>
         </Card>
@@ -108,7 +130,8 @@ export default function Dashboard() {
               Campaign Performance
             </CardTitle>
             <CardDescription className="text-green-500 dark:text-green-400">
-              75% of goal achieved
+              {statistics?.campaign_performance[0]?.performance_percentage} of
+              goal achieved
             </CardDescription>
           </CardHeader>
         </Card>

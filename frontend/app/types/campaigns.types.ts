@@ -70,6 +70,7 @@ export interface CampaignResponseDataType {
 export interface CampaignState {
   campaigns: CampaignResponseDataType[];
   currentCampaign: SingleCampaignResponseDataType | null;
+  statistics: CampaignStatisticsDataType | null;
   loading: boolean;
   error: string | null;
   addCampaign: (campaign: FormData) => Promise<CampaignResponseDataType>;
@@ -81,6 +82,7 @@ export interface CampaignState {
     campaign: FormData,
   ) => Promise<SingleCampaignResponseDataType>;
   fetchCampaignById: (id: string) => Promise<SingleCampaignResponseDataType>;
+  fetchCampaignStatistics: () => Promise<void>;
 }
 
 export interface CampaignDescription {
@@ -154,4 +156,24 @@ export interface SingleCampaignResponseDataType {
   updates: Update[];
   comments: Comment[];
   fundraiser: FundraiserDetailsType;
+}
+
+export interface CampaignPerformance {
+  id: number;
+  title: string;
+  performance_percentage: string;
+  total_days: number;
+  remaining_days: number;
+}
+
+export interface CampaignStatisticsDataType {
+  total_donations_received: string;
+  total_backers: number;
+  total_active_campaigns: number;
+  total_donated_amount: string;
+  campaign_performance: CampaignPerformance[];
+  new_donations_this_week: Record<string, unknown>; // Adjust the type as necessary, based on your backend response
+  campaigns_by_category: Record<string, number>; // Adjust based on the structure of your categories
+  top_campaigns: CampaignPerformance[];
+  average_donation_amount: number;
 }

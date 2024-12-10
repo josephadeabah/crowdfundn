@@ -60,6 +60,7 @@ Rails.application.routes.draw do
         resources :campaigns do
           get 'my_campaigns', on: :collection
           get 'group_by_category', on: :collection
+          get 'statistics', on: :collection
           resources :updates, only: %i[create update destroy]
           resources :comments, only: %i[create index destroy]
           resources :rewards, only: %i[index show create update destroy]
