@@ -4,7 +4,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 const TransferLoader = () => {
   return (
-    <tbody>
+    <>
       {Array(8) // Assuming there are 8 rows to be loaded
         .fill(null)
         .map((_, index) => (
@@ -32,7 +32,7 @@ const TransferLoader = () => {
             </td>
           </tr>
         ))}
-    </tbody>
+    </>
   );
 };
 
