@@ -104,7 +104,6 @@ module Api
         end
         
         # Fetch customer balance from your database or system
-        # Fetch customer balance from your database or system
         def get_customer_balance(customer_id)
           # Fetch customer record and return balance
           Campaign.find(customer_id).current_amount
@@ -124,10 +123,14 @@ module Api
         end
 
         # Update the transferred amount in the database
-        def update_transferred_amount(campaign_id, transferred_amount)
+        def update_transferred_amount(campaign_id, current_amount)
           campaign = Campaign.find(campaign_id)
           if campaign
-            campaign.update(transferred_amount: transferred_amount)
+            # Accumulate the transferred amount with the current_amount
+            new_transferred_amount = campaign.transferred_amount.to_f + current_amount.to_f
+
+            # Update the transferred amount
+            campaign.update(transferred_amount: new_transferred_amount)
           else
             Rails.logger.error "Failed to update transferred amount: Campaign with ID #{campaign_id} not found."
           end
