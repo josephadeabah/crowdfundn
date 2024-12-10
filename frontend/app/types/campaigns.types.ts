@@ -33,6 +33,7 @@ export interface CampaignResponseDataType {
   };
   goal_amount: string;
   current_amount: string;
+  transferred_amount: string;
   start_date: string;
   end_date: string;
   category: string;
