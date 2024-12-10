@@ -1,7 +1,12 @@
 import React from 'react';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-import { Card, CardHeader, CardTitle, CardDescription } from '../components/card/Card';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '../components/card/Card';
 import { HiOutlinePlus } from 'react-icons/hi';
 import Link from 'next/link';
 
