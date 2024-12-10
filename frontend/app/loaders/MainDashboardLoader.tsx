@@ -1,38 +1,11 @@
-import React, { useContext, useEffect } from 'react';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '../components/card/Card';
+import React from 'react';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import { Card, CardHeader, CardTitle, CardDescription } from '../components/card/Card';
 import { HiOutlinePlus } from 'react-icons/hi';
 import Link from 'next/link';
-import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
-import { useAuth } from '../context/auth/AuthContext';
-import MainDashboardLoader from '../loaders/MainDashboardLoader';
-import ErrorPage from '../components/errorpage/ErrorPage';
 
-export default function Dashboard() {
-  const { statistics, loading, error, fetchCampaignStatistics } =
-    useCampaignContext();
-  const { user } = useAuth();
-
-  // Fetch statistics data when the component mounts
-  useEffect(() => {
-    fetchCampaignStatistics();
-  }, [fetchCampaignStatistics]);
-
-  // Display a loading state if data is still being fetched
-  if (loading) {
-    return <MainDashboardLoader />;
-  }
-
-  // Display an error message if there was an error fetching data
-  if (error) {
-    return <ErrorPage />;
-  }
-
-  // If statistics data is available, display it
+export default function DashboardLoader() {
   return (
     <div className="space-y-6 p-4">
       <h2 className="text-2xl font-semibold text-gray-700 dark:text-red-300">
@@ -47,8 +20,8 @@ export default function Dashboard() {
             className="text-lg font-semibold text-gray-600 dark:text-gray-400 cursor-pointer"
           >
             <div className="mt-4 flex flex-col items-center">
-              <HiOutlinePlus className="text-4xl text-green-500 dark:text-green-300 mb-2" />
-              Add Campaign
+              <Skeleton circle height={60} width={60} />
+              <Skeleton width={80} height={20} className="mt-2" />
             </div>
           </Link>
         </Card>
@@ -57,10 +30,10 @@ export default function Dashboard() {
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Total Backers
+              <Skeleton width={150} />
             </CardTitle>
             <CardDescription className="text-purple-500 dark:text-purple-400">
-              {statistics?.total_backers} Backers
+              <Skeleton width={100} />
             </CardDescription>
           </CardHeader>
         </Card>
@@ -69,12 +42,10 @@ export default function Dashboard() {
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Fundraising Goal
+              <Skeleton width={150} />
             </CardTitle>
             <CardDescription className="text-yellow-500 dark:text-yellow-400">
-              {user?.currency?.toUpperCase()}{' '}
-              {statistics &&
-                parseFloat(statistics.total_donated_amount).toLocaleString()}
+              <Skeleton width={100} />
             </CardDescription>
           </CardHeader>
         </Card>
@@ -83,10 +54,10 @@ export default function Dashboard() {
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Active Campaigns
+              <Skeleton width={150} />
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-neutral-400">
-              {statistics?.total_active_campaigns} Campaigns
+              <Skeleton width={100} />
             </CardDescription>
           </CardHeader>
         </Card>
@@ -95,14 +66,10 @@ export default function Dashboard() {
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Total Donations
+              <Skeleton width={150} />
             </CardTitle>
             <CardDescription className="text-green-500 dark:text-green-400">
-              {user?.currency?.toUpperCase()}{' '}
-              {statistics &&
-                parseFloat(
-                  statistics.total_donations_received,
-                ).toLocaleString()}
+              <Skeleton width={100} />
             </CardDescription>
           </CardHeader>
         </Card>
@@ -111,12 +78,10 @@ export default function Dashboard() {
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Pending Withdrawals
+              <Skeleton width={150} />
             </CardTitle>
             <CardDescription className="text-yellow-600 dark:text-yellow-300">
-              {user?.currency?.toUpperCase()}{' '}
-              {statistics &&
-                parseFloat(statistics?.total_donated_amount).toLocaleString()}
+              <Skeleton width={100} />
             </CardDescription>
           </CardHeader>
         </Card>
@@ -125,12 +90,10 @@ export default function Dashboard() {
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Recent Activity
+              <Skeleton width={150} />
             </CardTitle>
             <CardDescription className="text-purple-500 dark:text-purple-400">
-              {statistics?.new_donations_this_week &&
-                Object.keys(statistics?.new_donations_this_week).length}{' '}
-              new donations this week
+              <Skeleton width={100} />
             </CardDescription>
           </CardHeader>
         </Card>
@@ -139,11 +102,10 @@ export default function Dashboard() {
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Campaign Performance
+              <Skeleton width={150} />
             </CardTitle>
             <CardDescription className="text-green-500 dark:text-green-400">
-              {statistics?.campaign_performance[0]?.performance_percentage}% of
-              goal achieved
+              <Skeleton width={50} />
             </CardDescription>
           </CardHeader>
         </Card>
@@ -152,10 +114,10 @@ export default function Dashboard() {
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Boost Your Campaign
+              <Skeleton width={150} />
             </CardTitle>
             <CardDescription className="text-zinc-500 dark:text-neutral-400">
-              Reach more people with targeted promotions.
+              <Skeleton width={100} />
             </CardDescription>
           </CardHeader>
         </Card>
