@@ -73,7 +73,7 @@ module Api
           subaccount = @fundraiser.subaccount.order(created_at: :desc).first
           campaign = Campaign.find(params[:campaign_id])
         
-          raise "Fundraiser does not have a subaccount configured." unless subaccount
+          raise "You do not have account number configured." unless subaccount
         
           if subaccount.recipient_code.present?
             render json: { recipient_code: subaccount.recipient_code, message: "Recipient code already exists." }, status: :ok
