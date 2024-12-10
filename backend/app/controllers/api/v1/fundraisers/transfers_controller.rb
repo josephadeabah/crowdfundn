@@ -104,6 +104,7 @@ module Api
         end
         
         # Fetch customer balance from your database or system
+        # Fetch customer balance from your database or system
         def get_customer_balance(customer_id)
           # Fetch customer record and return balance
           Campaign.find(customer_id).current_amount
@@ -112,37 +113,47 @@ module Api
           nil
         end
 
-      # Update the customer's balance in the database
-      def update_customer_balance(customer_id, new_balance)
-        campaign = Campaign.find(customer_id)
-        if campaign
-          campaign.update(current_amount: new_balance)
-        else
-          puts "Failed to update balance: Customer with ID #{customer_id} not found."
+        # Update the customer's balance in the database
+        def update_customer_balance(customer_id, new_balance)
+          campaign = Campaign.find(customer_id)
+          if campaign
+            campaign.update(current_amount: new_balance)
+          else
+            puts "Failed to update balance: Customer with ID #{customer_id} not found."
+          end
         end
-      end
 
-      # Reset the customer's balance to zero after a successful transfer
-      def reset_customer_balance(customer_id)
-        update_customer_balance(customer_id, 0)
-      end
+        # Update the transferred amount in the database
+        def update_transferred_amount(campaign_id, transferred_amount)
+          campaign = Campaign.find(campaign_id)
+          if campaign
+            campaign.update(transferred_amount: transferred_amount)
+          else
+            Rails.logger.error "Failed to update transferred amount: Campaign with ID #{campaign_id} not found."
+          end
+        end
+
+        # Reset the customer's balance to zero after a successful transfer
+        def reset_customer_balance(customer_id)
+          update_customer_balance(customer_id, 0)
+        end
 
         # Handle the process of transferring funds and resetting the balance
         def process_transfer(campaign_id, subaccount, recipient_account, campaign_title, currency)
           customer_balance = get_customer_balance(campaign_id)
-        
+
           if customer_balance.nil? || customer_balance <= 0
             render json: { error: "Insufficient funds for transfer." }, status: :unprocessable_entity
             return
           end
-        
+
           transfer_response = @paystack_service.initiate_transfer(
             amount: customer_balance.round, # Convert to kobo
             recipient: recipient_account,
             reason: "Payout for campaign: #{campaign_title}",
             currency: currency
           )
-        
+
           if transfer_response[:status]
             transfer_data = transfer_response[:data]
             subaccount.update!(
@@ -150,7 +161,11 @@ module Api
               transfer_code: transfer_data[:transfer_code],
               amount: customer_balance
             )
-            reset_customer_balance(campaign_id)
+
+            # Reset the current_amount to 0 and store the transferred amount
+            update_customer_balance(campaign_id, 0)  # Reset current_amount
+            update_transferred_amount(campaign_id, customer_balance)  # Store transferred amount
+
             render json: {
               transfer_code: transfer_data[:transfer_code],
               reference: transfer_data[:reference],
