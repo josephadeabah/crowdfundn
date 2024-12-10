@@ -116,7 +116,7 @@ module Api
       def update_customer_balance(customer_id, new_balance)
         campaign = Campaign.find(customer_id)
         if campaign
-          old_balance = campaign.current_amount  # Capture the current balance before updating
+          old_balance =  Campaign.find(customer_id).current_amount  # Capture the current balance before updating
           campaign.update(current_amount: new_balance)
           campaign.update(transferred_amount: old_balance)  # Set transferred_amount to the old balance
         else
