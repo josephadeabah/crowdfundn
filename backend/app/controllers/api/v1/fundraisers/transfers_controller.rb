@@ -277,7 +277,7 @@ module Api
       
         # Define pagination parameters
         page = params[:page] || 1
-        page_size = params[:pageSize] || 12
+        page_size = params[:pageSize] || 8
       
         # Query the database for transfers belonging to the current user with pagination and order by created_at
         @transfers = @fundraiser.transfers.includes(:campaign).order(created_at: :desc).page(page).per(page_size)
