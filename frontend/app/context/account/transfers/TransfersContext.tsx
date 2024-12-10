@@ -38,7 +38,10 @@ interface TransferState {
   loading: boolean;
   loadingCampaigns: Record<string | number, boolean>;
   error: string | null;
-  fetchTransfers: () => void;
+  currentPage: number; // current page
+  totalPages: number; // total pages
+  totalCount: number; // total items count
+  fetchTransfers: (page: number) => void; // accepts page parameter
   createTransferRecipient: (
     campaignId: string | number,
   ) => Promise<CreateTransferRecipientResponseType>;
@@ -57,47 +60,57 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
     Record<string | number, boolean>
   >({});
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalCount, setTotalCount] = useState<number>(0);
+
   const { user, token } = useAuth();
 
-  const fetchTransfers = useCallback(async (): Promise<void> => {
-    setLoading(true);
-    setError(null);
+  const fetchTransfers = useCallback(
+    async (page: number = 1): Promise<void> => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      if (!user) {
-        setError('You are not authenticated');
-        return;
-      }
+      try {
+        if (!user) {
+          setError('You are not authenticated');
+          return;
+        }
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/fetch_user_transfers`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/fetch_user_transfers?page=${page}&per_page=10`, // Adjust per_page as needed
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
           },
-        },
-      );
+        );
 
-      if (!response.ok) {
-        setError('Failed to fetch transfers');
-        return;
+        if (!response.ok) {
+          setError('Failed to fetch transfers');
+          return;
+        }
+
+        const responseData = await response.json();
+
+        if (responseData && responseData.transfers) {
+          setTransfers(responseData.transfers); // Assuming responseData.transfers is the array of transfers
+          setTotalPages(responseData.total_pages); // Assuming responseData contains pagination info
+          setCurrentPage(responseData.current_page); // Assuming responseData contains current page info
+          setTotalCount(responseData.total_count); // Assuming responseData contains total count info
+        } else {
+          setError('No transfer data found');
+        }
+      } catch (err: any) {
+        setError(err || 'Error fetching transfers');
+      } finally {
+        setLoading(false);
       }
-
-      const responseData = await response.json();
-
-      if (responseData && responseData) {
-        setTransfers(responseData);
-      } else {
-        setError('No transfer data found');
-      }
-    } catch (err: any) {
-      setError(err || 'Error fetching transfers');
-    } finally {
-      setLoading(false);
-    }
-  }, [user, token]);
+    },
+    [user, token],
+  );
 
   const initiateTransfer = useCallback(
     async (
@@ -195,6 +208,9 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       loading,
       loadingCampaigns,
       error,
+      currentPage,
+      totalPages,
+      totalCount,
       fetchTransfers,
       createTransferRecipient,
       initiateTransfer,
@@ -204,6 +220,9 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       loading,
       loadingCampaigns,
       error,
+      currentPage,
+      totalPages,
+      totalCount,
       fetchTransfers,
       createTransferRecipient,
       initiateTransfer,

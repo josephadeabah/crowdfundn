@@ -4,8 +4,9 @@ import { HiShieldCheck } from 'react-icons/hi';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
 import { useTransferContext } from '../context/account/transfers/TransfersContext';
 import ToastComponent from '../components/toast/Toast';
-import TransferLoader from '../loaders/TransferLoader ';
 import TransferCampaignLoader from '../loaders/TransferCampaignLoader';
+import TransferLoader from '../loaders/TransferLoader ';
+import Pagination from '../components/pagination/Pagination';
 
 export default function Transfers() {
   const {
@@ -20,6 +21,8 @@ export default function Transfers() {
     transfers,
     loading,
     loadingCampaigns,
+    currentPage,
+    totalPages,
   } = useTransferContext();
 
   const [toast, setToast] = useState({
@@ -47,8 +50,8 @@ export default function Transfers() {
   }, [fetchCampaigns]);
 
   useEffect(() => {
-    fetchTransfers();
-  }, [fetchTransfers]);
+    fetchTransfers(currentPage); // Pass currentPage to fetchTransfers
+  }, [fetchTransfers, currentPage]); // Add currentPage dependency;
 
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
@@ -79,7 +82,7 @@ export default function Transfers() {
           } else {
             // Success toast if transfer initiation is successful
             showToast('Success', 'Transfer initiated successfully', 'success');
-            fetchTransfers(); // Refresh the transfers list
+            fetchTransfers(currentPage);
             fetchCampaigns(); // Refresh the campaigns list
           }
         } else {
@@ -95,6 +98,9 @@ export default function Transfers() {
       showToast('Error', String(err), 'error');
     }
   };
+
+  // Calculate total pages based on total transfer count and transfers per page
+  // const totalPages = Math.ceil(totalTransfersCount / transfersPerPage);
 
   return (
     <>
@@ -115,6 +121,7 @@ export default function Transfers() {
         <p className="text-gray-500 dark:text-neutral-400 mb-4">
           Review your transfer history or request new transfers.
         </p>
+
         {/* Secure Transfers Button */}
         <Button
           variant="ghost"
@@ -262,6 +269,13 @@ export default function Transfers() {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Component */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={fetchTransfers} // Pass the fetchTransfers function
+          />
         </div>
       </div>
     </>
