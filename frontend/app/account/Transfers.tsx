@@ -91,7 +91,7 @@ export default function Transfers() {
         }
       } else {
         // Error toast if creating transfer recipient fails
-        showToast('Error', 'Failed to create transfer recipient', 'error');
+        showToast('Error', 'Please add your account number first', 'error');
       }
     } catch (err) {
       // Catch any unexpected errors and show an error toast
