@@ -267,7 +267,7 @@ export default function Transfers() {
             </table>
           </div>
           {/* Pagination Component */}
-          <div className="max-w-5xl mx-auto mb-12">
+          <div className="w-full max-w-3xl mx-auto py-12">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
