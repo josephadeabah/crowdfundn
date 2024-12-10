@@ -164,21 +164,6 @@ module Api
           Rails.logger.error "Error processing transfer: #{e.message}"
           render json: { error: e.message }, status: :unprocessable_entity
         end
-        
-
-        # Handle a new deposit, updating the balance
-        # def update_balance_on_deposit(customer_id, deposit_amount)
-        #   customer_balance = get_customer_balance(customer_id)
-
-        #   if customer_balance.nil?
-        #     puts "Deposit aborted: Unable to retrieve customer balance."
-        #     return
-        #   end
-
-        #   new_balance = customer_balance + deposit_amount
-        #   update_customer_balance(customer_id, new_balance)
-        #   puts "Customer balance updated to #{new_balance}"
-        # end
 
         # Initialize a transfer
         def initialize_transfer
@@ -287,18 +272,30 @@ module Api
         end
 
        # Fetch transfers for the logged-in user
-        def fetch_user_transfers
-          @fundraiser = @current_user
-
-          # Query the database for transfers belonging to the current user
-          @transfers = @fundraiser.transfers.includes(:campaign).order(created_at: :desc)
-
-          if @transfers.empty?
-            render json: { error: "No transfers found for this user" }, status: :not_found
-          else
-            render json: @transfers, status: :ok
-          end
+       def fetch_user_transfers
+        @fundraiser = @current_user
+      
+        # Define pagination parameters
+        page = params[:page] || 1
+        page_size = params[:pageSize] || 12
+      
+        # Query the database for transfers belonging to the current user with pagination and order by created_at
+        @transfers = @fundraiser.transfers.includes(:campaign).order(created_at: :desc).page(page).per(page_size)
+      
+        # Check if transfers are present
+        if @transfers.empty?
+          render json: { error: "No transfers found for this user" }, status: :not_found
+        else
+          # Prepare the response with pagination information
+          render json: {
+            transfers: @transfers.as_json(include: :campaign),
+            current_page: @transfers.current_page,
+            total_pages: @transfers.total_pages,
+            total_count: @transfers.total_count
+          }, status: :ok
         end
+       end
+      
 
         # Save a transfer from Paystack to the database
         def save_transfer_from_paystack(transfer_data)
