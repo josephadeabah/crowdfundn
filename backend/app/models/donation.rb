@@ -4,4 +4,7 @@ class Donation < ApplicationRecord
   
   validates :transaction_reference, presence: true
   validates :email, presence: true  # Email is required
+  
+  # Define the `successful` scope
+  scope :successful, -> { where(status: 'successful') }
 end

@@ -33,6 +33,8 @@ class Campaign < ApplicationRecord
   # Attachments for images or videos
   has_one_attached :media # Use `has_many_attached` if there are multiple files
 
+  after_initialize :set_default_status, if: :new_record?
+
   # Method to return media URL (you can adjust this to return an array for multiple attachments)
   def media_url
     return unless media.attached?
@@ -79,8 +81,30 @@ class Campaign < ApplicationRecord
         currency: fundraiser.currency,
         currency_symbol: fundraiser.currency_symbol,
         profile: fundraiser.profile
-      }
+      },
+      total_days: total_days,
+      remaining_days: remaining_days
     )
+  end
+
+  def total_days
+    return 0 unless start_date && end_date
+  
+    (end_date.to_date - start_date.to_date).to_i.clamp(0, Float::INFINITY)
+  end
+  
+
+  def remaining_days
+    return 0 unless end_date
+  
+    (end_date.to_date - Date.current).to_i.clamp(0, Float::INFINITY)
+  end
+  
+
+  def update_status_based_on_date
+    if remaining_days.zero? && active?
+      update(status: :completed)
+    end
   end
 
   # Calculate the total number of unique donors (authenticated + anonymous)
@@ -93,6 +117,18 @@ class Campaign < ApplicationRecord
 
     # Return the sum of both
     authenticated_donors + anonymous_donors
+  end
+
+  def performance_percentage
+    return 0 if goal_amount.zero?
+
+    (current_amount / goal_amount.to_f * 100).round(2)
+  end
+
+  private
+
+  def set_default_status
+    self.status ||= :active
   end
 end
 

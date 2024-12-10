@@ -2,7 +2,7 @@ module Api
   module V1
     module Fundraisers
       class CampaignsController < ApplicationController
-        before_action :authenticate_request, only: %i[create update destroy my_campaigns]  # Ensure user is authenticated
+        before_action :authenticate_request, only: %i[create update destroy my_campaigns statistics]  # Ensure user is authenticated
         before_action :set_campaign, only: %i[show update destroy]
         before_action :authorize_campaign_user!, only: %i[update destroy]  # Ensure user authorization for these actions
 
@@ -120,6 +120,12 @@ module Api
           @campaign.destroy
           head :no_content
         end
+
+        # GET /api/v1/fundraisers/campaigns/statistics
+        def statistics
+          stats = CampaignStatisticsService.calculate_for_user(@current_user)
+          render json: stats, status: :ok
+        end        
 
         private
 
