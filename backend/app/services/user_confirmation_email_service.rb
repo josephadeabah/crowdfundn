@@ -34,10 +34,10 @@ class UserConfirmationEmailService
           <div style="background-color: orange; padding: 20px; margin-top: 20px; color: black; text-align: center;">
             <p style="margin: 0; font-size: 14px; font-weight: bold;">Follow Us</p>
             <p style="margin: 5px 0;">
-            <a href="https://facebook.com/yourpage" style="color: black; text-decoration: none; margin: 0 10px;">Facebook</a> | 
+            <a href="https://web.facebook.com/profile.php?id=61568192851056" style="color: black; text-decoration: none; margin: 0 10px;">Facebook</a> | 
             <a href="https://twitter.com/yourprofile" style="color: black; text-decoration: none; margin: 0 10px;">Twitter</a> | 
-            <a href="https://instagram.com/yourprofile" style="color: black; text-decoration: none; margin: 0 10px;">Instagram</a> | 
-            <a href="https://linkedin.com/yourpage" style="color: black; text-decoration: none; margin: 0 10px;">LinkedIn</a>
+            <a href="https://www.instagram.com/bantuhive_fund/" style="color: black; text-decoration: none; margin: 0 10px;">Instagram</a> | 
+            <a href="https://www.linkedin.com/company/bantu-hive/about/" style="color: black; text-decoration: none; margin: 0 10px;">LinkedIn</a>
             </p>
             <hr style="border: none; height: 1px; background-color: black; margin: 10px 0;">
             <p style="font-size: 12px; margin: 0;">

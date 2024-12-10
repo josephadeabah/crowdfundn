@@ -14,7 +14,7 @@ class TransferNotificationEmailService
       when 'success'
         subject = 'Your transfer was successful!'
         body = <<~HTML
-          <p>Dear #{user},</p>
+          <p>Hello #{user},</p>
           <p>We are pleased to inform you that your transfer of <strong>#{currency_symbol} #{transaction_amount}</strong> has been successfully initiated. It may take a while to reflect in your settlement bank.</p>
           <p>The transaction reference for your transfer is: <strong>#{transaction_reference}</strong>.</p>
           <p>Date: <strong>#{transaction_date}</strong>.</p>
@@ -23,7 +23,7 @@ class TransferNotificationEmailService
       when 'reversed'
         subject = 'Your transfer has been reversed.'
         body = <<~HTML
-          <p>Dear #{user},</p>
+          <p>Hello #{user},</p>
           <p>We regret to inform you that your transfer of <strong>#{currency_symbol} #{transaction_amount}</strong> has been reversed.</p>
           <p>The transaction reference for your transfer is: <strong>#{transaction_reference}</strong>.</p>
           <p>If you have any questions, please contact us.</p>
@@ -31,7 +31,7 @@ class TransferNotificationEmailService
       when 'failed'
         subject = 'Your transfer failed.'
         body = <<~HTML
-          <p>Dear #{user},</p>
+          <p>Hello #{user},</p>
           <p>We regret to inform you that your transfer of <strong>#{currency_symbol} #{transaction_amount}</strong> has failed.</p>
           <p>The transaction reference for your transfer is: <strong>#{transaction_reference}</strong>.</p>
           <p>Please contact us for further assistance.</p>
@@ -64,16 +64,17 @@ class TransferNotificationEmailService
           <body>
             #{body}
             <br>
+            <p>Warm Regards,</p>
             <p><strong>Bantuhive Team</strong></p>
   
             <!-- Footer -->
             <div style="background-color: orange; padding: 20px; margin-top: 20px; color: black; text-align: center;">
                 <p style="margin: 0; font-size: 14px; font-weight: bold;">Follow Us</p>
                 <p style="margin: 5px 0;">
-                <a href="https://facebook.com/yourpage" style="color: black; text-decoration: none; margin: 0 10px;">Facebook</a> | 
+                <a href="https://web.facebook.com/profile.php?id=61568192851056" style="color: black; text-decoration: none; margin: 0 10px;">Facebook</a> | 
                 <a href="https://twitter.com/yourprofile" style="color: black; text-decoration: none; margin: 0 10px;">Twitter</a> | 
-                <a href="https://instagram.com/yourprofile" style="color: black; text-decoration: none; margin: 0 10px;">Instagram</a> | 
-                <a href="https://linkedin.com/yourpage" style="color: black; text-decoration: none; margin: 0 10px;">LinkedIn</a>
+                <a href="https://www.instagram.com/bantuhive_fund/" style="color: black; text-decoration: none; margin: 0 10px;">Instagram</a> | 
+                <a href="https://www.linkedin.com/company/bantu-hive/about/" style="color: black; text-decoration: none; margin: 0 10px;">LinkedIn</a>
                 </p>
                 <hr style="border: none; height: 1px; background-color: black; margin: 10px 0;">
                 <p style="font-size: 12px; margin: 0;">
