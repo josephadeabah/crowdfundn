@@ -31,7 +31,7 @@ const TransferLoader = () => {
         </tr>
       </thead>
       <tbody>
-        {Array(10) // Assuming there are 5 rows of transfers, adjust as necessary
+        {Array(8) // Assuming there are 5 rows of transfers, adjust as necessary
           .fill(null)
           .map((_, index) => (
             <tr key={index}>
