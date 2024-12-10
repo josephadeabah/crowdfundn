@@ -45,7 +45,7 @@ class PaystackWebhook::ChargeSuccessHandler
       campaign = donation.campaign
       # Update campaign amounts
       campaign.update!(
-        transferred_amount: campaign.current_amount + net_amount,
+        transferred_amount: campaign.transferred_amount + campaign.current_amount + net_amount,
         current_amount: campaign.current_amount + net_amount
       )
   
