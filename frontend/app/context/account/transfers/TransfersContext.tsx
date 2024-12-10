@@ -78,7 +78,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/fetch_user_transfers?page=${page}&per_page=10`, // Adjust per_page as needed
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/fetch_user_transfers?page=${page}&per_page=8`, // Adjust per_page as needed
           {
             method: 'GET',
             headers: {
@@ -96,10 +96,10 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         const responseData = await response.json();
 
         if (responseData && responseData.transfers) {
-          setTransfers(responseData.transfers); // Assuming responseData.transfers is the array of transfers
-          setTotalPages(responseData.total_pages); // Assuming responseData contains pagination info
-          setCurrentPage(responseData.current_page); // Assuming responseData contains current page info
-          setTotalCount(responseData.total_count); // Assuming responseData contains total count info
+          setTransfers(responseData.transfers); //  responseData.transfers is the array of transfers
+          setTotalPages(responseData.total_pages); //  responseData contains pagination info
+          setCurrentPage(responseData.current_page); //  responseData contains current page info
+          setTotalCount(responseData.total_count); //  responseData contains total count info
         } else {
           setError('No transfer data found');
         }

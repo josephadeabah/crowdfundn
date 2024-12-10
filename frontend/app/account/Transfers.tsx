@@ -50,8 +50,8 @@ export default function Transfers() {
   }, [fetchCampaigns]);
 
   useEffect(() => {
-    fetchTransfers(currentPage); // Pass currentPage to fetchTransfers
-  }, [fetchTransfers, currentPage]); // Add currentPage dependency;
+    fetchTransfers(currentPage);
+  }, [fetchTransfers, currentPage]);
 
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
@@ -98,9 +98,6 @@ export default function Transfers() {
       showToast('Error', String(err), 'error');
     }
   };
-
-  // Calculate total pages based on total transfer count and transfers per page
-  // const totalPages = Math.ceil(totalTransfersCount / transfersPerPage);
 
   return (
     <>
@@ -269,13 +266,14 @@ export default function Transfers() {
               </tbody>
             </table>
           </div>
-
           {/* Pagination Component */}
+          <div className="max-w-5xl mx-auto mb-12">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={fetchTransfers} // Pass the fetchTransfers function
+            onPageChange={fetchTransfers}
           />
+          </div>
         </div>
       </div>
     </>
