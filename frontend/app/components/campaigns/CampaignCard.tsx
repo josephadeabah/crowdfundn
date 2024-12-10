@@ -148,7 +148,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                         <span className="text-red-500">-</span>
                         {parseFloat(
                           campaign.transferred_amount,
-                        ).toLocaleString()}
+                        ).toLocaleString() || 0}
                       </div>
                     </div>
                   </div>
