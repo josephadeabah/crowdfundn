@@ -3,6 +3,7 @@ class CampaignStatisticsService
       total_donated = user.campaigns.joins(:donations).where(donations: { status: 'successful' }).sum('donations.amount')
       {
         total_donations_received: total_donated,
+        total_fundraising_goal: user.campaigns.sum(:goal_amount),
         total_backers: unique_backers_count(user),
         total_active_campaigns: user.campaigns.active.count,
         total_donated_amount: user.campaigns.sum(:current_amount),
