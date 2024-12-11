@@ -35,6 +35,13 @@ class Campaign < ApplicationRecord
 
   after_initialize :set_default_status, if: :new_record?
 
+  # Method to update the transferred_amount based on successful donations and previous transferred_amount
+  def update_transferred_amount(new_donated_amount)
+    # Accumulate the new donated amount with the existing transferred amount
+    updated_transferred_amount = transferred_amount + new_donated_amount
+    update!(transferred_amount: updated_transferred_amount)
+  end
+
   # Method to return media URL (you can adjust this to return an array for multiple attachments)
   def media_url
     return unless media.attached?

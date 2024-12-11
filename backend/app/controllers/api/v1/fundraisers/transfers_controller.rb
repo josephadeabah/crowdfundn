@@ -123,18 +123,19 @@ module Api
         end
 
         # Update the transferred amount in the database
-        def update_transferred_amount(campaign_id, current_amount)
-          campaign = Campaign.find(campaign_id)
-          if campaign
-            # Accumulate the transferred amount with the current_amount
-            new_transferred_amount = campaign.transferred_amount.to_f + current_amount.to_f
+        # def update_transferred_amount(campaign_id, current_amount)
+        #   campaign = Campaign.find(campaign_id)
+        #   if campaign
+        #     # Accumulate the transferred amount with the current_amount
+        #     new_transferred_amount = campaign.transferred_amount.to_f + current_amount.to_f
 
-            # Update the transferred amount
-            campaign.update(transferred_amount: new_transferred_amount)
-          else
-            Rails.logger.error "Failed to update transferred amount: Campaign with ID #{campaign_id} not found."
-          end
-        end
+        #     # Update the transferred amount
+        #     campaign.update(transferred_amount: new_transferred_amount)
+        #   else
+        #     Rails.logger.error "Failed to update transferred amount: Campaign with ID #{campaign_id} not found."
+        #   end
+        # end
+
 
         # Reset the customer's balance to zero after a successful transfer
         def reset_customer_balance(customer_id)
@@ -167,6 +168,7 @@ module Api
 
             # Reset the current_amount to 0 and store the transferred amount
             update_customer_balance(campaign_id, 0)  # Reset current_amount
+            # update_transferred_amount(campaign_id, customer_balance)  # Store transferred amount
 
             render json: {
               transfer_code: transfer_data[:transfer_code],
@@ -196,9 +198,6 @@ module Api
         
           total_donations = @campaign.current_amount
           raise "You have no funds available for payout." if total_donations <= 0.0
-
-          update_transferred_amount(@campaign.id, total_donations)  # Store transferred amount
-
         
           balance_response = @paystack_service.check_balance
         
