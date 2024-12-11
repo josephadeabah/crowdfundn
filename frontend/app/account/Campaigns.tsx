@@ -118,12 +118,16 @@ const Campaigns: React.FC = () => {
               <div className="text-gray-500 dark:text-neutral-400 flex justify-between items-center space-x-4">
                 <div className="flex items-center space-x-2">
                   <div className="font-normal">Goal:</div>
-                  <div className="font-medium">{campaign.goal_amount}</div>
+                  <div className="font-medium">
+                    {campaign?.currency?.toUpperCase()}{' '}
+                    {parseFloat(campaign.goal_amount).toLocaleString()}
+                  </div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="font-normal">Raised:</div>
                   <div className="font-medium">
-                    {campaign.transferred_amount}
+                    {campaign?.currency?.toUpperCase()}{' '}
+                    {parseFloat(campaign.transferred_amount).toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -214,10 +218,14 @@ const Campaigns: React.FC = () => {
               {selectedCampaign.title}
             </h2>
             <p className="text-gray-800 dark:text-neutral-200">
-              <strong>Goal Amount:</strong> {selectedCampaign.goal_amount}
+              <strong>Goal Amount:</strong>{' '}
+              {selectedCampaign?.currency?.toUpperCase()}{' '}
+              {parseFloat(selectedCampaign.goal_amount).toLocaleString()}
             </p>
             <p className="text-gray-800 dark:text-neutral-200">
-              <strong>Raised Amount:</strong> {selectedCampaign.transferred_amount}
+              <strong>Raised Amount:</strong>{' '}
+              {selectedCampaign?.currency?.toUpperCase()}{' '}
+              {parseFloat(selectedCampaign.transferred_amount).toLocaleString()}
             </p>
             {selectedCampaign.media && (
               <img
