@@ -170,6 +170,7 @@ export interface CampaignPerformance {
 
 export interface CampaignStatisticsDataType {
   total_donations_received: string;
+  total_fundraising_goal: string;
   total_backers: number;
   total_active_campaigns: number;
   total_donated_amount: string;

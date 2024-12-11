@@ -74,7 +74,7 @@ export default function Dashboard() {
             <CardDescription className="text-yellow-500 dark:text-yellow-400">
               {user?.currency?.toUpperCase()}{' '}
               {statistics &&
-                parseFloat(statistics.total_donated_amount).toLocaleString()}
+                parseFloat(statistics.total_fundraising_goal).toLocaleString()}
             </CardDescription>
           </CardHeader>
         </Card>
