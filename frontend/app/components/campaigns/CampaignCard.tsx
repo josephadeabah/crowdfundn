@@ -10,7 +10,6 @@ import { generateRandomString } from '../../utils/helpers/generate.random-string
 import Image from 'next/image';
 import { deslugify } from '@/app/utils/helpers/categories';
 import { useUserContext } from '@/app/context/users/UserContext';
-import { getRemainingDaysMessage } from '@/app/utils/helpers/calculate.days';
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
