@@ -55,6 +55,10 @@ const Campaigns: React.FC = () => {
     );
   };
 
+  const handleViewCampaignDetails = (campaignId: string) => {
+    router.push(`/campaign/${campaignId}?${generateRandomString()}`);
+  };
+
   useEffect(() => {
     fetchCampaigns();
   }, [fetchCampaigns]);
@@ -121,19 +125,30 @@ const Campaigns: React.FC = () => {
                   variant="secondary"
                   size="default"
                 >
-                  Promote
+                  {campaign.status}
                 </Button>
 
-                <Button
-                  className="px-4 py-2 text-gray-700 dark:text-gray-300 rounded-full"
-                  variant="secondary"
-                  size="default"
-                  onClick={() => handleOpenModal(campaign)}
-                >
-                  Preview Campaign
-                </Button>
+                <div className="flex gap-2 items-center">
+                  <Button
+                    className="px-4 py-2 text-gray-500 rounded-full"
+                    variant="secondary"
+                    size="default"
+                    onClick={() =>
+                      handleViewCampaignDetails(String(campaign.id))
+                    }
+                  >
+                    View
+                  </Button>
+                  <Button
+                    className="px-4 py-2 text-gray-700 dark:text-gray-300 rounded-full"
+                    variant="secondary"
+                    size="default"
+                    onClick={() => handleOpenModal(campaign)}
+                  >
+                    Preview
+                  </Button>
+                </div>
               </div>
-
               <Popover>
                 <PopoverTrigger asChild>
                   <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-200">
