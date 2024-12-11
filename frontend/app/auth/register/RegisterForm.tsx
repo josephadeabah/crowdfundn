@@ -1,5 +1,6 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { FaSpinner, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 import {
   ApiResponse,
   UserRegistrationData,
@@ -17,7 +18,6 @@ type FormData = {
   birthDate: string;
   phoneNumber: string;
   targetAmount: string;
-  durationDays: string;
   nationalId: string;
   country: string;
   paymentMethod: string;
@@ -31,6 +31,7 @@ type FormData = {
 type Errors = Partial<Record<keyof FormData, string>>;
 
 const RegisterForm: React.FC = () => {
+  const router = useRouter();
   const initialState: FormData = {
     email: '',
     password: '',
@@ -39,7 +40,6 @@ const RegisterForm: React.FC = () => {
     birthDate: '',
     phoneNumber: '',
     targetAmount: '',
-    durationDays: '',
     nationalId: '',
     country: '',
     paymentMethod: '',
@@ -67,11 +67,11 @@ const RegisterForm: React.FC = () => {
   const paymentMethods = [
     'Credit Card',
     'Mobile Money',
-    'PayStack',
-    'FlutterWave',
-    'Bank Transfer',
+    // 'PayStack',
+    // 'FlutterWave',
+    // 'Bank Transfer',
   ];
-  const mobileProviders = ['MTN', 'MPesa', 'Telecel', 'Airtel', 'Tigo'];
+  const mobileProviders = ['MTN', 'MPesa', 'Telecel', 'AirtelTigo'];
 
   const isStepValid = (): boolean => {
     const fieldsToValidate: Record<number, (keyof FormData)[]> = {
@@ -83,7 +83,7 @@ const RegisterForm: React.FC = () => {
         'phoneNumber',
         'birthDate',
       ],
-      2: ['category', 'targetAmount', 'durationDays', 'nationalId'],
+      2: ['category', 'targetAmount', 'nationalId'],
       3: [
         'country',
         'paymentMethod',
@@ -222,7 +222,6 @@ const RegisterForm: React.FC = () => {
         birth_date: formData.birthDate,
         category: formData.category,
         target_amount: parseInt(formData.targetAmount, 10),
-        duration_in_days: parseInt(formData.durationDays, 10),
         national_id: formData.nationalId,
       };
 
@@ -242,6 +241,8 @@ const RegisterForm: React.FC = () => {
           'Registration successful! Please check your email to confirm your account.',
         );
         setShowToast(true);
+        // Redirect to /auth/signin after success
+        setTimeout(() => router.push('/auth/login'), 2000);
       }
     } catch (error) {
       setError('An error occurred during registration. Please try again.');
@@ -460,26 +461,6 @@ const RegisterForm: React.FC = () => {
                   </p>
                 )}
               </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Duration (Days) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="durationDays"
-                  value={formData.durationDays}
-                  onChange={handleChange}
-                  className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors.durationDays ? 'border-red-500' : 'border-gray-300'}`}
-                  min="1"
-                  required
-                />
-                {errors.durationDays && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.durationDays}
-                  </p>
-                )}
-              </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   National ID <span className="text-red-500">*</span>
@@ -643,7 +624,7 @@ const RegisterForm: React.FC = () => {
                   {isLoading ? (
                     <span className="flex items-center">
                       <FaSpinner className="animate-spin mr-2" />
-                      Processing...
+                      Registering...
                     </span>
                   ) : (
                     "Let's Go!"

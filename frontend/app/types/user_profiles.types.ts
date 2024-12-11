@@ -31,7 +31,6 @@ export interface UserProfile {
   birth_date: string;
   category: string;
   target_amount: string;
-  duration_in_days: number;
   national_id: string;
   profile: Profile;
   roles: Role[];

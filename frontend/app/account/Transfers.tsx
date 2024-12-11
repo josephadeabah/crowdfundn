@@ -180,7 +180,7 @@ export default function Transfers() {
                     }
                   >
                     {loadingCampaigns[campaign.id]
-                      ? 'Processing...'
+                      ? 'Transferring...'
                       : 'Request Transfer'}
                   </Button>
                 </div>
