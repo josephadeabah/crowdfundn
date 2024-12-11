@@ -217,7 +217,7 @@ const Campaigns: React.FC = () => {
               <strong>Goal Amount:</strong> {selectedCampaign.goal_amount}
             </p>
             <p className="text-gray-800 dark:text-neutral-200">
-              <strong>Raised Amount:</strong> {selectedCampaign.current_amount}
+              <strong>Raised Amount:</strong> {selectedCampaign.transferred_amount}
             </p>
             {selectedCampaign.media && (
               <img
