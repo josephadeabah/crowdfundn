@@ -121,13 +121,12 @@ const Campaigns: React.FC = () => {
 
               <div className="mt-4 flex justify-between items-center">
                 <Button
-                  className="px-4 py-2 text-green-500 rounded-full"
+                  className={`px-4 py-2 rounded-full ${campaign.status === 'active' ? 'text-green-500' : 'text-red-500'}`}
                   variant="ghost"
                   size="default"
                 >
-                  {campaign.status}
+                  {campaign.status === 'active' ? 'Active' : 'Completed'}
                 </Button>
-
                 <div className="flex gap-2 items-center">
                   <Button
                     className="px-4 py-2 text-gray-500 rounded-full"
