@@ -167,7 +167,6 @@ module Api
 
             # Reset the current_amount to 0 and store the transferred amount
             update_customer_balance(campaign_id, 0)  # Reset current_amount
-            update_transferred_amount(campaign_id, customer_balance)  # Store transferred amount
 
             render json: {
               transfer_code: transfer_data[:transfer_code],
@@ -197,6 +196,9 @@ module Api
         
           total_donations = @campaign.current_amount
           raise "You have no funds available for payout." if total_donations <= 0.0
+
+          update_transferred_amount(@campaign.id, total_donations)  # Store transferred amount
+
         
           balance_response = @paystack_service.check_balance
         
