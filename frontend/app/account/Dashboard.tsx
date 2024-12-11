@@ -11,6 +11,7 @@ import { useCampaignContext } from '../context/account/campaign/CampaignsContext
 import { useAuth } from '../context/auth/AuthContext';
 import MainDashboardLoader from '../loaders/MainDashboardLoader';
 import ErrorPage from '../components/errorpage/ErrorPage';
+import { InfoCircledIcon } from '@radix-ui/react-icons';
 
 export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
@@ -152,6 +153,7 @@ export default function Dashboard() {
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-red-600 dark:text-gray-400">
+              <InfoCircledIcon/>
               Attention
             </CardTitle>
             <CardDescription className="text-zinc-500 dark:text-neutral-400">
