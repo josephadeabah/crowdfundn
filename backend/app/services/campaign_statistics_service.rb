@@ -5,7 +5,7 @@ class CampaignStatisticsService
         total_donations_received: total_donated,
         total_backers: unique_backers_count(user),
         total_active_campaigns: user.campaigns.active.count,
-        total_donated_amount: user.campaigns.pluck(:current_amount),
+        total_donated_amount: user.campaigns.sum(:current_amount),
         campaign_performance: calculate_campaign_performance_for_user(user),
         new_donations_this_week: new_donations_count_for_user(user),
         campaigns_by_category: campaigns_by_category_for_user(user),
