@@ -151,11 +151,11 @@ export default function Dashboard() {
         {/* Boost Campaign Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Boost Your Campaign
+            <CardTitle className="text-lg font-semibold text-red-600 dark:text-gray-400">
+              Attention
             </CardTitle>
             <CardDescription className="text-zinc-500 dark:text-neutral-400">
-              Reach more people with targeted promotions.
+              You must widthdraw your funds in chunks as you fundraise. Learn more <a href="/terms" target='_blank' className='no-underline text-blue-400'>about widthdrawals</a>
             </CardDescription>
           </CardHeader>
         </Card>
