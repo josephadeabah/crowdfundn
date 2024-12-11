@@ -128,17 +128,18 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       <div className="w-full text-xs text-gray-600">
                         <p className="flex justify-between items-center text-sm font-semibold mt-2">
                           {fundraiserCurrency}
-                        {!isNaN(parseFloat(campaign.transferred_amount))
-                          ? parseFloat(
-                              campaign.transferred_amount,
-                            ).toLocaleString()
-                          : 0}
+                          {!isNaN(parseFloat(campaign.transferred_amount))
+                            ? parseFloat(
+                                campaign.transferred_amount,
+                              ).toLocaleString()
+                            : 0}
                           <span className="text-gray-600 dark:text-gray-400">
-                          <span className="text-xs p-1">of</span>{fundraiserCurrency}
+                            <span className="text-xs p-1">of</span>
+                            {fundraiserCurrency}
                             {parseFloat(campaign.goal_amount).toLocaleString()}
                           </span>
                         </p>
-                          {/* <span className="font-medium">
+                        {/* <span className="font-medium">
                             {fundraiserCurrency}
                             <span className="text-green-500 text-xs italic">
                               +<span className="text-red-500">-</span>
