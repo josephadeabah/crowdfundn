@@ -115,10 +115,18 @@ const Campaigns: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
                 {campaign.title}
               </h3>
-              <p className="text-gray-500 dark:text-neutral-400">
-                Goal: {campaign.goal_amount}
-              </p>
-
+              <div className="text-gray-500 dark:text-neutral-400 flex justify-between items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <div className="font-normal">Goal:</div>
+                  <div className="font-medium">{campaign.goal_amount}</div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="font-normal">Raised:</div>
+                  <div className="font-medium">
+                    {campaign.transferred_amount}
+                  </div>
+                </div>
+              </div>
               <div className="mt-4 flex justify-between items-center">
                 <Button
                   className={`px-4 py-2 rounded-full ${campaign.status === 'active' ? 'text-green-500' : 'text-red-500'}`}
