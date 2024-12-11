@@ -18,6 +18,7 @@ const categoryLabels = [
   'Animal Welfare',
   'Arts and Culture',
   'Arts Education',
+  'Birthday Celebration',
   'Carbon Footprint Reduction',
   'Child Protection',
   'Civic Engagement',
@@ -43,6 +44,7 @@ const categoryLabels = [
   'Financial Literacy',
   'Food Security',
   'Forestry Management',
+  'Funerals',
   'Gender Equality',
   'Green Architecture',
   'Health',
@@ -76,6 +78,7 @@ const categoryLabels = [
   'Veterans Support',
   'Water and Sanitation',
   'Wildlife Conservation',
+  'Weddings',
   "Women's Empowerment",
   'Youth Development',
 ];
