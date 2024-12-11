@@ -49,7 +49,7 @@ class PaystackWebhook::ChargeSuccessHandler
         current_amount: campaign.current_amount + net_amount
       )
 
-      # Call the method to update transferred_amount with the new donation's net_amount
+      # Call the method from the campaign model to update transferred_amount with the new donation's net_amount
       campaign.update_transferred_amount(net_amount)
 
       # Send confirmation email
