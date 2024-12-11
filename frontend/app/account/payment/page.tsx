@@ -146,9 +146,17 @@ const PaymentPageContent = () => {
   const validatePayStackForm = () => {
     const newErrors: {
       paymentEmail?: string;
+      paymentAmount?: string;
     } = {};
-    if (!/\S+@\S+\.\S+/.test(paymentEmail))
+    // Validate email
+    if (!/\S+@\S+\.\S+/.test(paymentEmail)) {
       newErrors.paymentEmail = 'Invalid email address';
+    }
+    // Validate payment amount (must be a positive number)
+    const amount = parseFloat(paymentAmount);
+    if (!paymentAmount || isNaN(amount) || amount <= 0) {
+      newErrors.paymentAmount = 'Amount must be a positive number';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };

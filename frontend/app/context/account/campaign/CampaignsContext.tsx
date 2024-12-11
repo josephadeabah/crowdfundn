@@ -242,7 +242,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           {
             method: 'PUT',
             headers: {
-              'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
             body: updatedCampaignData,

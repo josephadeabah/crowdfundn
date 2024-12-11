@@ -14,7 +14,6 @@ export interface UserRegistrationData {
   birth_date: string;
   category: string | null;
   target_amount: number;
-  duration_in_days: number;
   national_id: string;
 }
 
@@ -42,7 +41,6 @@ interface User {
   birth_date: string; // ISO 8601 string format for dates
   category: string;
   target_amount: string; // Assuming it's a string that can be parsed into a number
-  duration_in_days: number;
   national_id: string;
   currency_symbol: string;
   phone_code: string;

@@ -53,11 +53,27 @@ const DonationButton: React.FC<DonationButtonProps> = ({
   });
 
   const paymentMethods = [
-    { id: 'creditCard', name: 'Bank Payment', icon: <FaCreditCard /> },
-    { id: 'paypal', name: 'PayPal', icon: <FaPaypal /> },
-    { id: 'flutterwave', name: 'Flutterwave', icon: <SiFlutter /> },
-    { id: 'paystack', name: 'PayStack', icon: <PaystackIcon /> },
-    { id: 'stripe', name: 'Stripe', icon: <SiStripe /> },
+    {
+      id: 'creditCard',
+      name: ' Credit Card with Bank Payment',
+      icon: <FaCreditCard />,
+    },
+    { id: 'paypal', name: 'Credit Card with PayPal', icon: <FaPaypal /> },
+    {
+      id: 'flutterwave',
+      name: 'Mobile Money &  Credit Card with Flutterwave',
+      icon: <SiFlutter />,
+    },
+    {
+      id: 'paystack',
+      name: 'Mobile Money &  Credit Card with PayStack',
+      icon: <PaystackIcon />,
+    },
+    {
+      id: 'stripe',
+      name: 'Credit Card & Google Pay with Stripe',
+      icon: <SiStripe />,
+    },
   ];
 
   const handleDonateClick = () => {

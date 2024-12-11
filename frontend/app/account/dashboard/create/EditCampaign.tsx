@@ -30,25 +30,15 @@ const EditCampaign = () => {
   );
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
-
   // Additional state variables
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currentAmount, setCurrentAmount] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [startDate, setStartDate] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [endDate, setEndDate] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [category, setCategory] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [location, setLocation] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currency, setCurrency] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currencyCode, setCurrencyCode] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => {

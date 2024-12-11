@@ -154,7 +154,17 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
           placeholder="Enter your amount"
           value={paymentAmount}
           onChange={(e) => setPaymentAmount(e.target.value)}
+          aria-invalid={!!errors.paymentAmount}
+          aria-describedby={
+            errors.paymentAmount ? 'paymentAmount-error' : undefined
+          }
+          required
         />
+        {errors.paymentAmount && (
+          <p id="paymentAmount-error" className="mt-1 text-sm text-red-500">
+            {errors.paymentAmount}
+          </p>
+        )}
       </div>
 
       <button
