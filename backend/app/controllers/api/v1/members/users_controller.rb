@@ -183,7 +183,6 @@ module Api
             :birth_date,
             :category,
             :target_amount,
-            :duration_in_days,
             :national_id,
             profile_attributes: %i[
               name

@@ -9,7 +9,6 @@ class AddFieldsToUsers < ActiveRecord::Migration[7.1]
     add_column :users, :birth_date, :date
     add_column :users, :category, :string
     add_column :users, :target_amount, :decimal
-    add_column :users, :duration_in_days, :integer
     add_column :users, :national_id, :string
   end
 end

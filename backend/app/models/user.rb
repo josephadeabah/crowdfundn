@@ -9,8 +9,7 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
   validates :currency_symbol, presence: true
   validates :phone_code, presence: true
-  validates :full_name, :phone_number, :country, :payment_method, :currency, :birth_date, :category, :target_amount,
-            :duration_in_days, :national_id, presence: true
+  validates :full_name, :phone_number, :country, :payment_method, :currency, :birth_date, :category, :target_amount, :national_id, presence: true
   has_one :profile, dependent: :destroy
   has_many :campaigns, foreign_key: 'fundraiser_id', dependent: :destroy
   has_many :donations
