@@ -114,12 +114,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       <div className="w-full text-xs">
                         <Progress
                           firstProgress={
-                            (Number(campaign?.current_amount) /
+                            (Number(campaign?.transferred_amount) /
                               Number(campaign?.goal_amount)) *
                             100
                           }
                           firstTooltipContent={`Progress: ${
-                            (Number(campaign?.current_amount) /
+                            (Number(campaign?.transferred_amount) /
                               Number(campaign?.goal_amount)) *
                             100
                           }%`}
@@ -138,7 +138,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                             {parseFloat(campaign.goal_amount).toLocaleString()}
                           </span>
                         </p>
-                          <span className="font-medium">
+                          {/* <span className="font-medium">
                             {fundraiserCurrency}
                             <span className="text-green-500 text-xs italic">
                               +<span className="text-red-500">-</span>
@@ -146,7 +146,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                             {parseFloat(
                               campaign.current_amount,
                             ).toLocaleString()}
-                          </span>
+                          </span> */}
                       </div>
                     </div>
                   </div>
