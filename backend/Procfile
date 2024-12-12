@@ -1,4 +1,4 @@
 web: bundle exec rails server -p $PORT -e ${RAILS_ENV:-production}
-clock: bundle exec rails runner 'Clockwork::run'
+clock: bundle exec clockwork config/clock.rb
 # worker: bundle exec sidekiq -C config/sidekiq.yml
 # release: bundle exec rails db:migrate
