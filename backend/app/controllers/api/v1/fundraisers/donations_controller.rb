@@ -3,7 +3,41 @@ module Api
     module Fundraisers
       class DonationsController < ApplicationController
         before_action :authenticate_request, only: %i[index create]
+        before_action :set_campaign, only: [:public_donations]
 
+        # Public donations list for a campaign
+        def public_donations
+          # Fetch donations related to the specified campaign and filter by successful status
+          donations = @campaign.donations.successful
+
+          # Format donation data with user info or 'Anonymous' for anonymous donations
+          donors = donations.map do |donation|
+            {
+              full_name: donation.user&.full_name || "Anonymous",  # If user exists, show their name; otherwise show 'Anonymous'
+              amount: donation.amount,
+              email: donation.email,
+              date: donation.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            }
+          end
+
+          # Paginate the donations
+          page = params[:page] || 1
+          per_page = params[:per_page] || 10
+          paginated_donors = Kaminari.paginate_array(donors).page(page).per(per_page)
+
+          # Prepare pagination info
+          pagination = {
+            current_page: paginated_donors.current_page,
+            total_pages: paginated_donors.total_pages,
+            per_page: paginated_donors.limit_value,
+            total_count: paginated_donors.total_count
+          }
+
+          # Render donations along with pagination data
+          render json: { donations: paginated_donors, pagination: pagination }, status: :ok
+        end
+
+        # fetch donations for a fundraiser
         def index
           if @current_user.nil?
             return render json: { error: 'You need to log in to access donations.' }, status: :unauthorized
@@ -109,24 +143,21 @@ module Api
           else
             render json: { error: 'Payment initialization failed: ' + response[:message] }, status: :unprocessable_entity
           end
-        end
-        
-        # New Action for Returning Redirect URL
-        # def redirect_url
-        #   campaign = Campaign.find_by(id: params[:campaign_id])
-        #   if campaign
-        #     redirect_url = campaign.send_redirect_url_to_frontend
-        #     render json: { redirect_url: redirect_url }, status: :ok
-        #   else
-        #     render json: { error: 'Campaign not found' }, status: :not_found
-        #   end
-        # end       
+        end      
         
         private
 
         def donation_params
           params.require(:donation).permit(:amount, :transaction_reference, :email, :full_name, :phone, :plan, metadata: {})
-        end        
+        end
+        
+        # Set the campaign based on the campaign_id parameter
+        def set_campaign
+          @campaign = Campaign.find_by(id: params[:campaign_id])
+          if @campaign.nil?
+            render json: { error: 'Campaign not found' }, status: :not_found
+          end
+        end
       end
     end
   end

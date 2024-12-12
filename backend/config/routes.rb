@@ -63,13 +63,13 @@ Rails.application.routes.draw do
         resources :campaigns do
           post 'webhook_status_update', on: :collection  # Defines a route for webhook status update
           get 'my_campaigns', on: :collection
+          get 'public_donations', to: 'donations#public_donations'
           get 'group_by_category', on: :collection
           get 'statistics', on: :collection
           resources :updates, only: %i[create update destroy]
           resources :comments, only: %i[create index destroy]
           resources :rewards, only: %i[index show create update destroy]
           resources :donations, only: [:create]
-          # get 'donations/redirect_url', to: 'donations#redirect_url', on: :member
         end
       end
     end
