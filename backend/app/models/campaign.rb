@@ -130,11 +130,11 @@ class Campaign < ApplicationRecord
     (current_amount / goal_amount.to_f * 100).round(2)
   end
 
-  def self.send_webhook_for_all_campaigns
-    all.find_each do |campaign|
-      CampaignWebhookService.new(campaign).send_status_update
-    end
-  end
+  # def self.send_webhook_for_all_campaigns
+  #   all.find_each do |campaign|
+  #     CampaignWebhookService.new(campaign).send_status_update
+  #   end
+  # end
 
   private
 
