@@ -112,10 +112,12 @@ class Campaign < ApplicationRecord
   
 
   def update_status_based_on_date
+    Rails.logger.debug "Remaining days for campaign #{id}: #{remaining_days}"
     if remaining_days.zero? && active?
+      Rails.logger.debug "Campaign #{id} status is being updated to completed"
       update!(status: :completed)
     end
-  end
+  end  
 
   # Calculate the total number of unique donors (authenticated + anonymous)
   def total_donors
