@@ -209,20 +209,20 @@ const SingleCampaignPage: React.FC = () => {
             {/* Show Donor List here */}
             <div className="bg-white rounded-lg shadow-sm px-6 py-4 mt-6">
               <h3 className="text-xl font-semibold mb-4">Donor List</h3>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {donations.map((donation) => (
                   <div
                     key={donation.id}
                     className="flex items-center justify-between"
                   >
-                    <div className="text-lg font-medium">
+                    <div className="text-lg font-medium truncate max-w-[200px]">
                       {donation.full_name}
                     </div>
                     <div className="text-sm text-gray-500">
                       {fundraiserCurrency}
                       {parseFloat(donation.amount || '0.0').toLocaleString()}
                     </div>
-                    <FaHeart className="text-red-500" />
+                    <FaHeart className="text-indigo-600 text-xl" />{' '}
                   </div>
                 ))}
               </div>
