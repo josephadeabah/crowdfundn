@@ -34,6 +34,9 @@ class Campaign < ApplicationRecord
   has_one_attached :media # Use `has_many_attached` if there are multiple files
 
   after_initialize :set_default_status, if: :new_record?
+  after_update :send_status_update_webhook, if: :status_changed?
+    # Automatically call `update_status_based_on_date` after update
+  after_update :update_status_based_on_date, if: :start_or_end_date_changed?
 
   # Method to update the transferred_amount based on successful donations and previous transferred_amount
   def update_transferred_amount(new_donated_amount)
@@ -116,13 +119,8 @@ class Campaign < ApplicationRecord
 
   # Calculate the total number of unique donors (authenticated + anonymous)
   def total_donors
-    # Count authenticated donors (distinct user_ids)
     authenticated_donors = donations.where(status: 'successful').where.not(user_id: nil).distinct.count(:user_id)
-
-    # Count anonymous donors (donations without a user_id)
     anonymous_donors = donations.where(status: 'successful', user_id: nil).count
-
-    # Return the sum of both
     authenticated_donors + anonymous_donors
   end
 
@@ -132,20 +130,24 @@ class Campaign < ApplicationRecord
     (current_amount / goal_amount.to_f * 100).round(2)
   end
 
+  def self.send_webhook_for_all_campaigns
+    all.find_each do |campaign|
+      CampaignWebhookService.new(campaign).send_status_update
+    end
+  end
+
   private
+
+  def send_status_update_webhook
+    CampaignWebhookService.new(self).send_status_update
+  end
+
+  # Only update status when start or end date changes
+  def start_or_end_date_changed?
+    start_date_changed? || end_date_changed?
+  end
 
   def set_default_status
     self.status ||= :active
   end
-end
-
-class Update < ApplicationRecord
-  belongs_to :campaign
-  validates :content, presence: true
-end
-
-class Comment < ApplicationRecord
-  belongs_to :campaign
-  belongs_to :user
-  validates :content, presence: true
 end

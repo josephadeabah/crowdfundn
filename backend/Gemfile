@@ -16,6 +16,8 @@ gem 'aws-sdk-s3', '~> 1.0'
 # Use for pagination
 gem 'kaminari'
 
+gem 'rest-client'
+
 # Use dotenv for environment variables
 gem 'dotenv-rails', groups: %i[development test production]
 

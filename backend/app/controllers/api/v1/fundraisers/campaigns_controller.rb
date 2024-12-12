@@ -3,10 +3,13 @@ module Api
     module Fundraisers
       class CampaignsController < ApplicationController
         before_action :authenticate_request, only: %i[create update destroy my_campaigns statistics]  # Ensure user is authenticated
-        before_action :set_campaign, only: %i[show update destroy]
+        before_action :set_campaign, only: %i[show update destroy webhook_status_update]
         before_action :authorize_campaign_user!, only: %i[update destroy]  # Ensure user authorization for these actions
 
         def index
+          # Call the send_webhook_for_all_campaigns method to send webhooks for all campaigns
+          Campaign.send_webhook_for_all_campaigns
+          
           page = params[:page] || 1
           page_size = params[:pageSize] || 12
           
@@ -125,7 +128,39 @@ module Api
         def statistics
           stats = CampaignStatisticsService.calculate_for_user(@current_user)
           render json: stats, status: :ok
-        end        
+        end
+        
+        # New Webhook Action
+        def webhook_status_update
+          # Check if this is a self-triggered request
+          if request.headers['X-Self-Triggered']
+            Rails.logger.info("Ignoring self-triggered webhook for campaign #{request.body.read['campaign_id']}")
+            return # Ignore self-triggered webhook
+          end
+
+          # Expecting the status and campaign_id in the request
+          data = JSON.parse(request.body.read)
+
+          unless data['campaign_id'] && data['status']
+            render json: { error: 'Invalid data' }, status: :unprocessable_entity
+            return
+          end
+
+          # Find the campaign by ID
+          @campaign = Campaign.find_by(id: data['campaign_id'])
+          
+          if @campaign
+            # Update the campaign's status
+            @campaign.update(status: data['status'])
+
+            # Optionally, call the CampaignWebhookService or any other related services
+            CampaignWebhookService.new(@campaign).send_status_update
+
+            render json: { message: 'Campaign status updated' }, status: :ok
+          else
+            render json: { error: 'Campaign not found' }, status: :not_found
+          end
+        end
 
         private
 
@@ -140,11 +175,11 @@ module Api
         end
 
         def set_campaign
-          @campaign = Campaign.includes(:rewards, :updates, :comments, fundraiser: :profile).find(params[:id])
+          campaign_id = params[:id] || JSON.parse(request.body.read)['campaign_id']
+          @campaign = Campaign.includes(:rewards, :updates, :comments, fundraiser: :profile).find(campaign_id)
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'Campaign not found' }, status: :not_found
         end
-        
 
         def authorize_campaign_user!
           authorize_user!(@campaign)  # Call the authorization method

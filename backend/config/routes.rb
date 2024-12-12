@@ -58,6 +58,7 @@ Rails.application.routes.draw do
 
         resources :donations, only: [:index]
         resources :campaigns do
+          post 'webhook_status_update', on: :collection  # Defines a route for webhook status update
           get 'my_campaigns', on: :collection
           get 'group_by_category', on: :collection
           get 'statistics', on: :collection
