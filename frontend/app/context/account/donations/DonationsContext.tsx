@@ -152,7 +152,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         );
         return;
       }
-
+      console.log("donationData", donationData);  
       const { authorization_url } = donationData;
 
       if (authorization_url) {
