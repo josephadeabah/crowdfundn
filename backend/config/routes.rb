@@ -66,6 +66,7 @@ Rails.application.routes.draw do
           resources :comments, only: %i[create index destroy]
           resources :rewards, only: %i[index show create update destroy]
           resources :donations, only: [:create]
+          get 'donations/redirect_url', to: 'donations#redirect_url', on: :member
         end
       end
     end

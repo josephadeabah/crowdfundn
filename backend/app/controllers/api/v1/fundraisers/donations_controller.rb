@@ -94,8 +94,10 @@ module Api
             donation.subscription_code = donation.plan if donation.plan.present?
         
             if donation.save
+              redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign.id, host: 'bantuhive.com')
               render json: {
                 authorization_url: response[:data][:authorization_url],
+                redirect_url: redirect_url,
                 donation: donation,
                 total_donors: campaign.total_donors
               }, status: :created
@@ -105,7 +107,18 @@ module Api
           else
             render json: { error: 'Payment initialization failed: ' + response[:message] }, status: :unprocessable_entity
           end
-        end                
+        end
+        
+        # New Action for Returning Redirect URL
+        def redirect_url
+          campaign = Campaign.find_by(id: params[:campaign_id])
+          if campaign
+            redirect_url = campaign.send_redirect_url_to_frontend
+            render json: { redirect_url: redirect_url }, status: :ok
+          else
+            render json: { error: 'Campaign not found' }, status: :not_found
+          end
+        end       
         
         private
 
