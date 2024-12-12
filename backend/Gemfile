@@ -18,6 +18,9 @@ gem 'kaminari'
 
 gem 'rest-client'
 
+
+gem 'clockwork'
+
 # Use dotenv for environment variables
 gem 'dotenv-rails', groups: %i[development test production]
 
