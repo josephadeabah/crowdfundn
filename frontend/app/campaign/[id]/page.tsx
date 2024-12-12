@@ -212,7 +212,7 @@ const SingleCampaignPage: React.FC = () => {
               <div className="max-h-[400px] overflow-y-auto space-y-6">
                 {' '}
                 {/* Set max height and enable vertical scroll */}
-                {donations.slice().reverse().map((donation) => (
+                {donations.map((donation) => (
                     <div
                       key={donation.id}
                       className="flex items-center justify-between"
