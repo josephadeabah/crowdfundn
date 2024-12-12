@@ -71,7 +71,7 @@ module Api
             fundraiser_name: campaign.fundraiser.full_name
           }
 
-          redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign.id, host: 'bantuhive.com')
+          redirect_url = Rails.application.routes.url_helpers.api_v1_fundraisers_campaign_url(campaign.id, host: 'bantuhive.com')
         
           metadata = { 
             user_id: donation.metadata[:campaign][:fundraiser_id], 
