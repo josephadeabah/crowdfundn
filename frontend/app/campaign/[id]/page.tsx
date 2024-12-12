@@ -217,7 +217,7 @@ const SingleCampaignPage: React.FC = () => {
                     key={donation.id}
                     className="flex items-center justify-between"
                   >
-                    <div className="text-lg font-medium truncate max-w-[200px]">
+                    <div className="text-sm font-medium truncate max-w-[200px]">
                       {donation.full_name}
                     </div>
                     <div className="text-sm text-gray-500">
