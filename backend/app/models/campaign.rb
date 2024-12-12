@@ -36,7 +36,7 @@ class Campaign < ApplicationRecord
   after_initialize :set_default_status, if: :new_record?
   after_update :send_status_update_webhook, if: :status_changed?
     # Automatically call `update_status_based_on_date` after update
-  after_update :update_status_based_on_date, if: :start_or_end_date_changed?
+  after_update :update_status_based_on_date, if: :remaining_days.zero? && active?
 
   # Method to update the transferred_amount based on successful donations and previous transferred_amount
   def update_transferred_amount(new_donated_amount)
@@ -112,11 +112,7 @@ class Campaign < ApplicationRecord
   
 
   def update_status_based_on_date
-    Rails.logger.debug "Remaining days for campaign #{id}: #{remaining_days}"
-    if remaining_days.zero? && active?
-      Rails.logger.debug "Campaign #{id} status is being updated to completed"
       update!(status: :completed)
-    end
   end  
 
   # Calculate the total number of unique donors (authenticated + anonymous)
@@ -131,12 +127,6 @@ class Campaign < ApplicationRecord
 
     (current_amount / goal_amount.to_f * 100).round(2)
   end
-
-  # def self.send_webhook_for_all_campaigns
-  #   all.find_each do |campaign|
-  #     CampaignWebhookService.new(campaign).send_status_update
-  #   end
-  # end
 
   private
 
