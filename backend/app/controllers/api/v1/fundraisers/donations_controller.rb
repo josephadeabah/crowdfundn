@@ -14,7 +14,7 @@ module Api
           donors = donations.map do |donation|
             {
               full_name: donation.full_name || "Anonymous",  # If user exists, show their name; otherwise show 'Anonymous'
-              amount: donation.amount,
+              amount: donation.gross_amount,
               email: donation.email,
               date: donation.created_at.strftime('%Y-%m-%d %H:%M:%S')
             }
