@@ -222,7 +222,7 @@ const SingleCampaignPage: React.FC = () => {
                       {fundraiserCurrency}
                       {parseFloat(donation.amount || '0.0').toLocaleString()}
                     </div>
-                    <FaHeart className="text-indigo-600 text-xl" />{' '}
+                    <FaHeart className="text-indigo-400 text-xl" />{' '}
                   </div>
                 ))}
               </div>
