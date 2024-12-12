@@ -13,7 +13,7 @@ module Api
           # Format donation data with user info or 'Anonymous' for anonymous donations
           donors = donations.map do |donation|
             {
-              full_name: donation.user&.full_name || "Anonymous",  # If user exists, show their name; otherwise show 'Anonymous'
+              full_name: donation.full_name || "Anonymous",  # If user exists, show their name; otherwise show 'Anonymous'
               amount: donation.amount,
               email: donation.email,
               date: donation.created_at.strftime('%Y-%m-%d %H:%M:%S')
