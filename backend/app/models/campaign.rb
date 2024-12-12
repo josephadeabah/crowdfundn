@@ -36,7 +36,7 @@ class Campaign < ApplicationRecord
   after_initialize :set_default_status, if: :new_record?
   after_update :send_status_update_webhook, if: :status_changed?
     # Automatically call `update_status_based_on_date` after update
-  after_update :update_status_based_on_date, if: :remaining_days.zero? && active?
+  after_update :update_status_based_on_date, if: -> { remaining_days.zero? && active? }
 
   # Method to update the transferred_amount based on successful donations and previous transferred_amount
   def update_transferred_amount(new_donated_amount)
@@ -134,10 +134,10 @@ class Campaign < ApplicationRecord
     CampaignWebhookService.new(self).send_status_update
   end
 
-  # Only update status when start or end date changes
-  def start_or_end_date_changed?
-    start_date_changed? || end_date_changed?
-  end
+  # # Only update status when start or end date changes
+  # def start_or_end_date_changed?
+  #   start_date_changed? || end_date_changed?
+  # end
 
   def set_default_status
     self.status ||= :active
