@@ -7,7 +7,7 @@ class DonationConfirmationEmailService
       campaign_name = donation.campaign.title
       fundraiser_name = donation.campaign.fundraiser.full_name
       transaction_reference = donation.transaction_reference
-      transaction_amount = donation.amount.to_f
+      transaction_amount = donation.gross_amount.to_f
       transaction_date = donation.created_at.strftime('%B %d, %Y')
       currency_symbol = donation.campaign.currency_symbol
   
