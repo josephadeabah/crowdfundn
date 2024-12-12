@@ -1,6 +1,8 @@
 
 Rails.application.routes.draw do
 
+  get 'campaign/:id', to: 'campaigns#show', as: 'campaign'
+
   namespace :api do
     namespace :v1 do
       namespace :members do
