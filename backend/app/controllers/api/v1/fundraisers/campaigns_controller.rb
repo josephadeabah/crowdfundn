@@ -134,7 +134,6 @@ module Api
             Rails.logger.info("Ignoring self-triggered webhook for campaign #{request.body.read['campaign_id']}")
             return # Ignore self-triggered webhook
           end
-
           # Expecting the status and campaign_id in the request
           data = JSON.parse(request.body.read)
 
@@ -142,7 +141,6 @@ module Api
             render json: { error: 'Invalid data' }, status: :unprocessable_entity
             return
           end
-
           # Find the campaign by ID
           @campaign = Campaign.find_by(id: data['campaign_id'])
           
