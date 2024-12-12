@@ -4,7 +4,7 @@ class CampaignWebhookService
     end
   
     def send_status_update
-      url = "http://127.0.0.1:3000/api/v1/fundraisers/campaigns/webhook_status_update" # Your webhook URL
+      url = "https://api.bantuhive.com/crowdfundn-backend2/api/v1/fundraisers/campaigns/webhook_status_update" # Your webhook URL
       
       payload = {
         campaign_id: @campaign.id,
