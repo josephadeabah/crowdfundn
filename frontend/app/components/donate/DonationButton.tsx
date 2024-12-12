@@ -140,6 +140,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
         <div className="text-orange-500 text-xs">
           We currently support payment with PayStack. If your preferred payment
           method is disabled, kindly wait for future availability.
+          <span className='text-gray-600'>You'll receive one email from us and one from Paystack after payment.</span>
         </div>
         <hr className="my-4" />
         <form onSubmit={handlePaymentSubmit}>
@@ -147,7 +148,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
             {paymentMethods.map((method) => (
               <label
                 key={method.id}
-                className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 ${
+                className={`flex items-center p-3 border rounded-lg text-sm cursor-pointer transition-all duration-200 ${
                   selectedPaymentMethod === method.id
                     ? 'border-green bg-green-100'
                     : 'border-green-200 hover:border-green-800'
