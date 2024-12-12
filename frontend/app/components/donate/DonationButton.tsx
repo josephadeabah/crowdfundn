@@ -140,7 +140,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
         <div className="text-orange-500 text-xs">
           We currently support payment with PayStack. If your preferred payment
           method is disabled, kindly wait for future availability.
-          <span className='text-gray-600'>You'll receive one email from us and one from Paystack after payment.</span>
+          <p className='text-gray-600'>You'll receive one email from us and one from Paystack after payment.</p>
         </div>
         <hr className="my-4" />
         <form onSubmit={handlePaymentSubmit}>
