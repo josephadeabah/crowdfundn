@@ -208,7 +208,7 @@ const SingleCampaignPage: React.FC = () => {
 
             {/* Show Donor List here */}
             <div className="bg-white rounded-lg shadow-sm px-6 py-4 mt-6">
-              <h3 className="text-xl font-semibold mb-4">Donor List</h3>
+              <h3 className="text-xl font-semibold mb-4">Backers</h3>
               <div className="max-h-[400px] overflow-y-auto space-y-6">
                 {' '}
                 {/* Set max height and enable vertical scroll */}
