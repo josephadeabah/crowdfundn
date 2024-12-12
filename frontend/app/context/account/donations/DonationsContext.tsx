@@ -33,7 +33,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     setError(`Oops!: ${errorText}`);
   };
 
-  // Fetch all donations for the fundraiser
+  // Fetch all donations for the fundraiser (requires authentication)
   const fetchDonations = useCallback(
     async (currentPage: number = 1, perPage: number = 10) => {
       if (!token) {
@@ -75,6 +75,50 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       }
     },
     [token],
+  );
+
+  // Fetch public donations for a campaign (no authentication required)
+  const fetchPublicDonations = useCallback(
+    async (
+      campaignId: string,
+      currentPage: number = 1,
+      perPage: number = 10,
+    ) => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/public_donations?page=${currentPage}&per_page=${perPage}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          handleApiError(errorText);
+          return;
+        }
+
+        const data = await response.json();
+        setDonations(data.donations);
+        setPagination({
+          current_page: data.pagination.current_page,
+          total_pages: data.pagination.total_pages,
+          per_page: data.pagination.per_page,
+          total_count: data.pagination.total_count,
+        });
+      } catch (err) {
+        handleApiError(
+          'Error fetching public donations. Please try again later.',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
   );
 
   // Create Donation Transaction
@@ -175,6 +219,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       error,
       pagination,
       fetchDonations,
+      fetchPublicDonations, // Add the public donations fetch here
       createDonationTransaction,
     }),
     [
@@ -183,6 +228,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       error,
       pagination,
       fetchDonations,
+      fetchPublicDonations, // Add the public donations fetch here
       createDonationTransaction,
     ],
   );

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import DonationButton from '@/app/components/donate/DonationButton';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useParams } from 'next/navigation';
-import { FaShare } from 'react-icons/fa';
+import { FaShare, FaHeart } from 'react-icons/fa'; // Import heart icon
 import { Button } from '@/app/components/button/Button';
 import SingleCampaignLoader from '@/app/loaders/SingleCampaignLoader';
 import Avatar from '@/app/components/avatar/Avatar';
@@ -12,6 +12,7 @@ import { getRemainingDaysMessage } from '@/app/utils/helpers/calculate.days';
 import CommentsSection from '@/app/components/comments/CommentSection';
 import FundraiserUpdates from '@/app/components/fundraiserupdate/FundraiserUpdates';
 import RewardSelection from '@/app/components/selectreward/RewardSelection';
+import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTier, setSelectedTier] = useState<number | null>(null);
@@ -22,12 +23,14 @@ const SingleCampaignPage: React.FC = () => {
 
   const { id } = useParams() as { id: string };
   const { currentCampaign, fetchCampaignById, loading } = useCampaignContext();
+  const { donations, fetchPublicDonations } = useDonationsContext(); // Get donations and fetch function
 
   useEffect(() => {
     if (id) {
       fetchCampaignById(id);
+      fetchPublicDonations(id, 1, 10); // Fetch public donations when the campaign is loaded
     }
-  }, [id, fetchCampaignById]);
+  }, [id, fetchCampaignById, fetchPublicDonations]);
 
   const handleTierSelect = (tierId: number) => {
     setSelectedTier(tierId);
@@ -200,6 +203,28 @@ const SingleCampaignPage: React.FC = () => {
                     campaignTitle: currentCampaign?.title,
                   }}
                 />
+              </div>
+            </div>
+
+            {/* Show Donor List here */}
+            <div className="bg-white rounded-lg shadow-sm px-6 py-4 mt-6">
+              <h3 className="text-xl font-semibold mb-4">Donor List</h3>
+              <div className="space-y-4">
+                {donations.map((donation) => (
+                  <div
+                    key={donation.id}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="text-lg font-medium">
+                      {donation.full_name}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {fundraiserCurrency}
+                      {parseFloat(donation.amount || '0.0').toLocaleString()}
+                    </div>
+                    <FaHeart className="text-red-500" />
+                  </div>
+                ))}
               </div>
             </div>
           </div>

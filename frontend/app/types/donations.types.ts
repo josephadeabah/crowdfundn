@@ -61,4 +61,9 @@ export interface DonationsState {
     billingFrequency: string,
   ) => Promise<void>;
   fetchDonations: (currentPage: number, perPage: number) => Promise<void>;
+  fetchPublicDonations: (
+    campaignId: string,
+    currentPage: number,
+    perPage: number,
+  ) => Promise<void>;
 }
