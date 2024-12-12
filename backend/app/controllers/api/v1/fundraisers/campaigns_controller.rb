@@ -6,10 +6,7 @@ module Api
         before_action :set_campaign, only: %i[show update destroy webhook_status_update]
         before_action :authorize_campaign_user!, only: %i[update destroy]  # Ensure user authorization for these actions
 
-        def index
-          # Call the send_webhook_for_all_campaigns method to send webhooks for all campaigns
-          Campaign.send_webhook_for_all_campaigns
-          
+        def index   
           page = params[:page] || 1
           page_size = params[:pageSize] || 12
           
