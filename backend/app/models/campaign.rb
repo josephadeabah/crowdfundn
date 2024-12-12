@@ -113,7 +113,7 @@ class Campaign < ApplicationRecord
 
   def update_status_based_on_date
     if remaining_days.zero? && active?
-      update(status: :completed)
+      update!(status: :completed)
     end
   end
 
