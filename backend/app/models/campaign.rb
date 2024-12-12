@@ -128,11 +128,11 @@ class Campaign < ApplicationRecord
     (current_amount / goal_amount.to_f * 100).round(2)
   end
 
-  private
-
   def send_status_update_webhook
     CampaignWebhookService.new(self).send_status_update
   end
+
+  private
 
   def set_default_status
     self.status ||= :active
