@@ -1,6 +1,7 @@
 
 Rails.application.routes.draw do
 
+  # redirect to the detailed campaign page
   get 'campaign/:id', to: 'campaigns#show', as: 'campaign'
 
   namespace :api do
