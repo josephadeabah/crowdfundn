@@ -209,7 +209,9 @@ const SingleCampaignPage: React.FC = () => {
             {/* Show Donor List here */}
             <div className="bg-white rounded-lg shadow-sm px-6 py-4 mt-6">
               <h3 className="text-xl font-semibold mb-4">Donor List</h3>
-              <div className="space-y-6">
+              <div className="max-h-[400px] overflow-y-auto space-y-6">
+                {' '}
+                {/* Set max height and enable vertical scroll */}
                 {donations.map((donation) => (
                   <div
                     key={donation.id}
@@ -222,7 +224,7 @@ const SingleCampaignPage: React.FC = () => {
                       {fundraiserCurrency}
                       {parseFloat(donation.amount || '0.0').toLocaleString()}
                     </div>
-                    <FaHeart className="text-indigo-400 text-xl" />{' '}
+                    <FaHeart className="text-indigo-400 text-xl" />
                   </div>
                 ))}
               </div>
