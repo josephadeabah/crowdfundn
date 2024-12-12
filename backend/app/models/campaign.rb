@@ -134,11 +134,6 @@ class Campaign < ApplicationRecord
     CampaignWebhookService.new(self).send_status_update
   end
 
-  # # Only update status when start or end date changes
-  # def start_or_end_date_changed?
-  #   start_date_changed? || end_date_changed?
-  # end
-
   def set_default_status
     self.status ||= :active
   end
