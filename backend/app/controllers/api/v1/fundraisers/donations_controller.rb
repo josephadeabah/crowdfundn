@@ -70,12 +70,15 @@ module Api
             fundraiser_id: campaign.fundraiser_id,
             fundraiser_name: campaign.fundraiser.full_name
           }
+
+          redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign.id, host: 'bantuhive.com')
         
           metadata = { 
             user_id: donation.metadata[:campaign][:fundraiser_id], 
             campaign_id: donation.campaign_id,
             session_token: donation.metadata[:session_token], # Only for anonymous users
             fundraiserName: campaign.fundraiser.full_name,
+            redirect_url: redirect_url,
           }
         
           donation.plan = params[:donation][:plan]
@@ -94,10 +97,8 @@ module Api
             donation.subscription_code = donation.plan if donation.plan.present?
         
             if donation.save
-              redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign.id, host: 'bantuhive.com')
               render json: {
                 authorization_url: response[:data][:authorization_url],
-                redirect_url: redirect_url,
                 donation: donation,
                 total_donors: campaign.total_donors
               }, status: :created
