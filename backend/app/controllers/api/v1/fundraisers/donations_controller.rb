@@ -99,6 +99,7 @@ module Api
             if donation.save
               render json: {
                 authorization_url: response[:data][:authorization_url],
+                redirect_url: redirect_url,  # Include the redirect URL
                 donation: donation,
                 total_donors: campaign.total_donors
               }, status: :created
