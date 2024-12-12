@@ -132,14 +132,14 @@ class Campaign < ApplicationRecord
     CampaignWebhookService.new(self).send_status_update
   end
 
-  def send_redirect_url_to_frontend
-    # Generate the redirect URL
-    redirect_url = Rails.application.routes.url_helpers.campaign_url(self.id, host: 'bantuhive.com')
+  # def send_redirect_url_to_frontend
+  #   # Generate the redirect URL
+  #   redirect_url = Rails.application.routes.url_helpers.campaign_url(self.id, host: 'bantuhive.com')
 
-    # Optionally, you can store this URL in the donation or send it directly to the controller.
-    # We'll just return it for simplicity here.
-    redirect_url
-  end
+  #   # Optionally, you can store this URL in the donation or send it directly to the controller.
+  #   # We'll just return it for simplicity here.
+  #   redirect_url
+  # end
 
   private
 
