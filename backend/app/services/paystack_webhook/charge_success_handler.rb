@@ -54,8 +54,6 @@ class PaystackWebhook::ChargeSuccessHandler
 
       # Send confirmation email
       DonationConfirmationEmailService.send_confirmation_email(donation)
-      # Send the redirect URL to the campaign model
-      # campaign.send_redirect_url_to_frontend
     else
       donation.update!(status: transaction_status)
       raise "Transaction status is #{transaction_status}"
