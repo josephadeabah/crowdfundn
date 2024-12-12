@@ -153,14 +153,14 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
       console.log("donationData", donationData);  
-      const { authorization_url } = donationData;
+      const { authorization_url, redirect_url } = donationData;
 
       if (authorization_url) {
-        window.location.href = authorization_url;
+        window.location.href = authorization_url;  // Redirect to Paystack payment page
+      } else if (redirect_url) {
+        window.location.href = redirect_url;  // Redirect to the campaign page (after successful donation)
       } else {
-        handleApiError(
-          'We could not initiate your payment at this time. Please try again later.',
-        );
+        handleApiError('We could not initiate your payment at this time. Please try again later.');
       }
     } catch (error) {
       handleApiError('Error initiating donation. Please try again later.');
