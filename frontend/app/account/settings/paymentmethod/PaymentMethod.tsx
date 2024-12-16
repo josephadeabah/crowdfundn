@@ -231,33 +231,7 @@ const PaymentMethod = () => {
       }
 
       const data = await response.json();
-      if (data.status) {
-        showToast(
-          'Success',
-          subaccountData
-            ? 'Account updated successfully!'
-            : 'Account added successfully!',
-          'success',
-        );
-        // Fetch the updated subaccount data
-        const subaccountResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user.id}/subaccount`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          },
-        );
-        const updatedSubaccountData = await subaccountResponse.json();
-        setSubaccountData(updatedSubaccountData[0]); // Assuming the response is an array and we use the first item
-      } else {
-        showToast(
-          'Error',
-          'Failed to update the account. Please try again.',
-          'error',
-        );
-      }
+      
     } catch (error) {
       console.error('Error:', error);
       showToast('Error', 'An error occurred. Please try again.', 'error');
