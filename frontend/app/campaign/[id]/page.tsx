@@ -213,20 +213,20 @@ const SingleCampaignPage: React.FC = () => {
                 {' '}
                 {/* Set max height and enable vertical scroll */}
                 {donations.map((donation) => (
-                    <div
-                      key={donation.id}
-                      className="flex items-center justify-between"
-                    >
-                      <div className="text-sm font-medium truncate max-w-[200px]">
-                        {donation.full_name || 'Anonymous'}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {fundraiserCurrency}
-                        {parseFloat(donation.amount || '0.0').toLocaleString()}
-                      </div>
-                      <FaHeart className="text-indigo-400 text-xl" />
+                  <div
+                    key={donation.id}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="text-sm font-medium truncate max-w-[200px]">
+                      {donation.full_name || 'Anonymous'}
                     </div>
-                  ))}
+                    <div className="text-sm text-gray-500">
+                      {fundraiserCurrency}
+                      {parseFloat(donation.amount || '0.0').toLocaleString()}
+                    </div>
+                    <FaHeart className="text-indigo-400 text-xl" />
+                  </div>
+                ))}
               </div>
             </div>
           </div>

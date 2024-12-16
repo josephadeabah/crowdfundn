@@ -112,7 +112,7 @@ const PaymentMethod = () => {
             },
           );
           const subaccountData = await response.json();
-          setSubaccountData(subaccountData[0]); // Assuming the response is an array and we use the first object
+          setSubaccountData(subaccountData[0]); // Assuming the response is an array and we use the first item
 
           setUserDetails({
             name: user.full_name,
@@ -159,8 +159,11 @@ const PaymentMethod = () => {
     }
   };
 
-  const handleAddSubaccount = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitSubaccount = async (
+    e: React.FormEvent<HTMLFormElement>,
+  ) => {
     e.preventDefault();
+
     if (!selectedBank) {
       showToast('Error', 'Please select a bank.', 'error');
       return;
@@ -200,34 +203,64 @@ const PaymentMethod = () => {
     };
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user.id}/create_subaccount`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+      let response;
+      if (subaccountData) {
+        // If subaccountData exists, it means we're updating an existing subaccount
+        response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user.id}/update_subaccount`,
+          {
+            method: 'PUT', // Use PUT or PATCH based on your API specification
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
           },
-          body: JSON.stringify(payload),
-        },
-      );
-
-      await response.json();
-      showToast('Success', 'Account added successfully!', 'success');
-
-      const subaccountResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user.id}/subaccount`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
+        );
+      } else {
+        // If no subaccountData, we are adding a new account
+        response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user.id}/create_subaccount`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
           },
-        },
-      );
-      const subaccountData = await subaccountResponse.json();
-      setSubaccountData(subaccountData[0]); // Assuming the response is an array and we use the first item
+        );
+      }
+
+      const data = await response.json();
+      if (data.status) {
+        showToast(
+          'Success',
+          subaccountData
+            ? 'Account updated successfully!'
+            : 'Account added successfully!',
+          'success',
+        );
+        // Fetch the updated subaccount data
+        const subaccountResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user.id}/subaccount`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+        const updatedSubaccountData = await subaccountResponse.json();
+        setSubaccountData(updatedSubaccountData[0]); // Assuming the response is an array and we use the first item
+      } else {
+        showToast(
+          'Error',
+          'Failed to update the account. Please try again.',
+          'error',
+        );
+      }
     } catch (error) {
-      showToast('Error', 'Error creating account. Please try again.', 'error');
-      console.error(error);
+      console.error('Error:', error);
+      showToast('Error', 'An error occurred. Please try again.', 'error');
     } finally {
       setIsLoading(false);
       setIsModalOpen(false);
@@ -293,9 +326,11 @@ const PaymentMethod = () => {
         size="small"
       >
         <h2 className="text-2xl font-bold mb-4 text-theme-color-primary">
-          Add Bank Account Number
+          {subaccountData
+            ? 'Update Bank Account Number'
+            : 'Add Bank Account Number'}
         </h2>
-        <form onSubmit={handleAddSubaccount}>
+        <form onSubmit={handleSubmitSubaccount}>
           <div className="mb-4">
             <label htmlFor="bank" className="block mb-1 font-medium">
               Select Your Bank
@@ -337,6 +372,7 @@ const PaymentMethod = () => {
               className="w-full p-2 border rounded-md border-gray-300"
               placeholder="123456789012"
               required
+              defaultValue={subaccountData?.account_number || ''}
             />
           </div>
 
@@ -353,7 +389,13 @@ const PaymentMethod = () => {
               className="bg-theme-color-primary text-gray-800 px-4 py-2 rounded-md hover:bg-theme-color-primary-dark transition-colors"
               disabled={isLoading}
             >
-              {isLoading ? 'Adding...' : 'Add Account'}
+              {isLoading
+                ? subaccountData
+                  ? 'Updating...'
+                  : 'Adding...'
+                : subaccountData
+                  ? 'Update Account'
+                  : 'Add Account'}
             </button>
           </div>
         </form>
