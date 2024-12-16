@@ -70,38 +70,44 @@ module Api
         # Create a transfer recipient
         def create_transfer_recipient
           @fundraiser = User.find(params[:fundraiser_id])
-          subaccount = @fundraiser.subaccount.order(created_at: :desc).first
           campaign = Campaign.find(params[:campaign_id])
         
-          raise "You do not have account number configured." unless subaccount
+          # Fetch the full subaccount based on subaccount_id in the user's table
+          subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
         
-          if subaccount.recipient_code.present?
-            render json: { recipient_code: subaccount.recipient_code, message: "Recipient code already exists." }, status: :ok
+          unless subaccount
+            render json: { error: "No subaccount found for the fundraiser" }, status: :unprocessable_entity
             return
           end
         
-          response = @paystack_service.create_transfer_recipient(
-            type: subaccount.subaccount_type,
-            name: subaccount.business_name,
-            account_number: subaccount.account_number,
-            bank_code: subaccount.settlement_bank,
-            currency: campaign.currency.upcase,
-            description: "Transfer recipient for campaign payouts",
-            metadata: { user_id: @fundraiser.id, campaign_id: campaign.id, email: @fundraiser.email, user_name: @fundraiser.full_name }
-          )
+          # If no recipient_code exists, proceed to create one
+          if subaccount.recipient_code.blank?
+            response = @paystack_service.create_transfer_recipient(
+              type: subaccount.subaccount_type,
+              name: subaccount.business_name,
+              account_number: subaccount.account_number,
+              bank_code: subaccount.bank_code,
+              currency: campaign.currency.upcase,
+              description: "Transfer recipient for campaign payouts",
+              metadata: { user_id: @fundraiser.id, campaign_id: campaign.id, email: @fundraiser.email, user_name: @fundraiser.full_name }
+            )
         
-          if response[:status]
-            subaccount.update!(recipient_code: response.dig(:data, :recipient_code))
-            render json: { message: "Recipient created successfully.", recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id }, status: :ok
+            if response[:status]
+              subaccount.update!(recipient_code: response.dig(:data, :recipient_code))
+              render json: { message: "Recipient created successfully.", recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id }, status: :ok
+            else
+              render json: { error: "Provide valid data" }, status: :unprocessable_entity
+            end
           else
-            render json: { error: "Provide valid data" }, status: :unprocessable_entity
+            # If recipient_code already exists, return it
+            render json: { recipient_code: subaccount.recipient_code, message: "Recipient code already exists." }, status: :ok
           end
         rescue ActiveRecord::RecordInvalid => e
           render json: { error: "Failed to save recipient code: #{e.message}" }, status: :internal_server_error
         rescue => e
           Rails.logger.error "Error creating transfer recipient: #{e.message}"
           render json: { error: e.message }, status: :unprocessable_entity
-        end
+        end        
         
         # Fetch customer balance from your database or system
         def get_customer_balance(customer_id)
@@ -174,7 +180,7 @@ module Api
         
           @campaign = Campaign.find(params[:campaign_id])
           @fundraiser = @campaign.fundraiser
-          subaccount = @fundraiser.subaccount.order(created_at: :desc).first
+          subaccount = @fundraiser.subaccount
           recipient_code = params[:recipient_code]
         
           raise "You do not have a account number added." unless subaccount

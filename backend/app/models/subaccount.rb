@@ -1,5 +1,5 @@
 class Subaccount < ApplicationRecord
-  belongs_to :user
+  belongs_to :user, optional: true
 
   validates :business_name, presence: true
   validates :account_number, presence: true

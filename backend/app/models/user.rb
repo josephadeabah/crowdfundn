@@ -15,7 +15,7 @@ class User < ApplicationRecord
   has_many :donations
   has_many :transfers, dependent: :destroy
   has_many :archived_campaigns
-  has_many :subaccount, dependent: :destroy
+  has_one :subaccount, dependent: :destroy
   accepts_nested_attributes_for :profile
 
   after_create :generate_confirmation_token

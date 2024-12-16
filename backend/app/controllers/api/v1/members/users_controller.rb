@@ -4,7 +4,7 @@ module Api
       class UsersController < ApplicationController
         before_action :authenticate_request, except: [:index]
         before_action :authorize_admin, only: [:make_admin]
-        before_action :set_user, only: %i[make_admin make_admin_role show_by_id assign_role show_subaccount] # Added :assign_role
+        before_action :set_user, only: %i[make_admin make_admin_role show_by_id assign_role show_subaccount update_subaccount] # Added :assign_role
         rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
         def index
@@ -24,72 +24,103 @@ module Api
           user = User.find(params[:user_id])
           raise "User not found" unless user
 
-            # Prepare metadata
-            metadata = params[:subaccount][:metadata]
-            if metadata && metadata[:custom_fields]
-              # Sanitize custom fields (ensure they have the required keys and valid data)
-              metadata[:custom_fields] = metadata[:custom_fields].map do |field|
-                # Ensure the field only contains necessary attributes and valid data
-                field.slice(:display_name, :variable_name, :value, :type)
-              end
-            else
-              metadata = { custom_fields: [] }  # Default to empty custom fields if not provided
-            end
-        
-          # Call Paystack service to create the subaccount
-          response = PaystackService.new.create_subaccount(
-            business_name: params[:subaccount][:business_name],
-            settlement_bank: params[:subaccount][:settlement_bank],
-            account_number: params[:subaccount][:account_number],
-            bank_code: params[:subaccount][:bank_code],
-            percentage_charge: params[:subaccount][:percentage_charge],
-            description: params[:subaccount][:description],
-            primary_contact_email: user.email,
-            primary_contact_name: user.full_name,
-            primary_contact_phone: user.phone_number,
-            metadata: metadata
-          )
-                
-          if response[:status] == true
-            # Proceed with saving the subaccount
-            subaccount = user.subaccount.build(
-              business_name: params[:subaccount][:business_name],
-              account_number: params[:subaccount][:account_number],
-              subaccount_code: response[:data][:subaccount_code],  # Use the subaccount_code from response[:data]
-              percentage_charge: params[:subaccount][:percentage_charge],
-              description: params[:subaccount][:description],
-              metadata: params[:subaccount][:metadata],
-              settlement_bank: params[:subaccount][:settlement_bank],
-              subaccount_type: metadata[:custom_fields].first[:type]
-            )
-          
-            if subaccount.save
-              # Fetch the newly created subaccount (this is now the first in order)
-              latest_subaccount = user.subaccount.order(created_at: :desc).first
-            
-              render json: { success: true, subaccount_code: latest_subaccount.subaccount_code }, status: :ok
-            else
-              Rails.logger.error "account save failed: #{subaccount.errors.full_messages}"
-              render json: { success: false, error: subaccount.errors.full_messages }, status: :unprocessable_entity
+          # Prepare metadata
+          metadata = params[:subaccount][:metadata]
+          if metadata && metadata[:custom_fields]
+            # Sanitize custom fields (ensure they have the required keys and valid data)
+            metadata[:custom_fields] = metadata[:custom_fields].map do |field|
+              # Ensure the field only contains necessary attributes and valid data
+              field.slice(:display_name, :variable_name, :value, :type)
             end
           else
-            render json: { success: false, error: response[:message] }, status: :unprocessable_entity
-          end          
+            metadata = { custom_fields: [] }  # Default to empty custom fields if not provided
+          end
+        
+          # Check if the user already has a subaccount
+          if user.subaccount
+            # Optionally, update the existing subaccount fields if needed
+            subaccount = user.subaccount
+          else
+            # If no subaccount exists, create a new one via Paystack
+            response = PaystackService.new.create_subaccount(
+              business_name: params[:subaccount][:business_name],
+              settlement_bank: params[:subaccount][:settlement_bank],
+              account_number: params[:subaccount][:account_number],
+              bank_code: params[:subaccount][:bank_code],
+              percentage_charge: params[:subaccount][:percentage_charge],
+              description: params[:subaccount][:description],
+              primary_contact_email: user.email,
+              primary_contact_name: user.full_name,
+              primary_contact_phone: user.phone_number,
+              metadata: metadata
+            )
+        
+            if response[:status] == true
+              # Create and associate a new subaccount with the user
+              subaccount = user.create_subaccount(
+                business_name: params[:subaccount][:business_name],
+                bank_code: params[:subaccount][:bank_code],
+                account_number: params[:subaccount][:account_number],
+                subaccount_code: response[:data][:subaccount_code],
+                subaccount_type: metadata[:custom_fields].first[:type],
+                percentage_charge: params[:subaccount][:percentage_charge],
+                description: params[:subaccount][:description],
+                settlement_bank: params[:subaccount][:settlement_bank],
+                metadata: params[:subaccount][:metadata]
+              )
+            else
+              render json: { success: false, error: response[:message] }, status: :unprocessable_entity
+              return
+            end
+          end
+        
+          # Ensure the user's subaccount_id is set to the subaccount_code
+          user.update_columns(subaccount_id: subaccount.subaccount_code)
+        
+          render json: { success: true, subaccount_code: user.subaccount_id }, status: :ok
         rescue => e
           Rails.logger.error "Error during account creation: #{e.message}"
           render json: { success: false, error: e.message }, status: :unprocessable_entity
-        end
+        end               
         
         # GET /api/v1/members/users/:user_id/subaccount
         def show_subaccount
-          if @user.subaccount.any?
-            # Sort all subaccounts by their creation time
-            subaccounts = @user.subaccount.order(created_at: :desc)
-            render json: subaccounts, status: :ok  # Return all sorted subaccounts
+          if @user.subaccount_id
+            subaccount = Subaccount.find_by(subaccount_code: @user.subaccount_id)
+            if subaccount
+              render json: subaccount, status: :ok
+            else
+              render json: { error: "Subaccount not found" }, status: :not_found
+            end
           else
-            render json: { error: "account not found" }, status: :not_found
+            render json: { error: "User has no associated subaccount" }, status: :not_found
           end
         end
+        
+        
+        def update_subaccount
+          # Ensure the user is set and has a subaccount
+          subaccount = Subaccount.find_by(subaccount_code: @user.subaccount_id)
+          
+          if subaccount.nil?
+            # If no subaccount exists for the user, return an error
+            render json: { success: false, error: "Subaccount not found for this user" }, status: :not_found
+            return
+          end
+        
+          # Try to update the subaccount with the provided parameters
+          if subaccount.update(subaccount_params)
+            # If successful, return the updated subaccount
+            render json: { success: true, subaccount: subaccount }, status: :ok
+          else
+            # If the update fails, return validation errors
+            render json: { success: false, error: subaccount.errors.full_messages }, status: :unprocessable_entity
+          end
+        rescue => e
+          # Log any errors that occur during the update process
+          Rails.logger.error "Error updating subaccount: #{e.message}"
+          render json: { success: false, error: "An error occurred while updating the subaccount" }, status: :unprocessable_entity
+        end                      
         
 
         # PUT /api/v1/members/users/:id/make_admin

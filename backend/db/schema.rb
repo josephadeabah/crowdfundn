@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_11_203454) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_16_183857) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -279,7 +279,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_11_203454) do
     t.string "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
+    t.string "subaccount_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
+    t.index ["subaccount_id"], name: "index_users_on_subaccount_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
