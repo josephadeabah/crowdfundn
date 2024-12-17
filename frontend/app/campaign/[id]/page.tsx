@@ -188,9 +188,9 @@ const SingleCampaignPage: React.FC = () => {
                       Number(currentCampaign?.goal_amount || 1)) *
                       100,
                   )}
-                  size={120} // Ring size
-                  strokeWidth={10} // Ring thickness
-                  color="#22c55e" // Green ring color
+                  size={120}
+                  strokeWidth={10}
+                  color="#22c55e"
                 />
               </div>
             </div>
