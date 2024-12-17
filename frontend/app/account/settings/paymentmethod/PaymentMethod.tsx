@@ -13,17 +13,14 @@ type Bank = {
 
 const PaymentMethod = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<'add' | 'update' | null>(null); // Separate state for modal type
   const [isLoading, setIsLoading] = useState(false);
-  const [userDetails, setUserDetails] = useState({
-    accountId: '',
-    name: '',
-    userEmail: '',
-  });
   const [banks, setBanks] = useState<Bank[]>([]);
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
   const [accountNumber, setAccountNumber] = useState('');
   const [isLoadingBanks, setIsLoadingBanks] = useState(true);
-  const [subaccountData, setSubaccountData] = useState<any>(null); // Handle subaccount structure as an object
+  const [subaccountData, setSubaccountData] = useState<any>(null);
+  const { user } = useAuth();
   const [toast, setToast] = useState({
     isOpen: false,
     title: '',
@@ -31,77 +28,32 @@ const PaymentMethod = () => {
     type: 'success' as 'success' | 'error' | 'warning',
   });
 
-  const { user } = useAuth();
-
-  const showToast = (
-    title: string,
-    description: string,
-    type: 'success' | 'error' | 'warning',
-  ) => {
-    setToast({
-      isOpen: true,
-      title,
-      description,
-      type,
-    });
+  const showToast = (title: string, description: string, type: 'success' | 'error' | 'warning') => {
+    setToast({ isOpen: true, title, description, type });
   };
 
-  const closeToast = () => {
-    setToast((prevState) => ({
-      ...prevState,
-      isOpen: false,
-    }));
-  };
+  const closeToast = () => setToast((prev) => ({ ...prev, isOpen: false }));
 
-  const getButtonText = () => {
-    if (isLoading) {
-      return subaccountData && Object.keys(subaccountData).length > 0
-        ? 'Updating...'  // Show "Updating..." if updating an existing account
-        : 'Adding...';    // Show "Adding..." if adding a new account
-    } else {
-      return subaccountData && Object.keys(subaccountData).length > 0
-        ? 'Update Account' // Show "Update Account" if account exists
-        : 'Add Account';    // Show "Add Account" if no account exists
-    }
-  };
-  
   useEffect(() => {
     const fetchBanks = async () => {
+      if (!user) {
+        showToast('Error', 'You are not authenticated.', 'error');
+        return;
+      }
       try {
         setIsLoadingBanks(true);
-
-        if (!user) {
-          showToast('Error', 'You are not authenticated.', 'error');
-          return;
-        }
-
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/get_bank_list?country=${user.country.toLowerCase()}&per_page=20`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Accept: 'application/json',
-            },
-          },
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/get_bank_list?country=${user.country.toLowerCase()}&per_page=20`
         );
         const data = await response.json();
-
-        const formattedBanks = data.data.map((bank: any) => ({
+        setBanks(data.data.map((bank: any) => ({
           display_name: bank.name,
           variable_name: bank.slug,
           value: bank.code,
           type: bank.type,
-        }));
-
-        setBanks(formattedBanks);
-      } catch (error) {
-        console.error('Failed to fetch banks', error);
-        showToast(
-          'Error',
-          'Failed to load the bank list. Please try again.',
-          'error',
-        );
+        })));
+      } catch {
+        showToast('Error', 'Failed to load banks.', 'error');
       } finally {
         setIsLoadingBanks(false);
       }
@@ -115,24 +67,11 @@ const PaymentMethod = () => {
       if (user) {
         try {
           const response = await fetch(
-            `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user.id}/subaccount`,
-            {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            },
+            `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user.id}/subaccount`
           );
           const data = await response.json();
-          setSubaccountData(data); // Set directly as an object (no need to access array)
-
-          setUserDetails({
-            name: user.full_name,
-            userEmail: user.email,
-            accountId: data?.account_number || '', // Access the object directly
-          });
-        } catch (error) {
-          console.error('Error fetching account:', error);
+          setSubaccountData(data || null);
+        } catch {
           showToast('Error', 'Failed to fetch account details.', 'error');
         }
       }
@@ -141,120 +80,47 @@ const PaymentMethod = () => {
     fetchSubaccount();
   }, [user]);
 
-  const verifyAccountNumber = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/resolve_account_details?account_number=${accountNumber}&bank_code=${selectedBank?.value}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-
-      const data = await response.json();
-
-      if (data.status) {
-        return data.data.account_name;
-      } else {
-        showToast('Error', 'Invalid account number.', 'error');
-      }
-    } catch (error) {
-      console.error('Error verifying account number:', error);
-      showToast(
-        'Error',
-        (error as any).message || 'Failed to verify account number.',
-        'error',
-      );
-      return null;
-    }
+  const handleOpenModal = (type: 'add' | 'update') => {
+    setModalType(type); // Set modal type to "add" or "update"
+    setIsModalOpen(true);
   };
 
-  const handleSubmitSubaccount = async (
-    e: React.FormEvent<HTMLFormElement>,
-  ) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!selectedBank) {
-      showToast('Error', 'Please select a bank.', 'error');
-      return;
-    }
-
+    if (!selectedBank) return showToast('Error', 'Please select a bank.', 'error');
     setIsLoading(true);
 
-    if (!user) {
-      showToast('Error', 'You are not authenticated.', 'error');
-      return;
-    }
-
-    const accountName = await verifyAccountNumber();
-
-    if (!accountName) {
-      setIsLoading(false);
-      return;
-    }
+    const endpoint = modalType === 'update'
+      ? `/members/users/${user?.id}/update_subaccount`
+      : `/members/users/${user?.id}/create_subaccount`;
 
     const payload = {
       subaccount: {
-        business_name: user.full_name,
+        business_name: user?.full_name,
         settlement_bank: selectedBank.value,
         account_number: accountNumber,
         percentage_charge: 20,
-        metadata: {
-          custom_fields: [
-            {
-              display_name: selectedBank.display_name,
-              variable_name: selectedBank.variable_name,
-              value: selectedBank.value,
-              type: selectedBank.type,
-            },
-          ],
-        },
       },
     };
 
     try {
-      let response;
-      if (subaccountData) {
-        // If subaccountData exists, it means we're updating an existing subaccount
-        response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user.id}/update_subaccount`,
-          {
-            method: 'PUT', // Use PUT or PATCH based on your API specification
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-          },
-        );
-      } else {
-        // If no subaccountData, we are adding a new account
-        response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user.id}/create_subaccount`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-          },
-        );
-      }
+      await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${endpoint}`, {
+        method: modalType === 'update' ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-      const data = await response.json();
-      setSubaccountData(data);
-    } catch (error) {
-      console.error('Error:', error);
-      showToast('Error', 'An error occurred. Please try again.', 'error');
+      showToast('Success', `Bank account ${modalType}d successfully.`, 'success');
+      setIsModalOpen(false);
+    } catch {
+      showToast('Error', `Failed to ${modalType} bank account.`, 'error');
     } finally {
       setIsLoading(false);
-      setIsModalOpen(false);
     }
   };
 
   return (
-    <div className="mx-auto bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-50">
+    <div className="mx-auto bg-white text-gray-800 p-6 rounded-md">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={closeToast}
@@ -263,121 +129,86 @@ const PaymentMethod = () => {
         type={toast.type}
       />
 
-      <div className="rounded-lg mb-6">
-        <h2 className="text-xl font-semibold mb-4 text-theme-color-primary-content md:text-2xl">
-          Bank Account Information
-        </h2>
-        <div className="py-3 text-green-600">
-          This is where we'll pay your money to.
+      <h2 className="text-xl font-semibold mb-4">Bank Account Information</h2>
+      {subaccountData ? (
+        <div className="p-4 border rounded-md shadow-md mb-4">
+          <p><strong>Name:</strong> {subaccountData.business_name}</p>
+          <p><strong>Account Number:</strong> {subaccountData.account_number}</p>
+          <p>
+            <strong>Bank:</strong> {subaccountData.metadata?.custom_fields?.[0]?.display_name}
+          </p>
         </div>
+      ) : (
+        <p>No Bank Account Added. Please add one.</p>
+      )}
 
-        {subaccountData &&
-        subaccountData?.error !== 'User has no associated subaccount' ? (
-          // Render the subaccount details only if subaccountData exists and no error message
-          <div className="bg-theme-color-base rounded-md p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-md">
-            <div className="mb-2 sm:mr-4">
-              <p className="font-medium">Name</p>
-              <p>{subaccountData.business_name || 'Not Available'}</p>
-            </div>
-            <div className="mb-2 sm:mr-4">
-              <p className="font-medium">Account Number</p>
-              <p>{subaccountData.account_number || 'Not Available'}</p>
-            </div>
-            <div className="mb-4 sm:mr-4">
-              <p className="font-medium">Settlement Bank</p>
-              <p>
-                {subaccountData.metadata?.custom_fields?.[0]?.display_name ||
-                  'Not Available'}
-              </p>
-            </div>
-          </div>
-        ) : (
-          // Show message when there's no subaccount data or user has no associated subaccount
-          <p>No Bank Account Added. Please add one.</p>
-        )}
-
+      <div className="flex space-x-4">
         <button
-          onClick={() => {
-            setIsModalOpen(true);
-          }}
-          className="mt-6 bg-theme-color-primary text-gray-800 px-6 py-3 rounded-md hover:bg-theme-color-primary-dark transition-colors flex items-center justify-center w-full sm:w-auto"
-          aria-label="Add Subaccount"
+          onClick={() => handleOpenModal('add')}
+          className="bg-green-500 text-white px-4 py-2 rounded-md"
         >
-          <FaPlus className="mr-2" />
-          Add Bank Account
+          <FaPlus className="inline mr-2" /> Add Bank Account
         </button>
+        {subaccountData && (
+          <button
+            onClick={() => handleOpenModal('update')}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md"
+          >
+            Update Bank Account
+          </button>
+        )}
       </div>
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        size="small"
-      >
-        <h2 className="text-2xl font-bold mb-4 text-theme-color-primary">
-          {subaccountData && Object.keys(subaccountData).length > 0
-            ? 'Update Bank Account Number'
-            : 'Add Bank Account Number'}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} size="small">
+        <h2 className="text-2xl font-bold mb-4">
+          {modalType === 'update' ? 'Update Bank Account' : 'Add Bank Account'}
         </h2>
-        <form onSubmit={handleSubmitSubaccount}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="bank" className="block mb-1 font-medium">
-              Select Your Bank
-            </label>
-            {isLoadingBanks ? (
-              <p>Loading banks...</p>
-            ) : (
+            <label htmlFor="bank" className="block mb-1 font-medium">Select Your Bank</label>
+            {isLoadingBanks ? <p>Loading banks...</p> : (
               <select
                 id="bank"
                 value={selectedBank?.value || ''}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                  setSelectedBank(
-                    banks.find((bank) => bank.value === e.target.value) || null,
-                  )
+                onChange={(e) =>
+                  setSelectedBank(banks.find((bank) => bank.value === e.target.value) || null)
                 }
-                className="w-full p-2 border rounded-md border-gray-300"
+                className="w-full p-2 border rounded-md"
                 required
               >
-                <option value="" disabled>
-                  Select a bank
-                </option>
+                <option value="" disabled>Select a bank</option>
                 {banks.map((bank) => (
-                  <option key={bank.value} value={bank.value}>
-                    {bank.display_name}
-                  </option>
+                  <option key={bank.value} value={bank.value}>{bank.display_name}</option>
                 ))}
               </select>
             )}
           </div>
           <div className="mb-4">
-            <label htmlFor="accountNumber" className="block mb-1 font-medium">
-              Account Number
-            </label>
+            <label htmlFor="accountNumber" className="block mb-1 font-medium">Account Number</label>
             <input
               type="text"
               id="accountNumber"
               value={accountNumber}
               onChange={(e) => setAccountNumber(e.target.value)}
-              className="w-full p-2 border rounded-md border-gray-300"
-              placeholder="123456789012"
+              className="w-full p-2 border rounded-md"
+              placeholder="1234567890"
               required
-              defaultValue={subaccountData?.account_number || ''}
             />
           </div>
-
           <div className="flex justify-end">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="mr-4 bg-gray-100 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md transition-colors"
+              className="mr-4 bg-gray-300 px-4 py-2 rounded-md"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-theme-color-primary text-gray-800 px-4 py-2 rounded-md hover:bg-theme-color-primary-dark transition-colors"
+              className="bg-theme-color-primary text-white px-4 py-2 rounded-md"
               disabled={isLoading}
             >
-               {getButtonText()}
+              {isLoading ? 'Processing...' : modalType === 'update' ? 'Update Account' : 'Add Account'}
             </button>
           </div>
         </form>
