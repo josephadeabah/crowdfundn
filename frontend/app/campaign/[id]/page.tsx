@@ -146,7 +146,7 @@ const SingleCampaignPage: React.FC = () => {
               />
             </div>
             {/* Progress Ring */}
-            <div className="flex flex-col sm:flex-row sm:justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8 space-y-6 sm:space-y-0 sm:space-x-6">
+            <div className="flex flex-col sm:flex-row sm:justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8 space-y-6 sm:space-y-0 sm:space-x-6">
               {/* Progress Info */}
               <div className="text-center sm:text-left">
                 <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
@@ -201,7 +201,7 @@ const SingleCampaignPage: React.FC = () => {
               }}
             />
             {/* Combined Share and Fundraiser Info Container */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
               {/* Share Section */}
               <div className="border-b pb-4 mb-4">
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-3">
