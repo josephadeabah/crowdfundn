@@ -55,13 +55,10 @@ const PaymentMethod = () => {
     const fetchBanks = async () => {
       try {
         setIsLoadingBanks(true);
-
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/get_bank_list?country=${user?.country.toLowerCase()}&per_page=20`,
         );
-
         const data = await response.json();
-
         const formattedBanks = data.data.map((bank: any) => ({
           display_name: bank.name,
           variable_name: bank.slug,
@@ -87,7 +84,6 @@ const PaymentMethod = () => {
             `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user.id}/subaccount`,
           );
           const data = await response.json();
-
           if (data && Object.keys(data).length > 0) {
             setSubaccountData(data);
           } else {
@@ -204,7 +200,8 @@ const PaymentMethod = () => {
 
       <h2 className="text-xl font-semibold">Bank Account Information</h2>
 
-      {subaccountData?.error !== "User has no associated subaccount" ? (
+      {/* Checking if there's a subaccount */}
+      {subaccountData ? (
         <div>
           <p>Name: {subaccountData?.business_name}</p>
           <p>Account Number: {subaccountData?.account_number}</p>
@@ -218,7 +215,6 @@ const PaymentMethod = () => {
       )}
 
       {/* Add Modal */}
-      {subaccountData?.error !== "User has no associated subaccount" ? (
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
         <h2>Add Bank Account</h2>
         <form onSubmit={(e) => handleSubmitSubaccount(e, false)}>
@@ -245,7 +241,9 @@ const PaymentMethod = () => {
           <button type="submit">Add Account</button>
         </form>
       </Modal>
-      ) : ( <Modal isOpen={isUpdateModalOpen} onClose={() => setIsUpdateModalOpen(false)}>
+
+      {/* Update Modal */}
+      <Modal isOpen={isUpdateModalOpen} onClose={() => setIsUpdateModalOpen(false)}>
         <h2>Update Bank Account</h2>
         <form onSubmit={(e) => handleSubmitSubaccount(e, true)}>
           <select
@@ -272,7 +270,6 @@ const PaymentMethod = () => {
           <button type="submit">Update Account</button>
         </form>
       </Modal>
-      )}
     </div>
   );
 };
