@@ -26,13 +26,15 @@ const SummaryCard: React.FC = () => {
           <div className="flex space-x-4">
             <a
               href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
-              className="inline-block px-4 py-2 bg-white cursor-pointer text-gray-600 font-medium text-sm rounded-md shadow-sm hover:bg-gray-100 transition"
+              className="inline-block px-4 py-2 bg-white text-gray-600 font-medium text-sm rounded-md shadow-sm hover:bg-gray-100 transition"
+              style={{ pointerEvents: 'auto' }}
             >
               Get Started
             </a>
             <a
               href="#categories"
-              className="inline-block px-4 py-2 bg-white cursor-pointer text-gray-600 font-medium text-sm rounded-md shadow-sm hover:bg-gray-100 transition"
+              className="inline-block px-4 py-2 bg-white text-gray-600 font-medium text-sm rounded-md shadow-sm hover:bg-gray-100 transition"
+              style={{ pointerEvents: 'auto' }}
             >
               Explore Campaigns
             </a>
