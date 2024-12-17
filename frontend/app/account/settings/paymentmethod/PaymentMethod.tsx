@@ -231,6 +231,8 @@ const PaymentMethod = () => {
       }
 
       const data = await response.json();
+      subaccountData ? showToast('Success', 'Account updated.', 'success') : showToast('Success', 'Account added.', 'success');
+      setSubaccountData(data);
     } catch (error) {
       console.error('Error:', error);
       showToast('Error', 'An error occurred. Please try again.', 'error');
