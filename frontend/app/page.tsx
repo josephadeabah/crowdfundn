@@ -262,7 +262,7 @@ const HomePage = () => {
               transition={{ duration: 0.5 }}
               className="text-4xl font-bold text-center mb-8 text-gray-700 dark:text-gray-50"
             >
-              Explore Projects in Categories
+              Explore Campaigns in Categories
             </motion.h4>
             {/* Parent grid for Categories and Recommended Fundraisers */}
             <div className="">

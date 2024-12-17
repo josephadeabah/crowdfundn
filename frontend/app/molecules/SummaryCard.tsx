@@ -7,7 +7,10 @@ const SummaryCard: React.FC = () => {
   const { user } = useAuth();
 
   return (
-    <div className="w-full bg-green-600 text-white py-4 shadow">
+    <div
+      className="w-full bg-green-600 text-white py-4"
+      style={{ pointerEvents: 'auto', position: 'relative', zIndex: 50 }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Flex Container */}
         <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
@@ -27,14 +30,12 @@ const SummaryCard: React.FC = () => {
             <a
               href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
               className="inline-block px-4 py-2 bg-white text-gray-600 font-medium text-sm rounded-md shadow-sm hover:bg-gray-100 transition"
-              style={{ pointerEvents: 'auto' }}
             >
               Get Started
             </a>
             <a
               href="#categories"
               className="inline-block px-4 py-2 bg-white text-gray-600 font-medium text-sm rounded-md shadow-sm hover:bg-gray-100 transition"
-              style={{ pointerEvents: 'auto' }}
             >
               Explore Campaigns
             </a>
