@@ -15,6 +15,7 @@ import { useAuth } from './context/auth/AuthContext';
 import CampaignCard from './components/campaigns/CampaignCard';
 import { useCampaignContext } from './context/account/campaign/CampaignsContext';
 import CategoryList from './components/categories/CategoryList';
+import SummaryCard from './molecules/SummaryCard';
 
 const HomePage = () => {
   const wordRef = React.useRef<HTMLDivElement | null>(null);
@@ -33,12 +34,11 @@ const HomePage = () => {
 
   React.useEffect(() => {
     const words = [
+      'Online Crowdfunding, Personal fundraising, Grant funding',
+      'Fundraise for charity, medical bills, disaster relief, education, and more',
+      'Fundraise for community projects, social causes and make a difference',
+      'Donate to a Cause You Care About with Confidence, Purpose and Ease',
       "We're Happy to Invest in your story",
-      'Wherever you are, Whenever you need',
-      'Crowdfunding Solutions for African dreamers',
-      'Transforming Ideas into Action Across Continents',
-      'Championing Local Causes with Global Support',
-      'Donate Like the World is Ending Tomorrow',
     ];
 
     let part = '';
@@ -133,6 +133,7 @@ const HomePage = () => {
   return (
     <div className="text-gray-700 dark:text-gray-50 min-h-screen">
       <main className="max-w-7xl mx-auto">
+        <SummaryCard />
         <div className="flex items-center justify-center">
           <div className="absolute inset-0 bg-cover bg-center" />
           <motion.div
@@ -176,7 +177,7 @@ const HomePage = () => {
                       whileTap={{ scale: 0.95 }}
                       className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300 "
                     >
-                      <a href="/how-it-works">Learn More</a>
+                      <a href="/how-it-works">How It Works</a>
                     </motion.button>
                   </div>
                 </div>
@@ -249,7 +250,10 @@ const HomePage = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-50">
+        <div
+          className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-50"
+          id="categories"
+        >
           <div className="mx-auto">
             <motion.h4
               variants={fadeInUp}
@@ -272,7 +276,7 @@ const HomePage = () => {
       <div id="projects" className="dark:bg-gray-950 dark:text-gray-50">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl font-bold mb-8 text-center">
-            Featured Projects
+            Fundraising Now
           </h2>
           <div className="w-full">
             <CampaignCard
