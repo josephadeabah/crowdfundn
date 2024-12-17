@@ -199,7 +199,7 @@ const Navbar = () => {
                   <DarkModeBtn />
                   {user && (
                     <li className="flex items-center gap-3">
-                     <Link href="/account">
+                      <Link href="/account">
                         <Avatar name={user.full_name} size="sm" />
                       </Link>
                       <div className="ml-3 flex flex-col">

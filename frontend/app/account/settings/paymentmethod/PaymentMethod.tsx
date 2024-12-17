@@ -48,7 +48,8 @@ const PaymentMethod = () => {
     });
   };
 
-  const closeToast = () => setToast((prevState) => ({ ...prevState, isOpen: false }));
+  const closeToast = () =>
+    setToast((prevState) => ({ ...prevState, isOpen: false }));
 
   // Fetch available banks
   useEffect(() => {
@@ -119,7 +120,10 @@ const PaymentMethod = () => {
   };
 
   // Handle add/update form submission
-  const handleSubmitSubaccount = async (e: React.FormEvent<HTMLFormElement>, isUpdate: boolean) => {
+  const handleSubmitSubaccount = async (
+    e: React.FormEvent<HTMLFormElement>,
+    isUpdate: boolean,
+  ) => {
     e.preventDefault();
 
     if (!selectedBank) {
@@ -175,12 +179,18 @@ const PaymentMethod = () => {
         setSubaccountData(data);
         showToast(
           'Success',
-          isUpdate ? 'Account updated successfully.' : 'Account added successfully.',
+          isUpdate
+            ? 'Account updated successfully.'
+            : 'Account added successfully.',
           'success',
         );
       }
     } catch (error) {
-      showToast('Error', 'An error occurred while saving the account.', 'error');
+      showToast(
+        'Error',
+        'An error occurred while saving the account.',
+        'error',
+      );
     } finally {
       setIsLoading(false);
       setIsAddModalOpen(false);
@@ -205,8 +215,12 @@ const PaymentMethod = () => {
         <div>
           <p>Name: {subaccountData?.business_name}</p>
           <p>Account Number: {subaccountData?.account_number}</p>
-          <p>Bank: {subaccountData?.metadata?.custom_fields?.[0]?.display_name}</p>
-          <button onClick={() => setIsUpdateModalOpen(true)}>Update Bank Account</button>
+          <p>
+            Bank: {subaccountData?.metadata?.custom_fields?.[0]?.display_name}
+          </p>
+          <button onClick={() => setIsUpdateModalOpen(true)}>
+            Update Bank Account
+          </button>
         </div>
       ) : (
         <button onClick={() => setIsAddModalOpen(true)}>
@@ -220,7 +234,9 @@ const PaymentMethod = () => {
         <form onSubmit={(e) => handleSubmitSubaccount(e, false)}>
           <select
             onChange={(e) =>
-              setSelectedBank(banks.find((bank) => bank.value === e.target.value) || null)
+              setSelectedBank(
+                banks.find((bank) => bank.value === e.target.value) || null,
+              )
             }
             required
           >
@@ -243,13 +259,18 @@ const PaymentMethod = () => {
       </Modal>
 
       {/* Update Modal */}
-      <Modal isOpen={isUpdateModalOpen} onClose={() => setIsUpdateModalOpen(false)}>
+      <Modal
+        isOpen={isUpdateModalOpen}
+        onClose={() => setIsUpdateModalOpen(false)}
+      >
         <h2>Update Bank Account</h2>
         <form onSubmit={(e) => handleSubmitSubaccount(e, true)}>
           <select
             value={selectedBank?.value || ''}
             onChange={(e) =>
-              setSelectedBank(banks.find((bank) => bank.value === e.target.value) || null)
+              setSelectedBank(
+                banks.find((bank) => bank.value === e.target.value) || null,
+              )
             }
             required
           >

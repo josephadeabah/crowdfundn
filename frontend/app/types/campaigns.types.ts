@@ -137,6 +137,7 @@ export interface SingleCampaignResponseDataType {
   title: string;
   goal_amount: string;
   current_amount: string;
+  transferred_amount: string;
   start_date: string;
   end_date: string;
   category: string;
@@ -145,6 +146,7 @@ export interface SingleCampaignResponseDataType {
   currency_code: string | null;
   currency_symbol: string | null;
   status: string | null;
+  remaining_days: string;
   total_donors: number;
   fundraiser_id: number;
   created_at: string;

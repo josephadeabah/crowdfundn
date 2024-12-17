@@ -15,6 +15,7 @@ export interface Donation {
   full_name: string;
   email: string;
   phone: string;
+  date: string;
   transaction_reference: string;
   status: 'successful';
   transaction_status: string;
