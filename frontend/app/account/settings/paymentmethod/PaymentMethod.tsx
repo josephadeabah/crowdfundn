@@ -53,6 +53,18 @@ const PaymentMethod = () => {
     }));
   };
 
+  const getButtonText = () => {
+    if (isLoading) {
+      return subaccountData && Object.keys(subaccountData).length > 0
+        ? 'Updating...'  // Show "Updating..." if updating an existing account
+        : 'Adding...';    // Show "Adding..." if adding a new account
+    } else {
+      return subaccountData && Object.keys(subaccountData).length > 0
+        ? 'Update Account' // Show "Update Account" if account exists
+        : 'Add Account';    // Show "Add Account" if no account exists
+    }
+  };
+  
   useEffect(() => {
     const fetchBanks = async () => {
       try {
@@ -365,13 +377,7 @@ const PaymentMethod = () => {
               className="bg-theme-color-primary text-gray-800 px-4 py-2 rounded-md hover:bg-theme-color-primary-dark transition-colors"
               disabled={isLoading}
             >
-              {isLoading
-                ? subaccountData && Object.keys(subaccountData).length > 0
-                  ? 'Updating...'
-                  : 'Adding...'
-                : subaccountData && Object.keys(subaccountData).length > 0
-                  ? 'Update Account'
-                  : 'Add Account'}
+               {getButtonText()}
             </button>
           </div>
         </form>
