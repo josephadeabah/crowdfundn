@@ -56,13 +56,8 @@ const PaymentMethod = () => {
       try {
         setIsLoadingBanks(true);
 
-        if (!user) {
-          showToast('Error', 'You are not authenticated.', 'error');
-          return;
-        }
-
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/get_bank_list?country=${user.country.toLowerCase()}&per_page=20`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/get_bank_list?country=${user?.country.toLowerCase()}&per_page=20`,
         );
 
         const data = await response.json();
