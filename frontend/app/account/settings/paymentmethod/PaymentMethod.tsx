@@ -23,7 +23,7 @@ const PaymentMethod = () => {
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
   const [accountNumber, setAccountNumber] = useState('');
   const [isLoadingBanks, setIsLoadingBanks] = useState(true);
-  const [subaccountData, setSubaccountData] = useState<any>(null); // Updated to handle subaccount structure
+  const [subaccountData, setSubaccountData] = useState<any>(null); // Handle subaccount structure as an object
   const [toast, setToast] = useState({
     isOpen: false,
     title: '',
@@ -111,13 +111,13 @@ const PaymentMethod = () => {
               },
             },
           );
-          const subaccountData = await response.json();
-          setSubaccountData(subaccountData[0]); // Assuming the response is an array and we use the first item
+          const data = await response.json();
+          setSubaccountData(data); // Set directly as an object (no need to access array)
 
           setUserDetails({
             name: user.full_name,
             userEmail: user.email,
-            accountId: subaccountData[0]?.account_number || '', // Update to access the first item
+            accountId: data?.account_number || '', // Access the object directly
           });
         } catch (error) {
           console.error('Error fetching account:', error);
@@ -231,7 +231,6 @@ const PaymentMethod = () => {
       }
 
       const data = await response.json();
-      
     } catch (error) {
       console.error('Error:', error);
       showToast('Error', 'An error occurred. Please try again.', 'error');
