@@ -204,7 +204,7 @@ const PaymentMethod = () => {
 
       <h2 className="text-xl font-semibold">Bank Account Information</h2>
 
-      {subaccountData ? (
+      {subaccountData.error !== "User has no associated subaccount" ? (
         <div>
           <p>Name: {subaccountData.business_name}</p>
           <p>Account Number: {subaccountData.account_number}</p>
@@ -218,6 +218,7 @@ const PaymentMethod = () => {
       )}
 
       {/* Add Modal */}
+      {subaccountData.error !== "User has no associated subaccount" ? (
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
         <h2>Add Bank Account</h2>
         <form onSubmit={(e) => handleSubmitSubaccount(e, false)}>
@@ -244,9 +245,7 @@ const PaymentMethod = () => {
           <button type="submit">Add Account</button>
         </form>
       </Modal>
-
-      {/* Update Modal */}
-      <Modal isOpen={isUpdateModalOpen} onClose={() => setIsUpdateModalOpen(false)}>
+      ) : ( <Modal isOpen={isUpdateModalOpen} onClose={() => setIsUpdateModalOpen(false)}>
         <h2>Update Bank Account</h2>
         <form onSubmit={(e) => handleSubmitSubaccount(e, true)}>
           <select
@@ -273,6 +272,7 @@ const PaymentMethod = () => {
           <button type="submit">Update Account</button>
         </form>
       </Modal>
+      )}
     </div>
   );
 };
