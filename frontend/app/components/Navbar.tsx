@@ -199,7 +199,9 @@ const Navbar = () => {
                   <DarkModeBtn />
                   {user && (
                     <li className="flex items-center gap-3">
-                      <Avatar name={user.full_name} size="sm" />
+                     <Link href="/account">
+                        <Avatar name={user.full_name} size="sm" />
+                      </Link>
                       <div className="ml-3 flex flex-col">
                         <span className="font-semibold">{user.full_name}</span>
                         <span className="text-gray-600">{user.email}</span>
