@@ -366,10 +366,10 @@ const PaymentMethod = () => {
               disabled={isLoading}
             >
               {isLoading
-                ? Object.keys(subaccountData).length > 0
+                ? subaccountData && Object.keys(subaccountData).length > 0
                   ? 'Updating...'
                   : 'Adding...'
-                : Object.keys(subaccountData).length > 0
+                : subaccountData && Object.keys(subaccountData).length > 0
                   ? 'Update Account'
                   : 'Add Account'}
             </button>
