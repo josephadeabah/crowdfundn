@@ -231,9 +231,6 @@ const PaymentMethod = () => {
       }
 
       const data = await response.json();
-      subaccountData
-        ? showToast('Success', 'Account updated.', 'success')
-        : showToast('Success', 'Account added.', 'success');
       setSubaccountData(data);
     } catch (error) {
       console.error('Error:', error);
@@ -369,10 +366,10 @@ const PaymentMethod = () => {
               disabled={isLoading}
             >
               {isLoading
-                ? subaccountData
+                ? Object.keys(subaccountData).length > 0
                   ? 'Updating...'
                   : 'Adding...'
-                : subaccountData
+                : Object.keys(subaccountData).length > 0
                   ? 'Update Account'
                   : 'Add Account'}
             </button>
