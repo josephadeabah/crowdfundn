@@ -20,13 +20,13 @@ const NavbarLoader = () => {
           <div className="hidden lg:flex items-center gap-x-2 mx-6">
             {/* Original Navigation Links */}
             <span className="mx-2 text-sm font-semibold p-2 hover:text-gray-700 dark:text-gray-50 hover:outline-none dark:hover:bg-gray-800">
-              Fundraise
+              About
             </span>
             <span className="mx-2 text-sm font-semibold p-2 hover:text-gray-700 dark:text-gray-50 hover:outline-none dark:hover:bg-gray-800">
-              Donate
+              Guides
             </span>
             <span className="mx-2 text-sm font-semibold p-2 hover:text-gray-700 dark:text-gray-50 hover:outline-none dark:hover:bg-gray-800">
-              For Diaspora
+              Contact
             </span>
           </div>
 

@@ -8,25 +8,25 @@ const SummaryCard: React.FC = () => {
 
   return (
     <div
-      className="w-full bg-green-600 text-white py-4"
-      style={{ pointerEvents: 'auto', position: 'relative', zIndex: 50 }}
+      className="w-full bg-green-50 text-green-600 py-4"
+      style={{ pointerEvents: 'auto', position: 'relative' }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Flex Container */}
         <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
           {/* Left Section */}
           <div className="text-center md:text-left">
-            <h2 className="text-lg md:text-xl font-semibold leading-tight">
+            <h2 className="text-green-600 font-bold leading-tight">
               Support, Empower, Thrive with Bantu Hive
             </h2>
-            <p className="mt-1 text-sm md:text-base opacity-90">
+            <p className="mt-1 text-sm text-gray-700 dark:text-gray-50 md:text-base opacity-90">
               Raise money when you need, fund, or support causes you care about.
               Reach donors, and make a difference.
             </p>
           </div>
 
           {/* Right Section - Buttons */}
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 z-10">
             <a
               href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
               className="inline-block px-4 py-2 bg-white text-gray-600 font-medium text-sm rounded-md shadow-sm hover:bg-gray-100 transition"

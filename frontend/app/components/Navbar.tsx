@@ -50,27 +50,27 @@ const Navbar = () => {
   };
 
   const dropdownLinks = {
-    fundraise: [
+    About: [
       // New combined category
-      { label: 'Start Your Campaign', href: '/individuals/start-campaign' },
+      { label: 'Who We Are', href: '/about-us' },
       {
-        label: 'Personal Fundraising',
-        href: '/individuals/personal-fundraising',
+        label: 'Why Is This Right For You?',
+        href: '/is-crowdfunding-right-for-you',
       },
-      { label: 'Support Local Businesses', href: '/individuals/support-local' },
+      { label: 'Who Can Fundraise?', href: '/who-can-fundraise' },
     ],
-    donate: [
-      { label: 'One-Time Donation', href: '/donate/one-time' },
-      { label: 'Recurring Support', href: '/donate/recurring' },
-      { label: 'Corporate Giving Programs', href: '/how-to/corporate-giving' },
+    Guides: [
+      { label: 'How To Get Started', href: '/how-to-get-started' },
+      { label: 'Stories', href: '/stories' },
+      { label: 'Corporate Social Responsibilty', href: '/corporate-giving' },
       {
         label: 'Fundraising Ideas for Africa',
-        href: '/how-to/fundraising-ideas-africa',
+        href: '/fundraising-ideas-africa',
       },
     ],
-    'for Diaspora': [
-      { label: 'Cultural Events', href: '/african-diaspora/cultural-events' },
-      { label: 'Diaspora Support', href: '/african-diaspora/diaspora-support' },
+    Contact: [
+      { label: 'Ghana', href: '/ghana-office' },
+      { label: 'Eswatini', href: '/eswatini-office' },
     ],
   };
 

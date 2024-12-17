@@ -132,8 +132,8 @@ const HomePage = () => {
 
   return (
     <div className="text-gray-700 dark:text-gray-50 min-h-screen">
+      <SummaryCard />
       <main className="max-w-7xl mx-auto">
-        <SummaryCard />
         <div className="flex items-center justify-center">
           <div className="absolute inset-0 bg-cover bg-center" />
           <motion.div
