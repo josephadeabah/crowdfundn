@@ -291,7 +291,7 @@ const SingleCampaignPage: React.FC = () => {
                   {/* Donor Info */}
                   <div className="flex items-center space-x-4">
                     <div className="bg-gray-100 h-10 w-10 flex items-center justify-center rounded-full">
-                      <FaHeart className="text-red-500 text-lg" />
+                      <FaHeart className="text-pink-500 text-lg" />
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-gray-800">
