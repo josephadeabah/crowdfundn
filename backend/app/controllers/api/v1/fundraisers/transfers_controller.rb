@@ -180,7 +180,7 @@ module Api
         
           @campaign = Campaign.find(params[:campaign_id])
           @fundraiser = @campaign.fundraiser
-          subaccount = @fundraiser.subaccount
+          subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
           recipient_code = params[:recipient_code]
         
           raise "You do not have a account number added." unless subaccount
@@ -264,21 +264,21 @@ module Api
         end
 
         # Fetch transfer details
-        def fetch_transfers
-          @fundraiser = User.find_by(id: params[:fundraiser_id])
-          raise ActiveRecord::RecordNotFound, "Fundraiser not found" unless @fundraiser
+        # def fetch_transfers
+        #   @fundraiser = User.find_by(id: params[:fundraiser_id])
+        #   raise ActiveRecord::RecordNotFound, "Fundraiser not found" unless @fundraiser
 
-          subaccount = @fundraiser.subaccount
-          raise ActiveRecord::RecordNotFound, "Subaccount not found for this fundraiser" unless subaccount
+        #   subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
+        #   raise ActiveRecord::RecordNotFound, "Subaccount not found for this fundraiser" unless subaccount
 
-          response = @paystack_service.fetch_transfer(subaccount.transfer_code)
-          render json: response, status: :ok
-        rescue ActiveRecord::RecordNotFound => e
-          render json: { error: e.message }, status: :not_found
-        rescue => e
-          Rails.logger.error "Error fetching transfers: #{e.message}"
-          render json: { error: e.message }, status: :unprocessable_entity
-        end
+        #   response = @paystack_service.fetch_transfer(subaccount.transfer_code)
+        #   render json: response, status: :ok
+        # rescue ActiveRecord::RecordNotFound => e
+        #   render json: { error: e.message }, status: :not_found
+        # rescue => e
+        #   Rails.logger.error "Error fetching transfers: #{e.message}"
+        #   render json: { error: e.message }, status: :unprocessable_entity
+        # end
 
        # Fetch transfers for the logged-in user
        def fetch_user_transfers
