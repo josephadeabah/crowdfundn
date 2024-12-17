@@ -22,7 +22,6 @@ const Navbar = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activePopover, setActivePopover] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { user, token, logout } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -49,9 +48,12 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handlePopoverToggle = (key: string) => {
+    setActivePopover(activePopover === key ? null : key);
+  };
+
   const dropdownLinks = {
     About: [
-      // New combined category
       { label: 'Who We Are', href: '/about-us' },
       {
         label: 'Why Is This Right For You?',
@@ -62,7 +64,7 @@ const Navbar = () => {
     Guides: [
       { label: 'How To Get Started', href: '/how-to-get-started' },
       { label: 'Stories', href: '/stories' },
-      { label: 'Corporate Social Responsibilty', href: '/corporate-giving' },
+      { label: 'Corporate Social Responsibility', href: '/corporate-giving' },
       {
         label: 'Fundraising Ideas for Africa',
         href: '/fundraising-ideas-africa',
@@ -97,44 +99,68 @@ const Navbar = () => {
             </div>
 
             <div className="hidden lg:flex items-center gap-x-2 mx-6">
-              {Object.entries(dropdownLinks).map(([key, links]) => (
-                <Popover key={key} open={activePopover === key}>
-                  <PopoverTrigger
-                    asChild
-                    onMouseEnter={() => setActivePopover(key)}
-                    onMouseLeave={() => setActivePopover(null)}
+              {Object.entries(dropdownLinks).map(([key, links]) => {
+                let closeTimeout: NodeJS.Timeout;
+                return (
+                  <Popover
+                    key={key}
+                    open={activePopover === key}
+                    onOpenChange={(isOpen) => {
+                      if (!isOpen) setActivePopover(null);
+                    }}
                   >
-                    <Button
-                      variant="ghost"
-                      className="flex items-center text-gray-700 dark:text-gray-50 group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
+                    <PopoverTrigger asChild>
+                      <Button
+                        onMouseEnter={() => {
+                          clearTimeout(closeTimeout); // Prevent immediate close
+                          setActivePopover(key);
+                        }}
+                        onMouseLeave={() => {
+                          closeTimeout = setTimeout(
+                            () => setActivePopover(null),
+                            200,
+                          ); // Slight delay before closing
+                        }}
+                        variant="ghost"
+                        className="flex items-center text-gray-700 dark:text-gray-50 group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
+                      >
+                        {key.charAt(0).toUpperCase() + key.slice(1)}
+                        {/* Arrow with rotation */}
+                        <TriangleDownIcon
+                          className={`ml-2 h-4 w-4 transition-transform ${
+                            activePopover === key ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      side="bottom"
+                      align="start"
+                      sideOffset={5}
+                      className="w-full p-0"
+                      onMouseEnter={() => clearTimeout(closeTimeout)} // Keep dropdown open
+                      onMouseLeave={() => {
+                        closeTimeout = setTimeout(
+                          () => setActivePopover(null),
+                          200,
+                        ); // Delay close
+                      }}
                     >
-                      {key.charAt(0).toUpperCase() + key.slice(1)}
-                      <TriangleDownIcon className="ml-2 h-4 w-4 transition-transform duration-100 transform group-hover:rotate-180" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    side="bottom"
-                    align="start"
-                    sideOffset={10}
-                    onMouseEnter={() => setActivePopover(key)}
-                    onMouseLeave={() => setActivePopover(null)}
-                    className="w-full p-0"
-                  >
-                    <ul className="p-2 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950">
-                      {links.map((link) => (
-                        <li
-                          key={link.href}
-                          className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800"
-                        >
-                          <Link href={link.href}>{link.label}</Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </PopoverContent>
-                </Popover>
-              ))}
+                      <ul className="p-2 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950">
+                        {links.map((link) => (
+                          <li
+                            key={link.href}
+                            className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800"
+                          >
+                            <Link href={link.href}>{link.label}</Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </PopoverContent>
+                  </Popover>
+                );
+              })}
             </div>
-
             <div className="lg:hidden mr-3">
               <button
                 onClick={handleMenuToggle}
@@ -170,29 +196,32 @@ const Navbar = () => {
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
+                            onClick={() => handlePopoverToggle(key)}
                             variant="ghost"
-                            className="flex items-center group focus:outline-none focus-visible:outline-none  focus:ring-0 focus-visible:ring-0 hover:outline-none"
+                            className="flex items-center text-gray-700 dark:text-gray-50 group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
                           >
                             {key.charAt(0).toUpperCase() + key.slice(1)}
-                            <TriangleDownIcon className="ml-2 h-4 w-4 transition-transform duration-200 transform group-hover:rotate-180" />
+                            <TriangleDownIcon className="ml-2 h-4 w-4" />
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent
-                          side="bottom"
-                          align="start"
-                          sideOffset={10}
-                        >
-                          <ul className="grid grid-cols-2 gap-2">
-                            {links.map((link) => (
-                              <li
-                                key={link.href}
-                                className="p-2 hover:bg-gray-950 hover:text-gray-50 dark:hover:bg-gray-800"
-                              >
-                                <Link href={link.href}>{link.label}</Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </PopoverContent>
+                        {activePopover === key && (
+                          <PopoverContent
+                            side="bottom"
+                            align="start"
+                            sideOffset={10}
+                          >
+                            <ul className="grid grid-cols-2 gap-2">
+                              {links.map((link) => (
+                                <li
+                                  key={link.href}
+                                  className="p-2 hover:bg-gray-950 hover:text-gray-50 dark:hover:bg-gray-800"
+                                >
+                                  <Link href={link.href}>{link.label}</Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </PopoverContent>
+                        )}
                       </Popover>
                     </li>
                   ))}
@@ -223,7 +252,7 @@ const Navbar = () => {
                 <>
                   <Button
                     variant="ghost"
-                    className="py-2 px-4 bg-white dark:bg-gray-900 dark:text-gray-50 rounded-full focus-visible:outline-none  focus:ring-0 focus-visible:ring-0 hover:outline-none"
+                    className="py-2 px-4 bg-white dark:bg-gray-900 dark:text-gray-50 rounded-full focus-visible:outline-none focus:ring-0 hover:outline-none"
                   >
                     <Link
                       href="/auth/register"
