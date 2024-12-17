@@ -298,7 +298,7 @@ const SingleCampaignPage: React.FC = () => {
                         {donation.full_name || 'Anonymous'}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {new Date(donation.date).toLocaleDateString()}
+                        {new Date(donation.date).toLocaleString()}
                       </p>
                     </div>
                   </div>
