@@ -206,9 +206,9 @@ const PaymentMethod = () => {
 
       {subaccountData?.error !== "User has no associated subaccount" ? (
         <div>
-          <p>Name: {subaccountData.business_name}</p>
-          <p>Account Number: {subaccountData.account_number}</p>
-          <p>Bank: {subaccountData.metadata?.custom_fields?.[0]?.display_name}</p>
+          <p>Name: {subaccountData?.business_name}</p>
+          <p>Account Number: {subaccountData?.account_number}</p>
+          <p>Bank: {subaccountData?.metadata?.custom_fields?.[0]?.display_name}</p>
           <button onClick={() => setIsUpdateModalOpen(true)}>Update Bank Account</button>
         </div>
       ) : (
