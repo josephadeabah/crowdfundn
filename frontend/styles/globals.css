@@ -93,3 +93,17 @@ h6 {
 .modal-scrollbar::-moz-scrollbar-track {
   background: #f1f5f9; /* Color of the scrollbar track for Firefox */
 }
+
+@keyframes bubbleAnimation {
+  0% {
+    transform: translateY(100vh) scale(0.5);
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-10vh) scale(1.5);
+    opacity: 0;
+  }
+}
