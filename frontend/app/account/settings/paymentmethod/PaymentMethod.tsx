@@ -264,7 +264,7 @@ const PaymentMethod = () => {
           // Render the subaccount details only if subaccountData exists and no error message
           <div className="bg-theme-color-base rounded-md p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-md">
             <div className="mb-2 sm:mr-4">
-              <p className="font-medium">Business Name</p>
+              <p className="font-medium">Name</p>
               <p>{subaccountData.business_name || 'Not Available'}</p>
             </div>
             <div className="mb-2 sm:mr-4">
