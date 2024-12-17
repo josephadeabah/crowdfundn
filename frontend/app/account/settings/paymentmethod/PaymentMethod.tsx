@@ -231,7 +231,9 @@ const PaymentMethod = () => {
       }
 
       const data = await response.json();
-      subaccountData ? showToast('Success', 'Account updated.', 'success') : showToast('Success', 'Account added.', 'success');
+      subaccountData
+        ? showToast('Success', 'Account updated.', 'success')
+        : showToast('Success', 'Account added.', 'success');
       setSubaccountData(data);
     } catch (error) {
       console.error('Error:', error);
@@ -260,8 +262,9 @@ const PaymentMethod = () => {
           This is where we'll pay your money to.
         </div>
 
-        {subaccountData && Object.keys(subaccountData).length > 0 ? (
-          // Show subaccount details if subaccount exists
+        {subaccountData &&
+        subaccountData?.error !== 'User has no associated subaccount' ? (
+          // Render the subaccount details only if subaccountData exists and no error message
           <div className="bg-theme-color-base rounded-md p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-md">
             <div className="mb-2 sm:mr-4">
               <p className="font-medium">Business Name</p>
@@ -280,6 +283,7 @@ const PaymentMethod = () => {
             </div>
           </div>
         ) : (
+          // Show message when there's no subaccount data or user has no associated subaccount
           <p>No Bank Account Added. Please add one.</p>
         )}
 
