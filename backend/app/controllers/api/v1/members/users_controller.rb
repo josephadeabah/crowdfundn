@@ -59,7 +59,7 @@ module Api
               # Create and associate a new subaccount with the user
               subaccount = user.create_subaccount(
                 business_name: params[:subaccount][:business_name],
-                bank_code: params[:subaccount][:bank_code],
+                bank_code: params[:subaccount][:settlement_bank],
                 account_number: params[:subaccount][:account_number],
                 subaccount_code: response[:data][:subaccount_code],
                 subaccount_type: metadata[:custom_fields].first[:type],
