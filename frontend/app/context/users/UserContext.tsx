@@ -31,9 +31,9 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
 
     try {
-      if (!token) {
-        throw new Error('Not authenticated');
-      }
+      // if (!token) {
+      //   throw new Error('Not authenticated');
+      // }
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/me`,
