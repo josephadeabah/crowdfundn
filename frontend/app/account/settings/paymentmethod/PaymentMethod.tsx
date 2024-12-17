@@ -302,7 +302,7 @@ const PaymentMethod = () => {
         size="small"
       >
         <h2 className="text-2xl font-bold mb-4 text-theme-color-primary">
-          {subaccountData
+          {subaccountData && Object.keys(subaccountData).length > 0
             ? 'Update Bank Account Number'
             : 'Add Bank Account Number'}
         </h2>
