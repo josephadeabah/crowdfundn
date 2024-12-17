@@ -134,8 +134,11 @@ const PaymentMethod = () => {
         <div className="p-4 border rounded-md shadow-md mb-4">
           <p><strong>Name:</strong> {subaccountData.business_name}</p>
           <p><strong>Account Number:</strong> {subaccountData.account_number}</p>
-          <p>
+          {/* <p>
             <strong>Bank:</strong> {subaccountData.metadata?.custom_fields?.[0]?.display_name}
+          </p> */}
+          <p>
+            <strong>Bank:</strong> {subaccountData.settlement_bank}
           </p>
         </div>
       ) : (
