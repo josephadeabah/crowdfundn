@@ -292,17 +292,16 @@ module Api
         @transfers = @fundraiser.transfers.includes(:campaign).order(created_at: :desc).page(page).per(page_size)
       
         # Check if transfers are present
-        if @transfers.empty?
-          render json: { error: "No transfers found for this user" }, status: :not_found
-        else
-          # Prepare the response with pagination information
+        if @transfers.any?
           render json: {
             transfers: @transfers.as_json(include: :campaign),
             current_page: @transfers.current_page,
             total_pages: @transfers.total_pages,
             total_count: @transfers.total_count
           }, status: :ok
-        end
+        else
+          render json: { error: "No transfers found for this user" }, status: :not_found
+        end        
       end
       
 
