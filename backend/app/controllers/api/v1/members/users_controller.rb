@@ -200,18 +200,6 @@ module Api
         end
 
         private
-
-        def subaccount_params
-          params.require(:subaccount).permit(
-            :business_name,
-            :settlement_bank,
-            :account_number,
-            :bank_code,
-            :percentage_charge,
-            :description,
-            metadata: { custom_fields: [:display_name, :variable_name, :value] },
-          )
-        end
         
         def record_not_found
           render json: { error: 'User not found' }, status: :not_found
