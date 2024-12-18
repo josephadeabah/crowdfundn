@@ -247,7 +247,7 @@ const PaymentMethod = () => {
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
         <h2>Add Bank Account</h2>
         <form
-          onSubmit={(e) => handleSubmitSubaccount(e, true)}
+          onSubmit={(e) => handleSubmitSubaccount(e, !!subaccountData)}
           className="w-full max-w-md mx-auto p-6 bg-white shadow-sm space-y-4"
         >
           {/* Select Input */}
