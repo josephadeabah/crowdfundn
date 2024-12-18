@@ -3,7 +3,7 @@ module Api
     module Fundraisers
       class TransfersController < ApplicationController
         include ErrorHandler
-        before_action :authenticate_request, only: %i[fetch_user_transfers fetch_transfers_from_paystack]
+        before_action :authenticate_request, only: %i[fetch_user_transfers]
         before_action :set_transfer_service
 
         # Approve or reject a transfer based on the payload
@@ -344,8 +344,8 @@ module Api
           # Create or update the transfer in the database
           transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer[:transfer_code])
           transfer_record.update(
-            user: transfer_data.dig(:metadata, :user_id),  # Associate with the logged-in user
-            campaign: transfer_data.dig(:metadata, :campaign_id),  # Associate with the campaign
+            user: campaign.fundraiser_id,  # Associate with the logged-in user
+            campaign: campaign,  # Associate with the campaign
             bank_name: transfer[:bank_name],
             account_number: transfer[:account_number],
             amount: transfer[:amount],
@@ -368,10 +368,10 @@ module Api
 
         # Fetch transfers from Paystack for the logged-in user
         def fetch_transfers_from_paystack
-          @fundraiser = @current_user
+          @fundraiser = current_user
           subaccounts = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
           
-          Rails.logger.debug "Fetching transfers for subaccounts: #{subaccounts.inspect}"
+          Rails.logger.info "Fetching transfers for subaccounts: #{subaccounts.inspect}"
 
           # Fetch transfers for each subaccount
           subaccounts.each do |subaccount|
