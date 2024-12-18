@@ -78,9 +78,6 @@ module Api
           metadata = subaccount.metadata
           custom_fields = metadata['custom_fields']
           bank_code_value = custom_fields.find { |field| field['type'] == 'ghipss' }&.dig('value')
-
-          Rails.logger.info "My Subaccount: #{subaccount.inspect}"
-          Rails.logger.info "My Campaign: #{campaign.inspect}"
         
           unless subaccount
             render json: { error: "No subaccount found for the fundraiser" }, status: :unprocessable_entity
@@ -98,8 +95,6 @@ module Api
               description: "Transfer recipient for campaign payouts",
               metadata: { user_id: @fundraiser.id, campaign_id: campaign.id, email: @fundraiser.email, user_name: @fundraiser.full_name }
             )
-
-            Rails.logger.info "Create Transfer Recipient Response: #{response.inspect}"
         
             if response[:status] == true
               subaccount.update!(recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id)
@@ -371,8 +366,6 @@ module Api
           @fundraiser = current_user
           subaccounts = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
           
-          Rails.logger.info "Fetching transfers for subaccounts: #{subaccounts.inspect}"
-
           # Fetch transfers for each subaccount
           subaccounts.each do |subaccount|
             response = @paystack_service.fetch_transfers(subaccount.transfer_code)
