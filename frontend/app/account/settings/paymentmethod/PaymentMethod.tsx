@@ -145,10 +145,10 @@ const PaymentMethod = () => {
 
     try {
       const url = isUpdate
-        ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user?.id}/create_subaccount`
+        ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user?.id}/update_subaccount`
         : `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user?.id}/create_subaccount`;
 
-      const method = isUpdate ? 'POST' : 'POST';
+      const method = isUpdate ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
         method,
