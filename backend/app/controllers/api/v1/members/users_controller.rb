@@ -58,15 +58,15 @@ module Api
             if response[:status] == true
               # Create and associate a new subaccount with the user
               subaccount = user.create_subaccount(
-                business_name: params[:subaccount][:business_name],
-                bank_code: params[:subaccount][:settlement_bank],
-                account_number: params[:subaccount][:account_number],
+                business_name: response[:data][:business_name],
+                bank_code: response[:data][:bank_code],
+                account_number: response[:data][:account_number],
                 subaccount_code: response[:data][:subaccount_code],
                 subaccount_type: metadata[:custom_fields].first[:type],
-                percentage_charge: params[:subaccount][:percentage_charge],
-                description: params[:subaccount][:description],
-                settlement_bank: params[:subaccount][:settlement_bank],
-                metadata: params[:subaccount][:metadata]
+                percentage_charge: response[:data][:percentage_charge],
+                description: response[:data][:description],
+                settlement_bank: response[:data][:settlement_bank],
+                metadata: metadata
               )
             else
               render json: { success: false, error: response[:message] }, status: :unprocessable_entity
