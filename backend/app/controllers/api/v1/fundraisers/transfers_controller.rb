@@ -75,7 +75,12 @@ module Api
           # Fetch the full subaccount based on subaccount_id in the user's table
           subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
 
+          metadata = subaccount.metadata
+          custom_fields = metadata['custom_fields']
+          bank_code_value = custom_fields.find { |field| field['type'] == 'ghipss' }&.dig('value')
+
           Rails.logger.info "My Subaccount: #{subaccount.inspect}"
+          Rails.logger.info "My Campaign: #{campaign.inspect}"
         
           unless subaccount
             render json: { error: "No subaccount found for the fundraiser" }, status: :unprocessable_entity
@@ -88,13 +93,15 @@ module Api
               type: subaccount.subaccount_type,
               name: subaccount.business_name,
               account_number: subaccount.account_number,
-              bank_code: subaccount.bank_code,
+              bank_code: bank_code_value,
               currency: campaign.currency.upcase,
               description: "Transfer recipient for campaign payouts",
               metadata: { user_id: @fundraiser.id, campaign_id: campaign.id, email: @fundraiser.email, user_name: @fundraiser.full_name }
             )
+
+            Rails.logger.info "Create Transfer Recipient Response: #{response.inspect}"
         
-            if response[:status]
+            if response[:status] == true
               subaccount.update!(recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id)
               render json: { message: "Recipient created successfully.", recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id }, status: :ok
             else
