@@ -368,7 +368,7 @@ const PaymentMethod = () => {
             type="submit"
             className="w-full py-2 bg-green-500 text-white rounded shadow-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all"
           >
-           { isLoading ? 'Updating...' : 'Update Account'}
+            {isLoading ? 'Updating...' : 'Update Account'}
           </button>
         </form>
       </Modal>
