@@ -353,6 +353,8 @@ module Api
         def fetch_transfers_from_paystack
           @fundraiser = @current_user
           subaccounts = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
+          
+          Rails.logger.debug "Fetching transfers for subaccounts: #{subaccounts.inspect}"
 
           # Fetch transfers for each subaccount
           subaccounts.each do |subaccount|
