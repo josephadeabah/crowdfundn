@@ -149,7 +149,7 @@ module Api
             @campaign.update(status: data['status'])
 
             # Optionally, call the CampaignWebhookService or any other related services
-            CampaignWebhookService.new(@campaign).send_status_update
+            # CampaignWebhookService.new(@campaign).send_status_update
 
             render json: { message: 'Campaign status updated' }, status: :ok
           else
