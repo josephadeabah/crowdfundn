@@ -68,7 +68,8 @@ module Api
                   percentage_charge: response[:data][:percentage_charge],
                   description: response[:data][:description],
                   settlement_bank: response[:data][:settlement_bank],
-                  metadata: metadata
+                  metadata: metadata,
+                  user_id: user.id
                 )
               else
                 # If Paystack returns an error, raise an exception to trigger rollback
