@@ -93,7 +93,7 @@ module Api
             )
         
             if response[:status]
-              subaccount.update!(recipient_code: response.dig(:data, :recipient_code))
+              subaccount.update!(recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id)
               render json: { message: "Recipient created successfully.", recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id }, status: :ok
             else
               render json: { error: "Provide valid data" }, status: :unprocessable_entity
@@ -335,8 +335,8 @@ module Api
           # Create or update the transfer in the database
           transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer[:transfer_code])
           transfer_record.update(
-            user: campaign.fundraiser_id,  # Associate with the logged-in user
-            campaign: campaign.id,  # Associate with the campaign
+            user: transfer_data.dig(:metadata, :user_id),  # Associate with the logged-in user
+            campaign: transfer_data.dig(:metadata, :campaign_id),  # Associate with the campaign
             bank_name: transfer[:bank_name],
             account_number: transfer[:account_number],
             amount: transfer[:amount],
