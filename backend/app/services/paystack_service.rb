@@ -75,6 +75,30 @@ class PaystackService
       parse_response(response)
     end
 
+      # Update a subaccount
+  def update_subaccount(subaccount_code:, business_name: nil, settlement_bank: nil, account_number: nil, 
+                        bank_code: nil, percentage_charge: nil, description: nil, 
+                        primary_contact_email: nil, primary_contact_name: nil, 
+                        primary_contact_phone: nil, metadata: nil)
+    uri = URI("#{PAYSTACK_BASE_URL}/subaccount/#{subaccount_code}")
+    
+    body = {
+      business_name: business_name,
+      settlement_bank: settlement_bank,
+      account_number: account_number,
+      bank_code: bank_code,
+      percentage_charge: percentage_charge,
+      description: description,
+      primary_contact_email: primary_contact_email,
+      primary_contact_name: primary_contact_name,
+      primary_contact_phone: primary_contact_phone,
+      metadata: metadata
+    }.compact.to_json  # Remove nil values
+    
+    response = make_put_request(uri, body)
+    parse_response(response)
+  end
+
   # 3. Initialize Transaction with Split Code
   def initialize_transaction(email:, amount:, plan: nil, metadata: {}, subaccount:)
     return { status: 'error', message: 'Email address is required' } if email.blank?
@@ -343,6 +367,13 @@ class PaystackService
 
   def make_get_request(uri)
     request = Net::HTTP::Get.new(uri, headers)
+    @http.request(request)
+  end
+
+  # Make PUT request
+  def make_put_request(uri, body)
+    request = Net::HTTP::Put.new(uri, headers)  # Use PUT method
+    request.body = body
     @http.request(request)
   end
 

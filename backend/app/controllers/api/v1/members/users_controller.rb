@@ -103,29 +103,53 @@ module Api
         
         
         def update_subaccount
-          # Ensure the user is set and has a subaccount
-          subaccount = Subaccount.find_by(subaccount_code: @user.subaccount_id)
-          
+          user = User.find(params[:user_id])
+          raise "User not found" unless user
+        
+          subaccount = Subaccount.find_by(subaccount_code: params[:subaccount_code])
+        
           if subaccount.nil?
-            # If no subaccount exists for the user, return an error
-            render json: { success: false, error: "Subaccount not found for this user" }, status: :not_found
+            render json: { success: false, error: "Subaccount not found" }, status: :not_found
             return
           end
         
-          # Try to update the subaccount with the provided parameters
-          if subaccount.update(subaccount_params)
-            # If successful, return the updated subaccount
+          metadata = params[:metadata] || {} 
+        
+          # Call Paystack API to update the subaccount
+          response = PaystackService.new.update_subaccount(
+            subaccount_code: subaccount.subaccount_code,
+            business_name: params[:business_name],
+            settlement_bank: params[:settlement_bank],
+            account_number: params[:account_number],
+            bank_code: params[:bank_code],
+            percentage_charge: params[:percentage_charge],
+            description: params[:description],
+            primary_contact_email: user.email,
+            primary_contact_name: user.full_name,
+            primary_contact_phone: user.phone_number,
+            metadata: metadata
+          )
+        
+          if response[:status] == true
+            subaccount.update!(
+              business_name: response[:data][:business_name],
+              bank_code: response[:data][:bank_code],
+              account_number: response[:data][:account_number],
+              subaccount_code: response[:data][:subaccount_code],
+              percentage_charge: response[:data][:percentage_charge],
+              description: response[:data][:description],
+              settlement_bank: response[:data][:settlement_bank],
+              metadata: metadata,
+              user_id: user.id
+            )
             render json: { success: true, subaccount: subaccount }, status: :ok
           else
-            # If the update fails, return validation errors
-            render json: { success: false, error: subaccount.errors.full_messages }, status: :unprocessable_entity
+            render json: { success: false, error: response[:message] }, status: :unprocessable_entity
           end
         rescue => e
-          # Log any errors that occur during the update process
           Rails.logger.error "Error updating subaccount: #{e.message}"
           render json: { success: false, error: "An error occurred while updating the subaccount" }, status: :unprocessable_entity
-        end                      
-        
+        end                    
 
         # PUT /api/v1/members/users/:id/make_admin
         def make_admin
@@ -185,7 +209,7 @@ module Api
             :bank_code,
             :percentage_charge,
             :description,
-            metadata: { custom_fields: [:display_name, :variable_name, :value] }
+            metadata: { custom_fields: [:display_name, :variable_name, :value] },
           )
         end
         
