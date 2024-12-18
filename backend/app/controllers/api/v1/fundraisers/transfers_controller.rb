@@ -73,7 +73,7 @@ module Api
           campaign = Campaign.find(params[:campaign_id])
         
           # Fetch the full subaccount based on subaccount_id in the user's table
-          subaccount = Subaccount.find_by(user_id: @fundraiser.id)
+          subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
 
           Rails.logger.debug "My Subaccount: #{subaccount.inspect}"
         
@@ -182,7 +182,7 @@ module Api
         
           @campaign = Campaign.find(params[:campaign_id])
           @fundraiser = @campaign.fundraiser
-          subaccount = Subaccount.find_by(user_id: @fundraiser.id)
+          subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
           recipient_code = params[:recipient_code]
         
           raise "You do not have a account number added." unless subaccount
@@ -362,7 +362,7 @@ module Api
         # Fetch transfers from Paystack for the logged-in user
         def fetch_transfers_from_paystack
           @fundraiser = @current_user
-          subaccounts = Subaccount.find_by(user_id: @fundraiser.id)
+          subaccounts = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
           
           Rails.logger.debug "Fetching transfers for subaccounts: #{subaccounts.inspect}"
 

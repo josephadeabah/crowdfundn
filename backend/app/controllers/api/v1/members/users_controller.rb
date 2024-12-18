@@ -23,7 +23,7 @@ module Api
         def create_subaccount
           user = User.find(params[:user_id])
           raise "User not found" unless user
-
+        
           # Prepare metadata
           metadata = params[:subaccount][:metadata]
           if metadata && metadata[:custom_fields]
@@ -36,52 +36,55 @@ module Api
             metadata = { custom_fields: [] }  # Default to empty custom fields if not provided
           end
         
-          # Check if the user already has a subaccount
-          if user.subaccount
-            # Optionally, update the existing subaccount fields if needed
-            subaccount = user.subaccount
-          else
-            # If no subaccount exists, create a new one via Paystack
-            response = PaystackService.new.create_subaccount(
-              business_name: params[:subaccount][:business_name],
-              settlement_bank: params[:subaccount][:settlement_bank],
-              account_number: params[:subaccount][:account_number],
-              bank_code: params[:subaccount][:bank_code],
-              percentage_charge: params[:subaccount][:percentage_charge],
-              description: params[:subaccount][:description],
-              primary_contact_email: user.email,
-              primary_contact_name: user.full_name,
-              primary_contact_phone: user.phone_number,
-              metadata: metadata
-            )
-        
-            if response[:status] == true
-              # Create and associate a new subaccount with the user
-              subaccount = user.create_subaccount(
-                business_name: response[:data][:business_name],
-                bank_code: response[:data][:bank_code],
-                account_number: response[:data][:account_number],
-                subaccount_code: response[:data][:subaccount_code],
-                subaccount_type: metadata[:custom_fields].first[:type],
-                percentage_charge: response[:data][:percentage_charge],
-                description: response[:data][:description],
-                settlement_bank: response[:data][:settlement_bank],
+          # Start a transaction to ensure atomicity of user and subaccount creation
+          ActiveRecord::Base.transaction do
+            # Check if the user already has a subaccount
+            if user.subaccount
+              # Optionally, update the existing subaccount fields if needed
+              subaccount = user.subaccount
+            else
+              # If no subaccount exists, create a new one via Paystack
+              response = PaystackService.new.create_subaccount(
+                business_name: params[:subaccount][:business_name],
+                settlement_bank: params[:subaccount][:settlement_bank],
+                account_number: params[:subaccount][:account_number],
+                bank_code: params[:subaccount][:bank_code],
+                percentage_charge: params[:subaccount][:percentage_charge],
+                description: params[:subaccount][:description],
+                primary_contact_email: user.email,
+                primary_contact_name: user.full_name,
+                primary_contact_phone: user.phone_number,
                 metadata: metadata
               )
-            else
-              render json: { success: false, error: response[:message] }, status: :unprocessable_entity
-              return
+        
+              if response[:status] == true
+                # Create and associate a new subaccount with the user
+                subaccount = Subaccount.create!(
+                  business_name: response[:data][:business_name],
+                  bank_code: response[:data][:bank_code],
+                  account_number: response[:data][:account_number],
+                  subaccount_code: response[:data][:subaccount_code],
+                  subaccount_type: metadata[:custom_fields].first[:type],
+                  percentage_charge: response[:data][:percentage_charge],
+                  description: response[:data][:description],
+                  settlement_bank: response[:data][:settlement_bank],
+                  metadata: metadata
+                )
+              else
+                # If Paystack returns an error, raise an exception to trigger rollback
+                raise StandardError, response[:message]
+              end
             end
+            # Ensure the user's subaccount_id is set to the subaccount_code
+            user.update_columns(subaccount_id: subaccount.subaccount_code)
           end
         
-          # Ensure the user's subaccount_id is set to the subaccount_code
-          user.update_columns(subaccount_id: subaccount.subaccount_code)
-        
+          # If no errors occur, return a success response
           render json: { success: true, subaccount_code: user.subaccount_id }, status: :ok
         rescue => e
           Rails.logger.error "Error during account creation: #{e.message}"
           render json: { success: false, error: e.message }, status: :unprocessable_entity
-        end               
+        end                      
         
         # GET /api/v1/members/users/:user_id/subaccount
         def show_subaccount
@@ -94,7 +97,7 @@ module Api
             end
           else
             render json: { error: "User has no associated subaccount" }, status: :not_found
-          end
+          end          
         end
         
         
