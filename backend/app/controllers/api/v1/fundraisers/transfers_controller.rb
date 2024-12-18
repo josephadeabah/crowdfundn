@@ -73,9 +73,9 @@ module Api
           campaign = Campaign.find(params[:campaign_id])
         
           # Fetch the full subaccount based on subaccount_id in the user's table
-          subaccount = @fundraiser.subaccount
+          subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
 
-          Rails.logger.debug "My Subaccount: #{subaccount.inspect}"
+          Rails.logger.info "My Subaccount: #{subaccount.inspect}"
         
           unless subaccount
             render json: { error: "No subaccount found for the fundraiser" }, status: :unprocessable_entity
