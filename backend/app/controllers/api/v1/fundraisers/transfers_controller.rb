@@ -73,7 +73,7 @@ module Api
           campaign = Campaign.find(params[:campaign_id])
         
           # Fetch the full subaccount based on subaccount_id in the user's table
-          subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
+          subaccount = @fundraiser.subaccount
 
           Rails.logger.debug "My Subaccount: #{subaccount.inspect}"
         
