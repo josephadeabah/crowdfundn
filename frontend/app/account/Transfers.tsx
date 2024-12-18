@@ -54,9 +54,11 @@ export default function Transfers() {
   }, [fetchTransfers, currentPage]);
 
   const handleRequestTransfer = async (campaignId: string | number) => {
+    console.log("campaign id in handleRequestTransfer", campaignId);
     try {
       // Step 1: Create the transfer recipient
       const response = await createTransferRecipient(campaignId);
+      console.log("response in handleRequestTransfer", response);
 
       // Step 2: Check if recipient creation was successful
       if (response && response.recipient_code) {
@@ -65,6 +67,7 @@ export default function Transfers() {
           campaignId,
           response.recipient_code,
         );
+        console.log("initiateResponse in handleRequestTransfer", initiateResponse);
 
         if (typeof initiateResponse === 'object' && initiateResponse !== null) {
           // Check if the response from initiateTransfer contains an error
