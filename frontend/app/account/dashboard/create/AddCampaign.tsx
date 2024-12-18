@@ -6,7 +6,7 @@ import { Button } from '@/app/components/button/Button';
 import { useDropzone } from 'react-dropzone';
 import Modal from '@/app/components/modal/Modal';
 import CampaignPermissionSetting from '@/app/account/dashboard/create/settings/PermissionSettings';
-import { FaEdit } from 'react-icons/fa';
+import { FaCheck, FaEdit } from 'react-icons/fa';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useUserContext } from '@/app/context/users/UserContext';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
@@ -165,7 +165,7 @@ const CreateCampaign = () => {
         const createdCampaign = await addCampaign(formData);
         setAlertTitle(createdCampaign.message);
         setAlertMessage(
-          <a href="/account" className="text-gray-700 underline">
+          <a href="/account#Campaigns" className="text-gray-700 underline">
             View created campaign in the "Campaigns" tab
           </a>,
         );
@@ -185,6 +185,13 @@ const CreateCampaign = () => {
         setAlertOpen(true);
       }
     }
+  };
+
+  const onConfirmAction = () => {
+    setAlertOpen(false);
+    setAlertMessage('');
+    setAlertTitle('');
+    window.location.href = '/account#Campaigns';
   };
 
   const handleCancel = () => {
@@ -471,10 +478,10 @@ const CreateCampaign = () => {
         message={alertMessage}
         isOpen={alertOpen}
         setIsOpen={setAlertOpen}
-        onConfirm={() => setAlertOpen(false)}
+        onConfirm={() => onConfirmAction()}
         icon={
           alertTitle === 'Campaign created successfully' ? (
-            <FaExclamationTriangle className="w-6 h-6 text-green-600" />
+            <FaCheck className="w-6 h-6 text-green-600" />
           ) : (
             <FaExclamationTriangle className="w-6 h-6 text-red-600" />
           )

@@ -27,12 +27,66 @@ const ProfileTabs = () => {
   const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<number>(0); // To track the onboarding step
 
+  // Tab titles and icons
+  const tabs = [
+    {
+      label: 'Dashboard',
+      icon: <DashboardIcon />,
+      component: <Dashboard />,
+      description:
+        'Your overall dashboard where you can see an overview of activities and analytics.',
+    },
+    {
+      label: 'Donations',
+      icon: <HandIcon />,
+      component: <Donations />,
+      description:
+        'Manage your donations and send thank you to your backers here.',
+    },
+    {
+      label: 'Transfers',
+      icon: <BiTransfer />,
+      component: <Transfers />,
+      description: 'View and manage your transfers.',
+    },
+    {
+      label: 'Rewards',
+      icon: <IconJarLogoIcon />,
+      component: <Rewards />,
+      description: 'Receive and give rewards to your donors here.',
+    },
+    {
+      label: 'Campaigns',
+      icon: <RocketIcon />,
+      component: <Campaigns />,
+      description: 'Create and manage your fundraising campaigns.',
+    },
+    {
+      label: 'Updates',
+      icon: <ChatBubbleIcon />,
+      component: <CampaignUpdates />,
+      description: 'Add your fundraising updates in this tab.',
+    },
+    {
+      label: 'Settings',
+      icon: <GearIcon />,
+      component: <AccountSettings />,
+      description: 'Manage your account settings and payment here.',
+    },
+  ];
+
+  // Navigate to a tab based on hash in URL
   useEffect(() => {
     const savedTab = localStorage.getItem('activeTab');
     const onboardingCompleted = localStorage.getItem('onboardingCompleted');
+    const hashTab = window.location.hash.replace('#', '');
 
-    if (savedTab) {
-      setActiveTab(savedTab);
+    if (hashTab && tabs.find((tab) => tab.label === hashTab)) {
+      setActiveTab(hashTab); // Set tab from URL hash
+    } else if (savedTab) {
+      setActiveTab(savedTab); // Set tab from local storage
+    } else {
+      setActiveTab(tabs[0].label); // Default to the first tab
     }
 
     if (!onboardingCompleted) {
@@ -42,8 +96,10 @@ const ProfileTabs = () => {
     setLoading(false);
   }, []);
 
+  // Update URL hash and save the active tab in local storage
   useEffect(() => {
     if (activeTab) {
+      window.history.replaceState(null, '', `#${activeTab}`);
       localStorage.setItem('activeTab', activeTab);
     }
   }, [activeTab]);
@@ -54,7 +110,7 @@ const ProfileTabs = () => {
     setActiveTab(tab);
     setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500); // Simulate loading
   };
 
   // Mark onboarding as completed
@@ -63,72 +119,9 @@ const ProfileTabs = () => {
     setShowOnboarding(false);
   };
 
-  // Render content for each tab
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'Dashboard':
-        return <Dashboard />;
-      case 'Donations':
-        return <Donations />;
-      case 'Transfers':
-        return <Transfers />;
-      case 'Rewards':
-        return <Rewards />;
-      case 'Campaigns':
-        return <Campaigns />;
-      case 'Updates':
-        return <CampaignUpdates />;
-      case 'Settings':
-        return <AccountSettings />;
-      default:
-        return <Dashboard />;
-    }
-  };
-
   if (loading) {
     return <ProfileTabsLoader />;
   }
-
-  // Tab titles and icons
-  const tabs = [
-    {
-      label: 'Dashboard',
-      icon: <DashboardIcon />,
-      description:
-        'Your overall dashboard where you can see an overview of activities and analytics.',
-    },
-    {
-      label: 'Donations',
-      icon: <HandIcon />,
-      description:
-        'Manage your donations and send thank you to your backers here.',
-    },
-    {
-      label: 'Transfers',
-      icon: <BiTransfer />,
-      description: 'View and manage your transfers.',
-    },
-    {
-      label: 'Rewards',
-      icon: <IconJarLogoIcon />,
-      description: 'Receive and give rewards to your donors here.',
-    },
-    {
-      label: 'Campaigns',
-      icon: <RocketIcon />,
-      description: 'Create and manage your fundraising campaigns.',
-    },
-    {
-      label: 'Updates',
-      icon: <ChatBubbleIcon />,
-      description: 'Add your fundraising updates in this tab.',
-    },
-    {
-      label: 'Settings',
-      icon: <GearIcon />,
-      description: 'Manage your account settings and payment here.',
-    },
-  ];
 
   return (
     <div className="w-full bg-white dark:bg-gray-800">
@@ -144,9 +137,9 @@ const ProfileTabs = () => {
               const isOnboarding = showOnboarding && currentStep === index;
 
               return (
-                <button
+                <a
                   key={label}
-                  type="button"
+                  href={`#${label}`} // Anchor link
                   className={`py-4 px-4 h-full whitespace-nowrap text-sm font-medium md:text-base transform transition-transform duration-300 ${
                     isActive
                       ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-400 dark:text-orange-600'
@@ -156,7 +149,10 @@ const ProfileTabs = () => {
                       ? 'bg-green-600 text-white dark:bg-orange-700'
                       : ''
                   }`}
-                  onClick={() => handleTabClick(label)}
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent default anchor behavior
+                    handleTabClick(label); // Handle tab click
+                  }}
                   aria-selected={isActive}
                   aria-controls={`vertical-tab-${label}`}
                   role="tab"
@@ -164,7 +160,7 @@ const ProfileTabs = () => {
                 >
                   <span className="mr-2">{icon}</span>
                   {label}
-                </button>
+                </a>
               );
             })}
           </div>
@@ -177,7 +173,7 @@ const ProfileTabs = () => {
             id={`vertical-tab-${activeTab}`}
             className="h-full"
           >
-            {renderTabContent()}
+            {tabs.find((tab) => tab.label === activeTab)?.component}
           </div>
         </div>
 

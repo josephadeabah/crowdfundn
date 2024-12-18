@@ -64,7 +64,7 @@ const Navbar = () => {
     Guides: [
       { label: 'How To Get Started', href: '/how-to-get-started' },
       { label: 'Stories', href: '/stories' },
-      { label: 'Corporate Social Responsibility', href: '/corporate-giving' },
+      { label: 'Pricing', href: '/pricing' },
       {
         label: 'Fundraising Ideas for Africa',
         href: '/fundraising-ideas-africa',

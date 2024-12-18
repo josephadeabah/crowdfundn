@@ -29,13 +29,13 @@ const SummaryCard: React.FC = () => {
           <div className="flex space-x-4 z-10">
             <a
               href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
-              className="inline-block px-4 py-2 bg-white text-gray-600 font-medium text-sm rounded-md shadow-sm hover:bg-gray-100 transition"
+              className="inline-block px-4 py-2 bg-green-50 text-gray-500 font-medium text-sm rounded-md shadow-sm hover:bg-gray-100 transition"
             >
               Get Started
             </a>
             <a
               href="#categories"
-              className="inline-block px-4 py-2 bg-white text-gray-600 font-medium text-sm rounded-md shadow-sm hover:bg-gray-100 transition"
+              className="inline-block px-4 py-2 bg-green-50 text-gray-500 font-medium text-sm rounded-md shadow-sm hover:bg-gray-100 transition"
             >
               Explore Campaigns
             </a>
