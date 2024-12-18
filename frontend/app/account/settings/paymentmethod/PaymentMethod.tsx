@@ -195,7 +195,7 @@ const PaymentMethod = () => {
 
       <h2 className="text-xl font-semibold">Bank Account Information</h2>
       <span className="font-semibold text-green-500 py-2">
-        You'll receive your money through this account number
+        You'll receive your money through this account
       </span>
 
       {isLoading ? (
