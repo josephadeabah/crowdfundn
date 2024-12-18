@@ -124,24 +124,44 @@ const PaymentMethod = () => {
       return;
     }
 
-    const payload = {
-      subaccount: {
-        business_name: user?.full_name,
-        settlement_bank: selectedBank.value,
-        account_number: accountNumber,
-        percentage_charge: 20,
-        metadata: {
-          custom_fields: [
-            {
-              display_name: selectedBank.display_name,
-              variable_name: selectedBank.variable_name,
-              value: selectedBank.value,
-              type: selectedBank.type,
+    // Prepare the payload based on whether we are creating or updating
+    const payload = isUpdate
+      ? {
+          subaccount_code: subaccountData?.subaccount_code || '', // For updating
+          business_name: user?.full_name,
+          settlement_bank: selectedBank.value,
+          account_number: accountNumber,
+          percentage_charge: 20,
+          description: subaccountData?.description || '',
+          metadata: {
+            custom_fields: [
+              {
+                display_name: selectedBank.display_name,
+                variable_name: selectedBank.variable_name,
+                value: selectedBank.value,
+                type: selectedBank.type,
+              },
+            ],
+          },
+        }
+      : {
+          subaccount: {
+            business_name: user?.full_name,
+            settlement_bank: selectedBank.value,
+            account_number: accountNumber,
+            percentage_charge: 20,
+            metadata: {
+              custom_fields: [
+                {
+                  display_name: selectedBank.display_name,
+                  variable_name: selectedBank.variable_name,
+                  value: selectedBank.value,
+                  type: selectedBank.type,
+                },
+              ],
             },
-          ],
-        },
-      },
-    };
+          },
+        };
 
     try {
       const url = isUpdate
