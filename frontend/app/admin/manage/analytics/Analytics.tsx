@@ -10,7 +10,9 @@ const AnalyticsComponent = () => {
     { id: 'pieChart', type: 'pie', order: 3 },
   ]);
 
-  const [notifications, setNotifications] = useState<{ id: number; message: string }[]>([]);
+  const [notifications, setNotifications] = useState<
+    { id: number; message: string }[]
+  >([]);
   const [filterOptions, setFilterOptions] = useState({
     timeRange: '7days',
     category: 'all',

@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { FaDollarSign, FaHandHoldingHeart, FaExchangeAlt, FaUsers } from 'react-icons/fa';
+import {
+  FaDollarSign,
+  FaHandHoldingHeart,
+  FaExchangeAlt,
+  FaUsers,
+} from 'react-icons/fa';
 import { FiSearch } from 'react-icons/fi';
 
 const GeneralDashboard = () => {
   const [filter, setFilter] = useState('daily');
   const [searchTerm, setSearchTerm] = useState('');
-  const [transfers, setTransfers] = useState<{
-    date: string;
-    amount: number;
-    from: string;
-    to: string;
-  }[]>([]);
+  const [transfers, setTransfers] = useState<
+    {
+      date: string;
+      amount: number;
+      from: string;
+      to: string;
+    }[]
+  >([]);
 
   const cardData = [
     { title: 'Total Donations', value: '$1,234,567', icon: <FaDollarSign /> },
@@ -139,19 +146,25 @@ const GeneralDashboard = () => {
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-4">Donations Overview</h2>
           {/* Placeholder for bar chart */}
-          <div className="bg-gray-200 p-6 rounded-lg text-center">Bar Chart Placeholder</div>
+          <div className="bg-gray-200 p-6 rounded-lg text-center">
+            Bar Chart Placeholder
+          </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-4">Fundraising Categories</h2>
           {/* Placeholder for pie chart */}
-          <div className="bg-gray-200 p-6 rounded-lg text-center">Pie Chart Placeholder</div>
+          <div className="bg-gray-200 p-6 rounded-lg text-center">
+            Pie Chart Placeholder
+          </div>
         </div>
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-md mb-8">
         <h2 className="text-xl font-semibold mb-4">User Growth</h2>
         {/* Placeholder for line chart */}
-        <div className="bg-gray-200 p-6 rounded-lg text-center">Line Chart Placeholder</div>
+        <div className="bg-gray-200 p-6 rounded-lg text-center">
+          Line Chart Placeholder
+        </div>
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-md">

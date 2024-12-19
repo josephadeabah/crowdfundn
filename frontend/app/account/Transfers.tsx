@@ -244,7 +244,9 @@ export default function Transfers() {
                         ).toLocaleString()}
                       </td>
                       <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                       {moment(transfer.created_at).format('MM/DD/YYYY HH:mm:ss')}
+                        {moment(transfer.created_at).format(
+                          'MM/DD/YYYY HH:mm:ss',
+                        )}
                       </td>
                       <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
                         {transfer.status}
