@@ -27,65 +27,71 @@ module Api
           # Prepare metadata
           metadata = params[:subaccount][:metadata]
           if metadata && metadata[:custom_fields]
-            # Sanitize custom fields (ensure they have the required keys and valid data)
             metadata[:custom_fields] = metadata[:custom_fields].map do |field|
-              # Ensure the field only contains necessary attributes and valid data
               field.slice(:display_name, :variable_name, :value, :type)
             end
           else
-            metadata = { custom_fields: [] }  # Default to empty custom fields if not provided
+            metadata = { custom_fields: [] }
           end
         
-          # Start a transaction to ensure atomicity of user and subaccount creation
           ActiveRecord::Base.transaction do
             # Check if the user already has a subaccount
             if user.subaccount
-              # Optionally, update the existing subaccount fields if needed
-              subaccount = user.subaccount
-            else
-              # If no subaccount exists, create a new one via Paystack
-              response = PaystackService.new.create_subaccount(
-                business_name: params[:subaccount][:business_name],
-                settlement_bank: params[:subaccount][:settlement_bank],
-                account_number: params[:subaccount][:account_number],
-                bank_code: params[:subaccount][:bank_code],
-                percentage_charge: params[:subaccount][:percentage_charge],
-                description: params[:subaccount][:description],
-                primary_contact_email: user.email,
-                primary_contact_name: user.full_name,
-                primary_contact_phone: user.phone_number,
-                metadata: metadata
-              )
-        
-              if response[:status] == true
-                # Create and associate a new subaccount with the user
-                subaccount = Subaccount.create!(
-                  business_name: response[:data][:business_name],
-                  bank_code: response[:data][:bank_code],
-                  account_number: response[:data][:account_number],
-                  subaccount_code: response[:data][:subaccount_code],
-                  subaccount_type: metadata[:custom_fields].first[:type],
-                  percentage_charge: response[:data][:percentage_charge],
-                  description: response[:data][:description],
-                  settlement_bank: response[:data][:settlement_bank],
-                  metadata: metadata,
-                  user_id: user.id
-                )
-              else
-                # If Paystack returns an error, raise an exception to trigger rollback
-                raise StandardError, response[:message]
+              existing_recipient_code = user.subaccount.recipient_code
+              if existing_recipient_code.present?
+                # Attempt to delete the recipient code on Paystack
+                delete_response = PaystackService.new.delete_transfer_recipient(existing_recipient_code)
+                unless delete_response[:status]
+                  raise StandardError, "Failed to delete recipient on Paystack: #{delete_response[:message]}"
+                end
               end
+        
+              # Delete recipient code locally
+              user.subaccount.update!(recipient_code: nil)
             end
-            # Ensure the user's subaccount_id is set to the subaccount_code
+        
+            # Create a new subaccount via Paystack
+            response = PaystackService.new.create_subaccount(
+              business_name: params[:subaccount][:business_name],
+              settlement_bank: params[:subaccount][:settlement_bank],
+              account_number: params[:subaccount][:account_number],
+              bank_code: params[:subaccount][:bank_code],
+              percentage_charge: params[:subaccount][:percentage_charge],
+              description: params[:subaccount][:description],
+              primary_contact_email: user.email,
+              primary_contact_name: user.full_name,
+              primary_contact_phone: user.phone_number,
+              metadata: metadata
+            )
+        
+            if response[:status] == true
+              # Create and associate a new subaccount with the user
+              subaccount = Subaccount.create!(
+                business_name: response[:data][:business_name],
+                bank_code: response[:data][:bank_code],
+                account_number: response[:data][:account_number],
+                subaccount_code: response[:data][:subaccount_code],
+                subaccount_type: metadata[:custom_fields].first[:type],
+                percentage_charge: response[:data][:percentage_charge],
+                description: response[:data][:description],
+                settlement_bank: response[:data][:settlement_bank],
+                metadata: metadata,
+                user_id: user.id
+              )
+            else
+              raise StandardError, response[:message]
+            end
+        
+            # Update user's subaccount_id
             user.update_columns(subaccount_id: subaccount.subaccount_code)
           end
         
-          # If no errors occur, return a success response
           render json: { success: true, subaccount_code: user.subaccount_id }, status: :ok
         rescue => e
           Rails.logger.error "Error during account creation: #{e.message}"
           render json: { success: false, error: e.message }, status: :unprocessable_entity
-        end                      
+        end
+                              
         
         # GET /api/v1/members/users/:user_id/subaccount
         def show_subaccount
@@ -107,13 +113,23 @@ module Api
           raise "User not found" unless user
         
           subaccount = Subaccount.find_by(subaccount_code: params[:subaccount_code])
-        
           if subaccount.nil?
             render json: { success: false, error: "Subaccount not found" }, status: :not_found
             return
           end
         
-          metadata = params[:metadata] || {} 
+          metadata = params[:metadata] || {}
+        
+          # Delete the existing recipient code on Paystack
+          if subaccount.recipient_code.present?
+            delete_response = PaystackService.new.delete_transfer_recipient(subaccount.recipient_code)
+            unless delete_response[:status]
+              raise StandardError, "Failed to delete recipient on Paystack: #{delete_response[:message]}"
+            end
+        
+            # Delete recipient code locally
+            subaccount.update!(recipient_code: nil)
+          end
         
           # Call Paystack API to update the subaccount
           response = PaystackService.new.update_subaccount(
@@ -149,7 +165,7 @@ module Api
         rescue => e
           Rails.logger.error "Error updating subaccount: #{e.message}"
           render json: { success: false, error: "An error occurred while updating the subaccount" }, status: :unprocessable_entity
-        end                    
+        end                           
 
         # PUT /api/v1/members/users/:id/make_admin
         def make_admin

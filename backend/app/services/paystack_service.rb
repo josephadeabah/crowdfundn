@@ -238,6 +238,13 @@ class PaystackService
     parse_response(response)
   end
 
+  # Delete a transfer recipient by recipient_code
+  def delete_transfer_recipient(recipient_code)
+    uri = URI("#{PAYSTACK_BASE_URL}/transferrecipient/#{recipient_code}")
+    response = make_delete_request(uri)
+    parse_response(response)
+  end
+
 
   # Bulk create transfer recipients
   def bulk_create_transfer_recipients(recipients:)
@@ -388,6 +395,11 @@ class PaystackService
   def make_put_request(uri, body)
     request = Net::HTTP::Put.new(uri, headers)  # Use PUT method
     request.body = body
+    @http.request(request)
+  end
+
+  def make_delete_request(uri)
+    request = Net::HTTP::Delete.new(uri, headers)
     @http.request(request)
   end
 
