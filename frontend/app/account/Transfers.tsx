@@ -244,7 +244,7 @@ export default function Transfers() {
                         ).toLocaleString()}
                       </td>
                       <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {format(parseISO(transfer.created_at), 'MM/dd/yyyy HH:mm:ss')}
+                      {new Date(transfer.created_at.replace(/-/g, '/')).toLocaleDateString()}
                       </td>
                       <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
                         {transfer.status}
