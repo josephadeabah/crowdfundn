@@ -301,17 +301,17 @@ const Navbar = () => {
                           <span className="text-gray-600">{user.email}</span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 px-0 py-2 rounded transition">
+                      <div className="flex items-center gap-3 shadow-sm hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 px-0 py-2 rounded transition">
                         <Link href="/account">
                           <div>Go to Account</div>
                         </Link>
                       </div>
-                      <div className="flex items-center gap-3 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 px-0 py-2 rounded transition">
+                      <div className="flex items-center gap-3 shadow-sm hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 px-0 py-2 rounded transition">
                         <DarkModeBtn />
                         <div>Change Theme</div>
                       </div>
                       <div
-                        className="hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
+                        className="hover:bg-gray-200 shadow-sm cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
                         onClick={logout}
                       >
                         Logout
