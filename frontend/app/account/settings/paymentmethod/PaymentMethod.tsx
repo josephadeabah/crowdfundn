@@ -81,7 +81,7 @@ const PaymentMethod = () => {
     } catch {
       showToast('Error', 'Failed to fetch account details.', 'error');
     } finally {
-      setIsLoading(false); // Set loading to false after data is fetched
+      setIsLoading(false);
     }
   };
 
@@ -219,7 +219,7 @@ const PaymentMethod = () => {
       </span>
 
       {isLoading ? (
-        <BankAccountLoader /> // Show skeleton loader while data is loading
+        <BankAccountLoader />
       ) : subaccountData ? (
         <div>
           <div className="p-4 max-w-md bg-white rounded-sm shadow-sm">
