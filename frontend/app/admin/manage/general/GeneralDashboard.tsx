@@ -1,45 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Bar, Pie, Line } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PieController,
-  ArcElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import {
-  FaDollarSign,
-  FaHandHoldingHeart,
-  FaExchangeAlt,
-  FaUsers,
-} from 'react-icons/fa';
+import { FaDollarSign, FaHandHoldingHeart, FaExchangeAlt, FaUsers } from 'react-icons/fa';
 import { FiSearch } from 'react-icons/fi';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PieController,
-  ArcElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
-);
 
 const GeneralDashboard = () => {
   const [filter, setFilter] = useState('daily');
   const [searchTerm, setSearchTerm] = useState('');
-  const [transfers, setTransfers] = useState<
-    { date: string; amount: number; from: string; to: string }[]
-  >([]);
+  const [transfers, setTransfers] = useState<{
+    date: string;
+    amount: number;
+    from: string;
+    to: string;
+  }[]>([]);
 
   const cardData = [
     { title: 'Total Donations', value: '$1,234,567', icon: <FaDollarSign /> },
@@ -167,17 +138,20 @@ const GeneralDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-4">Donations Overview</h2>
-          <Bar data={barChartData} options={{ responsive: true }} />
+          {/* Placeholder for bar chart */}
+          <div className="bg-gray-200 p-6 rounded-lg text-center">Bar Chart Placeholder</div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-4">Fundraising Categories</h2>
-          <Pie data={pieChartData} options={{ responsive: true }} />
+          {/* Placeholder for pie chart */}
+          <div className="bg-gray-200 p-6 rounded-lg text-center">Pie Chart Placeholder</div>
         </div>
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-md mb-8">
         <h2 className="text-xl font-semibold mb-4">User Growth</h2>
-        <Line data={lineChartData} options={{ responsive: true }} />
+        {/* Placeholder for line chart */}
+        <div className="bg-gray-200 p-6 rounded-lg text-center">Line Chart Placeholder</div>
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-md">
