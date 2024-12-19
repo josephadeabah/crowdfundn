@@ -286,7 +286,7 @@ const Navbar = () => {
                     </div>
                   </PopoverTrigger>
                   <PopoverContent side="bottom" align="end" sideOffset={10}>
-                    <div className="flex flex-col justify-start gap-3 p-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50">
+                    <div className="flex flex-col justify-start gap-1 p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50">
                       <div className="cursor-pointer flex items-center">
                         <Link href="/account">
                           <Avatar name={user.full_name} size="sm" />
