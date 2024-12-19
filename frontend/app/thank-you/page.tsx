@@ -49,7 +49,7 @@ const ThankYouPage: React.FC = () => {
       {/* Thank You Message */}
       <div className="z-10">
         <h1 className="text-4xl md:text-5xl font-bold text-orange-500 mb-4">
-          Thank You for Your Generous Donation!
+          Thank You For Your Generous Donation!
         </h1>
         <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-6">
           Your contribution means the world to us and will help make a
