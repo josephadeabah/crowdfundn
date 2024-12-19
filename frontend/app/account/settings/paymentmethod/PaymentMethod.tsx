@@ -131,7 +131,7 @@ const PaymentMethod = () => {
           business_name: user?.full_name,
           settlement_bank: selectedBank.value,
           account_number: accountNumber,
-          percentage_charge: 20,
+          percentage_charge: 10,
           description: subaccountData?.description || '',
           metadata: {
             custom_fields: [
@@ -149,7 +149,7 @@ const PaymentMethod = () => {
             business_name: user?.full_name,
             settlement_bank: selectedBank.value,
             account_number: accountNumber,
-            percentage_charge: 20,
+            percentage_charge: 10,
             metadata: {
               custom_fields: [
                 {
