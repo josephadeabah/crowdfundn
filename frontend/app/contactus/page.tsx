@@ -236,6 +236,12 @@ const ContactUs = () => {
                 Mbabane
                 <br />
                 Eswatini
+                <div className="mt-4 flex items-center space-x-4">
+                  <FiPhone className="text-theme-color-primary text-xl" />
+                  <p className="text-neutral-600 dark:text-gray-300">
+                    (268) 78039973
+                  </p>
+                </div>
               </p>
             </div>
           </div>
@@ -243,7 +249,7 @@ const ContactUs = () => {
           <div className="mt-4 flex items-center space-x-4">
             <FiPhone className="text-theme-color-primary text-xl" />
             <p className="text-neutral-600 dark:text-gray-300">
-              (233) 200415683/ (268) 78039973
+              (233) 200415683
             </p>
           </div>
           <div className="mt-2 flex items-center space-x-4">

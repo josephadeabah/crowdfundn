@@ -71,8 +71,8 @@ const Navbar = () => {
       },
     ],
     Contact: [
-      { label: 'Ghana', href: '/ghana-office' },
-      { label: 'Eswatini', href: '/eswatini-office' },
+      { label: 'Ghana', href: '/contactus' },
+      { label: 'Eswatini', href: '/contactus' },
     ],
   };
 
