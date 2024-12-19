@@ -74,20 +74,29 @@ module Api
         
           # Fetch the full subaccount based on subaccount_id in the user's table
           subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
-
-          metadata = subaccount.metadata
-          custom_fields = metadata['custom_fields']
-          bank_code_value = custom_fields.find { |field| field['type'] == 'ghipss' }&.dig('value')
         
           unless subaccount
             render json: { error: "No subaccount found for the fundraiser" }, status: :unprocessable_entity
             return
           end
         
+          metadata = subaccount.metadata
+          custom_fields = metadata['custom_fields']
+        
+          # Extract the appropriate field based on the type (ghipss or mobile_money)
+          bank_code_value = custom_fields.find { |field| field['type'] == 'ghipss' }&.dig('value') || 
+                            custom_fields.find { |field| field['type'] == 'mobile_money' }&.dig('value')
+        
+          if bank_code_value.blank?
+            render json: { error: "No valid bank code or mobile money details provided" }, status: :unprocessable_entity
+            return
+          end
+        
           # If no recipient_code exists, proceed to create one
           if subaccount.recipient_code.blank?
+            # recipient_type = subaccount.subaccount_type
             response = @paystack_service.create_transfer_recipient(
-              type: subaccount.subaccount_type,
+              type: bank_code_value,
               name: subaccount.business_name,
               account_number: subaccount.account_number,
               bank_code: bank_code_value,
@@ -111,7 +120,7 @@ module Api
         rescue => e
           Rails.logger.error "Error creating transfer recipient: #{e.message}"
           render json: { error: e.message }, status: :unprocessable_entity
-        end
+        end        
         
         # Update a transfer recipient
       def update_transfer_recipient
