@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { parseISO, format } from 'date-fns';
 import { Button } from '../components/button/Button';
 import { HiShieldCheck } from 'react-icons/hi';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
@@ -243,7 +244,7 @@ export default function Transfers() {
                         ).toLocaleString()}
                       </td>
                       <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                        {new Date(transfer.created_at).toLocaleDateString()}
+                      {format(parseISO(transfer.created_at), 'MM/dd/yyyy HH:mm:ss')}
                       </td>
                       <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
                         {transfer.status}
