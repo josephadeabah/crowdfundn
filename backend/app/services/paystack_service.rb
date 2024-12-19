@@ -225,6 +225,20 @@ class PaystackService
     parse_response(response)
   end
 
+  # Update a transfer recipient
+  def update_transfer_recipient(recipient_code:, name: nil, email: nil)
+    uri = URI("#{PAYSTACK_BASE_URL}/transferrecipient/#{recipient_code}")
+
+    body = {
+      name: name,
+      email: email
+    }.compact.to_json # Remove nil values
+
+    response = make_put_request(uri, body)
+    parse_response(response)
+  end
+
+
   # Bulk create transfer recipients
   def bulk_create_transfer_recipients(recipients:)
     uri = URI("#{PAYSTACK_BASE_URL}/transferrecipient/bulk")

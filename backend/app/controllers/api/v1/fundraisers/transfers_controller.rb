@@ -111,7 +111,41 @@ module Api
         rescue => e
           Rails.logger.error "Error creating transfer recipient: #{e.message}"
           render json: { error: e.message }, status: :unprocessable_entity
-        end        
+        end
+        
+        # Update a transfer recipient
+      def update_transfer_recipient
+        recipient_code = params[:recipient_code]
+        update_params = transfer_recipient_params
+
+        # Call the Paystack service to update the recipient
+        response = @paystack_service.update_transfer_recipient(recipient_code, **update_params.symbolize_keys)
+
+        if response[:status]
+          # Update the local database with the new recipient details if needed
+          subaccount = Subaccount.find_by(recipient_code: recipient_code)
+          if subaccount
+            subaccount.update!(
+              business_name: update_params[:name],
+            )
+          end
+
+          render json: {
+            message: "Transfer recipient updated successfully",
+            data: response[:data]
+          }, status: :ok
+        else
+          render json: {
+            error: response[:message] || "Failed to update transfer recipient"
+          }, status: :unprocessable_entity
+        end
+      rescue ActiveRecord::RecordNotFound => e
+        render json: { error: e.message }, status: :not_found
+      rescue => e
+        Rails.logger.error "Error updating transfer recipient: #{e.message}"
+        render json: { error: e.message }, status: :unprocessable_entity
+      end
+
         
         # Fetch customer balance from your database or system
         def get_customer_balance(customer_id)
@@ -185,6 +219,7 @@ module Api
           @campaign = Campaign.find(params[:campaign_id])
           @fundraiser = @campaign.fundraiser
           subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
+          subaccount.reload if subaccount.present?
           recipient_code = params[:recipient_code]
         
           raise "You do not have a account number added." unless subaccount
