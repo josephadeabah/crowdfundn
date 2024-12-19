@@ -8,7 +8,7 @@ const SummaryCard: React.FC = () => {
 
   return (
     <div
-      className="w-full bg-green-50 text-green-600 py-4"
+      className="w-full bg-green-50 text-green-600 dark:bg-gray-800 dark:text-green-400 py-4"
       style={{ pointerEvents: 'auto', position: 'relative' }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -16,10 +16,10 @@ const SummaryCard: React.FC = () => {
         <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
           {/* Left Section */}
           <div className="text-center md:text-left">
-            <h2 className="text-green-600 font-bold leading-tight">
+            <h2 className="text-green-600 dark:text-green-400 font-bold leading-tight">
               Support, Empower, Thrive with Bantu Hive
             </h2>
-            <p className="mt-1 text-sm text-gray-700 dark:text-gray-50 md:text-base opacity-90">
+            <p className="mt-1 text-sm text-gray-700 dark:text-gray-200 md:text-base opacity-90">
               Raise money when you need, fund, or support causes you care about.
               Reach donors, and make a difference.
             </p>
@@ -29,13 +29,13 @@ const SummaryCard: React.FC = () => {
           <div className="flex space-x-4 z-10">
             <a
               href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
-              className="inline-block px-4 py-2 bg-green-50 text-gray-500 font-medium text-sm rounded-md shadow-sm hover:bg-gray-100 transition"
+              className="inline-block px-4 py-2 bg-green-50 text-gray-500 dark:bg-gray-700 dark:text-gray-300 font-medium text-sm rounded-md shadow-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition"
             >
               Get Started
             </a>
             <a
               href="#categories"
-              className="inline-block px-4 py-2 bg-green-50 text-gray-500 font-medium text-sm rounded-md shadow-sm hover:bg-gray-100 transition"
+              className="inline-block px-4 py-2 bg-green-50 text-gray-500 dark:bg-gray-700 dark:text-gray-300 font-medium text-sm rounded-md shadow-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition"
             >
               Explore Campaigns
             </a>
