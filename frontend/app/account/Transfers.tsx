@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import moment from 'moment';
 import { Button } from '../components/button/Button';
 import { HiShieldCheck } from 'react-icons/hi';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
@@ -244,9 +243,7 @@ export default function Transfers() {
                         ).toLocaleString()}
                       </td>
                       <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                        {moment(transfer.created_at).format(
-                          'MM/DD/YYYY HH:mm:ss',
-                        )}
+                      {new Date(transfer.created_at).toLocaleString('en-US', { hour12: true })}
                       </td>
                       <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
                         {transfer.status}
