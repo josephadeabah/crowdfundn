@@ -243,7 +243,7 @@ export default function Transfers() {
                         ).toLocaleString()}
                       </td>
                       <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.created_at}
+                      {new Date(transfer.created_at).toLocaleString()}
                       </td>
                       <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
                         {transfer.status}

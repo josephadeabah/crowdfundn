@@ -18,6 +18,7 @@ import FundraiserUpdates from '@/app/components/fundraiserupdate/FundraiserUpdat
 import RewardSelection from '@/app/components/selectreward/RewardSelection';
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
 import ProgressRing from '@/app/components/ring/ProgressRing';
+import moment from 'moment';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<
@@ -298,7 +299,7 @@ const SingleCampaignPage: React.FC = () => {
                         {donation.full_name || 'Anonymous'}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {new Date(donation.date).toLocaleString()}
+                        {moment(donation.date).format('MMM DD, YYYY, HH:mm:ss')}
                       </p>
                     </div>
                   </div>
