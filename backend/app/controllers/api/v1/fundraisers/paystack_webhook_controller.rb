@@ -11,6 +11,7 @@ module Api
             begin
               event = JSON.parse(payload, symbolize_names: true)
               handle_event(event)
+              head :ok # Respond with 200 OK after handling the event
             rescue JSON::ParserError => e
               Rails.logger.error "Invalid JSON payload: #{e.message}"
               render json: { error: 'Invalid JSON payload' }, status: :unprocessable_entity
@@ -22,13 +23,23 @@ module Api
             Rails.logger.error "Invalid webhook signature"
             render json: { error: 'Invalid signature' }, status: :forbidden
           end
-
-          head :ok
         end
 
         private
 
         def handle_event(event)
+          event_id = event[:data][:id]
+          
+          # Check if the event has already been processed (deduplication)
+          if EventProcessed.exists?(event_id: event_id)
+            Rails.logger.info "Event already processed: #{event_id}"
+            return # Ignore duplicate events
+          end
+
+          # Log the received event for debugging purposes
+          Rails.logger.info "Received Paystack event: #{event[:event]}"
+
+          # Process different event types
           case event[:event]
           when 'charge.success'
             PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
@@ -50,6 +61,9 @@ module Api
             Rails.logger.warn "Unhandled event type: #{event[:event]}"
             render json: { error: 'Unhandled event type' }, status: :unprocessable_entity
           end
+
+          # Mark the event as processed to prevent future duplicates
+          EventProcessed.create(event_id: event_id)
         end
       end
     end

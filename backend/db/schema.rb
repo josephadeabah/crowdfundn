@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_16_183857) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_20_191703) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -115,6 +115,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_16_183857) do
     t.index ["campaign_id"], name: "index_donations_on_campaign_id"
     t.index ["status"], name: "index_donations_on_status"
     t.index ["user_id"], name: "index_donations_on_user_id"
+  end
+
+  create_table "event_processed", force: :cascade do |t|
+    t.string "event_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_event_processed_on_event_id", unique: true
   end
 
   create_table "fundraisers", force: :cascade do |t|
