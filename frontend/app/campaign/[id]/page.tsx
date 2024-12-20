@@ -299,7 +299,7 @@ const SingleCampaignPage: React.FC = () => {
                         {donation.full_name || 'Anonymous'}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {moment(donation.date).format('MMM DD, YYYY, HH:mm:ss')}
+                        {moment(donation.date).format('MMM DD, YYYY, hh:mm:ss A')}
                       </p>
                     </div>
                   </div>
