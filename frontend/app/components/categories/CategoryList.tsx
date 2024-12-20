@@ -124,7 +124,7 @@ const CategoryList: React.FC = () => {
                             <span>Progress</span>
                             <span>
                               {Math.round(
-                                (parseFloat(campaign.current_amount) /
+                                (parseFloat(campaign.transferred_amount) /
                                   parseFloat(campaign.goal_amount)) *
                                   100,
                               )}
@@ -136,7 +136,7 @@ const CategoryList: React.FC = () => {
                               className="bg-orange-400 h-2.5 rounded-full"
                               style={{
                                 width: `${
-                                  (parseFloat(campaign.current_amount) /
+                                  (parseFloat(campaign.transferred_amount) /
                                     parseFloat(campaign.goal_amount)) *
                                   100
                                 }%`,
@@ -148,7 +148,7 @@ const CategoryList: React.FC = () => {
                               {campaign.currency_symbol ||
                                 campaign?.currency?.toUpperCase()}{' '}
                               {parseFloat(
-                                campaign.current_amount,
+                                campaign.transferred_amount,
                               ).toLocaleString()}
                             </span>
                             <span className="text-gray-600 dark:text-gray-400">
@@ -169,10 +169,7 @@ const CategoryList: React.FC = () => {
                             Back Now
                           </button>
                           <div className="w-full text-xs font-semibold text-right text-gray-600">
-                            {getRemainingDaysMessage(
-                              campaign.start_date,
-                              campaign.end_date,
-                            )}
+                            {campaign.remaining_days} days left
                           </div>
                         </div>
                       </div>
