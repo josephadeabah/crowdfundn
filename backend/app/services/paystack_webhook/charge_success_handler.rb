@@ -29,7 +29,7 @@ class PaystackWebhook::ChargeSuccessHandler
     transaction_status = response.dig(:data, :status)
     if transaction_status == 'success'
       gross_amount = response.dig(:data, :amount).to_f / 100.0 # Gross amount from Paystack
-      platform_fee = gross_amount * 0.20 # Platform fee
+      platform_fee = gross_amount * 0.0805 # Platform fee
       net_amount = gross_amount - platform_fee # Net amount
   
       donation.update!(
