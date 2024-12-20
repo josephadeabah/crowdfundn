@@ -29,28 +29,31 @@ class PaystackWebhook::ChargeSuccessHandler
     transaction_status = response.dig(:data, :status)
     if transaction_status == 'success'
       gross_amount = response.dig(:data, :amount).to_f / 100.0 # Gross amount from Paystack
-      platform_fee = gross_amount * 0.0805 # Platform fee
-      net_amount = gross_amount - platform_fee # Net amount
+      # Extract subaccount fee from the fee_split data
+      subaccount_fee = response.dig(:data, :fees_split, :subaccount).to_f / 100.0
+      integration_fee = response.dig(:data, :fees_split, :integration).to_f / 100.0
+      # paystack_fee = response.dig(:data, :fees_split, :paystack).to_f / 100.0
+
   
       donation.update!(
         status: 'successful',
         gross_amount: gross_amount,
-        net_amount: net_amount,
-        platform_fee: platform_fee, # Store platform fee
-        amount: net_amount
+        net_amount: subaccount_fee,
+        platform_fee: integration_fee, # Store platform fee
+        amount: subaccount_fee
       )
   
-      donation.update!(status: 'successful', gross_amount: gross_amount, net_amount: net_amount, amount: net_amount)
+      donation.update!(status: 'successful', gross_amount: gross_amount, net_amount: subaccount_fee, amount: subaccount_fee)
 
       campaign = donation.campaign
       # Update campaign amounts
       campaign.update!(
-        total_successful_donations: campaign.current_amount + net_amount,
-        current_amount: campaign.current_amount + net_amount
+        total_successful_donations: campaign.current_amount + subaccount_fee,
+        current_amount: campaign.current_amount + subaccount_fee
       )
 
       # Call the method from the campaign model to update transferred_amount with the new donation's net_amount
-      campaign.update_transferred_amount(net_amount)
+      campaign.update_transferred_amount(subaccount_fee)
 
       # Send confirmation email
       DonationConfirmationEmailService.send_confirmation_email(donation)
