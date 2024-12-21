@@ -19,7 +19,7 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
   def create
     Rails.logger.info("Received comment creation request for campaign #{params[:campaign_id]} with content: #{params[:comment][:content]}")
   
-    Ensure the user has donated successfully to comment
+    # Ensure the user has donated successfully to comment
     unless user_has_successfully_donated?(@campaign, @current_user)
       Rails.logger.info("[CommentController] User #{@current_user&.id || 'Anonymous'} has not donated successfully to campaign #{@campaign.id}. Denying comment creation.")
       return render json: { error: 'You must have made a successful donation to comment.' }, status: :unauthorized
