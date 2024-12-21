@@ -90,14 +90,15 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
     end
   
     # Check for anonymous users using the session token from donations metadata
-    session_token = request.session.id # Retrieve the current session token for the anonymous user
+    session_token = request.session.id  # Directly use the Rails session ID
     Rails.logger.info("[CommentController] Checking donation for anonymous session: #{session_token}")
   
+    # Ensure session_token is present and match it with donation metadata
     return Donation.where(
       campaign_id: campaign.id,
       status: 'successful'
     ).where("metadata ->> 'session_token' = ?", session_token).exists? if session_token.present?
   
     false
-  end   
+  end    
 end

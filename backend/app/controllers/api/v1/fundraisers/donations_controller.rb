@@ -88,8 +88,7 @@ module Api
           if @current_user
             donation.user_id = @current_user.id
           else
-            session_token = SecureRandom.hex(16)
-            donation.metadata[:session_token] = session_token
+            donation.metadata[:session_token] = request.session.id  # Use Rails session ID
           end
         
           # Add campaign details to donation metadata
