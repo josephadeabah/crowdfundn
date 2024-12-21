@@ -9,6 +9,7 @@ import { CampaignUpdatesProvider } from './account/updates/CampaignUpdatesContex
 import { TransferProvider } from './account/transfers/TransfersContext';
 import { AuthProvider } from './auth/AuthContext';
 import { CategoryProvider } from './categories/CategoryContext';
+import { CampaignCommentsProvider } from './account/comments/CommentsContext';
 
 export const GlobalContextProvider = ({
   children,
@@ -23,7 +24,9 @@ export const GlobalContextProvider = ({
             <CampaignProvider>
               <CampaignUpdatesProvider>
                 <TransferProvider>
-                  <CategoryProvider>{children}</CategoryProvider>
+                  <CampaignCommentsProvider>
+                    <CategoryProvider>{children}</CategoryProvider>
+                  </CampaignCommentsProvider>
                 </TransferProvider>
               </CampaignUpdatesProvider>
             </CampaignProvider>
