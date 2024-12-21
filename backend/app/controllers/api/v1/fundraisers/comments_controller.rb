@@ -1,5 +1,5 @@
 class Api::V1::Fundraisers::CommentsController < ApplicationController
-  before_action :authenticate_request
+  before_action :authenticate_request, except: [:index, :show] 
   before_action :set_comment, only: %i[show update destroy]
   before_action :set_campaign, only: %i[index create]
 
