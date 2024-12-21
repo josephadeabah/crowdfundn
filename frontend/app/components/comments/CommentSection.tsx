@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCampaignCommentsContext } from '@/app/context/account/comments/CommentsContext';
+import Avatar from '../avatar/Avatar';
+import moment from 'moment';
 
 interface CommentsSectionProps {
   campaignId: string;
@@ -36,7 +38,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
     <div className="bg-white rounded-lg shadow p-6 mb-8">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Comments ({comments.length})</h2>
-        <button onClick={toggleCommentsVisibility} className="text-red-500">
+        <button onClick={toggleCommentsVisibility} className="text-orange-500">
           {areCommentsVisible ? 'Hide' : 'Show'}
         </button>
       </div>
@@ -47,11 +49,33 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
           {error && <div className="text-red-500">{error}</div>}
           {comments.length ? (
             comments.map((comment) => (
-              <div key={comment.id} className="border-b py-2">
-                <p className="font-semibold">
-                  {comment.full_name || 'Anonymous'}
-                </p>
-                <p className="text-gray-600">{comment.content}</p>
+              <div
+                key={comment.id}
+                className="bg-white dark:bg-gray-800 rounded-sm shadow p-4 mb-4 flex items-start"
+              >
+                <div className="flex-shrink-0">
+                  <Avatar
+                    name={String(comment?.full_name) || 'Anonymous'}
+                    size="sm"
+                  />
+                </div>
+                <div className="ml-3 w-full">
+                  {/* Full Name Section */}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-gray-800 dark:text-gray-100 font-semibold text-sm">
+                      {comment?.full_name || 'Anonymous'}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {moment(comment.created_at).format(
+                        'MMM DD, YYYY, hh:mm:ss A',
+                      )}
+                    </div>
+                  </div>
+                  {/* Comment Content */}
+                  <p className="text-gray-800 dark:text-gray-200 break-words">
+                    {comment.content}
+                  </p>
+                </div>
               </div>
             ))
           ) : (
