@@ -105,13 +105,12 @@ export const CampaignCommentsProvider = ({
           },
         );
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          handleApiError(errorText);
+        const newComment = await response.json();
+
+        if(newComment.error) {
+          handleApiError(newComment.error);
           return;
         }
-
-        const newComment = await response.json();
         setComments((prevComments) => [...prevComments, newComment]);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error creating comment');

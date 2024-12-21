@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCampaignCommentsContext } from '@/app/context/account/comments/CommentsContext';
 import Avatar from '../avatar/Avatar';
+import ToastComponent from '../toast/Toast'; 
 import moment from 'moment';
 
 interface CommentsSectionProps {
@@ -13,9 +14,38 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
   const [comment, setComment] = useState<string>('');
   const [areCommentsVisible, setAreCommentsVisible] = useState<boolean>(false);
 
+  // Toast state
+  const [toast, setToast] = useState({
+    isOpen: false,
+    title: '',
+    description: '',
+    type: 'success' as 'success' | 'error' | 'warning',
+  });
+
+  // Show toast function
+  const showToast = (
+    title: string,
+    description: string,
+    type: 'success' | 'error' | 'warning',
+  ) => {
+    setToast({
+      isOpen: true,
+      title,
+      description,
+      type,
+    });
+  };
+
   // Fetch comments when the component is mounted
   useEffect(() => {
-    fetchComments(campaignId);
+    const fetch = async () => {
+      try {
+        await fetchComments(campaignId);
+      } catch (err) {
+        showToast('Error', 'Failed to load comments.', 'error');
+      }
+    };
+    fetch();
   }, [campaignId, fetchComments]);
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
@@ -25,9 +55,10 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
     try {
       await createComment(campaignId, comment); // Submit the comment
       setComment(''); // Clear the input after submitting
-      fetchComments(campaignId); // Fetch the updated comments
+      await fetchComments(campaignId); // Fetch the updated comments
+      showToast('Success', 'Comment added successfully!', 'success');
     } catch (err) {
-      console.error('Error submitting comment:', err);
+      showToast('Error', 'You must have made a successful donation to comment.', 'error');
     }
   };
 
@@ -36,6 +67,15 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
 
   return (
     <div className="bg-white rounded-lg shadow p-6 mb-8">
+      {/* Toast Component */}
+      <ToastComponent
+        isOpen={toast.isOpen}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
+        title={toast.title}
+        description={toast.description}
+        type={toast.type}
+      />
+
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Comments ({comments.length})</h2>
         <button onClick={toggleCommentsVisibility} className="text-orange-500">
@@ -44,9 +84,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
       </div>
 
       {areCommentsVisible && (
-        <div className="max-h-96 overflow-y-auto">
-          {loading && <div>Loading comments...</div>}
-          {error && <div className="text-red-500">{error}</div>}
+        <div className="max-h-96 overflow-y-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
           {comments.length ? (
             comments.map((comment) => (
               <div
@@ -94,10 +132,10 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
         />
         <button
           type="submit"
-          className="mt-2 bg-gray-500 text-white rounded-md px-4 py-2"
+          className="mt-2 bg-gray-500 text-white rounded-full p-2"
           disabled={loading} // Disable the button when loading
         >
-          Submit Comment
+          {loading ? 'Loading...' : 'Add Comment'}
         </button>
       </form>
     </div>
