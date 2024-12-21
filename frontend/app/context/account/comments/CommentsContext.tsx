@@ -104,15 +104,17 @@ export const CampaignCommentsProvider = ({
           },
         );
 
-        const newComment = await response.json();
-
-        if (newComment.error) {
-          handleApiError(newComment.error);
-          return;
+        if (!response.ok) {
+          const errorText = await response.text();
+          handleApiError(errorText);
+          throw new Error(errorText); // Throw an error to signal failure
         }
+
+        const newComment = await response.json();
         setComments((prevComments) => [...prevComments, newComment]);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error creating comment');
+        throw err; // Re-throw the error for the component to catch
       } finally {
         setLoading(false);
       }

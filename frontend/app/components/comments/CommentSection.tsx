@@ -54,11 +54,13 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
     if (!comment.trim()) return; // Don't submit empty comments
 
     try {
-      await createComment(campaignId, comment); // Submit the comment
-      setComment(''); // Clear the input after submitting
+      await createComment(campaignId, comment); // Attempt to submit the comment
+      setComment(''); // Clear the input after successful submission
       await fetchComments(campaignId); // Fetch the updated comments
       showToast('Success', 'Comment added successfully!', 'success');
     } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to add comment.';
       showToast(
         'Error',
         'You must have made a successful donation to comment.',
