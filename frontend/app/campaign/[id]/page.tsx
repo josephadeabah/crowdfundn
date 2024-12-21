@@ -276,7 +276,7 @@ const SingleCampaignPage: React.FC = () => {
 
         {selectedTab === 'comments' && (
           <div className="max-w-xl">
-            <CommentsSection comments={currentCampaign?.comments || []} />
+            <CommentsSection campaignId={String(currentCampaign?.id)} />
           </div>
         )}
 
@@ -299,7 +299,9 @@ const SingleCampaignPage: React.FC = () => {
                         {donation.full_name || 'Anonymous'}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {moment(donation.date).format('MMM DD, YYYY, hh:mm:ss A')}
+                        {moment(donation.date).format(
+                          'MMM DD, YYYY, hh:mm:ss A',
+                        )}
                       </p>
                     </div>
                   </div>

@@ -5,7 +5,8 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
 
   # GET /api/v1/fundraisers/campaigns/:campaign_id/comments
   def index
-    @comments = @campaign.comments
+    # Fetch all comments for the campaign
+    @comments = @campaign.comments.order(created_at: :desc)
     render json: @comments, status: :ok
   end
 
@@ -16,8 +17,24 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
 
   # POST /api/v1/fundraisers/campaigns/:campaign_id/comments
   def create
+    # Ensure the user has donated successfully to comment
+    unless user_has_successfully_donated?(@campaign, @current_user)
+      return render json: { error: 'You must have made a successful donation to comment.' }, status: :unauthorized
+    end
+
     @comment = @campaign.comments.build(comment_params)
-    @comment.user = @current_user # Associate the comment with the current user
+
+    # Associate the comment with the current user if authenticated
+    if @current_user
+      @comment.user = @current_user
+      @comment.full_name = @current_user.full_name
+      @comment.email = @current_user.email
+    else
+      # For non-authenticated users, leave user_id as null
+      @comment.user_id = nil
+      @comment.full_name = nil
+      @comment.email = nil
+    end
 
     if @comment.save
       render json: @comment, status: :created
@@ -26,6 +43,7 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
     end
   end
 
+  # PUT /api/v1/fundraisers/campaigns/:campaign_id/comments/:id
   def update
     if @comment.update(comment_params)
       render json: @comment, status: :ok
@@ -36,17 +54,14 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
 
   # DELETE /api/v1/fundraisers/campaigns/:campaign_id/comments/:id
   def destroy
-    @comment.destroy
-    render json: { message: 'Comment deleted successfully' }, status: :ok
+    if @comment.destroy
+      head :no_content
+    else
+      render json: { error: 'Unable to delete comment' }, status: :unprocessable_entity
+    end
   end
 
   private
-
-  def set_comment
-    @comment = Comment.find(params[:id])
-  rescue ActiveRecord::RecordNotFound
-    render json: { message: 'Comment not found' }, status: :not_found
-  end
 
   def set_campaign
     @campaign = Campaign.find(params[:campaign_id])
@@ -54,7 +69,24 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
     render json: { message: 'Campaign not found' }, status: :not_found
   end
 
+  def set_comment
+    @comment = Comment.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { message: 'Comment not found' }, status: :not_found
+  end
+
   def comment_params
     params.require(:comment).permit(:content)
+  end
+
+  # Helper method to check if the user has made a successful donation to the campaign
+  def user_has_successfully_donated?(campaign, user)
+    if user
+      # For authenticated users, check if they have made a successful donation
+      Donation.successful.exists?(user_id: user.id, campaign_id: campaign.id)
+    else
+      # For non-authenticated users, check for anonymous donations with user_id = null
+      Donation.successful.exists?(user_id: nil, campaign_id: campaign.id)
+    end
   end
 end
