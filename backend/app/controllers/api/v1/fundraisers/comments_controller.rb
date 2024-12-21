@@ -80,29 +80,35 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
   end
 
   # Helper method to check if the user has made a successful donation to the campaign
+  # Helper method to check if the user has made a successful donation to the campaign
   def user_has_successfully_donated?(campaign, user)
     Rails.logger.info("Current user: #{user.inspect}")
     Rails.logger.info("Authenticated user: #{@current_user.inspect}")  # Log current user
     Rails.logger.info("[CommentController] Checking donation for user: #{user&.id || 'Anonymous'}, campaign: #{campaign.id}")
-  
 
     Rails.logger.info("Checking donation for user: #{@current_user&.id || 'Anonymous'}, campaign: #{campaign.id}")
     Rails.logger.info("Session token: #{request.session.id}")  # Log session id for anonymous users
-    # Check for authenticated users
+
+    # Check for authenticated users by fetching donation record
     if user
-      return Donation.exists?(campaign_id: campaign.id, user_id: user.id, status: 'successful')
+      @donation = Donation.find_by(campaign_id: campaign.id, user_id: user.id, status: 'successful')
+      return @donation.present?
     end
-  
+
     # Check for anonymous users using the session token from donations metadata
     session_token = request.session.id  # Directly use the Rails session ID
     Rails.logger.info("[CommentController] Checking donation for anonymous session: #{session_token}")
-  
+
     # Ensure session_token is present and match it with donation metadata
-    return Donation.where(
-      campaign_id: campaign.id,
-      status: 'successful'
-    ).where("metadata ->> 'session_token' = ?", session_token).exists? if session_token.present?
-  
+    if session_token.present?
+      @donation = Donation.find_by(
+        campaign_id: campaign.id,
+        status: 'successful',
+        "metadata ->> 'session_token' = ?" => session_token
+      )
+      return @donation.present?
+    end
+
     false
   end     
 end
