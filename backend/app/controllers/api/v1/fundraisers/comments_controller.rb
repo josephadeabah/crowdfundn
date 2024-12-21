@@ -83,10 +83,14 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
   def user_has_successfully_donated?(campaign, user)
     if user
       # For authenticated users, check if they have made a successful donation
-      Donation.successful.exists?(user_id: user.id, campaign_id: campaign.id)
+      donation_exists = Donation.successful.exists?(user_id: user.id, campaign_id: campaign.id)
+      Rails.logger.info("Authenticated user donation exists: #{donation_exists}")
+      return donation_exists
     else
-      # For non-authenticated users, check for anonymous donations with user_id = null
-      Donation.successful.exists?(user_id: nil, campaign_id: campaign.id)
+      # For non-authenticated users, check for anonymous donations with user_id = nil
+      donation_exists = Donation.successful.exists?(user_id: nil, campaign_id: campaign.id)
+      Rails.logger.info("Anonymous donation exists: #{donation_exists}")
+      return donation_exists
     end
-  end
+  end  
 end
