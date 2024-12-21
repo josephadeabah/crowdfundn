@@ -18,21 +18,17 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
   # POST /api/v1/fundraisers/campaigns/:campaign_id/comments
   def create
     # Ensure the user has donated successfully to comment
-    Rails.logger.info("Received comment creation request for campaign #{params[:campaign_id]} with content: #{params[:comment][:content]}")
-
-    # Ensure the user has donated successfully to comment
-    unless user_has_successfully_donated?(@campaign, @current_user)
-      Rails.logger.info("User #{current_user.id} has not donated successfully to campaign #{@campaign.id}. Denying comment creation.")
+    unless user_has_successfully_donated?(@campaign, current_user)
       return render json: { error: 'You must have made a successful donation to comment.' }, status: :unauthorized
     end
 
     @comment = @campaign.comments.build(comment_params)
 
     # Associate the comment with the current user if authenticated
-    if @current_user
-      @comment.user = @current_user
-      @comment.full_name = @current_user.full_name
-      @comment.email = @current_user.email
+    if current_user
+      @comment.user = current_user
+      @comment.full_name = current_user.full_name
+      @comment.email = current_user.email
     else
       # For non-authenticated users, leave user_id as null
       @comment.user_id = nil
