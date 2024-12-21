@@ -81,16 +81,23 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
 
   # Helper method to check if the user has made a successful donation to the campaign
   def user_has_successfully_donated?(campaign, user)
-    Rails.logger.info("Current user: #{user.inspect}")
+    Rails.logger.info("Current user: #{user&.inspect}")
     Rails.logger.info("[CommentController] Checking donation for user: #{user&.id || 'Anonymous'}, campaign: #{campaign.id}")
   
     # Check for authenticated users
     if user
-      return Donation.find_by(campaign_id: campaign.id, user_id: user.id, status: 'successful') if user.present?
+      return Donation.exists?(campaign_id: campaign.id, user_id: user.id, status: 'successful')
     end
   
-    # Check for anonymous users
-    # Optionally, you can link donations to a session ID or IP address for anonymous users.
+    # Check for anonymous users using the session token from donations metadata
+    session_token = request.session.id # Retrieve the current session token for the anonymous user
+    Rails.logger.info("[CommentController] Checking donation for anonymous session: #{session_token}")
+  
+    return Donation.where(
+      campaign_id: campaign.id,
+      status: 'successful'
+    ).where("metadata ->> 'session_token' = ?", session_token).exists? if session_token.present?
+  
     false
-  end  
+  end   
 end
