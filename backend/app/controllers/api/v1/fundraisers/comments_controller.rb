@@ -82,11 +82,14 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
   # Helper method to check if the user has made a successful donation to the campaign
   def user_has_successfully_donated?(campaign, user)
     Rails.logger.info("[CommentController] Checking donation for user: #{user&.id || 'Anonymous'}, campaign: #{campaign.id}")
-    
+  
+    # Check for authenticated users
     if user
-      Donation.exists?(status: 'successful', user_id: user.id, campaign_id: campaign.id)
-    else
-      Donation.exists?(status: 'successful', user_id: nil, campaign_id: campaign.id)
+      return Donation.successful.exists?(user_id: user.id, campaign_id: campaign.id)
     end
-  end 
+  
+    # Check for anonymous users
+    # Optionally, you can link donations to a session ID or IP address for anonymous users.
+    false
+  end  
 end
