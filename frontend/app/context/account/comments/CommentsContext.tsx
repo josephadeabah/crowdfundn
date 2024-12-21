@@ -89,7 +89,6 @@ export const CampaignCommentsProvider = ({
   // Create a new comment
   const createComment = useCallback(
     async (campaignId: string, content: string): Promise<void> => {
-
       setLoading(true);
       setError(null);
       try {
@@ -99,7 +98,7 @@ export const CampaignCommentsProvider = ({
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token!}`,
+              Authorization: `Bearer ${token!}`,
             },
             body: JSON.stringify({ content }),
           },
@@ -107,7 +106,7 @@ export const CampaignCommentsProvider = ({
 
         const newComment = await response.json();
 
-        if(newComment.error) {
+        if (newComment.error) {
           handleApiError(newComment.error);
           return;
         }

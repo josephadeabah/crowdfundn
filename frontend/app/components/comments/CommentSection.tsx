@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useCampaignCommentsContext } from '@/app/context/account/comments/CommentsContext';
 import Avatar from '../avatar/Avatar';
-import ToastComponent from '../toast/Toast'; 
+import ToastComponent from '../toast/Toast';
 import moment from 'moment';
+import CommentLoader from '@/app/loaders/CommentLoader';
 
 interface CommentsSectionProps {
   campaignId: string;
@@ -58,7 +59,11 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
       await fetchComments(campaignId); // Fetch the updated comments
       showToast('Success', 'Comment added successfully!', 'success');
     } catch (err) {
-      showToast('Error', 'You must have made a successful donation to comment.', 'error');
+      showToast(
+        'Error',
+        'You must have made a successful donation to comment.',
+        'error',
+      );
     }
   };
 
@@ -85,7 +90,11 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
 
       {areCommentsVisible && (
         <div className="max-h-96 overflow-y-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
-          {comments.length ? (
+          {loading ? (
+            Array.from({ length: comments.length }).map((_, index) => (
+              <CommentLoader key={index} />
+            ))
+          ) : comments && comments.length > 0 ? (
             comments.map((comment) => (
               <div
                 key={comment.id}
