@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useCampaignCommentsContext } from '@/app/context/account/comments/CommentsContext';
 import Avatar from '../avatar/Avatar';
 import ToastComponent from '../toast/Toast';
@@ -10,8 +10,9 @@ interface CommentsSectionProps {
 }
 
 const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
-  const { comments, fetchComments, createComment, loading, error } =
-    useCampaignCommentsContext();
+  const [fetchLoading, setFetchLoading] = useState(false);  // for fetch comments loading
+  const [submitLoading, setSubmitLoading] = useState(false); // for submit comment loading
+  const { comments, fetchComments: fetchCommentsFromContext, createComment, loading, error } = useCampaignCommentsContext();
   const [comment, setComment] = useState<string>('');
   const [areCommentsVisible, setAreCommentsVisible] = useState<boolean>(false);
 
@@ -37,35 +38,37 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
     });
   };
 
+  const fetchComments = useCallback(async (campaignId: string) => {
+    setFetchLoading(true);
+    try {
+      // Fetch comments using the provided fetchComments function
+      await fetchCommentsFromContext(campaignId);
+    } catch (error) {
+      console.error(error);
+      showToast('Error', 'Failed to load comments.', 'error');
+    } finally {
+      setFetchLoading(false);
+    }
+  }, [fetchCommentsFromContext]);
+
   // Fetch comments when the component is mounted
   useEffect(() => {
-    const fetch = async () => {
-      try {
-        await fetchComments(campaignId);
-      } catch (err) {
-        showToast('Error', 'Failed to load comments.', 'error');
-      }
-    };
-    fetch();
+    fetchComments(campaignId);
   }, [campaignId, fetchComments]);
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!comment.trim()) return; // Don't submit empty comments
-
+    setSubmitLoading(true);  // Start loading for comment submission
     try {
-      await createComment(campaignId, comment); // Attempt to submit the comment
-      setComment(''); // Clear the input after successful submission
-      await fetchComments(campaignId); // Fetch the updated comments
+      await createComment(campaignId, comment);  // Submit the comment
+      setComment('');  // Clear the comment input after submission
+      await fetchComments(campaignId);  // Fetch updated comments
       showToast('Success', 'Comment added successfully!', 'success');
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Failed to add comment.';
-      showToast(
-        'Error',
-        'You must have made a successful donation to comment.',
-        'error',
-      );
+      showToast('Error', 'You must have made a successful donation to comment.', 'error');
+    } finally {
+      setSubmitLoading(false);  // End loading after submission
     }
   };
 
@@ -91,9 +94,9 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
       </div>
 
       {areCommentsVisible && (
-        <div className="max-h-96 overflow-y-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
-          {loading ? (
-            Array.from({ length: comments.length }).map((_, index) => (
+        <div className="max-h-96 overflow-y-auto">
+          {fetchLoading ? (
+            Array.from({ length: 3 }).map((_, index) => (
               <CommentLoader key={index} />
             ))
           ) : comments && comments.length > 0 ? (
@@ -103,27 +106,18 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
                 className="bg-white dark:bg-gray-800 rounded-sm shadow p-4 mb-4 flex items-start"
               >
                 <div className="flex-shrink-0">
-                  <Avatar
-                    name={String(comment?.full_name) || 'Anonymous'}
-                    size="sm"
-                  />
+                  <Avatar name={String(comment?.full_name) || 'Anonymous'} size="sm" />
                 </div>
                 <div className="ml-3 w-full">
-                  {/* Full Name Section */}
                   <div className="flex items-center justify-between mb-2">
                     <div className="text-gray-800 dark:text-gray-100 font-semibold text-sm">
                       {comment?.full_name || 'Anonymous'}
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {moment(comment.created_at).format(
-                        'MMM DD, YYYY, hh:mm:ss A',
-                      )}
+                      {moment(comment.created_at).format('MMM DD, YYYY, hh:mm:ss A')}
                     </div>
                   </div>
-                  {/* Comment Content */}
-                  <p className="text-gray-800 dark:text-gray-200 break-words">
-                    {comment.content}
-                  </p>
+                  <p className="text-gray-800 dark:text-gray-200 break-words">{comment.content}</p>
                 </div>
               </div>
             ))
@@ -144,9 +138,9 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
         <button
           type="submit"
           className="mt-2 bg-gray-500 text-white rounded-full p-2"
-          disabled={loading} // Disable the button when loading
+          disabled={submitLoading || fetchLoading}  // Disable button during loading
         >
-          {loading ? 'Loading...' : 'Add Comment'}
+          {submitLoading ? 'Loading...' : 'Add Comment'}
         </button>
       </form>
     </div>
