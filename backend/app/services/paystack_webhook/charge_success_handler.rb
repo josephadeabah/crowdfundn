@@ -50,31 +50,43 @@ class PaystackWebhook::ChargeSuccessHandler
     # Extract transaction status
     transaction_status = response.dig(:data, :status)
     if transaction_status == 'success'
-      gross_amount = response.dig(:data, :amount).to_f / 100.0 # Gross amount from Paystack
-      subaccount_fee = response.dig(:data, :fees_split, :subaccount).to_f / 100.0
-      integration_fee = response.dig(:data, :fees_split, :integration).to_f / 100.0
+      gross_amount = response.dig(:data, :amount).to_f / 100.0  # Gross amount from Paystack
+      # subaccount_fee = response.dig(:data, :fees_split, :subaccount).to_f / 100.0
+      # integration_fee = response.dig(:data, :fees_split, :integration).to_f / 100.0
+
+      # Step 1: Calculate the net amount (90% of the gross amount)
+      net_amount = gross_amount * 0.90
+
+      # Step 2: Calculate the platform fee (10% of the gross amount)
+      platform_fee = gross_amount * 0.10
+
+      # Step 3: Adjust the platform fee after Paystack's 1.95% deduction
+      paystack_fee = platform_fee * 0.0195
+
+      # Step 4: Subtract Paystack's fee from the platform fee
+      adjusted_platform_fee = platform_fee - paystack_fee
+
 
       # Log important details for debugging
-      Rails.logger.debug "Donation update: gross_amount=#{gross_amount}, subaccount_fee=#{subaccount_fee}, integration_fee=#{integration_fee}"
 
       # Update the donation record
       donation.update!(
         status: 'successful',
         gross_amount: gross_amount,
-        net_amount: subaccount_fee,
-        platform_fee: integration_fee, # Store platform fee
-        amount: subaccount_fee
+        net_amount: net_amount,
+        platform_fee: adjusted_platform_fee, # Store platform fee
+        amount: net_amount
       )
 
       # Update the related campaign
       campaign = donation.campaign
       campaign.update!(
-        total_successful_donations: campaign.current_amount + subaccount_fee,
-        current_amount: campaign.current_amount + subaccount_fee
+        total_successful_donations: campaign.current_amount + net_amount,
+        current_amount: campaign.current_amount + net_amount
       )
 
       # Update the transferred amount for the campaign
-      campaign.update_transferred_amount(subaccount_fee)
+      campaign.update_transferred_amount(net_amount)
 
       # Send confirmation email to the donor
       DonationConfirmationEmailService.send_confirmation_email(donation)
