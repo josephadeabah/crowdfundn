@@ -81,6 +81,9 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
 
   # Helper method to check if the user has made a successful donation to the campaign
   def user_has_successfully_donated?(campaign, user)
+    Rails.logger.info("user: #{user.inspect}")
+    Rails.logger.info("campaign: #{campaign.inspect}")
+
     if user
       # For authenticated users, check if they have made a successful donation
       donation_exists = Donation.successful.exists?(user_id: user.id, campaign_id: campaign.id)
