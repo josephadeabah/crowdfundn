@@ -67,15 +67,21 @@ class PaystackWebhook::ChargeSuccessHandler
       adjusted_platform_fee = platform_fee - paystack_fee
 
 
-      # Log important details for debugging
+      # Step 4: Extract metadata values (user_id, campaign_id, session_token)
+      user_id = response.dig(:data, :metadata, :user_id)
+      campaign_id = response.dig(:data, :metadata, :campaign_id)
+      session_token = response.dig(:data, :metadata, :session_token)
 
-      # Update the donation record
+      # Step 5: Update the donation record with extracted metadata and transaction details
       donation.update!(
         status: 'successful',
         gross_amount: gross_amount,
         net_amount: net_amount,
-        platform_fee: adjusted_platform_fee, # Store platform fee
-        amount: net_amount
+        platform_fee: adjusted_platform_fee,
+        amount: net_amount,
+        user_id: user_id.presence,  # Update user_id only if provided
+        campaign_id: campaign_id.presence,  # Update campaign_id only if provided
+        metadata: donation.metadata.merge(session_token: session_token)  # Add session_token to metadata
       )
 
       # Update the related campaign
