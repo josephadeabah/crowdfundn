@@ -18,7 +18,11 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
   # POST /api/v1/fundraisers/campaigns/:campaign_id/comments
   def create
     # Ensure the user has donated successfully to comment
+    Rails.logger.info("Received comment creation request for campaign #{params[:campaign_id]} with content: #{params[:comment][:content]}")
+
+    # Ensure the user has donated successfully to comment
     unless user_has_successfully_donated?(@campaign, @current_user)
+      Rails.logger.info("User #{current_user.id} has not donated successfully to campaign #{@campaign.id}. Denying comment creation.")
       return render json: { error: 'You must have made a successful donation to comment.' }, status: :unauthorized
     end
 
@@ -81,19 +85,12 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
 
   # Helper method to check if the user has made a successful donation to the campaign
   def user_has_successfully_donated?(campaign, user)
-    Rails.logger.info("user: #{user.inspect}")
-    Rails.logger.info("campaign: #{campaign.inspect}")
-
-    if user
-      # For authenticated users, check if they have made a successful donation
-      donation_exists = Donation.successful.exists?(user_id: user.id, campaign_id: campaign.id)
-      Rails.logger.info("Authenticated user donation exists: #{donation_exists}")
-      return donation_exists
-    else
-      # For non-authenticated users, check for anonymous donations with user_id = nil
-      donation_exists = Donation.successful.exists?(user_id: nil, campaign_id: campaign.id)
-      Rails.logger.info("Anonymous donation exists: #{donation_exists}")
-      return donation_exists
-    end
-  end  
+    Rails.logger.info("Checking donation for user: #{user.inspect} and campaign: #{campaign.inspect}")
+    
+    # Ensure the user has made a successful donation to the campaign
+    donation_exists = Donation.successful.exists?(user_id: user.id, campaign_id: campaign.id)
+    Rails.logger.info("Donation exists for user: #{user.id} and campaign: #{campaign.id}: #{donation_exists}")
+    
+    return donation_exists
+  end 
 end
