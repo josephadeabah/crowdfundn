@@ -89,10 +89,6 @@ export const CampaignCommentsProvider = ({
   // Create a new comment
   const createComment = useCallback(
     async (campaignId: string, content: string): Promise<void> => {
-      if (!token) {
-        setError('Authentication token is missing');
-        return;
-      }
 
       setLoading(true);
       setError(null);
@@ -102,8 +98,7 @@ export const CampaignCommentsProvider = ({
           {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json'
             },
             body: JSON.stringify({ content }),
           },
