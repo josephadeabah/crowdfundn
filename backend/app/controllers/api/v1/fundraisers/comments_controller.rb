@@ -86,7 +86,7 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
   
     # Check for authenticated users
     if user
-      return Donation.successful.exists?(user_id: user.id, campaign_id: campaign.id)
+      return Donation.find_by(campaign_id: campaign.id, user_id: user.id, status: 'successful') if user.present?
     end
   
     # Check for anonymous users
