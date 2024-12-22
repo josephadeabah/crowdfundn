@@ -5,7 +5,6 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import { useParams } from 'next/navigation';
 import {
   FaShare,
-  FaHeart,
   FaChevronLeft,
   FaChevronRight,
 } from 'react-icons/fa';
@@ -18,7 +17,6 @@ import FundraiserUpdates from '@/app/components/fundraiserupdate/FundraiserUpdat
 import RewardSelection from '@/app/components/selectreward/RewardSelection';
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
 import ProgressRing from '@/app/components/ring/ProgressRing';
-import moment from 'moment';
 import DonationList from '@/app/components/backerlist/DonationList';
 
 const SingleCampaignPage: React.FC = () => {
