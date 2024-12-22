@@ -322,13 +322,13 @@ module Api
           raise ActiveRecord::RecordNotFound, "Subaccount not found for this fundraiser" unless subaccount
         
           response = @paystack_service.fetch_settlements(
-            subaccount: subaccount.subaccount_code
+            subaccount: "none"
           )
         
           if response[:status]
             render json: {
               status: "success",
-              data: response,
+              data: response[:data],
               message: "Settlement details retrieved successfully"
             }, status: :ok
           else
