@@ -379,11 +379,12 @@ class PaystackService
   end
 
   # Fetch Settlements with optional query parameters
-  def fetch_settlements(page: 1, per_page: 50)
+  def fetch_settlements(page: 1, per_page: 50, subaccount: nil)
     # Build query parameters
     query_params = {
       perPage: per_page,
-      page: page
+      page: page,
+      subaccount: subaccount
     }.compact  # Remove nil values
 
     # Build the URI with query parameters
