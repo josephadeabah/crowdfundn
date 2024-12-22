@@ -157,7 +157,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
         />
         <button
           type="submit"
-          className="mt-2 bg-gray-500 text-white rounded-full p-2"
+          className="mt-2 bg-green-500 hover:bg-green-700 dark:bg-green-600 text-white text-sm rounded-full p-2"
           disabled={submitLoading || fetchLoading} // Disable button during loading
         >
           {submitLoading ? 'Loading...' : 'Add Comment'}
