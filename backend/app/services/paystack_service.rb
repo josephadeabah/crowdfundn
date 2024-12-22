@@ -378,6 +378,23 @@ class PaystackService
     parse_response(response)
   end
 
+  # Fetch Settlements with optional query parameters
+  def fetch_settlements(page: 1, per_page: 50)
+    # Build query parameters
+    query_params = {
+      perPage: per_page,
+      page: page
+    }.compact  # Remove nil values
+
+    # Build the URI with query parameters
+    uri = URI("#{PAYSTACK_BASE_URL}/settlement")
+    uri.query = URI.encode_www_form(query_params)
+
+    # Make GET request to fetch settlements
+    response = make_get_request(uri)
+    parse_response(response)
+  end
+
   private
 
   def make_post_request(uri, body)

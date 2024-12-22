@@ -311,22 +311,38 @@ module Api
           render json: { error: e.message }, status: :unprocessable_entity
         end
 
-        # Fetch transfer details
-        def fetch_transfers
-          @fundraiser = User.find_by(id: params[:fundraiser_id])
-          raise ActiveRecord::RecordNotFound, "Fundraiser not found" unless @fundraiser
+        # Fetch settlements details for user
+        def fetch_settlement_status
 
+          @fundraiser = User.find_by(id: params[:fundraiser_id])
+        
+          raise ActiveRecord::RecordNotFound, "Fundraiser not found" unless @fundraiser
+          
           subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
           raise ActiveRecord::RecordNotFound, "Subaccount not found for this fundraiser" unless subaccount
-
-          response = @paystack_service.fetch_transfer(subaccount.transfer_code)
-          render json: response, status: :ok
+        
+          response = @paystack_service.fetch_settlements(
+            subaccount: subaccount.subaccount_code
+          )
+        
+          if response[:status]
+            render json: {
+              status: "success",
+              data: response[:data],
+              message: "Settlement details retrieved successfully"
+            }, status: :ok
+          else
+            render json: {
+              status: "error",
+              message: response[:message]
+            }, status: :unprocessable_entity
+          end
         rescue ActiveRecord::RecordNotFound => e
           render json: { error: e.message }, status: :not_found
         rescue => e
-          Rails.logger.error "Error fetching transfers: #{e.message}"
+          Rails.logger.error "Error fetching settlement status: #{e.message}"
           render json: { error: e.message }, status: :unprocessable_entity
-        end
+        end        
 
        # Fetch transfers for the logged-in user
       def fetch_user_transfers

@@ -45,6 +45,7 @@ Rails.application.routes.draw do
             get :fetch_transfers
             get :fetch_user_transfers
             get :verify_transfer
+            get :fetch_settlement_status
             post :approve_transfer
             put :update_transfer_recipient
           end
