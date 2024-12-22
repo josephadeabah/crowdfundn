@@ -97,7 +97,7 @@ const SingleCampaignPage: React.FC = () => {
             </button>
             <div
               ref={tabsRef}
-              className="max-w-7xl mx-auto flex space-x-5 overflow-x-auto scrollbar-hide whitespace-nowrap"
+              className="max-w-7xl mx-auto flex space-x-4 overflow-x-auto scrollbar-hide whitespace-nowrap"
             >
               {['details', 'donate', 'updates', 'comments', 'backers'].map(
                 (tab) => {
