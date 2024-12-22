@@ -132,7 +132,7 @@ const SingleCampaignPage: React.FC = () => {
 
         {/* Tab Content */}
         {selectedTab === 'details' && (
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-xl mx-auto">
             {/* Campaign Title */}
             <h1 className="text-4xl font-bold mb-4">
               {currentCampaign?.title}
@@ -243,7 +243,7 @@ const SingleCampaignPage: React.FC = () => {
           </div>
         )}
         {selectedTab === 'donate' && (
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-xl mx-auto">
             <RewardSelection
               rewards={currentCampaign?.rewards || []}
               selectedTier={selectedTier}
@@ -267,7 +267,7 @@ const SingleCampaignPage: React.FC = () => {
         )}
 
         {selectedTab === 'updates' && (
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-xl mx-auto">
             <FundraiserUpdates
               updates={currentCampaign?.updates || []}
               fundraiserName={fundraiserName}
@@ -276,13 +276,13 @@ const SingleCampaignPage: React.FC = () => {
         )}
 
         {selectedTab === 'comments' && (
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-xl mx-auto">
             <CommentsSection campaignId={String(currentCampaign?.id)} />
           </div>
         )}
 
         {selectedTab === 'backers' && (
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-xl mx-auto">
           <h3 className="text-2xl font-bold mb-6">Backer List</h3>
           <DonationList
             donations={donations}
