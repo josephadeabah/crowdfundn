@@ -49,6 +49,7 @@ interface TransferState {
     campaignId: string | number,
     recipientCode: string,
   ) => Promise<string | null>;
+  fetchSettlementStatus: () => Promise<void>;
 }
 
 const TransferContext = createContext<TransferState | undefined>(undefined);
@@ -111,6 +112,44 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
     },
     [user, token],
   );
+
+  const fetchSettlementStatus = useCallback(
+    async (): Promise<void> => {
+      setLoading(true);
+      setError(null);
+
+      try {
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/settlement_status/${user?.id}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            }
+          },
+        );
+
+        if (!response.ok) {
+          setError('Failed to fetch settlement status');
+          return;
+        }
+
+        const responseData = await response.json();
+
+        if (responseData) {
+          //  responseData contains the settlement status
+        }
+      } catch (err: any) {
+       setError(err || 'Error fetching settlement status');
+      } finally {
+      setLoading(false);
+    }
+  },
+  [user, token],
+);
+
 
   const initiateTransfer = useCallback(
     async (
@@ -214,6 +253,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       fetchTransfers,
       createTransferRecipient,
       initiateTransfer,
+      fetchSettlementStatus
     }),
     [
       transfers,
@@ -226,6 +266,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       fetchTransfers,
       createTransferRecipient,
       initiateTransfer,
+      fetchSettlementStatus
     ],
   );
 
