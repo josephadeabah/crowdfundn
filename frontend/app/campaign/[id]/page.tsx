@@ -3,11 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import DonationButton from '@/app/components/donate/DonationButton';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useParams } from 'next/navigation';
-import {
-  FaShare,
-  FaChevronLeft,
-  FaChevronRight,
-} from 'react-icons/fa';
+import { FaShare, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { Button } from '@/app/components/button/Button';
 import SingleCampaignLoader from '@/app/loaders/SingleCampaignLoader';
 import Avatar from '@/app/components/avatar/Avatar';
@@ -104,19 +100,35 @@ const SingleCampaignPage: React.FC = () => {
               className="max-w-7xl mx-auto flex space-x-6 overflow-x-auto scrollbar-hide whitespace-nowrap"
             >
               {['details', 'donate', 'updates', 'comments', 'backers'].map(
-                (tab) => (
-                  <button
-                    key={tab}
-                    className={`px-4 py-2 font-semibold ${
-                      selectedTab === tab
-                        ? 'border-b-2 border-green-600 text-green-600'
-                        : 'text-gray-600'
-                    }`}
-                    onClick={() => setSelectedTab(tab as any)}
-                  >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                  </button>
-                ),
+                (tab) => {
+                  let count = 0; // Default to 0 for tabs that don't require counts
+                  if (tab === 'updates') {
+                    count = currentCampaign?.updates?.length || 0;
+                  } else if (tab === 'comments') {
+                    count = currentCampaign?.comments?.length || 0;
+                  } else if (tab === 'backers') {
+                    count = currentCampaign?.total_donors || 0;
+                  }
+
+                  return (
+                    <button
+                      key={tab}
+                      className={`px-4 py-2 font-semibold ${
+                        selectedTab === tab
+                          ? 'border-b-2 border-green-600 text-green-600'
+                          : 'text-gray-600'
+                      }`}
+                      onClick={() => setSelectedTab(tab as any)}
+                    >
+                      {tab.charAt(0).toUpperCase() + tab.slice(1)}{' '}
+                      {count > 0 && (
+                        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                          ({count})
+                        </span>
+                      )}
+                    </button>
+                  );
+                },
               )}
             </div>
             <button
@@ -281,12 +293,12 @@ const SingleCampaignPage: React.FC = () => {
 
         {selectedTab === 'backers' && (
           <div className="max-w-xl bg-white mx-auto px-6 py-6">
-          <h3 className="text-2xl font-bold mb-6">Backer List</h3>
-          <DonationList
-            donations={donations}
-            fundraiserCurrency={fundraiserCurrency}
-          />
-        </div>
+            <h3 className="text-2xl font-bold mb-6">Backer List</h3>
+            <DonationList
+              donations={donations}
+              fundraiserCurrency={fundraiserCurrency}
+            />
+          </div>
         )}
       </div>
     </div>

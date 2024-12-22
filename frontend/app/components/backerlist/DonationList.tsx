@@ -15,7 +15,10 @@ interface DonationListProps {
   fundraiserCurrency?: string;
 }
 
-const DonationList: React.FC<DonationListProps> = ({ donations, fundraiserCurrency }) => {
+const DonationList: React.FC<DonationListProps> = ({
+  donations,
+  fundraiserCurrency,
+}) => {
   return (
     <div className="space-y-4">
       {donations.map((donation) => (

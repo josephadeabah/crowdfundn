@@ -10,9 +10,7 @@ const SingleCampaignLoader: React.FC = () => {
         {/* Horizontal Tabs Skeleton */}
         <div className="relative mb-6">
           <div className="flex items-center mb-6">
-            <button
-              className="absolute left-0 z-10 bg-white shadow-md p-2 rounded-full md:hidden"
-            >
+            <button className="absolute left-0 z-10 bg-white shadow-md p-2 rounded-full md:hidden">
               <Skeleton width={30} height={30} circle />
             </button>
             <div className="max-w-7xl mx-auto flex space-x-6 overflow-x-auto scrollbar-hide whitespace-nowrap">
@@ -22,9 +20,7 @@ const SingleCampaignLoader: React.FC = () => {
               <Skeleton width={80} height={30} />
               <Skeleton width={80} height={30} />
             </div>
-            <button
-              className="absolute right-0 z-10 bg-white shadow-md p-2 rounded-full md:hidden"
-            >
+            <button className="absolute right-0 z-10 bg-white shadow-md p-2 rounded-full md:hidden">
               <Skeleton width={30} height={30} circle />
             </button>
           </div>

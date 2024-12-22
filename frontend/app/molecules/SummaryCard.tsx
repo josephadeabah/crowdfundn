@@ -11,13 +11,17 @@ const SummaryCard: React.FC = () => {
     const currentTime = new Date().getTime();
 
     // Check if the script was loaded within the last 24 hours
-    if (!lastLoaded || currentTime - parseInt(lastLoaded) >= 24 * 60 * 60 * 1000) {
+    if (
+      !lastLoaded ||
+      currentTime - parseInt(lastLoaded) >= 24 * 60 * 60 * 1000
+    ) {
       // Dynamically create and insert the SurveyMonkey script into the document
       const script = document.createElement('script');
       script.type = 'text/javascript';
       script.async = true;
       script.id = 'smcx-sdk';
-      script.src = 'https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgd49YS4rryGNzeLvxp2jzCxpDbJgT8pmCb6alk9fI1p26.js';
+      script.src =
+        'https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgd49YS4rryGNzeLvxp2jzCxpDbJgT8pmCb6alk9fI1p26.js';
       const scriptTag = document.getElementsByTagName('script')[0];
       scriptTag.parentNode?.insertBefore(script, scriptTag);
 
