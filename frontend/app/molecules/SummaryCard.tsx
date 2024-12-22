@@ -16,13 +16,13 @@ const SummaryCard: React.FC = () => {
         <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
           {/* Left Section */}
           <div className="text-center md:text-left">
-            <h2 className="text-green-600 dark:text-green-400 font-bold leading-tight">
+            <h1 className="text-green-600 dark:text-green-400 font-bold leading-tight">
               Support, Empower, Thrive with Bantu Hive
-            </h2>
-            <p className="mt-1 text-sm text-gray-700 dark:text-gray-200 md:text-base opacity-90">
+            </h1>
+            <div className="mt-1 text-lg text-gray-700 dark:text-gray-200 md:text-base opacity-90">
               Raise money when you need, fund, or support causes you care about.
               Reach donors, and make a difference.
-            </p>
+            </div>
           </div>
 
           {/* Right Section - Buttons */}
