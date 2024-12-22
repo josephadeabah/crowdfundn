@@ -314,7 +314,7 @@ module Api
         # Fetch settlements details for user
         def fetch_settlement_status
 
-          @fundraiser = User.find_by(id: params[:fundraiser_id])
+          @fundraiser = User.find(params[:fundraiser_id])
         
           raise ActiveRecord::RecordNotFound, "Fundraiser not found" unless @fundraiser
           
