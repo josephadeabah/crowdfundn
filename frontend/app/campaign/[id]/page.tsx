@@ -101,7 +101,7 @@ const SingleCampaignPage: React.FC = () => {
             </button>
             <div
               ref={tabsRef}
-              className="max-w-7xl mx-auto flex space-x-4 overflow-x-auto scrollbar-hide whitespace-nowrap"
+              className="max-w-7xl bg-white mx-auto flex space-x-4 overflow-x-auto scrollbar-hide whitespace-nowrap"
             >
               {['details', 'donate', 'updates', 'comments', 'backers'].map(
                 (tab) => (
@@ -130,7 +130,7 @@ const SingleCampaignPage: React.FC = () => {
 
         {/* Tab Content */}
         {selectedTab === 'details' && (
-          <div className="max-w-xl bg-white mx-auto">
+          <div className="max-w-xl bg-white mx-auto px-4">
             {/* Campaign Title */}
             <h1 className="text-4xl font-bold mb-4">
               {currentCampaign?.title}
@@ -241,7 +241,7 @@ const SingleCampaignPage: React.FC = () => {
           </div>
         )}
         {selectedTab === 'donate' && (
-          <div className="max-w-xl bg-white mx-auto">
+          <div className="max-w-xl bg-white mx-auto px-4">
             <RewardSelection
               rewards={currentCampaign?.rewards || []}
               selectedTier={selectedTier}
@@ -265,7 +265,7 @@ const SingleCampaignPage: React.FC = () => {
         )}
 
         {selectedTab === 'updates' && (
-          <div className="max-w-xl bg-white mx-auto">
+          <div className="max-w-xl bg-white mx-auto px-4">
             <FundraiserUpdates
               updates={currentCampaign?.updates || []}
               fundraiserName={fundraiserName}
@@ -274,13 +274,13 @@ const SingleCampaignPage: React.FC = () => {
         )}
 
         {selectedTab === 'comments' && (
-          <div className="max-w-xl bg-white mx-auto">
+          <div className="max-w-xl bg-white mx-auto px-4">
             <CommentsSection campaignId={String(currentCampaign?.id)} />
           </div>
         )}
 
         {selectedTab === 'backers' && (
-          <div className="max-w-xl bg-white mx-auto">
+          <div className="max-w-xl bg-white mx-auto px-4">
           <h3 className="text-2xl font-bold mb-6">Backer List</h3>
           <DonationList
             donations={donations}
