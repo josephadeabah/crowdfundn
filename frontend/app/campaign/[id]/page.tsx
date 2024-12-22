@@ -90,8 +90,8 @@ const SingleCampaignPage: React.FC = () => {
   if (loading) return <SingleCampaignLoader />;
 
   return (
-    <div className="w-full max-w-7xl mx-auto  bg-white dark:bg-gray-800">
-      <div className="px-4 sm:px-6 mt-3 lg:px-8 py-8">
+    <div className="w-full bg-white dark:bg-gray-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-3 lg:px-8 py-8">
         {/* Horizontal Tabs */}
         <div className="relative">
           <div className="flex items-center mb-6">
@@ -103,7 +103,7 @@ const SingleCampaignPage: React.FC = () => {
             </button>
             <div
               ref={tabsRef}
-              className="flex space-x-4 overflow-x-auto scrollbar-hide whitespace-nowrap mx-12"
+              className="max-w-7xl mx-auto flex space-x-4 overflow-x-auto scrollbar-hide whitespace-nowrap"
             >
               {['details', 'donate', 'updates', 'comments', 'backers'].map(
                 (tab) => (
