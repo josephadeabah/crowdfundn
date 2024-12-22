@@ -95,7 +95,7 @@ const SingleCampaignPage: React.FC = () => {
           <div className="flex items-center mb-6">
             <button
               onClick={() => scrollTabs('left')}
-              className="absolute left-0 z-10 bg-white shadow-md p-2 rounded-full"
+              className="absolute left-0 z-10 bg-white shadow-md p-2 rounded-full md:hidden"
             >
               <FaChevronLeft />
             </button>
@@ -121,7 +121,7 @@ const SingleCampaignPage: React.FC = () => {
             </div>
             <button
               onClick={() => scrollTabs('right')}
-              className="absolute right-0 z-10 bg-white shadow-md p-2 rounded-full"
+              className="absolute right-0 z-10 bg-white shadow-md p-2 rounded-full md:hidden"
             >
               <FaChevronRight />
             </button>
