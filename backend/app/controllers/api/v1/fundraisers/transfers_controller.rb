@@ -328,7 +328,7 @@ module Api
           if response[:status]
             render json: {
               status: "success",
-              data: response[:data],
+              data: response,
               message: "Settlement details retrieved successfully"
             }, status: :ok
           else
