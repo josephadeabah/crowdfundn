@@ -100,7 +100,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
       />
 
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Comments ({comments.length})</h2>
+        <h2 className="text-2xl font-bold">Comments</h2>
         <button onClick={toggleCommentsVisibility} className="text-orange-500">
           {areCommentsVisible ? 'Hide' : 'Show'}
         </button>
