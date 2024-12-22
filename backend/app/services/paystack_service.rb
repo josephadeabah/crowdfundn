@@ -384,7 +384,8 @@ class PaystackService
     query_params = {
       perPage: per_page,
       page: page,
-      subaccount: subaccount
+      subaccount: subaccount,
+      status: 'pending'  # Fetch only pending settlements
     }.compact  # Remove nil values
 
     # Build the URI with query parameters
