@@ -19,10 +19,10 @@ const SummaryCard: React.FC = () => {
             <h1 className="text-green-600 dark:text-green-400 font-bold leading-tight">
               Support, Empower, Thrive with Bantu Hive
             </h1>
-            <div className="mt-1 text-lg text-gray-700 dark:text-gray-200 md:text-base opacity-90">
+            <h3 className="mt-1 text-gray-700 dark:text-gray-200 md:text-base opacity-90">
               Raise money when you need, fund, or support causes you care about.
               Reach donors, and make a difference.
-            </div>
+            </h3>
           </div>
 
           {/* Right Section - Buttons */}
