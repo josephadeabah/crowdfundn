@@ -44,6 +44,7 @@ class PaystackWebhook::TransferSuccessHandler
           status: @data[:status],
           completed_at: Time.current,
           recipient_code: @data.dig(:recipient, :recipient_code),
+          subaccount_code: @data.dig(:recipient, :subaccount_code),
           amount: @data[:amount], # Use gross amount
           transfer_code: @data[:transfer_code],
           reference: @data[:reference],

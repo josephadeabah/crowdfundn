@@ -322,7 +322,7 @@ module Api
           raise ActiveRecord::RecordNotFound, "Subaccount not found for this fundraiser" unless subaccount
         
           response = @paystack_service.fetch_settlements(
-            subaccount: "none"
+            subaccount: subaccount.recipient_code
           )
         
           if response[:status]
