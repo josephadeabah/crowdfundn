@@ -19,6 +19,7 @@ import RewardSelection from '@/app/components/selectreward/RewardSelection';
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
 import ProgressRing from '@/app/components/ring/ProgressRing';
 import moment from 'moment';
+import DonationList from '@/app/components/backerlist/DonationList';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<
@@ -89,8 +90,8 @@ const SingleCampaignPage: React.FC = () => {
   if (loading) return <SingleCampaignLoader />;
 
   return (
-    <div className="w-full bg-white dark:bg-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-3 lg:px-8 py-8">
+    <div className="w-full max-w-7xl mx-auto  bg-white dark:bg-gray-800">
+      <div className="px-4 sm:px-6 mt-3 lg:px-8 py-8">
         {/* Horizontal Tabs */}
         <div className="relative">
           <div className="flex items-center mb-6">
@@ -282,42 +283,12 @@ const SingleCampaignPage: React.FC = () => {
 
         {selectedTab === 'backers' && (
           <div className="max-w-xl">
-            <h3 className="text-2xl font-bold mb-6">Backer List</h3>
-            <div className="space-y-4">
-              {donations.map((donation) => (
-                <div
-                  key={donation.id}
-                  className="flex items-center justify-between border-b border-gray-200 py-4"
-                >
-                  {/* Donor Info */}
-                  <div className="flex items-center space-x-4">
-                    <div className="bg-gray-100 h-10 w-10 flex items-center justify-center rounded-full">
-                      <FaHeart className="text-pink-500 text-lg" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-800">
-                        {donation.full_name || 'Anonymous'}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {moment(donation.date).format(
-                          'MMM DD, YYYY, hh:mm:ss A',
-                        )}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Donation Amount */}
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-green-600">
-                      {fundraiserCurrency}
-                      {parseFloat(donation.amount || '0.0').toLocaleString()}
-                    </p>
-                    <p className="text-xs text-gray-500">Thank you!</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <h3 className="text-2xl font-bold mb-6">Backer List</h3>
+          <DonationList
+            donations={donations}
+            fundraiserCurrency={fundraiserCurrency}
+          />
+        </div>
         )}
       </div>
     </div>
