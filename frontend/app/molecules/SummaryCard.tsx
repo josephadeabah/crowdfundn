@@ -1,10 +1,21 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../context/auth/AuthContext';
 
 const SummaryCard: React.FC = () => {
   const { user } = useAuth();
+
+  useEffect(() => {
+    // Dynamically create and insert the SurveyMonkey script into the document
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.id = 'smcx-sdk';
+    script.src = 'https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgd49YS4rryGNzeLvxp2jzCxpDbJgT8pmCb6alk9fI1p26.js';
+    const scriptTag = document.getElementsByTagName('script')[0];
+    scriptTag.parentNode?.insertBefore(script, scriptTag);
+  }, []);
 
   return (
     <div
