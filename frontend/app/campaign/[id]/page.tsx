@@ -89,7 +89,7 @@ const SingleCampaignPage: React.FC = () => {
 
   return (
     <div className="w-full dark:bg-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-3 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-2 mt-3 py-8">
         {/* Horizontal Tabs */}
         <div className="relative">
           <div className="flex items-center mb-6">
