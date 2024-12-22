@@ -88,7 +88,7 @@ const SingleCampaignPage: React.FC = () => {
   if (loading) return <SingleCampaignLoader />;
 
   return (
-    <div className="w-full bg-white dark:bg-gray-800">
+    <div className="w-full dark:bg-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-3 lg:px-8 py-8">
         {/* Horizontal Tabs */}
         <div className="relative">
@@ -130,7 +130,7 @@ const SingleCampaignPage: React.FC = () => {
 
         {/* Tab Content */}
         {selectedTab === 'details' && (
-          <div className="max-w-xl mx-auto">
+          <div className="max-w-xl bg-white mx-auto">
             {/* Campaign Title */}
             <h1 className="text-4xl font-bold mb-4">
               {currentCampaign?.title}
@@ -241,7 +241,7 @@ const SingleCampaignPage: React.FC = () => {
           </div>
         )}
         {selectedTab === 'donate' && (
-          <div className="max-w-xl mx-auto">
+          <div className="max-w-xl bg-white mx-auto">
             <RewardSelection
               rewards={currentCampaign?.rewards || []}
               selectedTier={selectedTier}
@@ -265,7 +265,7 @@ const SingleCampaignPage: React.FC = () => {
         )}
 
         {selectedTab === 'updates' && (
-          <div className="max-w-xl mx-auto">
+          <div className="max-w-xl bg-white mx-auto">
             <FundraiserUpdates
               updates={currentCampaign?.updates || []}
               fundraiserName={fundraiserName}
@@ -274,13 +274,13 @@ const SingleCampaignPage: React.FC = () => {
         )}
 
         {selectedTab === 'comments' && (
-          <div className="max-w-xl mx-auto">
+          <div className="max-w-xl bg-white mx-auto">
             <CommentsSection campaignId={String(currentCampaign?.id)} />
           </div>
         )}
 
         {selectedTab === 'backers' && (
-          <div className="max-w-xl mx-auto">
+          <div className="max-w-xl bg-white mx-auto">
           <h3 className="text-2xl font-bold mb-6">Backer List</h3>
           <DonationList
             donations={donations}
