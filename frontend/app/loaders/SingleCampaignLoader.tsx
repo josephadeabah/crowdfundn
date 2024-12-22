@@ -5,26 +5,40 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 const SingleCampaignLoader: React.FC = () => {
   return (
-    <div className="w-full bg-white dark:bg-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-3 lg:px-8 py-8">
-        {/* Tabs Skeleton */}
-        <div className="flex items-center space-x-4 mb-6">
-          <Skeleton width={80} height={30} />
-          <Skeleton width={80} height={30} />
-          <Skeleton width={80} height={30} />
-          <Skeleton width={80} height={30} />
-          <Skeleton width={80} height={30} />
+    <div className="w-full dark:bg-gray-800">
+      <div className="max-w-7xl mx-auto px-2 mt-3 py-8">
+        {/* Horizontal Tabs Skeleton */}
+        <div className="relative mb-6">
+          <div className="flex items-center mb-6">
+            <button
+              className="absolute left-0 z-10 bg-white shadow-md p-2 rounded-full md:hidden"
+            >
+              <Skeleton width={30} height={30} circle />
+            </button>
+            <div className="max-w-7xl mx-auto flex space-x-6 overflow-x-auto scrollbar-hide whitespace-nowrap">
+              <Skeleton width={80} height={30} />
+              <Skeleton width={80} height={30} />
+              <Skeleton width={80} height={30} />
+              <Skeleton width={80} height={30} />
+              <Skeleton width={80} height={30} />
+            </div>
+            <button
+              className="absolute right-0 z-10 bg-white shadow-md p-2 rounded-full md:hidden"
+            >
+              <Skeleton width={30} height={30} circle />
+            </button>
+          </div>
         </div>
 
-        {/* Campaign Title */}
+        {/* Campaign Title Skeleton */}
         <Skeleton width={400} height={40} className="mb-4" />
 
-        {/* Campaign Image */}
+        {/* Campaign Image Skeleton */}
         <div className="w-full aspect-video rounded-md overflow-hidden mb-4">
           <Skeleton height="100%" />
         </div>
 
-        {/* Progress Section */}
+        {/* Progress Section Skeleton */}
         <div className="flex flex-col sm:flex-row items-center bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8 space-y-6 sm:space-y-0 sm:space-x-6">
           <div className="w-full space-y-2">
             <Skeleton width={150} height={20} />
@@ -36,14 +50,14 @@ const SingleCampaignLoader: React.FC = () => {
           </div>
         </div>
 
-        {/* Campaign Description */}
+        {/* Campaign Description Skeleton */}
         <div className="space-y-2 mb-6">
           <Skeleton width={600} height={20} />
           <Skeleton width={600} height={20} />
           <Skeleton width={400} height={20} />
         </div>
 
-        {/* Share and Fundraiser Info Section */}
+        {/* Share and Fundraiser Info Section Skeleton */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
           {/* Share Section */}
           <div className="border-b pb-4 mb-4">
