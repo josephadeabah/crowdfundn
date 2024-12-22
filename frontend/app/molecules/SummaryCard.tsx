@@ -13,7 +13,7 @@ const SummaryCard: React.FC = () => {
     script.async = true;
     script.id = 'smcx-sdk';
     script.src = 'https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgd49YS4rryGNzeLvxp2jzCxpDbJgT8pmCb6alk9fI1p26.js';
-    const scriptTag = document.getElementsByTagName('script')[0];
+    const scriptTag = document.getElementsByTagName('script')[3];
     scriptTag.parentNode?.insertBefore(script, scriptTag);
   }, []);
 
