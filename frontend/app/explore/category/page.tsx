@@ -58,7 +58,7 @@ const CategoryListPage: React.FC = () => {
             initial="hidden"
             animate={controls}
             transition={{ duration: 0.5 }}
-            className="text-4xl font-bold text-center mb-8 text-black" // Added black for visibility
+            className="text-4xl font-bold text-center mb-8 text-gray-800"
           >
             Explore Campaigns in Categories
           </motion.h4>
