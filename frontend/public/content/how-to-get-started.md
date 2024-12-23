@@ -8,7 +8,7 @@ Ready to bring your ideas to life and start raising funds for your project? We�
 ### 1. Click “Fundraise Now” or “Start a Project”
 
 To begin your exciting journey with us, simply click the “Fundraise Now” or “Start a Project” button. You’ll be whisked away to the next step where the magic happens!
-![Account Creation](/marketing4.png#markdown-start-project)
+![Account Creation](/guides/startaproject.png#markdown-start-project)
 
 ### 2. Enter your details
 
