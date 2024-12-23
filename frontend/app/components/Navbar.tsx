@@ -77,6 +77,10 @@ const Navbar = () => {
       { label: 'Ghana', href: '/contactus' },
       { label: 'Eswatini', href: '/contactus' },
     ],
+    Explore: [
+      { label: 'Projects', href: '/projects' },
+      { label: 'Categories', href: '/categories' },
+    ],
   };
 
   if (loading) {
