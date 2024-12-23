@@ -22,7 +22,7 @@ Once you've selected the campaign, simply click on the **Request Transfer** butt
 
 ### 6. Confirmation message will be displayed
 
-Once you’ve clicked the request, you’ll see a confirmation message letting you know that your transfer request has been received. We’ll handle the rest and make sure your funds are transferred securely to your bank account within 5 working days!
+Once you’ve clicked the request, you’ll see a confirmation message letting you know that your transfer request has been received. We’ll handle the rest and make sure your funds are transferred securely to your bank account within 3 working days!
 
 ---
 
