@@ -108,7 +108,8 @@ h6 {
   }
 }
 
-img[src*='#start-project'] {
-  width: 400px;
-  height: 200px;
+img[src*='#markdown-start-project'] {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
 }
