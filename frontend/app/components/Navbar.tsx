@@ -63,7 +63,7 @@ const Navbar = () => {
     ],
     Guides: [
       { label: 'How To Get Started', href: '/articles/how-to-get-started' },
-      { label: 'Stories', href: '/stories' },
+      { label: 'How To Withdraw Funds Safely', href: '/articles/how-to-withdraw-funds' },
       { label: 'Pricing', href: '/pricing' },
       {
         label: 'Fundraising Ideas for Africa',
