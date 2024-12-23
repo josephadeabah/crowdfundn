@@ -91,7 +91,7 @@ const SingleCampaignPage: React.FC = () => {
           <div className="flex items-center mb-6">
             <button
               onClick={() => scrollTabs('left')}
-              className="absolute left-0 z-10 bg-white shadow-md p-2 rounded-full md:hidden"
+              className="absolute left-0 z-10 bg-white dark:text-gray-100 shadow-md p-2 rounded-full md:hidden"
             >
               <FaChevronLeft />
             </button>
@@ -142,7 +142,7 @@ const SingleCampaignPage: React.FC = () => {
 
         {/* Tab Content */}
         {selectedTab === 'details' && (
-          <div className="max-w-xl bg-white mx-auto px-6 py-6">
+          <div className="max-w-xl bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
             {/* Campaign Title */}
             <h1 className="text-4xl font-bold mb-4">
               {currentCampaign?.title}
@@ -254,7 +254,7 @@ const SingleCampaignPage: React.FC = () => {
           </div>
         )}
         {selectedTab === 'donate' && (
-          <div className="max-w-xl bg-white mx-auto px-6 py-6">
+          <div className="max-w-xl bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
             <RewardSelection
               rewards={currentCampaign?.rewards || []}
               selectedTier={selectedTier}
@@ -278,7 +278,7 @@ const SingleCampaignPage: React.FC = () => {
         )}
 
         {selectedTab === 'updates' && (
-          <div className="max-w-xl bg-white mx-auto px-6 py-6">
+          <div className="max-w-xl bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
             <FundraiserUpdates
               updates={currentCampaign?.updates || []}
               fundraiserName={fundraiserName}
@@ -287,13 +287,13 @@ const SingleCampaignPage: React.FC = () => {
         )}
 
         {selectedTab === 'comments' && (
-          <div className="max-w-xl bg-white mx-auto px-6 py-6">
+          <div className="max-w-xl bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
             <CommentsSection campaignId={String(currentCampaign?.id)} />
           </div>
         )}
 
         {selectedTab === 'backers' && (
-          <div className="max-w-xl bg-white mx-auto px-6 py-6">
+          <div className="max-w-xl bg-white dark:bg-gray-800 mx-auto px-6 py-6">
             <h3 className="text-2xl font-bold mb-6">Backer List</h3>
             <DonationList
               donations={donations}
