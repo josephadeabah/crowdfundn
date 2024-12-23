@@ -71,11 +71,11 @@ Once you’ve filled everything out, you’ll be one step closer to hitting laun
 
 Done with all the details? Nice! Click the “Create” button to finalize your campaign. This is where you officially bring your project to life on Bantu Hive. Take a deep breath—you’re almost there!
 
-### 6. Click confirm to go to the campaign or cancel to delete the campaign.
+### 6. Click confirm to go to the campaign.
 
 A quick confirmation will pop up, asking you to either Confirm or Cancel.
 
 - **Confirm:** If everything looks good, hit Confirm to go straight to your campaign page and get started.
-- **Cancel:** If you need to make changes or rethink your campaign, you can click Cancel to delete it and start fresh.
+- **Edit/Delete:** If you need to make changes or rethink your campaign, you can click the three vertical dot on the campaign from the dashboard to delete it and start fresh or edit it.
 
 ---
