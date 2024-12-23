@@ -74,8 +74,8 @@ const Navbar = () => {
       { label: 'Eswatini', href: '/contactus' },
     ],
     Explore: [
-      { label: 'By Advance Filtering', href: '/explore' },
       { label: 'By Category', href: '/categories' },
+      { label: 'By Advance Filtering', href: '/explore' },
     ],
   };
 
