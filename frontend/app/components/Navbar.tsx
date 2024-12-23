@@ -62,7 +62,7 @@ const Navbar = () => {
       { label: 'Who Can Fundraise?', href: '/articles/who-can-fundraise' },
     ],
     Guides: [
-      { label: 'How To Get Started', href: '/how-to-get-started' },
+      { label: 'How To Get Started', href: '/articles/how-to-get-started' },
       { label: 'Stories', href: '/stories' },
       { label: 'Pricing', href: '/pricing' },
       {
