@@ -1,3 +1,5 @@
+"use client";
+
 import CategoryList from '@/app/components/categories/CategoryList';
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
