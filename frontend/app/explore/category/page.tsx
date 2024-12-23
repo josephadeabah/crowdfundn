@@ -53,11 +53,12 @@ const CategoryListPage: React.FC = () => {
       <div className="bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-50">
         <div className="mx-auto">
           <motion.h4
+            ref={ref}
             variants={fadeInUp}
             initial="hidden"
             animate={controls}
             transition={{ duration: 0.5 }}
-            className="text-4xl font-bold text-center mb-8 text-gray-700 dark:text-gray-50"
+            className="text-4xl font-bold text-center mb-8 text-black" // Added black for visibility
           >
             Explore Campaigns in Categories
           </motion.h4>
