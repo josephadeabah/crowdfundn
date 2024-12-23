@@ -228,7 +228,7 @@ const Navbar = () => {
                       </Popover>
                     </li>
                   ))}
-                  <DarkModeBtn />
+                  {/* <DarkModeBtn /> */}
                   {user && (
                     <li className="flex items-center gap-3">
                       <Link href="/account">
@@ -309,10 +309,10 @@ const Navbar = () => {
                           <div>Go to Account</div>
                         </Link>
                       </div>
-                      <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
+                      {/* <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
                         <div>Change Theme</div>
                         <DarkModeBtn />
-                      </div>
+                      </div> */}
                       <div
                         className="hover:bg-gray-200 border border-gray-50 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
                         onClick={logout}
