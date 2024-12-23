@@ -9,7 +9,7 @@ const WhyIsThisRightForYou = () => {
         Why Is This Right For You?
       </h1>
 
-      <section className="bg-white p-12 rounded-lg shadow-lg mb-16">
+      <section className="bg-white p-12 rounded-lg shadow-sm mb-16">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
           1. Tailored for Africa’s Unique Needs
         </h2>

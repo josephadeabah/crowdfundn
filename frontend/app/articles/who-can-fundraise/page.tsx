@@ -9,7 +9,7 @@ const WhoCanFundraise = () => {
         Who Can Fundraise on BantuHive?
       </h1>
 
-      <section className="bg-white p-12 rounded-lg shadow-lg mb-16">
+      <section className="bg-white p-12 rounded-lg shadow-sm mb-16">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
           1. Entrepreneurs & Startups
         </h2>
