@@ -63,12 +63,15 @@ const Navbar = () => {
     ],
     Guides: [
       { label: 'How To Get Started', href: '/articles/how-to-get-started' },
-      { label: 'How To Withdraw Funds Safely', href: '/articles/how-to-withdraw-funds' },
-      { label: 'Pricing', href: '/pricing' },
       {
-        label: 'Fundraising Ideas for Africa',
-        href: '/fundraising-ideas-africa',
+        label: 'How To Withdraw Funds Safely',
+        href: '/articles/how-to-withdraw-funds',
       },
+      { label: 'Pricing', href: '/pricing' },
+      // {
+      //   label: 'Fundraising Ideas for Africa',
+      //   href: '/fundraising-ideas-africa',
+      // },
     ],
     Contact: [
       { label: 'Ghana', href: '/contactus' },
