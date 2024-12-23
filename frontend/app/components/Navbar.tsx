@@ -75,7 +75,7 @@ const Navbar = () => {
     ],
     Explore: [
       { label: 'By Advance Filtering', href: '/explore' },
-      { label: 'By Categories', href: '/categories' },
+      { label: 'By Category', href: '/categories' },
     ],
   };
 
