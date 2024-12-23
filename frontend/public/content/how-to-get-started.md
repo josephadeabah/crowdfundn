@@ -48,6 +48,7 @@ Now that you’re signed up, it’s time to make your mark and create your campa
 ### 1. Land on your dashboard
 
 After you sign in, you’ll land right on your dashboard—your campaign HQ! This is where all the magic happens. From here, you can manage your campaigns, track donations, and check out your progress. Ready to start? Let’s go!
+![Account](/guides/accounts.png#markdown-accounts)
 
 ### 2. Click Add campaign
 
