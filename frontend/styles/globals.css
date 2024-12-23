@@ -135,5 +135,41 @@ img[src*='#markdown-payments'] {
 img[src*='#markdown-accounts'] {
   width: 100%;
   height: 400px;
-  object-fit: cover;
+  object-fit: contain;
+}
+
+img[src*='#markdown-campaign'] {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
+}
+
+img[src*='#markdown-story'] {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
+}
+
+img[src*='#markdown-details'] {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
+}
+
+img[src*='#markdown-create'] {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
+}
+
+img[src*='#markdown-confirm'] {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
+}
+
+img[src*='#markdown-live'] {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
 }

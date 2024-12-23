@@ -1,4 +1,3 @@
-
 # For Fundraisers (Campaign Creators)
 
 ## How to Sign Up
@@ -53,10 +52,12 @@ After you sign in, you’ll land right on your dashboard—your campaign HQ! Thi
 ### 2. Click Add campaign
 
 Look for the “Add Campaign” button and give it a click. This will kick off the campaign creation process. You’re one step closer to launching your project!
+![Create Campaign](/guides/campaign.png#markdown-campaign)
 
 ### 3. Click ‘create your story’
 
 Now it’s time to tell your story! Click “Create Your Story” to begin filling out the details that will make your campaign shine. This is your moment to connect with potential supporters and share why your campaign matters.
+![Add Your Story](/guides/story.png#markdown-story)
 
 ### 4. Fill in the details
 
@@ -70,10 +71,12 @@ This is where you bring your campaign to life! You’ll need to fill out the fol
 - **Upload a Picture:** Add a picture that represents your campaign. This will be the face of your project—make it eye-catching!
 
 Once you’ve filled everything out, you’ll be one step closer to hitting launch.
+![Add Details](/guides/details.png#markdown-details)
 
 ### 5. Click Create
 
 Done with all the details? Nice! Click the “Create” button to finalize your campaign. This is where you officially bring your project to life on Bantu Hive. Take a deep breath—you’re almost there!
+![Click Create](/guides/create.png#markdown-create)
 
 ### 6. Click confirm to go to the campaign.
 
@@ -81,5 +84,8 @@ A quick confirmation will pop up, asking you to either Confirm or Cancel.
 
 - **Confirm:** If everything looks good, hit Confirm to go straight to your campaign page and get started.
 - **Edit/Delete:** If you need to make changes or rethink your campaign, you can click the three vertical dot on the campaign from the dashboard to delete it and start fresh or edit it.
+  ![Click Confirm](/guides/confirm.png#markdown-confirm)
+
+![Live Campaign](/guides/live.png#markdown-live)
 
 ---
