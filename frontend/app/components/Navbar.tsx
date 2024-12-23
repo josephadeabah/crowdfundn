@@ -68,18 +68,14 @@ const Navbar = () => {
         href: '/articles/how-to-withdraw-funds',
       },
       { label: 'Pricing', href: '/pricing' },
-      // {
-      //   label: 'Fundraising Ideas for Africa',
-      //   href: '/fundraising-ideas-africa',
-      // },
     ],
     Contact: [
       { label: 'Ghana', href: '/contactus' },
       { label: 'Eswatini', href: '/contactus' },
     ],
     Explore: [
-      { label: 'Projects', href: '/projects' },
-      { label: 'Categories', href: '/categories' },
+      { label: 'By Advance Filtering', href: '/explore' },
+      { label: 'By Categories', href: '/categories' },
     ],
   };
 
