@@ -14,7 +14,6 @@ import { FaHandHoldingUsd } from 'react-icons/fa';
 import { useAuth } from './context/auth/AuthContext';
 import CampaignCard from './components/campaigns/CampaignCard';
 import { useCampaignContext } from './context/account/campaign/CampaignsContext';
-import CategoryList from './components/categories/CategoryList';
 import SummaryCard from './molecules/SummaryCard';
 
 const HomePage = () => {
@@ -246,27 +245,6 @@ const HomePage = () => {
                   <p className="text-gray-500">{item.description}</p>
                 </motion.div>
               ))}
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-50"
-          id="categories"
-        >
-          <div className="mx-auto">
-            <motion.h4
-              variants={fadeInUp}
-              initial="hidden"
-              animate={controls}
-              transition={{ duration: 0.5 }}
-              className="text-4xl font-bold text-center mb-8 text-gray-700 dark:text-gray-50"
-            >
-              Explore Campaigns in Categories
-            </motion.h4>
-            {/* Parent grid for Categories and Recommended Fundraisers */}
-            <div className="">
-              <CategoryList />
             </div>
           </div>
         </div>
