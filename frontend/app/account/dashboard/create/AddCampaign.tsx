@@ -464,7 +464,7 @@ const CreateCampaign = () => {
 
             <div className="flex justify-end space-x-2 mt-4">
               <Button variant="secondary" onClick={handleCancel}>
-                Cancel
+                Close
               </Button>
               <Button variant="destructive" onClick={handleSubmit}>
                 {loading ? 'Creating...' : 'Create'}

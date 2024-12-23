@@ -80,7 +80,7 @@ Done with all the details? Nice! Click the “Create” button to finalize your 
 
 ### 6. Click confirm to go to the campaign.
 
-A quick confirmation will pop up, asking you to either Confirm or Cancel.
+A quick confirmation will pop up, asking you to either Confirm or Close.
 
 - **Confirm:** If everything looks good, hit Confirm to go straight to your campaign page and get started.
 - **Edit/Delete:** If you need to make changes or rethink your campaign, you can click the three vertical dot on the campaign from the dashboard to delete it and start fresh or edit it.
