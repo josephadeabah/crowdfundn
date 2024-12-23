@@ -77,7 +77,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
     } catch (err) {
       showToast(
         'Error',
-        'You must have made a successful donation to comment.',
+        'You must be a registered backer to comment.',
         'error',
       );
     } finally {
