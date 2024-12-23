@@ -3,10 +3,12 @@
 ### 1. Go to settings and add bank account
 
 The first thing to do after registering on Bantu Hive is to add your bank account number. This way, people can be able to support your campaign. To start, you’ll need to link your bank account to Bantu Hive. Head to the **Settings** section of your account, and look for the option to add your Bank Account details. This ensures your funds will go directly to the right place when you request a transfer.
+![Click Add Bank Account](/guides/bankaccount.png#markdown-bankaccount)
 
 ### 2. Select your Bank and Account number
 
-Once you’re in the settings, enter your Bank Name and Account Number. This is where we’ll send your funds. Double-check the details to make sure everything is correct—accuracy is key!
+Once you’re in the settings, enter your Bank Name and Account Number. This is where we’ll send your funds. Double-check the details to make sure everything is correct—accuracy is key!. Click Add Account
+![Select Bank](/guides/selectbank.png#markdown-selectbank)
 
 ### 3. Click on Transfers
 
