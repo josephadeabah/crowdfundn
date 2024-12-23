@@ -208,6 +208,7 @@ const SingleCampaignPage: React.FC = () => {
             </div>
             {/* Campaign Description */}
             <div
+            className="prose dark:prose-dark max-w-none"
               dangerouslySetInnerHTML={{
                 __html: currentCampaign?.description?.body || '',
               }}
