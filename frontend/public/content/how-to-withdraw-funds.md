@@ -1,5 +1,3 @@
-# How to Withdraw Funds Safely
-
 ### 1. Go to settings and add bank account
 
 The first thing to do after registering on Bantu Hive is to add your bank account number. This way, people can be able to support your campaign. To start, you’ll need to link your bank account to Bantu Hive. Head to the **Settings** section of your account, and look for the option to add your Bank Account details. This ensures your funds will go directly to the right place when you request a transfer.
