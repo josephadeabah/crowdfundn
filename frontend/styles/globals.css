@@ -107,3 +107,8 @@ h6 {
     opacity: 0;
   }
 }
+
+img[src*='#start-project'] {
+  width: 400px;
+  height: 200px;
+}

@@ -1,13 +1,4 @@
 
-<head>
-  <style>
-    img {
-      width: 50%;
-      height: auto;
-    }
-  </style>
-</head>
-
 # For Fundraisers (Campaign Creators)
 
 ## How to Sign Up
@@ -17,7 +8,7 @@ Ready to bring your ideas to life and start raising funds for your project? We�
 ### 1. Click “Fundraise Now” or “Start a Project”
 
 To begin your exciting journey with us, simply click the “Fundraise Now” or “Start a Project” button. You’ll be whisked away to the next step where the magic happens!
-![Account Creation](/marketing4.png)
+![Account Creation](/marketing4.png#start-project)
 
 ### 2. Enter your details
 
