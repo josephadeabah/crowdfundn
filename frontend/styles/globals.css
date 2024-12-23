@@ -113,3 +113,21 @@ img[src*='#markdown-start-project'] {
   height: 400px;
   object-fit: contain;
 }
+
+img[src*='#markdown-register'] {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
+}
+
+img[src*='#markdown-category'] {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
+}
+
+img[src*='#markdown-payments'] {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
+}

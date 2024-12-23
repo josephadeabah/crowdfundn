@@ -8,20 +8,22 @@ Ready to bring your ideas to life and start raising funds for your project? We�
 ### 1. Click “Fundraise Now” or “Start a Project”
 
 To begin your exciting journey with us, simply click the “Fundraise Now” or “Start a Project” button. You’ll be whisked away to the next step where the magic happens!
-![Account Creation](/guides/startaproject.png#markdown-start-project)
+![Get Started](/guides/startaproject.png#markdown-start-project)
 
 ### 2. Enter your details
 
 On the next screen, we’ll need a little info to create your account. Type in your Name, Email, Password, Birthdate, and Phone number. We promise we’ll keep your info safe and sound. Ready to get started? Just hit Next!
-![Setup Campaign](/marketing3.png)
+![Account Creation](/guides/register.png#markdown-register)
 
 ### 3. Select the campaign category
 
 Now for the fun part—let’s create your campaign! Select a category that best fits your project (we’ve got tons of options!). Then, enter the target amount you aim to raise for your campaign. Oh, and don’t forget to provide your national ID for verification—it’s a quick step that keeps things secure.
+![Category and others](/guides/category.png#markdown-category)
 
 ### 4. Select your preferred method of withdrawing funds
 
 Next, let us know how you’d like to receive your funds. You can choose the withdrawal method that works best for you—whether it’s a bank transfer, mobile money, or another option. We’ll make sure it’s smooth and seamless.
+![Payment Methods](/guides/payments.png#markdown-payments)
 
 ### 5. Click Let’s go and wait for an email confirmation
 
