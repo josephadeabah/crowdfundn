@@ -28,7 +28,7 @@ export default async function HowToGetStarted() {
         How to Get Started with Bantuhive
       </h1>
 
-      <section className="bg-white p-12 rounded-lg shadow-lg mb-16">
+      <section className="bg-white p-12 rounded-lg mb-16">
         <div
           className="prose max-w-none"
           dangerouslySetInnerHTML={{ __html: content }}
