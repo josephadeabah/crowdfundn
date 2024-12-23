@@ -57,9 +57,9 @@ const Navbar = () => {
       { label: 'Who We Are', href: '/about-us' },
       {
         label: 'Why Is This Right For You?',
-        href: '/is-crowdfunding-right-for-you',
+        href: '/articles/is-crowdfunding-right-for-you',
       },
-      { label: 'Who Can Fundraise?', href: '/who-can-fundraise' },
+      { label: 'Who Can Fundraise?', href: '/articles/who-can-fundraise' },
     ],
     Guides: [
       { label: 'How To Get Started', href: '/how-to-get-started' },
