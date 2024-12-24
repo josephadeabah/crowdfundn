@@ -4,7 +4,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 const CategoryBadgeLoader: React.FC = () => {
   return (
-    <div className="flex items-center justify-center">
+    <div className="">
       {Array.from({ length: 60 }).map((_, index) => (
         <Skeleton
           key={index}
