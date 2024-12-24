@@ -79,7 +79,7 @@ const CampaignsPage = () => {
   if (loading) return <CampaignCardLoader />;
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="max-w-7xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">
         We’ve made it easy to find the causes that matter most to you.
       </h1>
@@ -205,7 +205,7 @@ const CampaignsPage = () => {
         </aside>
 
         {/* Campaigns Section */}
-        <main className="w-full md:w-3/4">
+        <div className="w-full">
           {!loading && campaigns && campaigns.length > 0 ? (
             <CampaignCard
               campaigns={campaigns}
@@ -216,7 +216,7 @@ const CampaignsPage = () => {
           ) : (
             !loading && <p>No campaigns found.</p>
           )}
-        </main>
+        </div>
       </div>
     </div>
   );
