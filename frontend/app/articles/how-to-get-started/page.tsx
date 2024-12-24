@@ -3,8 +3,11 @@ import path from 'path';
 import { remark } from 'remark';
 import html from 'remark-html';
 import { Button } from '@/app/components/button/Button';
+import { motion } from 'framer-motion';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 export default async function HowToGetStarted() {
+  const { user } = useAuth();
   // Path to the markdown file
   const markdownFilePath = path.join(
     process.cwd(),
@@ -36,9 +39,15 @@ export default async function HowToGetStarted() {
       </section>
 
       <div className="text-center">
-        <Button className="text-xl py-3 px-6" size="lg" variant="outline">
-          Start Fundraising Now
-        </Button>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300 "
+        >
+          <a href={`${user ? '/account/dashboard/create' : '/auth/register'}`}>
+            Start Fundraising Now
+          </a>
+        </motion.button>
       </div>
     </div>
   );
