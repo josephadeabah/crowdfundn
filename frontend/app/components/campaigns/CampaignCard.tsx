@@ -25,6 +25,7 @@ type CampaignCardProps = {
   ) => Promise<void>;
   sortBy: string;
   sortOrder: string;
+  onPageChange: (newPage: number) => void;
 };
 
 const CampaignCard: React.FC<CampaignCardProps> = ({
@@ -34,6 +35,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   fetchCampaigns,
   sortBy,
   sortOrder,
+  onPageChange, // Receive onPageChange function
 }) => {
   const { userProfile } = useUserContext();
   const [userCountry, setUserCountry] = useState<string | null>(null);
@@ -69,10 +71,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       campaign.status !== 'completed'
     );
   });
-
-  const handlePageChange = (newPage: number) => {
-    fetchCampaigns(sortBy, sortOrder, newPage, 12);
-  };
 
   if (loading || isLocationLoading) return <CampaignCardLoader />;
   if (error) return <ErrorPage />;
@@ -165,7 +163,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       <Pagination
         currentPage={pagination.currentPage}
         totalPages={pagination.totalPages}
-        onPageChange={handlePageChange}
+        onPageChange={onPageChange}
       />
     </div>
   );

@@ -6,7 +6,8 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import CampaignCard from '@/app/components/campaigns/CampaignCard';
 
 const CampaignsPage = () => {
-  const { fetchAllCampaigns, campaigns, loading, error } = useCampaignContext();
+  const { fetchAllCampaigns, campaigns, loading, error, pagination } =
+    useCampaignContext(); // Add pagination from context
 
   const [sortBy, setSortBy] = useState<string>('created_at');
   const [sortOrder, setSortOrder] = useState<string>('desc');
@@ -15,7 +16,6 @@ const CampaignsPage = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   useEffect(() => {
-    // Fetch campaigns with sorting and pagination logic
     fetchAllCampaigns(sortBy, sortOrder, page, pageSize);
   }, [sortBy, sortOrder, page, pageSize]);
 
@@ -32,7 +32,6 @@ const CampaignsPage = () => {
   };
 
   const handleSearch = () => {
-    // Assuming your backend supports search
     fetchAllCampaigns(sortBy, sortOrder, page, pageSize);
   };
 
@@ -41,6 +40,7 @@ const CampaignsPage = () => {
       <h1 className="text-2xl font-bold mb-4">Campaigns</h1>
 
       <div className="flex flex-wrap gap-4 mb-6">
+        {/* Sort and search filters */}
         <div>
           <label htmlFor="sortBy" className="block text-sm font-medium mb-1">
             Sort By
@@ -90,7 +90,7 @@ const CampaignsPage = () => {
 
         <button
           onClick={handleSearch}
-          className="bg-blue-500 text-white px-4 py-2 rounded mt-6"
+          className="bg-green-500 text-white px-4 py-2 rounded mt-6"
         >
           Search
         </button>
@@ -100,17 +100,15 @@ const CampaignsPage = () => {
       {error && <p className="text-red-500">{error}</p>}
 
       {!loading && campaigns && campaigns.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Display campaign cards without any sorting applied here */}
-            <CampaignCard
-              campaigns={campaigns}
-              loading={loading}
-              error={error}
-              fetchCampaigns={fetchAllCampaigns}
-              sortBy={sortBy}
-              sortOrder={sortOrder}
-            />
-        </div>
+        <CampaignCard
+          campaigns={campaigns}
+          loading={loading}
+          error={error}
+          fetchCampaigns={fetchAllCampaigns}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onPageChange={handlePageChange}
+        />
       ) : (
         !loading && <p>No campaigns found.</p>
       )}

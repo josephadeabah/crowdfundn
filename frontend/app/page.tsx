@@ -33,6 +33,11 @@ const HomePage = () => {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(12);
 
+  // Function to handle page change
+  const handlePageChange = (page: number) => {
+    setPageNumber(page);
+  };
+
   useEffect(() => {
     fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, itemsPerPage);
   }, [fetchAllCampaigns, sortCriteria, pageNumber, itemsPerPage]);
@@ -270,6 +275,7 @@ const HomePage = () => {
               fetchCampaigns={fetchAllCampaigns}
               sortBy={sortCriteria}
               sortOrder={sortOrder}
+              onPageChange={handlePageChange}
             />
           </div>
         </div>
