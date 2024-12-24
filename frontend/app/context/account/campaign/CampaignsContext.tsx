@@ -149,6 +149,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       sortOrder: string = 'desc',
       page: number = 1,
       pageSize: number = 12,
+      dateRange = 'all_time',
+      goalRange = 'all',
+      location = 'all',
     ): Promise<void> => {
       setLoading(true);
       setError(null);
@@ -158,10 +161,15 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           sortOrder,
           page: page.toString(),
           pageSize: pageSize.toString(),
-        }).toString();
+        });
+
+        // Add the new parameters to the query string if they're provided
+        if (dateRange) queryParams.append('dateRange', dateRange);
+        if (goalRange) queryParams.append('goalRange', goalRange);
+        if (location) queryParams.append('location', location);
 
         const response = await nextFetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?${queryParams}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?${queryParams.toString()}`,
           { method: 'GET' },
         );
 

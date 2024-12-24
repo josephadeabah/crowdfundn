@@ -86,6 +86,9 @@ export interface CampaignState {
     sortOrder: string,
     page: number,
     pageSize: number,
+    dateRange?: string,
+    goalRange?: string,
+    location?: string,
   ) => Promise<void>;
   deleteCampaign: (id: string) => Promise<void>;
   editCampaign: (
