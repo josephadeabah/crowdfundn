@@ -54,10 +54,6 @@ const CategoryList: React.FC = () => {
   const filteredCampaigns = (category: string) => {
     const campaigns = campaignsGroupedByCategory[category]?.campaigns || [];
     return campaigns.filter((campaign) => {
-      const remainingDays = getRemainingDaysMessage(
-        campaign.start_date,
-        campaign.end_date,
-      );
       return campaign.status !== 'completed';
     });
   };
