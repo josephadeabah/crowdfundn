@@ -150,10 +150,10 @@ const CampaignsPage = () => {
             className="p-2 border rounded"
           >
             <option value="all">All</option>
-            <option value="nigeria">Nigeria</option>
-            <option value="kenya">Kenya</option>
-            <option value="ghana">Ghana</option>
-            <option value="south_africa">South Africa</option>
+            <option value="Nigeria">Nigeria</option>
+            <option value="Kenya">Kenya</option>
+            <option value="Ghana">Ghana</option>
+            <option value="South Africa">South Africa</option>
             {/* Add more countries as needed */}
           </select>
         </div>
