@@ -77,134 +77,135 @@ const CampaignsPage = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <span className="text-xs font-normal mb-4 text-red-600">
-        [Work In Progress]
-      </span>
       <h1 className="text-2xl font-bold mb-4">
         We’ve made it easy to find the causes that matter most to you.
       </h1>
 
-      <div className="flex flex-wrap gap-4 mb-6">
-        {/* Sort and search filters */}
-        <div>
-          <label htmlFor="sortBy" className="block text-sm font-medium mb-1">
-            Sort By
-          </label>
-          <select
-            id="sortBy"
-            value={sortBy}
-            onChange={handleSortChange}
-            className="p-2 border rounded"
+      <div className="flex flex-col md:flex-row gap-4">
+        {/* Filters Section */}
+        <aside className="w-full md:w-1/4 p-4 border rounded bg-gray-100">
+          <h2 className="text-lg font-semibold mb-4">Filters</h2>
+          <div className="mb-4">
+            <label htmlFor="sortBy" className="block text-sm font-medium mb-1">
+              Sort By
+            </label>
+            <select
+              id="sortBy"
+              value={sortBy}
+              onChange={handleSortChange}
+              className="p-2 border rounded w-full"
+            >
+              <option value="created_at">Date Created</option>
+              <option value="goal_amount">Goal Amount</option>
+              <option value="location">Location</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="sortOrder" className="block text-sm font-medium mb-1">
+              Sort Order
+            </label>
+            <select
+              id="sortOrder"
+              value={sortOrder}
+              onChange={handleOrderChange}
+              className="p-2 border rounded w-full"
+            >
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="dateRange" className="block text-sm font-medium mb-1">
+              Date Created
+            </label>
+            <select
+              id="dateRange"
+              value={dateRange}
+              onChange={handleDateRangeChange}
+              className="p-2 border rounded w-full"
+            >
+              <option value="all_time">All Time</option>
+              <option value="last_7_days">Last 7 Days</option>
+              <option value="last_30_days">Last 30 Days</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="goalRange" className="block text-sm font-medium mb-1">
+              Goal Amount
+            </label>
+            <select
+              id="goalRange"
+              value={goalRange}
+              onChange={handleGoalRangeChange}
+              className="p-2 border rounded w-full"
+            >
+              <option value="all">All</option>
+              <option value="0-500">$0 - $500</option>
+              <option value="500-1000">$500 - $1000</option>
+              <option value="1000-5000">$1000 - $5000</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="location" className="block text-sm font-medium mb-1">
+              Location
+            </label>
+            <select
+              id="location"
+              value={location}
+              onChange={handleLocationChange}
+              className="p-2 border rounded w-full"
+            >
+              <option value="all">All</option>
+              <option value="Nigeria">Nigeria</option>
+              <option value="Kenya">Kenya</option>
+              <option value="Ghana">Ghana</option>
+              <option value="South Africa">South Africa</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="search" className="block text-sm font-medium mb-1">
+              Search by Title
+            </label>
+            <input
+              id="search"
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="p-2 border rounded w-full"
+              placeholder="Search for a campaign"
+            />
+          </div>
+
+          <button
+            onClick={handleSearch}
+            className="bg-green-500 text-white px-4 py-2 rounded w-full"
           >
-            <option value="created_at">Date Created</option>
-            <option value="goal_amount">Goal Amount</option>
-            <option value="location">Location</option>
-          </select>
-        </div>
+            Search
+          </button>
+        </aside>
 
-        <div>
-          <label htmlFor="sortOrder" className="block text-sm font-medium mb-1">
-            Sort Order
-          </label>
-          <select
-            id="sortOrder"
-            value={sortOrder}
-            onChange={handleOrderChange}
-            className="p-2 border rounded"
-          >
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
-        </div>
+        {/* Campaigns Section */}
+        <main className="w-full md:w-3/4">
+          {loading && <p>Loading campaigns...</p>}
+          {error && <p className="text-red-500">{error}</p>}
 
-        <div>
-          <label htmlFor="dateRange" className="block text-sm font-medium mb-1">
-            Date Created
-          </label>
-          <select
-            id="dateRange"
-            value={dateRange}
-            onChange={handleDateRangeChange}
-            className="p-2 border rounded"
-          >
-            <option value="all_time">All Time</option>
-            <option value="last_7_days">Last 7 Days</option>
-            <option value="last_30_days">Last 30 Days</option>
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="goalRange" className="block text-sm font-medium mb-1">
-            Goal Amount
-          </label>
-          <select
-            id="goalRange"
-            value={goalRange}
-            onChange={handleGoalRangeChange}
-            className="p-2 border rounded"
-          >
-            <option value="all">All</option>
-            <option value="0-500">$0 - $500</option>
-            <option value="500-1000">$500 - $1000</option>
-            <option value="1000-5000">$1000 - $5000</option>
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="location" className="block text-sm font-medium mb-1">
-            Location
-          </label>
-          <select
-            id="location"
-            value={location}
-            onChange={handleLocationChange}
-            className="p-2 border rounded"
-          >
-            <option value="all">All</option>
-            <option value="Nigeria">Nigeria</option>
-            <option value="Kenya">Kenya</option>
-            <option value="Ghana">Ghana</option>
-            <option value="South Africa">South Africa</option>
-            {/* Add more countries as needed */}
-          </select>
-        </div>
-
-        {/* Search input for title */}
-        <div>
-          <label htmlFor="search" className="block text-sm font-medium mb-1">
-            Search by Title
-          </label>
-          <input
-            id="search"
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-2 border rounded"
-            placeholder="Search for a campaign"
-          />
-        </div>
-
-        <button
-          onClick={handleSearch}
-          className="bg-green-500 text-white px-4 py-2 rounded mt-6"
-        >
-          Search
-        </button>
+          {!loading && campaigns && campaigns.length > 0 ? (
+            <CampaignCard
+              campaigns={campaigns}
+              loading={loading}
+              error={error}
+              onPageChange={handlePageChange}
+            />
+          ) : (
+            !loading && <p>No campaigns found.</p>
+          )}
+        </main>
       </div>
-
-      {loading && <p>Loading campaigns...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-
-      {!loading && campaigns && campaigns.length > 0 ? (
-        <CampaignCard
-          campaigns={campaigns}
-          loading={loading}
-          error={error}
-          onPageChange={handlePageChange}
-        />
-      ) : (
-        !loading && <p>No campaigns found.</p>
-      )}
     </div>
   );
 };
