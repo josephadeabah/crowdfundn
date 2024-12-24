@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import CampaignCard from '@/app/components/campaigns/CampaignCard';
-import Pagination from '@/app/components/pagination/Pagination';
 
 const CampaignsPage = () => {
   const { fetchAllCampaigns, campaigns, loading, error } = useCampaignContext();
@@ -14,7 +13,6 @@ const CampaignsPage = () => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(12);
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const { pagination } = useCampaignContext();
 
   useEffect(() => {
     // Fetch campaigns with sorting and pagination logic
@@ -106,7 +104,6 @@ const CampaignsPage = () => {
           {/* Display campaign cards without any sorting applied here */}
           {campaigns.map((campaign: CampaignResponseDataType) => (
             <CampaignCard
-              key={campaign.id}
               campaigns={[campaign]}
               loading={loading}
               error={error}
@@ -119,12 +116,6 @@ const CampaignsPage = () => {
       ) : (
         !loading && <p>No campaigns found.</p>
       )}
-{/* 
-      <Pagination
-        currentPage={pagination.currentPage}
-        totalPages={pagination.totalPages}
-        onPageChange={handlePageChange}
-      /> */}
     </div>
   );
 };
