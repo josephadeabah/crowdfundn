@@ -15,13 +15,27 @@ type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
   loading: boolean;
   error: string | null;
-  fetchCampaigns: () => Promise<void>;
+  fetchCampaigns: (
+    sortBy: string,
+    sortOrder: string,
+    page: number,
+    pageSize: number,
+  ) => Promise<void>;
+  sortBy: string;
+  sortOrder: string;
+  page: number;
+  pageSize: number;
 };
 
 const CampaignCard: React.FC<CampaignCardProps> = ({
   campaigns,
   loading,
   error,
+  fetchCampaigns,
+  sortBy,
+  sortOrder,
+  page,
+  pageSize,
 }) => {
   const { userProfile } = useUserContext();
   const [userCountry, setUserCountry] = useState<string | null>(null);
@@ -56,6 +70,10 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       campaign.status !== 'completed'
     );
   });
+
+  const handlePageChange = (newPage: number) => {
+    fetchCampaigns(sortBy, sortOrder, newPage, pageSize);
+  };
 
   if (loading || isLocationLoading) return <CampaignCardLoader />;
   if (error) return <ErrorPage />;
@@ -143,6 +161,26 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
           })}
         </div>
       )}
+
+      <div className="mt-6 flex justify-between">
+        <button
+          onClick={() => handlePageChange(page - 1)}
+          disabled={page === 1 || loading}
+          className={`px-4 py-2 rounded ${
+            page === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'
+          }`}
+        >
+          Previous
+        </button>
+        <p>Page {page}</p>
+        <button
+          onClick={() => handlePageChange(page + 1)}
+          disabled={loading}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

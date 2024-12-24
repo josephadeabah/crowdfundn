@@ -136,28 +136,44 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [token]);
 
-  const fetchAllCampaigns = useCallback(async (): Promise<void> => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await nextFetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns`,
-        { method: 'GET' },
-      );
+  const fetchAllCampaigns = useCallback(
+    async (
+      sortBy: string = 'created_at',
+      sortOrder: string = 'desc',
+      page: number = 1,
+      pageSize: number = 12,
+    ): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const queryParams = new URLSearchParams({
+          sortBy,
+          sortOrder,
+          page: page.toString(),
+          pageSize: pageSize.toString(),
+        }).toString();
 
-      if (!response.ok) {
-        handleApiError("Couldn't fetch campaigns. Please refresh the page.");
-        return;
+        const response = await nextFetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?${queryParams}`,
+          { method: 'GET' },
+        );
+
+        if (!response.ok) {
+          handleApiError("Couldn't fetch campaigns. Please refresh the page.");
+          return;
+        }
+
+        const allCampaigns = await response.json();
+
+        setCampaigns(allCampaigns?.campaigns); // Set campaigns from response
+      } catch (err) {
+        setError('Error fetching campaigns. Please refresh the page.');
+      } finally {
+        setLoading(false);
       }
-
-      const allCampaigns = await response.json();
-      setCampaigns(allCampaigns?.campaigns);
-    } catch (err) {
-      setError('Error fetching campaigns. Please refresh the page.');
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
+    },
+    [token],
+  );
 
   const fetchCampaignById = useCallback(
     async (id: string) => {
