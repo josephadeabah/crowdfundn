@@ -1,15 +1,11 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useAuth } from '../context/auth/AuthContext';
 
 const SummaryCard: React.FC = () => {
-  const { user } = useAuth();
-
   useEffect(() => {
     const lastLoaded = localStorage.getItem('surveyMonkeyLastLoaded');
     const currentTime = new Date().getTime();
-
     // Check if the script was loaded within the last 24 hours
     if (
       !lastLoaded ||
@@ -27,6 +23,8 @@ const SummaryCard: React.FC = () => {
 
       // Store the time when the script was loaded
       localStorage.setItem('surveyMonkeyLastLoaded', currentTime.toString());
+    } else {
+      console.log('SurveyMonkey script not loaded due to 24-hour condition.');
     }
   }, []);
 
@@ -47,16 +45,6 @@ const SummaryCard: React.FC = () => {
               Raise money when you need, fund, or support causes you care about.
               Reach donors, and make a difference.
             </h3>
-          </div>
-
-          {/* Right Section - Buttons */}
-          <div className="flex space-x-4 z-10">
-            <a
-              href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
-              className="inline-block px-4 py-2 bg-green-50 text-gray-500 dark:bg-gray-700 dark:text-gray-300 font-medium text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-600 transition"
-            >
-              Get Started
-            </a>
           </div>
         </div>
       </div>
