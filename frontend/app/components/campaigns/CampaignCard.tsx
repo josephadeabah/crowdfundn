@@ -120,7 +120,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                           {campaign.remaining_days} days left
                         </div>
                       </div>
-                      <div className="w-full">
+                      <div className="w-full text-xs">
                         <Progress
                           firstProgress={
                             (Number(campaign?.transferred_amount) /
