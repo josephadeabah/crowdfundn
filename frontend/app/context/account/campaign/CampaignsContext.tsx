@@ -33,6 +33,13 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const [statistics, setStatistics] =
     useState<CampaignStatisticsDataType | null>(null); // Add state for statistics
   const { token } = useAuth();
+  const [pagination, setPagination] = useState<{
+    currentPage: number;
+    totalPages: number;
+  }>({
+    currentPage: 1,
+    totalPages: 1,
+  });
 
   const handleApiError = (errorText: string) => {
     setError(errorText);
@@ -165,7 +172,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
         const allCampaigns = await response.json();
 
-        setCampaigns(allCampaigns?.campaigns); // Set campaigns from response
+        // Update the campaigns and pagination data
+        setCampaigns(allCampaigns?.campaigns);
+        setPagination({
+          currentPage: allCampaigns?.current_page || 1,
+          totalPages: allCampaigns?.total_pages || 1,
+        });
       } catch (err) {
         setError('Error fetching campaigns. Please refresh the page.');
       } finally {
@@ -295,6 +307,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       loading,
       error,
       statistics, // Add statistics to context
+      pagination,
       addCampaign,
       fetchCampaigns,
       fetchCampaignStatistics, // Add fetchStatistics to context
@@ -309,6 +322,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       loading,
       error,
       statistics, // Include statistics in memoization
+      pagination,
       addCampaign,
       fetchCampaigns,
       fetchCampaignStatistics, // Include fetchStatistics in memoization

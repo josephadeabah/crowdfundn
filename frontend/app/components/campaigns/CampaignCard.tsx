@@ -10,6 +10,8 @@ import { generateRandomString } from '../../utils/helpers/generate.random-string
 import Image from 'next/image';
 import { deslugify } from '@/app/utils/helpers/categories';
 import { useUserContext } from '@/app/context/users/UserContext';
+import Pagination from '../pagination/Pagination'; // Import the Pagination component
+import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -23,8 +25,6 @@ type CampaignCardProps = {
   ) => Promise<void>;
   sortBy: string;
   sortOrder: string;
-  page: number;
-  pageSize: number;
 };
 
 const CampaignCard: React.FC<CampaignCardProps> = ({
@@ -34,12 +34,11 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   fetchCampaigns,
   sortBy,
   sortOrder,
-  page,
-  pageSize,
 }) => {
   const { userProfile } = useUserContext();
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [isLocationLoading, setIsLocationLoading] = useState(true);
+  const { pagination } = useCampaignContext();
 
   useEffect(() => {
     const fetchUserLocation = async () => {
@@ -72,7 +71,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   });
 
   const handlePageChange = (newPage: number) => {
-    fetchCampaigns(sortBy, sortOrder, newPage, pageSize);
+    fetchCampaigns(sortBy, sortOrder, newPage, 12);
   };
 
   if (loading || isLocationLoading) return <CampaignCardLoader />;
@@ -162,25 +161,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         </div>
       )}
 
-      <div className="mt-6 flex justify-between">
-        <button
-          onClick={() => handlePageChange(page - 1)}
-          disabled={page === 1 || loading}
-          className={`px-4 py-2 rounded ${
-            page === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'
-          }`}
-        >
-          Previous
-        </button>
-        <p>Page {page}</p>
-        <button
-          onClick={() => handlePageChange(page + 1)}
-          disabled={loading}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Next
-        </button>
-      </div>
+      {/* Add Pagination */}
+      <Pagination
+        currentPage={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

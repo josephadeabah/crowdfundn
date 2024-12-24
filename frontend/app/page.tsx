@@ -270,8 +270,6 @@ const HomePage = () => {
               fetchCampaigns={fetchAllCampaigns}
               sortBy={sortCriteria}
               sortOrder={sortOrder}
-              page={pageNumber}
-              pageSize={itemsPerPage}
             />
           </div>
         </div>

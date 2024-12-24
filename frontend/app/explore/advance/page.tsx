@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import CampaignCard from '@/app/components/campaigns/CampaignCard';
+import Pagination from '@/app/components/pagination/Pagination';
 
 const CampaignsPage = () => {
   const { fetchAllCampaigns, campaigns, loading, error } = useCampaignContext();
@@ -13,6 +14,7 @@ const CampaignsPage = () => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(12);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const { pagination } = useCampaignContext();
 
   useEffect(() => {
     // Fetch campaigns with sorting and pagination logic
@@ -111,34 +113,18 @@ const CampaignsPage = () => {
               fetchCampaigns={fetchAllCampaigns}
               sortBy={sortBy}
               sortOrder={sortOrder}
-              page={page}
-              pageSize={pageSize}
             />
           ))}
         </div>
       ) : (
         !loading && <p>No campaigns found.</p>
       )}
-
-      <div className="mt-6 flex justify-between">
-        <button
-          onClick={() => handlePageChange(page - 1)}
-          disabled={page === 1 || loading}
-          className={`px-4 py-2 rounded ${
-            page === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'
-          }`}
-        >
-          Previous
-        </button>
-        <p>Page {page}</p>
-        <button
-          onClick={() => handlePageChange(page + 1)}
-          disabled={loading}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Next
-        </button>
-      </div>
+{/* 
+      <Pagination
+        currentPage={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        onPageChange={handlePageChange}
+      /> */}
     </div>
   );
 };

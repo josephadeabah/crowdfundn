@@ -73,6 +73,10 @@ export interface CampaignState {
   campaigns: CampaignResponseDataType[];
   currentCampaign: SingleCampaignResponseDataType | null;
   statistics: CampaignStatisticsDataType | null;
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+  };
   loading: boolean;
   error: string | null;
   addCampaign: (campaign: FormData) => Promise<CampaignResponseDataType>;
