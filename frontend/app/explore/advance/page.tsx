@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import CampaignCard from '@/app/components/campaigns/CampaignCard';
-import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 
 const CampaignsPage = () => {
   const { fetchAllCampaigns, campaigns, loading, error } = useCampaignContext();
