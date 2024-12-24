@@ -37,7 +37,7 @@ const CampaignsPage = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Campaigns</h1>
+      <h1 className="text-2xl font-bold mb-4">We’ve made it easy to find the causes that matter most to you.</h1>
 
       <div className="flex flex-wrap gap-4 mb-6">
         {/* Sort and search filters */}
