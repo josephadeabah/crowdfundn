@@ -27,9 +27,15 @@ const HomePage = () => {
   const [isVisible, setIsVisible] = useState(false);
   const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
 
+  // States for sorting and pagination
+  const [sortCriteria, setSortCriteria] = useState<string>('created_at');
+  const [sortOrder, setSortOrder] = useState<string>('desc');
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(12);
+
   useEffect(() => {
-    fetchAllCampaigns();
-  }, [fetchAllCampaigns]);
+    fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, itemsPerPage);
+  }, [fetchAllCampaigns, sortCriteria, pageNumber, itemsPerPage]);
 
   React.useEffect(() => {
     const words = [
@@ -262,6 +268,10 @@ const HomePage = () => {
               loading={loading}
               error={error}
               fetchCampaigns={fetchAllCampaigns}
+              sortBy={sortCriteria}
+              sortOrder={sortOrder}
+              page={pageNumber}
+              pageSize={itemsPerPage}
             />
           </div>
         </div>
