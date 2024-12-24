@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import CampaignCard from '@/app/components/campaigns/CampaignCard';
+import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 
 const CampaignsPage = () => {
   const { fetchAllCampaigns, campaigns, loading, error } = useCampaignContext();
@@ -74,6 +75,8 @@ const CampaignsPage = () => {
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
+
+  if (loading) return <CampaignCardLoader />;
 
   return (
     <div className="container mx-auto p-4">
@@ -191,7 +194,7 @@ const CampaignsPage = () => {
 
         {/* Campaigns Section */}
         <main className="w-full md:w-3/4">
-          {campaigns && campaigns.length > 0 ? (
+          {!loading && campaigns && campaigns.length > 0 ? (
             <CampaignCard
               campaigns={campaigns}
               loading={loading}
@@ -199,7 +202,7 @@ const CampaignsPage = () => {
               onPageChange={handlePageChange}
             />
           ) : (
-            <p>No campaigns found.</p>
+            !loading && <p>No campaigns found.</p>
           )}
         </main>
       </div>
