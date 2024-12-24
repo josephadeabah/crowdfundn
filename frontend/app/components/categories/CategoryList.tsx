@@ -81,7 +81,7 @@ const CategoryList: React.FC = () => {
                 onClick={() => handleCategoryClick(category.value)}
                 variant="default"
               >
-                {category.label} ({campaignCount})
+                {category.label} {campaignCount > 0 && `(${campaignCount})`}
               </Badge>
             );
           })}
