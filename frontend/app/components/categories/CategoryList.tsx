@@ -58,7 +58,7 @@ const CategoryList: React.FC = () => {
         campaign.start_date,
         campaign.end_date,
       );
-      return remainingDays !== 'No days left';
+      return campaign.status !== 'completed';
     });
   };
 
