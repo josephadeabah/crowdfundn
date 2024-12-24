@@ -84,7 +84,7 @@ const CampaignsPage = () => {
 
       <div className="flex flex-col md:flex-row gap-4">
         {/* Filters Section */}
-        <aside className="w-full md:w-1/4 p-4 border rounded bg-gray-100">
+        <aside className="w-full md:w-1/4 p-4 border rounded bg-gray-50">
           <h2 className="text-lg font-semibold mb-4">Filters</h2>
           <div className="mb-4">
             <label htmlFor="sortBy" className="block text-sm font-medium mb-1">
