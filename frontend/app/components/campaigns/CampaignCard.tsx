@@ -30,6 +30,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [isLocationLoading, setIsLocationLoading] = useState(true);
   const { pagination } = useCampaignContext();
+  const [page, setPage] = useState<number>(1);
+
+  const handlePageChange = (newPage: number) => {
+    onPageChange(newPage);
+    setPage(newPage);
+  };
 
   useEffect(() => {
     const fetchUserLocation = async () => {
@@ -150,9 +156,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
 
       {/* Add Pagination */}
       <Pagination
-        currentPage={pagination.currentPage}
+        currentPage={pagination.currentPage || page}
         totalPages={pagination.totalPages}
-        onPageChange={onPageChange}
+        onPageChange={handlePageChange}
       />
     </div>
   );
