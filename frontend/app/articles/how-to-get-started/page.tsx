@@ -1,8 +1,9 @@
+"use client";
+
 import fs from 'fs';
 import path from 'path';
 import { remark } from 'remark';
 import html from 'remark-html';
-import { Button } from '@/app/components/button/Button';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/app/context/auth/AuthContext';
 
