@@ -12,7 +12,7 @@ const CategoryBadgeLoader: React.FC = () => {
             className="flex items-center justify-center"
           >
             <Skeleton
-              width="100%"
+              width={100}
               height={30}
               className="rounded-full transform hover:scale-105 transition-transform duration-300"
             />
