@@ -102,16 +102,14 @@ const CampaignsPage = () => {
       {!loading && campaigns && campaigns.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Display campaign cards without any sorting applied here */}
-          {campaigns.map((campaign: CampaignResponseDataType) => (
             <CampaignCard
-              campaigns={[campaign]}
+              campaigns={campaigns}
               loading={loading}
               error={error}
               fetchCampaigns={fetchAllCampaigns}
               sortBy={sortBy}
               sortOrder={sortOrder}
             />
-          ))}
         </div>
       ) : (
         !loading && <p>No campaigns found.</p>
