@@ -16,6 +16,9 @@ module Api
           # Ensure sorting is safe
           valid_sort_columns = %w[created_at goal_amount location]
           sort_by = valid_sort_columns.include?(sort_by) ? sort_by : 'created_at'
+
+          # Initialize campaigns collection
+          @campaigns = Campaign.all
         
           # Filters
           if params[:dateRange] && params[:dateRange] != 'all_time'
