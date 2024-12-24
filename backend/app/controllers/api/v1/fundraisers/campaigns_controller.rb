@@ -10,8 +10,17 @@ module Api
           page = params[:page] || 1
           page_size = params[:pageSize] || 12
           
-          # Retrieve only active campaigns
-          @campaigns = Campaign.active.order(created_at: :desc).page(page).per(page_size)
+          sort_by = params[:sortBy] || 'created_at'
+          sort_order = params[:sortOrder] || 'desc'
+
+          # Ensure sorting is safe
+          valid_sort_columns = %w[created_at goal_amount location]
+          sort_by = valid_sort_columns.include?(sort_by) ? sort_by : 'created_at'
+
+          @campaigns = Campaign.active
+                               .order(sort_by => sort_order)
+                               .page(page)
+                               .per(page_size)
         
           campaigns_data = @campaigns.map do |campaign|
             campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
@@ -123,6 +132,25 @@ module Api
           stats = CampaignStatisticsService.calculate_for_user(@current_user)
           render json: stats, status: :ok
         end
+
+      # POST /api/v1/fundraisers/campaigns/:id/favorite
+      def favorite
+        if @current_user.favorites.create(campaign: @campaign)
+          render json: { message: 'Campaign favorited successfully' }, status: :ok
+        else
+          render json: { error: 'Unable to favorite campaign' }, status: :unprocessable_entity
+        end
+      end
+
+      # DELETE /api/v1/fundraisers/campaigns/:id/unfavorite
+      def unfavorite
+        favorite = @current_user.favorites.find_by(campaign: @campaign)
+        if favorite&.destroy
+          render json: { message: 'Campaign unfavorited successfully' }, status: :ok
+        else
+          render json: { error: 'Unable to unfavorite campaign' }, status: :unprocessable_entity
+        end
+      end
         
         # New Webhook Action
         def webhook_status_update
