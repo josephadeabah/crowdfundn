@@ -7,16 +7,16 @@ const CategoryBadgeLoader: React.FC = () => {
     <div className="max-w-7xl mx-auto">
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2">
         {Array.from({ length: 24 }).map((_, index) => (
-        //   <div
-        //     key={index}
-        //     className="w-full flex items-center justify-center cursor-pointer"
-        //   >
+          <div
+            key={index}
+            className="flex items-center justify-center"
+          >
             <Skeleton
-             key={index}
-              width={100}
+              width="100%"
               height={30}
-              className="cursor-pointer transform hover:scale-105 transition-transform duration-300 w-fit"
+              className="rounded-full transform hover:scale-105 transition-transform duration-300"
             />
+          </div>
         ))}
       </div>
     </div>
