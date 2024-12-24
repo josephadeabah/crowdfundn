@@ -5,7 +5,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 const CategoryBadgeLoader: React.FC = () => {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2">
-      {Array.from({ length: 12 }).map((_, index) => (
+      {Array.from({ length: 60 }).map((_, index) => (
         <div
           key={index}
           className="w-fit flex items-center justify-center cursor-pointer"
