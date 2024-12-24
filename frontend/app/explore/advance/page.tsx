@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import CampaignCard from '@/app/components/campaigns/CampaignCard';
+import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 
 const CampaignsPage = () => {
   const { fetchAllCampaigns, campaigns, loading, error } = useCampaignContext();
@@ -191,10 +192,7 @@ const CampaignsPage = () => {
 
         {/* Campaigns Section */}
         <main className="w-full md:w-3/4">
-          {loading && <p>Loading campaigns...</p>}
-          {error && <p className="text-red-500">{error}</p>}
-
-          {!loading && campaigns && campaigns.length > 0 ? (
+          {campaigns && campaigns.length > 0 ? (
             <CampaignCard
               campaigns={campaigns}
               loading={loading}
@@ -202,7 +200,7 @@ const CampaignsPage = () => {
               onPageChange={handlePageChange}
             />
           ) : (
-            !loading && <p>No campaigns found.</p>
+            <p>No campaigns found.</p>
           )}
         </main>
       </div>
