@@ -12,15 +12,36 @@ module Api
           
           sort_by = params[:sortBy] || 'created_at'
           sort_order = params[:sortOrder] || 'desc'
-
+        
           # Ensure sorting is safe
           valid_sort_columns = %w[created_at goal_amount location]
           sort_by = valid_sort_columns.include?(sort_by) ? sort_by : 'created_at'
+        
+          # Filters
+          if params[:dateRange] && params[:dateRange] != 'all_time'
+            case params[:dateRange]
+            when 'last_7_days'
+              start_date = 7.days.ago
+            when 'last_30_days'
+              start_date = 30.days.ago
+            end
+            @campaigns = @campaigns.where('created_at >= ?', start_date)
+          end
+        
+          if params[:goalRange] && params[:goalRange] != 'all'
+            min_goal, max_goal = params[:goalRange].split('-').map(&:to_i)
+            @campaigns = @campaigns.where(goal_amount: min_goal..max_goal)
+          end
+        
+          if params[:location] && params[:location] != 'all'
+            @campaigns = @campaigns.where(location: params[:location])
+          end
 
-          @campaigns = Campaign.active
-                               .order(sort_by => sort_order)
-                               .page(page)
-                               .per(page_size)
+          if params[:title].present?
+            @campaigns = @campaigns.where('lower(title) LIKE ?', "%#{params[:title].downcase}%")
+          end
+        
+          @campaigns = Campaign.active.order(sort_by => sort_order).page(page).per(page_size)
         
           campaigns_data = @campaigns.map do |campaign|
             campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
