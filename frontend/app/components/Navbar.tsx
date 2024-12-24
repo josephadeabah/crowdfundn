@@ -271,9 +271,10 @@ const Navbar = () => {
                       Start A Project
                     </Link>
                   </motion.button>
-                  <Button
-                    variant="ghost"
-                    className="py-2 px-4 bg-orange-400 rounded-full dark:hover:bg-gray-800"
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="py-2 px-4 bg-orange-400 rounded-full dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300"
                   >
                     <Link
                       href="/auth/login"
@@ -281,7 +282,7 @@ const Navbar = () => {
                     >
                       Login
                     </Link>
-                  </Button>
+                  </motion.button>
                 </>
               ) : (
                 <Popover>
