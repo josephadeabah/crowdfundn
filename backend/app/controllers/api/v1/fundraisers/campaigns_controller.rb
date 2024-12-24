@@ -11,7 +11,7 @@ module Api
           page_size = params[:pageSize] || 12
           
           # Retrieve only active campaigns
-          @campaigns = Campaign.active.order(created_at: :desc).page(page).per(page_size).reload
+          @campaigns = Campaign.active.order(created_at: :desc).page(page).per(page_size)
         
           campaigns_data = @campaigns.map do |campaign|
             campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
