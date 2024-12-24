@@ -90,6 +90,7 @@ export interface CampaignState {
     goalRange?: string,
     location?: string,
     title?: string,
+    searchTerm?: string,
   ) => Promise<void>;
   deleteCampaign: (id: string) => Promise<void>;
   editCampaign: (
