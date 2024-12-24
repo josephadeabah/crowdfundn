@@ -259,17 +259,6 @@ const Navbar = () => {
             <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
               {!user ? (
                 <>
-                  {/* <Button
-                    variant="ghost"
-                    className="py-2 px-4 bg-white dark:bg-gray-900 dark:text-gray-50 rounded-full focus-visible:outline-none focus:ring-0 hover:outline-none"
-                  >
-                    <Link
-                      href="/auth/register"
-                      className="text-gray-700 dark:text-gray-50"
-                    >
-                      Start A Project
-                    </Link>
-                  </Button> */}
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
