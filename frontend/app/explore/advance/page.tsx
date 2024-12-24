@@ -11,7 +11,7 @@ const CampaignsPage = () => {
   const [sortOrder, setSortOrder] = useState<string>('desc');
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(12);
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>(''); // Track search input
   const [dateRange, setDateRange] = useState<string>('all_time');
   const [goalRange, setGoalRange] = useState<string>('all');
   const [location, setLocation] = useState<string>('all');
@@ -25,8 +25,18 @@ const CampaignsPage = () => {
       dateRange,
       goalRange,
       location,
+      searchTerm, // Pass the searchTerm to filter by title
     );
-  }, [sortBy, sortOrder, page, pageSize, dateRange, goalRange, location]);
+  }, [
+    sortBy,
+    sortOrder,
+    page,
+    pageSize,
+    dateRange,
+    goalRange,
+    location,
+    searchTerm,
+  ]);
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortBy(e.target.value);
@@ -57,6 +67,7 @@ const CampaignsPage = () => {
       dateRange,
       goalRange,
       location,
+      searchTerm, // Include the search term in the search query
     );
   };
 
@@ -156,6 +167,21 @@ const CampaignsPage = () => {
             <option value="South Africa">South Africa</option>
             {/* Add more countries as needed */}
           </select>
+        </div>
+
+        {/* Search input for title */}
+        <div>
+          <label htmlFor="search" className="block text-sm font-medium mb-1">
+            Search by Title
+          </label>
+          <input
+            id="search"
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="p-2 border rounded"
+            placeholder="Search for a campaign"
+          />
         </div>
 
         <button

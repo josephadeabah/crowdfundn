@@ -152,6 +152,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       dateRange = 'all_time',
       goalRange = 'all',
       location = 'all',
+      title = '',
     ): Promise<void> => {
       setLoading(true);
       setError(null);
@@ -167,6 +168,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         if (dateRange) queryParams.append('dateRange', dateRange);
         if (goalRange) queryParams.append('goalRange', goalRange);
         if (location) queryParams.append('location', location);
+        if (title) queryParams.append('title', title);
 
         const response = await nextFetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?${queryParams.toString()}`,
