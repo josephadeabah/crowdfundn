@@ -6,19 +6,18 @@ module Api
         before_action :set_campaign, only: %i[show update destroy webhook_status_update]
         before_action :authorize_campaign_user!, only: %i[update destroy]  # Ensure user authorization for these actions
 
-        def index   
+        def index
           page = params[:page] || 1
           page_size = params[:pageSize] || 12
           
-          # Retrieve campaigns with pagination and order by most recent
-          @campaigns = Campaign.order(created_at: :desc).page(page).per(page_size).reload
-
-          # Include total_donors for each campaign in the response
+          # Retrieve only active campaigns
+          @campaigns = Campaign.active.order(created_at: :desc).page(page).per(page_size).reload
+        
           campaigns_data = @campaigns.map do |campaign|
             campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
                    .merge(media: campaign.media_url, total_donors: campaign.total_donors)
           end
-
+        
           render json: {
             campaigns: campaigns_data,
             current_page: @campaigns.current_page,
@@ -58,18 +57,16 @@ module Api
         def group_by_category
           page = params[:page] || 1
           page_size = params[:page_size] || 12
-
-          # Group campaigns by category and order each group by most recent
-          grouped_campaigns = Campaign.all.order(created_at: :desc).group_by do |campaign|
+        
+          # Group only active campaigns by category
+          grouped_campaigns = Campaign.active.order(created_at: :desc).group_by do |campaign|
             campaign.category.downcase.gsub(/\s+/, '-')
           end
-
-          # Paginate each category separately
+        
           grouped_paginated_campaigns = grouped_campaigns.transform_values do |campaigns|
             Kaminari.paginate_array(campaigns).page(page).per(page_size)
           end
-
-          # Prepare the response with paginated grouped campaigns
+        
           response_data = grouped_paginated_campaigns.each_with_object({}) do |(category, campaigns), result|
             result[category] = {
               campaigns: campaigns,
@@ -78,7 +75,7 @@ module Api
               total_count: campaigns.total_count
             }
           end
-
+        
           render json: {
             grouped_campaigns: response_data
           }, status: :ok
