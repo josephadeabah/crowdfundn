@@ -4,7 +4,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 const CategoryBadgeLoader: React.FC = () => {
   return (
-    <div className="">
+    <>
       {Array.from({ length: 60 }).map((_, index) => (
         <Skeleton
           key={index}
@@ -13,7 +13,7 @@ const CategoryBadgeLoader: React.FC = () => {
           className="cursor-pointer transform hover:scale-105 transition-transform duration-300 w-fit"
         />
       ))}
-    </div>
+    </>
   );
 };
 
