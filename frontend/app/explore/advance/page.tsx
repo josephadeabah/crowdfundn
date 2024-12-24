@@ -204,7 +204,7 @@ const CampaignsPage = () => {
 
         {/* Campaigns Section */}
         <div className="w-full">
-        {loading && <CampaignCardLoader />}
+          {loading && <CampaignCardLoader />}
           {!loading && campaigns && campaigns.length > 0 ? (
             <CampaignCard
               campaigns={campaigns}

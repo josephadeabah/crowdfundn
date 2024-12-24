@@ -86,7 +86,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 initial="hidden"
                 animate="visible"
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gradient-to-br from-green-50 to-orange-50 dark:from-green-900 dark:to-orange-900 dark:bg-gray-900  flex flex-col h-full dark:text-gray-50 transform hover:shadow-lg transition-transform duration-300 cursor-pointer"
+                className="bg-gradient-to-br from-green-50 to-orange-50 dark:from-green-900 dark:to-orange-900 dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 transform hover:shadow-lg transition-transform duration-300 cursor-pointer overflow-hidden"
               >
                 <Link
                   href={`/campaign/${campaign.id}?${generateRandomString()}`}
@@ -105,18 +105,22 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                         className="absolute top-0 left-0 rounded-t"
                       />
                     </div>
-                    <div className="px-1 dark:text-gray-50">
+                    <div className="px-1 py-2 dark:text-gray-50 flex flex-col gap-1">
                       <h3 className="text-lg font-bold truncate whitespace-nowrap overflow-hidden">
                         {campaign?.title}
                       </h3>
-                      <div className="w-full text-xs text-green-600">
+                      <div className="w-full text-xs text-green-600 truncate">
                         {deslugify(campaign?.category)}
                       </div>
-                      <div className="flex justify-between items-center w-full text-xs font-semibold text-right text-gray-600">
-                        <div>{campaign.total_donors || 0} Backers</div>
-                        <div>{campaign.remaining_days} days left</div>
+                      <div className="flex justify-between items-center w-full text-xs font-semibold text-gray-600">
+                        <div className="truncate">
+                          {campaign.total_donors || 0} Backers
+                        </div>
+                        <div className="truncate">
+                          {campaign.remaining_days} days left
+                        </div>
                       </div>
-                      <div className="w-full text-xs">
+                      <div className="w-full">
                         <Progress
                           firstProgress={
                             (Number(campaign?.transferred_amount) /
@@ -130,15 +134,15 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                           }%`}
                         />
                       </div>
-                      <div className="w-full text-xs text-gray-600">
-                        <p className="flex justify-between items-center text-sm font-semibold mt-2">
+                      <div className="w-full text-xs text-gray-600 flex flex-col">
+                        <p className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
                           {fundraiserCurrency}
                           {!isNaN(parseFloat(campaign.transferred_amount))
                             ? parseFloat(
                                 campaign.transferred_amount,
                               ).toLocaleString()
                             : 0}
-                          <span className="text-gray-600 dark:text-gray-400">
+                          <span className="text-gray-600 dark:text-gray-400 truncate">
                             <span className="text-xs p-1">of</span>
                             {fundraiserCurrency}
                             {parseFloat(campaign.goal_amount).toLocaleString()}
