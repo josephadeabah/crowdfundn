@@ -1,30 +1,22 @@
-"use client";
+'use client';
 
-import fs from 'fs';
-import path from 'path';
-import { remark } from 'remark';
-import html from 'remark-html';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/app/context/auth/AuthContext';
+import { getMarkdownContent } from '@/app/utils/helpers/getMarkdownContent';
 
-export default async function HowToGetStarted() {
+export default function HowToGetStarted() {
   const { user } = useAuth();
-  // Path to the markdown file
-  const markdownFilePath = path.join(
-    process.cwd(),
-    'public',
-    'content',
-    'how-to-get-started.md',
-  );
+  const [content, setContent] = useState<string>('');
 
-  // Read the markdown file
-  const fileContent = fs.readFileSync(markdownFilePath, 'utf-8');
+  useEffect(() => {
+    async function fetchContent() {
+      const markdownContent = await getMarkdownContent('how-to-get-started.md');
+      setContent(markdownContent);
+    }
 
-  // Parse the markdown content to HTML using remark
-  const processedContent = await remark().use(html).process(fileContent);
-
-  // Convert buffer to string
-  const content = processedContent.toString();
+    fetchContent();
+  }, []);
 
   return (
     <div className="relative w-full max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
