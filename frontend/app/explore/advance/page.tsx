@@ -104,9 +104,6 @@ const CampaignsPage = () => {
           campaigns={campaigns}
           loading={loading}
           error={error}
-          fetchCampaigns={fetchAllCampaigns}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
           onPageChange={handlePageChange}
         />
       ) : (

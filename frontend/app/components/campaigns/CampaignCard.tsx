@@ -17,14 +17,6 @@ type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
   loading: boolean;
   error: string | null;
-  fetchCampaigns: (
-    sortBy: string,
-    sortOrder: string,
-    page: number,
-    pageSize: number,
-  ) => Promise<void>;
-  sortBy: string;
-  sortOrder: string;
   onPageChange: (newPage: number) => void;
 };
 
@@ -32,9 +24,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   campaigns,
   loading,
   error,
-  fetchCampaigns,
-  sortBy,
-  sortOrder,
   onPageChange, // Receive onPageChange function
 }) => {
   const { userProfile } = useUserContext();

@@ -272,9 +272,6 @@ const HomePage = () => {
               campaigns={campaigns}
               loading={loading}
               error={error}
-              fetchCampaigns={fetchAllCampaigns}
-              sortBy={sortCriteria}
-              sortOrder={sortOrder}
               onPageChange={handlePageChange}
             />
           </div>
