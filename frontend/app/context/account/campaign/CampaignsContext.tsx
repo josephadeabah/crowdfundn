@@ -169,7 +169,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         if (goalRange) queryParams.append('goalRange', goalRange);
         if (location) queryParams.append('location', location);
         if (title) queryParams.append('title', title);
-        
+
         const response = await nextFetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?${queryParams.toString()}`,
           { method: 'GET' },

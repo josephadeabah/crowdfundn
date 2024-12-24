@@ -105,7 +105,10 @@ const CampaignsPage = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="sortOrder" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="sortOrder"
+              className="block text-sm font-medium mb-1"
+            >
               Sort Order
             </label>
             <select
@@ -120,7 +123,10 @@ const CampaignsPage = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="dateRange" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="dateRange"
+              className="block text-sm font-medium mb-1"
+            >
               Date Created
             </label>
             <select
@@ -136,7 +142,10 @@ const CampaignsPage = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="goalRange" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="goalRange"
+              className="block text-sm font-medium mb-1"
+            >
               Goal Amount
             </label>
             <select
@@ -153,7 +162,10 @@ const CampaignsPage = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="location" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="location"
+              className="block text-sm font-medium mb-1"
+            >
               Location
             </label>
             <select

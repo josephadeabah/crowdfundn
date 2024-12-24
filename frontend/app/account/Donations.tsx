@@ -114,26 +114,24 @@ export default function Donations() {
                 </tr>
               </thead>
               <tbody>
-                {donations.map((donation) => (
-                  <DonationRow
-                    key={donation.id}
-                    id={donation.id}
-                    donorName={donation.full_name || 'Anonymous'}
-                    amount={parseFloat(donation.gross_amount)}
-                    currency={
-                      donation?.metadata?.campaign?.currency ||
-                      donation?.metadata?.campaign?.currency_symbol
-                    }
-                    date={new Date(donation.created_at).toLocaleDateString()}
-                    campaignTitle={
-                      donation.metadata.campaign?.title || 'No Title'
-                    }
-                    status={donation.status}
-                    filter={filter}
-                    isSelected={selectedDonors.includes(donation.id)}
-                    onToggle={() => toggleDonorSelection(donation.id)}
-                  />
-                ))}
+                {donations.map((donation) => {
+                  const campaign = donation.metadata?.campaign || {};
+                  return (
+                    <DonationRow
+                      key={donation.id}
+                      id={donation.id}
+                      donorName={donation.full_name || 'Anonymous'}
+                      amount={parseFloat(donation.gross_amount)}
+                      currency={campaign.currency || campaign.currency_symbol}
+                      date={new Date(donation.created_at).toLocaleDateString()}
+                      campaignTitle={campaign.title || 'No Title'}
+                      status={donation.status}
+                      filter={filter}
+                      isSelected={selectedDonors.includes(donation.id)}
+                      onToggle={() => toggleDonorSelection(donation.id)}
+                    />
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -184,6 +182,9 @@ const DonationRow: React.FC<DonationRowProps> = ({
   isSelected,
   onToggle,
 }) => {
+  const formattedCurrency = currency ? currency.toLocaleUpperCase() : '';
+  const formattedAmount = amount.toFixed(2);
+
   return (
     <tr className="border-b hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors duration-200">
       {filter === 'specific' && (
@@ -199,13 +200,13 @@ const DonationRow: React.FC<DonationRowProps> = ({
         {donorName}
       </td>
       <td className="py-3 px-4 text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-        {currency?.toLocaleUpperCase()} {amount.toFixed(2)}
+        {formattedCurrency} {formattedAmount}
       </td>
       <td className="py-3 px-4 text-gray-500 dark:text-neutral-400 whitespace-nowrap">
         {date}
       </td>
       <td className="py-3 px-4 text-gray-500 dark:text-neutral-400 whitespace-nowrap">
-        {campaignTitle}
+        {campaignTitle || 'No Title'}
       </td>
       <td className="py-3 px-4 text-green-500 dark:text-green-400 whitespace-nowrap">
         {status}
