@@ -12,7 +12,7 @@ const config = {
   sitemapSize: 5000, // Split sitemap into multiple files if it exceeds 5000 URLs
   changefreq: 'daily', // Suggested update frequency for your pages
   priority: 0.7, // Default priority for pages
-  exclude: ['/admin/*', '/account/*', '/thank-you'], // Exclude specific pages or routes
+  exclude: ['/admin/*', '/account', '/account/*', '/thank-you'], // Exclude specific pages or routes
   robotsTxtOptions: {
     policies: [
       {
