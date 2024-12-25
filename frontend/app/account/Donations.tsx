@@ -136,13 +136,11 @@ export default function Donations() {
             </table>
           </div>
           {/* Pagination Controls */}
-          {donations.length > 10 && (
             <Pagination
               currentPage={currentPage}
               totalPages={pagination.total_pages}
               onPageChange={handlePageChange}
             />
-          )}
           {/* Thank You Button */}
           <div className="mt-6">
             <Button
