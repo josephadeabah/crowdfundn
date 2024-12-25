@@ -88,6 +88,7 @@ const LoginPage = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     aria-label="Email Address"
+                    autoComplete="off"
                   />
                 </div>
                 <div className="relative">
@@ -105,6 +106,7 @@ const LoginPage = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     aria-label="Password"
+                    autoComplete="off"
                   />
                   <button
                     type="button"
