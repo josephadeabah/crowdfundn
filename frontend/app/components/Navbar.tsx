@@ -86,7 +86,7 @@ const Navbar = () => {
 
   return (
     <>
-      <NotificationBar />
+      {/* <NotificationBar /> */}
       <header
         className={`bg-green-50 p-1 dark:bg-gray-950 sticky top-0 z-50 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
       >
