@@ -29,6 +29,7 @@ const CampaignsPage = () => {
       searchTerm, // Pass the searchTerm to filter by title
     );
   }, [
+    fetchAllCampaigns,
     sortBy,
     sortOrder,
     page,
