@@ -192,7 +192,7 @@ const CategoryList: React.FC = () => {
 
             {/* Pagination Component */}
             {selectedCategory &&
-               campaignsGroupedByCategory[selectedCategory]?.total_pages > 1 && (
+              campaignsGroupedByCategory[selectedCategory]?.total_pages > 1 && (
                 <Pagination
                   currentPage={
                     campaignsGroupedByCategory[selectedCategory]?.current_page
