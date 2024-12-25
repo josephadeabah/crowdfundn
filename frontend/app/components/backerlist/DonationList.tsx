@@ -21,10 +21,11 @@ const DonationList: React.FC<DonationListProps> = ({
   fundraiserCurrency,
 }) => {
   const { pagination, fetchPublicDonations } = useDonationsContext();
+  const [currentPage, setCurrentPage] = React.useState(1);
 
   // Handle page changes
   const handlePageChange = async (page: number) => {
-    await fetchPublicDonations('campaignId', page, pagination.per_page);
+    setCurrentPage(page);
   };
 
   useEffect(() => {
@@ -69,7 +70,7 @@ const DonationList: React.FC<DonationListProps> = ({
       {/* Pagination */}
       {pagination.total_pages > 1 && (
         <Pagination
-          currentPage={pagination.current_page}
+          currentPage={currentPage}
           totalPages={pagination.total_pages}
           onPageChange={handlePageChange}
         />
