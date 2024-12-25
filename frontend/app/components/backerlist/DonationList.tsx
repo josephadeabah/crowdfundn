@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FaHeart } from 'react-icons/fa';
 import moment from 'moment';
 import Pagination from '@/app/components/pagination/Pagination';
@@ -26,6 +26,11 @@ const DonationList: React.FC<DonationListProps> = ({
   const handlePageChange = async (page: number) => {
     await fetchPublicDonations('campaignId', page, pagination.per_page);
   };
+
+  useEffect(() => {
+    fetchPublicDonations('campaignId', 1, 10);
+  }, [pagination.current_page]);
+  
 
   return (
     <div className="space-y-8">
