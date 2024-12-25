@@ -14,23 +14,25 @@ interface Donation {
 interface DonationListProps {
   donations: Donation[];
   fundraiserCurrency?: string;
+  campaignId: string;
 }
 
 const DonationList: React.FC<DonationListProps> = ({
   donations,
   fundraiserCurrency,
+  campaignId,
 }) => {
   const { pagination, fetchPublicDonations } = useDonationsContext();
-  const [currentPage, setCurrentPage] = React.useState(1);
+
+  // Handle page changes
+  useEffect(() => {
+    fetchPublicDonations(campaignId, 1, 10); // Replace 'campaignId' with the actual campaign ID
+  }, []);
 
   // Handle page changes
   const handlePageChange = async (page: number) => {
-    setCurrentPage(page);
+    await fetchPublicDonations(campaignId, page, pagination.per_page); // Replace 'campaignId' with actual campaign ID
   };
-
-  useEffect(() => {
-    fetchPublicDonations('campaignId', 1, 10);
-  }, [pagination.current_page]);
 
   return (
     <div className="space-y-8">
@@ -70,7 +72,7 @@ const DonationList: React.FC<DonationListProps> = ({
       {/* Pagination */}
       {pagination.total_pages > 1 && (
         <Pagination
-          currentPage={currentPage}
+          currentPage={pagination.current_page}
           totalPages={pagination.total_pages}
           onPageChange={handlePageChange}
         />
