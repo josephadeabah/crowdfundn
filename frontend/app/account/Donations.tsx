@@ -135,14 +135,6 @@ export default function Donations() {
               </tbody>
             </table>
           </div>
-          {/* Pagination Controls */}
-          {pagination.total_pages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={pagination.total_pages}
-              onPageChange={handlePageChange}
-            />
-          )}
           {/* Thank You Button */}
           <div className="mt-6">
             <Button
@@ -153,6 +145,14 @@ export default function Donations() {
               {filter === 'all' ? 'Send Thank You to All' : 'Send Thank You'}
             </Button>
           </div>
+          {/* Pagination Controls */}
+          {pagination.total_pages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={pagination.total_pages}
+              onPageChange={handlePageChange}
+            />
+          )}
         </>
       )}
     </div>

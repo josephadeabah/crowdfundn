@@ -30,7 +30,6 @@ const DonationList: React.FC<DonationListProps> = ({
   useEffect(() => {
     fetchPublicDonations('campaignId', 1, 10);
   }, [pagination.current_page]);
-  
 
   return (
     <div className="space-y-8">
