@@ -63,7 +63,7 @@ const DonationList: React.FC<DonationListProps> = ({
         ))}
       </div>
       {/* Pagination */}
-      {donations.length > 10 && (
+      {pagination.total_pages > 1 && (
         <Pagination
           currentPage={pagination.current_page}
           totalPages={pagination.total_pages}
