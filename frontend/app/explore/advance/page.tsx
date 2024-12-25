@@ -84,7 +84,7 @@ const CampaignsPage = () => {
 
       <div className="flex flex-col md:flex-row gap-4">
         {/* Filters Section */}
-        <aside className="w-full md:w-1/4 p-4 border rounded bg-gray-50">
+        <aside className="w-full md:w-1/4 p-4 border border-gray-50 rounded bg-white">
           <h2 className="text-lg font-semibold mb-4">Filters</h2>
           <div className="mb-4">
             <label htmlFor="sortBy" className="block text-sm font-medium mb-1">
@@ -94,7 +94,7 @@ const CampaignsPage = () => {
               id="sortBy"
               value={sortBy}
               onChange={handleSortChange}
-              className="p-2 border rounded w-full"
+              className="p-2 border border-gray-50 rounded w-full"
             >
               <option value="created_at">Date Created</option>
               <option value="goal_amount">Goal Amount</option>
@@ -113,7 +113,7 @@ const CampaignsPage = () => {
               id="sortOrder"
               value={sortOrder}
               onChange={handleOrderChange}
-              className="p-2 border rounded w-full"
+              className="p-2 border border-gray-50 rounded w-full"
             >
               <option value="asc">Ascending</option>
               <option value="desc">Descending</option>
@@ -131,7 +131,7 @@ const CampaignsPage = () => {
               id="dateRange"
               value={dateRange}
               onChange={handleDateRangeChange}
-              className="p-2 border rounded w-full"
+              className="p-2 border border-gray-50 rounded w-full"
             >
               <option value="all_time">All Time</option>
               <option value="last_7_days">Last 7 Days</option>
@@ -150,7 +150,7 @@ const CampaignsPage = () => {
               id="goalRange"
               value={goalRange}
               onChange={handleGoalRangeChange}
-              className="p-2 border rounded w-full"
+              className="p-2 border border-gray-50 rounded w-full"
             >
               <option value="all">All</option>
               <option value="0-500">$0 - $500</option>
@@ -170,7 +170,7 @@ const CampaignsPage = () => {
               id="location"
               value={location}
               onChange={handleLocationChange}
-              className="p-2 border rounded w-full"
+              className="p-2 border border-gray-50 rounded w-full"
             >
               <option value="all">All</option>
               <option value="Nigeria">Nigeria</option>
@@ -189,7 +189,7 @@ const CampaignsPage = () => {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="p-2 border rounded w-full"
+              className="p-2 border border-gray-50 rounded w-full"
               placeholder="Search for a campaign"
             />
           </div>
