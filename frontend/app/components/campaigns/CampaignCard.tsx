@@ -159,11 +159,13 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       )}
 
       {/* Add Pagination */}
-      <Pagination
-        currentPage={pagination.currentPage || page}
-        totalPages={pagination.totalPages}
-        onPageChange={handlePageChange}
-      />
+      {filteredCampaigns.length > 12 && (
+        <Pagination
+          currentPage={pagination.currentPage || page}
+          totalPages={pagination.totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 };
