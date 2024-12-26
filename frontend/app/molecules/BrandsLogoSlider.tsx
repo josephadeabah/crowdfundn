@@ -34,7 +34,7 @@ export function BrandsLogoSlider() {
     { name: 'Paystack', id: 'paystack' },
     { name: 'Visa', id: 'visa' },
     { name: 'Mastercard', id: 'mastercard' },
-    { name: 'MPesa', id: 'm-pesa' },
+    { name: 'MPesa', id: 'mpesa' },
     { name: 'MTN', id: 'mtn' },
     { name: 'Red Cross', id: 'redcross' },
     { name: 'Save the Children', id: 'savechildren' },

@@ -235,6 +235,10 @@ const CampaignsPage = () => {
                 {userProfile?.currency.toUpperCase()}10000 -{' '}
                 {userProfile?.currency.toUpperCase()}50000
               </option>
+              <option value="50000-100000">
+                {userProfile?.currency.toUpperCase()}50000 -{' '}
+                {userProfile?.currency.toUpperCase()}100000
+              </option>
             </select>
           </div>
 
