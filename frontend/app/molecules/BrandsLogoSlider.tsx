@@ -34,17 +34,11 @@ export function BrandsLogoSlider() {
     { name: 'Paystack', id: 'paystack' },
     { name: 'Visa', id: 'visa' },
     { name: 'Mastercard', id: 'mastercard' },
-    { name: 'Airtel', id: 'airtel' },
-    { name: 'Orange', id: 'orange' },
+    { name: 'AirtelTigo', id: 'airteltigo' },
     { name: 'MTN', id: 'mtn' },
     { name: 'Red Cross', id: 'redcross' },
     { name: 'Save the Children', id: 'savechildren' },
-    { name: 'Safaricom', id: 'safaricom' },
-    { name: 'Verve', id: 'verve' },
     { name: 'Vodafone', id: 'vodafone' },
-    { name: 'Africell', id: 'africell' },
-    { name: 'Tigo', id: 'tigo' },
-    { name: 'WFP', id: 'wfp' },
   ];
 
   // Chunk the brands into groups of 3
