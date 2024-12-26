@@ -221,23 +221,23 @@ const CampaignsPage = () => {
               </option>
               <option value="500-1000">
                 {userProfile?.currency.toUpperCase() || 'GHS'}500 -{' '}
-                {userProfile?.currency.toUpperCase() || 'GHS'}1000
+                {userProfile?.currency.toUpperCase() || 'GHS'}1,000
               </option>
               <option value="1000-5000">
-                {userProfile?.currency.toUpperCase() || 'GHS'}1000 -{' '}
-                {userProfile?.currency.toUpperCase() || 'GHS'}5000
+                {userProfile?.currency.toUpperCase() || 'GHS'}1,000 -{' '}
+                {userProfile?.currency.toUpperCase() || 'GHS'}5,000
               </option>
               <option value="5000-10000">
-                {userProfile?.currency.toUpperCase() || 'GHS'}5000 -{' '}
-                {userProfile?.currency.toUpperCase() || 'GHS'}10000
+                {userProfile?.currency.toUpperCase() || 'GHS'}5,000 -{' '}
+                {userProfile?.currency.toUpperCase() || 'GHS'}10,000
               </option>
               <option value="10000-50000">
-                {userProfile?.currency.toUpperCase() || 'GHS'}10000 -{' '}
-                {userProfile?.currency.toUpperCase() || 'GHS'}50000
+                {userProfile?.currency.toUpperCase() || 'GHS'}10,000 -{' '}
+                {userProfile?.currency.toUpperCase() || 'GHS'}50,000
               </option>
               <option value="50000-100000">
-                {userProfile?.currency.toUpperCase() || 'GHS'}50000 -{' '}
-                {userProfile?.currency.toUpperCase() || 'GHS'}100000
+                {userProfile?.currency.toUpperCase() || 'GHS'}50,000 -{' '}
+                {userProfile?.currency.toUpperCase() || 'GHS'}10,0000
               </option>
             </select>
           </div>
