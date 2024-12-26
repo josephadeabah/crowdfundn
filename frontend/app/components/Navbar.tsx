@@ -266,7 +266,7 @@ const Navbar = () => {
                   >
                     <Link
                       href="/auth/register"
-                      className="text-gray-700 dark:text-gray-50"
+                      className="text-gray-700 text-sm dark:text-gray-50"
                     >
                       Start A Project
                     </Link>
@@ -278,7 +278,7 @@ const Navbar = () => {
                   >
                     <Link
                       href="/auth/login"
-                      className="text-white dark:text-gray-50"
+                      className="text-white text-sm dark:text-gray-50"
                     >
                       Login
                     </Link>
