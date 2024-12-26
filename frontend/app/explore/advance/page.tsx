@@ -81,10 +81,10 @@ const CampaignsPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4">
-      <h1 className="font-bold leading-tight mb-6 text-green-500 transition-all duration-300">
+      <h3 className="font-bold leading-tight mb-6 text-green-500 transition-all duration-300">
         We’ve made it easy to find and support the causes that matter most to
         you.
-      </h1>
+      </h3>
       <section className="flex flex-col md:flex-row gap-4 md:p-2">
         {/* Filters Section */}
         <aside className="w-full md:w-1/4 p-4 border border-gray-50 rounded bg-white">
