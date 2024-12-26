@@ -133,13 +133,13 @@ const CampaignsPage = () => {
           transition={{ duration: 0.5 }}
           className="text-4xl font-bold text-center text-gray-800 py-2"
         >
-          We’ve made it easy to find and support the causes that matter most to
+          Find and support the causes that matter most to
           you.
         </motion.h4>
       </div>
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex flex-col md:flex-row gap-2">
         {/* Filters Section */}
-        <aside className="w-full md:w-1/4 p-4 border border-gray-50 rounded bg-white">
+        <aside className="w-full md:w-1/4 p-4 border border-gray-50 bg-white">
           <h2 className="text-lg font-semibold mb-4">Filters</h2>
           <div className="mb-4">
             <label htmlFor="sortBy" className="block text-sm font-medium mb-1">
