@@ -71,7 +71,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   if (error) return <ErrorPage />;
 
   return (
-    <div>
+    <div className="bg-white">
       {filteredCampaigns.length === 0 ? (
         <EmptyPage />
       ) : (
