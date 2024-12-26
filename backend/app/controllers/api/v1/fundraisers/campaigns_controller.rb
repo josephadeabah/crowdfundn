@@ -15,7 +15,7 @@ module Api
         
           # Ensure sorting is safe
           valid_sort_columns = %w[created_at title goal_amount location]
-          sort_by = valid_sort_columns.include?(params[:sortBy] || 'created_at') ? params[:sortBy] || 'created_at' : 'created_at'
+          sort_by = valid_sort_columns.include?(sort_by) ? sort_by : 'created_at'
 
           # Initialize campaigns collection
           @campaigns = Campaign.active
@@ -44,7 +44,7 @@ module Api
             @campaigns = @campaigns.where('lower(title) LIKE ?', "%#{params[:title].downcase}%")
           end
         
-          @campaigns = Campaign.order("#{params[:sortBy]} #{params[:sortOrder]} #{params[:title]} #{params[:location]}").page(page).per(page_size)
+          @campaigns = Campaign.order(sort_by => sort_order).page(page).per(page_size)
         
           campaigns_data = @campaigns.map do |campaign|
             campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
