@@ -28,20 +28,20 @@ module Api
             when 'last_30_days'
               start_date = 30.days.ago
             end
-            @campaigns = @campaigns.where('created_at >= ?', start_date)
+            @campaigns = Campaign.where('created_at >= ?', start_date)
           end
         
           if params[:goalRange] && params[:goalRange] != 'all'
             min_goal, max_goal = params[:goalRange].split('-').map(&:to_i)
-            @campaigns = @campaigns.where(goal_amount: min_goal..max_goal)
+            @campaigns = Campaign.where(goal_amount: min_goal..max_goal)
           end
         
           if params[:location] && params[:location] != 'all'
-            @campaigns = @campaigns.where(location: params[:location])
+            @campaigns = Campaign.where(location: params[:location])
           end
 
           if params[:title].present?
-            @campaigns = @campaigns.where('lower(title) LIKE ?', "%#{params[:title].downcase}%")
+            @campaigns = Campaign.where('lower(title) LIKE ?', "%#{params[:title].downcase}%")
           end
         
           @campaigns = Campaign.order(sort_by => sort_order).page(page).per(page_size)
