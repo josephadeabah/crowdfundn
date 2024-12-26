@@ -109,7 +109,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       <h3 className="text-lg font-bold truncate whitespace-nowrap overflow-hidden">
                         {campaign?.title}
                       </h3>
-                      <div className="w-full text-xs text-orange-300 truncate">
+                      <div className="w-full text-xs text-orange-400 truncate">
                         {deslugify(campaign?.category)}
                       </div>
                       <div className="flex justify-between items-center w-full text-xs font-semibold text-gray-400">
