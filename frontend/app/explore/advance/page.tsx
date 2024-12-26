@@ -85,7 +85,7 @@ const CampaignsPage = () => {
         We’ve made it easy to find and support the causes that matter most to
         you.
       </h3>
-      <div className="flex flex-col md:flex-row gap-4 md:p-2 bg-gray-50">
+      <div className="flex flex-col md:flex-row gap-4 md:p-1 bg-gray-50">
         {/* Filters Section */}
         <aside className="w-full md:w-1/4 p-4 border border-gray-50 rounded bg-white">
           <h2 className="text-lg font-semibold mb-4">Filters</h2>
