@@ -18,7 +18,7 @@ From the list of your active campaigns, select the one you’d like to withdraw 
 
 ### 5. Click request transfer
 
-Once you've selected the campaign, simply click on the **Request Transfer** button. This initiates the withdrawal process. All you have to do now is wait for a confirmation. Minimum amount to request transfer is GHS 50 for Ghana.
+Once you've selected the campaign, simply click on the **Request Transfer** button. This initiates the withdrawal process. All you have to do now is wait for a confirmation. Minimum amount to request transfer is GHS 60 for Ghana.
 
 ### 6. Confirmation message will be displayed
 
