@@ -18,7 +18,7 @@ module Api
           sort_by = valid_sort_columns.include?(sort_by) ? sort_by : 'created_at'
 
           # Initialize campaigns collection
-          @campaigns = Campaign.all
+          @campaigns = Campaign.active
         
           # Filters
           if params[:dateRange] && params[:dateRange] != 'all_time'
