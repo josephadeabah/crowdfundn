@@ -231,7 +231,7 @@ const CampaignsPage = () => {
         </aside>
 
         {/* Campaigns Section */}
-        <div className="w-full">
+        <section className="w-full">
           {/* Show a loading spinner or placeholder while data is being fetched */}
           {loading ? (
             <CampaignCardLoader />
@@ -262,7 +262,7 @@ const CampaignsPage = () => {
               )}
             </>
           )}
-        </div>
+        </section>
       </div>
     </div>
   );
