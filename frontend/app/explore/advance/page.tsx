@@ -140,7 +140,7 @@ const CampaignsPage = () => {
       <div className="flex flex-col md:flex-row gap-1">
         {/* Filters Section */}
         <aside className="w-full md:w-1/4 p-4 border border-gray-50 bg-white">
-          <h2 className="text-lg font-semibold mb-4">Filters</h2>
+          <h2 className="text-lg font-semibold mb-4">Find & Fund</h2>
           <div className="mb-4">
             <label htmlFor="sortBy" className="block text-sm font-medium mb-1">
               Sort By
