@@ -283,7 +283,7 @@ const CampaignsPage = () => {
         </aside>
 
         {/* Campaigns Section */}
-        <div className="w-full bg-gray-50 md:p-1">
+        <div className="w-full bg-white md:p-1">
           {/* Show a loading spinner or placeholder while data is being fetched */}
           {loading ? (
             <CampaignCardLoader />
