@@ -24,12 +24,29 @@ module Api
           if params[:dateRange] && params[:dateRange] != 'all_time'
             case params[:dateRange]
             when 'today'
+              start_date = Time.zone.now.beginning_of_day # Start of the current day
             when 'last_7_days'
               start_date = 7.days.ago
             when 'last_30_days'
               start_date = 30.days.ago
+            when 'last_60_days'
+              start_date = 60.days.ago
+            when 'last_90_days'
+              start_date = 90.days.ago
+            when 'this_month'
+              start_date = Time.zone.now.beginning_of_month # Start of the current month
+            when 'last_month'
+              start_date = 1.month.ago.beginning_of_month # Start of the last month
+            when 'this_year'
+              start_date = Time.zone.now.beginning_of_year # Start of the current year
+            when 'last_year'
+              start_date = 1.year.ago.beginning_of_year # Start of the previous year
+            else
+              # If no valid date range is provided, you can decide to handle it as an error or fallback
+              start_date = nil
             end
-            @campaigns = @campaigns.where('created_at >= ?', start_date)
+            # Only apply the filter if start_date is defined
+            @campaigns = @campaigns.where('created_at >= ?', start_date) if start_date
           end
         
           if params[:goalRange] && params[:goalRange] != 'all'
