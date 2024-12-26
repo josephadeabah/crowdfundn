@@ -5,10 +5,16 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import CampaignCard from '@/app/components/campaigns/CampaignCard';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import { useUserContext } from '@/app/context/users/UserContext';
+import { motion, useAnimation } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
 
 const CampaignsPage = () => {
   const { fetchAllCampaigns, campaigns, loading, error } = useCampaignContext();
   const { userProfile } = useUserContext();
+  const controls = useAnimation();
+  const [ref, inView] = useInView();
+  const [scrollY, setScrollY] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
 
   const [sortBy, setSortBy] = useState<string>('created_at');
   const [sortOrder, setSortOrder] = useState<string>('desc');
@@ -79,16 +85,59 @@ const CampaignsPage = () => {
     setPage(newPage);
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      if (scrollPosition > 100) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (inView) {
+      controls.start('visible');
+    }
+  }, [controls, inView]);
+
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
     <div className="max-w-7xl mx-auto p-4">
-      <h3
-        className="font-bold leading-tight mb-6 text-green-500 transition-all duration-300 shadow-text"
-        style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.1)' }}
-      >
-        We’ve made it easy to find and support the causes that matter most to
-        you.
-      </h3>
-      <div className="flex flex-col md:flex-row gap-4 md:p-1 bg-white">
+      <div className="w-full bg-white mx-auto">
+        <motion.h4
+          ref={ref}
+          variants={fadeInUp}
+          initial="hidden"
+          animate={controls}
+          transition={{ duration: 0.5 }}
+          className="text-4xl font-bold text-center mb-8 text-gray-800"
+        >
+          We’ve made it easy to find and support the causes that matter most to
+          you.
+        </motion.h4>
+      </div>
+      <div className="flex flex-col md:flex-row gap-4 md:p-1 bg-gray-100">
         {/* Filters Section */}
         <aside className="w-full md:w-1/4 p-4 border border-gray-50 rounded bg-white">
           <h2 className="text-lg font-semibold mb-4">Filters</h2>

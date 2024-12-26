@@ -38,7 +38,10 @@ const SummaryCard: React.FC = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between md:space-x-8 space-y-4 md:space-y-0">
           {/* Left Section */}
           <div className="flex-1 text-center md:text-left md:max-w-[60%]">
-            <h2 className="text-green-600 dark:text-green-400 font-bold leading-tight">
+            <h2
+              className="text-green-600 dark:text-green-400 font-bold leading-tight"
+              style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.1)' }}
+            >
               Support, Empower, Thrive with Bantu Hive
             </h2>
             <h3 className="mt-1 text-gray-700 dark:text-gray-200">
