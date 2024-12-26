@@ -44,7 +44,7 @@ module Api
             @campaigns = @campaigns.where('lower(title) LIKE ?', "%#{params[:title].downcase}%")
           end
         
-          @campaigns = Campaign.active.order(sort_by => sort_order).page(page).per(page_size)
+          @campaigns = Campaign.order(sort_by => sort_order).page(page).per(page_size)
         
           campaigns_data = @campaigns.map do |campaign|
             campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
