@@ -212,8 +212,8 @@ const FeePolicy: React.FC = () => {
                 </h3>
                 <p className="text-gray-600">
                   Bantuhive charges a platform fee of 7% on all successful
-                  funding transactions. This fee includes Paystack’s
-                  processing fee of 1.95%. So in total 6.86% for Bantuhive
+                  funding transactions. This fee includes Paystack’s processing
+                  fee of 1.95%. So in total 6.86% for Bantuhive
                 </p>
               </div>
               <div>

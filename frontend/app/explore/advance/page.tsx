@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import CampaignCard from '@/app/components/campaigns/CampaignCard';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
+import { useUserContext } from '@/app/context/users/UserContext';
 
 const CampaignsPage = () => {
   const { fetchAllCampaigns, campaigns, loading, error } = useCampaignContext();
+  const { userProfile } = useUserContext();
 
   const [sortBy, setSortBy] = useState<string>('created_at');
   const [sortOrder, setSortOrder] = useState<string>('desc');
@@ -154,9 +156,26 @@ const CampaignsPage = () => {
               className="p-2 border border-gray-50 rounded w-full"
             >
               <option value="all">All</option>
-              <option value="0-500">$0 - $500</option>
-              <option value="500-1000">$500 - $1000</option>
-              <option value="1000-5000">$1000 - $5000</option>
+              <option value="0-500">
+                {userProfile?.currency.toUpperCase()}0 -{' '}
+                {userProfile?.currency.toUpperCase()}500
+              </option>
+              <option value="500-1000">
+                {userProfile?.currency.toUpperCase()}500 -{' '}
+                {userProfile?.currency.toUpperCase()}1000
+              </option>
+              <option value="1000-5000">
+                {userProfile?.currency.toUpperCase()}1000 -{' '}
+                {userProfile?.currency.toUpperCase()}5000
+              </option>
+              <option value="5000-10000">
+                {userProfile?.currency.toUpperCase()}5000 -{' '}
+                {userProfile?.currency.toUpperCase()}10000
+              </option>
+              <option value="10000-50000">
+                {userProfile?.currency.toUpperCase()}10000 -{' '}
+                {userProfile?.currency.toUpperCase()}50000
+              </option>
             </select>
           </div>
 
@@ -178,6 +197,7 @@ const CampaignsPage = () => {
               <option value="Kenya">Kenya</option>
               <option value="Ghana">Ghana</option>
               <option value="South Africa">South Africa</option>
+              <option value="Eswatini">Eswatini</option>
             </select>
           </div>
 
@@ -214,7 +234,7 @@ const CampaignsPage = () => {
               onPageChange={handlePageChange}
             />
           ) : (
-            !loading && <p>No campaigns found.</p>
+            <p>No campaigns found.</p>
           )}
         </div>
       </div>
