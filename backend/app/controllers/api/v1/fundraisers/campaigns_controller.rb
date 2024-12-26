@@ -14,7 +14,7 @@ module Api
           sort_order = params[:sortOrder] || 'desc'
         
           # Ensure sorting is safe
-          valid_sort_columns = %w[created_at goal_amount location]
+          valid_sort_columns = %w[created_at title goal_amount location]
           sort_by = valid_sort_columns.include?(sort_by) ? sort_by : 'created_at'
 
           # Initialize campaigns collection
