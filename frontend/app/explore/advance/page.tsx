@@ -137,7 +137,7 @@ const CampaignsPage = () => {
           you.
         </motion.h4>
       </div>
-      <div className="flex flex-col md:flex-row gap-2">
+      <div className="flex flex-col md:flex-row gap-1">
         {/* Filters Section */}
         <aside className="w-full md:w-1/4 p-4 border border-gray-50 bg-white">
           <h2 className="text-lg font-semibold mb-4">Filters</h2>
