@@ -74,7 +74,7 @@ const Navbar = () => {
       { label: 'Ghana', href: '/contactus' },
       { label: 'Eswatini', href: '/contactus' },
     ],
-    Explore: [
+    Donate: [
       { label: 'By Category', href: '/explore/category' },
       { label: 'By Advance Filtering', href: '/explore/advance' },
     ],
