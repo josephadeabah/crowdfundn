@@ -232,16 +232,35 @@ const CampaignsPage = () => {
 
         {/* Campaigns Section */}
         <div className="w-full">
-          {loading && <CampaignCardLoader />}
-          {!loading && campaigns && campaigns.length > 0 ? (
-            <CampaignCard
-              campaigns={campaigns}
-              loading={loading}
-              error={error}
-              onPageChange={handlePageChange}
-            />
+          {/* Show a loading spinner or placeholder while data is being fetched */}
+          {loading ? (
+            <CampaignCardLoader />
           ) : (
-            <p>No campaigns found.</p>
+            <>
+              {/* Show campaigns if available */}
+              {campaigns && campaigns.length > 0 ? (
+                <CampaignCard
+                  campaigns={campaigns}
+                  loading={loading}
+                  error={error}
+                  onPageChange={handlePageChange}
+                />
+              ) : (
+                // Show a friendly message if no campaigns are found
+                <p className="text-center text-gray-500">
+                  No campaigns found. Try adjusting your filters or search
+                  terms.
+                </p>
+              )}
+
+              {/* Show error message if an error occurred */}
+              {error && (
+                <p className="text-center text-red-500">
+                  An error occurred while fetching campaigns. Please try again
+                  later.
+                </p>
+              )}
+            </>
           )}
         </div>
       </div>
