@@ -137,6 +137,7 @@ const CampaignsPage = () => {
               className="p-2 border border-gray-50 rounded w-full"
             >
               <option value="all_time">All Time</option>
+              <option value="today">Today</option>
               <option value="last_7_days">Last 7 Days</option>
               <option value="last_30_days">Last 30 Days</option>
             </select>
