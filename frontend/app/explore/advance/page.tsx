@@ -62,18 +62,18 @@ const CampaignsPage = () => {
     setLocation(e.target.value);
   };
 
-  // const handleSearch = () => {
-  //   fetchAllCampaigns(
-  //     sortBy,
-  //     sortOrder,
-  //     page,
-  //     pageSize,
-  //     dateRange,
-  //     goalRange,
-  //     location,
-  //     searchTerm,
-  //   );
-  // };
+  const handleSearch = () => {
+    fetchAllCampaigns(
+      sortBy,
+      sortOrder,
+      page,
+      pageSize,
+      dateRange,
+      goalRange,
+      location,
+      searchTerm,
+    );
+  };
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -225,12 +225,12 @@ const CampaignsPage = () => {
             />
           </div>
 
-          {/* <button
+          <button
             onClick={handleSearch}
             className="bg-green-500 text-white px-4 py-2 rounded focus:outline-none w-full"
           >
             Search
-          </button> */}
+          </button>
         </aside>
 
         {/* Campaigns Section */}
