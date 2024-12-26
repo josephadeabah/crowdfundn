@@ -25,7 +25,7 @@ const Progress: React.FC<ProgressBarProps> = ({
       {/* Progress labels */}
       <div className="text-md flex items-center justify-between font-bold">
         <span
-          className="text-orange-500"
+          className="text-green-500"
           data-tooltip-id="performance-tooltip"
           data-tooltip-content={firstTooltipContent}
         >
@@ -52,7 +52,7 @@ const Progress: React.FC<ProgressBarProps> = ({
         className={`flex ${className} w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700`}
       >
         <div
-          className="h-full bg-red-600"
+          className="h-full bg-green-600"
           style={{ width: `${firstProgress}%` }}
           data-tooltip-id="performance-tooltip"
           data-tooltip-content={firstTooltipContent}
