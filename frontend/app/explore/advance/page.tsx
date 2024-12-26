@@ -81,7 +81,9 @@ const CampaignsPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4">
-      <h3 className="font-bold leading-tight mb-6 text-green-500 transition-all duration-300">
+      <h3 className="font-bold leading-tight mb-6 text-green-500 transition-all duration-300"
+      style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.1)' }}
+      >
         We’ve made it easy to find and support the causes that matter most to
         you.
       </h3>
