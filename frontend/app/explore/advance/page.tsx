@@ -81,10 +81,13 @@ const CampaignsPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4">
-      <h2 className="font-bold leading-tight mb-6 text-green-500 transition-all duration-300 shadow-text">
+      <h3
+        className="font-bold leading-tight mb-6 text-green-500 transition-all duration-300 shadow-text"
+        style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.1)' }}
+      >
         We’ve made it easy to find and support the causes that matter most to
         you.
-      </h2>
+      </h3>
       <div className="flex flex-col md:flex-row gap-4 md:p-1 bg-gray-50">
         {/* Filters Section */}
         <aside className="w-full md:w-1/4 p-4 border border-gray-50 rounded bg-white">
