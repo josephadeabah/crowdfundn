@@ -81,7 +81,7 @@ const CampaignsPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4">
-      <h1 className="text-4xl font-extrabold text-gray-900 leading-tight mb-6 hover:text-green-500 transition-all duration-300">
+      <h1 className="font-bold leading-tight mb-6 text-green-500 transition-all duration-300">
         We’ve made it easy to find and support the causes that matter most to
         you.
       </h1>
