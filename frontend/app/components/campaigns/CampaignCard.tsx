@@ -112,7 +112,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       <div className="w-full text-xs text-orange-500 truncate">
                         {deslugify(campaign?.category)}
                       </div>
-                      <div className="flex justify-between items-center w-full text-xs font-semibold text-gray-400">
+                      <div className="flex justify-between items-center w-full text-xs font-semibold text-gray-500">
                         <div className="truncate">
                           {campaign.total_donors || 0} Backers
                         </div>
