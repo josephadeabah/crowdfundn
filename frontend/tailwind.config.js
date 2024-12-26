@@ -8,6 +8,9 @@ export default {
         roboto: 'var(--font-roboto)',
         ubuntu: 'var(--font-ubuntu)',
       },
+      boxShadow: {
+        'text': '2px 2px 4px rgba(0, 0, 0, 0.1)', // Custom text shadow
+      }
     },
   },
   plugins: [],
