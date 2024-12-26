@@ -131,7 +131,7 @@ const CampaignsPage = () => {
           initial="hidden"
           animate={controls}
           transition={{ duration: 0.5 }}
-          className="text-4xl font-bold text-center text-gray-800 py-2"
+          className="text-4xl font-bold text-center text-gray-800 py-4"
         >
           Find and support the causes that matter most to
           you.
