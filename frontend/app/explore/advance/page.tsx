@@ -308,14 +308,6 @@ const CampaignsPage = () => {
                   terms.
                 </p>
               )}
-
-              {/* Show error message if an error occurred */}
-              {error && (
-                <p className="text-center text-red-500">
-                  An error occurred while fetching campaigns. Please try again
-                  later.
-                </p>
-              )}
             </>
           )}
         </div>
