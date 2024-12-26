@@ -23,6 +23,7 @@ module Api
           # Filters
           if params[:dateRange] && params[:dateRange] != 'all_time'
             case params[:dateRange]
+            when 'today'
             when 'last_7_days'
               start_date = 7.days.ago
             when 'last_30_days'
