@@ -19,7 +19,7 @@ module Api
 
           # Initialize campaigns collection
           @campaigns = Campaign.active
-        
+
           # Filters
           if params[:dateRange] && params[:dateRange] != 'all_time'
             case params[:dateRange]
@@ -28,29 +28,32 @@ module Api
             when 'last_30_days'
               start_date = 30.days.ago
             end
-            @campaigns = Campaign.where('created_at >= ?', start_date)
+            @campaigns = @campaigns.where('created_at >= ?', start_date)
           end
         
           if params[:goalRange] && params[:goalRange] != 'all'
             min_goal, max_goal = params[:goalRange].split('-').map(&:to_i)
-            @campaigns = Campaign.where(goal_amount: min_goal..max_goal)
+            @campaigns = @campaigns.where(goal_amount: min_goal..max_goal)
           end
         
           if params[:location] && params[:location] != 'all'
-            @campaigns = Campaign.where(location: params[:location])
+            @campaigns = @campaigns.where(location: params[:location])
           end
-
+        
           if params[:title].present?
-            @campaigns = Campaign.where('lower(title) LIKE ?', "%#{params[:title].downcase}%")
+            @campaigns = @campaigns.where('lower(title) LIKE ?', "%#{params[:title].downcase}%")
           end
         
-          @campaigns = Campaign.order(sort_by => sort_order).page(page).per(page_size)
-        
+          # Sorting and pagination
+          @campaigns = @campaigns.order(sort_by => sort_order).page(page).per(page_size)
+          
+          # Prepare campaigns data
           campaigns_data = @campaigns.map do |campaign|
             campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
                    .merge(media: campaign.media_url, total_donors: campaign.total_donors)
           end
         
+          # Render response
           render json: {
             campaigns: campaigns_data,
             current_page: @campaigns.current_page,
