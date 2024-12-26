@@ -81,8 +81,8 @@ const CampaignsPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">
-        We’ve made it easy to find the causes that matter most to you.
+      <h1 className="text-3xl font-bold mb-4">
+        We’ve made it easy to find and support the causes that matter most to you.
       </h1>
 
       <section className="flex flex-col md:flex-row gap-4 px-2 py-2">
