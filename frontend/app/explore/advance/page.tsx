@@ -97,7 +97,7 @@ const CampaignsPage = () => {
               id="sortBy"
               value={sortBy}
               onChange={handleSortChange}
-              className="p-2 border border-gray-50 rounded w-full"
+              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
             >
               <option value="created_at">Date Created</option>
               <option value="goal_amount">Goal Amount</option>
@@ -116,7 +116,7 @@ const CampaignsPage = () => {
               id="sortOrder"
               value={sortOrder}
               onChange={handleOrderChange}
-              className="p-2 border border-gray-50 rounded w-full"
+              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
             >
               <option value="asc">Ascending</option>
               <option value="desc">Descending</option>
@@ -134,7 +134,7 @@ const CampaignsPage = () => {
               id="dateRange"
               value={dateRange}
               onChange={handleDateRangeChange}
-              className="p-2 border border-gray-50 rounded w-full"
+              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
             >
               <option value="all_time">All Time</option>
               <option value="today">Today</option>
@@ -160,7 +160,7 @@ const CampaignsPage = () => {
               id="goalRange"
               value={goalRange}
               onChange={handleGoalRangeChange}
-              className="p-2 border border-gray-50 rounded w-full"
+              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
             >
               <option value="all">All</option>
               <option value="0-500">
@@ -197,7 +197,7 @@ const CampaignsPage = () => {
               id="location"
               value={location}
               onChange={handleLocationChange}
-              className="p-2 border border-gray-50 rounded w-full"
+              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
             >
               <option value="all">All</option>
               <option value="Nigeria">Nigeria</option>
@@ -217,14 +217,14 @@ const CampaignsPage = () => {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="p-2 border border-gray-50 rounded w-full"
+              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
               placeholder="Search for a campaign"
             />
           </div>
 
           <button
             onClick={handleSearch}
-            className="bg-green-500 text-white px-4 py-2 rounded w-full"
+            className="bg-green-500 text-white px-4 py-2 rounded focus:outline-none w-full"
           >
             Search
           </button>
