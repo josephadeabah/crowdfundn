@@ -7,22 +7,10 @@ import { FaDollarSign, FaUsers, FaHeartbeat } from 'react-icons/fa';
 const GeneralDashboard = () => {
   const { metrics, loading, error, fetchMetrics } = useMetricsContext();
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
-    const fetchData = async () => {
-      await fetchMetrics(currentPage);
-
-      // Assuming total pages are returned from the backend
-      if (metrics?.donations?.donations_over_time.total_pages) {
-        setTotalPages(
-          Number(metrics?.donations.donations_over_time.total_pages),
-        );
-      }
-    };
-
-    fetchData();
-  }, [fetchMetrics, currentPage]);
+    fetchMetrics(currentPage);
+  }, [currentPage, fetchMetrics]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -50,6 +38,9 @@ const GeneralDashboard = () => {
       icon: <FaDollarSign className="text-sm text-blue-500" />,
     },
   ];
+
+  const donations = metrics?.donations.donations_over_time.data || {};
+  const pagination = metrics?.donations.donations_over_time.pagination;
 
   if (loading) {
     return <div>Loading...</div>;
@@ -103,26 +94,26 @@ const GeneralDashboard = () => {
             Donations Over Time
           </h2>
           <div className="bg-gray-200 p-6 rounded-lg text-left">
-            {metrics?.donations.donations_over_time?.data ? (
-              Object.entries(metrics.donations.donations_over_time.data).map(
-                ([date, amount]) => (
-                  <div key={date} className="mb-2">
-                    <p>
-                      {moment(date).format('MMM DD, YYYY')}: GHS{amount}
-                    </p>
-                  </div>
-                ),
-              )
+            {Object.entries(donations).length > 0 ? (
+              Object.entries(donations).map(([date, amount]) => (
+                <div key={date} className="mb-2">
+                  <p>
+                    {moment(date).format('MMM DD, YYYY')}: GHS{amount}
+                  </p>
+                </div>
+              ))
             ) : (
               <p>No donations recorded for the selected time period.</p>
             )}
           </div>
           {/* Pagination Component */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
+          {pagination && (
+            <Pagination
+              currentPage={pagination.current_page}
+              totalPages={pagination.total_pages}
+              onPageChange={handlePageChange}
+            />
+          )}
         </div>
       </div>
 

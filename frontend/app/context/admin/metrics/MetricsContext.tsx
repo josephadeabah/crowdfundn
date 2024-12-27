@@ -34,11 +34,15 @@ interface Metrics {
   donations: {
     total_amount: string;
     average_donation?: string;
-    donations_over_time: {
-      data: Record<string, string | number>; // The donations data grouped by date
-      total_pages: number; // Total number of pages for pagination
-    };
     repeat_donors: number;
+    donations_over_time: {
+      data: Record<string, string | number>; // Donations grouped by date
+      pagination: {
+        current_page: number;
+        total_pages: number;
+        total_count: number;
+      };
+    };
   };
   roles: Record<string, number>;
   subscriptions: {
