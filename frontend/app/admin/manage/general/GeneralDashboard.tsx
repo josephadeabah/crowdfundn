@@ -1,68 +1,16 @@
+import { useMetricsContext } from '@/app/context/admin/metrics/MetricsContext';
 import React, { useState, useEffect } from 'react';
-import {
-  FaDollarSign,
-  FaHandHoldingHeart,
-  FaExchangeAlt,
-  FaUsers,
-} from 'react-icons/fa';
+import { FaDollarSign, FaUsers, FaHeartbeat } from 'react-icons/fa';
 import { FiSearch } from 'react-icons/fi';
 
 const GeneralDashboard = () => {
+  const { metrics, loading, error, fetchMetrics } = useMetricsContext();
   const [filter, setFilter] = useState('daily');
   const [searchTerm, setSearchTerm] = useState('');
-  const [transfers, setTransfers] = useState<
-    {
-      date: string;
-      amount: number;
-      from: string;
-      to: string;
-    }[]
-  >([]);
 
-  const cardData = [
-    { title: 'Total Donations', value: '$1,234,567', icon: <FaDollarSign /> },
-    { title: 'Fundraising', value: '$987,654', icon: <FaHandHoldingHeart /> },
-    { title: 'Transfers', value: '$456,789', icon: <FaExchangeAlt /> },
-    { title: 'Total Users', value: '10,234', icon: <FaUsers /> },
-  ];
-
-  const barChartData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    datasets: [
-      {
-        label: 'Donations',
-        data: [65, 59, 80, 81, 56, 55],
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-      },
-    ],
-  };
-
-  const pieChartData = {
-    labels: ['Education', 'Healthcare', 'Environment', 'Others'],
-    datasets: [
-      {
-        data: [30, 25, 20, 25],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.6)',
-          'rgba(54, 162, 235, 0.6)',
-          'rgba(255, 206, 86, 0.6)',
-          'rgba(75, 192, 192, 0.6)',
-        ],
-      },
-    ],
-  };
-
-  const lineChartData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    datasets: [
-      {
-        label: 'User Growth',
-        data: [100, 200, 300, 400, 500, 600],
-        borderColor: 'rgba(75, 192, 192, 1)',
-        tension: 0.1,
-      },
-    ],
-  };
+  useEffect(() => {
+    fetchMetrics();
+  }, [fetchMetrics]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFilter(e.target.value);
@@ -72,24 +20,36 @@ const GeneralDashboard = () => {
     setSearchTerm(e.target.value);
   };
 
-  const userFeedback = [
-    {
-      id: 1,
-      name: 'John Doe',
-      comment: 'Great platform for making a difference!',
-    },
-    { id: 2, name: 'Jane Smith', comment: 'Easy to use and transparent.' },
-  ];
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  useEffect(() => {
-    // Static transfer data
-    const staticTransfers = [
-      { date: '2023-06-01', amount: 5000, from: 'User 1', to: 'Charity 1' },
-      { date: '2023-06-02', amount: 7000, from: 'User 2', to: 'Charity 2' },
-      { date: '2023-06-03', amount: 3000, from: 'User 3', to: 'Charity 3' },
-    ];
-    setTransfers(staticTransfers);
-  }, []);
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  const cardData = [
+    {
+      title: 'Total Donations',
+      value: `$${metrics?.donations.total_amount}`,
+      icon: <FaDollarSign />,
+    },
+    {
+      title: 'Total Users',
+      value: `${metrics?.users.total}`,
+      icon: <FaUsers />,
+    },
+    {
+      title: 'Active Campaigns',
+      value: `${metrics?.campaigns.active}`,
+      icon: <FaHeartbeat />,
+    },
+    {
+      title: 'Average Donation',
+      value: `$${metrics?.donations.average_donation}`,
+      icon: <FaDollarSign />,
+    },
+  ];
 
   return (
     <div className="mx-auto px-4 py-8">
@@ -144,71 +104,99 @@ const GeneralDashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Donations Overview</h2>
-          {/* Placeholder for bar chart */}
+          <h2 className="text-xl font-semibold mb-4">Campaign Performance</h2>
           <div className="bg-gray-200 p-6 rounded-lg text-center">
-            Bar Chart Placeholder
+            {/* Placeholder for bar chart */}
+            {/* Ideally, you would use a chart library to visualize the campaign data */}
+            <div className="text-lg font-bold">Top Performing Campaigns</div>
+            {metrics?.campaigns.top_performing.map((campaign) => (
+              <div key={campaign.id} className="mb-2">
+                <p className="font-semibold">{campaign.name}</p>
+                <p>
+                  Goal: ${campaign.goal_amount} | Amount Raised: $
+                  {campaign.transferred_amount}
+                </p>
+                <p>Performance: {campaign.performance_percentage}%</p>
+              </div>
+            ))}
           </div>
         </div>
+
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Fundraising Categories</h2>
-          {/* Placeholder for pie chart */}
+          <h2 className="text-xl font-semibold mb-4">Donations Over Time</h2>
           <div className="bg-gray-200 p-6 rounded-lg text-center">
-            Pie Chart Placeholder
+            {/* Placeholder for line chart */}
+            <div className="text-lg font-bold">Donations Over Time</div>
+            {/* Ideally, you would use a chart library to visualize the donations data */}
+            <div>
+              {Object.entries(metrics?.donations.donations_over_time || {}).map(
+                ([date, amount]) => (
+                  <div key={date} className="mb-2">
+                    <p>
+                      {date}: ${amount}
+                    </p>
+                  </div>
+                ),
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h2 className="text-xl font-semibold mb-4">User Growth</h2>
-        {/* Placeholder for line chart */}
+        <h2 className="text-xl font-semibold mb-4">User Engagement</h2>
         <div className="bg-gray-200 p-6 rounded-lg text-center">
-          Line Chart Placeholder
+          <div className="font-semibold">
+            Active Users: {metrics?.users.active}
+          </div>
+          <div className="font-semibold">
+            Email Confirmation Rate: {metrics?.users.email_confirmation_rate}%
+          </div>
         </div>
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Recent Transfers</h2>
-        <table className="w-full">
-          <thead>
-            <tr>
-              <th className="text-left p-2">Date</th>
-              <th className="text-left p-2">Amount</th>
-              <th className="text-left p-2">From</th>
-              <th className="text-left p-2">To</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transfers.map((transfer, index) => (
-              <tr key={index} className="hover:bg-gray-100">
-                <td className="p-2">{transfer.date}</td>
-                <td className="p-2">${transfer.amount}</td>
-                <td className="p-2">{transfer.from}</td>
-                <td className="p-2">{transfer.to}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <h2 className="text-xl font-semibold mb-4">Geography</h2>
+        <div className="bg-gray-200 p-6 rounded-lg text-center">
+          <div className="text-lg font-bold">Users by Country</div>
+          <ul>
+            {Object.entries(metrics?.geography.users_by_country || {}).map(
+              ([country, count]) => (
+                <li key={country}>
+                  {country}: {count}
+                </li>
+              ),
+            )}
+          </ul>
+          <div className="text-lg font-bold mt-4">
+            Top Countries by Donations
+          </div>
+          <ul>
+            {metrics?.geography.top_countries_by_donations.map(
+              ([country, donation]) => (
+                <li key={country}>
+                  {country}: ${donation}
+                </li>
+              ),
+            )}
+          </ul>
+        </div>
       </div>
 
-      {/* User Engagement */}
-      <section aria-label="User Engagement">
-        <h2 className="text-2xl font-semibold mb-4">User Engagement</h2>
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold mb-2">User Feedback</h3>
-          <div className="space-y-4">
-            {userFeedback.map((feedback) => (
-              <div
-                key={feedback.id}
-                className="border-l-4 border-blue-500 pl-4"
-              >
-                <p className="italic">"{feedback.comment}"</p>
-                <p className="text-gray-600 mt-1">- {feedback.name}</p>
-              </div>
-            ))}
+      <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 className="text-xl font-semibold mb-4">Subscription Info</h2>
+        <div className="bg-gray-200 p-6 rounded-lg text-center">
+          <div className="font-semibold">
+            Active Subscriptions: {metrics?.subscriptions.active}
+          </div>
+          <div className="font-semibold">
+            MRR: ${metrics?.subscriptions.mrr}
+          </div>
+          <div className="font-semibold">
+            Churn Rate: {metrics?.subscriptions.churn_rate}%
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };
