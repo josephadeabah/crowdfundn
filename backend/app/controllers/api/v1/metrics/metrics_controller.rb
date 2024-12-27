@@ -38,7 +38,7 @@ module Api
               donations: {
                 total_amount: Donation.sum(:gross_amount),
                 average_donation: Donation.average(:gross_amount),
-                donations_over_time: Donation.group_by_day(:created_at).page(params[:page]).per(15).sum(:gross_amount),
+                donations_over_time: Donation.group_by_day(:created_at).order("created_at DESC").limit(15).sum(:gross_amount),
                 repeat_donors: Donation.select(:user_id).group(:user_id).having("count(*) > 1").count.keys.size
               },
               roles: Role.joins(:users).group(:name).count,
