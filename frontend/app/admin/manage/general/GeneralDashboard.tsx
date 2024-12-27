@@ -97,22 +97,25 @@ const GeneralDashboard = () => {
             ))}
           </div>
         </div>
-
         {/* Donations Over Time Section */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-4 text-left">
             Donations Over Time
           </h2>
           <div className="bg-gray-200 p-6 rounded-lg text-left">
-            {Object.entries(
-              metrics?.donations.donations_over_time.data || {},
-            ).map(([date, amount]) => (
-              <div key={date} className="mb-2">
-                <p>
-                  {moment(date).format('MMM DD, YYYY')}: GHS{amount}
-                </p>
-              </div>
-            ))}
+            {metrics?.donations.donations_over_time?.data ? (
+              Object.entries(metrics.donations.donations_over_time.data).map(
+                ([date, amount]) => (
+                  <div key={date} className="mb-2">
+                    <p>
+                      {moment(date).format('MMM DD, YYYY')}: GHS{amount}
+                    </p>
+                  </div>
+                ),
+              )
+            ) : (
+              <p>No donations recorded for the selected time period.</p>
+            )}
           </div>
           {/* Pagination Component */}
           <Pagination
