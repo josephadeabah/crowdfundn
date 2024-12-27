@@ -90,7 +90,7 @@ const GeneralDashboard = () => {
                 ([date, amount]) => (
                   <div key={date} className="mb-2">
                     <p>
-                      {moment(date).format('MMM DD, YYYY, hh:mm:ss A')}: $
+                      {moment(date).format('MMM DD, YYYY')}: $
                       {amount}
                     </p>
                   </div>
