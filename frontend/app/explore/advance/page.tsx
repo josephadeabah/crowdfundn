@@ -133,8 +133,7 @@ const CampaignsPage = () => {
           transition={{ duration: 0.5 }}
           className="text-4xl font-bold text-center text-gray-800 py-6"
         >
-          Find and support the causes that matter most to
-          you.
+          Find and support the causes that matter most to you.
         </motion.h4>
       </div>
       <div className="flex flex-col md:flex-row gap-1">
