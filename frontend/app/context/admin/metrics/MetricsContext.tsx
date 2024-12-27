@@ -33,7 +33,7 @@ interface Metrics {
   };
   donations: {
     total_amount: string;
-    average_donation: string;
+    average_donation?: string;
     donations_over_time: Record<string, string | number>;
     repeat_donors: number;
   };

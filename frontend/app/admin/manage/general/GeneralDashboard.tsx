@@ -46,7 +46,7 @@ const GeneralDashboard = () => {
     },
     {
       title: 'Average Donation',
-      value: `$${metrics?.donations.average_donation}`,
+      value: `$${metrics?.donations.average_donation ? parseFloat(metrics.donations.average_donation).toFixed(2) : '0.00'}`,
       icon: <FaDollarSign />,
     },
   ];
