@@ -15,6 +15,7 @@ const CampaignsPage = () => {
   const [ref, inView] = useInView();
   const [scrollY, setScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [countries, setCountries] = useState<any[]>([]);
 
   const [sortBy, setSortBy] = useState<string>('created_at');
   const [sortOrder, setSortOrder] = useState<string>('desc');
@@ -24,6 +25,21 @@ const CampaignsPage = () => {
   const [dateRange, setDateRange] = useState<string>('all_time');
   const [goalRange, setGoalRange] = useState<string>('all');
   const [location, setLocation] = useState<string>('all');
+
+    // Fetch all countries from the REST Countries API
+    useEffect(() => {
+      const fetchCountries = async () => {
+        try {
+          const response = await fetch('https://restcountries.com/v3.1/all');
+          const data = await response.json();
+          setCountries(data);
+        } catch (error) {
+          console.error('Error fetching countries:', error);
+        }
+      };
+  
+      fetchCountries();
+    }, []);
 
   useEffect(() => {
     fetchAllCampaigns(
@@ -250,18 +266,18 @@ const CampaignsPage = () => {
               Location
             </label>
             <select
-              id="location"
-              value={location}
-              onChange={handleLocationChange}
-              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
-            >
-              <option value="all">All</option>
-              <option value="Nigeria">Nigeria</option>
-              <option value="Kenya">Kenya</option>
-              <option value="Ghana">Ghana</option>
-              <option value="South Africa">South Africa</option>
-              <option value="Eswatini">Eswatini</option>
-            </select>
+            id="location"
+            value={location}
+            onChange={handleLocationChange}
+            className="p-2 border border-gray-50 rounded focus:outline-none w-full"
+          >
+            <option value="all">All</option>
+            {countries?.map((country) => (
+              <option key={country?.cca3} value={country?.name.common}>
+                {country?.name.common}
+              </option>
+            ))}
+          </select>
           </div>
 
           <div className="mb-4">
