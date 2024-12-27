@@ -85,7 +85,6 @@ const GeneralDashboard = () => {
             Donations Over Time
           </h2>
           <div className="bg-gray-200 p-6 rounded-lg text-left">
-            <div className="text-lg font-bold">Donations Over Time</div>
             <div>
               {Object.entries(metrics?.donations.donations_over_time || {}).map(
                 ([date, amount]) => (
