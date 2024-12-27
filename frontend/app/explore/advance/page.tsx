@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import CampaignCard from '@/app/components/campaigns/CampaignCard';
@@ -13,7 +15,6 @@ const CampaignsPage = () => {
   const [ref, inView] = useInView();
   const [scrollY, setScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
-  const [countries, setCountries] = useState<any[]>([]);
 
   const [sortBy, setSortBy] = useState<string>('created_at');
   const [sortOrder, setSortOrder] = useState<string>('desc');
@@ -23,21 +24,6 @@ const CampaignsPage = () => {
   const [dateRange, setDateRange] = useState<string>('all_time');
   const [goalRange, setGoalRange] = useState<string>('all');
   const [location, setLocation] = useState<string>('all');
-
-  // Fetch all countries from the new API (https://countriesnow.space/api/v0.1/countries)
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await fetch('https://countriesnow.space/api/v0.1/countries');
-        const data = await response.json();
-        setCountries(data.data);  // Update the country data
-      } catch (error) {
-        console.error('Error fetching countries:', error);
-      }
-    };
-
-    fetchCountries();
-  }, []);
 
   useEffect(() => {
     fetchAllCampaigns(
@@ -230,22 +216,28 @@ const CampaignsPage = () => {
             >
               <option value="all">All</option>
               <option value="0-500">
-                {userProfile?.currency.toUpperCase() || 'GHS'}0 -{' '}{userProfile?.currency.toUpperCase() || 'GHS'}500
+                {userProfile?.currency.toUpperCase() || 'GHS'}0 -{' '}
+                {userProfile?.currency.toUpperCase() || 'GHS'}500
               </option>
               <option value="500-1000">
-                {userProfile?.currency.toUpperCase() || 'GHS'}500 -{' '}{userProfile?.currency.toUpperCase() || 'GHS'}1,000
+                {userProfile?.currency.toUpperCase() || 'GHS'}500 -{' '}
+                {userProfile?.currency.toUpperCase() || 'GHS'}1,000
               </option>
               <option value="1000-5000">
-                {userProfile?.currency.toUpperCase() || 'GHS'}1,000 -{' '}{userProfile?.currency.toUpperCase() || 'GHS'}5,000
+                {userProfile?.currency.toUpperCase() || 'GHS'}1,000 -{' '}
+                {userProfile?.currency.toUpperCase() || 'GHS'}5,000
               </option>
               <option value="5000-10000">
-                {userProfile?.currency.toUpperCase() || 'GHS'}5,000 -{' '}{userProfile?.currency.toUpperCase() || 'GHS'}10,000
+                {userProfile?.currency.toUpperCase() || 'GHS'}5,000 -{' '}
+                {userProfile?.currency.toUpperCase() || 'GHS'}10,000
               </option>
               <option value="10000-50000">
-                {userProfile?.currency.toUpperCase() || 'GHS'}10,000 -{' '}{userProfile?.currency.toUpperCase() || 'GHS'}50,000
+                {userProfile?.currency.toUpperCase() || 'GHS'}10,000 -{' '}
+                {userProfile?.currency.toUpperCase() || 'GHS'}50,000
               </option>
               <option value="50000-100000">
-                {userProfile?.currency.toUpperCase() || 'GHS'}50,000 -{' '}{userProfile?.currency.toUpperCase() || 'GHS'}100,000
+                {userProfile?.currency.toUpperCase() || 'GHS'}50,000 -{' '}
+                {userProfile?.currency.toUpperCase() || 'GHS'}10,0000
               </option>
             </select>
           </div>
@@ -258,18 +250,18 @@ const CampaignsPage = () => {
               Location
             </label>
             <select
-            id="location"
-            value={location}
-            onChange={handleLocationChange}
-            className="p-2 border border-gray-50 rounded focus:outline-none w-full"
-          >
-            <option value="all">All</option>
-            {countries?.map((country) => (
-              <option key={country?.iso3} value={country?.country}>
-                {country?.country}
-              </option>
-            ))}
-          </select>
+              id="location"
+              value={location}
+              onChange={handleLocationChange}
+              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
+            >
+              <option value="all">All</option>
+              <option value="Nigeria">Nigeria</option>
+              <option value="Kenya">Kenya</option>
+              <option value="Ghana">Ghana</option>
+              <option value="South Africa">South Africa</option>
+              <option value="Eswatini">Eswatini</option>
+            </select>
           </div>
 
           <div className="mb-4">
