@@ -107,10 +107,10 @@ const GeneralDashboard = () => {
             )}
           </div>
           {/* Pagination Component */}
-          {pagination && (
+          {(pagination?.total_pages ?? 0) > 0 && (
             <Pagination
-              currentPage={pagination.current_page}
-              totalPages={pagination.total_pages}
+              currentPage={pagination?.current_page ?? 1}
+              totalPages={pagination?.total_pages ?? 0}
               onPageChange={handlePageChange}
             />
           )}
