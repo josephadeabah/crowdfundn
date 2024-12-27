@@ -25,10 +25,8 @@ module Api
                     performance_percentage: c.performance_percentage
                   }
                 end,
-                donors_per_campaign: Campaign.left_joins(:donations)
-                                             .group(:id)
-                                             .average("COUNT(donations.id)")
-                                             .transform_values(&:to_i)
+                donors_per_campaign: donors_per_campaign.transform_values(&:to_i),
+                average_donors_per_campaign: average_donors_per_campaign.round(2)
               },
               donations: {
                 total_amount: Donation.sum(:gross_amount),
