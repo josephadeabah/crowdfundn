@@ -21,6 +21,8 @@ gem 'rest-client'
 
 gem 'clockwork'
 
+gem 'groupdate'
+
 # Use dotenv for environment variables
 gem 'dotenv-rails', groups: %i[development test production]
 
