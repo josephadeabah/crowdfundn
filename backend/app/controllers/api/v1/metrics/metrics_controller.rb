@@ -3,6 +3,13 @@ module Api
       module Metrics
         class MetricsController < ApplicationController
           def dashboard
+            donors_per_campaign = Campaign.left_joins(:donations)
+                                           .group(:id)
+                                           .count("donations.id")
+  
+            average_donors_per_campaign = donors_per_campaign.values.sum.to_f / donors_per_campaign.size if donors_per_campaign.any?
+            average_donors_per_campaign ||= 0
+  
             metrics = {
               users: {
                 total: User.count,
