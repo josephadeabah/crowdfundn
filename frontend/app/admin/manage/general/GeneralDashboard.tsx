@@ -21,22 +21,22 @@ const GeneralDashboard = () => {
     {
       title: 'Total Donations',
       value: `$${metrics?.donations.total_amount}`,
-      icon: <FaDollarSign className="text-xl text-blue-500" />,
+      icon: <FaDollarSign className="text-lg text-blue-500" />,
     },
     {
       title: 'Total Users',
       value: `${metrics?.users.total}`,
-      icon: <FaUsers className="text-xl text-blue-500" />,
+      icon: <FaUsers className="text-lg text-blue-500" />,
     },
     {
       title: 'Active Campaigns',
       value: `${metrics?.campaigns.active}`,
-      icon: <FaHeartbeat className="text-xl text-blue-500" />,
+      icon: <FaHeartbeat className="text-lg text-blue-500" />,
     },
     {
       title: 'Average Donation',
       value: `$${metrics?.donations.average_donation ? parseFloat(metrics.donations.average_donation).toFixed(2) : '0.00'}`,
-      icon: <FaDollarSign className="text-xl text-blue-500" />,
+      icon: <FaDollarSign className="text-lg text-blue-500" />,
     },
   ];
 
