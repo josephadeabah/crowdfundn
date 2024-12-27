@@ -1,44 +1,23 @@
-import Pagination from '@/app/components/pagination/Pagination';
 import { useMetricsContext } from '@/app/context/admin/metrics/MetricsContext';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { FaDollarSign, FaUsers, FaHeartbeat } from 'react-icons/fa';
 
 const GeneralDashboard = () => {
   const { metrics, loading, error, fetchMetrics } = useMetricsContext();
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [donationsData, setDonationsData] = useState<
-    Record<string, string | number>
-  >({});
-  const [pagination, setPagination] = useState<{
-    current_page: number;
-    total_pages: number;
-  }>({
-    current_page: 1,
-    total_pages: 0,
-  });
 
   useEffect(() => {
-    // Fetching data when the page changes
-    const fetchDonations = async (page: number) => {
-      await fetchMetrics(page);
-    };
+    fetchMetrics();
+  }, [fetchMetrics]);
 
-    fetchDonations(currentPage);
-  }, [currentPage, fetchMetrics]);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  useEffect(() => {
-    if (metrics) {
-      setDonationsData(metrics.donations.donations_over_time.data || {});
-      setPagination(metrics.donations.donations_over_time.pagination);
-    }
-  }, [metrics]);
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
-  const handlePageChange = (page: number) => {
-    if (page <= pagination.total_pages && page > 0) {
-      setCurrentPage(page); // Update page number
-    }
-  };
   const cardData = [
     {
       title: 'Total Donations',
@@ -61,14 +40,6 @@ const GeneralDashboard = () => {
       icon: <FaDollarSign className="text-sm text-blue-500" />,
     },
   ];
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
 
   return (
     <div className="mx-auto px-4 py-8">
@@ -108,32 +79,25 @@ const GeneralDashboard = () => {
             ))}
           </div>
         </div>
-        {/* Donations Over Time Section */}
+
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-4 text-left">
             Donations Over Time
           </h2>
           <div className="bg-gray-200 p-6 rounded-lg text-left">
-            {Object.entries(donationsData).length > 0 ? (
-              Object.entries(donationsData).map(([date, amount]) => (
-                <div key={date} className="mb-2">
-                  <p>
-                    {moment(date).format('MMM DD, YYYY')}: GHS{amount}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p>No donations recorded for the selected time period.</p>
-            )}
+            <div>
+              {Object.entries(metrics?.donations.donations_over_time || {}).map(
+                ([date, amount]) => (
+                  <div key={date} className="mb-2">
+                    <p>
+                      {moment(date).format('MMM DD, YYYY')}: GHS
+                      {amount}
+                    </p>
+                  </div>
+                ),
+              )}
+            </div>
           </div>
-          {/* Pagination Component */}
-          {(pagination?.total_pages ?? 0) > 0 && (
-            <Pagination
-              currentPage={pagination?.current_page ?? 1}
-              totalPages={pagination?.total_pages ?? 0}
-              onPageChange={handlePageChange}
-            />
-          )}
         </div>
       </div>
 

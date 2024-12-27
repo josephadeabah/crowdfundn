@@ -11,7 +11,7 @@ interface MetricsState {
   metrics: Metrics | null;
   loading: boolean;
   error: string | null;
-  fetchMetrics: (currentPage: number) => Promise<void>;
+  fetchMetrics: () => Promise<void>;
 }
 
 interface Metrics {
@@ -34,15 +34,8 @@ interface Metrics {
   donations: {
     total_amount: string;
     average_donation?: string;
+    donations_over_time: Record<string, string | number>;
     repeat_donors: number;
-    donations_over_time: {
-      data: Record<string, string | number>; // Donations grouped by date
-      pagination: {
-        current_page: number;
-        total_pages: number;
-        total_count: number;
-      };
-    };
   };
   roles: Record<string, number>;
   subscriptions: {
@@ -79,13 +72,13 @@ export const MetricsProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchMetrics = useCallback(async (page: number = 1) => {
+  const fetchMetrics = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/metrics/dashboard?page=${page}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/metrics/dashboard`,
         {
           method: 'GET',
           headers: {
