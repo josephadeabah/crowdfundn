@@ -21,7 +21,7 @@ const GeneralDashboard = () => {
   const cardData = [
     {
       title: 'Total Donations',
-      value: `GHS${metrics?.donations.total_amount}`,
+      value: `GHS${metrics?.donations.total_amount ? parseFloat(metrics.donations.total_amount).toFixed(2) : '0.00'}`,
       icon: <FaDollarSign className="text-lg text-blue-500" />,
     },
     {
