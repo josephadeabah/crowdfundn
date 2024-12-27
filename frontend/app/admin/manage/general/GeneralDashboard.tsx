@@ -7,15 +7,38 @@ import { FaDollarSign, FaUsers, FaHeartbeat } from 'react-icons/fa';
 const GeneralDashboard = () => {
   const { metrics, loading, error, fetchMetrics } = useMetricsContext();
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [donationsData, setDonationsData] = useState<
+    Record<string, string | number>
+  >({});
+  const [pagination, setPagination] = useState<{
+    current_page: number;
+    total_pages: number;
+  }>({
+    current_page: 1,
+    total_pages: 0,
+  });
 
   useEffect(() => {
-    fetchMetrics(currentPage);
+    // Fetching data when the page changes
+    const fetchDonations = async (page: number) => {
+      await fetchMetrics(page);
+    };
+
+    fetchDonations(currentPage);
   }, [currentPage, fetchMetrics]);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+  useEffect(() => {
+    if (metrics) {
+      setDonationsData(metrics.donations.donations_over_time.data || {});
+      setPagination(metrics.donations.donations_over_time.pagination);
+    }
+  }, [metrics]);
 
+  const handlePageChange = (page: number) => {
+    if (page <= pagination.total_pages && page > 0) {
+      setCurrentPage(page); // Update page number
+    }
+  };
   const cardData = [
     {
       title: 'Total Donations',
@@ -38,9 +61,6 @@ const GeneralDashboard = () => {
       icon: <FaDollarSign className="text-sm text-blue-500" />,
     },
   ];
-
-  const donations = metrics?.donations.donations_over_time.data || {};
-  const pagination = metrics?.donations.donations_over_time.pagination;
 
   if (loading) {
     return <div>Loading...</div>;
@@ -94,8 +114,8 @@ const GeneralDashboard = () => {
             Donations Over Time
           </h2>
           <div className="bg-gray-200 p-6 rounded-lg text-left">
-            {Object.entries(donations).length > 0 ? (
-              Object.entries(donations).map(([date, amount]) => (
+            {Object.entries(donationsData).length > 0 ? (
+              Object.entries(donationsData).map(([date, amount]) => (
                 <div key={date} className="mb-2">
                   <p>
                     {moment(date).format('MMM DD, YYYY')}: GHS{amount}
