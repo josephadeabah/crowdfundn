@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_20_231835) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_27_183344) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -289,6 +289,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_20_231835) do
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.string "subaccount_id"
+    t.integer "sign_in_count", default: 0
+    t.datetime "last_sign_in_at"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["subaccount_id"], name: "index_users_on_subaccount_id"
   end
