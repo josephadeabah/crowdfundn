@@ -10,16 +10,16 @@ module Api
             average_donors_per_campaign = donors_per_campaign.values.sum.to_f / donors_per_campaign.size if donors_per_campaign.any?
             average_donors_per_campaign ||= 0
 
-            donations_data = Donation.group_by_day(:created_at)
-                                   .page(params[:page])
-                                   .per(15)
-                                   .sum(:gross_amount)
+            donations_data = Donation.page(params[:page])
+                           .per(15)
+                           .group_by_day(:created_at)
+                           .sum(:gross_amount)
 
-          pagination_meta = {
-            current_page: donations_data.current_page,
-            total_pages: donations_data.total_pages,
-            total_count: donations_data.total_count
-          }
+            pagination_meta = {
+                current_page: donations_data.current_page,
+                total_pages: donations_data.total_pages,
+                total_count: donations_data.total_count
+            }
   
             metrics = {
               users: {
