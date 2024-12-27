@@ -64,6 +64,10 @@ module Api
           if user&.authenticate(params[:password])
             Rails.logger.debug "User email confirmed: #{user.email_confirmed}" # Debugging line
             if user.email_confirmed
+              user.update(
+                last_sign_in_at: Time.current,
+                sign_in_count: user.sign_in_count + 1
+              )
               render json: { token: encode_token(user.id), user: user.as_json(include: :roles) }, status: :ok
             else
               user.send_confirmation_email

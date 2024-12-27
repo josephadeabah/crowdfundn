@@ -75,6 +75,12 @@ Rails.application.routes.draw do
           resources :donations, only: [:create]
         end
       end
+
+      # Add the metrics routes
+      namespace :metrics do
+        get 'dashboard', to: 'metrics#dashboard'
+      end
+
     end
   end
 
