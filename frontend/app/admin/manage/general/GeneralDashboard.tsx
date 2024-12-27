@@ -1,4 +1,5 @@
 import { useMetricsContext } from '@/app/context/admin/metrics/MetricsContext';
+import moment from 'moment';
 import React, { useEffect } from 'react';
 import { FaDollarSign, FaUsers, FaHeartbeat } from 'react-icons/fa';
 
@@ -90,7 +91,8 @@ const GeneralDashboard = () => {
                 ([date, amount]) => (
                   <div key={date} className="mb-2">
                     <p>
-                      {date}: ${amount}
+                      {moment(date).format('MMM DD, YYYY, hh:mm:ss A')}: $
+                      {amount}
                     </p>
                   </div>
                 ),
