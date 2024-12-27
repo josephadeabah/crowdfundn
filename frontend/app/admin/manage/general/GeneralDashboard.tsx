@@ -21,7 +21,7 @@ const GeneralDashboard = () => {
   const cardData = [
     {
       title: 'Total Donations',
-      value: `$${metrics?.donations.total_amount}`,
+      value: `GHS${metrics?.donations.total_amount}`,
       icon: <FaDollarSign className="text-lg text-blue-500" />,
     },
     {
@@ -36,7 +36,7 @@ const GeneralDashboard = () => {
     },
     {
       title: 'Average Donation',
-      value: `$${metrics?.donations.average_donation ? parseFloat(metrics.donations.average_donation).toFixed(2) : '0.00'}`,
+      value: `GHS${metrics?.donations.average_donation ? parseFloat(metrics.donations.average_donation).toFixed(2) : '0.00'}`,
       icon: <FaDollarSign className="text-lg text-blue-500" />,
     },
   ];
@@ -71,7 +71,7 @@ const GeneralDashboard = () => {
               <div key={campaign.id} className="mb-2">
                 <p className="font-semibold">{campaign.name}</p>
                 <p>
-                  Goal: ${campaign.goal_amount} | Amount Raised: $
+                  Goal: GHS{campaign.goal_amount} | Amount Raised: GHS
                   {campaign.transferred_amount}
                 </p>
                 <p>Performance: {campaign.performance_percentage}%</p>
@@ -90,7 +90,7 @@ const GeneralDashboard = () => {
                 ([date, amount]) => (
                   <div key={date} className="mb-2">
                     <p>
-                      {moment(date).format('MMM DD, YYYY')}: $
+                      {moment(date).format('MMM DD, YYYY')}: GHS
                       {amount}
                     </p>
                   </div>
@@ -135,7 +135,7 @@ const GeneralDashboard = () => {
             {metrics?.geography.top_countries_by_donations.map(
               ([country, donation]) => (
                 <li key={country}>
-                  {country}: ${donation}
+                  {country}: GHS{donation}
                 </li>
               ),
             )}
@@ -152,7 +152,7 @@ const GeneralDashboard = () => {
             Active Subscriptions: {metrics?.subscriptions.active}
           </div>
           <div className="font-semibold">
-            MRR: ${metrics?.subscriptions.mrr}
+            MRR: GHS{metrics?.subscriptions.mrr}
           </div>
           <div className="font-semibold">
             Churn Rate: {metrics?.subscriptions.churn_rate}%
