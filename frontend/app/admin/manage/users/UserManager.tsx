@@ -27,15 +27,6 @@ const UserManagement = () => {
   const [metadata, setMetadata] = useState<any>({});
   const [searchTerm, setSearchTerm] = useState('');
   const [sortCriteria, setSortCriteria] = useState('name');
-  const [selectedUser, setSelectedUser] = useState<{
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-  } | null>(null);
-  const [editMode, setEditMode] = useState(false);
-  const [roles, setRoles] = useState(['Admin', 'User', 'Editor']);
-  const [newRole, setNewRole] = useState('');
   const [page, setPage] = useState(1);
   const [perPage] = useState(10); // Pagination items per page
 
@@ -57,27 +48,31 @@ const UserManagement = () => {
     setSortCriteria(criteria);
   };
 
-  const handleEditUser = (user: any) => {
-    setSelectedUser(user);
-    setEditMode(true);
+  const handleRoleChange = async (userId: number, role: string) => {
+    try {
+      await assignRoleToUser(userId, role);
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === userId ? { ...user, role } : user,
+        ),
+      );
+      toast.success('Role updated successfully!');
+    } catch (err) {
+      toast.error('Failed to update role');
+    }
   };
 
-  const handleUpdateUser = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (selectedUser) {
-      try {
-        await assignRoleToUser(selectedUser.id, selectedUser.role);
-        setUsers((prevUsers) =>
-          prevUsers.map((user) =>
-            user.id === selectedUser.id ? selectedUser : user,
-          ),
-        );
-        setEditMode(false);
-        setSelectedUser(null);
-        toast.success('User updated successfully!');
-      } catch (err) {
-        toast.error('Failed to update user');
-      }
+  const handleToggleAdmin = async (userId: number, isAdmin: boolean) => {
+    try {
+      await makeUserAdmin(userId, isAdmin);
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === userId ? { ...user, isAdmin } : user,
+        ),
+      );
+      toast.success(`User ${isAdmin ? 'made' : 'removed'} admin!`);
+    } catch (err) {
+      toast.error('Failed to update admin status');
     }
   };
 
@@ -121,14 +116,6 @@ const UserManagement = () => {
     }
   };
 
-  const handleAddRole = () => {
-    if (newRole && !roles.includes(newRole)) {
-      setRoles([...roles, newRole]);
-      setNewRole('');
-      toast.success('New role added!');
-    }
-  };
-
   const filteredUsers = users.filter((user) => {
     const userName = user.full_name?.toLowerCase() || ''; // Safeguard for undefined
     const userEmail = user.email?.toLowerCase() || ''; // Safeguard for undefined
@@ -136,7 +123,7 @@ const UserManagement = () => {
       userName.includes(searchTerm.toLowerCase()) ||
       userEmail.includes(searchTerm.toLowerCase())
     );
-  });  
+  });
 
   const sortedUsers = filteredUsers.sort((a, b) => {
     if (a[sortCriteria] < b[sortCriteria]) return -1;
@@ -184,21 +171,34 @@ const UserManagement = () => {
               <tr key={user.id} className="border-b hover:bg-gray-100">
                 <td className="p-2 truncate">{user.name}</td>
                 <td className="p-2 truncate">{user.email}</td>
-                <td className="p-2 truncate">{user.role}</td>
+                <td className="p-2 truncate">
+                  <select
+                    value={user.role}
+                    onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                    className="border p-1 rounded"
+                  >
+                    <option value="Admin">Admin</option>
+                    <option value="User">User</option>
+                    <option value="Editor">Editor</option>
+                  </select>
+                </td>
                 <td className="p-2">
                   <span
-                    className={`px-2 py-1 rounded ${user.status === 'active' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}
+                    className={`px-2 py-1 rounded ${
+                      user.status === 'active'
+                        ? 'bg-green-200 text-green-800'
+                        : 'bg-red-200 text-red-800'
+                    }`}
                   >
                     {user.status}
                   </span>
                 </td>
                 <td className="p-2 flex items-center gap-4 space-x-2">
                   <button
-                    onClick={() => handleEditUser(user)}
-                    className="text-blue-500 hover:text-blue-700"
-                    aria-label="Edit user"
+                    onClick={() => handleToggleAdmin(user.id, !user.isAdmin)}
+                    className={`text-sm px-3 py-1 rounded ${user.isAdmin ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-black'}`}
                   >
-                    <FaEdit />
+                    {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
                   </button>
                   <button
                     onClick={() =>
@@ -224,92 +224,6 @@ const UserManagement = () => {
           </tbody>
         </table>
       </div>
-
-      {editMode && selectedUser && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <h2 className="text-2xl font-bold mb-4">Edit User</h2>
-            <form onSubmit={handleUpdateUser}>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="name"
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={selectedUser.name}
-                  onChange={(e) =>
-                    setSelectedUser({ ...selectedUser, name: e.target.value })
-                  }
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="email"
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={selectedUser.email}
-                  onChange={(e) =>
-                    setSelectedUser({ ...selectedUser, email: e.target.value })
-                  }
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="role"
-                >
-                  Role
-                </label>
-                <select
-                  id="role"
-                  name="role"
-                  value={selectedUser.role}
-                  onChange={(e) =>
-                    setSelectedUser({ ...selectedUser, role: e.target.value })
-                  }
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                >
-                  {roles.map((role) => (
-                    <option key={role} value={role}>
-                      {role}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex items-center justify-between">
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
-                >
-                  Update User
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setEditMode(false)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       <Pagination
         currentPage={page}
