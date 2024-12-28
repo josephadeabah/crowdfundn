@@ -211,7 +211,7 @@ const UserManagement = () => {
                   {userProfile && userProfile.admin && (
                     <button
                       onClick={() => handleToggleAdmin(user.id, !user.admin)}
-                      className={`text-sm px-3 py-1 rounded w-auto ${user.admin ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-black'}`}
+                      className={`text-sm px-3 py-1 rounded w-24 ${user.admin ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-black'}`}
                     >
                       {user.admin ? 'Remove' : 'Admin'}
                     </button>
@@ -222,14 +222,14 @@ const UserManagement = () => {
                         ? handleBlockUser(user.id)
                         : handleActivateUser(user.id)
                     }
-                    className={`${user.status === 'active' ? 'text-red-500 hover:text-red-700' : 'text-green-500 hover:text-green-700'}`}
+                    className={`w-24 ${user.status === 'active' ? 'text-red-500 hover:text-red-700' : 'text-green-500 hover:text-green-700'}`}
                     aria-label={`${user.status === 'active' ? 'Block' : 'Unblock'} user`}
                   >
                     {user.status === 'active' ? <FaLock /> : <FaUnlock />}
                   </button>
                   <button
                     onClick={() => handleDeleteUser(user.id)}
-                    className="text-red-500 hover:text-red-700"
+                    className="w-24 text-red-500 hover:text-red-700"
                     aria-label="Delete user"
                   >
                     <FaTrash />
