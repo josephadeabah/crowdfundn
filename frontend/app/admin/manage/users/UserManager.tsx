@@ -219,7 +219,7 @@ const UserManagement = () => {
                           : 'bg-gray-200 text-black'
                       }`}
                     >
-                      {user.admin ? 'Assign Admin' : 'Unassign Admin'}
+                      {user.admin ? 'Remove' : 'Admin'}
                     </button>
                   )}
                   <button
