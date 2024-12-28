@@ -177,12 +177,17 @@ module Api
         end   
         
         def block_user
+          if @user.nil?
+            render json: { error: 'User not found' }, status: :not_found
+            return
+          end
+        
           if @user.update(status: 'blocked')
             render json: { message: "User #{@user.id} has been blocked." }, status: :ok
           else
             render json: { error: @user.errors.full_messages }, status: :unprocessable_entity
           end
-        end
+        end        
         
         def activate_user
           if @user.update(status: 'active')
