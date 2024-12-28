@@ -132,51 +132,51 @@ const GeneralDashboard = () => {
           User Engagement
         </h2>
         <div className="bg-gray-200 p-6 rounded-lg text-left">
-          <div className="font-semibold flex items-center">
+          <div className="font-semibold flex items-center justify-start">
             <FaInfoCircle
               data-tooltip-id="tooltip-active-users"
               data-tooltip-content="The number of users who signed in at least once in the past 7 days."
-              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
+              className="text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-active-users"
-              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
+              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded z-10"
             />
             Active Users: {metrics?.users.active}
           </div>
-          <div className="font-semibold flex items-center">
+          <div className="font-semibold flex items-center justify-start">
             <FaInfoCircle
               data-tooltip-id="tooltip-email-confirmation-rate"
               data-tooltip-content="The percentage of users who have confirmed their email addresses."
-              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
+              className="text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-email-confirmation-rate"
-              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
+              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded z-10"
             />
             Email Confirmation Rate: {metrics?.users.email_confirmation_rate}%
           </div>
-          <div className="font-semibold flex items-center">
+          <div className="font-semibold flex items-center justify-start">
             <FaInfoCircle
               data-tooltip-id="tooltip-average-logins"
               data-tooltip-content="The average number of logins per user."
-              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
+              className="text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-average-logins"
-              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
+              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded z-10"
             />
             Average Logins: {metrics?.engagement.average_logins || '0'}
           </div>
-          <div className="font-semibold flex items-center">
+          <div className="font-semibold flex items-center justify-start">
             <FaInfoCircle
               data-tooltip-id="tooltip-time-to-first-action"
               data-tooltip-content="The average time it takes a user to create a campaign after signing up."
-              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
+              className="text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-time-to-first-action"
-              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
+              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded z-10"
             />
             Time to First Action:{' '}
             {metrics?.engagement.time_to_first_action
@@ -221,39 +221,39 @@ const GeneralDashboard = () => {
           Subscription Info
         </h2>
         <div className="bg-gray-200 p-6 rounded-lg text-left">
-          <div className="font-semibold flex items-center">
+          <div className="font-semibold flex items-center justify-start">
             <FaInfoCircle
               data-tooltip-id="tooltip-active-subscriptions"
               data-tooltip-content="The number of currently active subscriptions."
-              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
+              className="text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-active-subscriptions"
-              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
+              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded z-10"
             />
             Active Subscriptions: {metrics?.subscriptions.active}
           </div>
-          <div className="font-semibold flex items-center">
+          <div className="font-semibold flex items-center justify-start">
             <FaInfoCircle
               data-tooltip-id="tooltip-mrr"
               data-tooltip-content="Monthly Recurring Revenue (MRR) from subscriptions in the last month."
-              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
+              className="text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-mrr"
-              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
+              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded z-10"
             />
             MRR: GHS{metrics?.subscriptions.mrr}
           </div>
-          <div className="font-semibold flex items-center">
+          <div className="font-semibold flex items-center justify-start">
             <FaInfoCircle
               data-tooltip-id="tooltip-churn-rate"
               data-tooltip-content="The percentage of canceled subscriptions over the last month."
-              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
+              className="text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-churn-rate"
-              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
+              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded z-10"
             />
             Churn Rate: {metrics?.subscriptions.churn_rate}%
           </div>
@@ -263,27 +263,27 @@ const GeneralDashboard = () => {
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-xl font-semibold mb-4 text-left">Subaccounts</h2>
         <div className="bg-gray-200 p-6 rounded-lg text-left">
-          <div className="font-semibold flex items-center">
+          <div className="font-semibold flex items-center justify-start">
             <FaInfoCircle
               data-tooltip-id="tooltip-total-subaccounts"
               data-tooltip-content="The total number of subaccounts created."
-              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
+              className="text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-total-subaccounts"
-              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
+              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded z-10"
             />
             Total Subaccounts: {metrics?.subaccounts.total}
           </div>
-          <div className="font-semibold flex items-center">
+          <div className="font-semibold flex items-center justify-start">
             <FaInfoCircle
               data-tooltip-id="tooltip-success-rate"
               data-tooltip-content="The percentage of subaccounts successfully verified."
-              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
+              className="text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-success-rate"
-              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
+              className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded z-10"
             />
             Success Rate: {metrics?.subaccounts.success_rate}%
           </div>
