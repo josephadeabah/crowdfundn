@@ -1,9 +1,7 @@
 import { useMetricsContext } from '@/app/context/admin/metrics/MetricsContext';
 import moment from 'moment';
 import React, { useEffect } from 'react';
-import {
-  FaInfoCircle,
-} from 'react-icons/fa';
+import { FaInfoCircle } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 
 const GeneralDashboard = () => {
@@ -73,16 +71,16 @@ const GeneralDashboard = () => {
             className="bg-white p-6 rounded-lg shadow-md transition-transform hover:scale-105"
           >
             <div className="flex items-center justify-start mb-4">
-            <FaInfoCircle
+              <FaInfoCircle
                 data-tooltip-id={card.tooltipId}
                 data-tooltip-content={card.tooltip}
-                className="text-gray-400 text-sm cursor-pointer"
+                className="text-gray-400 text-sm cursor-pointer mr-2"
               />
               <Tooltip
                 id={card.tooltipId}
                 className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
               />
-              <h2 className="text-xl font-semibold ml-1">{card.title}</h2>
+              <h2 className="text-xl font-semibold">{card.title}</h2>
             </div>
             <p className="text-2xl font-bold text-left">{card.value}</p>
           </div>
@@ -92,10 +90,9 @@ const GeneralDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-4 text-left">
-            Campaign Performance
+            Top {metrics?.campaigns.top_performing.length} Performing Campaigns
           </h2>
           <div className="bg-gray-200 p-6 rounded-lg text-left">
-            <div className="text-lg font-bold">Top Performing Campaigns</div>
             {metrics?.campaigns.top_performing.map((campaign) => (
               <div key={campaign.id} className="mb-2">
                 <p className="font-semibold">{campaign.name}</p>
@@ -135,7 +132,7 @@ const GeneralDashboard = () => {
           User Engagement
         </h2>
         <div className="bg-gray-200 p-6 rounded-lg text-left">
-          <div className="font-semibold">
+          <div className="font-semibold flex items-center">
             Active Users: {metrics?.users.active}
             <FaInfoCircle
               data-tooltip-id="tooltip-active-users"
@@ -147,7 +144,7 @@ const GeneralDashboard = () => {
               className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
             />
           </div>
-          <div className="font-semibold">
+          <div className="font-semibold flex items-center">
             Email Confirmation Rate: {metrics?.users.email_confirmation_rate}%
             <FaInfoCircle
               data-tooltip-id="tooltip-email-confirmation-rate"
@@ -159,7 +156,7 @@ const GeneralDashboard = () => {
               className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
             />
           </div>
-          <div className="font-semibold">
+          <div className="font-semibold flex items-center">
             Average Logins: {metrics?.engagement.average_logins || '0'}
             <FaInfoCircle
               data-tooltip-id="tooltip-average-logins"
@@ -171,7 +168,7 @@ const GeneralDashboard = () => {
               className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
             />
           </div>
-          <div className="font-semibold">
+          <div className="font-semibold flex items-center">
             Time to First Action:{' '}
             {metrics?.engagement.time_to_first_action
               ? moment
@@ -224,7 +221,7 @@ const GeneralDashboard = () => {
           Subscription Info
         </h2>
         <div className="bg-gray-200 p-6 rounded-lg text-left">
-          <div className="font-semibold">
+          <div className="font-semibold flex items-center">
             Active Subscriptions: {metrics?.subscriptions.active}
             <FaInfoCircle
               data-tooltip-id="tooltip-active-subscriptions"
@@ -236,7 +233,7 @@ const GeneralDashboard = () => {
               className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
             />
           </div>
-          <div className="font-semibold">
+          <div className="font-semibold flex items-center">
             MRR: GHS{metrics?.subscriptions.mrr}
             <FaInfoCircle
               data-tooltip-id="tooltip-mrr"
@@ -248,7 +245,7 @@ const GeneralDashboard = () => {
               className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
             />
           </div>
-          <div className="font-semibold">
+          <div className="font-semibold flex items-center">
             Churn Rate: {metrics?.subscriptions.churn_rate}%
             <FaInfoCircle
               data-tooltip-id="tooltip-churn-rate"
@@ -266,7 +263,7 @@ const GeneralDashboard = () => {
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-xl font-semibold mb-4 text-left">Subaccounts</h2>
         <div className="bg-gray-200 p-6 rounded-lg text-left">
-          <div className="font-semibold">
+          <div className="font-semibold flex items-center">
             Total Subaccounts: {metrics?.subaccounts.total}
             <FaInfoCircle
               data-tooltip-id="tooltip-total-subaccounts"
@@ -278,7 +275,7 @@ const GeneralDashboard = () => {
               className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
             />
           </div>
-          <div className="font-semibold">
+          <div className="font-semibold flex items-center">
             Success Rate: {metrics?.subaccounts.success_rate}%
             <FaInfoCircle
               data-tooltip-id="tooltip-success-rate"
