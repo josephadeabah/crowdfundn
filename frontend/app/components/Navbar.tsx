@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation';
 import NavbarLoader from '../loaders/NavbarLoader';
 import NotificationBar from './noticebar/NotificationBar';
 import { motion } from 'framer-motion';
+import { useUserContext } from '../context/users/UserContext';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -24,6 +25,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activePopover, setActivePopover] = useState<string | null>(null);
   const { user, token, logout } = useAuth();
+  const { userProfile } = useUserContext();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
@@ -307,6 +309,17 @@ const Navbar = () => {
                           <span className="text-gray-600">{user.email}</span>
                         </div>
                       </div>
+                      {userProfile &&
+                        (userProfile?.admin === true ||
+                          userProfile?.roles.some(
+                            (role) => role.name === 'Admin',
+                          )) && (
+                          <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
+                            <Link href="/admin/manage">
+                              <div>Go to Admin</div>
+                            </Link>
+                          </div>
+                        )}
                       <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
                         <Link href="/account">
                           <div>Go to Account</div>
