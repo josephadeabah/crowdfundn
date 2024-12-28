@@ -9,10 +9,6 @@ module Api
   
             average_donors_per_campaign = donors_per_campaign.values.sum.to_f / donors_per_campaign.size if donors_per_campaign.any?
             average_donors_per_campaign ||= 0
-            donations_data = Donation.group_by_day(:created_at)
-                                    .order(created_at: :desc)  # Ensure the data is ordered by `created_at` descending
-                                    .limit(15)                 # Limit to 15 most recent records
-                                    .sum(:gross_amount)
   
             metrics = {
               users: {
@@ -42,7 +38,7 @@ module Api
               donations: {
                 total_amount: Donation.sum(:gross_amount),
                 average_donation: Donation.average(:gross_amount),
-                donations_over_time: donations_data,
+                donations_over_time: Donation.group_by_month(:created_at).sum(:gross_amount),
                 repeat_donors: Donation.select(:user_id).group(:user_id).having("count(*) > 1").count.keys.size
               },
               roles: Role.joins(:users).group(:name).count,
