@@ -92,8 +92,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     Cookies.remove('user');
     Cookies.remove('token');
     Cookies.remove('roles'); // Ensure all related cookies are cleared
-    // Clear all cookies on logout, including the unknown one
-    Cookies.remove('smcx_459238096_last_shown_as');
 
 
     router.push('/auth/login'); // Redirect to login page
