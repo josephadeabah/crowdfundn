@@ -129,11 +129,14 @@ const UserManagement = () => {
     }
   };
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const filteredUsers = users.filter((user) => {
+    const userName = user.full_name?.toLowerCase() || ''; // Safeguard for undefined
+    const userEmail = user.email?.toLowerCase() || ''; // Safeguard for undefined
+    return (
+      userName.includes(searchTerm.toLowerCase()) ||
+      userEmail.includes(searchTerm.toLowerCase())
+    );
+  });  
 
   const sortedUsers = filteredUsers.sort((a, b) => {
     if (a[sortCriteria] < b[sortCriteria]) return -1;
