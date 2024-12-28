@@ -22,7 +22,7 @@ const GeneralDashboard = () => {
   const cardData = [
     {
       title: 'Total Donations',
-      value: `GHS ${
+      value: `${
         metrics?.donations.total_amount
           ? new Intl.NumberFormat('en-US', {
               style: 'currency',
@@ -47,7 +47,7 @@ const GeneralDashboard = () => {
     },
     {
       title: 'Average Donation',
-      value: `GHS ${
+      value: `${
         metrics?.donations.average_donation
           ? new Intl.NumberFormat('en-US', {
               style: 'currency',
