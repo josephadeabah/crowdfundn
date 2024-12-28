@@ -75,7 +75,7 @@ const AdminDashboard = () => {
       <div
         className={`${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } fixed inset-y-0 left-0 z-30 w-64 sm:w-80 md:w-96 lg:w-56 transition-all duration-300 ease-in-out bg-black text-gray-50 overflow-hidden lg:translate-x-0 lg:static lg:inset-0`}
+        } fixed inset-y-0 left-0 w-64 sm:w-80 md:w-96 lg:w-56 transition-all duration-300 ease-in-out bg-black text-gray-50 overflow-hidden lg:translate-x-0 lg:static lg:inset-0`}
       >
         <div className="flex items-center justify-between px-4 py-4">
           <div className="text-2xl font-semibold">Bantuhive Admin</div>
