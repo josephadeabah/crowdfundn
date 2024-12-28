@@ -8,9 +8,18 @@ module Api
         rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
         def index
-          @users = User.includes(:profile, :roles).all
-          render json: @users.to_json(include: %i[profile roles]), status: :ok
-        end
+          @users = User.includes(:profile, :roles).page(params[:page]).per(params[:per_page] || 10) # Default to 10 per page
+          render json: {
+            users: @users.as_json(include: %i[profile roles]),
+            meta: {
+              current_page: @users.current_page,
+              next_page: @users.next_page,
+              prev_page: @users.prev_page,
+              total_pages: @users.total_pages,
+              total_count: @users.total_count
+            }
+          }, status: :ok
+        end        
 
         def show
           render json: @current_user.as_json(include: %i[profile roles]), status: :ok
