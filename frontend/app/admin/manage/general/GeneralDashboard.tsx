@@ -32,18 +32,21 @@ const GeneralDashboard = () => {
       }`,
       icon: <FaDollarSign className="text-sm text-blue-500" />,
       tooltip: 'The total amount donated across all campaigns.',
+      tooltipId: 'tooltip-total-donations',
     },
     {
       title: 'Total Users',
       value: `${metrics?.users.total}`,
       icon: <FaUsers className="text-sm text-blue-500" />,
       tooltip: 'The total number of users registered on the platform.',
+      tooltipId: 'tooltip-total-users',
     },
     {
       title: 'Active Campaigns',
       value: `${metrics?.campaigns.active}`,
       icon: <FaHeartbeat className="text-sm text-blue-500" />,
       tooltip: 'The number of campaigns currently marked as "active."',
+      tooltipId: 'tooltip-active-campaigns',
     },
     {
       title: 'Average Donation',
@@ -57,6 +60,7 @@ const GeneralDashboard = () => {
       }`,
       icon: <FaDollarSign className="text-sm text-blue-500" />,
       tooltip: 'The average amount of a single donation.',
+      tooltipId: 'tooltip-average-donation',
     },
   ];
 
@@ -73,7 +77,7 @@ const GeneralDashboard = () => {
             <div className="flex items-center justify-start mb-4">
               {card.icon}
               <h2 className="text-xl font-semibold ml-2">{card.title}</h2>
-              <Tooltip content={card.tooltip}>
+              <Tooltip id={card.tooltipId} content={card.tooltip}>
                 <span className="ml-2 text-gray-400 text-sm">?</span>
               </Tooltip>
             </div>
@@ -130,19 +134,28 @@ const GeneralDashboard = () => {
         <div className="bg-gray-200 p-6 rounded-lg text-left">
           <div className="font-semibold">
             Active Users: {metrics?.users.active}
-            <Tooltip content="The number of users who signed in at least once in the past 7 days.">
+            <Tooltip
+              id="tooltip-active-users"
+              content="The number of users who signed in at least once in the past 7 days."
+            >
               <span className="ml-2 text-gray-400 text-sm">?</span>
             </Tooltip>
           </div>
           <div className="font-semibold">
             Email Confirmation Rate: {metrics?.users.email_confirmation_rate}%
-            <Tooltip content="The percentage of users who have confirmed their email addresses.">
+            <Tooltip
+              id="tooltip-email-confirmation-rate"
+              content="The percentage of users who have confirmed their email addresses."
+            >
               <span className="ml-2 text-gray-400 text-sm">?</span>
             </Tooltip>
           </div>
           <div className="font-semibold">
             Average Logins: {metrics?.engagement.average_logins || '0'}
-            <Tooltip content="The average number of logins per user.">
+            <Tooltip
+              id="tooltip-average-logins"
+              content="The average number of logins per user."
+            >
               <span className="ml-2 text-gray-400 text-sm">?</span>
             </Tooltip>
           </div>
@@ -153,7 +166,10 @@ const GeneralDashboard = () => {
                   .duration(metrics.engagement.time_to_first_action, 'seconds')
                   .humanize()
               : 'N/A'}
-            <Tooltip content="The average time it takes a user to create a campaign after signing up.">
+            <Tooltip
+              id="tooltip-time-to-first-action"
+              content="The average time it takes a user to create a campaign after signing up."
+            >
               <span className="ml-2 text-gray-400 text-sm">?</span>
             </Tooltip>
           </div>
@@ -197,19 +213,28 @@ const GeneralDashboard = () => {
         <div className="bg-gray-200 p-6 rounded-lg text-left">
           <div className="font-semibold">
             Active Subscriptions: {metrics?.subscriptions.active}
-            <Tooltip content="The number of currently active subscriptions.">
+            <Tooltip
+              id="tooltip-active-subscriptions"
+              content="The number of currently active subscriptions."
+            >
               <span className="ml-2 text-gray-400 text-sm">?</span>
             </Tooltip>
           </div>
           <div className="font-semibold">
             MRR: GHS{metrics?.subscriptions.mrr}
-            <Tooltip content="Monthly Recurring Revenue (MRR) from subscriptions in the last month.">
+            <Tooltip
+              id="tooltip-mrr"
+              content="Monthly Recurring Revenue (MRR) from subscriptions in the last month."
+            >
               <span className="ml-2 text-gray-400 text-sm">?</span>
             </Tooltip>
           </div>
           <div className="font-semibold">
             Churn Rate: {metrics?.subscriptions.churn_rate}%
-            <Tooltip content="The percentage of canceled subscriptions over the last month.">
+            <Tooltip
+              id="tooltip-churn-rate"
+              content="The percentage of canceled subscriptions over the last month."
+            >
               <span className="ml-2 text-gray-400 text-sm">?</span>
             </Tooltip>
           </div>
@@ -222,13 +247,19 @@ const GeneralDashboard = () => {
         <div className="bg-gray-200 p-6 rounded-lg text-left">
           <div className="font-semibold">
             Total Subaccounts: {metrics?.subaccounts.total}
-            <Tooltip content="The total number of subaccounts created.">
+            <Tooltip
+              id="tooltip-total-subaccounts"
+              content="The total number of subaccounts created."
+            >
               <span className="ml-2 text-gray-400 text-sm">?</span>
             </Tooltip>
           </div>
           <div className="font-semibold">
             Success Rate: {metrics?.subaccounts.success_rate}%
-            <Tooltip content="The percentage of successful subaccount setups.">
+            <Tooltip
+              id="tooltip-success-rate"
+              content="The percentage of successful subaccount setups."
+            >
               <span className="ml-2 text-gray-400 text-sm">?</span>
             </Tooltip>
           </div>
