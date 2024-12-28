@@ -128,6 +128,14 @@ const UserManagement = () => {
     return 0;
   });
 
+  if(loading) {
+    return <div>Loading...</div>;
+  }
+
+  if(error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div className="mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">User Management</h1>
