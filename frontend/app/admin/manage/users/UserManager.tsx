@@ -5,11 +5,9 @@ import { useUserContext } from '@/app/context/users/UserContext';
 import React, { useState, useEffect } from 'react';
 import {
   FaSearch,
-  FaEdit,
   FaTrash,
   FaLock,
   FaUnlock,
-  FaUpload,
 } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -128,11 +126,11 @@ const UserManagement = () => {
     return 0;
   });
 
-  if(loading) {
+  if (loading) {
     return <div>Loading...</div>;
   }
 
-  if(error) {
+  if (error) {
     return <div>Error: {error}</div>;
   }
 
@@ -167,6 +165,7 @@ const UserManagement = () => {
               <th className="p-2 w-1/5 text-left">Name</th>
               <th className="p-2 w-1/5 text-left">Email</th>
               <th className="p-2 w-1/5 text-left">Role</th>
+              <th className="p-2 w-1/5 text-left">Role Names</th>
               <th className="p-2 w-1/5 text-left">Status</th>
               <th className="p-2 w-1/5 text-left">Actions</th>
             </tr>
@@ -186,6 +185,16 @@ const UserManagement = () => {
                     <option value="User">User</option>
                     <option value="Manager">Manager</option>
                   </select>
+                </td>
+                <td className="p-2 truncate">
+                  {user.roles.map((role: any) => (
+                    <span
+                      key={role.id}
+                      className="px-2 py-1 text-sm rounded bg-blue-200 text-orange-600"
+                    >
+                      {role.name}
+                    </span>
+                  ))}
                 </td>
                 <td className="p-2">
                   <span
