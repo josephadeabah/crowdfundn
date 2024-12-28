@@ -165,7 +165,7 @@ const UserManagement = () => {
               <th className="p-2 text-left">Email</th>
               <th className="p-2 text-left">Country</th>
               <th className="p-2 text-left">Role</th>
-              <th className="p-2 text-left">Role Names</th>
+              <th className="p-2 text-left">Access Level</th>
               <th className="p-2 text-left">Status</th>
               <th className="p-2 text-left">Actions</th>
             </tr>
