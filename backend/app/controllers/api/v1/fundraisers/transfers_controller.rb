@@ -214,7 +214,7 @@ module Api
             }, status: :ok
           else
             Rails.logger.error "Transfer failed: #{transfer_response[:message]}"
-            render json: { error: "Sorry, you cannot transfer more than stipulated amount per transfer. See our terms or Contact support." }, status: :unprocessable_entity
+            render json: { error: "Sorry, this is an error from our side. Please Try again later or contact support." }, status: :unprocessable_entity
           end
         rescue StandardError => e
           Rails.logger.error "Error processing transfer: #{e.message}"
