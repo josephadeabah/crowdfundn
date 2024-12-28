@@ -100,7 +100,7 @@ const GeneralDashboard = () => {
           </div>
         </div>
       </div>
-
+      {/* User Engagement */}
       <div className="bg-white p-6 rounded-lg shadow-md mb-8">
         <h2 className="text-xl font-semibold mb-4 text-left">
           User Engagement
@@ -112,9 +112,19 @@ const GeneralDashboard = () => {
           <div className="font-semibold">
             Email Confirmation Rate: {metrics?.users.email_confirmation_rate}%
           </div>
+          <div className="font-semibold">
+            Average Logins: {metrics?.engagement.average_logins || '0'}
+          </div>
+          <div className="font-semibold">
+            Time to First Action:{' '}
+            {metrics?.engagement.time_to_first_action
+              ? moment
+                  .duration(metrics.engagement.time_to_first_action, 'seconds')
+                  .humanize()
+              : 'N/A'}
+          </div>
         </div>
       </div>
-
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-xl font-semibold mb-4 text-left">Geography</h2>
         <div className="bg-gray-200 p-6 rounded-lg text-left">
