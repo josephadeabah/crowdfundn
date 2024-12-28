@@ -176,7 +176,7 @@ const UserManagement = () => {
                   >
                     <option value="Admin">Admin</option>
                     <option value="User">User</option>
-                    <option value="Editor">Editor</option>
+                    <option value="Manager">Manager</option>
                   </select>
                 </td>
                 <td className="p-2">
