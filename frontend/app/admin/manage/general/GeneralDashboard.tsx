@@ -73,16 +73,16 @@ const GeneralDashboard = () => {
             className="bg-white p-6 rounded-lg shadow-md transition-transform hover:scale-105"
           >
             <div className="flex items-center justify-start mb-4">
-              <h2 className="text-xl font-semibold ml-1">{card.title}</h2>
-              <FaInfoCircle
+            <FaInfoCircle
                 data-tooltip-id={card.tooltipId}
                 data-tooltip-content={card.tooltip}
                 className="text-gray-400 text-sm cursor-pointer"
               />
               <Tooltip
                 id={card.tooltipId}
-                className="max-w-xs bg-gray-800 text-white text-sm p-1 rounded"
+                className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
               />
+              <h2 className="text-xl font-semibold ml-1">{card.title}</h2>
             </div>
             <p className="text-2xl font-bold text-left">{card.value}</p>
           </div>
