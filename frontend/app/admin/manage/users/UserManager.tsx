@@ -180,7 +180,7 @@ const UserManagement = () => {
                     onChange={(e) => handleRoleChange(user.id, e.target.value)}
                     className="border p-1 rounded"
                   >
-                    <option value="">Select Role</option>
+                    <option value="">Select</option>
                     <option value="Admin">Admin</option>
                     <option value="User">User</option>
                     <option value="Manager">Manager</option>
