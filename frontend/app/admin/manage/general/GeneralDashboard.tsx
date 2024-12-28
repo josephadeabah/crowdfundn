@@ -133,7 +133,6 @@ const GeneralDashboard = () => {
         </h2>
         <div className="bg-gray-200 p-6 rounded-lg text-left">
           <div className="font-semibold flex items-center">
-            Active Users: {metrics?.users.active}
             <FaInfoCircle
               data-tooltip-id="tooltip-active-users"
               data-tooltip-content="The number of users who signed in at least once in the past 7 days."
@@ -143,9 +142,9 @@ const GeneralDashboard = () => {
               id="tooltip-active-users"
               className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
             />
+            Active Users: {metrics?.users.active}
           </div>
           <div className="font-semibold flex items-center">
-            Email Confirmation Rate: {metrics?.users.email_confirmation_rate}%
             <FaInfoCircle
               data-tooltip-id="tooltip-email-confirmation-rate"
               data-tooltip-content="The percentage of users who have confirmed their email addresses."
@@ -155,9 +154,9 @@ const GeneralDashboard = () => {
               id="tooltip-email-confirmation-rate"
               className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
             />
+            Email Confirmation Rate: {metrics?.users.email_confirmation_rate}%
           </div>
           <div className="font-semibold flex items-center">
-            Average Logins: {metrics?.engagement.average_logins || '0'}
             <FaInfoCircle
               data-tooltip-id="tooltip-average-logins"
               data-tooltip-content="The average number of logins per user."
@@ -167,14 +166,9 @@ const GeneralDashboard = () => {
               id="tooltip-average-logins"
               className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
             />
+            Average Logins: {metrics?.engagement.average_logins || '0'}
           </div>
           <div className="font-semibold flex items-center">
-            Time to First Action:{' '}
-            {metrics?.engagement.time_to_first_action
-              ? moment
-                  .duration(metrics.engagement.time_to_first_action, 'seconds')
-                  .humanize()
-              : 'N/A'}
             <FaInfoCircle
               data-tooltip-id="tooltip-time-to-first-action"
               data-tooltip-content="The average time it takes a user to create a campaign after signing up."
@@ -184,6 +178,12 @@ const GeneralDashboard = () => {
               id="tooltip-time-to-first-action"
               className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
             />
+            Time to First Action:{' '}
+            {metrics?.engagement.time_to_first_action
+              ? moment
+                  .duration(metrics.engagement.time_to_first_action, 'seconds')
+                  .humanize()
+              : 'N/A'}
           </div>
         </div>
       </div>
@@ -222,7 +222,6 @@ const GeneralDashboard = () => {
         </h2>
         <div className="bg-gray-200 p-6 rounded-lg text-left">
           <div className="font-semibold flex items-center">
-            Active Subscriptions: {metrics?.subscriptions.active}
             <FaInfoCircle
               data-tooltip-id="tooltip-active-subscriptions"
               data-tooltip-content="The number of currently active subscriptions."
@@ -232,9 +231,9 @@ const GeneralDashboard = () => {
               id="tooltip-active-subscriptions"
               className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
             />
+            Active Subscriptions: {metrics?.subscriptions.active}
           </div>
           <div className="font-semibold flex items-center">
-            MRR: GHS{metrics?.subscriptions.mrr}
             <FaInfoCircle
               data-tooltip-id="tooltip-mrr"
               data-tooltip-content="Monthly Recurring Revenue (MRR) from subscriptions in the last month."
@@ -244,9 +243,9 @@ const GeneralDashboard = () => {
               id="tooltip-mrr"
               className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
             />
+            MRR: GHS{metrics?.subscriptions.mrr}
           </div>
           <div className="font-semibold flex items-center">
-            Churn Rate: {metrics?.subscriptions.churn_rate}%
             <FaInfoCircle
               data-tooltip-id="tooltip-churn-rate"
               data-tooltip-content="The percentage of canceled subscriptions over the last month."
@@ -256,6 +255,7 @@ const GeneralDashboard = () => {
               id="tooltip-churn-rate"
               className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
             />
+            Churn Rate: {metrics?.subscriptions.churn_rate}%
           </div>
         </div>
       </div>
@@ -264,7 +264,6 @@ const GeneralDashboard = () => {
         <h2 className="text-xl font-semibold mb-4 text-left">Subaccounts</h2>
         <div className="bg-gray-200 p-6 rounded-lg text-left">
           <div className="font-semibold flex items-center">
-            Total Subaccounts: {metrics?.subaccounts.total}
             <FaInfoCircle
               data-tooltip-id="tooltip-total-subaccounts"
               data-tooltip-content="The total number of subaccounts created."
@@ -274,9 +273,9 @@ const GeneralDashboard = () => {
               id="tooltip-total-subaccounts"
               className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
             />
+            Total Subaccounts: {metrics?.subaccounts.total}
           </div>
           <div className="font-semibold flex items-center">
-            Success Rate: {metrics?.subaccounts.success_rate}%
             <FaInfoCircle
               data-tooltip-id="tooltip-success-rate"
               data-tooltip-content="The percentage of subaccounts successfully verified."
@@ -286,6 +285,7 @@ const GeneralDashboard = () => {
               id="tooltip-success-rate"
               className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
             />
+            Success Rate: {metrics?.subaccounts.success_rate}%
           </div>
         </div>
       </div>
