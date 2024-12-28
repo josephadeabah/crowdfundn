@@ -35,21 +35,18 @@ const GeneralDashboard = () => {
             }).format(parseFloat(metrics.donations.total_amount))
           : '0.00'
       }`,
-      icon: <FaDollarSign className="text-sm text-blue-500" />,
       tooltip: 'The total amount donated across all campaigns.',
       tooltipId: 'tooltip-total-donations',
     },
     {
       title: 'Total Users',
       value: `${metrics?.users.total}`,
-      icon: <FaUsers className="text-sm text-blue-500" />,
       tooltip: 'The total number of users registered on the platform.',
       tooltipId: 'tooltip-total-users',
     },
     {
       title: 'Active Campaigns',
       value: `${metrics?.campaigns.active}`,
-      icon: <FaHeartbeat className="text-sm text-blue-500" />,
       tooltip: 'The number of campaigns currently marked as "active."',
       tooltipId: 'tooltip-active-campaigns',
     },
@@ -63,7 +60,6 @@ const GeneralDashboard = () => {
             }).format(parseFloat(metrics.donations.average_donation))
           : '0.00'
       }`,
-      icon: <FaDollarSign className="text-sm text-blue-500" />,
       tooltip: 'The average amount of a single donation.',
       tooltipId: 'tooltip-average-donation',
     },
@@ -80,7 +76,6 @@ const GeneralDashboard = () => {
             className="bg-white p-6 rounded-lg shadow-md transition-transform hover:scale-105"
           >
             <div className="flex items-center justify-start mb-4">
-              {card.icon}
               <h2 className="text-xl font-semibold ml-2">{card.title}</h2>
               <FaInfoCircle
                 data-tooltip-id={card.tooltipId}
