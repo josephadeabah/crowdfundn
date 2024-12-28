@@ -157,12 +157,13 @@ const UserManagement = () => {
         </select>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
         <table className="min-w-full table-auto border-collapse">
           <thead>
             <tr className="bg-gray-200">
               <th className="p-2 text-left">Name</th>
               <th className="p-2 text-left">Email</th>
+              <th className="p-2 text-left">Country</th>
               <th className="p-2 text-left">Role</th>
               <th className="p-2 text-left">Role Names</th>
               <th className="p-2 text-left">Status</th>
@@ -174,6 +175,7 @@ const UserManagement = () => {
               <tr key={user.id} className="border-b hover:bg-gray-100">
                 <td className="p-2 truncate">{user.full_name}</td>
                 <td className="p-2 truncate">{user.email}</td>
+                <td className="p-2 truncate">{user.country}</td>
                 <td className="p-2 truncate">
                   <select
                     value={user.role}
@@ -217,7 +219,7 @@ const UserManagement = () => {
                           : 'bg-gray-200 text-black'
                       }`}
                     >
-                      {user.admin ? 'Remove' : 'Admin'}
+                      {user.admin ? 'Assign Admin' : 'Unassign Admin'}
                     </button>
                   )}
                   <button
