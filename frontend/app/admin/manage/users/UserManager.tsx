@@ -3,12 +3,7 @@ import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import Pagination from '@/app/components/pagination/Pagination';
 import { useUserContext } from '@/app/context/users/UserContext';
 import React, { useState, useEffect } from 'react';
-import {
-  FaSearch,
-  FaTrash,
-  FaLock,
-  FaUnlock,
-} from 'react-icons/fa';
+import { FaSearch, FaTrash, FaLock, FaUnlock } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -190,7 +185,7 @@ const UserManagement = () => {
                   {user.roles.map((role: any) => (
                     <span
                       key={role.id}
-                      className="px-2 py-1 text-sm rounded bg-blue-200 text-orange-600"
+                      className="px-2 py-1 text-sm rounded bg-gray-50 text-orange-600 mr-2" // Add margin-right for spacing
                     >
                       {role.name}
                     </span>
@@ -210,7 +205,7 @@ const UserManagement = () => {
                 <td className="p-2 flex items-center gap-4 space-x-2">
                   <button
                     onClick={() => handleToggleAdmin(user.id, !user.isAdmin)}
-                    className={`text-sm px-3 py-1 rounded ${user.isAdmin ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-black'}`}
+                    className={`text-sm px-3 py-1 rounded w-auto ${user.isAdmin ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-black'}`}
                   >
                     {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
                   </button>
