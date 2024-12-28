@@ -210,10 +210,10 @@ const UserManagement = () => {
                 <td className="p-2 flex items-center gap-4 space-x-2">
                   {userProfile && userProfile.admin && (
                     <button
-                      onClick={() => handleToggleAdmin(user.id, !user.isAdmin)}
-                      className={`text-sm px-3 py-1 rounded w-auto ${user.isAdmin ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-black'}`}
+                      onClick={() => handleToggleAdmin(user.id, !user.admin)}
+                      className={`text-sm px-3 py-1 rounded w-auto ${user.admin ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-black'}`}
                     >
-                      {user.isAdmin ? 'Remove' : 'Admin'}
+                      {user.admin ? 'Remove' : 'Admin'}
                     </button>
                   )}
                   <button
