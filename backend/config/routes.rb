@@ -29,6 +29,7 @@ Rails.application.routes.draw do
         put 'users/:user_id/update_subaccount', to: 'users#update_subaccount'
         put 'users/:id/block', to: 'users#block_user'
         put 'users/:id/activate', to: 'users#activate_user'
+        delete 'users/:id', to: 'users#destroy'
       end
 
       namespace :fundraisers do
