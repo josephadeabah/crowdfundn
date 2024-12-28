@@ -1,11 +1,13 @@
 class User < ApplicationRecord
   has_secure_password
+  STATUSES = %w[active blocked].freeze
 
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
   has_many :subscriptions, dependent: :destroy
   has_many :subscribed_campaigns, through: :subscriptions, source: :campaign
 
+  validates :status, inclusion: { in: STATUSES }
   validates :email, presence: true, uniqueness: true
   validates :currency_symbol, presence: true
   validates :phone_code, presence: true
@@ -22,6 +24,10 @@ class User < ApplicationRecord
   after_create :send_confirmation_email
   after_create :assign_default_role
   after_create :create_default_profile
+  after_initialize :set_default_status, if: :new_record?
+  # Scopes
+  scope :active, -> { where(status: 'active') }
+  scope :blocked, -> { where(status: 'blocked') }
   
   def generate_confirmation_token
     self.confirmation_token = UserConfirmationService.generate_confirmation_token(self)
@@ -61,4 +67,10 @@ class User < ApplicationRecord
       Rails.logger.error "Failed to create profile for user #{id}: #{profile.errors.full_messages}"
     end
   end 
+
+  private
+
+  def set_default_status
+    self.status ||= 'active'
+  end
 end

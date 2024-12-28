@@ -165,7 +165,24 @@ module Api
         rescue => e
           Rails.logger.error "Error updating subaccount: #{e.message}"
           render json: { success: false, error: "An error occurred while updating the subaccount" }, status: :unprocessable_entity
-        end                           
+        end   
+        
+        def block_user
+          if @user.update(status: 'blocked')
+            render json: { message: "User #{@user.id} has been blocked." }, status: :ok
+          else
+            render json: { error: @user.errors.full_messages }, status: :unprocessable_entity
+          end
+        end
+        
+        def activate_user
+          if @user.update(status: 'active')
+            render json: { message: "User #{@user.id} has been activated." }, status: :ok
+          else
+            render json: { error: @user.errors.full_messages }, status: :unprocessable_entity
+          end
+        end
+        
 
         # PUT /api/v1/members/users/:id/make_admin
         def make_admin

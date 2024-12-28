@@ -27,6 +27,8 @@ Rails.application.routes.draw do
         post 'users/:user_id/create_subaccount', to: 'users#create_subaccount'
         get 'users/:user_id/subaccount', to: 'users#show_subaccount'
         put 'users/:user_id/update_subaccount', to: 'users#update_subaccount'
+        put 'users/:id/block', to: 'users#block_user'
+        put 'users/:id/activate', to: 'users#activate_user'
       end
 
       namespace :fundraisers do
