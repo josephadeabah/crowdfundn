@@ -212,7 +212,7 @@ const UserManagement = () => {
                       onClick={() => handleToggleAdmin(user.id, !user.isAdmin)}
                       className={`text-sm px-3 py-1 rounded w-auto ${user.isAdmin ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-black'}`}
                     >
-                      {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
+                      {user.isAdmin ? 'Remove' : 'Admin'}
                     </button>
                   )}
                   <button
