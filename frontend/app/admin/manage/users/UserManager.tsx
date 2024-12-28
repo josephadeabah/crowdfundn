@@ -1,7 +1,10 @@
 'use client';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import Pagination from '@/app/components/pagination/Pagination';
-import { useUserContext } from '@/app/context/users/UserContext';
+import {
+  UserProfileProvider,
+  useUserContext,
+} from '@/app/context/users/UserContext';
 import React, { useState, useEffect } from 'react';
 import { FaSearch, FaTrash, FaLock, FaUnlock } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
@@ -15,6 +18,7 @@ const UserManagement = () => {
     blockUser,
     activateUser,
     makeUserAdmin,
+    userProfile,
     error,
     loading,
   } = useUserContext();
@@ -203,12 +207,14 @@ const UserManagement = () => {
                   </span>
                 </td>
                 <td className="p-2 flex items-center gap-4 space-x-2">
-                  <button
-                    onClick={() => handleToggleAdmin(user.id, !user.isAdmin)}
-                    className={`text-sm px-3 py-1 rounded w-auto ${user.isAdmin ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-black'}`}
-                  >
-                    {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
-                  </button>
+                  {userProfile && userProfile.admin && (
+                    <button
+                      onClick={() => handleToggleAdmin(user.id, !user.isAdmin)}
+                      className={`text-sm px-3 py-1 rounded w-auto ${user.isAdmin ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-black'}`}
+                    >
+                      {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
+                    </button>
+                  )}
                   <button
                     onClick={() =>
                       user.status === 'active'
