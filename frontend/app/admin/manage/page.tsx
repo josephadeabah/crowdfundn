@@ -21,32 +21,17 @@ import CampaignManager from './campaigns/CampaignsManager';
 import ContentManagerAdminPage from './content/ContentManager';
 
 const AdminDashboard = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true); // Sidebar open by default on small screens
+  const [activeTab, setActiveTab] = useState<'dashboard'>('dashboard');
 
-  type TabNames =
-    | 'dashboard'
-    | 'userManagement'
-    | 'moneyTransfers'
-    | 'campaignsManager'
-    | 'contentManager'
-    | 'promotions'
-    | 'analytics'
-    | 'support'
-    | 'settings';
-
-  // Initialize state for activeTab with default value
-  const [activeTab, setActiveTab] = useState<TabNames>('dashboard');
-
-  // Use useEffect to access localStorage only on the client
   useEffect(() => {
     const storedTab = localStorage.getItem('activeTab');
     if (storedTab) {
-      setActiveTab(storedTab as TabNames);
+      setActiveTab(storedTab as 'dashboard');
     }
   }, []);
 
   useEffect(() => {
-    // Save the active tab in localStorage whenever it changes
     if (typeof window !== 'undefined') {
       localStorage.setItem('activeTab', activeTab);
     }
@@ -56,11 +41,10 @@ const AdminDashboard = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  const selectTab = (tabName: TabNames) => {
+  const selectTab = (tabName: 'dashboard') => {
     setActiveTab(tabName);
   };
 
-  // Navigation items
   const navItems = [
     { name: 'dashboard', label: 'Dashboard', icon: <FaDashcube /> },
     { name: 'userManagement', label: 'User Manager', icon: <FiUser /> },
@@ -73,7 +57,7 @@ const AdminDashboard = () => {
     { name: 'settings', label: 'Settings', icon: <FiSettings /> },
   ];
 
-  const tabContent: Record<TabNames, JSX.Element> = {
+  const tabContent = {
     dashboard: <GeneralDashboard />,
     userManagement: <UserManagement />,
     moneyTransfers: <TransfersManager />,
@@ -91,43 +75,37 @@ const AdminDashboard = () => {
       <div
         className={`${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } fixed inset-y-0 left-0 z-30 w-56 overflow-y-auto transition duration-300 ease-in-out transform bg-black lg:translate-x-0 lg:static lg:inset-0`}
+        } fixed inset-y-0 left-0 z-30 w-64 sm:w-80 md:w-96 lg:w-56 transition-all duration-300 ease-in-out bg-black text-gray-50 overflow-hidden lg:translate-x-0 lg:static lg:inset-0`}
       >
-        <div className="flex items-center justify-between px-2 py-4">
-          <div className="flex items-center py-4 md:py-0">
-            <span className="text-2xl font-semibold text-gray-50">
-              Bantuhive Admin
-            </span>
-          </div>
-          {/* Close Icon */}
+        <div className="flex items-center justify-between px-4 py-4">
+          <div className="text-2xl font-semibold">Bantuhive Admin</div>
+          {/* Close Icon for Mobile */}
           <button
             onClick={toggleSidebar}
-            className="text-gray-50 focus:outline-none lg:hidden"
+            className="lg:hidden text-gray-50 focus:outline-none"
           >
             <FiX className="w-6 h-6" />
           </button>
         </div>
-        <nav className="flex flex-col items-center">
+        <nav className="flex flex-col items-start space-y-2">
           {navItems.map((item) => (
             <button
               key={item.name}
-              className={`w-full max-w-xl flex items-center px-4 py-2 mt-4 text-gray-100 hover:bg-gray-700 hover:bg-opacity-25 ${
-                activeTab === item.name ? 'bg-gray-700 bg-opacity-25' : ''
+              className={`w-full flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700 ${
+                activeTab === item.name ? 'bg-gray-700' : ''
               }`}
-              onClick={() => selectTab(item.name as TabNames)}
+              onClick={() => selectTab(item.name as 'dashboard')}
             >
-              <span className="w-6 h-6 mr-3">{item.icon}</span>
+              <span className="mr-3">{item.icon}</span>
               <span>{item.label}</span>
             </button>
           ))}
         </nav>
       </div>
 
-      {/* Tab Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-x-hidden overflow-y-auto">
-          <div className="mx-auto px-2 py-8">{tabContent[activeTab]}</div>
-        </main>
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto">
+        <main className="mx-auto px-4 py-8">{tabContent[activeTab]}</main>
       </div>
     </div>
   );
