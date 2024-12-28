@@ -158,15 +158,15 @@ const UserManagement = () => {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full table-fixed border-collapse">
+        <table className="min-w-full table-auto border-collapse">
           <thead>
             <tr className="bg-gray-200">
-              <th className="p-2 w-1/5 text-left">Name</th>
-              <th className="p-2 w-1/5 text-left">Email</th>
-              <th className="p-2 w-1/5 text-left">Role</th>
-              <th className="p-2 w-1/5 text-left">Role Names</th>
-              <th className="p-2 w-1/5 text-left">Status</th>
-              <th className="p-2 w-1/5 text-left">Actions</th>
+              <th className="p-2 text-left">Name</th>
+              <th className="p-2 text-left">Email</th>
+              <th className="p-2 text-left">Role</th>
+              <th className="p-2 text-left">Role Names</th>
+              <th className="p-2 text-left">Status</th>
+              <th className="p-2 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -190,7 +190,7 @@ const UserManagement = () => {
                   {user.roles.map((role: any) => (
                     <span
                       key={role.id}
-                      className="px-2 py-1 text-sm rounded bg-gray-50 text-orange-600 mr-1" // Add margin-right for spacing
+                      className="px-2 py-1 text-sm rounded bg-gray-50 text-orange-600 mr-1"
                     >
                       {role.name}
                     </span>
@@ -211,7 +211,11 @@ const UserManagement = () => {
                   {userProfile && userProfile.admin && (
                     <button
                       onClick={() => handleToggleAdmin(user.id, !user.admin)}
-                      className={`text-sm px-3 py-1 rounded w-24 ${user.admin ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-black'}`}
+                      className={`text-sm px-3 py-1 rounded w-24 ${
+                        user.admin
+                          ? 'bg-yellow-500 text-white'
+                          : 'bg-gray-200 text-black'
+                      }`}
                     >
                       {user.admin ? 'Remove' : 'Admin'}
                     </button>
@@ -222,7 +226,11 @@ const UserManagement = () => {
                         ? handleBlockUser(user.id)
                         : handleActivateUser(user.id)
                     }
-                    className={`w-24 ${user.status === 'active' ? 'text-red-500 hover:text-red-700' : 'text-green-500 hover:text-green-700'}`}
+                    className={`w-24 ${
+                      user.status === 'active'
+                        ? 'text-red-500 hover:text-red-700'
+                        : 'text-green-500 hover:text-green-700'
+                    }`}
                     aria-label={`${user.status === 'active' ? 'Block' : 'Unblock'} user`}
                   >
                     {user.status === 'active' ? <FaLock /> : <FaUnlock />}
