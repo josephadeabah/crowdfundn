@@ -136,7 +136,7 @@ const GeneralDashboard = () => {
             <FaInfoCircle
               data-tooltip-id="tooltip-active-users"
               data-tooltip-content="The number of users who signed in at least once in the past 7 days."
-              className="ml-2 text-gray-400 text-sm cursor-pointer"
+              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-active-users"
@@ -148,7 +148,7 @@ const GeneralDashboard = () => {
             <FaInfoCircle
               data-tooltip-id="tooltip-email-confirmation-rate"
               data-tooltip-content="The percentage of users who have confirmed their email addresses."
-              className="ml-2 text-gray-400 text-sm cursor-pointer"
+              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-email-confirmation-rate"
@@ -160,7 +160,7 @@ const GeneralDashboard = () => {
             <FaInfoCircle
               data-tooltip-id="tooltip-average-logins"
               data-tooltip-content="The average number of logins per user."
-              className="ml-2 text-gray-400 text-sm cursor-pointer"
+              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-average-logins"
@@ -172,7 +172,7 @@ const GeneralDashboard = () => {
             <FaInfoCircle
               data-tooltip-id="tooltip-time-to-first-action"
               data-tooltip-content="The average time it takes a user to create a campaign after signing up."
-              className="ml-2 text-gray-400 text-sm cursor-pointer"
+              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-time-to-first-action"
@@ -225,7 +225,7 @@ const GeneralDashboard = () => {
             <FaInfoCircle
               data-tooltip-id="tooltip-active-subscriptions"
               data-tooltip-content="The number of currently active subscriptions."
-              className="ml-2 text-gray-400 text-sm cursor-pointer"
+              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-active-subscriptions"
@@ -237,7 +237,7 @@ const GeneralDashboard = () => {
             <FaInfoCircle
               data-tooltip-id="tooltip-mrr"
               data-tooltip-content="Monthly Recurring Revenue (MRR) from subscriptions in the last month."
-              className="ml-2 text-gray-400 text-sm cursor-pointer"
+              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-mrr"
@@ -249,7 +249,7 @@ const GeneralDashboard = () => {
             <FaInfoCircle
               data-tooltip-id="tooltip-churn-rate"
               data-tooltip-content="The percentage of canceled subscriptions over the last month."
-              className="ml-2 text-gray-400 text-sm cursor-pointer"
+              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-churn-rate"
@@ -267,7 +267,7 @@ const GeneralDashboard = () => {
             <FaInfoCircle
               data-tooltip-id="tooltip-total-subaccounts"
               data-tooltip-content="The total number of subaccounts created."
-              className="ml-2 text-gray-400 text-sm cursor-pointer"
+              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-total-subaccounts"
@@ -279,7 +279,7 @@ const GeneralDashboard = () => {
             <FaInfoCircle
               data-tooltip-id="tooltip-success-rate"
               data-tooltip-content="The percentage of subaccounts successfully verified."
-              className="ml-2 text-gray-400 text-sm cursor-pointer"
+              className="ml-2 text-gray-400 text-sm cursor-pointer mr-2"
             />
             <Tooltip
               id="tooltip-success-rate"
