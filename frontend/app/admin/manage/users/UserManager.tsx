@@ -189,7 +189,7 @@ const UserManagement = () => {
                   {user.roles.map((role: any) => (
                     <span
                       key={role.id}
-                      className="px-2 py-1 text-sm rounded bg-gray-50 text-orange-600 mr-2" // Add margin-right for spacing
+                      className="px-2 py-1 text-sm rounded bg-gray-50 text-orange-600 mr-1" // Add margin-right for spacing
                     >
                       {role.name}
                     </span>
