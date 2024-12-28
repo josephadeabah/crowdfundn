@@ -18,6 +18,7 @@ export interface LoginUserType {
   payment_method: string;
   mobile_money_provider: string | null;
   currency: string;
+  status: string;
   birth_date: string;
   category: string;
   target_amount: string;

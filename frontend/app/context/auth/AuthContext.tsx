@@ -34,6 +34,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   let logoutTimer: NodeJS.Timeout;
 
   useEffect(() => {
+    if (user && user.status === 'blocked') {
+      logout();
+    }
+  }, [user]);
+
+  useEffect(() => {
     const storedUser = Cookies.get('user')
       ? JSON.parse(Cookies.get('user')!)
       : null;
@@ -71,6 +77,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const login = (response: LoginUserResponseSuccess) => {
+    if (response.user && response.user.status === 'blocked') {
+      logout(); // Automatically log out if the user is blocked
+      alert('Your account is blocked. Please contact support.');
+      return;
+    }
     setUser(response.user);
     setToken(response.token);
 
