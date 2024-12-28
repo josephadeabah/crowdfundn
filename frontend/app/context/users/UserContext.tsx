@@ -25,16 +25,46 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     Cookies.set('roles', JSON.stringify(roleNames), { expires: 30 }); // Expires in 30 days
   };
 
+  // Add this inside the UserProfileProvider component
+  const fetchAllUsers = async (page = 1, perPage = 10) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users?page=${page}&per_page=${perPage}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch users');
+      }
+
+      const data = await response.json();
+      return {
+        users: data.users, // Array of users
+        meta: data.meta, // Pagination details
+      };
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+      return { users: [], meta: null };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Function to fetch user profile data
   const fetchUserProfile = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      // if (!token) {
-      //   throw new Error('Not authenticated');
-      // }
-
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/me`,
         {
@@ -62,6 +92,108 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Function to assign a role to a user
+  const assignRoleToUser = async (userId: string, roleName: string) => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${userId}/assign_role`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ role_name: roleName }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to assign role to user');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to make a user Super Admin
+  const makeUserAdmin = async (userId: string, isAdmin: boolean) => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${userId}/make_admin`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ admin: isAdmin }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to update user admin status');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to block a user
+  const blockUser = async (userId: string) => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${userId}/block`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to block user');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to activate a user
+  const activateUser = async (userId: string) => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${userId}/activate`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to activate user');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Automatically fetch user data when token changes (e.g., after login)
   useEffect(() => {
     if (token) {
@@ -75,7 +207,18 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const contextValue = React.useMemo(
-    () => ({ userProfile, loading, error, fetchUserProfile, hasRole }),
+    () => ({
+      userProfile,
+      loading,
+      error,
+      fetchUserProfile,
+      hasRole,
+      assignRoleToUser,
+      makeUserAdmin,
+      blockUser,
+      activateUser,
+      fetchAllUsers,
+    }),
     [userProfile, loading, error],
   );
 
