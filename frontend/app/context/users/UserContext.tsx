@@ -63,6 +63,35 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
+  // Function to delete a user
+  const deleteUser = useCallback(
+    async (userId: number) => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${userId}`,
+          {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to delete user');
+        }
+        // Optionally, you can trigger any necessary state updates or notifications
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
+
   // Function to fetch user profile data
   const fetchUserProfile = useCallback(async () => {
     setLoading(true);
@@ -234,6 +263,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       blockUser,
       activateUser,
       fetchAllUsers,
+      deleteUser,
     }),
     [
       userProfile,
@@ -246,6 +276,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       blockUser,
       activateUser,
       fetchAllUsers,
+      deleteUser,
     ],
   );
 

@@ -1,4 +1,5 @@
 'use client';
+import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import Pagination from '@/app/components/pagination/Pagination';
 import { useUserContext } from '@/app/context/users/UserContext';
 import React, { useState, useEffect } from 'react';
@@ -16,6 +17,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const UserManagement = () => {
   const {
     fetchAllUsers,
+    deleteUser,
     assignRoleToUser,
     blockUser,
     activateUser,
@@ -29,6 +31,8 @@ const UserManagement = () => {
   const [sortCriteria, setSortCriteria] = useState('name');
   const [page, setPage] = useState(1);
   const [perPage] = useState(10); // Pagination items per page
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -104,16 +108,9 @@ const UserManagement = () => {
     }
   };
 
-  const handleDeleteUser = async (userId: number) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      try {
-        // Call delete API here if needed (for now, removing from list)
-        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
-        toast.error('User deleted!');
-      } catch (err) {
-        toast.error('Failed to delete user');
-      }
-    }
+  const handleDeleteUser = (userId: number) => {
+    setUserToDelete(userId);
+    setIsDeletePopupOpen(true); // Show the custom confirmation popup
   };
 
   const filteredUsers = users.filter((user) => {
@@ -230,7 +227,32 @@ const UserManagement = () => {
         totalPages={metadata.total_pages || 1} // Ensure there's a fallback in case it's undefined
         onPageChange={(newPage) => setPage(newPage)}
       />
-
+      {/* Add the AlertPopup here */}
+      <AlertPopup
+        title="Delete User"
+        message="Are you sure you want to delete this user?"
+        isOpen={isDeletePopupOpen}
+        setIsOpen={setIsDeletePopupOpen}
+        onConfirm={async () => {
+          if (userToDelete !== null) {
+            try {
+              await deleteUser(userToDelete); // Call the deleteUser function with the selected userId
+              setUsers((prevUsers) =>
+                prevUsers.filter((user) => user.id !== userToDelete),
+              ); // Remove the user from the list
+              toast.error('User deleted!');
+            } catch (err) {
+              toast.error('Failed to delete user');
+            }
+            setIsDeletePopupOpen(false); // Close the popup
+            setUserToDelete(null); // Clear the userId
+          }
+        }}
+        onCancel={() => {
+          setIsDeletePopupOpen(false); // Close the popup without deleting the user
+          setUserToDelete(null); // Clear the userId
+        }}
+      />
       <ToastContainer />
     </div>
   );

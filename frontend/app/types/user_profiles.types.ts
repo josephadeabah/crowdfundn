@@ -46,6 +46,7 @@ export interface UserProfileState {
     page: number,
     perPage: number,
   ) => Promise<{ users: any; meta: any }>;
+  deleteUser: (userId: number) => Promise<void>;
   assignRoleToUser: (userId: number, role: string) => Promise<void>;
   blockUser: (userId: number) => Promise<void>;
   activateUser: (userId: number) => Promise<void>;
