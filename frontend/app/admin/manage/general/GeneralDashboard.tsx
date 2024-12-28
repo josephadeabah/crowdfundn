@@ -2,9 +2,6 @@ import { useMetricsContext } from '@/app/context/admin/metrics/MetricsContext';
 import moment from 'moment';
 import React, { useEffect } from 'react';
 import {
-  FaDollarSign,
-  FaUsers,
-  FaHeartbeat,
   FaInfoCircle,
 } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
