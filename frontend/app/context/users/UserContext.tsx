@@ -5,6 +5,7 @@ import React, {
   useContext,
   ReactNode,
   useEffect,
+  useCallback,
 } from 'react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { UserProfile, UserProfileState } from '@/app/types/user_profiles.types';
@@ -20,47 +21,50 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
 
   // Function to store roles in cookies
-  const storeRolesInCookies = (roles: Role[]) => {
+  const storeRolesInCookies = useCallback((roles: Role[]) => {
     const roleNames = roles.map((role) => role.name);
     Cookies.set('roles', JSON.stringify(roleNames), { expires: 30 }); // Expires in 30 days
-  };
+  }, []);
 
-  // Add this inside the UserProfileProvider component
-  const fetchAllUsers = async (page = 1, perPage = 10) => {
-    setLoading(true);
-    setError(null);
+  // Function to fetch all users
+  const fetchAllUsers = useCallback(
+    async (page = 1, perPage = 10) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users?page=${page}&per_page=${perPage}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users?page=${page}&per_page=${perPage}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
           },
-        },
-      );
+        );
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch users');
+        if (!response.ok) {
+          throw new Error('Failed to fetch users');
+        }
+
+        const data = await response.json();
+        return {
+          users: data.users, // Array of users
+          meta: data.meta, // Pagination details
+        };
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+        return { users: [], meta: null };
+      } finally {
+        setLoading(false);
       }
-
-      const data = await response.json();
-      return {
-        users: data.users, // Array of users
-        meta: data.meta, // Pagination details
-      };
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      return { users: [], meta: null };
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [token],
+  );
 
   // Function to fetch user profile data
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -90,121 +94,133 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token, storeRolesInCookies]);
 
   // Function to assign a role to a user
-  const assignRoleToUser = async (userId: string, roleName: string) => {
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${userId}/assign_role`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+  const assignRoleToUser = useCallback(
+    async (userId: number, roleName: string) => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${userId}/assign_role`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ role_name: roleName }),
           },
-          body: JSON.stringify({ role_name: roleName }),
-        },
-      );
+        );
 
-      if (!response.ok) {
-        throw new Error('Failed to assign role to user');
+        if (!response.ok) {
+          throw new Error('Failed to assign role to user');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [token],
+  );
 
   // Function to make a user Super Admin
-  const makeUserAdmin = async (userId: string, isAdmin: boolean) => {
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${userId}/make_admin`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+  const makeUserAdmin = useCallback(
+    async (userId: number, isAdmin: boolean) => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${userId}/make_admin`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ admin: isAdmin }),
           },
-          body: JSON.stringify({ admin: isAdmin }),
-        },
-      );
+        );
 
-      if (!response.ok) {
-        throw new Error('Failed to update user admin status');
+        if (!response.ok) {
+          throw new Error('Failed to update user admin status');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [token],
+  );
 
   // Function to block a user
-  const blockUser = async (userId: string) => {
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${userId}/block`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+  const blockUser = useCallback(
+    async (userId: number) => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${userId}/block`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
           },
-        },
-      );
+        );
 
-      if (!response.ok) {
-        throw new Error('Failed to block user');
+        if (!response.ok) {
+          throw new Error('Failed to block user');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [token],
+  );
 
   // Function to activate a user
-  const activateUser = async (userId: string) => {
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${userId}/activate`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+  const activateUser = useCallback(
+    async (userId: number) => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${userId}/activate`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
           },
-        },
-      );
+        );
 
-      if (!response.ok) {
-        throw new Error('Failed to activate user');
+        if (!response.ok) {
+          throw new Error('Failed to activate user');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [token],
+  );
 
   // Automatically fetch user data when token changes (e.g., after login)
   useEffect(() => {
     if (token) {
       fetchUserProfile();
     }
-  }, [token]);
+  }, [token, fetchUserProfile]);
 
-  const hasRole = (role: string) => {
+  const hasRole = useCallback((role: string) => {
     const roles = Cookies.get('roles') ? JSON.parse(Cookies.get('roles')!) : [];
     return roles.includes(role);
-  };
+  }, []);
 
   const contextValue = React.useMemo(
     () => ({
@@ -219,7 +235,18 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       activateUser,
       fetchAllUsers,
     }),
-    [userProfile, loading, error],
+    [
+      userProfile,
+      loading,
+      error,
+      token,
+      hasRole,
+      assignRoleToUser,
+      makeUserAdmin,
+      blockUser,
+      activateUser,
+      fetchAllUsers,
+    ],
   );
 
   return (

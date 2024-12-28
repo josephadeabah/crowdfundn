@@ -42,4 +42,12 @@ export interface UserProfileState {
   error: string | null;
   fetchUserProfile: () => void;
   hasRole: (role: string) => boolean;
+  fetchAllUsers: (
+    page: number,
+    perPage: number,
+  ) => Promise<{ users: any; meta: any }>;
+  assignRoleToUser: (userId: number, role: string) => Promise<void>;
+  blockUser: (userId: number) => Promise<void>;
+  activateUser: (userId: number) => Promise<void>;
+  makeUserAdmin: (userId: number, isAdmin: boolean) => Promise<void>;
 }

@@ -1,3 +1,6 @@
+'use client';
+import Pagination from '@/app/components/pagination/Pagination';
+import { useUserContext } from '@/app/context/users/UserContext';
 import React, { useState, useEffect } from 'react';
 import {
   FaSearch,
@@ -11,55 +14,40 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const UserManagement = () => {
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: 'John Doe',
-      email: 'john@example.com',
-      role: 'Admin',
-      status: 'active',
-      profilePicture:
-        'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1180&q=80',
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      email: 'jane@example.com',
-      role: 'User',
-      status: 'active',
-      profilePicture:
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1287&q=80',
-    },
-    {
-      id: 3,
-      name: 'Bob Johnson',
-      email: 'bob@example.com',
-      role: 'Editor',
-      status: 'blocked',
-      profilePicture:
-        'https://images.unsplash.com/photo-1639149888905-fb39731f2e6c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1364&q=80',
-    },
-  ]);
+  const {
+    fetchAllUsers,
+    assignRoleToUser,
+    blockUser,
+    activateUser,
+    makeUserAdmin,
+    error,
+    loading,
+  } = useUserContext();
+  const [users, setUsers] = useState<any[]>([]);
+  const [metadata, setMetadata] = useState<any>({});
   const [searchTerm, setSearchTerm] = useState('');
   const [sortCriteria, setSortCriteria] = useState('name');
-  interface User {
+  const [selectedUser, setSelectedUser] = useState<{
     id: number;
     name: string;
     email: string;
     role: string;
-    status: string;
-    profilePicture: string;
-  }
-
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  } | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [roles, setRoles] = useState(['Admin', 'User', 'Editor']);
   const [newRole, setNewRole] = useState('');
+  const [page, setPage] = useState(1);
+  const [perPage] = useState(10); // Pagination items per page
 
   useEffect(() => {
-    // Simulating API call to fetch users
-    // In a real application, you would fetch users from an API here
-  }, []);
+    const fetchUsers = async () => {
+      const { users, meta } = await fetchAllUsers(page, perPage); // Assuming `fetchAllUsers` returns `totalPages`
+      setUsers(users);
+      setMetadata(meta);
+    };
+
+    fetchUsers();
+  }, [page, fetchAllUsers]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -69,67 +57,67 @@ const UserManagement = () => {
     setSortCriteria(criteria);
   };
 
-  const handleEditUser = (user: {
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-    status: string;
-    profilePicture: string;
-  }) => {
+  const handleEditUser = (user: any) => {
     setSelectedUser(user);
     setEditMode(true);
   };
 
-  const handleUpdateUser = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleUpdateUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (selectedUser) {
-      const updatedUsers = users.map((user) =>
-        user.id === selectedUser.id ? selectedUser : user,
-      );
-      setUsers(updatedUsers);
-      setEditMode(false);
-      setSelectedUser(null);
-      toast.success('User updated successfully!');
+      try {
+        await assignRoleToUser(selectedUser.id, selectedUser.role);
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === selectedUser.id ? selectedUser : user,
+          ),
+        );
+        setEditMode(false);
+        setSelectedUser(null);
+        toast.success('User updated successfully!');
+      } catch (err) {
+        toast.error('Failed to update user');
+      }
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setSelectedUser({ ...selectedUser, [name]: value } as User);
+  const handleBlockUser = async (userId: number) => {
+    try {
+      await blockUser(userId);
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === userId ? { ...user, status: 'blocked' } : user,
+        ),
+      );
+      toast.info('User blocked!');
+    } catch (err) {
+      toast.error('Failed to block user');
+    }
   };
 
-  const handleProfilePictureUpload = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const files = e.target.files;
-    if (!files) return;
-    const file = files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setSelectedUser({
-        ...selectedUser,
-        profilePicture: reader.result as string,
-      } as User);
-    };
-    reader.readAsDataURL(file);
+  const handleActivateUser = async (userId: number) => {
+    try {
+      await activateUser(userId);
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === userId ? { ...user, status: 'active' } : user,
+        ),
+      );
+      toast.info('User activated!');
+    } catch (err) {
+      toast.error('Failed to activate user');
+    }
   };
 
-  const handleBlockUser = (userId: number) => {
-    const updatedUsers = users.map((user) =>
-      user.id === userId
-        ? { ...user, status: user.status === 'active' ? 'blocked' : 'active' }
-        : user,
-    );
-    setUsers(updatedUsers);
-    toast.info('User status updated!');
-  };
-
-  const handleDeleteUser = (userId: number) => {
+  const handleDeleteUser = async (userId: number) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
-      const updatedUsers = users.filter((user) => user.id !== userId);
-      setUsers(updatedUsers);
-      toast.error('User deleted!');
+      try {
+        // Call delete API here if needed (for now, removing from list)
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+        toast.error('User deleted!');
+      } catch (err) {
+        toast.error('Failed to delete user');
+      }
     }
   };
 
@@ -147,17 +135,9 @@ const UserManagement = () => {
       user.email.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const isUserKey = (key: string): key is keyof User => {
-    return ['id', 'name', 'email', 'role', 'status', 'profilePicture'].includes(
-      key,
-    );
-  };
-
   const sortedUsers = filteredUsers.sort((a, b) => {
-    if (isUserKey(sortCriteria)) {
-      if (a[sortCriteria] < b[sortCriteria]) return -1;
-      if (a[sortCriteria] > b[sortCriteria]) return 1;
-    }
+    if (a[sortCriteria] < b[sortCriteria]) return -1;
+    if (a[sortCriteria] > b[sortCriteria]) return 1;
     return 0;
   });
 
@@ -184,6 +164,7 @@ const UserManagement = () => {
           <option value="role">Sort by Role</option>
         </select>
       </div>
+
       <div className="overflow-x-auto">
         <table className="w-full table-fixed border-collapse">
           <thead>
@@ -217,12 +198,12 @@ const UserManagement = () => {
                     <FaEdit />
                   </button>
                   <button
-                    onClick={() => handleBlockUser(user.id)}
-                    className={`${
+                    onClick={() =>
                       user.status === 'active'
-                        ? 'text-red-500 hover:text-red-700'
-                        : 'text-green-500 hover:text-green-700'
-                    }`}
+                        ? handleBlockUser(user.id)
+                        : handleActivateUser(user.id)
+                    }
+                    className={`${user.status === 'active' ? 'text-red-500 hover:text-red-700' : 'text-green-500 hover:text-green-700'}`}
                     aria-label={`${user.status === 'active' ? 'Block' : 'Unblock'} user`}
                   >
                     {user.status === 'active' ? <FaLock /> : <FaUnlock />}
@@ -258,7 +239,9 @@ const UserManagement = () => {
                   id="name"
                   name="name"
                   value={selectedUser.name}
-                  onChange={handleInputChange}
+                  onChange={(e) =>
+                    setSelectedUser({ ...selectedUser, name: e.target.value })
+                  }
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   required
                 />
@@ -275,7 +258,9 @@ const UserManagement = () => {
                   id="email"
                   name="email"
                   value={selectedUser.email}
-                  onChange={handleInputChange}
+                  onChange={(e) =>
+                    setSelectedUser({ ...selectedUser, email: e.target.value })
+                  }
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   required
                 />
@@ -292,10 +277,7 @@ const UserManagement = () => {
                   name="role"
                   value={selectedUser.role}
                   onChange={(e) =>
-                    setSelectedUser({
-                      ...selectedUser,
-                      role: e.target.value,
-                    } as User)
+                    setSelectedUser({ ...selectedUser, role: e.target.value })
                   }
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 >
@@ -306,79 +288,33 @@ const UserManagement = () => {
                   ))}
                 </select>
               </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="profilePicture"
+              <div className="flex items-center justify-between">
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
                 >
-                  Profile Picture
-                </label>
-                <div className="flex items-center">
-                  <img
-                    src={selectedUser.profilePicture}
-                    alt={selectedUser.name}
-                    className="w-16 h-16 rounded-full mr-4 object-cover"
-                  />
-                  <label className="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    <FaUpload className="inline-block mr-2" />
-                    Upload New
-                    <input
-                      type="file"
-                      id="profilePicture"
-                      name="profilePicture"
-                      onChange={handleProfilePictureUpload}
-                      className="hidden"
-                      accept="image/*"
-                    />
-                  </label>
-                </div>
-              </div>
-              <div className="flex justify-end">
+                  Update User
+                </button>
                 <button
                   type="button"
                   onClick={() => setEditMode(false)}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
+                  className="text-red-500 hover:text-red-700"
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                >
-                  Save Changes
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">Manage Roles</h2>
-        <div className="flex items-center">
-          <input
-            type="text"
-            placeholder="New role name"
-            value={newRole}
-            onChange={(e) => setNewRole(e.target.value)}
-            className="p-2 border rounded mr-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
-          />
-          <button
-            onClick={handleAddRole}
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Add Role
-          </button>
-        </div>
-        <div className="mt-4">
-          <h3 className="text-lg font-semibold mb-2">Current Roles:</h3>
-          <ul className="list-disc list-inside">
-            {roles.map((role) => (
-              <li key={role}>{role}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
-      <ToastContainer position="bottom-right" autoClose={3000} />
+
+      <Pagination
+        currentPage={page}
+        totalPages={metadata.totalPages}
+        onPageChange={(newPage) => setPage(newPage)}
+      />
+
+      <ToastContainer />
     </div>
   );
 };
