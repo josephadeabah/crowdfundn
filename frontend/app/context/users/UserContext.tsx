@@ -51,7 +51,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         const data = await response.json();
         return {
           users: data.users, // Array of users
-          meta: data.meta, // Pagination details
+          meta: data.meta, // Pagination metadata
         };
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');

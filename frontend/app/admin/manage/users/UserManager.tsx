@@ -32,13 +32,13 @@ const UserManagement = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const { users, meta } = await fetchAllUsers(page, perPage); // Assuming `fetchAllUsers` returns `totalPages`
+      const { users, meta } = await fetchAllUsers(page, perPage); // Assuming `fetchAllUsers` returns `meta` with pagination info
       setUsers(users);
-      setMetadata(meta);
+      setMetadata(meta); // Store pagination metadata here
     };
 
     fetchUsers();
-  }, [page, fetchAllUsers]);
+  }, [page, fetchAllUsers, perPage]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -224,10 +224,10 @@ const UserManagement = () => {
           </tbody>
         </table>
       </div>
-
+      {/* Fix the Pagination component */}
       <Pagination
-        currentPage={page}
-        totalPages={metadata.totalPages}
+        currentPage={metadata.current_page || page}
+        totalPages={metadata.total_pages || 1} // Ensure there's a fallback in case it's undefined
         onPageChange={(newPage) => setPage(newPage)}
       />
 
