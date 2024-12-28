@@ -169,7 +169,7 @@ const UserManagement = () => {
           <tbody>
             {sortedUsers.map((user) => (
               <tr key={user.id} className="border-b hover:bg-gray-100">
-                <td className="p-2 truncate">{user.name}</td>
+                <td className="p-2 truncate">{user.full_name}</td>
                 <td className="p-2 truncate">{user.email}</td>
                 <td className="p-2 truncate">
                   <select
