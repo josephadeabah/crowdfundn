@@ -4,7 +4,7 @@ module Api
       class UsersController < ApplicationController
         before_action :authenticate_request, except: [:index]
         before_action :authorize_admin, only: [:make_admin]
-        before_action :set_user, only: %i[make_admin make_admin_role show_by_id assign_role show_subaccount update_subaccount destroy] # Added :assign_role
+        before_action :set_user, only: %i[make_admin make_admin_role show_by_id assign_role show_subaccount update_subaccount destroy block_user activate_user] # Added :assign_role
         rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
         def index
