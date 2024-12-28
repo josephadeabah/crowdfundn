@@ -200,7 +200,7 @@ module Api
 
         # PUT /api/v1/members/users/:id/make_admin
         def make_admin
-          admin_status = params[:admin] == 'true'
+          admin_status = params[:admin] == true
         
           # Use default values if currency_symbol and phone_code are not provided
           currency_symbol = params[:currency_symbol] || 'GHS'  # Default to 'GHS'
