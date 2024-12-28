@@ -312,7 +312,7 @@ const Navbar = () => {
                       {userProfile &&
                         (userProfile?.admin === true ||
                           userProfile?.roles.some(
-                            (role) => role.name === 'Admin',
+                            (role) => role.name === 'Admin' || role.name === 'Manager',
                           )) && (
                           <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
                             <Link href="/admin/manage">
