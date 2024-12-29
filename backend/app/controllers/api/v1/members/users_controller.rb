@@ -129,7 +129,17 @@ module Api
         
           metadata = params[:metadata] || {}
 
-          Rails.logger.info "Campaign Info in Subaccount: #{user.currency.inspect}"
+            # Extract the bank code from metadata
+            bank_code = nil
+            if metadata[:custom_fields].present?
+              metadata[:custom_fields].each do |field|
+                # If the custom field has a name or variable that represents the bank code, we extract its value
+                if field[:type] == "ghipss" || field[:type] == "mobile_money" # Or any other condition depending on how bank codes are identified
+                  bank_code = field[:value]
+                  break
+                end
+              end
+            end
         
           # Check if recipient_code exists. If it does not exist, create it only once.
           if subaccount.recipient_code.blank?
@@ -138,7 +148,7 @@ module Api
               type: subaccount.subaccount_type,
               name: subaccount.business_name,
               account_number: subaccount.account_number,
-              bank_code: subaccount.bank_code,
+              bank_code: bank_code,
               currency: user.currency.upcase,
               description: "Recipient for #{subaccount.business_name}",
               metadata: metadata
