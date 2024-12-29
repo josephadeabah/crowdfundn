@@ -130,6 +130,8 @@ module Api
           metadata = params[:metadata] || {}
 
           campaign = Subaccount.find_by(campaign_id: subaccount.campaign_id)
+
+          Rails.logger.info "Campaign Info in Subaccount: #{campaign.inspect}"
         
           # Check if recipient_code exists. If it does not exist, create it only once.
           if subaccount.recipient_code.blank?
