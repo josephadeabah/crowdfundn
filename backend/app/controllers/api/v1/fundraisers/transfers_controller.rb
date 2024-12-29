@@ -190,8 +190,6 @@ module Api
             return
           end
 
-          Rails.logger.info "Transfer response: #{customer_balance.round}"
-
           transfer_response = @paystack_service.initiate_transfer(
             amount: customer_balance.round, # Convert to kobo
             recipient: recipient_account,
@@ -218,7 +216,7 @@ module Api
             }, status: :ok
           else
             Rails.logger.error "Transfer failed: #{transfer_response[:message]}"
-            render json: { error: transfer_response[:body, :message] }, status: :unprocessable_entity
+            render json: { error: transfer_response[:message] }, status: :unprocessable_entity
           end
         rescue StandardError => e
           Rails.logger.error "Error processing transfer: #{e.message}"
