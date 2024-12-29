@@ -129,9 +129,7 @@ module Api
         
           metadata = params[:metadata] || {}
 
-          campaign = Campaign.find_by(id: subaccount.campaign_id)
-
-          Rails.logger.info "Campaign Info in Subaccount: #{campaign.inspect}"
+          Rails.logger.info "Campaign Info in Subaccount: #{user.currency.inspect}"
         
           # Check if recipient_code exists. If it does not exist, create it only once.
           if subaccount.recipient_code.blank?
@@ -141,7 +139,7 @@ module Api
               name: subaccount.business_name,
               account_number: subaccount.account_number,
               bank_code: subaccount.bank_code,
-              currency: campaign.currency.upcase,
+              currency: user.currency.upcase,
               description: "Recipient for #{subaccount.business_name}",
               metadata: metadata
             )
