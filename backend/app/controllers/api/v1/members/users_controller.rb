@@ -128,38 +128,6 @@ module Api
           end
         
           metadata = params[:metadata] || {}
-
-              # Initialize bank_code variable
-            # Initialize bank_code and mobile_money_number variables
-            bank_code = nil
-            mobile_money_number = nil
-
-            # Extract the bank code or mobile money identifier from metadata separately
-            if metadata[:custom_fields].present?
-              metadata[:custom_fields].each do |field|
-                if field[:type] == "ghipss"
-                  bank_code = field[:value]
-                  break
-                elsif field[:type] == "mobile_money"
-                  mobile_money_number = field[:value]
-                  break
-                end
-              end
-            end
-
-            # Now, depending on whether it's a bank or mobile money, handle accordingly
-            if bank_code.present?
-              # If bank_code (ghipss) is found, use it for the recipient creation
-              Rails.logger.info "Using ghipss bank code: #{bank_code}"
-            elsif mobile_money_number.present?
-              # If mobile money number is found, use it for recipient creation
-              Rails.logger.info "Using mobile money number: #{mobile_money_number}"
-              # Directly use mobile_money number for recipient creation
-              bank_code = mobile_money_number
-            else
-              render json: { error: "No valid bank code or mobile money number found in metadata" }, status: :unprocessable_entity
-              return
-            end
         
           # Check if recipient_code exists. If it does not exist, create it only once.
           if subaccount.recipient_code.blank?
@@ -168,7 +136,7 @@ module Api
               type: subaccount.subaccount_type,
               name: subaccount.business_name,
               account_number: subaccount.account_number,
-              bank_code: bank_code,
+              bank_code: subaccount.settlement_bank,
               currency: user.currency.upcase,
               description: "Recipient for #{subaccount.business_name}",
               metadata: metadata
