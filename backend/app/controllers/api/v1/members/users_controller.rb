@@ -175,7 +175,7 @@ module Api
                 type: metadata[:custom_fields].first[:type],
                 name: params[:business_name],
                 account_number: params[:account_number],
-                bank_code: params[:bank_code],
+                bank_code: params[:settlement_bank],
                 currency: user.currency.upcase,
                 description: "Recipient for #{params[:description]}",
                 metadata: metadata
