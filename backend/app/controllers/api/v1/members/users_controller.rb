@@ -130,37 +130,37 @@ module Api
           metadata = params[:metadata] || {}
         
           # Check if recipient_code exists. If it does not exist, create it only once.
-          if subaccount.recipient_code.blank?
-            # Automatically create recipient if missing
-            response = PaystackService.new.create_transfer_recipient(
-              type: subaccount.subaccount_type,
-              name: subaccount.business_name,
-              account_number: subaccount.account_number,
-              bank_code: subaccount.settlement_bank,
-              currency: user.currency.upcase,
-              description: "Recipient for #{subaccount.business_name}",
-              metadata: metadata
-            )
+          # if subaccount.recipient_code.blank?
+          #   # Automatically create recipient if missing
+          #   response = PaystackService.new.create_transfer_recipient(
+          #     type: subaccount.subaccount_type,
+          #     name: subaccount.business_name,
+          #     account_number: subaccount.account_number,
+          #     bank_code: subaccount.settlement_bank,
+          #     currency: user.currency.upcase,
+          #     description: "Recipient for #{subaccount.business_name}",
+          #     metadata: metadata
+          #   )
 
-            Rails.logger.info "Response from Paystack: #{response.inspect}"
+          #   Rails.logger.info "Response from Paystack: #{response.inspect}"
         
-            if response[:status] == true
-              subaccount.update!(
-                recipient_code: response[:data][:recipient_code], 
-                business_name: response[:data][:business_name],
-                bank_code: response[:data][:bank_code],
-                account_number: response[:data][:account_number],
-                subaccount_code: response[:data][:subaccount_code],
-                percentage_charge: response[:data][:percentage_charge],
-                description: response[:data][:description],
-                settlement_bank: response[:data][:settlement_bank],
-                metadata: metadata,
-                user_id: user.id)
-            else
-              render json: { error: "Failed to create recipient: #{response[:message]}" }, status: :unprocessable_entity
-              return
-            end
-          end
+          #   if response[:status] == true
+          #     subaccount.update!(
+          #       recipient_code: response[:data][:recipient_code], 
+          #       business_name: response[:data][:business_name],
+          #       bank_code: response[:data][:bank_code],
+          #       account_number: response[:data][:account_number],
+          #       subaccount_code: response[:data][:subaccount_code],
+          #       percentage_charge: response[:data][:percentage_charge],
+          #       description: response[:data][:description],
+          #       settlement_bank: response[:data][:settlement_bank],
+          #       metadata: metadata,
+          #       user_id: user.id)
+          #   else
+          #     render json: { error: "Failed to create recipient: #{response[:message]}" }, status: :unprocessable_entity
+          #     return
+          #   end
+          # end
         
           # If recipient_code exists or has been created, proceed to update the subaccount
           response = PaystackService.new.update_subaccount(
