@@ -129,18 +129,28 @@ module Api
         
           metadata = params[:metadata] || {}
         
-          # Delete the existing recipient code on Paystack
-          if subaccount.recipient_code.present?
-            delete_response = PaystackService.new.delete_transfer_recipient(subaccount.recipient_code)
-            unless delete_response[:status]
-              raise StandardError, "Failed to delete recipient on Paystack: #{delete_response[:message]}"
-            end
+          # Check if recipient_code exists. If it does not exist, create it only once.
+          if subaccount.recipient_code.blank?
+            # Automatically create recipient if missing
+            response = PaystackService.new.create_transfer_recipient(
+              type: subaccount.subaccount_type,
+              name: subaccount.business_name,
+              account_number: subaccount.account_number,
+              bank_code: subaccount.bank_code,
+              currency: subaccount.currency.upcase,
+              description: "Recipient for #{subaccount.business_name}",
+              metadata: metadata
+            )
         
-            # Delete recipient code locally
-            subaccount.update!(recipient_code: nil)
+            if response[:status] == true
+              subaccount.update!(recipient_code: response[:data][:recipient_code])
+            else
+              render json: { error: "Failed to create recipient: #{response[:message]}" }, status: :unprocessable_entity
+              return
+            end
           end
         
-          # Call Paystack API to update the subaccount
+          # If recipient_code exists or has been created, proceed to update the subaccount
           response = PaystackService.new.update_subaccount(
             subaccount_code: subaccount.subaccount_code,
             business_name: params[:business_name],
@@ -174,7 +184,7 @@ module Api
         rescue => e
           Rails.logger.error "Error updating subaccount: #{e.message}"
           render json: { success: false, error: "An error occurred while updating the subaccount" }, status: :unprocessable_entity
-        end   
+        end          
         
         def block_user
           if @user.nil?
