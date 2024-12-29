@@ -184,8 +184,7 @@ module Api
               Rails.logger.info "Response from Paystack: #{create_response.inspect}"
         
               if create_response[:status] == true
-                subaccount.update!(
-                  recipient_code: create_response[:data][:recipient_code])
+                subaccount.update!(recipient_code: create_response[:data][:recipient_code])
               else
                 render json: { error: "Failed to create recipient: #{create_response[:message]}" }, status: :unprocessable_entity
                 return
