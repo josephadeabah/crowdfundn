@@ -177,7 +177,7 @@ module Api
                 account_number: params[:account_number],
                 bank_code: params[:settlement_bank],
                 currency: user.currency.upcase,
-                description: "Recipient for #{params[:description]}",
+                description: "Recipient for #{params[:business_name]}",
                 metadata: metadata
               )
         
@@ -185,17 +185,7 @@ module Api
         
               if create_response[:status] == true
                 subaccount.update!(
-                  recipient_code: create_response[:data][:recipient_code],
-                  business_name: create_response[:data][:business_name],
-                  bank_code: create_response[:data][:bank_code],
-                  account_number: create_response[:data][:account_number],
-                  subaccount_code: create_response[:data][:subaccount_code],
-                  percentage_charge: create_response[:data][:percentage_charge],
-                  description: create_response[:data][:description],
-                  settlement_bank: create_response[:data][:settlement_bank],
-                  metadata: metadata,
-                  user_id: user.id
-                )
+                  recipient_code: create_response[:data][:recipient_code])
               else
                 render json: { error: "Failed to create recipient: #{create_response[:message]}" }, status: :unprocessable_entity
                 return
