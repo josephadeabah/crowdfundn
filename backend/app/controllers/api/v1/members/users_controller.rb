@@ -172,12 +172,12 @@ module Api
             # If the recipient_code was deleted, create a new one
             if response[:status] == true && subaccount.recipient_code.blank?
               create_response = PaystackService.new.create_transfer_recipient(
-                type: response[:data][:type],
-                name: response[:data][:business_name],
-                account_number: response[:data][:account_number],
-                bank_code: response[:data][:bank_code],
+                type: metadata[:custom_fields].first[:type],
+                name: params[:business_name],
+                account_number: params[:account_number],
+                bank_code: params[:bank_code],
                 currency: user.currency.upcase,
-                description: "Recipient for #{response[:data][:description]}",
+                description: "Recipient for #{params[:description]}",
                 metadata: metadata
               )
         
