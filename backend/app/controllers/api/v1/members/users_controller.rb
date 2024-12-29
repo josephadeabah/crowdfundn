@@ -45,19 +45,19 @@ module Api
         
           ActiveRecord::Base.transaction do
             # Check if the user already has a subaccount
-            if user.subaccount
-              existing_recipient_code = user.subaccount.recipient_code
-              if existing_recipient_code.present?
-                # Attempt to delete the recipient code on Paystack
-                delete_response = PaystackService.new.delete_transfer_recipient(existing_recipient_code)
-                unless delete_response[:status]
-                  raise StandardError, "Failed to delete recipient on Paystack: #{delete_response[:message]}"
-                end
-              end
+            # if user.subaccount
+            #   existing_recipient_code = user.subaccount.recipient_code
+            #   if existing_recipient_code.present?
+            #     # Attempt to delete the recipient code on Paystack
+            #     delete_response = PaystackService.new.delete_transfer_recipient(existing_recipient_code)
+            #     unless delete_response[:status]
+            #       raise StandardError, "Failed to delete recipient on Paystack: #{delete_response[:message]}"
+            #     end
+            #   end
         
-              # Delete recipient code locally
-              user.subaccount.update!(recipient_code: nil)
-            end
+            #   # Delete recipient code locally
+            #   user.subaccount.update!(recipient_code: nil)
+            # end
         
             # Create a new subaccount via Paystack
             response = PaystackService.new.create_subaccount(
