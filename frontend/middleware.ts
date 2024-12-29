@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 type Roles = 'Admin' | 'Manager' | 'Moderator' | 'User';
 
@@ -32,12 +33,18 @@ export default function middleware(req: NextRequest) {
   const isProtectedRoute = protectedRoutes.includes(path);
   const isAdminRoute = adminRoutes.includes(path);
   const isPublicRoute = publicRoutes.includes(path);
+  const { user } = useAuth();
 
   const cookies = parseCookies(req.headers.get('cookie') ?? undefined);
   const { token, roles } = cookies;
 
   // Redirect unauthenticated users to login if accessing a protected route
   if ((isProtectedRoute || isAdminRoute) && !token) {
+    return NextResponse.redirect(new URL('/auth/login', req.nextUrl));
+  }
+
+  if (user && user.status === 'blocked') {
+    alert('Your account is blocked. Please contact support.');
     return NextResponse.redirect(new URL('/auth/login', req.nextUrl));
   }
 
