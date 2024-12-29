@@ -189,7 +189,7 @@ module Api
             render json: { error: "Insufficient funds for transfer." }, status: :unprocessable_entity
             return
           end
-          
+
           Rails.logger.info "Transfer response: #{customer_balance.round}"
 
           transfer_response = @paystack_service.initiate_transfer(
@@ -218,7 +218,7 @@ module Api
             }, status: :ok
           else
             Rails.logger.error "Transfer failed: #{transfer_response[:message]}"
-            render json: { error: "Sorry, this is an error from our side. Please Try again later or contact support." }, status: :unprocessable_entity
+            render json: { error: transfer_response[:body, :message] }, status: :unprocessable_entity
           end
         rescue StandardError => e
           Rails.logger.error "Error processing transfer: #{e.message}"
