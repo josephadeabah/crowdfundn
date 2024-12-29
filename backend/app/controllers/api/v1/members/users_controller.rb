@@ -176,6 +176,8 @@ module Api
             primary_contact_phone: user.phone_number,
             metadata: metadata
           )
+
+          Rails.logger.info "Response from Paystack: #{response.inspect}"
         
           if response[:status] == true
             subaccount.update!(
