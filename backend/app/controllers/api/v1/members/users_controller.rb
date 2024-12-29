@@ -128,19 +128,8 @@ module Api
           end
         
           metadata = params[:metadata] || {}
-            # Check if the user already has a subaccount
-            if user.subaccount
-              existing_recipient_code = user.subaccount.recipient_code
-              if existing_recipient_code.present?
-                # Attempt to delete the recipient code on Paystack
-                delete_response = PaystackService.new.delete_transfer_recipient(existing_recipient_code)
-                unless delete_response[:status]
-                  raise StandardError, "Failed to delete recipient on Paystack: #{delete_response[:message]}"
-                end
-              end
-              # Delete recipient code locally
-              user.subaccount.update!(recipient_code: nil)
-               # Check if recipient_code exists. If it does not exist, create it only once.
+        
+          # Check if recipient_code exists. If it does not exist, create it only once.
           if subaccount.recipient_code.blank?
             # Automatically create recipient if missing
             response = PaystackService.new.create_transfer_recipient(
@@ -172,9 +161,6 @@ module Api
               return
             end
           end
-            end
-        
-         
         
           # If recipient_code exists or has been created, proceed to update the subaccount
           response = PaystackService.new.update_subaccount(
