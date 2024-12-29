@@ -128,6 +128,8 @@ module Api
           end
         
           metadata = params[:metadata] || {}
+
+          campaign = Subaccount.find_by(campaign_id: subaccount.campaign_id)
         
           # Check if recipient_code exists. If it does not exist, create it only once.
           if subaccount.recipient_code.blank?
@@ -137,7 +139,7 @@ module Api
               name: subaccount.business_name,
               account_number: subaccount.account_number,
               bank_code: subaccount.bank_code,
-              currency: subaccount.currency.upcase,
+              currency: campaign.currency.upcase,
               description: "Recipient for #{subaccount.business_name}",
               metadata: metadata
             )
