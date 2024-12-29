@@ -216,7 +216,10 @@ module Api
             }, status: :ok
           else
             Rails.logger.error "Transfer failed: #{transfer_response[:message]}"
-            render json: { error: transfer_response[:message] }, status: :unprocessable_entity
+             # Parse the body to get the specific message about insufficient balance
+            body = JSON.parse(transfer_response[:body]) rescue {}
+            specific_message = body["message"] || "An error occurred"
+            render json: { error: specific_message }, status: :unprocessable_entity
           end
         rescue StandardError => e
           Rails.logger.error "Error processing transfer: #{e.message}"
