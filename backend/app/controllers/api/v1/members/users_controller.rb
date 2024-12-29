@@ -129,7 +129,7 @@ module Api
         
           metadata = params[:metadata] || {}
 
-          campaign = Campaign.find_by(campaign_id: subaccount.campaign_id)
+          campaign = Campaign.find_by(id: subaccount.campaign_id)
 
           Rails.logger.info "Campaign Info in Subaccount: #{campaign.inspect}"
         
