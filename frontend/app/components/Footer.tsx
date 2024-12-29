@@ -69,14 +69,14 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-gray-400 flex flex-col md:flex-row justify-between items-center">
           <div className="flex space-x-6 mb-4 md:mb-0">
             <a
-              href="#"
+              href="https://web.facebook.com/profile.php?id=61568192851056"
               className="text-2xl hover:text-orange-300 transition duration-300"
               aria-label="Facebook"
             >
               <FaFacebook />
             </a>
             <a
-              href="#"
+              href="https://www.instagram.com/bantuhive_fund/"
               className="text-2xl hover:text-orange-300 transition duration-300"
               aria-label="Instagram"
             >
