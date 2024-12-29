@@ -71,7 +71,7 @@ const ProfileTabs = () => {
       label: 'Settings',
       icon: <GearIcon />,
       component: <AccountSettings />,
-      description: 'Manage your account settings and payment here.',
+      description: 'Manage your account and Payment settings here. <span class="text-white bg-red-500 p-2">IMPORTANT: Please add your bank or mobile money account in this tab after you click Finish or Skip button.</span>',
     },
   ];
 

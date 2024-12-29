@@ -23,7 +23,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
         </h3>
         <div className="mb-4">
           <h4 className="font-bold text-lg">{tabs[currentStep].label}</h4>
-          <p>{tabs[currentStep].description}</p>
+          <p dangerouslySetInnerHTML={{ __html: tabs[currentStep].description }} />
         </div>
         <div className="flex justify-between mt-4">
           {/* Grouping Previous and Next Buttons */}
