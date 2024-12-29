@@ -129,16 +129,36 @@ module Api
         
           metadata = params[:metadata] || {}
 
-            # Extract the bank code from metadata
+              # Initialize bank_code variable
+            # Initialize bank_code and mobile_money_number variables
             bank_code = nil
+            mobile_money_number = nil
+
+            # Extract the bank code or mobile money identifier from metadata separately
             if metadata[:custom_fields].present?
               metadata[:custom_fields].each do |field|
-                # If the custom field has a name or variable that represents the bank code, we extract its value
-                if field[:type] == "ghipss" || field[:type] == "mobile_money" # Or any other condition depending on how bank codes are identified
+                if field[:type] == "ghipss"
                   bank_code = field[:value]
+                  break
+                elsif field[:type] == "mobile_money"
+                  mobile_money_number = field[:value]
                   break
                 end
               end
+            end
+
+            # Now, depending on whether it's a bank or mobile money, handle accordingly
+            if bank_code.present?
+              # If bank_code (ghipss) is found, use it for the recipient creation
+              Rails.logger.info "Using ghipss bank code: #{bank_code}"
+            elsif mobile_money_number.present?
+              # If mobile money number is found, use it for recipient creation
+              Rails.logger.info "Using mobile money number: #{mobile_money_number}"
+              # Directly use mobile_money number for recipient creation
+              bank_code = mobile_money_number
+            else
+              render json: { error: "No valid bank code or mobile money number found in metadata" }, status: :unprocessable_entity
+              return
             end
         
           # Check if recipient_code exists. If it does not exist, create it only once.
@@ -157,7 +177,17 @@ module Api
             Rails.logger.info "Response from Paystack: #{response.inspect}"
         
             if response[:status] == true
-              subaccount.update!(recipient_code: response[:data][:recipient_code])
+              subaccount.update!(
+                recipient_code: response[:data][:recipient_code], 
+                business_name: response[:data][:business_name],
+                bank_code: response[:data][:bank_code],
+                account_number: response[:data][:account_number],
+                subaccount_code: response[:data][:subaccount_code],
+                percentage_charge: response[:data][:percentage_charge],
+                description: response[:data][:description],
+                settlement_bank: response[:data][:settlement_bank],
+                metadata: metadata,
+                user_id: user.id)
             else
               render json: { error: "Failed to create recipient: #{response[:message]}" }, status: :unprocessable_entity
               return
