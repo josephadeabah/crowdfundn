@@ -22,12 +22,12 @@ import ContentManagerAdminPage from './content/ContentManager';
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true); // Sidebar open by default on small screens
-  const [activeTab, setActiveTab] = useState<'dashboard'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'general-dashboard'>('general-dashboard');
 
   useEffect(() => {
     const storedTab = localStorage.getItem('activeTab');
     if (storedTab) {
-      setActiveTab(storedTab as 'dashboard');
+      setActiveTab(storedTab as 'general-dashboard');
     }
   }, []);
 
@@ -41,12 +41,12 @@ const AdminDashboard = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  const selectTab = (tabName: 'dashboard') => {
+  const selectTab = (tabName: 'general-dashboard') => {
     setActiveTab(tabName);
   };
 
   const navItems = [
-    { name: 'dashboard', label: 'Dashboard', icon: <FaDashcube /> },
+    { name: 'general-dashboard', label: 'Dashboard', icon: <FaDashcube /> },
     { name: 'userManagement', label: 'User Manager', icon: <FiUser /> },
     { name: 'moneyTransfers', label: 'Transactions', icon: <FiDollarSign /> },
     { name: 'campaignsManager', label: 'Campaigns', icon: <BiSolidLayout /> },
@@ -58,7 +58,7 @@ const AdminDashboard = () => {
   ];
 
   const tabContent = {
-    dashboard: <GeneralDashboard />,
+    "general-dashboard": <GeneralDashboard />,
     userManagement: <UserManagement />,
     moneyTransfers: <TransfersManager />,
     campaignsManager: <CampaignManager />,
@@ -94,7 +94,7 @@ const AdminDashboard = () => {
               className={`w-full flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700 ${
                 activeTab === item.name ? 'bg-gray-700' : ''
               }`}
-              onClick={() => selectTab(item.name as 'dashboard')}
+              onClick={() => selectTab(item.name as 'general-dashboard')}
             >
               <span className="mr-3">{item.icon}</span>
               <span>{item.label}</span>
