@@ -129,40 +129,19 @@ module Api
         
           metadata = params[:metadata] || {}
         
-          # Check if recipient_code exists. If it does not exist, create it only once.
-          # if subaccount.recipient_code.blank?
-          #   # Automatically create recipient if missing
-          #   response = PaystackService.new.create_transfer_recipient(
-          #     type: subaccount.subaccount_type,
-          #     name: subaccount.business_name,
-          #     account_number: subaccount.account_number,
-          #     bank_code: subaccount.settlement_bank,
-          #     currency: user.currency.upcase,
-          #     description: "Recipient for #{subaccount.business_name}",
-          #     metadata: metadata
-          #   )
-
-          #   Rails.logger.info "Response from Paystack: #{response.inspect}"
+          # Check if recipient_code exists. If it does, delete and create a new one.
+          if subaccount.recipient_code.present?
+            # Attempt to delete the recipient code on Paystack
+            delete_response = PaystackService.new.delete_transfer_recipient(subaccount.recipient_code)
+            unless delete_response[:status]
+              raise StandardError, "Failed to delete recipient on Paystack: #{delete_response[:message]}"
+            end
         
-          #   if response[:status] == true
-          #     subaccount.update!(
-          #       recipient_code: response[:data][:recipient_code], 
-          #       business_name: response[:data][:business_name],
-          #       bank_code: response[:data][:bank_code],
-          #       account_number: response[:data][:account_number],
-          #       subaccount_code: response[:data][:subaccount_code],
-          #       percentage_charge: response[:data][:percentage_charge],
-          #       description: response[:data][:description],
-          #       settlement_bank: response[:data][:settlement_bank],
-          #       metadata: metadata,
-          #       user_id: user.id)
-          #   else
-          #     render json: { error: "Failed to create recipient: #{response[:message]}" }, status: :unprocessable_entity
-          #     return
-          #   end
-          # end
+            # Delete recipient code locally
+            subaccount.update!(recipient_code: nil)
+          end
         
-          # If recipient_code exists or has been created, proceed to update the subaccount
+          # Proceed to update the subaccount
           response = PaystackService.new.update_subaccount(
             subaccount_code: subaccount.subaccount_code,
             business_name: params[:business_name],
@@ -176,7 +155,7 @@ module Api
             primary_contact_phone: user.phone_number,
             metadata: metadata
           )
-
+        
           Rails.logger.info "Response from Paystack: #{response.inspect}"
         
           if response[:status] == true
@@ -191,6 +170,40 @@ module Api
               metadata: metadata,
               user_id: user.id
             )
+        
+            # If the recipient_code was deleted, create a new one
+            if subaccount.recipient_code.blank?
+              create_response = PaystackService.new.create_transfer_recipient(
+                type: subaccount.subaccount_type,
+                name: subaccount.business_name,
+                account_number: subaccount.account_number,
+                bank_code: subaccount.settlement_bank,
+                currency: user.currency.upcase,
+                description: "Recipient for #{subaccount.business_name}",
+                metadata: metadata
+              )
+        
+              Rails.logger.info "Response from Paystack: #{create_response.inspect}"
+        
+              if create_response[:status] == true
+                subaccount.update!(
+                  recipient_code: create_response[:data][:recipient_code],
+                  business_name: create_response[:data][:business_name],
+                  bank_code: create_response[:data][:bank_code],
+                  account_number: create_response[:data][:account_number],
+                  subaccount_code: create_response[:data][:subaccount_code],
+                  percentage_charge: create_response[:data][:percentage_charge],
+                  description: create_response[:data][:description],
+                  settlement_bank: create_response[:data][:settlement_bank],
+                  metadata: metadata,
+                  user_id: user.id
+                )
+              else
+                render json: { error: "Failed to create recipient: #{create_response[:message]}" }, status: :unprocessable_entity
+                return
+              end
+            end
+        
             render json: { success: true, subaccount: subaccount }, status: :ok
           else
             render json: { success: false, error: response[:message] }, status: :unprocessable_entity
@@ -198,7 +211,7 @@ module Api
         rescue => e
           Rails.logger.error "Error updating subaccount: #{e.message}"
           render json: { success: false, error: "An error occurred while updating the subaccount" }, status: :unprocessable_entity
-        end          
+        end                 
         
         def block_user
           if @user.nil?
