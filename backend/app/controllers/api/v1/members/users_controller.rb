@@ -155,9 +155,7 @@ module Api
             primary_contact_phone: user.phone_number,
             metadata: metadata
           )
-        
-          Rails.logger.info "Response from Paystack: #{response.inspect}"
-        
+                
           if response[:status] == true
             subaccount.update!(
               business_name: response[:data][:business_name],
@@ -172,14 +170,14 @@ module Api
             )
         
             # If the recipient_code was deleted, create a new one
-            if subaccount.recipient_code.blank?
+            if response[:status] == true && subaccount.recipient_code.blank?
               create_response = PaystackService.new.create_transfer_recipient(
-                type: subaccount.subaccount_type,
-                name: subaccount.business_name,
-                account_number: subaccount.account_number,
-                bank_code: subaccount.settlement_bank,
+                type: response[:data][:type],
+                name: response[:data][:business_name],
+                account_number: response[:data][:account_number],
+                bank_code: response[:data][:bank_code],
                 currency: user.currency.upcase,
-                description: "Recipient for #{subaccount.business_name}",
+                description: "Recipient for #{response[:data][:description]}",
                 metadata: metadata
               )
         
