@@ -189,6 +189,8 @@ module Api
             render json: { error: "Insufficient funds for transfer." }, status: :unprocessable_entity
             return
           end
+          
+          Rails.logger.info "Transfer response: #{customer_balance.round}"
 
           transfer_response = @paystack_service.initiate_transfer(
             amount: customer_balance.round, # Convert to kobo
@@ -196,6 +198,8 @@ module Api
             reason: "Payout for campaign: #{campaign_title}",
             currency: currency
           )
+
+          Rails.logger.info "Transfer response: #{transfer_response.inspect}"
 
           if transfer_response[:status]
             transfer_data = transfer_response[:data]
