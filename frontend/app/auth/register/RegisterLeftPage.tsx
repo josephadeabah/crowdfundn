@@ -10,13 +10,13 @@ export default function RegisterLeftPage() {
           </h2>
           <p className="text-base">
             Our platform provides you with the tools you need to raise funds. We
-            have helped over 1,000,000 people to achieve their goals.
+            have helped over 1,000 people to achieve their goals.
           </p>
         </div>
         <div className="flex w-full flex-col items-center gap-12 rounded-lg bg-gray-50 px-6 py-12 dark:bg-gray-900 lg:flex-row lg:justify-center lg:gap-6 lg:px-12">
           <div>
             <h4 className="mb-2 text-2xl font-bold text-orange-400 lg:text-3xl">
-              500k+
+              2K+
             </h4>
             <p className="text-base font-medium text-gray-950 dark:text-gray-50">
               Monthly Visitors
@@ -24,7 +24,7 @@ export default function RegisterLeftPage() {
           </div>
           <div>
             <h4 className="mb-2 text-2xl font-bold text-orange-400  lg:text-3xl">
-              250k+
+              1K+
             </h4>
             <p className="text-base font-medium text-gray-950 dark:text-gray-50">
               Registered Users
@@ -32,7 +32,7 @@ export default function RegisterLeftPage() {
           </div>
           <div>
             <h4 className="mb-2 text-2xl font-bold text-orange-400  lg:text-3xl">
-              175M+
+              5M+
             </h4>
             <p className="text-base font-medium text-gray-950 dark:text-gray-50">
               Money Raised
@@ -40,7 +40,7 @@ export default function RegisterLeftPage() {
           </div>
           <div>
             <h4 className="mb-2 text-2xl font-bold text-orange-400  lg:text-3xl">
-              5M+
+              3K+
             </h4>
             <p className="text-base font-medium text-gray-950 dark:text-gray-50">
               Happy Donors
