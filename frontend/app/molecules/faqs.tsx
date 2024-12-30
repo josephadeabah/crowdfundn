@@ -129,7 +129,7 @@ const FAQsPage = () => {
             Bantu Hive connects communities and people with the funding they
             need, to create lasting impact.
           </div>
-          <div className="mx-auto">
+          <div className="mx-auto px-8">
             {faqs.map((faq, index) => (
               <div key={index} className="mb-4 border-b border-gray-50 pb-4">
                 <button
@@ -138,7 +138,7 @@ const FAQsPage = () => {
                   aria-expanded={expandedFAQ === index}
                   aria-controls={`faq-answer-${index}`}
                 >
-                  <span className="text-lg font-semibold px-8 dark:text-gray-100">
+                  <span className="text-lg font-semibold dark:text-gray-100">
                     {faq.question}
                   </span>
                   {expandedFAQ === index ? (
@@ -150,7 +150,7 @@ const FAQsPage = () => {
                 {expandedFAQ === index && (
                   <div
                     id={`faq-answer-${index}`}
-                    className="prose mt-2 dark:text-gray-100 px-8 animate-fadeIn"
+                    className="prose mt-2 dark:text-gray-100 animate-fadeIn"
                     dangerouslySetInnerHTML={{ __html: faq.answer }}
                   />
                 )}
