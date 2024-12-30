@@ -122,7 +122,7 @@ const FAQsPage = () => {
       {/* FAQs Section */}
       <div id="faqs" className="py-20 max-w-7xl mx-auto mb-10">
         <div className="">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-50">
+          <h2 className="text-3xl font-bold text-center mb-12">
             Bantu Hive FAQs
           </h2>
           <div className="text-center text-lg py-8">
@@ -138,19 +138,19 @@ const FAQsPage = () => {
                   aria-expanded={expandedFAQ === index}
                   aria-controls={`faq-answer-${index}`}
                 >
-                  <span className="text-lg font-semibold text-gray-50 dark:text-gray-100">
+                  <span className="text-lg font-semibold dark:text-gray-100">
                     {faq.question}
                   </span>
                   {expandedFAQ === index ? (
-                    <FiChevronUp className="h-6 w-6 text-gray-50" />
+                    <FiChevronUp className="h-6 w-6" />
                   ) : (
-                    <FiChevronDown className="h-6 w-6 text-gray-50" />
+                    <FiChevronDown className="h-6 w-6" />
                   )}
                 </button>
                 {expandedFAQ === index && (
                   <div
                     id={`faq-answer-${index}`}
-                    className="prose mt-2 text-gray-50 dark:text-gray-100 animate-fadeIn"
+                    className="prose mt-2 dark:text-gray-100 animate-fadeIn"
                     dangerouslySetInnerHTML={{ __html: faq.answer }}
                   />
                 )}
