@@ -17,7 +17,7 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Product</h3>
             <ul className="space-y-2">
-              {['How It Works', 'Pricing', 'Case Studies'].map((item) => (
+              {['How It Works', 'Pricing'].map((item) => (
                 <li key={item}>
                   <a
                     href={`/${item.toLowerCase().replace(/\s+/g, '-')}`} // Regular expression to handle multiple spaces
@@ -51,7 +51,7 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Support</h3>
             <ul className="space-y-2">
-              {['Help Center', 'FAQs', 'Community'].map((item) => (
+              {['Help Center', 'FAQs'].map((item) => (
                 <li key={item}>
                   <a
                     href={`/${item.toLowerCase().replace(' ', '-')}`}
