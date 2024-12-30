@@ -158,7 +158,7 @@ const HomePage = () => {
                 <div className="p-4 sm:w-1/2">
                   <h1 className="text-4xl md:text-7xl">
                     <div
-                      className="anim-words flex justify-center items-center w-full p-4 md:p-8"
+                      className="anim-words flex justify-center items-center w-full p-0 md:p-0"
                       style={{ height: '250px' }}
                     >
                       <h1
