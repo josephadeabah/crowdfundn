@@ -169,7 +169,7 @@ const HomePage = () => {
                       </h1>
                     </div>
                   </h1>
-                  <div className="w-full flex flex-col md:flex-row justify-center items-center gap-4 lg:justify-start *:w-full *:px-5 *:py-3 *:text-base *:font-medium *:text-center *:transition *:duration-[250ms] *:ease-in-out lg:*:w-auto">
+                  <div className="w-full flex flex-row justify-center items-center gap-4 lg:justify-start *:w-full *:px-5 *:py-3 *:text-base *:font-medium *:text-center *:transition *:duration-[250ms] *:ease-in-out lg:*:w-auto">
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
