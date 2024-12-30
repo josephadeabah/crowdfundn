@@ -286,13 +286,12 @@ const FeePolicy: React.FC = () => {
                   Refunds for Donations
                 </h3>
                 <p className="text-gray-600">
-                  Bantuhive does not provide refunds for donations made to
-                  campaigns unless:
+                  A donor can request a refund on Bantuhive:
                 </p>
                 <ul className="list-disc pl-6 text-gray-600">
                   <li>
-                    The campaign has been deemed fraudulent or violated
-                    Bantuhive's terms of service.
+                    if and only if the funds are still active on the campaign
+                    and not withdrawn.
                   </li>
                 </ul>
               </div>
@@ -303,8 +302,8 @@ const FeePolicy: React.FC = () => {
                 <p className="text-gray-600">
                   If you believe you are eligible for a refund, you may submit a
                   request to Bantuhive’s support team by emailing
-                  support@bantuhive.com. Please include the following
-                  information in your request:
+                  help@bantuhive.com. Please include the following information
+                  in your request:
                 </p>
                 <ul className="list-disc pl-6 text-gray-600">
                   <li>Your transaction ID and the amount you donated.</li>
@@ -331,9 +330,7 @@ const FeePolicy: React.FC = () => {
                 </h3>
                 <p className="text-gray-600">
                   Donations made to campaigns that have already reached their
-                  fundraising goal or are in the process of being withdrawn are
-                  non-refundable. Additionally, donations made to campaigns that
-                  explicitly state no refunds are allowed are also
+                  fundraising goal and or have been withdrawn are
                   non-refundable.
                 </p>
               </div>

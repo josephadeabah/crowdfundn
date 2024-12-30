@@ -51,18 +51,16 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Support</h3>
             <ul className="space-y-2">
-              {['Help Center', 'Contact Us', 'FAQs', 'Community'].map(
-                (item) => (
-                  <li key={item}>
-                    <a
-                      href={`/${item.toLowerCase().replace(' ', '-')}`}
-                      className="hover:text-orange-300 transition duration-300"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                ),
-              )}
+              {['Help Center', 'FAQs', 'Community'].map((item) => (
+                <li key={item}>
+                  <a
+                    href={`/${item.toLowerCase().replace(' ', '-')}`}
+                    className="hover:text-orange-300 transition duration-300"
+                  >
+                    {item}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
