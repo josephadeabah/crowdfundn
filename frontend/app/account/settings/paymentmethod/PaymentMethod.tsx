@@ -179,13 +179,9 @@ const PaymentMethod = () => {
       });
 
       const data = await response.json();
-      if(data && data.success === false || data && data.error){
-        showToast(
-          'Error',
-          data.error,
-          'error',
-        );
-        return
+      if ((data && data.success === false) || (data && data.error)) {
+        showToast('Error', data.error, 'error');
+        return;
       }
       if (data) {
         setSubaccountData(data);

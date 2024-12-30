@@ -169,11 +169,11 @@ const HomePage = () => {
                       </h1>
                     </div>
                   </h1>
-                  <div className="w-full flex flex-row justify-center items-center gap-4  lg:justify-start *:w-full *:px-5 *:py-3 *:text-base *:font-medium *:text-center *:transition *:duration-[250ms] *:ease-in-out lg:*:w-auto">
+                  <div className="w-full flex flex-row justify-center items-center gap-4 lg:justify-start *:w-full *:px-5 *:py-3 *:text-base *:font-medium *:text-center *:transition *:duration-[250ms] *:ease-in-out lg:*:w-auto">
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="bg-green-700 text-white px-8 py-3 rounded-full text-xs md:text-base font-semibold hover:bg-green-500 hover:scale-105 transition-transform duration-300 "
+                      className="bg-green-700 text-white sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-green-500 hover:scale-105 transition-transform duration-300 whitespace-nowrap"
                     >
                       <a
                         href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
@@ -185,7 +185,7 @@ const HomePage = () => {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-8 py-3 rounded-full text-xs md:text-base font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300 "
+                      className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300"
                     >
                       <a href="/how-it-works">How It Works</a>
                     </motion.button>

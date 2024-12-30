@@ -22,7 +22,8 @@ import ContentManagerAdminPage from './content/ContentManager';
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true); // Sidebar open by default on small screens
-  const [activeTab, setActiveTab] = useState<'general-dashboard'>('general-dashboard');
+  const [activeTab, setActiveTab] =
+    useState<'general-dashboard'>('general-dashboard');
 
   useEffect(() => {
     const storedTab = localStorage.getItem('activeTab');
@@ -58,7 +59,7 @@ const AdminDashboard = () => {
   ];
 
   const tabContent = {
-    "general-dashboard": <GeneralDashboard />,
+    'general-dashboard': <GeneralDashboard />,
     userManagement: <UserManagement />,
     moneyTransfers: <TransfersManager />,
     campaignsManager: <CampaignManager />,
