@@ -129,7 +129,7 @@ const FAQsPage = () => {
             Bantu Hive connects communities and people with the funding they
             need, to create lasting impact.
           </div>
-          <div className="mx-auto px-8">
+          <div className="mx-auto px-12">
             {faqs.map((faq, index) => (
               <div key={index} className="mb-4 border-b border-gray-50 pb-4">
                 <button
