@@ -173,7 +173,7 @@ const HomePage = () => {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="bg-green-700 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-green-500 hover:scale-105 transition-transform duration-300 "
+                      className="bg-green-700 text-white px-8 py-3 rounded-full text-sm md:text-lg font-semibold hover:bg-green-500 hover:scale-105 transition-transform duration-300 "
                     >
                       <a
                         href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
@@ -185,7 +185,7 @@ const HomePage = () => {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300 "
+                      className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-8 py-3 rounded-full text-sm md:text-lg font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300 "
                     >
                       <a href="/how-it-works">How It Works</a>
                     </motion.button>
