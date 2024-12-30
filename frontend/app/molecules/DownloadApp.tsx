@@ -16,7 +16,7 @@ const DownloadApp = () => {
           transition={{ duration: 0.5 }}
           className="lg:w-1/2 text-gray-700 dark:text-gray-50 mb-8 lg:mb-0"
         >
-          <h1>Launching Soon</h1>
+          <h1>App Coming Soon</h1>
           <p className="text-xl mb-6">
             Get ready for an amazing experience! Our app will be available soon
             on Google Play Store and App Store.
