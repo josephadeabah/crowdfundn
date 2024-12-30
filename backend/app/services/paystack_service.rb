@@ -109,7 +109,7 @@ class PaystackService
       amount: (amount * 100).to_i, # Convert to kobo
       plan: plan,
       reference: SecureRandom.uuid,
-      metadata: metadata,
+      metadata: metadata, # Add metadata to the transaction
       subaccount: subaccount  # Add the subaccount_code here
     }.compact.to_json
 
