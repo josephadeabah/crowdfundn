@@ -32,7 +32,7 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Company</h3>
             <ul className="space-y-2">
-              {['About Us', 'Careers', 'Partners', 'News'].map((item) => (
+              {['About Us', 'Careers'].map((item) => (
                 <li key={item}>
                   <a
                     href={
