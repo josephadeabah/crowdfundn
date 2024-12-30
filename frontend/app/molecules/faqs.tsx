@@ -138,7 +138,7 @@ const FAQsPage = () => {
                   aria-expanded={expandedFAQ === index}
                   aria-controls={`faq-answer-${index}`}
                 >
-                  <span className="text-lg font-semibold px-4 dark:text-gray-100">
+                  <span className="text-lg font-semibold px-8 dark:text-gray-100">
                     {faq.question}
                   </span>
                   {expandedFAQ === index ? (
@@ -150,7 +150,7 @@ const FAQsPage = () => {
                 {expandedFAQ === index && (
                   <div
                     id={`faq-answer-${index}`}
-                    className="prose mt-2 dark:text-gray-100 px-4 animate-fadeIn"
+                    className="prose mt-2 dark:text-gray-100 px-8 animate-fadeIn"
                     dangerouslySetInnerHTML={{ __html: faq.answer }}
                   />
                 )}
