@@ -178,7 +178,7 @@ const HomePage = () => {
                       <a
                         href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
                       >
-                        Fundraise Now
+                        Fundraise Now For Free
                       </a>
                     </motion.button>
 
