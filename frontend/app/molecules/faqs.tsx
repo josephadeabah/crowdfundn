@@ -28,7 +28,7 @@ const FAQsPage = () => {
     {
       question: 'How do I promote my campaign?',
       answer:
-        'You can promote your campaign by sharing it on social media, via email, or by using the "Promote" feature on Bantu Hive to boost visibility on our platform. Coming Soon!!!.',
+        'You can promote your campaign by sharing it on social media, via email, or by using the ("Promote", Coming Soon!!!) feature on Bantu Hive to boost visibility on our platform.',
     },
     {
       question: 'How do I withdraw funds from my campaign?',
