@@ -219,7 +219,7 @@ module Api
             body = JSON.parse(transfer_response[:body]) rescue {}
             specific_message = body["message"] || "An error occurred"
             Rails.logger.info "Transfer failed: #{specific_message}"
-            render json: { error: "Sorry, this is an error from our side. Please try again later." }, status: :unprocessable_entity
+            render json: { error: "Sorry, this is an issue on our side. Please wait for a while." }, status: :unprocessable_entity
           end
         rescue StandardError => e
           Rails.logger.error "Error processing transfer: #{e.message}"
