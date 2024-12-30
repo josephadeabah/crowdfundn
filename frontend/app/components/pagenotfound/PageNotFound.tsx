@@ -19,12 +19,13 @@ const NotFoundPage = () => {
                 Oops! Page Not Found
               </h1>
               <p className="text-lg text-gray-500 dark:text-gray-400">
-                Sorry, the page you're looking for doesn't exist or has been
-                moved.
+                Sorry, the page you're looking for doesn't exist, or it's
+                temporarily unavailable.
               </p>
               <p className="text-lg text-gray-500 dark:text-gray-400">
-                Don't worry, you can go back to our <strong>Home</strong> or{' '}
-                <strong>Come back</strong> Later.
+                Our team is working to bring it back online soon. In the
+                meantime, you can return to the homepage or explore some of our
+                other resources.
               </p>
             </div>
 
@@ -51,7 +52,6 @@ const NotFoundPage = () => {
                 </button>
               </div>
             </div>
-
             <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 w-full max-w-2xl"></div>
           </div>
         </div>
