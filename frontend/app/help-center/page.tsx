@@ -96,8 +96,8 @@ const Support = () => {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-8 mt-8 bg-gray-100 min-h-screen">
-      <h1 className="text-4xl font-bold text-center mb-8 text-indigo-700">
+    <section className="max-w-7xl mx-auto px-4 py-8 mt-8 bg-green-100 min-h-screen">
+      <h1 className="text-4xl font-bold text-center mb-8 text-green-800">
         Support Center
       </h1>
 
@@ -109,12 +109,12 @@ const Support = () => {
             placeholder="Search for help..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full p-4 pr-12 rounded-lg border-2 border-indigo-300 focus:border-indigo-500 focus:outline-none"
+            className="w-full p-4 pr-12 rounded-lg border-2 border-green-300 focus:border-green-500 focus:outline-none"
             aria-label="Search for help"
           />
           <button
             type="submit"
-            className="absolute right-3 top-3 text-indigo-500 hover:text-indigo-700"
+            className="absolute right-3 top-3 text-green-500 hover:text-green-700"
             aria-label="Submit search"
           >
             <FaSearch size={24} />
@@ -128,7 +128,7 @@ const Support = () => {
           <button
             key={category}
             onClick={() => handleCategoryChange(category)}
-            className={`px-4 py-2 rounded-full ${selectedCategory === category ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600 hover:bg-indigo-100'} transition-colors duration-200`}
+            className={`px-4 py-2 rounded-full ${selectedCategory === category ? 'bg-green-600 text-white' : 'bg-white text-green-600 hover:bg-green-100'} transition-colors duration-200`}
           >
             {category}
           </button>
@@ -139,7 +139,7 @@ const Support = () => {
         {/* Live Chat */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold mb-4 flex items-center">
-            <FaComment className="mr-2 text-indigo-500" /> Live Chat
+            <FaComment className="mr-2 text-green-500" /> Live Chat
           </h2>
           <div className="h-64 overflow-y-auto mb-4 border border-gray-200 rounded p-4">
             {chatMessages.map((message, index) => (
@@ -148,7 +148,7 @@ const Support = () => {
                 className={`mb-2 ${message.sender === 'user' ? 'text-right' : 'text-left'}`}
               >
                 <span
-                  className={`inline-block p-2 rounded-lg ${message.sender === 'user' ? 'bg-indigo-100' : 'bg-gray-200'}`}
+                  className={`inline-block p-2 rounded-lg ${message.sender === 'user' ? 'bg-green-100' : 'bg-gray-200'}`}
                 >
                   {message.text}
                 </span>
@@ -161,11 +161,11 @@ const Support = () => {
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Type your message..."
-              className="flex-grow p-2 border border-gray-300 rounded-l-lg focus:outline-none focus:border-indigo-500"
+              className="flex-grow p-2 border border-gray-300 rounded-l-lg focus:outline-none focus:border-green-500"
             />
             <button
               type="submit"
-              className="bg-indigo-500 text-white p-2 rounded-r-lg hover:bg-indigo-600 transition-colors duration-200"
+              className="bg-green-500 text-white p-2 rounded-r-lg hover:bg-green-600 transition-colors duration-200"
             >
               Send
             </button>
@@ -178,7 +178,7 @@ const Support = () => {
               </span>
             </span>
             <button
-              className="text-indigo-500 hover:text-indigo-700"
+              className="text-green-500 hover:text-green-700"
               aria-label="Attach file"
             >
               <FaPaperclip size={20} />
@@ -192,7 +192,7 @@ const Support = () => {
           <div className="flex justify-end mb-4">
             <button
               onClick={() => handleSort('relevance')}
-              className="flex items-center text-indigo-600 hover:text-indigo-800"
+              className="flex items-center text-green-600 hover:text-green-800"
             >
               <FaSort className="mr-1" /> Sort by: {sortBy}
               <MdKeyboardArrowDown className="ml-1" />
@@ -201,7 +201,7 @@ const Support = () => {
           <ul className="space-y-4">
             {articles.map((article) => (
               <li key={article.id} className="border-b pb-4">
-                <h3 className="text-lg font-semibold hover:text-indigo-600 cursor-pointer">
+                <h3 className="text-lg font-semibold hover:text-green-600 cursor-pointer">
                   {article.title}
                 </h3>
                 <p className="text-sm text-gray-600">
@@ -227,7 +227,7 @@ const Support = () => {
             <input
               type="text"
               id="name"
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:border-green-500"
               required
             />
           </div>
@@ -241,7 +241,7 @@ const Support = () => {
             <input
               type="email"
               id="email"
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:border-green-500"
               required
             />
           </div>
@@ -255,13 +255,13 @@ const Support = () => {
             <textarea
               id="message"
               rows={4}
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:border-green-500"
               required
             ></textarea>
           </div>
           <button
             type="submit"
-            className="bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 transition-colors duration-200"
+            className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition-colors duration-200"
           >
             Submit
           </button>
@@ -270,7 +270,7 @@ const Support = () => {
 
       {/* Notification */}
       {notification && (
-        <div className="fixed bottom-4 right-4 bg-indigo-600 text-white p-4 rounded-lg shadow-lg flex items-center">
+        <div className="fixed bottom-4 right-4 bg-green-600 text-white p-4 rounded-lg shadow-lg flex items-center">
           <FaBell className="mr-2" />
           <span>{notification}</span>
         </div>
