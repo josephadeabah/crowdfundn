@@ -81,7 +81,7 @@ class PaystackWebhook::ChargeSuccessHandler
         amount: net_amount,
         user_id: user_id.presence,  # Update user_id only if provided
         campaign_id: campaign_id.presence,  # Update campaign_id only if provided
-        full_name: response.dig(:data, :metadata, :fundraiserName),
+        # full_name: response.dig(:data, :metadata, :fundraiserName),
         email: response.dig(:data, :customer, :email),
         phone: response.dig(:data, :customer, :phone),
         metadata: donation.metadata.merge(session_token: session_token)  # Add session_token to metadata
