@@ -152,12 +152,28 @@ const Campaigns: React.FC = () => {
               </div>
               <div className="mt-4 flex justify-between items-center">
                 <Button
-                  className={`px-4 py-2 rounded-full ${campaign.status === 'active' ? 'text-green-500' : 'text-red-500'}`}
+                  className={`px-4 py-2 rounded-full 
+    ${
+      campaign.status === 'active'
+        ? 'text-green-500'
+        : campaign.status === 'completed'
+          ? 'text-red-500'
+          : campaign.status === 'canceled'
+            ? 'text-orange-400'
+            : ''
+    }`}
                   variant="ghost"
                   size="default"
                 >
-                  {campaign.status === 'active' ? 'Active' : 'Completed'}
+                  {campaign.status === 'active'
+                    ? 'Active'
+                    : campaign.status === 'completed'
+                      ? 'Completed'
+                      : campaign.status === 'canceled'
+                        ? 'Canceled'
+                        : 'Unknown'}
                 </Button>
+
                 <div className="flex gap-2 items-center">
                   <Button
                     className="px-4 py-2 text-gray-500 rounded-full"
