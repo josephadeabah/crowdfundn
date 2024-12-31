@@ -159,7 +159,7 @@ const Campaigns: React.FC = () => {
         : campaign.status === 'completed'
           ? 'text-red-500'
           : campaign.status === 'canceled'
-            ? 'text-orange-400'
+            ? 'text-orange-300'
             : ''
     }`}
                   variant="ghost"
