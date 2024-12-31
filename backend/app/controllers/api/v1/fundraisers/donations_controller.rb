@@ -72,6 +72,7 @@ module Api
           end
 
           subaccount = Subaccount.find_by(user_id: campaign.fundraiser_id)
+          Rails.logger.info "Subaccount: #{subaccount.inspect}"
         
           # Ensure subaccount exists and has a valid subaccount code
           if subaccount.nil? || subaccount.subaccount_code.blank?
