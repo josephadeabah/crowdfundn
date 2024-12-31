@@ -210,7 +210,8 @@ const Campaigns: React.FC = () => {
                         disabled={campaign.status === 'canceled'}
                         style={{
                           cursor:
-                            campaign.status === 'canceled'
+                            campaign.status === 'canceled' ||
+                            campaign.status === 'completed'
                               ? 'not-allowed'
                               : 'pointer',
                         }}
