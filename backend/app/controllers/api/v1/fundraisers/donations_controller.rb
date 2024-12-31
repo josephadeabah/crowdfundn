@@ -88,9 +88,7 @@ module Api
             donation.user_id = @current_user.id
           else
             # Generate a new anonymous_token if not provided
-            anonymous_token = request.headers['X-Anonymous-Token'] || SecureRandom.uuid
-            # Include the token in the response headers for client-side usage
-            response.headers['X-Anonymous-Token'] = anonymous_token
+            anonymous_token = SecureRandom.uuid
             donation.metadata[:anonymous_token] = anonymous_token # Add token to metadata
           end
         

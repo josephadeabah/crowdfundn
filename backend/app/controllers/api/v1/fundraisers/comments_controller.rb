@@ -31,11 +31,10 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
         email: @current_user.email
       }))
     else
-      # For anonymous users, check for a valid donation using anonymous_token
-      anonymous_token = request.headers['X-Anonymous-Token']
-      if anonymous_token.blank?
-        return render json: { error: 'Anonymous token is required.' }, status: :unauthorized
-      end
+    # Anonymous user flow
+    # Check if the anonymous token is valid
+    token = request.headers['X-Anonymous-Token']
+    anonymous_token = Donation.find_by(metadata: { anonymous_token: token })&.metadata&.dig('anonymous_token')
 
       unless anonymous_user_has_successfully_donated?(@campaign, anonymous_token)
         return render json: { error: 'You must make a successful donation to comment.' }, status: :unauthorized
