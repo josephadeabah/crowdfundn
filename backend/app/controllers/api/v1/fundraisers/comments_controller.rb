@@ -16,9 +16,16 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
   end
 
   # POST /api/v1/fundraisers/campaigns/:campaign_id/comments
-# POST /api/v1/fundraisers/campaigns/:campaign_id/comments
 def create
+  Rails.logger.info("Current User: #{@current_user.inspect}")
+  Rails.logger.info("Params: #{params.inspect}")
+
+  provided_email = params[:email]
   donation = Donation.find_by(campaign_id: @campaign.id, status: 'successful')
+
+  Rails.logger.info("Campaign: #{@campaign.inspect}")
+  Rails.logger.info("Donation: #{donation.inspect}")
+  Rails.logger.info("Provided Email: #{provided_email}")
 
   if @current_user
     unless user_has_successfully_donated?(@campaign, @current_user)
@@ -31,9 +38,7 @@ def create
       email: @current_user.email
     }))
   else
-    provided_email = params[:email]
-
-    # Anonymous users need a valid donation
+    # Anonymous user case
     if donation.nil? || provided_email != donation.email
       return render json: { error: 'You must make a successful donation to comment.' }, status: :unauthorized
     end
