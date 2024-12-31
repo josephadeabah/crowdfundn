@@ -2,11 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import CampaignCard from '@/app/components/campaigns/CampaignCard';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import { useUserContext } from '@/app/context/users/UserContext';
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import Progress from '@/app/components/progressbar/ProgressBar';
+import Link from 'next/link';
+import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
+import { deslugify } from '@/app/utils/helpers/categories';
+import Image from 'next/image';
+import Pagination from '@/app/components/pagination/Pagination';
 
 const CampaignsPage = () => {
   const { fetchAllCampaigns, campaigns, loading, error } = useCampaignContext();
@@ -24,6 +29,7 @@ const CampaignsPage = () => {
   const [dateRange, setDateRange] = useState<string>('all_time');
   const [goalRange, setGoalRange] = useState<string>('all');
   const [location, setLocation] = useState<string>('all');
+  const { pagination } = useCampaignContext();
 
   useEffect(() => {
     fetchAllCampaigns(
@@ -294,12 +300,92 @@ const CampaignsPage = () => {
             <>
               {/* Show campaigns if available */}
               {campaigns && campaigns.length > 0 ? (
-                <CampaignCard
-                  campaigns={campaigns}
-                  loading={loading}
-                  error={error}
-                  onPageChange={handlePageChange}
-                />
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 px-2 md:p-0 relative">
+                  {campaigns.map((campaign, index) => {
+                    const fundraiserCurrency =
+                      campaign?.currency_symbol ||
+                      campaign?.currency?.toUpperCase();
+
+                    return (
+                      <motion.div
+                        key={campaign.id}
+                        initial="hidden"
+                        animate="visible"
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                        className="bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 transform hover:shadow-lg transition-transform duration-300 cursor-pointer overflow-hidden"
+                      >
+                        <Link
+                          href={`/campaign/${campaign.id}?${generateRandomString()}`}
+                        >
+                          <div className="flex flex-col h-full">
+                            <div
+                              className="relative w-full"
+                              style={{ paddingTop: '100%' }}
+                            >
+                              <Image
+                                src={campaign?.media || '/bantuhive.svg'}
+                                alt="media thumbnail"
+                                sizes="100vw"
+                                layout="fill"
+                                objectFit="cover"
+                                className="absolute top-0 left-0 rounded-t"
+                              />
+                            </div>
+                            <div className="px-1 py-2 dark:text-gray-50 flex flex-col gap-1">
+                              <h3 className="text-lg font-bold truncate whitespace-nowrap overflow-hidden">
+                                {campaign?.title}
+                              </h3>
+                              <div className="w-full text-xs text-orange-500 truncate">
+                                {deslugify(campaign?.category)}
+                              </div>
+                              <div className="flex justify-between items-center w-full text-xs font-semibold text-gray-500">
+                                <div className="truncate">
+                                  {campaign.total_donors || 0} Backers
+                                </div>
+                                <div className="truncate">
+                                  {campaign.remaining_days} days left
+                                </div>
+                              </div>
+                              <div className="w-full text-xs">
+                                <Progress
+                                  firstProgress={
+                                    (Number(campaign?.transferred_amount) /
+                                      Number(campaign?.goal_amount)) *
+                                    100
+                                  }
+                                  firstTooltipContent={`Progress: ${
+                                    (Number(campaign?.transferred_amount) /
+                                      Number(campaign?.goal_amount)) *
+                                    100
+                                  }%`}
+                                />
+                              </div>
+                              <div className="w-full text-xs text-gray-600 flex flex-col">
+                                <p className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
+                                  {fundraiserCurrency}
+                                  {!isNaN(
+                                    parseFloat(campaign.transferred_amount),
+                                  )
+                                    ? parseFloat(
+                                        campaign.transferred_amount,
+                                      ).toLocaleString()
+                                    : 0}
+                                  <span className="text-gray-600 dark:text-gray-100 truncate">
+                                    <span className="text-xs p-1">of</span>
+                                    {fundraiserCurrency}
+                                    {parseFloat(
+                                      campaign.goal_amount,
+                                    ).toLocaleString()}
+                                  </span>
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+                </div>
               ) : (
                 // Show a friendly message if no campaigns are found
                 <p className="text-center text-gray-500">
@@ -310,6 +396,13 @@ const CampaignsPage = () => {
             </>
           )}
         </div>
+        {pagination.totalPages > 1 && (
+          <Pagination
+            currentPage={pagination.currentPage || page}
+            totalPages={pagination.totalPages}
+            onPageChange={handlePageChange}
+          />
+        )}
       </div>
     </div>
   );
