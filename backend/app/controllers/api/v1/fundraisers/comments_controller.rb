@@ -19,6 +19,7 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
   def create
     anonymous_token = request.headers['X-Anonymous-Token']
     Rails.logger.info "Anonymous Token received: #{anonymous_token}" # Log for debugging
+    Rails.logger.info "Headers: #{request.headers.to_h}"
     if @current_user
       unless user_has_successfully_donated?(@campaign, @current_user)
         return render json: { error: 'You must have made a successful donation to comment.' }, status: :unauthorized
