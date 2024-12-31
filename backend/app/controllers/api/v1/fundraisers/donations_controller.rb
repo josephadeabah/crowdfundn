@@ -131,8 +131,6 @@ module Api
             metadata: metadata, # metadata that has the donor info
             subaccount: subaccount_code # subaccount code of fundraiser
           )
-
-          Rails.logger.info "Payment initialization response: #{response.inspect}"
         
           if response[:status] == true
             donation.transaction_reference = response[:data][:reference]

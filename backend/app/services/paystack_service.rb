@@ -102,7 +102,6 @@ class PaystackService
   # 3. Initialize Transaction with Split Code
   def initialize_transaction(email:, amount:, plan: nil, metadata: {}, subaccount:)
     return { status: 'error', message: 'Email address is required' } if email.blank?
-    Rails.logger.info("Initializing transaction for #{email} with amount #{amount}  with amount #{plan} and subaccount #{subaccount}")
 
     uri = URI("#{PAYSTACK_BASE_URL}/transaction/initialize")
     body = {
