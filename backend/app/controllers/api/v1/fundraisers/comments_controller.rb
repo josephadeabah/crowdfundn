@@ -1,53 +1,51 @@
 class Api::V1::Fundraisers::CommentsController < ApplicationController
-  before_action :authenticate_request, except: [:index, :show] 
+  before_action :authenticate_request, except: [:index, :show]
   before_action :set_comment, only: %i[show update destroy]
   before_action :set_campaign, only: %i[index create]
 
-    # GET /api/v1/fundraisers/campaigns/:campaign_id/comments
-    def index
-      # Fetch all comments for the campaign
-      @comments = @campaign.comments.order(created_at: :desc)
-      render json: @comments, status: :ok
-    end
+  # GET /api/v1/fundraisers/campaigns/:campaign_id/comments
+  def index
+    # Fetch all comments for the campaign
+    @comments = @campaign.comments.order(created_at: :desc)
+    render json: @comments, status: :ok
+  end
 
-    # GET /api/v1/fundraisers/campaigns/:campaign_id/comments/:id
-    def show
-      render json: @comment, status: :ok
-    end
+  # GET /api/v1/fundraisers/campaigns/:campaign_id/comments/:id
+  def show
+    render json: @comment, status: :ok
+  end
 
-      # POST /api/v1/fundraisers/campaigns/:campaign_id/comments
-    def create
-
-      provided_email = params[:email]
-      donation = Donation.find_by(campaign_id: @campaign.id, status: 'successful')
-
-      if @current_user
-        unless user_has_successfully_donated?(@campaign, @current_user)
-          return render json: { error: 'You must have made a successful donation to comment.' }, status: :unauthorized
-        end
-
-        @comment = @campaign.comments.build(comment_params.merge({
-          user: @current_user,
-          full_name: @current_user.full_name,
-          email: @current_user.email
-        }))
-      else
-        # Anonymous user case
-        if donation.nil? || provided_email != donation.email
-          return render json: { error: 'You must make a successful donation to comment.' }, status: :unauthorized
-        end
-
-        @comment = @campaign.comments.build(comment_params.merge({
-          email: provided_email
-        }))
+  # POST /api/v1/fundraisers/campaigns/:campaign_id/comments
+  def create
+    if @current_user
+      unless user_has_successfully_donated?(@campaign, @current_user)
+        return render json: { error: 'You must have made a successful donation to comment.' }, status: :unauthorized
       end
 
-      if @comment.save
-        render json: @comment, status: :created
-      else
-        render json: { errors: @comment.errors.full_messages }, status: :unprocessable_entity
+      @comment = @campaign.comments.build(comment_params.merge({
+        user: @current_user,
+        full_name: @current_user.full_name,
+        email: @current_user.email
+      }))
+    else
+      # For anonymous users, check for a valid donation using anonymous_token
+      anonymous_token = cookies[:anonymous_token]
+      unless anonymous_token && anonymous_user_has_successfully_donated?(@campaign, anonymous_token)
+        return render json: { error: 'You must make a successful donation to comment.' }, status: :unauthorized
       end
-    end 
+
+      @comment = @campaign.comments.build(comment_params.merge({
+        anonymous_token: anonymous_token
+      }))
+    end
+
+    if @comment.save
+      render json: @comment, status: :created
+    else
+      render json: { errors: @comment.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
   # PUT /api/v1/fundraisers/campaigns/:campaign_id/comments/:id
   def update
     if @comment.update(comment_params)
@@ -84,13 +82,13 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
     params.require(:comment).permit(:content)
   end
 
-  # Helper method to check if the user has made a successful donation to the campaign
+  # Helper method to check if the authenticated user has made a successful donation
   def user_has_successfully_donated?(campaign, user)
-    return false unless user
+    Donation.exists?(campaign_id: campaign.id, user_id: user.id, status: 'successful')
+  end
 
-    # Check for a successful donation by the current authenticated user
-    @donation = Donation.find_by(campaign_id: campaign.id, email: user.email, status: 'successful')
-    
-    @donation.present?
-  end    
+  # Helper method to check if the anonymous user has made a successful donation
+  def anonymous_user_has_successfully_donated?(campaign, anonymous_token)
+    Donation.exists?(campaign_id: campaign.id, metadata: { anonymous_token: anonymous_token }, status: 'successful')
+  end
 end

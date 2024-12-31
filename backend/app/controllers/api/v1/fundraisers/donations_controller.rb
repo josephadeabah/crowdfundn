@@ -70,13 +70,11 @@ module Api
           unless campaign
             return render json: { error: 'The campaign you are trying to donate to no longer exists.' }, status: :not_found
           end
-
-          subaccount = Subaccount.find_by(user_id: campaign.fundraiser_id)
-          Rails.logger.info "Subaccount: #{subaccount.inspect}"
         
-          # Ensure subaccount exists and has a valid subaccount code
+          subaccount = Subaccount.find_by(user_id: campaign.fundraiser_id)
+        
           if subaccount.nil? || subaccount.subaccount_code.blank?
-            return render json: { error: 'Fundraiser does not meet requirememnts for raising funds.' }, status: :unprocessable_entity
+            return render json: { error: 'Fundraiser does not meet requirements for raising funds.' }, status: :unprocessable_entity
           end
         
           subaccount_code = subaccount.subaccount_code
@@ -89,10 +87,13 @@ module Api
           if @current_user
             donation.user_id = @current_user.id
           else
-            donation.metadata[:session_token] = request.session.id  # Use Rails session ID
+            # Check if an anonymous token exists in cookies; generate one if not
+            anonymous_token = cookies[:anonymous_token] || SecureRandom.uuid
+            cookies[:anonymous_token] = { value: anonymous_token, expires: 1.year.from_now }
+        
+            donation.metadata[:anonymous_token] = anonymous_token
           end
         
-          # Add campaign details to donation metadata
           donation.metadata[:campaign] = {
             id: campaign.id,
             title: campaign.title,
@@ -104,17 +105,17 @@ module Api
             fundraiser_id: campaign.fundraiser_id,
             fundraiser_name: campaign.fundraiser.full_name
           }
-
+        
           redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign.id, host: 'bantuhive.com')
           donation.email = params[:donation][:email]
           donation.amount = params[:donation][:amount]
           donation.full_name = params[:donation][:full_name]
           donation.phone = params[:donation][:phone]
         
-          metadata = { 
-            user_id: donation.metadata[:campaign][:fundraiser_id], # ID of the authenticated donor
+          metadata = {
+            user_id: donation.metadata[:campaign][:fundraiser_id],
             campaign_id: donation.campaign_id,
-            session_token: donation.metadata[:session_token], # Only for anonymous users
+            anonymous_token: donation.metadata[:anonymous_token], # Anonymous identifier
             donor_name: donation.full_name,
             redirect_url: redirect_url,
             campaign_metadata: donation.metadata[:campaign],
@@ -128,8 +129,8 @@ module Api
             email: donation.email,
             amount: donation.amount,
             plan: donation.plan,
-            metadata: metadata, # metadata that has the donor info
-            subaccount: subaccount_code # subaccount code of fundraiser
+            metadata: metadata,
+            subaccount: subaccount_code
           )
         
           if response[:status] == true
@@ -139,19 +140,17 @@ module Api
             if donation.save
               render json: {
                 authorization_url: response[:data][:authorization_url],
-                redirect_url: redirect_url,  # Include the redirect URL
+                redirect_url: redirect_url,
                 donation: donation,
                 total_donors: campaign.total_donors
               }, status: :created
             else
-              Rails.logger.info "Donation creation failed: #{donation.errors.full_messages.join(', ')}"
               render json: { error: 'Donation creation failed: ' + donation.errors.full_messages.join(', ') }, status: :unprocessable_entity
             end
           else
-            Rails.logger.info "Payment initialization failed: #{response[:message]}"
             render json: { error: 'Payment initialization failed: ' + response[:message] }, status: :unprocessable_entity
           end
-        end      
+        end            
         
         private
 
