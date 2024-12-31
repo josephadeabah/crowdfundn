@@ -96,13 +96,13 @@ export const CampaignCommentsProvider = ({
           'Content-Type': 'application/json',
         };
 
-              // If the user is authenticated, include the bearer token, otherwise, use the anonymous token
-      const anonymousToken = localStorage.getItem('anonymous_token');
-      if (user) {
-        headers.Authorization = `Bearer ${token}`;
-      } else if (anonymousToken) {
-        headers['X-Anonymous-Token'] = anonymousToken; // Send anonymous token with the request
-      }
+        // If the user is authenticated, include the bearer token, otherwise, use the anonymous token
+        const anonymousToken = localStorage.getItem('anonymous_token');
+        if (user) {
+          headers.Authorization = `Bearer ${token}`;
+        } else if (anonymousToken) {
+          headers['X-Anonymous-Token'] = anonymousToken; // Send anonymous token with the request
+        }
 
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/comments`,
@@ -120,11 +120,11 @@ export const CampaignCommentsProvider = ({
         }
 
         const newComment = await response.json();
-              // Store the anonymous token if provided in response headers
-      const newAnonymousToken = response.headers.get('X-Anonymous-Token');
-      if (newAnonymousToken) {
-        localStorage.setItem('anonymous_token', newAnonymousToken);
-      }
+        // Store the anonymous token if provided in response headers
+        const newAnonymousToken = response.headers.get('X-Anonymous-Token');
+        if (newAnonymousToken) {
+          localStorage.setItem('anonymous_token', newAnonymousToken);
+        }
         setComments((prevComments) => [...prevComments, newComment]);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error creating comment');
