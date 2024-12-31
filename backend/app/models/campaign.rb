@@ -40,7 +40,7 @@ class Campaign < ApplicationRecord
 
   # New cancel method
   def cancel
-    update!(status: :canceled, remaining_days: 0)
+    update!(status: :canceled)
   end  
   # Method to update the transferred_amount based on successful donations and previous transferred_amount
   def update_transferred_amount(new_donated_amount)
