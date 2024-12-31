@@ -218,14 +218,24 @@ module Api
             # Update the campaign's status
             @campaign.update(status: data['status'])
 
-            # Optionally, call the CampaignWebhookService or any other related services
-            # CampaignWebhookService.new(@campaign).send_status_update
-
             render json: { message: 'Campaign status updated' }, status: :ok
           else
             render json: { error: 'Campaign not found' }, status: :not_found
           end
         end
+
+        # PATCH /api/v1/fundraisers/campaigns/:id/cancel
+        def cancel
+          if @campaign.update(status: :canceled)
+            render json: {
+              message: 'Campaign canceled successfully',
+              campaign: @campaign.as_json(include: %i[rewards updates comments])
+            }, status: :ok
+          else
+            render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity
+          end
+        end
+
 
         private
 

@@ -38,6 +38,11 @@ class Campaign < ApplicationRecord
     # Automatically call `update_status_based_on_date` after update
   after_update :update_status_based_on_date, if: -> { remaining_days.zero? && active? }
 
+  # New cancel method
+  def cancel
+    update!(status: :canceled)
+  end
+
   # Method to update the transferred_amount based on successful donations and previous transferred_amount
   def update_transferred_amount(new_donated_amount)
     # Accumulate the new donated amount with the existing transferred amount
@@ -105,6 +110,7 @@ class Campaign < ApplicationRecord
   
 
   def remaining_days
+    return 0 if canceled?
     return 0 unless end_date
   
     (end_date.to_date - Date.current).to_i.clamp(0, Float::INFINITY)
@@ -112,7 +118,8 @@ class Campaign < ApplicationRecord
   
 
   def update_status_based_on_date
-      update!(status: :completed)
+    return if canceled? # Skip if already canceled
+    update!(status: :completed)
   end  
 
   # Calculate the total number of unique donors (authenticated + anonymous)
