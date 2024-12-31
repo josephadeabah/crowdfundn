@@ -141,6 +141,25 @@ const CampaignsPage = () => {
         >
           Find and support the causes that matter most to you.
         </motion.h4>
+        {/* Search Section */}
+        <div className="flex justify-center mb-6">
+          <div className="w-full max-w-2xl">
+            <input
+              id="search"
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="p-2 border border-gray-300 rounded focus:outline-none w-full"
+              placeholder="Search for a campaign"
+            />
+            <button
+              onClick={handleSearch}
+              className="bg-green-500 text-white px-4 py-2 rounded mt-2 w-full"
+            >
+              Search
+            </button>
+          </div>
+        </div>
       </div>
       <div className="flex flex-col md:flex-row gap-1">
         {/* Filters Section */}
@@ -268,27 +287,6 @@ const CampaignsPage = () => {
               <option value="Eswatini">Eswatini</option>
             </select>
           </div>
-
-          <div className="mb-4">
-            <label htmlFor="search" className="block text-sm font-medium mb-1">
-              Search by Title
-            </label>
-            <input
-              id="search"
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
-              placeholder="Search for a campaign"
-            />
-          </div>
-
-          <button
-            onClick={handleSearch}
-            className="bg-green-500 text-white px-4 py-2 rounded focus:outline-none w-full"
-          >
-            Search
-          </button>
         </aside>
 
         {/* Campaigns Section */}
