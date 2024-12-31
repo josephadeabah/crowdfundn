@@ -23,7 +23,11 @@ interface CommentsState {
   loading: boolean;
   error: string | null;
   fetchComments: (campaignId: string) => Promise<void>;
-  createComment: (campaignId: string, content: string) => Promise<void>;
+  createComment: (
+    campaignId: string,
+    content: string,
+    email?: string,
+  ) => Promise<void>;
   updateComment: (
     campaignId: string,
     commentId: string,
@@ -88,7 +92,11 @@ export const CampaignCommentsProvider = ({
 
   // Create a new comment
   const createComment = useCallback(
-    async (campaignId: string, content: string): Promise<void> => {
+    async (
+      campaignId: string,
+      content: string,
+      email?: string, // Optional email parameter
+    ): Promise<void> => {
       setLoading(true);
       setError(null);
       try {
@@ -98,9 +106,9 @@ export const CampaignCommentsProvider = ({
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${token!}`,
+              Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ content }),
+            body: JSON.stringify({ content, email }), // Include email if provided
           },
         );
 
