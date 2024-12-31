@@ -223,7 +223,10 @@ const Campaigns: React.FC = () => {
                       <button
                         className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
                         onClick={() => handleAction(campaign, 'cancel')}
-                        disabled={campaign.status === 'canceled'}
+                        disabled={
+                          campaign.status === 'canceled' ||
+                          campaign.status === 'completed'
+                        }
                         style={{
                           cursor:
                             campaign.status === 'canceled' ||
