@@ -143,7 +143,7 @@ const CampaignsPage = () => {
         </motion.h4>
         {/* Search Section */}
         <div className="flex justify-center mb-6">
-          <div className="w-full max-w-2xl flex">
+          <div className="w-full max-w-2xl flex py-6">
             <input
               id="search"
               type="text"
