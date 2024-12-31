@@ -113,7 +113,7 @@ module Api
           donation.phone = params[:donation][:phone]
         
           metadata = {
-            user_id: donation.metadata[:campaign][:fundraiser_id],
+            user_id: donation.user_id,
             campaign_id: donation.campaign_id,
             anonymous_token: donation.metadata[:anonymous_token], # Anonymous identifier
             donor_name: donation.full_name,
