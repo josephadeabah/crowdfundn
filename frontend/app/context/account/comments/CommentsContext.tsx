@@ -86,7 +86,6 @@ export const CampaignCommentsProvider = ({
     [token],
   );
 
-  // Create a new comment
   const createComment = useCallback(
     async (campaignId: string, content: string): Promise<void> => {
       setLoading(true);
@@ -95,15 +94,12 @@ export const CampaignCommentsProvider = ({
         const headers: Record<string, string> = {
           'Content-Type': 'application/json',
         };
-
-        // If the user is authenticated, include the bearer token, otherwise, use the anonymous token
-        const anonymousToken = localStorage.getItem('anonymous_token');
+  
+        // Check if user is authenticated
         if (user) {
           headers.Authorization = `Bearer ${token}`;
-        } else if (anonymousToken) {
-          headers['X-Anonymous-Token'] = anonymousToken; // Send anonymous token with the request
         }
-
+  
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/comments`,
           {
@@ -112,29 +108,24 @@ export const CampaignCommentsProvider = ({
             body: JSON.stringify({ content }),
           },
         );
-
+  
         if (!response.ok) {
           const errorText = await response.text();
           handleApiError(errorText);
           throw new Error(errorText); // Throw an error to signal failure
         }
-
+  
         const newComment = await response.json();
-        // Store the anonymous token if provided in response headers
-        const newAnonymousToken = response.headers.get('X-Anonymous-Token');
-        if (newAnonymousToken) {
-          localStorage.setItem('anonymous_token', newAnonymousToken);
-        }
         setComments((prevComments) => [...prevComments, newComment]);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error creating comment');
-        throw err; // Re-throw the error for the component to catch
+        throw err;
       } finally {
         setLoading(false);
       }
     },
     [token],
-  );
+  );  
 
   // Update an existing comment
   const updateComment = useCallback(
