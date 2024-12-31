@@ -143,9 +143,11 @@ module Api
                 total_donors: campaign.total_donors
               }, status: :created
             else
+              Rails.logger.info "Donation creation failed: #{donation.errors.full_messages.join(', ')}"
               render json: { error: 'Donation creation failed: ' + donation.errors.full_messages.join(', ') }, status: :unprocessable_entity
             end
           else
+            Rails.logger.info "Payment initialization failed: #{response[:message]}"
             render json: { error: 'Payment initialization failed: ' + response[:message] }, status: :unprocessable_entity
           end
         end      
