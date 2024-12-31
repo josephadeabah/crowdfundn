@@ -149,7 +149,7 @@ const CampaignsPage = () => {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="mt-1 block w-full sm:w-3/4 md:w-full px-4 py-2 rounded-md border border-gray-100 focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white mr-2" // Adjust width on mobile and larger screens
+              className="mt-1 block w-full sm:w-3/4 sm:px-1 md:w-full px-4 py-2 rounded-md border border-gray-100 focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white mr-2" // Adjust width on mobile and larger screens
               placeholder="Search for a campaign"
             />
             <motion.button
