@@ -225,14 +225,12 @@ module Api
         end
 
         # PATCH /api/v1/fundraisers/campaigns/:id/cancel
-        def cancel
-          if @campaign.update(status: :canceled)
-            render json: {
-              message: 'Campaign canceled successfully',
-              campaign: @campaign.as_json(include: %i[rewards updates comments])
-            }, status: :ok
+        def cancel_campaign
+          campaign = Campaign.find(params[:id])
+          if campaign.cancel
+            render json: { message: 'Campaign successfully canceled' }, status: :ok
           else
-            render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity
+            render json: { message: 'Failed to cancel the campaign' }, status: :unprocessable_entity
           end
         end
 

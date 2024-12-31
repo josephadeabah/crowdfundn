@@ -68,7 +68,7 @@ Rails.application.routes.draw do
         resources :donations, only: [:index]
         resources :campaigns do
           member do
-            patch :cancel # Add the cancel action for individual campaigns
+            patch 'cancel', to: 'campaigns#cancel_campaign'
           end
           post 'webhook_status_update', on: :collection  # Defines a route for webhook status update
           get 'my_campaigns', on: :collection
