@@ -143,18 +143,18 @@ const CampaignsPage = () => {
         </motion.h4>
         {/* Search Section */}
         <div className="flex justify-center mb-6">
-          <div className="w-full max-w-2xl">
+          <div className="w-full max-w-2xl flex">
             <input
               id="search"
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="p-2 border border-gray-300 rounded focus:outline-none w-full"
+              className="p-2 border border-gray-300 rounded focus:outline-none w-full mr-2" // Added 'mr-2' for margin-right
               placeholder="Search for a campaign"
             />
             <button
               onClick={handleSearch}
-              className="bg-green-500 text-white px-4 py-2 rounded mt-2 w-full"
+              className="bg-green-500 text-white px-4 py-2 rounded w-32" // Set a fixed width for button
             >
               Search
             </button>
