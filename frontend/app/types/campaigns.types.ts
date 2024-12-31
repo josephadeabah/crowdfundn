@@ -80,6 +80,7 @@ export interface CampaignState {
   loading: boolean;
   error: string | null;
   addCampaign: (campaign: FormData) => Promise<CampaignResponseDataType>;
+  cancelCampaign(id: string): Promise<void>;
   fetchCampaigns: () => Promise<void>;
   fetchAllCampaigns: (
     sortBy: string,

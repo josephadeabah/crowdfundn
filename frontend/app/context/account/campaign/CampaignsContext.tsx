@@ -45,6 +45,48 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     setError(errorText);
   };
 
+  const cancelCampaign = useCallback(
+    async (id: string) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await nextFetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}/cancel`,
+          {
+            method: 'PATCH', // Assuming the cancel endpoint requires a POST request
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            cache: 'no-store', // No caching for cancel action
+          },
+        );
+
+        if (!response.ok) {
+          handleApiError('Failed to cancel the campaign. Please try again.');
+          return;
+        }
+
+        // Optional: Update the state to reflect the campaign cancellation
+        setCampaigns((prevCampaigns) =>
+          prevCampaigns.filter((campaign) => campaign.id !== Number(id)),
+        );
+
+        const updatedCampaign = await response.json();
+        setCurrentCampaign((current) =>
+          current && current.id === Number(id) ? updatedCampaign : current,
+        );
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error canceling the campaign',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
+
   const addCampaign = useCallback(
     async (campaign: FormData) => {
       if (!token) {
@@ -325,6 +367,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       fetchCampaignById,
       deleteCampaign,
       editCampaign,
+      cancelCampaign,
     }),
     [
       campaigns,
@@ -340,6 +383,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       fetchCampaignById,
       deleteCampaign,
       editCampaign,
+      cancelCampaign,
     ],
   );
 

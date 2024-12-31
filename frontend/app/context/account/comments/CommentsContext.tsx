@@ -94,12 +94,12 @@ export const CampaignCommentsProvider = ({
         const headers: Record<string, string> = {
           'Content-Type': 'application/json',
         };
-  
+
         // Check if user is authenticated
         if (user) {
           headers.Authorization = `Bearer ${token}`;
         }
-  
+
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/comments`,
           {
@@ -108,13 +108,13 @@ export const CampaignCommentsProvider = ({
             body: JSON.stringify({ content }),
           },
         );
-  
+
         if (!response.ok) {
           const errorText = await response.text();
           handleApiError(errorText);
           throw new Error(errorText); // Throw an error to signal failure
         }
-  
+
         const newComment = await response.json();
         setComments((prevComments) => [...prevComments, newComment]);
       } catch (err) {
@@ -125,7 +125,7 @@ export const CampaignCommentsProvider = ({
       }
     },
     [token],
-  );  
+  );
 
   // Update an existing comment
   const updateComment = useCallback(

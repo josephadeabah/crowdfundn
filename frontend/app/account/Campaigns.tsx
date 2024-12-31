@@ -19,16 +19,25 @@ import { generateRandomString } from '../utils/helpers/generate.random-string';
 import ErrorPage from '../components/errorpage/ErrorPage';
 
 const Campaigns: React.FC = () => {
-  const { campaigns, loading, error, fetchCampaigns, deleteCampaign } =
-    useCampaignContext();
+  const {
+    campaigns,
+    loading,
+    error,
+    fetchCampaigns,
+    deleteCampaign,
+    cancelCampaign, // Added cancelCampaign function from context
+  } = useCampaignContext();
 
   const [selectedCampaign, setSelectedCampaign] =
     useState<CampaignResponseDataType | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [alertPopupOpen, setAlertPopupOpen] = useState(false);
-  const [campaignToDelete, setCampaignToDelete] =
+  const [campaignToActOn, setCampaignToActOn] =
     useState<CampaignResponseDataType | null>(null);
+  const [actionType, setActionType] = useState<'delete' | 'cancel' | null>(
+    null,
+  ); // Tracks whether action is delete or cancel
 
   const router = useRouter();
 
@@ -79,18 +88,28 @@ const Campaigns: React.FC = () => {
     setSelectedCampaign(null);
   };
 
-  const handleDeleteCampaign = (campaign: CampaignResponseDataType) => {
-    setCampaignToDelete(campaign);
+  const handleAction = (
+    campaign: CampaignResponseDataType,
+    type: 'delete' | 'cancel',
+  ) => {
+    setCampaignToActOn(campaign);
+    setActionType(type);
     setAlertPopupOpen(true);
   };
 
-  const confirmDeleteCampaign = async () => {
-    if (campaignToDelete) {
-      await deleteCampaign(String(campaignToDelete.id)); // Await deletion
-      await fetchCampaigns(); // Fetch updated campaigns after deletion
-      setAlertPopupOpen(false);
-      setCampaignToDelete(null);
+  const confirmAction = async () => {
+    if (!campaignToActOn || !actionType) return;
+
+    if (actionType === 'delete') {
+      await deleteCampaign(String(campaignToActOn.id));
+    } else if (actionType === 'cancel') {
+      await cancelCampaign(String(campaignToActOn.id));
     }
+
+    await fetchCampaigns(); // Refresh campaigns after action
+    setAlertPopupOpen(false);
+    setCampaignToActOn(null);
+    setActionType(null);
   };
 
   return (
@@ -179,9 +198,17 @@ const Campaigns: React.FC = () => {
                     <li>
                       <button
                         className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
-                        onClick={() => handleDeleteCampaign(campaign)}
+                        onClick={() => handleAction(campaign, 'delete')}
                       >
                         Delete Campaign
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+                        onClick={() => handleAction(campaign, 'cancel')}
+                      >
+                        Cancel Campaign
                       </button>
                     </li>
                   </ul>
@@ -192,13 +219,21 @@ const Campaigns: React.FC = () => {
         </div>
       )}
 
-      {/* AlertPopup for confirming deletion */}
+      {/* AlertPopup for confirming delete or cancel action */}
       <AlertPopup
-        title={campaignToDelete ? campaignToDelete.title : 'Confirm Deletion'}
-        message="Are you sure you want to delete this campaign?"
+        title={
+          actionType === 'delete'
+            ? campaignToActOn?.title || 'Confirm Deletion'
+            : 'Confirm Cancelation'
+        }
+        message={
+          actionType === 'delete'
+            ? 'Are you sure you want to delete this campaign?'
+            : 'Are you sure you want to cancel this campaign?'
+        }
         isOpen={alertPopupOpen}
         setIsOpen={setAlertPopupOpen}
-        onConfirm={confirmDeleteCampaign}
+        onConfirm={confirmAction}
         onCancel={() => setAlertPopupOpen(false)}
       />
 
