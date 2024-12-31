@@ -48,7 +48,7 @@ export const CampaignCommentsProvider = ({
   const [comments, setComments] = useState<CommentDataType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { token } = useAuth();
+  const { token, user } = useAuth();
 
   const handleApiError = (errorText: string) => {
     setError(`API Error: ${errorText}`);
@@ -104,7 +104,7 @@ export const CampaignCommentsProvider = ({
           'Content-Type': 'application/json',
         };
   
-        if (token) {
+        if (user) {
           headers.Authorization = `Bearer ${token}`;
         }
   
