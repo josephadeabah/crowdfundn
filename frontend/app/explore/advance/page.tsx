@@ -149,14 +149,14 @@ const CampaignsPage = () => {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 rounded-md border border-gray-100 focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white mr-2" // Added 'mr-2' for margin-right
+              className="mt-1 block w-full sm:w-3/4 md:w-full px-4 py-2 rounded-md border border-gray-100 focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white mr-2" // Adjust width on mobile and larger screens
               placeholder="Search for a campaign"
             />
             <motion.button
               whileHover={{ scale: 1.05 }}
               onClick={handleSearch}
               whileTap={{ scale: 0.95 }}
-              className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300"
+              className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300 w-full sm:w-auto"
             >
               Search
             </motion.button>
