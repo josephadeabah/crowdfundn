@@ -170,7 +170,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            amount: amount, // Amount to donate
+            amount: amount,
             email: email,
             full_name: fullName,
             phone: phoneNumber,
