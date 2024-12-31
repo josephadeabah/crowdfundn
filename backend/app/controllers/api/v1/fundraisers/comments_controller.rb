@@ -21,19 +21,29 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
     unless user_has_successfully_donated?(@campaign, @current_user)
       return render json: { error: 'You must have made a successful donation to comment.' }, status: :unauthorized
     end
-
-    donation = Donation.find_by(campaign_id: @campaign.id, email: @campaign.donations.email, status: 'successful')
+  
+    # Fetch any successful donation for the campaign (not just the most recent one)
+    donation = Donation.find_by(campaign_id: @campaign.id, status: 'successful')
   
     @comment = @campaign.comments.build(comment_params)
   
     if @current_user
+      # Authenticated user
       @comment.user = @current_user
       @comment.full_name = @current_user.full_name
-      @comment.email = @current_user.email || donation.email
+      @comment.email = @current_user.email
     else
-      @comment.user_id = nil
-      @comment.full_name = nil
-      @comment.email = nil
+      # Anonymous user: Check if email is passed in params and matches donation email
+      provided_email = params[:email]  # Assuming email is included in params for anonymous users
+  
+      # Check for a donation with a matching email
+      if donation && provided_email == donation.email
+        @comment.user_id = nil
+        @comment.full_name = nil
+        @comment.email = provided_email
+      else
+        return render json: { error: 'You must make a successful donation to comment.' }, status: :unauthorized
+      end
     end
   
     if @comment.save
@@ -41,7 +51,7 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
     else
       render json: { errors: @comment.errors.full_messages }, status: :unprocessable_entity
     end
-  end
+  end  
   # PUT /api/v1/fundraisers/campaigns/:campaign_id/comments/:id
   def update
     if @comment.update(comment_params)
@@ -80,25 +90,11 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
 
   # Helper method to check if the user has made a successful donation to the campaign
   def user_has_successfully_donated?(campaign, user)
+    return false unless user
 
-    # Check for authenticated users by fetching donation record
-    if user
-      @donation = Donation.find_by(campaign_id: campaign.id, email: user.email, status: 'successful')
-      return @donation.present?
-    end
-
-    donation = Donation.find_by(campaign_id: campaign.id, email: campaign.donations.email, status: 'successful')
-
-    # Ensure email is present and match it with donation metadata
-    if email.present?
-      @donation = Donation.find_by(
-        campaign_id: campaign.id,
-        email: donation.email,
-        status: 'successful'
-      )
-      return @donation.present?
-    end
-
-    false
-  end     
+    # Check for a successful donation by the current authenticated user
+    @donation = Donation.find_by(campaign_id: campaign.id, email: user.email, status: 'successful')
+    
+    @donation.present?
+  end    
 end
