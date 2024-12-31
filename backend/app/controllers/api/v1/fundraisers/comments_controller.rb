@@ -29,14 +29,18 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
       }))
     else
       # For anonymous users, check for a valid donation using anonymous_token
-      anonymous_token = cookies[:anonymous_token]
-      unless anonymous_token && anonymous_user_has_successfully_donated?(@campaign, anonymous_token)
+      anonymous_token = request.headers['X-Anonymous-Token']
+      if anonymous_token.blank?
+        return render json: { error: 'Anonymous token is required.' }, status: :unauthorized
+      end
+
+      unless anonymous_user_has_successfully_donated?(@campaign, anonymous_token)
         return render json: { error: 'You must make a successful donation to comment.' }, status: :unauthorized
       end
 
-      @comment = @campaign.comments.build(comment_params.merge({
-        anonymous_token: anonymous_token
-      }))
+    @comment = @campaign.comments.build(comment_params.merge({
+      anonymous_token: anonymous_token
+    }))
     end
 
     if @comment.save

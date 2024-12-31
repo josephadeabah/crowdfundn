@@ -87,11 +87,11 @@ module Api
           if @current_user
             donation.user_id = @current_user.id
           else
-            # Check if an anonymous token exists in cookies; generate one if not
-            anonymous_token = cookies[:anonymous_token] || SecureRandom.uuid
-            cookies[:anonymous_token] = { value: anonymous_token, expires: 1.year.from_now }
-        
-            donation.metadata[:anonymous_token] = anonymous_token
+                # Generate a new anonymous_token if not provided
+            anonymous_token = request.headers['X-Anonymous-Token'] || SecureRandom.uuid
+            # Include the token in the response headers for client-side usage
+            response.headers['X-Anonymous-Token'] = anonymous_token
+            donation.metadata[:anonymous_token] = anonymous_token # Add token to metadata
           end
         
           donation.metadata[:campaign] = {
