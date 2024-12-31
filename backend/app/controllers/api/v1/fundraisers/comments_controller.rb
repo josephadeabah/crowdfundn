@@ -16,42 +16,39 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
   end
 
   # POST /api/v1/fundraisers/campaigns/:campaign_id/comments
-  def create
-    # Ensure the user has donated successfully to comment
+# POST /api/v1/fundraisers/campaigns/:campaign_id/comments
+def create
+  donation = Donation.find_by(campaign_id: @campaign.id, status: 'successful')
+
+  if @current_user
     unless user_has_successfully_donated?(@campaign, @current_user)
       return render json: { error: 'You must have made a successful donation to comment.' }, status: :unauthorized
     end
-  
-    # Fetch any successful donation for the campaign (not just the most recent one)
-    donation = Donation.find_by(campaign_id: @campaign.id, status: 'successful')
-  
-    @comment = @campaign.comments.build(comment_params)
-  
-    if @current_user
-      # Authenticated user
-      @comment.user = @current_user
-      @comment.full_name = @current_user.full_name
-      @comment.email = @current_user.email
-    else
-      # Anonymous user: Check if email is passed in params and matches donation email
-      provided_email = params[:email]  # Assuming email is included in params for anonymous users
-  
-      # Check for a donation with a matching email
-      if donation && provided_email == donation.email
-        @comment.user_id = nil
-        @comment.full_name = nil
-        @comment.email = provided_email
-      else
-        return render json: { error: 'You must make a successful donation to comment.' }, status: :unauthorized
-      end
+
+    @comment = @campaign.comments.build(comment_params.merge({
+      user: @current_user,
+      full_name: @current_user.full_name,
+      email: @current_user.email
+    }))
+  else
+    provided_email = params[:email]
+
+    # Anonymous users need a valid donation
+    if donation.nil? || provided_email != donation.email
+      return render json: { error: 'You must make a successful donation to comment.' }, status: :unauthorized
     end
-  
-    if @comment.save
-      render json: @comment, status: :created
-    else
-      render json: { errors: @comment.errors.full_messages }, status: :unprocessable_entity
-    end
-  end  
+
+    @comment = @campaign.comments.build(comment_params.merge({
+      email: provided_email
+    }))
+  end
+
+  if @comment.save
+    render json: @comment, status: :created
+  else
+    render json: { errors: @comment.errors.full_messages }, status: :unprocessable_entity
+  end
+end 
   # PUT /api/v1/fundraisers/campaigns/:campaign_id/comments/:id
   def update
     if @comment.update(comment_params)
