@@ -21,13 +21,15 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
     unless user_has_successfully_donated?(@campaign, @current_user)
       return render json: { error: 'You must have made a successful donation to comment.' }, status: :unauthorized
     end
+
+    donation = Donation.find_by(campaign_id: @campaign.id, email: @campaign.donations.email, status: 'successful')
   
     @comment = @campaign.comments.build(comment_params)
   
     if @current_user
       @comment.user = @current_user
       @comment.full_name = @current_user.full_name
-      @comment.email = @current_user.email
+      @comment.email = @current_user.email || donation.email
     else
       @comment.user_id = nil
       @comment.full_name = nil
@@ -77,24 +79,22 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
   end
 
   # Helper method to check if the user has made a successful donation to the campaign
-  # Helper method to check if the user has made a successful donation to the campaign
   def user_has_successfully_donated?(campaign, user)
 
     # Check for authenticated users by fetching donation record
     if user
-      @donation = Donation.find_by(campaign_id: campaign.id, user_id: user.id, status: 'successful')
+      @donation = Donation.find_by(campaign_id: campaign.id, email: user.email, status: 'successful')
       return @donation.present?
     end
 
-    # Check for anonymous users using the session token from donations metadata
-    session_token = request.session.id  # Directly use the Rails session ID
-    # Ensure session_token is present and match it with donation metadata
-    if session_token.present?
+    donation = Donation.find_by(campaign_id: campaign.id, email: campaign.donations.email, status: 'successful')
+
+    # Ensure email is present and match it with donation metadata
+    if email.present?
       @donation = Donation.find_by(
         campaign_id: campaign.id,
-        user_id: nil,
-        status: 'successful',
-        "metadata ->> 'session_token' = ?" => session_token
+        email: donation.email,
+        status: 'successful'
       )
       return @donation.present?
     end
