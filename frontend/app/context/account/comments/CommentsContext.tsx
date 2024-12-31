@@ -106,7 +106,7 @@ export const CampaignCommentsProvider = ({
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${token!}`,
             },
             body: JSON.stringify({ content, email }), // Include email if provided
           },
