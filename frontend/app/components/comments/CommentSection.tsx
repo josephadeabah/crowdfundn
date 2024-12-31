@@ -4,7 +4,6 @@ import Avatar from '../avatar/Avatar';
 import ToastComponent from '../toast/Toast';
 import moment from 'moment';
 import CommentLoader from '@/app/loaders/CommentLoader';
-import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface CommentsSectionProps {
   campaignId: string;
@@ -13,8 +12,7 @@ interface CommentsSectionProps {
 const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
   const [fetchLoading, setFetchLoading] = useState(false); // for fetch comments loading
   const [submitLoading, setSubmitLoading] = useState(false); // for submit comment loading
-  const [comment, setComment] = useState<string>('');
-  const [email, setEmail] = useState<string>(''); // For anonymous user email
+  const [comment, setComment] = useState<string>(''); // Comment text
   const [areCommentsVisible, setAreCommentsVisible] = useState<boolean>(false);
 
   const {
@@ -24,7 +22,6 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
     loading,
     error,
   } = useCampaignCommentsContext();
-  const { user } = useAuth();
 
   const [toast, setToast] = useState({
     isOpen: false,
@@ -69,17 +66,10 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
     e.preventDefault();
     if (!comment.trim()) return;
 
-    // Ensure email is provided for anonymous users
-    if (!user && !email.trim()) {
-      showToast('Error', 'Email is required to comment.', 'error');
-      return;
-    }
-
     setSubmitLoading(true);
     try {
-      await createComment(campaignId, comment, email); // Pass email for anonymous users
+      await createComment(campaignId, comment); // Just send comment for the logged-in user
       setComment('');
-      setEmail(''); // Clear email after submission
       await fetchComments(campaignId);
       showToast('Success', 'Comment added successfully!', 'success');
     } catch (err) {
@@ -155,16 +145,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
       )}
 
       <form onSubmit={handleCommentSubmit} className="mt-4">
-        {!user && ( // Show email input for anonymous users
-          <input
-            type="email"
-            className="w-full border rounded-md p-2 mb-2"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        )}
+        {/* Removed email input, as it's no longer required */}
         <textarea
           className="w-full border rounded-md p-2"
           placeholder="Leave a comment..."

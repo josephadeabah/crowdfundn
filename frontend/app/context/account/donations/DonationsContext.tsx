@@ -27,7 +27,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     per_page: 10,
     total_count: 0,
   });
-  const { token } = useAuth();
+  const { token, user } = useAuth();
 
   const handleApiError = (errorText: string) => {
     setError(`Oops!: ${errorText}`);
@@ -133,6 +133,13 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     try {
       setLoading(true);
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (user) {
+        headers.Authorization = `Bearer ${token}`;
+      }
 
       // Step 1: Create subscription plan
       try {
@@ -166,9 +173,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
         {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
           body: JSON.stringify({
             amount: amount,
             email: email,
