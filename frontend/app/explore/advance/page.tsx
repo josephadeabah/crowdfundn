@@ -149,7 +149,7 @@ const CampaignsPage = () => {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="p-2 border border-gray-300 rounded focus:outline-none w-full mr-2" // Added 'mr-2' for margin-right
+              className="mt-1 block w-full px-4 py-2 rounded-md border border-gray-50 focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white mr-2" // Added 'mr-2' for margin-right
               placeholder="Search for a campaign"
             />
             <button
