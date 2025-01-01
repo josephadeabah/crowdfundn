@@ -142,7 +142,7 @@ const CampaignsPage = () => {
           Find and support the causes that matter most to you.
         </motion.h4>
         {/* Search Section */}
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-1">
           <div className="w-full max-w-2xl mx-auto flex py-6">
             <input
               id="search"
