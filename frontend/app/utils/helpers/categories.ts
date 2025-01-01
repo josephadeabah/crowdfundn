@@ -21,6 +21,7 @@ const categoryLabels = [
   'Birthday Celebration',
   'Carbon Footprint Reduction',
   'Child Protection',
+  'Charity',
   'Civic Engagement',
   'Clean Energy',
   'Clean Water',
