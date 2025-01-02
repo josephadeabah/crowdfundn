@@ -159,6 +159,24 @@ const FAQsPage = () => {
           </div>
         </div>
       </div>
+      {/* FAQPage Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: faqs.map((faq) => ({
+              '@type': 'Question',
+              name: faq.question,
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: faq.answer.replace(/<[^>]+>/g, ''), // Remove HTML tags for JSON-LD
+              },
+            })),
+          }),
+        }}
+      />
     </section>
   );
 };
