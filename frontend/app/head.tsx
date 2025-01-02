@@ -55,7 +55,7 @@ export default function Head() {
                 'BantuHive operates as a premier crowdfunding platform focused on facilitating fundraising efforts across Africa and the Diaspora.',
               foundingDate: '2024',
               foundingLocation: {
-                '@type': 'Ghana',
+                '@type': 'Place',
                 name: 'Africa',
               },
               contactPoint: {
