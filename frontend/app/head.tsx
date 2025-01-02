@@ -9,7 +9,7 @@ export default function Head() {
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta
         name="keywords"
-        content="fundraising, Africa, diaspora, charity, donations, nonprofit"
+        content="fundraising, Africa, diaspora, charity, donations, nonprofit, crowdfunding"
       />
       <meta
         property="og:title"
@@ -34,7 +34,8 @@ export default function Head() {
         name="twitter:title"
         content="Fundraising Made Easy for Africa & Diaspora"
       />
-      <link rel="icon" href="/bantuhive.ico" />
+      <link rel="icon" href="/bantuhive.ico" type="image/x-icon" />
+      <link rel="icon" href="/bantu-hive.svg" type="image/svg+xml" />
       <link rel="canonical" href="https://bantuhive.com" />
 
       {/* Structured Data */}
@@ -46,7 +47,7 @@ export default function Head() {
             '@type': 'Organization',
             name: 'Bantu Hive',
             url: 'https://bantuhive.com',
-            logo: 'https://bantuhive.com/bantuhive.ico',
+            logo: 'https://bantuhive.com/bantu-hive.svg',
             description:
               'Raise Money When You Need, Fund or Support Causes You Care About, Reach Donors and Make a Difference.',
             sameAs: [
