@@ -4,7 +4,7 @@ export default function Head() {
       <title>Fundraising Made Easy for Africa & Diaspora</title>
       <meta
         name="description"
-        content="Raise Money When You Need, Fund or Support Causes You Care About, Reach Donors and Make a Difference."
+        content="BantuHive operates as a premier crowdfunding platform focused on facilitating fundraising efforts across Africa and the Diaspora."
       />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta
@@ -17,7 +17,7 @@ export default function Head() {
       />
       <meta
         property="og:description"
-        content="Raise Money When You Need, Fund or Support Causes You Care About, Reach Donors and Make a Difference."
+        content="BantuHive operates as a premier crowdfunding platform focused on facilitating fundraising efforts across Africa and the Diaspora."
       />
       <meta property="og:image" content="/marketing7.png" />
       <meta property="og:url" content="https://bantuhive.com" />
@@ -27,7 +27,7 @@ export default function Head() {
       <meta name="twitter:site" content="@bantuhive" />
       <meta
         name="twitter:description"
-        content="Raise Money When You Need, Fund or Support Causes You Care About, Reach Donors and Make a Difference."
+        content="BantuHive operates as a premier crowdfunding platform focused on facilitating fundraising efforts across Africa and the Diaspora."
       />
       <meta name="twitter:image" content="/marketing6.png" />
       <meta
@@ -49,7 +49,7 @@ export default function Head() {
             url: 'https://bantuhive.com',
             logo: 'https://bantuhive.com/bantu-hive.svg',
             description:
-              'Raise Money When You Need, Fund or Support Causes You Care About, Reach Donors and Make a Difference.',
+              'BantuHive operates as a premier crowdfunding platform focused on facilitating fundraising efforts across Africa and the Diaspora.',
             sameAs: [
               'https://web.facebook.com/profile.php?id=61568192851056',
               'https://www.instagram.com/bantuhive_fund/',
