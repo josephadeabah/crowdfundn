@@ -1,3 +1,5 @@
+import { faqs } from './molecules/faqs';
+
 export default function Head() {
   return (
     <>
@@ -42,20 +44,54 @@ export default function Head() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'Organization',
-            name: 'Bantu Hive',
-            url: 'https://bantuhive.com',
-            logo: 'https://bantuhive.com/bantu-hive.svg',
-            description:
-              'BantuHive operates as a premier crowdfunding platform focused on facilitating fundraising efforts across Africa and the Diaspora.',
-            sameAs: [
-              'https://web.facebook.com/profile.php?id=61568192851056',
-              'https://www.instagram.com/bantuhive_fund/',
-              'https://www.linkedin.com/company/bantu-hive/about/',
-            ],
-          }),
+          __html: JSON.stringify([
+            {
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'Bantu Hive',
+              url: 'https://bantuhive.com',
+              logo: 'https://bantuhive.com/bantu-hive.svg',
+              description:
+                'BantuHive operates as a premier crowdfunding platform focused on facilitating fundraising efforts across Africa and the Diaspora.',
+              foundingDate: '2024',
+              foundingLocation: {
+                '@type': 'Ghana',
+                name: 'Africa',
+              },
+              contactPoint: {
+                '@type': 'ContactPoint',
+                telephone: '+233200415683',
+                contactType: 'customer service',
+                email: 'help@bantuhive.com',
+                areaServed: 'Africa, Diaspora',
+              },
+              address: {
+                '@type': 'PostalAddress',
+                streetAddress: 'IVY Street, Kingstel Hotel Avenue',
+                addressLocality: 'Takoradi',
+                addressRegion: 'Western Region',
+                postalCode: '982',
+                addressCountry: 'Ghana',
+              },
+              sameAs: [
+                'https://web.facebook.com/profile.php?id=61568192851056',
+                'https://www.instagram.com/bantuhive_fund/',
+                'https://www.linkedin.com/company/bantu-hive/about/',
+              ],
+            },
+            {
+              '@context': 'https://schema.org',
+              '@type': 'FAQPage',
+              mainEntity: faqs.map((faq) => ({
+                '@type': 'Question',
+                name: faq.question,
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: faq.answer.replace(/<[^>]+>/g, ''), // Remove HTML tags for JSON-LD
+                },
+              })),
+            },
+          ]),
         }}
       />
     </>
