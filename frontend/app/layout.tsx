@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Providers from './Providers';
 import { ReactNode } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { GlobalContextProvider } from './context/GlobalContextProvider';
 import Head from './head';
 
@@ -36,7 +37,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <GlobalContextProvider>
           <Providers>
             <Navbar />
-            <main className="w-full">{children}</main>
+            <main className="w-full">
+              {children} <Analytics />
+            </main>
             <Footer />
           </Providers>
         </GlobalContextProvider>
