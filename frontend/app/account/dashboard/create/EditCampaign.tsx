@@ -203,7 +203,7 @@ const EditCampaign = () => {
 
         {/* Dropdown for Campaign Permissions and Promotion Settings */}
         {id != null && (
-          <div className="mb-4 col-span-full">
+          <div className="col-span-full">
             <button
               onClick={() => setSettingsOpen((prev) => !prev)}
               className="flex items-center justify-between w-full p-2 bg-gray-100 rounded-lg text-left focus:outline-none"
@@ -215,7 +215,7 @@ const EditCampaign = () => {
         )}
 
         {settingsOpen && (
-          <div className="mt-2 p-4 border rounded-lg bg-gray-50 col-span-full">
+          <div className="p-4 border rounded-lg bg-gray-50 col-span-full">
             <CampaignPermissionSetting
               permissions={permissions as { [key: string]: boolean }}
               setPermissions={
