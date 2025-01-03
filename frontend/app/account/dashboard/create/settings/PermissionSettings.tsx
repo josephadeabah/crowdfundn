@@ -184,7 +184,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
         </h3>
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm">
-            Make Campaign {isPublic ? 'Public' : 'Private'}
+            Make Campaign {!isPublic ? 'Public' : 'Private'}
           </span>
           <Switch
             checked={isPublic}
