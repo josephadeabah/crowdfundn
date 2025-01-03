@@ -99,6 +99,10 @@ export interface CampaignState {
   ) => Promise<SingleCampaignResponseDataType>;
   fetchCampaignById: (id: string) => Promise<SingleCampaignResponseDataType>;
   fetchCampaignStatistics: () => Promise<void>;
+  updateCampaignSettings: (
+    campaignId: string,
+    settings: Record<string, any>,
+  ) => Promise<void>;
 }
 
 export interface CampaignDescription {

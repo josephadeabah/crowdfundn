@@ -1,11 +1,9 @@
 'use client';
 import React, { useState, useCallback, useEffect } from 'react';
-import { FiX, FiChevronDown, FiChevronUp } from 'react-icons/fi';
-import { Field, Switch } from '@headlessui/react';
+import { FiX } from 'react-icons/fi';
 import { Button } from '@/app/components/button/Button';
 import { useDropzone } from 'react-dropzone';
 import Modal from '@/app/components/modal/Modal';
-import CampaignPermissionSetting from '@/app/account/dashboard/create/settings/PermissionSettings';
 import { FaCheck, FaEdit } from 'react-icons/fa';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useUserContext } from '@/app/context/users/UserContext';
@@ -27,23 +25,12 @@ const CreateCampaign = () => {
   const [location, setLocation] = useState('');
   const [currency, setCurrency] = useState('');
   const [currency_symbol, setCurrencySymbol] = useState('');
-  const [isPublic, setIsPublic] = useState<boolean>(true);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [error, setError] = useState<FormErrors>({});
-  const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
   const { addCampaign, loading } = useCampaignContext();
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<React.ReactNode>('');
   const [alertTitle, setAlertTitle] = useState<string>('');
-
-  const initialPermissions = {
-    acceptDonations: false,
-    leaveWordsOfSupport: false,
-    appearInSearchResults: false,
-    suggestedFundraiserLists: false,
-    receiveDonationEmail: false,
-    receiveDailySummary: false,
-  };
 
   interface FormErrors {
     title?: string;
@@ -54,15 +41,6 @@ const CreateCampaign = () => {
     endDate?: string;
     dateRange?: string;
   }
-
-  const [permissions, setPermissions] = useState(initialPermissions);
-
-  const [promotionSettings, setPromotionSettings] = useState({
-    enablePromotions: false,
-    schedulePromotion: false,
-    promotionFrequency: 'daily',
-    promotionDuration: 1,
-  });
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -131,32 +109,6 @@ const CreateCampaign = () => {
       formData.append('campaign[location]', location);
       formData.append('campaign[currency]', currency);
       formData.append('campaign[currency_symbol]', currency_symbol);
-      // Handle booleans properly
-      formData.append('campaign[is_public]', isPublic ? 'true' : 'false');
-      formData.append(
-        'campaign[permissions][accept_donations]',
-        permissions.acceptDonations ? 'true' : 'false',
-      );
-      formData.append(
-        'campaign[permissions][leave_words_of_support]',
-        permissions.leaveWordsOfSupport ? 'true' : 'false',
-      );
-      formData.append(
-        'campaign[permissions][appear_in_search_results]',
-        permissions.appearInSearchResults ? 'true' : 'false',
-      );
-      formData.append(
-        'campaign[permissions][suggested_fundraiser_lists]',
-        permissions.suggestedFundraiserLists ? 'true' : 'false',
-      );
-      formData.append(
-        'campaign[permissions][receive_donation_email]',
-        permissions.receiveDonationEmail ? 'true' : 'false',
-      );
-      formData.append(
-        'campaign[permissions][receive_daily_summary]',
-        permissions.receiveDailySummary ? 'true' : 'false',
-      );
 
       if (selectedImage) {
         formData.append('campaign[media]', selectedImage);
@@ -198,14 +150,6 @@ const CreateCampaign = () => {
     setIsOpen(false);
     setTitle('');
     setContent('');
-    setIsPublic(false);
-    setPermissions(initialPermissions);
-    setPromotionSettings({
-      enablePromotions: false,
-      schedulePromotion: false,
-      promotionFrequency: 'daily',
-      promotionDuration: 1,
-    });
     setSelectedImage(null);
   };
 
@@ -404,59 +348,6 @@ const CreateCampaign = () => {
                     src={URL.createObjectURL(selectedImage) || ''}
                     alt="Selected image"
                     className="h-full w-full object-cover"
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Public Switch */}
-            <div className="mb-4">
-              <Field className="flex items-center justify-between">
-                <span className="flex-grow flex flex-col">
-                  <Field as="span" className="text-sm font-medium leading-6">
-                    Campaign is {isPublic ? 'Public' : 'Private'}
-                  </Field>
-                  <Field className="text-xs text-gray-500">
-                    Allow your campaign to be visible to the public.
-                  </Field>
-                </span>
-                <Switch
-                  checked={isPublic}
-                  onChange={setIsPublic}
-                  className={`${
-                    isPublic ? 'bg-green-500' : 'bg-gray-200'
-                  } relative inline-flex h-6 w-11 items-center rounded-full`}
-                >
-                  <span
-                    className={`${
-                      isPublic ? 'translate-x-6' : 'translate-x-1'
-                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                  />
-                </Switch>
-              </Field>
-            </div>
-
-            {/* Dropdown for Campaign Permissions and Promotion Settings */}
-            <div className="mb-4">
-              <button
-                onClick={() => setSettingsOpen((prev) => !prev)}
-                className="flex items-center justify-between w-full p-2 bg-gray-100 rounded-lg text-left focus:outline-none"
-              >
-                <span className="text-lg font-semibold">Campaign Settings</span>
-                {settingsOpen ? <FiChevronUp /> : <FiChevronDown />}
-              </button>
-
-              {settingsOpen && (
-                <div className="mt-2 p-4 border rounded-lg bg-gray-50">
-                  <CampaignPermissionSetting
-                    permissions={permissions as { [key: string]: boolean }}
-                    setPermissions={
-                      setPermissions as React.Dispatch<
-                        React.SetStateAction<{ [key: string]: boolean }>
-                      >
-                    }
-                    promotionSettings={promotionSettings}
-                    setPromotionSettings={setPromotionSettings}
                   />
                 </div>
               )}

@@ -1,6 +1,9 @@
+'use client';
+
 import React from 'react';
 import { Switch } from '@headlessui/react';
 import { Button } from '@/app/components/button/Button';
+import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 
 interface CampaignPermissionSettingProps {
   permissions: { [key: string]: boolean };
@@ -21,6 +24,9 @@ interface CampaignPermissionSettingProps {
       schedulePromotion: boolean;
     }>
   >;
+  isPublic: boolean; // Add isPublic to props
+  setIsPublic: React.Dispatch<React.SetStateAction<boolean>>; // Add setIsPublic to props
+  campaignId: string; // Add campaignId to props
 }
 
 const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
@@ -28,7 +34,12 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
   setPermissions,
   promotionSettings,
   setPromotionSettings,
+  isPublic,
+  setIsPublic,
+  campaignId, // Destructure campaignId
 }) => {
+  const { updateCampaignSettings, loading } = useCampaignContext();
+
   const handleSwitchChange = (permission: string) => {
     setPermissions((prev) => ({
       ...prev,
@@ -59,12 +70,28 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
     }));
   };
 
+  const handleSaveSettings = async () => {
+    const updatedSettings = {
+      ...permissions,
+      ...promotionSettings,
+      is_public: isPublic, // Include isPublic in the payload
+    };
+
+    try {
+      await updateCampaignSettings(campaignId, updatedSettings);
+      alert('Campaign settings updated successfully!');
+    } catch (error) {
+      alert('Failed to update campaign settings. Please try again.');
+    }
+  };
+
   return (
     <div className="p-2 bg-gray-50 dark:bg-gray-900 h-fit">
       <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">
         Fundraiser Settings
       </h2>
 
+      {/* Permissions Section */}
       <div className="mb-6 p-4 h-full bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 hover:shadow">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
           Fundraiser Permissions
@@ -85,6 +112,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
         ))}
       </div>
 
+      {/* Promotion Settings Section */}
       <div className="mb-6 p-4 h-full bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 hover:shadow">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
           Promotion Settings
@@ -144,6 +172,38 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
             </div>
           </>
         )}
+      </div>
+
+      {/* Visibility Settings Section */}
+      <div className="mb-6 p-4 h-full bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 hover:shadow">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
+          Visibility Settings
+        </h3>
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-sm">
+            Make Campaign {isPublic ? 'Public' : 'Private'}
+          </span>
+          <Switch
+            checked={isPublic}
+            onChange={setIsPublic}
+            className={`${isPublic ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
+          >
+            <span
+              className={`${isPublic ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+            />
+          </Switch>
+        </div>
+      </div>
+
+      {/* Save Settings Button */}
+      <div className="flex justify-end">
+        <Button
+          onClick={handleSaveSettings}
+          disabled={loading}
+          className="bg-green-500 text-white hover:bg-green-600"
+        >
+          {loading ? 'Saving...' : 'Save Settings'}
+        </Button>
       </div>
     </div>
   );

@@ -1,11 +1,14 @@
 'use client';
 import { FaEdit } from 'react-icons/fa';
 import React, { useState, useCallback, useEffect } from 'react';
+import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { useDropzone } from 'react-dropzone';
 import Modal from '@/app/components/modal/Modal';
 import { Button } from '@/app/components/button/Button';
 import { useParams } from 'next/navigation';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
+import CampaignPermissionSetting from '@/app/account/dashboard/create/settings/PermissionSettings';
+
 import { SingleCampaignResponseDataType } from '@/app/types/campaigns.types';
 import CampaignsLoader from '@/app/loaders/CampaignsLoader';
 import { truncateHTML } from '@/app/utils/helpers/truncate.html';
@@ -40,6 +43,27 @@ const EditCampaign = () => {
   const [currencyCode, setCurrencyCode] = useState<string | null>(null);
   const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const [isPublic, setIsPublic] = useState<boolean>(true);
+
+  const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
+
+  const initialPermissions = {
+    acceptDonations: false,
+    leaveWordsOfSupport: false,
+    appearInSearchResults: false,
+    suggestedFundraiserLists: false,
+    receiveDonationEmail: false,
+    receiveDailySummary: false,
+  };
+
+  const [permissions, setPermissions] = useState(initialPermissions);
+
+  const [promotionSettings, setPromotionSettings] = useState({
+    enablePromotions: false,
+    schedulePromotion: false,
+    promotionFrequency: 'daily',
+    promotionDuration: 1,
+  });
 
   useEffect(() => {
     if (id && typeof id === 'string') {
@@ -176,6 +200,35 @@ const EditCampaign = () => {
             className="w-full h-40 object-cover rounded"
           />
         </div>
+
+        {/* Dropdown for Campaign Permissions and Promotion Settings */}
+        <div className="mb-4">
+          <button
+            onClick={() => setSettingsOpen((prev) => !prev)}
+            className="flex items-center justify-between w-full p-2 bg-gray-100 rounded-lg text-left focus:outline-none"
+          >
+            <span className="text-lg font-semibold">Campaign Settings</span>
+            {settingsOpen ? <FiChevronUp /> : <FiChevronDown />}
+          </button>
+        </div>
+
+        {settingsOpen && (
+          <div className="mt-2 p-4 border rounded-lg bg-gray-50">
+            <CampaignPermissionSetting
+              permissions={permissions as { [key: string]: boolean }}
+              setPermissions={
+                setPermissions as React.Dispatch<
+                  React.SetStateAction<{ [key: string]: boolean }>
+                >
+              }
+              promotionSettings={promotionSettings}
+              setPromotionSettings={setPromotionSettings}
+              isPublic={isPublic} // Pass isPublic state
+              setIsPublic={setIsPublic} // Pass setIsPublic setter
+              campaignId={Array.isArray(id) ? id[0] : id}
+            />
+          </div>
+        )}
       </div>
 
       {/* Modal Component */}

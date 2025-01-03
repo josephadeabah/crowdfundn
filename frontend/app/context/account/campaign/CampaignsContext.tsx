@@ -352,6 +352,61 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
+  // Add the updateCampaignSettings method
+  const updateCampaignSettings = useCallback(
+    async (campaignId: string, settings: Record<string, any>) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await nextFetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ campaign: settings }),
+          },
+        );
+
+        if (!response.ok) {
+          handleApiError(
+            'Failed to update campaign settings. Please try again.',
+          );
+          return;
+        }
+
+        const updatedCampaign = await response.json();
+
+        // Update the current campaign in state
+        setCurrentCampaign((current) =>
+          current && current.id === Number(campaignId)
+            ? updatedCampaign
+            : current,
+        );
+
+        // Update the campaigns list if needed
+        setCampaigns((prevCampaigns) =>
+          prevCampaigns.map((campaign) =>
+            campaign.id === Number(campaignId) ? updatedCampaign : campaign,
+          ),
+        );
+
+        return updatedCampaign;
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Error updating campaign settings',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
+
   const contextValue = useMemo(
     () => ({
       campaigns,
@@ -368,6 +423,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       deleteCampaign,
       editCampaign,
       cancelCampaign,
+      updateCampaignSettings,
     }),
     [
       campaigns,
@@ -384,6 +440,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       deleteCampaign,
       editCampaign,
       cancelCampaign,
+      updateCampaignSettings,
     ],
   );
 
