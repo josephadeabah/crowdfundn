@@ -38,7 +38,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
   setIsPublic,
   campaignId, // Destructure campaignId
 }) => {
-  const { updateCampaignSettings, loading } = useCampaignContext();
+  const { updateCampaignSettings, fetchCampaignById, fetchCampaigns, loading } = useCampaignContext();
 
   const handleSwitchChange = (permission: string) => {
     setPermissions((prev) => ({
@@ -79,6 +79,8 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
 
     try {
       await updateCampaignSettings(campaignId, updatedSettings);
+      await fetchCampaignById(campaignId);
+      await fetchCampaigns();
       alert('Campaign settings updated successfully!');
     } catch (error) {
       alert('Failed to update campaign settings. Please try again.');
