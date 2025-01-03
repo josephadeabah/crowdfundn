@@ -13,8 +13,6 @@ import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import Modal from '@/app/components/modal/Modal';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { CampaignResponseDataType } from '../types/campaigns.types';
-import CampaignPermissionSetting from './dashboard/create/settings/PermissionSettings';
-import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { generateRandomString } from '../utils/helpers/generate.random-string';
 import ErrorPage from '../components/errorpage/ErrorPage';
 
@@ -31,7 +29,6 @@ const Campaigns: React.FC = () => {
   const [selectedCampaign, setSelectedCampaign] =
     useState<CampaignResponseDataType | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [alertPopupOpen, setAlertPopupOpen] = useState(false);
   const [campaignToActOn, setCampaignToActOn] =
     useState<CampaignResponseDataType | null>(null);
@@ -40,33 +37,6 @@ const Campaigns: React.FC = () => {
   ); // Tracks whether action is delete or cancel
 
   const router = useRouter();
-
-  const initialPermissions = {
-    acceptDonations: false,
-    leaveWordsOfSupport: false,
-    appearInSearchResults: false,
-    suggestedFundraiserLists: false,
-    receiveDonationEmail: false,
-    receiveDailySummary: false,
-  };
-
-  const [permissions, setPermissions] = useState(initialPermissions);
-  const [promotionSettings, setPromotionSettings] = useState({
-    enablePromotions: false,
-    schedulePromotion: false,
-    promotionFrequency: 'daily',
-    promotionDuration: 1,
-  });
-
-  const handleEditCampaign = (campaignId: string) => {
-    router.push(
-      `/account/dashboard/create/${campaignId}?${generateRandomString()}`,
-    );
-  };
-
-  const handleViewCampaignDetails = (campaignId: string) => {
-    router.push(`/campaign/${campaignId}?${generateRandomString()}`);
-  };
 
   useEffect(() => {
     fetchCampaigns();
@@ -77,6 +47,16 @@ const Campaigns: React.FC = () => {
   if (error) {
     return <ErrorPage />;
   }
+
+  const handleEditCampaign = (campaignId: string) => {
+    router.push(
+      `/account/dashboard/create/${campaignId}?${generateRandomString()}`,
+    );
+  };
+
+  const handleViewCampaignDetails = (campaignId: string) => {
+    router.push(`/campaign/${campaignId}?${generateRandomString()}`);
+  };
 
   const handleOpenModal = (campaign: CampaignResponseDataType) => {
     setSelectedCampaign(campaign);
@@ -302,32 +282,6 @@ const Campaigns: React.FC = () => {
                 __html: selectedCampaign.description.body,
               }}
             />
-          </div>
-
-          {/* Dropdown for Campaign Permissions and Promotion Settings */}
-          <div className="mb-4 mt-4">
-            <button
-              onClick={() => setSettingsOpen((prev) => !prev)}
-              className="flex items-center justify-between w-full p-2 bg-gray-100 rounded-lg text-left focus:outline-none"
-            >
-              <span className="text-lg font-semibold">Campaign Settings</span>
-              {settingsOpen ? <FiChevronUp /> : <FiChevronDown />}
-            </button>
-
-            {settingsOpen && (
-              <div className="mt-2 p-4 border rounded-lg bg-gray-50">
-                <CampaignPermissionSetting
-                  permissions={permissions as { [key: string]: boolean }}
-                  setPermissions={
-                    setPermissions as React.Dispatch<
-                      React.SetStateAction<{ [key: string]: boolean }>
-                    >
-                  }
-                  promotionSettings={promotionSettings}
-                  setPromotionSettings={setPromotionSettings}
-                />
-              </div>
-            )}
           </div>
         </Modal>
       )}

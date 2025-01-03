@@ -38,7 +38,8 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
   setIsPublic,
   campaignId, // Destructure campaignId
 }) => {
-  const { updateCampaignSettings, fetchCampaignById, fetchCampaigns, loading } = useCampaignContext();
+  const { updateCampaignSettings, fetchCampaignById, fetchCampaigns, loading } =
+    useCampaignContext();
 
   const handleSwitchChange = (permission: string) => {
     setPermissions((prev) => ({
