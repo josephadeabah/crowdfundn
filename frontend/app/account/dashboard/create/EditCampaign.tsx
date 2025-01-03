@@ -202,6 +202,7 @@ const EditCampaign = () => {
         </div>
 
         {/* Dropdown for Campaign Permissions and Promotion Settings */}
+        {id != null && (
         <div className="mb-4 col-span-full">
           <button
             onClick={() => setSettingsOpen((prev) => !prev)}
@@ -211,8 +212,9 @@ const EditCampaign = () => {
             {settingsOpen ? <FiChevronUp /> : <FiChevronDown />}
           </button>
         </div>
+        )}
 
-        {settingsOpen && id != null && (
+        {settingsOpen && (
           <div className="mt-2 p-4 border rounded-lg bg-gray-50 col-span-full">
             <CampaignPermissionSetting
               permissions={permissions as { [key: string]: boolean }}
