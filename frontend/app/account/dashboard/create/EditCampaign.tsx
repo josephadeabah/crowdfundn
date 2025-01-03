@@ -203,15 +203,15 @@ const EditCampaign = () => {
 
         {/* Dropdown for Campaign Permissions and Promotion Settings */}
         {id != null && (
-        <div className="mb-4 col-span-full">
-          <button
-            onClick={() => setSettingsOpen((prev) => !prev)}
-            className="flex items-center justify-between w-full p-2 bg-gray-100 rounded-lg text-left focus:outline-none"
-          >
-            <span className="text-lg font-semibold">Campaign Settings</span>
-            {settingsOpen ? <FiChevronUp /> : <FiChevronDown />}
-          </button>
-        </div>
+          <div className="mb-4 col-span-full">
+            <button
+              onClick={() => setSettingsOpen((prev) => !prev)}
+              className="flex items-center justify-between w-full p-2 bg-gray-100 rounded-lg text-left focus:outline-none"
+            >
+              <span className="text-lg font-semibold">Campaign Settings</span>
+              {settingsOpen ? <FiChevronUp /> : <FiChevronDown />}
+            </button>
+          </div>
         )}
 
         {settingsOpen && (

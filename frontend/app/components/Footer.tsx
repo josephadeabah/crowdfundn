@@ -4,7 +4,7 @@ import { FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-50 dark:text-gray-50 text-gray-800 mb-0 dark:bg-gray-950">
+    <footer className="bg-gray-50 dark:text-gray-50 text-gray-800 dark:bg-gray-950 w-full">
       <div className="mx-auto px-3 md:px-0 py-12 max-w-screen-xl">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           <div className="col-span-1 md:col-span-2">
@@ -20,7 +20,7 @@ const Footer = () => {
               {['How It Works', 'Pricing'].map((item) => (
                 <li key={item}>
                   <a
-                    href={`/${item.toLowerCase().replace(/\s+/g, '-')}`} // Regular expression to handle multiple spaces
+                    href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
                     className="hover:text-orange-300 transition duration-300"
                   >
                     {item}

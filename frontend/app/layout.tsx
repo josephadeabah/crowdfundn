@@ -32,12 +32,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en" className="h-full scroll-smooth light">
       <Head />
       <body
-        className={`max-w-full bg-green-50 opacity-2 dark:bg-gray-900 mx-auto transition-all duration-150 ${roboto.variable} ${ubuntu.variable}`}
+        className={`max-w-full bg-green-50 opacity-2 dark:bg-gray-900 mx-auto transition-all duration-150 ${roboto.variable} ${ubuntu.variable} flex flex-col min-h-screen`}
       >
         <GlobalContextProvider>
           <Providers>
             <Navbar />
-            <main className="w-full">
+            <main className="flex-grow w-full">
               {children} <Analytics />
             </main>
             <Footer />
