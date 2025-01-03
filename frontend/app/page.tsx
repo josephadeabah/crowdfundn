@@ -15,6 +15,7 @@ import { useAuth } from './context/auth/AuthContext';
 import CampaignCard from './components/campaigns/CampaignCard';
 import { useCampaignContext } from './context/account/campaign/CampaignsContext';
 import SummaryCard from './molecules/SummaryCard';
+import Footer from './components/Footer';
 
 const HomePage = () => {
   const wordRef = React.useRef<HTMLDivElement | null>(null);
@@ -296,6 +297,7 @@ const HomePage = () => {
           ↑
         </motion.button>
       </div>
+      <Footer />
     </div>
   );
 };
