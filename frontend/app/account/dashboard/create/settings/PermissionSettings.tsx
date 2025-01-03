@@ -89,7 +89,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
   };
 
   return (
-    <div className="p-2 bg-gray-50 dark:bg-gray-900 h-fit max-h-[60vh] overflow-y-auto">
+    <div className="px-2 py-24 bg-gray-50 dark:bg-gray-900 h-fit max-h-[60vh] overflow-y-auto">
       <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">
         Fundraiser Settings
       </h2>
