@@ -176,7 +176,6 @@ const ProfileTabs = () => {
           >
             {tabs.find((tab) => tab.label === activeTab)?.component}
           </div>
-          <div className="w-full bg-white h-10 text-center mt-4">Bantuhive Ltd</div>
         </div>
 
         {/* Onboarding Modal */}
@@ -189,6 +188,7 @@ const ProfileTabs = () => {
           />
         )}
       </div>
+      <div className="w-full bg-white text-center mt-4 py-4">Bantuhive Ltd</div>
     </div>
   );
 };
