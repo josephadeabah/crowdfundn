@@ -212,7 +212,7 @@ const EditCampaign = () => {
           </button>
         </div>
 
-        {settingsOpen && (
+        {settingsOpen && id != null && (
           <div className="mt-2 p-4 border rounded-lg bg-gray-50">
             <CampaignPermissionSetting
               permissions={permissions as { [key: string]: boolean }}
