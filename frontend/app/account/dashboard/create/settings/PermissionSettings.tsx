@@ -89,13 +89,13 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
   };
 
   return (
-    <div className="p-2 bg-gray-50 dark:bg-gray-900 h-fit">
+    <div className="p-2 bg-gray-50 dark:bg-gray-900 h-fit max-h-[60vh] overflow-y-auto">
       <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">
         Fundraiser Settings
       </h2>
 
       {/* Permissions Section */}
-      <div className="mb-6 p-4 h-full bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 hover:shadow">
+      <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 hover:shadow">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
           Fundraiser Permissions
         </h3>
@@ -116,7 +116,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
       </div>
 
       {/* Promotion Settings Section */}
-      <div className="mb-6 p-4 h-full bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 hover:shadow">
+      <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 hover:shadow">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
           Promotion Settings
         </h3>
@@ -178,7 +178,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
       </div>
 
       {/* Visibility Settings Section */}
-      <div className="mb-6 p-4 h-full bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 hover:shadow">
+      <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 hover:shadow">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
           Visibility Settings
         </h3>

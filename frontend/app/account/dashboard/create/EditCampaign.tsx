@@ -202,7 +202,7 @@ const EditCampaign = () => {
         </div>
 
         {/* Dropdown for Campaign Permissions and Promotion Settings */}
-        <div className="mb-4">
+        <div className="mb-4 col-span-full">
           <button
             onClick={() => setSettingsOpen((prev) => !prev)}
             className="flex items-center justify-between w-full p-2 bg-gray-100 rounded-lg text-left focus:outline-none"
@@ -213,7 +213,7 @@ const EditCampaign = () => {
         </div>
 
         {settingsOpen && id != null && (
-          <div className="mt-2 p-4 border rounded-lg bg-gray-50">
+          <div className="mt-2 p-4 border rounded-lg bg-gray-50 col-span-full">
             <CampaignPermissionSetting
               permissions={permissions as { [key: string]: boolean }}
               setPermissions={
@@ -223,14 +223,13 @@ const EditCampaign = () => {
               }
               promotionSettings={promotionSettings}
               setPromotionSettings={setPromotionSettings}
-              isPublic={isPublic} // Pass isPublic state
-              setIsPublic={setIsPublic} // Pass setIsPublic setter
+              isPublic={isPublic}
+              setIsPublic={setIsPublic}
               campaignId={Array.isArray(id) ? id[0] : id}
             />
           </div>
         )}
       </div>
-
       {/* Modal Component */}
       <Modal
         isOpen={isModalOpen}
