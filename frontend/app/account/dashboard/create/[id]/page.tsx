@@ -78,7 +78,7 @@ const FundraiserPage = () => {
         </div>
       )}
 
-      <div key={activeTab} className="h-screen">
+      <div key={activeTab} className="h-full">
         {renderTabContent()}
       </div>
       <div className="w-full bg-white text-center mt-4 h-10 text-gray-300">
