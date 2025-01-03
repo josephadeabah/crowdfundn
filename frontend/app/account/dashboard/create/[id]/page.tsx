@@ -81,7 +81,7 @@ const FundraiserPage = () => {
       <div key={activeTab} className="h-full">
         {renderTabContent()}
       </div>
-      <div className="w-full bg-white text-center mt-4 h-10 text-gray-300">
+      <div className="flex justify-center items-center w-full bg-white mt-4 h-10 text-gray-300">
         &copy; {new Date().getFullYear()} BantuHive Ltd. All rights reserved.
       </div>
     </div>
