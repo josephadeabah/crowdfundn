@@ -169,7 +169,7 @@ const CreateCampaign = () => {
         size="xxxlarge"
         closeOnBackdropClick={false}
       >
-        <div className="overflow-y-auto max-h-[80vh] p-2">
+        <div className="overflow-y-auto p-2">
           <div className="space-y-4">
             <h2 className="text-xl font-bold mb-4">Create a New Campaign</h2>
 
