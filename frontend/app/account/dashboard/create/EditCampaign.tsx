@@ -43,7 +43,7 @@ const EditCampaign = () => {
   const [currencyCode, setCurrencyCode] = useState<string | null>(null);
   const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
-  const [isPublic, setIsPublic] = useState<boolean>(true);
+  const [isPublic, setIsPublic] = useState<boolean>(false);
 
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
 
