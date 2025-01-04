@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_27_183344) do
+ActiveRecord::Schema[7.1].define(version: 2025_01_04_172048) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -124,6 +124,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_27_183344) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["event_id"], name: "index_event_processeds_on_event_id", unique: true
+  end
+
+  create_table "favorites", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "campaign_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id"], name: "index_favorites_on_campaign_id"
+    t.index ["user_id"], name: "index_favorites_on_user_id"
   end
 
   create_table "fundraisers", force: :cascade do |t|
@@ -291,6 +300,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_27_183344) do
     t.string "subaccount_id"
     t.integer "sign_in_count", default: 0
     t.datetime "last_sign_in_at"
+    t.string "status", default: "active"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["subaccount_id"], name: "index_users_on_subaccount_id"
   end
@@ -302,6 +312,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_27_183344) do
   add_foreign_key "comments", "users"
   add_foreign_key "donations", "campaigns"
   add_foreign_key "donations", "users"
+  add_foreign_key "favorites", "campaigns"
+  add_foreign_key "favorites", "users"
   add_foreign_key "fundraisers", "users"
   add_foreign_key "profiles", "users"
   add_foreign_key "rewards", "campaigns"
