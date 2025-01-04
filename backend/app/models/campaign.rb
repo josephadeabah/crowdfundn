@@ -91,16 +91,10 @@ class Campaign < ApplicationRecord
       rewards: rewards,
       updates: updates,
       comments: comments,
-      fundraiser: {
-        id: fundraiser.id,
-        name: fundraiser.full_name,
-        currency: fundraiser.currency,
-        currency_symbol: fundraiser.currency_symbol,
-        profile: fundraiser.profile
-      },
+      fundraiser: fundraiser.as_json(only: %i[id full_name currency currency_symbol profile]),
       total_days: total_days,
       remaining_days: remaining_days,
-      favorited: options[:user] ? options[:user].favorited_campaigns.include?(self) : false
+      favorited: options[:current_user] ? options[:current_user].favorited_campaigns.include?(self) : false
     )
   end
 

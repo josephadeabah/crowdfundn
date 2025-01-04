@@ -21,6 +21,9 @@ class User < ApplicationRecord
   has_many :favorites, dependent: :destroy
   has_many :favorited_campaigns, through: :favorites, source: :campaign
   accepts_nested_attributes_for :profile
+  def as_json(options = {})
+    super(options.merge(only: %i[id full_name currency currency_symbol profile]))
+  end
 
   after_create :generate_confirmation_token
   after_create :send_confirmation_email
