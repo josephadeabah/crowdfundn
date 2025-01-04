@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Switch } from '@headlessui/react';
 import { Button } from '@/app/components/button/Button';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
@@ -10,8 +10,18 @@ interface CampaignPermissionSettingProps {
   campaignId: string; // Add campaignId to props
 }
 
+interface Permissions {
+  accept_donations: boolean;
+  leave_words_of_support: boolean;
+  appear_in_search_results: boolean;
+  suggested_fundraiser_lists: boolean;
+  receive_donation_email: boolean;
+  receive_daily_summary: boolean;
+  is_public: boolean;
+}
+
 const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
-  campaignId, // Destructure campaignId
+  campaignId,
 }) => {
   const {
     updateCampaignSettings,
@@ -20,33 +30,50 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
     currentCampaign,
     loading,
   } = useCampaignContext();
-  interface Permissions {
-    accept_donations: boolean | undefined;
-    leave_words_of_support: boolean | undefined;
-    appear_in_search_results: boolean | undefined;
-    suggested_fundraiser_lists: boolean | undefined;
-    receive_donation_email: boolean | undefined;
-    receive_daily_summary: boolean | undefined;
-    is_public: boolean | undefined;
-  }
 
   const [permissions, setPermissions] = useState<Permissions>({
-    accept_donations: currentCampaign?.permissions.accept_donations,
-    leave_words_of_support: currentCampaign?.permissions.leave_words_of_support,
-    appear_in_search_results:
-      currentCampaign?.permissions.appear_in_search_results,
-    suggested_fundraiser_lists:
-      currentCampaign?.permissions.suggested_fundraiser_lists,
-    receive_donation_email: currentCampaign?.permissions.receive_donation_email,
-    receive_daily_summary: currentCampaign?.permissions.receive_daily_summary,
-    is_public: currentCampaign?.permissions.is_public,
+    accept_donations: false,
+    leave_words_of_support: false,
+    appear_in_search_results: false,
+    suggested_fundraiser_lists: false,
+    receive_donation_email: false,
+    receive_daily_summary: false,
+    is_public: false,
   });
+
   const [promotions, setPromotions] = useState({
-    enable_promotions: currentCampaign?.promotions.enable_promotions,
-    promotion_frequency: currentCampaign?.promotions.promotion_frequency,
-    promotion_duration: currentCampaign?.promotions.promotion_duration,
-    schedule_promotion: currentCampaign?.promotions.schedule_promotion,
+    enable_promotions: false,
+    promotion_frequency: 'daily',
+    promotion_duration: 1,
+    schedule_promotion: false,
   });
+
+  // Sync local state with currentCampaign
+  useEffect(() => {
+    if (currentCampaign) {
+      setPermissions({
+        accept_donations: currentCampaign.permissions.accept_donations,
+        leave_words_of_support:
+          currentCampaign.permissions.leave_words_of_support,
+        appear_in_search_results:
+          currentCampaign.permissions.appear_in_search_results,
+        suggested_fundraiser_lists:
+          currentCampaign.permissions.suggested_fundraiser_lists,
+        receive_donation_email:
+          currentCampaign.permissions.receive_donation_email,
+        receive_daily_summary:
+          currentCampaign.permissions.receive_daily_summary,
+        is_public: currentCampaign.permissions.is_public,
+      });
+
+      setPromotions({
+        enable_promotions: currentCampaign.promotions.enable_promotions,
+        promotion_frequency: currentCampaign.promotions.promotion_frequency,
+        promotion_duration: currentCampaign.promotions.promotion_duration,
+        schedule_promotion: currentCampaign.promotions.schedule_promotion,
+      });
+    }
+  }, [currentCampaign]);
 
   // Toast state
   const [toast, setToast] = useState({
@@ -108,15 +135,15 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
   const handleSaveSettings = async () => {
     const updatedSettings = {
       campaign: {
-        ...permissions, // Includes isPublic
+        ...permissions,
         ...promotions,
       },
     };
 
     try {
       await updateCampaignSettings(campaignId, updatedSettings);
-      await fetchCampaignById(campaignId);
-      await fetchCampaigns();
+      await fetchCampaignById(campaignId); // Refresh currentCampaign
+      await fetchCampaigns(); // Refresh campaigns list
       showToast(
         'Success',
         'Campaign settings updated successfully!',
