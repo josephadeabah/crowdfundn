@@ -155,6 +155,9 @@ module Api
 
         # PUT /api/v1/fundraisers/campaigns/:id
         def update
+          # Find the campaign by ID
+          @campaign = Campaign.find(params[:id])
+        
           if @campaign.update(campaign_params)
             # Update media if a new file is provided
             if params[:media].present?
