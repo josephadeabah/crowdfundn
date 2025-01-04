@@ -64,7 +64,7 @@ class Campaign < ApplicationRecord
     media.attached? ? media.filename.to_s : nil
   end
 
-  def as_json(_options = {})
+  def as_json(options = {})
     super(only: %i[
       id title goal_amount current_amount transferred_amount start_date end_date
       category location currency currency_code currency_symbol status
