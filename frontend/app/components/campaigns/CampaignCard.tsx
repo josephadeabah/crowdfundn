@@ -10,9 +10,11 @@ import { generateRandomString } from '../../utils/helpers/generate.random-string
 import Image from 'next/image';
 import { deslugify } from '@/app/utils/helpers/categories';
 import { useUserContext } from '@/app/context/users/UserContext';
-import Pagination from '../pagination/Pagination'; // Import the Pagination component
+import Pagination from '../pagination/Pagination';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
+import { useAuth } from '@/app/context/auth/AuthContext';
+import ToastComponent from '../toast/Toast';
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -25,14 +27,35 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   campaigns,
   loading,
   error,
-  onPageChange, // Receive onPageChange function
+  onPageChange,
 }) => {
   const { userProfile } = useUserContext();
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [isLocationLoading, setIsLocationLoading] = useState(true);
   const { pagination, favoriteCampaign, unfavoriteCampaign } =
     useCampaignContext();
+  const { user } = useAuth();
   const [page, setPage] = useState<number>(1);
+
+  const [toast, setToast] = useState({
+    isOpen: false,
+    title: '',
+    description: '',
+    type: 'success' as 'success' | 'error' | 'warning',
+  });
+
+  const showToast = (
+    title: string,
+    description: string,
+    type: 'success' | 'error' | 'warning',
+  ) => {
+    setToast({
+      isOpen: true,
+      title,
+      description,
+      type,
+    });
+  };
 
   const handlePageChange = (newPage: number) => {
     onPageChange(newPage);
@@ -52,7 +75,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       }
     };
 
-    // Fetch location only if userProfile doesn't have a country
     if (!userProfile?.country) {
       fetchUserLocation();
     } else {
@@ -61,7 +83,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     }
   }, [userProfile]);
 
-  // Filter campaigns by the user's country and exclude campaigns with zero remaining days
   const filteredCampaigns = campaigns?.filter((campaign) => {
     return (
       campaign.location.toLowerCase() === userCountry?.toLowerCase() &&
@@ -71,10 +92,26 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   });
 
   const handleFavorite = async (campaignId: string) => {
+    if (!user) {
+      showToast(
+        'Error',
+        'You must log in first to add to your favorite.',
+        'error',
+      );
+      return;
+    }
     await favoriteCampaign(campaignId);
   };
 
   const handleUnfavorite = async (campaignId: string) => {
+    if (!user) {
+      showToast(
+        'Error',
+        'You must log in first to add to your favorite.',
+        'error',
+      );
+      return;
+    }
     await unfavoriteCampaign(campaignId);
   };
 
@@ -83,6 +120,14 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
 
   return (
     <div className="bg-white p-1">
+      {/* Toast component for notifications */}
+      <ToastComponent
+        isOpen={toast.isOpen}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
+        title={toast.title}
+        description={toast.description}
+        type={toast.type}
+      />
       {filteredCampaigns.length === 0 ? (
         <EmptyPage />
       ) : (
@@ -167,7 +212,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 <div
                   className="absolute top-2 right-2 p-2 bg-transparent rounded-full shadow-md cursor-pointer hover:bg-gray-100"
                   onClick={(e) => {
-                    e.preventDefault(); // Prevent link navigation
+                    e.preventDefault();
                     campaign.favorited
                       ? handleUnfavorite(campaign.id.toString())
                       : handleFavorite(campaign.id.toString());
@@ -185,7 +230,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         </div>
       )}
 
-      {/* Add Pagination */}
+      {/* Pagination */}
       {pagination.totalPages > 1 && (
         <Pagination
           currentPage={pagination.currentPage || page}
