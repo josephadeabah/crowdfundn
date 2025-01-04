@@ -12,9 +12,17 @@ import { generateRandomString } from '@/app/utils/helpers/generate.random-string
 import { deslugify } from '@/app/utils/helpers/categories';
 import Image from 'next/image';
 import Pagination from '@/app/components/pagination/Pagination';
+import { FaBookmark, FaRegBookmark } from 'react-icons/fa'; // Import bookmark icons
 
 const CampaignsPage = () => {
-  const { fetchAllCampaigns, campaigns, loading, error } = useCampaignContext();
+  const {
+    fetchAllCampaigns,
+    campaigns,
+    loading,
+    error,
+    favoriteCampaign,
+    unfavoriteCampaign,
+  } = useCampaignContext();
   const { userProfile } = useUserContext();
   const controls = useAnimation();
   const [ref, inView] = useInView();
@@ -25,7 +33,7 @@ const CampaignsPage = () => {
   const [sortOrder, setSortOrder] = useState<string>('desc');
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(12);
-  const [searchTerm, setSearchTerm] = useState<string>(''); // Track search input
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [dateRange, setDateRange] = useState<string>('all_time');
   const [goalRange, setGoalRange] = useState<string>('all');
   const [location, setLocation] = useState<string>('all');
@@ -40,7 +48,7 @@ const CampaignsPage = () => {
       dateRange,
       goalRange,
       location,
-      searchTerm, // Pass the searchTerm to filter by title
+      searchTerm,
     );
   }, [
     fetchAllCampaigns,
@@ -128,6 +136,15 @@ const CampaignsPage = () => {
     visible: { opacity: 1, y: 0 },
   };
 
+  // Handle favorite/unfavorite action
+  const handleFavorite = async (campaignId: string) => {
+    await favoriteCampaign(campaignId);
+  };
+
+  const handleUnfavorite = async (campaignId: string) => {
+    await unfavoriteCampaign(campaignId);
+  };
+
   return (
     <div className="max-w-7xl mx-auto p-4">
       <div className="w-full bg-white mx-auto">
@@ -149,7 +166,7 @@ const CampaignsPage = () => {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="mt-1 block w-full sm:w-3/4 sm:px-2 md:w-full px-4 py-2 rounded-md border border-gray-100 focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white mr-1" // Adjust width on mobile and larger screens
+              className="mt-1 block w-full sm:w-3/4 sm:px-2 md:w-full px-4 py-2 rounded-md border border-gray-100 focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white mr-1"
               placeholder="Search for a campaign"
             />
             <motion.button
@@ -293,16 +310,14 @@ const CampaignsPage = () => {
 
         {/* Campaigns Section */}
         <div className="w-full bg-white md:p-1">
-          {/* Show a loading spinner or placeholder while data is being fetched */}
           {loading ? (
             <CampaignCardLoader />
           ) : (
             <>
-              {/* Show campaigns if available */}
               {campaigns && campaigns.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 px-2 md:p-0 relative">
                   {campaigns
-                    .filter((campaign) => campaign.permissions.is_public) // Filter campaigns where is_public is true
+                    .filter((campaign) => campaign.permissions.is_public)
                     .map((campaign, index) => {
                       const fundraiserCurrency =
                         campaign?.currency_symbol ||
@@ -384,12 +399,27 @@ const CampaignsPage = () => {
                               </div>
                             </div>
                           </Link>
+                          {/* Favorite/Unfavorite Icon */}
+                          <div
+                            className="absolute top-2 right-2 p-2 bg-transparent rounded-full shadow-md cursor-pointer hover:bg-gray-100"
+                            onClick={(e) => {
+                              e.preventDefault(); // Prevent link navigation
+                              campaign.favorited
+                                ? handleUnfavorite(campaign.id.toString())
+                                : handleFavorite(campaign.id.toString());
+                            }}
+                          >
+                            {campaign.favorited ? (
+                              <FaBookmark className="text-orange-500" />
+                            ) : (
+                              <FaRegBookmark className="text-gray-50" />
+                            )}
+                          </div>
                         </motion.div>
                       );
                     })}
                 </div>
               ) : (
-                // Show a friendly message if no campaigns are found
                 <p className="text-center text-gray-500">
                   No campaigns found. Try adjusting your filters or search
                   terms.
