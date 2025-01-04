@@ -95,7 +95,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     if (!user) {
       showToast(
         'Error',
-        'You must log in first to add to your favorite.',
+        'You must log in first to add to your favorite and track campaign progress.',
         'error',
       );
       return;
@@ -107,7 +107,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     if (!user) {
       showToast(
         'Error',
-        'You must log in first to add to your favorite.',
+        'You must log in first to add to your favorite and track campaign progress.',
         'error',
       );
       return;
