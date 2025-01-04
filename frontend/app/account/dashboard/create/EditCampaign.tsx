@@ -141,7 +141,7 @@ const EditCampaign = () => {
             Fundraising Goal
           </h3>
           <p className="text-gray-700 dark:text-gray-400">
-            {currentCampaign?.currency_symbol || currentCampaign?.currency}{currentCampaign?.goal_amount}
+            {currentCampaign?.currency_symbol || currentCampaign?.currency.toLocaleUpperCase()}{currentCampaign?.goal_amount}
           </p>
         </div>
 
