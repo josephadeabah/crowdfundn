@@ -37,6 +37,7 @@ const CampaignManager = () => {
     campaigns: contextCampaigns,
     loading,
     error: contextError,
+    fetchCampaigns
   } = useCampaignContext(); // Use the context
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [sortColumn, setSortColumn] = useState('startDate');
@@ -48,6 +49,10 @@ const CampaignManager = () => {
   const [filterDate, setFilterDate] = useState<Date | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [editMode, setEditMode] = useState(false);
+
+  useEffect(() => {
+    fetchCampaigns();
+  }, [fetchCampaigns]);
 
   // Map context campaigns to the local Campaign interface
   useEffect(() => {
