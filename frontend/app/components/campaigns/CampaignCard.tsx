@@ -63,7 +63,8 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const filteredCampaigns = campaigns?.filter((campaign) => {
     return (
       campaign.location.toLowerCase() === userCountry?.toLowerCase() &&
-      campaign.status !== 'completed' && campaign.permissions.is_public
+      campaign.status !== 'completed' &&
+      campaign.permissions.is_public
     );
   });
 

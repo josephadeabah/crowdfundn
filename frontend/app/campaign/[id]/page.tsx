@@ -110,15 +110,21 @@ const SingleCampaignPage: React.FC = () => {
                     count = currentCampaign?.total_donors || 0;
                   }
 
+                  // Disable "donate" tab if donations are not allowed
+                  const isDonateTabDisabled =
+                    tab === 'donate' &&
+                    !currentCampaign?.permissions?.accept_donations;
+
                   return (
                     <button
                       key={tab}
-                      className={`px-4 py-2 font-semibold ${
-                        selectedTab === tab
-                          ? 'border-b-2 border-green-600 text-green-600'
-                          : 'text-gray-600'
-                      }`}
-                      onClick={() => setSelectedTab(tab as any)}
+                      className={`px-4 py-2 font-semibold ${selectedTab === tab ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-600'} ${isDonateTabDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      onClick={() => {
+                        if (!isDonateTabDisabled) {
+                          setSelectedTab(tab as any);
+                        }
+                      }}
+                      disabled={isDonateTabDisabled} // Disable the button if the "donate" tab is disabled
                     >
                       {tab.charAt(0).toUpperCase() + tab.slice(1)}{' '}
                       {count > 0 && (
