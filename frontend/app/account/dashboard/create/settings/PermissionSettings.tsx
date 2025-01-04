@@ -257,7 +257,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
       </div>
 
       {/* Visibility Settings Section */}
-      <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 hover:shadow">
+      {/* <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 hover:shadow">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
           Visibility Settings
         </h3>
@@ -275,7 +275,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
             />
           </Switch>
         </div>
-      </div>
+      </div> */}
 
       {/* Save Settings Button */}
       <div className="flex justify-end">
