@@ -40,7 +40,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <main className="flex-grow w-full">
               {children} <Analytics />
             </main>
-            <Footer /> {/* Add mt-auto to push footer down */}
+            <Footer />
           </Providers>
         </GlobalContextProvider>
       </body>

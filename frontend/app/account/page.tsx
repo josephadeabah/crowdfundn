@@ -188,9 +188,6 @@ const ProfileTabs = () => {
           />
         )}
       </div>
-      <div className="flex justify-center items-center w-full bg-white mt-4 h-10 text-gray-300">
-        &copy; {new Date().getFullYear()} BantuHive Ltd. All rights reserved.
-      </div>
     </div>
   );
 };
