@@ -76,7 +76,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         <EmptyPage />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 px-2 md:p-0 relative">
-          {filteredCampaigns.slice(0, 12).map((campaign, index) => {
+          {filteredCampaigns?.map((campaign, index) => {
             const fundraiserCurrency =
               campaign?.currency_symbol || campaign?.currency?.toUpperCase();
 
