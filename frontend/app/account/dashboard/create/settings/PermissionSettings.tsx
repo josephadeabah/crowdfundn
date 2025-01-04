@@ -7,40 +7,46 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import ToastComponent from '@/app/components/toast/Toast';
 
 interface CampaignPermissionSettingProps {
-  permissions: { [key: string]: boolean };
-  setPermissions: React.Dispatch<
-    React.SetStateAction<{ [key: string]: boolean }>
-  >;
-  promotionSettings: {
-    enablePromotions: boolean;
-    promotionFrequency: string;
-    promotionDuration: number;
-    schedulePromotion: boolean;
-  };
-  setPromotionSettings: React.Dispatch<
-    React.SetStateAction<{
-      enablePromotions: boolean;
-      promotionFrequency: string;
-      promotionDuration: number;
-      schedulePromotion: boolean;
-    }>
-  >;
-  isPublic: boolean; // Add isPublic to props
-  setIsPublic: React.Dispatch<React.SetStateAction<boolean>>; // Add setIsPublic to props
   campaignId: string; // Add campaignId to props
 }
 
 const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
-  permissions,
-  setPermissions,
-  promotionSettings,
-  setPromotionSettings,
-  isPublic,
-  setIsPublic,
   campaignId, // Destructure campaignId
 }) => {
-  const { updateCampaignSettings, fetchCampaignById, fetchCampaigns, loading } =
-    useCampaignContext();
+  const {
+    updateCampaignSettings,
+    fetchCampaignById,
+    fetchCampaigns,
+    currentCampaign,
+    loading,
+  } = useCampaignContext();
+  interface Permissions {
+    accept_donations: boolean;
+    leave_words_of_support: boolean | undefined;
+    appear_in_search_results: boolean | undefined;
+    suggested_fundraiser_lists: boolean | undefined;
+    receive_donation_email: boolean | undefined;
+    receive_daily_summary: boolean | undefined;
+    is_public: boolean | undefined;
+  }
+
+  const [permissions, setPermissions] = useState<Permissions>({
+    accept_donations: true,
+    leave_words_of_support: currentCampaign?.permissions.leave_words_of_support,
+    appear_in_search_results:
+      currentCampaign?.permissions.appear_in_search_results,
+    suggested_fundraiser_lists:
+      currentCampaign?.permissions.suggested_fundraiser_lists,
+    receive_donation_email: currentCampaign?.permissions.receive_donation_email,
+    receive_daily_summary: currentCampaign?.permissions.receive_daily_summary,
+    is_public: currentCampaign?.permissions.is_public,
+  });
+  const [promotions, setPromotions] = useState({
+    enable_promotions: currentCampaign?.promotions.enable_promotions,
+    promotion_frequency: currentCampaign?.promotions.promotion_frequency,
+    promotion_duration: currentCampaign?.promotions.promotion_duration,
+    schedule_promotion: currentCampaign?.promotions.schedule_promotion,
+  });
 
   // Toast state
   const [toast, setToast] = useState({
@@ -64,41 +70,47 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
     });
   };
 
-  const handleSwitchChange = (permission: string) => {
+  // Handle toggling permissions (including isPublic)
+  const handleSwitchChange = (permission: keyof Permissions) => {
     setPermissions((prev) => ({
       ...prev,
       [permission]: !prev[permission],
     }));
   };
 
-  const handlePromotionChange = (setting: keyof typeof promotionSettings) => {
-    setPromotionSettings((prev) => ({
+  // Handle toggling promotion settings
+  const handlePromotionChange = (setting: keyof typeof promotions) => {
+    setPromotions((prev) => ({
       ...prev,
       [setting]: !prev[setting],
     }));
   };
 
+  // Handle frequency change
   const handleFrequencyChange = (
     event: React.ChangeEvent<HTMLSelectElement>,
   ) => {
-    setPromotionSettings((prev) => ({
+    setPromotions((prev) => ({
       ...prev,
-      promotionFrequency: event.target.value,
+      promotion_frequency: event.target.value,
     }));
   };
 
+  // Handle duration change
   const handleDurationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPromotionSettings((prev) => ({
+    setPromotions((prev) => ({
       ...prev,
-      promotionDuration: Number(event.target.value),
+      promotion_duration: Number(event.target.value),
     }));
   };
 
+  // Handle saving settings
   const handleSaveSettings = async () => {
     const updatedSettings = {
-      ...permissions,
-      ...promotionSettings,
-      is_public: isPublic, // Include isPublic in the payload
+      campaign: {
+        ...permissions, // Includes isPublic
+        ...promotions,
+      },
     };
 
     try {
@@ -109,13 +121,13 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
         'Success',
         'Campaign settings updated successfully!',
         'success',
-      ); // Replace alert with toast
+      );
     } catch (error) {
       showToast(
         'Error',
         'Failed to update campaign settings. Please try again.',
         'error',
-      ); // Replace alert with toast
+      );
     }
   };
 
@@ -144,7 +156,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
             <span className="text-sm">{key.replace(/([A-Z])/g, ' $1')}</span>
             <Switch
               checked={value}
-              onChange={() => handleSwitchChange(key)}
+              onChange={() => handleSwitchChange(key as keyof Permissions)}
               className={`${value ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
             >
               <span
@@ -163,22 +175,22 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm">Enable Promotions</span>
           <Switch
-            checked={promotionSettings.enablePromotions}
-            onChange={() => handlePromotionChange('enablePromotions')}
-            className={`${promotionSettings.enablePromotions ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
+            checked={promotions.enable_promotions}
+            onChange={() => handlePromotionChange('enable_promotions')}
+            className={`${promotions.enable_promotions ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
           >
             <span
-              className={`${promotionSettings.enablePromotions ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+              className={`${promotions.enable_promotions ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
             />
           </Switch>
         </div>
 
-        {promotionSettings.enablePromotions && (
+        {promotions.enable_promotions && (
           <>
             <div className="mb-4">
               <label className="block text-sm mb-1">Promotion Frequency:</label>
               <select
-                value={promotionSettings.promotionFrequency}
+                value={promotions.promotion_frequency}
                 onChange={handleFrequencyChange}
                 className="form-select block w-full rounded-md border-gray-300 focus:ring-theme-color-primary"
               >
@@ -195,7 +207,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
               <input
                 type="number"
                 min="1"
-                value={promotionSettings.promotionDuration}
+                value={promotions.promotion_duration}
                 onChange={handleDurationChange}
                 className="form-input block w-full rounded-md border-gray-300 focus:ring-theme-color-primary"
               />
@@ -204,12 +216,12 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm">Schedule Promotion</span>
               <Switch
-                checked={promotionSettings.schedulePromotion}
-                onChange={() => handlePromotionChange('schedulePromotion')}
-                className={`${promotionSettings.schedulePromotion ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
+                checked={promotions.schedule_promotion}
+                onChange={() => handlePromotionChange('schedule_promotion')}
+                className={`${promotions.schedule_promotion ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
               >
                 <span
-                  className={`${promotionSettings.schedulePromotion ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  className={`${promotions.schedule_promotion ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                 />
               </Switch>
             </div>
@@ -224,15 +236,15 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
         </h3>
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm">
-            Make Campaign {!isPublic ? 'Public' : 'Private'}
+            Make Campaign {!permissions.is_public ? 'Public' : 'Private'}
           </span>
           <Switch
-            checked={isPublic}
-            onChange={setIsPublic}
-            className={`${isPublic ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
+            checked={permissions.is_public}
+            onChange={() => handleSwitchChange('is_public')}
+            className={`${permissions.is_public ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
           >
             <span
-              className={`${isPublic ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+              className={`${permissions.is_public ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
             />
           </Switch>
         </div>

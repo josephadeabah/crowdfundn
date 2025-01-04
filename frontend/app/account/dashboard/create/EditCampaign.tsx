@@ -43,27 +43,8 @@ const EditCampaign = () => {
   const [currencyCode, setCurrencyCode] = useState<string | null>(null);
   const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
-  const [isPublic, setIsPublic] = useState<boolean>(false);
 
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
-
-  const initialPermissions = {
-    acceptDonations: false,
-    leaveWordsOfSupport: false,
-    appearInSearchResults: false,
-    suggestedFundraiserLists: false,
-    receiveDonationEmail: false,
-    receiveDailySummary: false,
-  };
-
-  const [permissions, setPermissions] = useState(initialPermissions);
-
-  const [promotionSettings, setPromotionSettings] = useState({
-    enablePromotions: false,
-    schedulePromotion: false,
-    promotionFrequency: 'daily',
-    promotionDuration: 1,
-  });
 
   useEffect(() => {
     if (id && typeof id === 'string') {
@@ -216,19 +197,11 @@ const EditCampaign = () => {
 
         {settingsOpen && (
           <div className="p-4 border rounded-lg bg-gray-50 col-span-full">
-            <CampaignPermissionSetting
-              permissions={permissions as { [key: string]: boolean }}
-              setPermissions={
-                setPermissions as React.Dispatch<
-                  React.SetStateAction<{ [key: string]: boolean }>
-                >
-              }
-              promotionSettings={promotionSettings}
-              setPromotionSettings={setPromotionSettings}
-              isPublic={isPublic}
-              setIsPublic={setIsPublic}
-              campaignId={Array.isArray(id) ? id[0] : id}
-            />
+            {currentCampaign && (
+              <CampaignPermissionSetting
+                campaignId={Array.isArray(id) ? id[0] : id}
+              />
+            )}
           </div>
         )}
       </div>
