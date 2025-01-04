@@ -32,7 +32,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const [statistics, setStatistics] =
     useState<CampaignStatisticsDataType | null>(null); // Add state for statistics
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [pagination, setPagination] = useState<{
     currentPage: number;
     totalPages: number;
@@ -199,6 +199,15 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       try {
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+        };
+
+        // Check if user is authenticated
+        if (user) {
+          headers.Authorization = `Bearer ${token}`;
+        }
+
         const queryParams = new URLSearchParams({
           sortBy,
           sortOrder,
@@ -214,7 +223,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
         const response = await nextFetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?${queryParams.toString()}`,
-          { method: 'GET' },
+          { method: 'GET', headers },
         );
 
         if (!response.ok) {
