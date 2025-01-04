@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
 import { FaBookmark, FaRegBookmark } from 'react-icons/fa'; // Import bookmark icons
 import { CampaignResponseDataType } from '../types/campaigns.types';
-import EmptyPage from '../components/emptypage/EmptyPage';
 
 const Favorites = () => {
   const {
@@ -20,21 +19,12 @@ const Favorites = () => {
 
   // Trigger fetch for favorited campaigns when the component mounts
   useEffect(() => {
-    const loadFavoritedCampaigns = async () => {
-      await fetchFavoritedCampaigns(); // Fetch favorited campaigns from context
-    };
-
-    loadFavoritedCampaigns();
+    fetchFavoritedCampaigns(); // Fetch favorited campaigns from context
   }, [fetchFavoritedCampaigns]);
 
   // Show loader while campaigns are being fetched
   if (loading) {
     return <CampaignCardLoader />;
-  }
-
-  // Handle case when no favorited campaigns are found
-  if (campaigns.length === 0) {
-    return <EmptyPage />;
   }
 
   // Handle favorite/unfavorite action
@@ -46,11 +36,21 @@ const Favorites = () => {
     await unfavoriteCampaign(campaignId);
   };
 
+  // Filter favorited campaigns
+  const favoritedCampaigns = campaigns.filter(
+    (campaign: CampaignResponseDataType) => campaign.favorited,
+  );
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-      {campaigns
-        .filter((campaign: CampaignResponseDataType) => campaign.favorited) // Only show favorited campaigns
-        .map((campaign) => (
+      {/* Check if any campaigns are favorited */}
+      {favoritedCampaigns.length === 0 ? (
+        <div className="col-span-full text-center p-4 text-gray-500">
+          You have not added any campaign as your favorite yet.
+        </div>
+      ) : (
+        // Render the favorite campaigns
+        favoritedCampaigns.map((campaign) => (
           <div
             key={campaign.id}
             className="bg-white dark:bg-gray-900 rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300"
@@ -91,7 +91,8 @@ const Favorites = () => {
               )}
             </div>
           </div>
-        ))}
+        ))
+      )}
     </div>
   );
 };
