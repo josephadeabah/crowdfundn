@@ -180,7 +180,12 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
         </h3>
         {Object.entries(permissions).map(([key, value]) => (
           <div key={key} className="flex items-center justify-between mb-4">
-            <span className="text-sm">{key.replace(/([A-Z])/g, ' $1')}</span>
+            {/* Transform permission key to human-readable format */}
+            <span className="text-sm">
+              {key
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, (char) => char.toUpperCase())}
+            </span>
             <Switch
               checked={value}
               onChange={() => handleSwitchChange(key as keyof Permissions)}
@@ -255,27 +260,6 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
           </>
         )}
       </div>
-
-      {/* Visibility Settings Section */}
-      {/* <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 hover:shadow">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
-          Visibility Settings
-        </h3>
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-sm">
-            Make Campaign {!permissions.is_public ? 'Public' : 'Private'}
-          </span>
-          <Switch
-            checked={permissions.is_public}
-            onChange={() => handleSwitchChange('is_public')}
-            className={`${permissions.is_public ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
-          >
-            <span
-              className={`${permissions.is_public ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-            />
-          </Switch>
-        </div>
-      </div> */}
 
       {/* Save Settings Button */}
       <div className="flex justify-end">
