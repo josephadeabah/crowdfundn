@@ -8,6 +8,8 @@ class Campaign < ApplicationRecord
   has_many :transfers, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :subscribers, through: :subscriptions, source: :user
+  has_many :favorites, dependent: :destroy
+  has_many :favorited_by_users, through: :favorites, source: :user
   has_rich_text :description
 
   validates :title, :description, :goal_amount, :start_date, :end_date, :currency, presence: true
@@ -97,7 +99,8 @@ class Campaign < ApplicationRecord
         profile: fundraiser.profile
       },
       total_days: total_days,
-      remaining_days: remaining_days
+      remaining_days: remaining_days,
+      favorited: options[:current_user] ? options[:current_user].favorited_campaigns.include?(self) : false
     )
   end
 

@@ -2,8 +2,8 @@ module Api
   module V1
     module Fundraisers
       class CampaignsController < ApplicationController
-        before_action :authenticate_request, only: %i[create update destroy my_campaigns statistics]  # Ensure user is authenticated
-        before_action :set_campaign, only: %i[show update destroy webhook_status_update]
+        before_action :authenticate_request, only: %i[create update destroy my_campaigns statistics favorite unfavorite]  # Ensure user is authenticated
+        before_action :set_campaign, only: %i[show update destroy webhook_status_update favorite unfavorite]
         before_action :authorize_campaign_user!, only: %i[update destroy]  # Ensure user authorization for these actions
 
         def index
@@ -67,7 +67,7 @@ module Api
           
           # Prepare campaigns data
           campaigns_data = @campaigns.map do |campaign|
-            campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
+            campaign.as_json(include: %i[rewards updates comments fundraiser: :profile], current_user: @current_user)
                    .merge(media: campaign.media_url, total_donors: campaign.total_donors)
           end
         
@@ -82,7 +82,7 @@ module Api
 
         def show
           # Include total_donors for the single campaign
-          render json: @campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
+          render json: @campaign.as_json(include: %i[rewards updates comments fundraiser: :profile], current_user: @current_user)
                                 .merge(media: @campaign.media_url, total_donors: @campaign.total_donors),
                  status: :ok
         end
@@ -189,8 +189,7 @@ module Api
           render json: { error: 'Unable to favorite campaign' }, status: :unprocessable_entity
         end
       end
-
-      # DELETE /api/v1/fundraisers/campaigns/:id/unfavorite
+      
       def unfavorite
         favorite = @current_user.favorites.find_by(campaign: @campaign)
         if favorite&.destroy
