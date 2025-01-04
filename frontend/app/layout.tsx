@@ -2,7 +2,7 @@
 import '../styles/globals.css';
 import { Roboto, Ubuntu } from 'next/font/google';
 import Navbar from './components/Navbar';
-// import Footer from './components/Footer';
+import Footer from './components/Footer';
 import Providers from './Providers';
 import { ReactNode } from 'react';
 import { Analytics } from '@vercel/analytics/react';
@@ -40,6 +40,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <main className="flex-grow w-full">
               {children} <Analytics />
             </main>
+            <Footer /> {/* Add mt-auto to push footer down */}
           </Providers>
         </GlobalContextProvider>
       </body>
