@@ -506,34 +506,38 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   );
 
   // In your CampaignContext file
-const fetchFavoritedCampaigns = useCallback(async () => {
-  setLoading(true);
-  setError(null);
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/favorites`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+  const fetchFavoritedCampaigns = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/favorites`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
         },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch favorited campaigns');
       }
-    );
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch favorited campaigns');
+      const data = await response.json();
+      return data.campaigns;
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Error fetching favorited campaigns',
+      );
+      return [];
+    } finally {
+      setLoading(false);
     }
-
-    const data = await response.json();
-    return data.campaigns;
-  } catch (err) {
-    setError(err instanceof Error ? err.message : 'Error fetching favorited campaigns');
-    return [];
-  } finally {
-    setLoading(false);
-  }
-}, [token]);
+  }, [token]);
 
   const contextValue = useMemo(
     () => ({

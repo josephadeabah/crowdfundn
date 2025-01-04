@@ -11,7 +11,9 @@ import EmptyPage from '../components/emptypage/EmptyPage';
 
 const Favorites = () => {
   const { fetchFavoritedCampaigns } = useCampaignContext();
-  const [favoritedCampaigns, setFavoritedCampaigns] = useState<CampaignResponseDataType[]>([]);
+  const [favoritedCampaigns, setFavoritedCampaigns] = useState<
+    CampaignResponseDataType[]
+  >([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
