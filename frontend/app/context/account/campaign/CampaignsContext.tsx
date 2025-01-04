@@ -535,7 +535,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const data = await response.json();
-      return data.campaigns;
+      setCampaigns(data.campaigns);
     } catch (err) {
       setError(
         err instanceof Error
