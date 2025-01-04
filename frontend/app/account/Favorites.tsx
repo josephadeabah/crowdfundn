@@ -19,11 +19,7 @@ const Favorites = () => {
 
   // Trigger fetch for favorited campaigns when the component mounts
   useEffect(() => {
-    const loadFavoritedCampaigns = async () => {
-      await fetchFavoritedCampaigns(); // Fetch favorited campaigns from context
-    };
-
-    loadFavoritedCampaigns();
+      fetchFavoritedCampaigns(); // Fetch favorited campaigns from context
   }, [fetchFavoritedCampaigns]);
 
   // Show loader while campaigns are being fetched
