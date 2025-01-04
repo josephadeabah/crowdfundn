@@ -12,7 +12,9 @@ import { generateRandomString } from '@/app/utils/helpers/generate.random-string
 import { deslugify } from '@/app/utils/helpers/categories';
 import Image from 'next/image';
 import Pagination from '@/app/components/pagination/Pagination';
-import { FaBookmark, FaRegBookmark } from 'react-icons/fa'; // Import bookmark icons
+import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
+import { useAuth } from '@/app/context/auth/AuthContext';
+import ToastComponent from '@/app/components/toast/Toast';
 
 const CampaignsPage = () => {
   const {
@@ -24,6 +26,7 @@ const CampaignsPage = () => {
     unfavoriteCampaign,
   } = useCampaignContext();
   const { userProfile } = useUserContext();
+  const { user } = useAuth();
   const controls = useAnimation();
   const [ref, inView] = useInView();
   const [scrollY, setScrollY] = useState(0);
@@ -38,6 +41,26 @@ const CampaignsPage = () => {
   const [goalRange, setGoalRange] = useState<string>('all');
   const [location, setLocation] = useState<string>('all');
   const { pagination } = useCampaignContext();
+
+  const [toast, setToast] = useState({
+    isOpen: false,
+    title: '',
+    description: '',
+    type: 'success' as 'success' | 'error' | 'warning',
+  });
+
+  const showToast = (
+    title: string,
+    description: string,
+    type: 'success' | 'error' | 'warning',
+  ) => {
+    setToast({
+      isOpen: true,
+      title,
+      description,
+      type,
+    });
+  };
 
   useEffect(() => {
     fetchAllCampaigns(
@@ -138,15 +161,38 @@ const CampaignsPage = () => {
 
   // Handle favorite/unfavorite action
   const handleFavorite = async (campaignId: string) => {
+    if (!user) {
+      showToast(
+        'Error',
+        'You must log in first to add to your favorite and track campaign progress.',
+        'error',
+      );
+      return;
+    }
     await favoriteCampaign(campaignId);
   };
 
   const handleUnfavorite = async (campaignId: string) => {
+    if (!user) {
+      showToast(
+        'Error',
+        'You must log in first to add to your favorite and track campaign progress.',
+        'error',
+      );
+      return;
+    }
     await unfavoriteCampaign(campaignId);
   };
 
   return (
     <div className="max-w-7xl mx-auto p-4">
+      <ToastComponent
+        isOpen={toast.isOpen}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
+        title={toast.title}
+        description={toast.description}
+        type={toast.type}
+      />
       <div className="w-full bg-white mx-auto">
         <motion.h4
           ref={ref}
