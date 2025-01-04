@@ -64,8 +64,12 @@ class Campaign < ApplicationRecord
     media.attached? ? media.filename.to_s : nil
   end
 
-  def as_json(options = {})
-    super(options).merge(
+  def as_json(_options = {})
+    super(only: %i[
+      id title goal_amount current_amount transferred_amount start_date end_date
+      category location currency currency_code currency_symbol status
+      fundraiser_id created_at updated_at
+    ]).merge(
       media: media_url,
       media_filename: media_filename,
       description: description.as_json,
@@ -95,8 +99,7 @@ class Campaign < ApplicationRecord
         profile: fundraiser.profile
       },
       total_days: total_days,
-      remaining_days: remaining_days,
-      favorited: options[:current_user] ? options[:current_user].favorited_campaigns.include?(self) : false
+      remaining_days: remaining_days
     )
   end
 

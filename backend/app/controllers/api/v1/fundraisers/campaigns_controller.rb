@@ -67,8 +67,8 @@ module Api
           
           # Prepare campaigns data
           campaigns_data = @campaigns.map do |campaign|
-            campaign.as_json(include: %i[rewards updates comments fundraiser: :profile], current_user: @current_user)
-                    .merge(media: campaign.media_url, total_donors: campaign.total_donors)
+            campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
+                   .merge(media: campaign.media_url, total_donors: campaign.total_donors)
           end
         
           # Render response
@@ -81,7 +81,8 @@ module Api
         end
 
         def show
-          render json: @campaign.as_json(include: %i[rewards updates comments fundraiser: :profile], current_user: @current_user)
+          # Include total_donors for the single campaign
+          render json: @campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
                                 .merge(media: @campaign.media_url, total_donors: @campaign.total_donors),
                  status: :ok
         end
