@@ -67,6 +67,7 @@ export interface CampaignResponseDataType {
   rewards: Reward[];
   updates: Update[];
   comments: Comment[];
+  fundraiser: FundraiserDetailsType;
 }
 
 export interface CampaignState {

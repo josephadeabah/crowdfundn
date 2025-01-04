@@ -17,6 +17,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Modal from '@/app/components/modal/Modal';
+import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 
 const CampaignManager = () => {
   interface Campaign {
@@ -32,57 +33,40 @@ const CampaignManager = () => {
     isBlocked: boolean;
   }
 
+  const {
+    campaigns: contextCampaigns,
+    loading,
+    error: contextError,
+  } = useCampaignContext(); // Use the context
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [sortColumn, setSortColumn] = useState('startDate');
   const [sortDirection, setSortDirection] = useState('asc');
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(
     null,
   );
-  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('active');
   const [filterDate, setFilterDate] = useState<Date | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [editMode, setEditMode] = useState(false);
 
+  // Map context campaigns to the local Campaign interface
   useEffect(() => {
-    // Simulating real-time updates
-    const interval = setInterval(() => {
-      const newCampaign = generateRandomCampaign();
-      setCampaigns((prevCampaigns) => [...prevCampaigns, newCampaign]);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const generateRandomCampaign = () => {
-    const id = Math.random().toString(36).substr(2, 9);
-    const title = `Campaign${Math.floor(Math.random() * 1000)}`;
-    const startDate = new Date(
-      Date.now() + Math.random() * 10 * 24 * 60 * 60 * 1000,
-    );
-    const endDate = new Date(
-      startDate.getTime() + Math.random() * 30 * 24 * 60 * 60 * 1000,
-    );
-    const organizer = `User${Math.floor(Math.random() * 1000)}`;
-    const status = Math.random() > 0.5 ? 'active' : 'pending';
-    const goal = Math.floor(Math.random() * 10000) + 1000;
-    const currentAmount = Math.floor(Math.random() * goal);
-    const participants = Math.floor(Math.random() * 100);
-    const isBlocked = Math.random() > 0.9;
-
-    return {
-      id,
-      title,
-      startDate,
-      endDate,
-      organizer,
-      status,
-      goal,
-      currentAmount,
-      participants,
-      isBlocked,
-    };
-  };
+    if (contextCampaigns) {
+      const mappedCampaigns = contextCampaigns.map((campaign) => ({
+        id: campaign.id.toString(),
+        title: campaign.title,
+        startDate: new Date(campaign.start_date),
+        endDate: new Date(campaign.end_date),
+        organizer: campaign.fundraiser?.profile?.name || 'Unknown',
+        status: campaign.status || 'active',
+        goal: parseFloat(campaign.goal_amount),
+        currentAmount: parseFloat(campaign.transferred_amount),
+        participants: campaign.total_donors,
+        isBlocked: !campaign.permissions.is_public, // Assuming is_public determines blocking
+      }));
+      setCampaigns(mappedCampaigns);
+    }
+  }, [contextCampaigns]);
 
   const handleSort = (column: string) => {
     if (column === sortColumn) {
@@ -171,13 +155,13 @@ const CampaignManager = () => {
   return (
     <div className="mx-auto px-2 py-4">
       <h1 className="text-3xl font-bold mb-6">Campaign Manager</h1>
-      {error && (
+      {contextError && (
         <div
           className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
           role="alert"
         >
           <strong className="font-bold">Error:</strong>
-          <span className="block sm:inline"> {error}</span>
+          <span className="block sm:inline"> {contextError}</span>
         </div>
       )}
       <div className="mb-4 flex flex-col sm:flex-row justify-between items-center">

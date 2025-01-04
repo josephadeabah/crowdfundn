@@ -61,21 +61,6 @@ const TeamCarousel = () => {
         github: 'https://github.com/josephadeabah',
       },
     },
-    {
-      id: 3,
-      name: 'Team Member 3',
-      position: 'Team Member',
-      description: 'Lorem ipsum dolor sit amet.',
-      image:
-        'https://st2.depositphotos.com/9998432/48284/v/600/depositphotos_482842120-stock-illustration-default-avatar-photo-placeholder-grey.jpg',
-      fullDescription:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      socialLinks: {
-        linkedin: 'https://linkedin.com/in/mikejohnson',
-        twitter: 'https://twitter.com/mikejohnson',
-        github: 'https://github.com/mikejohnson',
-      },
-    },
   ];
 
   const nextSlide = () => {
