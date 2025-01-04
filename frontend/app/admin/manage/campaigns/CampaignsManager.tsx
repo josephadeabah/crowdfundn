@@ -37,8 +37,10 @@ const CampaignManager = () => {
     campaigns: contextCampaigns,
     loading,
     error: contextError,
-    fetchCampaigns
+    fetchAllCampaigns,
+    pagination,
   } = useCampaignContext(); // Use the context
+
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [sortColumn, setSortColumn] = useState('startDate');
   const [sortDirection, setSortDirection] = useState('asc');
@@ -50,9 +52,39 @@ const CampaignManager = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [editMode, setEditMode] = useState(false);
 
+  // State for filters and pagination
+  const [sortBy, setSortBy] = useState<string>('created_at');
+  const [sortOrder, setSortOrder] = useState<string>('desc');
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(12);
+  const [dateRange, setDateRange] = useState<string>('all_time');
+  const [goalRange, setGoalRange] = useState<string>('all');
+  const [location, setLocation] = useState<string>('all');
+  const [titleFilter, setTitleFilter] = useState<string>('');
+
+  // Fetch campaigns when filters or pagination change
   useEffect(() => {
-    fetchCampaigns();
-  }, [fetchCampaigns]);
+    fetchAllCampaigns(
+      sortBy,
+      sortOrder,
+      page,
+      pageSize,
+      dateRange,
+      goalRange,
+      location,
+      titleFilter,
+    );
+  }, [
+    fetchAllCampaigns,
+    sortBy,
+    sortOrder,
+    page,
+    pageSize,
+    dateRange,
+    goalRange,
+    location,
+    titleFilter,
+  ]);
 
   // Map context campaigns to the local Campaign interface
   useEffect(() => {
