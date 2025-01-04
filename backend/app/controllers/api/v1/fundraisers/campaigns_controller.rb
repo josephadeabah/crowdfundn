@@ -203,7 +203,7 @@ module Api
       def favorites
         @campaigns = @current_user.favorited_campaigns.includes(:rewards, :updates, :comments, fundraiser: :profile)
         campaigns_data = @campaigns.map do |campaign|
-          campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
+          campaign.as_json(user: @current_user, include: %i[rewards updates comments fundraiser: :profile])
                   .merge(media: campaign.media_url, total_donors: campaign.total_donors)
         end
       
