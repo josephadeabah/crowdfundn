@@ -149,7 +149,7 @@ const ProfileTabs = () => {
                 <a
                   key={label}
                   href={`#${label}`} // Anchor link
-                  className={`py-4 px-4 h-full whitespace-nowrap text-sm font-medium md:text-base transform transition-transform duration-300 ${
+                  className={`py-2 px-2 h-full whitespace-nowrap text-sm font-medium md:text-base transform transition-transform duration-300 ${
                     isActive
                       ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-400 dark:text-orange-600'
                       : 'border-transparent text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-gray-800 dark:text-neutral-400 dark:hover:text-gray-950'
