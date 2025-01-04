@@ -38,7 +38,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
     suggested_fundraiser_lists: false,
     receive_donation_email: false,
     receive_daily_summary: false,
-    is_public: false,
+    is_public: true,
   });
 
   const [promotions, setPromotions] = useState({
