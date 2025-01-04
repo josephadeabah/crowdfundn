@@ -49,6 +49,7 @@ export interface CampaignResponseDataType {
   updated_at: string;
   media: string;
   media_filename: string;
+  favorited: boolean;
   permissions: {
     accept_donations: boolean;
     leave_words_of_support: boolean;
@@ -104,6 +105,8 @@ export interface CampaignState {
     campaignId: string,
     settings: Record<string, any>,
   ) => Promise<void>;
+  favoriteCampaign: (campaignId: string) => Promise<void>;
+  unfavoriteCampaign: (campaignId: string) => Promise<void>;
 }
 
 export interface CampaignDescription {

@@ -12,6 +12,7 @@ import { deslugify } from '@/app/utils/helpers/categories';
 import { useUserContext } from '@/app/context/users/UserContext';
 import Pagination from '../pagination/Pagination'; // Import the Pagination component
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
+import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -29,7 +30,8 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const { userProfile } = useUserContext();
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [isLocationLoading, setIsLocationLoading] = useState(true);
-  const { pagination } = useCampaignContext();
+  const { pagination, favoriteCampaign, unfavoriteCampaign } =
+    useCampaignContext();
   const [page, setPage] = useState<number>(1);
 
   const handlePageChange = (newPage: number) => {
@@ -67,6 +69,14 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       campaign.permissions.is_public
     );
   });
+
+  const handleFavorite = async (campaignId: string) => {
+    await favoriteCampaign(campaignId);
+  };
+
+  const handleUnfavorite = async (campaignId: string) => {
+    await unfavoriteCampaign(campaignId);
+  };
 
   if (loading || isLocationLoading) return <CampaignCardLoader />;
   if (error) return <ErrorPage />;
@@ -153,6 +163,22 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                     </div>
                   </div>
                 </Link>
+                {/* Bookmark Icon */}
+                <div
+                  className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md cursor-pointer hover:bg-gray-100"
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent link navigation
+                    campaign.favorited
+                      ? handleUnfavorite(campaign.id.toString())
+                      : handleFavorite(campaign.id.toString());
+                  }}
+                >
+                  {campaign.favorited ? (
+                    <FaBookmark className="text-orange-500" />
+                  ) : (
+                    <FaRegBookmark className="text-gray-500" />
+                  )}
+                </div>
               </motion.div>
             );
           })}

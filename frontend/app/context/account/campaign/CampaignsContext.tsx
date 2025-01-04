@@ -407,40 +407,142 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
+  const favoriteCampaign = useCallback(
+    async (campaignId: string) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await nextFetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/favorite`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          handleApiError('Failed to favorite the campaign. Please try again.');
+          return;
+        }
+
+        // Update the current campaign's favorited status
+        setCurrentCampaign((current) =>
+          current && current.id === Number(campaignId)
+            ? { ...current, favorited: true }
+            : current,
+        );
+
+        // Update the campaigns list if needed
+        setCampaigns((prevCampaigns) =>
+          prevCampaigns.map((campaign) =>
+            campaign.id === Number(campaignId)
+              ? { ...campaign, favorited: true }
+              : campaign,
+          ),
+        );
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error favoriting the campaign',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
+
+  const unfavoriteCampaign = useCallback(
+    async (campaignId: string) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await nextFetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/unfavorite`,
+          {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          handleApiError(
+            'Failed to unfavorite the campaign. Please try again.',
+          );
+          return;
+        }
+
+        // Update the current campaign's favorited status
+        setCurrentCampaign((current) =>
+          current && current.id === Number(campaignId)
+            ? { ...current, favorited: false }
+            : current,
+        );
+
+        // Update the campaigns list if needed
+        setCampaigns((prevCampaigns) =>
+          prevCampaigns.map((campaign) =>
+            campaign.id === Number(campaignId)
+              ? { ...campaign, favorited: false }
+              : campaign,
+          ),
+        );
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Error unfavoriting the campaign',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
+
   const contextValue = useMemo(
     () => ({
       campaigns,
       currentCampaign,
       loading,
       error,
-      statistics, // Add statistics to context
+      statistics,
       pagination,
       addCampaign,
       fetchCampaigns,
-      fetchCampaignStatistics, // Add fetchStatistics to context
+      fetchCampaignStatistics,
       fetchAllCampaigns,
       fetchCampaignById,
       deleteCampaign,
       editCampaign,
       cancelCampaign,
       updateCampaignSettings,
+      favoriteCampaign, // Add favoriteCampaign to context
+      unfavoriteCampaign, // Add unfavoriteCampaign to context
     }),
     [
       campaigns,
       currentCampaign,
       loading,
       error,
-      statistics, // Include statistics in memoization
+      statistics,
       pagination,
       addCampaign,
       fetchCampaigns,
-      fetchCampaignStatistics, // Include fetchStatistics in memoization
+      fetchCampaignStatistics,
       fetchAllCampaigns,
       fetchCampaignById,
       deleteCampaign,
       editCampaign,
       cancelCampaign,
       updateCampaignSettings,
+      favoriteCampaign, // Include favoriteCampaign in memoization
+      unfavoriteCampaign, // Include unfavoriteCampaign in memoization
     ],
   );
 
