@@ -23,7 +23,7 @@ class Campaign < ApplicationRecord
   attribute :suggested_fundraiser_lists, :boolean, default: true
   attribute :receive_donation_email, :boolean, default: true
   attribute :receive_daily_summary, :boolean, default: false
-  attribute :is_public, :boolean, default: false
+  attribute :is_public, :boolean, default: true
 
   # Promotions settings
   attribute :enable_promotions, :boolean, default: false
