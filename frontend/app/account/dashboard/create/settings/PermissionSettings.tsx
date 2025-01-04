@@ -187,7 +187,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
             <Switch
               checked={value}
               onChange={() => handleSwitchChange(key as keyof Permissions)}
-              className={`${value ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
+              className={`${value ? 'bg-green-700' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
             >
               <span
                 className={`${value ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
@@ -207,7 +207,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
           <Switch
             checked={promotions.enable_promotions}
             onChange={() => handlePromotionChange('enable_promotions')}
-            className={`${promotions.enable_promotions ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
+            className={`${promotions.enable_promotions ? 'bg-green-700' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
           >
             <span
               className={`${promotions.enable_promotions ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
@@ -248,7 +248,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
               <Switch
                 checked={promotions.schedule_promotion}
                 onChange={() => handlePromotionChange('schedule_promotion')}
-                className={`${promotions.schedule_promotion ? 'bg-gray-900' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
+                className={`${promotions.schedule_promotion ? 'bg-green-700' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2`}
               >
                 <span
                   className={`${promotions.schedule_promotion ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
