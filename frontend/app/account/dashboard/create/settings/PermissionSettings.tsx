@@ -134,10 +134,8 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
   // Handle saving settings
   const handleSaveSettings = async () => {
     const updatedSettings = {
-      campaign: {
-        ...permissions,
-        ...promotions,
-      },
+      ...permissions,
+      ...promotions,
     };
 
     try {
