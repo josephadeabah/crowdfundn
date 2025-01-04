@@ -107,6 +107,7 @@ export interface CampaignState {
   ) => Promise<void>;
   favoriteCampaign: (campaignId: string) => Promise<void>;
   unfavoriteCampaign: (campaignId: string) => Promise<void>;
+  fetchFavoritedCampaigns: () => Promise<CampaignResponseDataType[]>;
 }
 
 export interface CampaignDescription {

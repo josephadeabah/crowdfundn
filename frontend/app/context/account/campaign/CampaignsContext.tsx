@@ -505,6 +505,36 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
+  // In your CampaignContext file
+const fetchFavoritedCampaigns = useCallback(async () => {
+  setLoading(true);
+  setError(null);
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/favorites`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch favorited campaigns');
+    }
+
+    const data = await response.json();
+    return data.campaigns;
+  } catch (err) {
+    setError(err instanceof Error ? err.message : 'Error fetching favorited campaigns');
+    return [];
+  } finally {
+    setLoading(false);
+  }
+}, [token]);
+
   const contextValue = useMemo(
     () => ({
       campaigns,
@@ -524,6 +554,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       updateCampaignSettings,
       favoriteCampaign, // Add favoriteCampaign to context
       unfavoriteCampaign, // Add unfavoriteCampaign to context
+      fetchFavoritedCampaigns, // Add fetchFavoritedCampaigns to context
     }),
     [
       campaigns,
@@ -543,6 +574,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       updateCampaignSettings,
       favoriteCampaign, // Include favoriteCampaign in memoization
       unfavoriteCampaign, // Include unfavoriteCampaign in memoization
+      fetchFavoritedCampaigns, // Include fetchFavoritedCampaigns in memoization
     ],
   );
 

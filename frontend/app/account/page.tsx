@@ -9,6 +9,7 @@ import {
   GearIcon,
   RocketIcon,
   ChatBubbleIcon,
+  StarIcon,
 } from '@radix-ui/react-icons';
 import { BiTransfer } from 'react-icons/bi';
 import Rewards from '@/app/account/Rewards';
@@ -20,6 +21,7 @@ import Dashboard from '@/app/account/Dashboard';
 import ProfileTabsLoader from '@/app/loaders/ProfileTabsLoader';
 import AccountSettings from '@/app/account/settings/AccountSettings';
 import OnboardingModal from '@/app/components/onboarding/OnboardingModal';
+import Favorites from '@/app/account/Favorites';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState<string>('');
@@ -66,6 +68,12 @@ const ProfileTabs = () => {
       icon: <ChatBubbleIcon />,
       component: <CampaignUpdates />,
       description: 'Add your fundraising updates in this tab.',
+    },
+    {
+      label: 'Favorites', // New Favorites tab
+      icon: <StarIcon />, // Use an appropriate icon
+      component: <Favorites />,
+      description: 'View your favorited campaigns here.',
     },
     {
       label: 'Settings',
