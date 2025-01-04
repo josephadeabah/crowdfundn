@@ -165,7 +165,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 </Link>
                 {/* Bookmark Icon */}
                 <div
-                  className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md cursor-pointer hover:bg-gray-100"
+                  className="absolute top-2 right-2 p-2 bg-transparent rounded-full shadow-md cursor-pointer hover:bg-gray-100"
                   onClick={(e) => {
                     e.preventDefault(); // Prevent link navigation
                     campaign.favorited
@@ -176,7 +176,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                   {campaign.favorited ? (
                     <FaBookmark className="text-orange-500" />
                   ) : (
-                    <FaRegBookmark className="text-gray-500" />
+                    <FaRegBookmark className="text-gray-50" />
                   )}
                 </div>
               </motion.div>
