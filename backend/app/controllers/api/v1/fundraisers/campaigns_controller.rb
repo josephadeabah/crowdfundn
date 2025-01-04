@@ -2,8 +2,8 @@ module Api
   module V1
     module Fundraisers
       class CampaignsController < ApplicationController
-        before_action :authenticate_request, only: %i[create update destroy my_campaigns statistics favorite unfavorite favorites]  # Ensure user is authenticated
-        before_action :set_campaign, only: %i[show update destroy webhook_status_update favorite unfavorite]
+        before_action :authenticate_request, only: %i[index create update destroy my_campaigns statistics favorite unfavorite favorites]  # Ensure user is authenticated
+        before_action :set_campaign, only: %i[index show update destroy webhook_status_update favorite unfavorite]
         before_action :authorize_campaign_user!, only: %i[update destroy]  # Ensure user authorization for these actions
 
         def index
