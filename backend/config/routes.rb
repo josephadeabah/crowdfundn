@@ -67,6 +67,9 @@ Rails.application.routes.draw do
 
         resources :donations, only: [:index]
         resources :campaigns do
+          collection do
+            get :favorites
+          end
           member do
             patch 'cancel', to: 'campaigns#cancel_campaign'
             post :favorite

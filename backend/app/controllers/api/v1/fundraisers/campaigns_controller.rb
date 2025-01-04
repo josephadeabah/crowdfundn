@@ -198,6 +198,12 @@ module Api
           render json: { error: 'Unable to unfavorite campaign' }, status: :unprocessable_entity
         end
       end
+
+      # In your CampaignsController
+      def favorites
+        @campaigns = @current_user.favorited_campaigns
+        render json: { campaigns: @campaigns }
+      end
         
         # New Webhook Action
         def webhook_status_update
