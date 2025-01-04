@@ -21,7 +21,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
     loading,
   } = useCampaignContext();
   interface Permissions {
-    accept_donations: boolean;
+    accept_donations: boolean | undefined;
     leave_words_of_support: boolean | undefined;
     appear_in_search_results: boolean | undefined;
     suggested_fundraiser_lists: boolean | undefined;
@@ -31,7 +31,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
   }
 
   const [permissions, setPermissions] = useState<Permissions>({
-    accept_donations: true,
+    accept_donations: currentCampaign?.permissions.accept_donations,
     leave_words_of_support: currentCampaign?.permissions.leave_words_of_support,
     appear_in_search_results:
       currentCampaign?.permissions.appear_in_search_results,
