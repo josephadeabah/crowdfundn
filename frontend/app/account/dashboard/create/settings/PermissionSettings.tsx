@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Switch } from '@headlessui/react';
 import { Button } from '@/app/components/button/Button';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
+import ToastComponent from '@/app/components/toast/Toast';
 
 interface CampaignPermissionSettingProps {
   permissions: { [key: string]: boolean };
@@ -40,6 +41,28 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
 }) => {
   const { updateCampaignSettings, fetchCampaignById, fetchCampaigns, loading } =
     useCampaignContext();
+
+  // Toast state
+  const [toast, setToast] = useState({
+    isOpen: false,
+    title: '',
+    description: '',
+    type: 'success' as 'success' | 'error' | 'warning',
+  });
+
+  // Function to show toast
+  const showToast = (
+    title: string,
+    description: string,
+    type: 'success' | 'error' | 'warning',
+  ) => {
+    setToast({
+      isOpen: true,
+      title,
+      description,
+      type,
+    });
+  };
 
   const handleSwitchChange = (permission: string) => {
     setPermissions((prev) => ({
@@ -82,14 +105,31 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
       await updateCampaignSettings(campaignId, updatedSettings);
       await fetchCampaignById(campaignId);
       await fetchCampaigns();
-      alert('Campaign settings updated successfully!');
+      showToast(
+        'Success',
+        'Campaign settings updated successfully!',
+        'success',
+      ); // Replace alert with toast
     } catch (error) {
-      alert('Failed to update campaign settings. Please try again.');
+      showToast(
+        'Error',
+        'Failed to update campaign settings. Please try again.',
+        'error',
+      ); // Replace alert with toast
     }
   };
 
   return (
     <div className="p-2 bg-gray-50 dark:bg-gray-900 h-fit overflow-y-auto">
+      {/* Toast Component */}
+      <ToastComponent
+        isOpen={toast.isOpen}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
+        title={toast.title}
+        description={toast.description}
+        type={toast.type}
+      />
+
       <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">
         Fundraiser Settings
       </h2>
