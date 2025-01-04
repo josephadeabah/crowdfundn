@@ -354,7 +354,7 @@ const CreateCampaign = () => {
             </div>
             <div className="w-full text-orange-500 text-sm">
               Campaign you create is public by default. You can change it
-              anytime from your settings
+              anytime from your fundraiser settings
             </div>
             <div className="flex justify-end space-x-2 mt-4">
               <Button variant="secondary" onClick={handleCancel}>
