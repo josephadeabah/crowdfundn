@@ -515,7 +515,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   );
 
   // In your CampaignContext file
-  const fetchFavoritedCampaigns = useCallback(async () => {
+  const fetchFavoritedCampaigns = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
@@ -535,14 +535,14 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const data = await response.json();
-      setCampaigns(data.campaigns);
+      setCampaigns(data?.campaigns);
     } catch (err) {
       setError(
         err instanceof Error
           ? err.message
           : 'Error fetching favorited campaigns',
       );
-      return [];
+      return;
     } finally {
       setLoading(false);
     }
