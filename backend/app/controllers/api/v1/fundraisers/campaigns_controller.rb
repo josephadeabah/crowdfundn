@@ -3,7 +3,7 @@ module Api
     module Fundraisers
       class CampaignsController < ApplicationController
         before_action :authenticate_request, only: %i[create update destroy my_campaigns statistics favorite unfavorite favorites]  # Ensure user is authenticated
-        before_action :set_campaign, only: %i[show update destroy webhook_status_update favorite unfavorite favorites]
+        before_action :set_campaign, only: %i[show update destroy webhook_status_update favorite unfavorite]
         before_action :authorize_campaign_user!, only: %i[update destroy]  # Ensure user authorization for these actions
 
         def index
@@ -201,8 +201,15 @@ module Api
 
       # In your CampaignsController
       def favorites
-        @campaigns = @current_user.favorited_campaigns
-        render json: { campaigns: @campaigns }
+        @campaigns = @current_user.favorited_campaigns.includes(:rewards, :updates, :comments, fundraiser: :profile)
+        campaigns_data = @campaigns.map do |campaign|
+          campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
+                  .merge(media: campaign.media_url, total_donors: campaign.total_donors)
+        end
+      
+        render json: {
+          campaigns: campaigns_data
+        }, status: :ok
       end
         
         # New Webhook Action
