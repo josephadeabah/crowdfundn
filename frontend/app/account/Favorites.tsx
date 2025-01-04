@@ -58,9 +58,6 @@ const Favorites = () => {
             </div>
             <div className="p-4">
               <h3 className="text-lg font-bold truncate">{campaign.title}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                {campaign.description.body}
-              </p>
               <div className="mt-2 text-sm text-gray-500">
                 <span>{campaign.total_donors} Backers</span>
                 <span className="mx-2">•</span>
