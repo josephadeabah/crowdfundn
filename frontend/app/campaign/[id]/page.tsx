@@ -52,7 +52,7 @@ const SingleCampaignPage: React.FC = () => {
       if (navigator.share) {
         await navigator.share({
           title: `Fundraising Details - ${currentCampaign?.title}`,
-          text: `Check out my fundraising details for ${currentCampaign?.description}`,
+          text: `Check out my fundraising details for "${currentCampaign?.title}": ${currentCampaign?.description?.body || ''}`,
           url: currentUrl,
         });
       } else {
@@ -62,6 +62,17 @@ const SingleCampaignPage: React.FC = () => {
       }
     } catch (error) {
       setError('Error sharing fundraising details');
+    }
+  };
+
+  const handleCopy = async () => {
+    try {
+      const currentUrl = window.location.href;
+      await navigator.clipboard.writeText(currentUrl);
+      setCopyButtonText('Copied');
+      setTimeout(() => setCopyButtonText('Copy'), 2000);
+    } catch {
+      setError('Error copying the link');
     }
   };
 
@@ -233,7 +244,10 @@ const SingleCampaignPage: React.FC = () => {
                   >
                     <FaShare className="mr-2" /> Share
                   </Button>
-                  <button className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                  <button
+                    onClick={handleCopy}
+                    className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                  >
                     {copyButtonText}
                   </button>
                 </div>
