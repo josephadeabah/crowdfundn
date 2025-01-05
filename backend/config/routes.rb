@@ -24,6 +24,7 @@ Rails.application.routes.draw do
         get 'users/:id', to: 'users#show_by_id'
         put 'users/:id/make_admin', to: 'users#make_admin'
         put 'users/:id/assign_role', to: 'users#assign_role'
+        put 'users/:id/remove_role', to: 'users#remove_role'
         post 'users/:user_id/create_subaccount', to: 'users#create_subaccount'
         get 'users/:user_id/subaccount', to: 'users#show_subaccount'
         put 'users/:user_id/update_subaccount', to: 'users#update_subaccount'

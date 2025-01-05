@@ -258,6 +258,21 @@ module Api
           end
         end
 
+        def remove_role
+          role = Role.find_by(name: params[:role_name])
+          if role.present?
+            if @user.roles.include?(role)
+              @user.roles.delete(role)
+              render json: { message: 'Role removed successfully.' }, status: :ok
+            else
+              render json: { error: 'User does not have the specified role.' }, status: :unprocessable_entity
+            end
+          else
+            render json: { error: 'Role not found' }, status: :unprocessable_entity
+          end
+        end
+        
+
         def update
           if @current_user.update(user_params)
             render json: @current_user.as_json(include: :profile), status: :ok
