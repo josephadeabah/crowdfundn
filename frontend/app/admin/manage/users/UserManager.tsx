@@ -65,15 +65,15 @@ const UserManagement = () => {
     }
   };
 
-  const handleRemoveRole = async (userId: number, roleId: number) => {
+  const handleRemoveRole = async (userId: number, roleName: string) => {
     try {
-      await removeRoleFromUser(userId, roleId.toString()); // Assuming `removeRoleFromUser` is available in the context
+      await removeRoleFromUser(userId, roleName); // Assuming `removeRoleFromUser` is available in the context
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === userId
             ? {
                 ...user,
-                roles: user.roles.filter((role: any) => role.id !== roleId),
+                roles: user.roles.filter((role: any) => role.name !== roleName),
               }
             : user,
         ),
@@ -217,7 +217,7 @@ const UserManagement = () => {
                     >
                       {role.name}
                       <button
-                        onClick={() => handleRemoveRole(user.id, role.id)}
+                        onClick={() => handleRemoveRole(user.id, role.name)}
                         className="ml-2 text-red-500 hover:text-red-700"
                         aria-label={`Remove ${role.name}`}
                       >
