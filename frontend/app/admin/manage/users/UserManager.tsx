@@ -18,10 +18,12 @@ const UserManagement = () => {
     blockUser,
     activateUser,
     makeUserAdmin,
+    removeRoleFromUser, // Added this function to the context
     userProfile,
     error,
     loading,
   } = useUserContext();
+
   const [users, setUsers] = useState<any[]>([]);
   const [metadata, setMetadata] = useState<any>({});
   const [searchTerm, setSearchTerm] = useState('');
@@ -60,6 +62,25 @@ const UserManagement = () => {
       toast.success('Role updated successfully!');
     } catch (err) {
       toast.error('Failed to update role');
+    }
+  };
+
+  const handleRemoveRole = async (userId: number, roleId: number) => {
+    try {
+      await removeRoleFromUser(userId, roleId.toString()); // Assuming `removeRoleFromUser` is available in the context
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === userId
+            ? {
+                ...user,
+                roles: user.roles.filter((role: any) => role.id !== roleId),
+              }
+            : user,
+        ),
+      );
+      toast.success('Role removed successfully!');
+    } catch (err) {
+      toast.error('Failed to remove role');
     }
   };
 
@@ -192,9 +213,16 @@ const UserManagement = () => {
                   {user.roles.map((role: any) => (
                     <span
                       key={role.id}
-                      className="px-2 py-1 text-sm rounded bg-gray-50 text-orange-600 mr-1"
+                      className="inline-flex items-center px-2 py-1 text-sm rounded bg-gray-50 text-orange-600 mr-1"
                     >
                       {role.name}
+                      <button
+                        onClick={() => handleRemoveRole(user.id, role.id)}
+                        className="ml-2 text-red-500 hover:text-red-700"
+                        aria-label={`Remove ${role.name}`}
+                      >
+                        &times;
+                      </button>
                     </span>
                   ))}
                 </td>
@@ -233,7 +261,9 @@ const UserManagement = () => {
                         ? 'text-red-500 hover:text-red-700'
                         : 'text-green-500 hover:text-green-700'
                     }`}
-                    aria-label={`${user.status === 'active' ? 'Block' : 'Unblock'} user`}
+                    aria-label={`${
+                      user.status === 'active' ? 'Block' : 'Unblock'
+                    } user`}
                   >
                     {user.status === 'active' ? <FaLock /> : <FaUnlock />}
                   </button>
@@ -250,13 +280,11 @@ const UserManagement = () => {
           </tbody>
         </table>
       </div>
-      {/* Fix the Pagination component */}
       <Pagination
         currentPage={metadata.current_page || page}
-        totalPages={metadata.total_pages || 1} // Ensure there's a fallback in case it's undefined
+        totalPages={metadata.total_pages || 1}
         onPageChange={(newPage) => setPage(newPage)}
       />
-      {/* Add the AlertPopup here */}
       <AlertPopup
         title="Delete User"
         message="Are you sure you want to delete this user?"
@@ -265,21 +293,21 @@ const UserManagement = () => {
         onConfirm={async () => {
           if (userToDelete !== null) {
             try {
-              await deleteUser(userToDelete); // Call the deleteUser function with the selected userId
+              await deleteUser(userToDelete);
               setUsers((prevUsers) =>
                 prevUsers.filter((user) => user.id !== userToDelete),
-              ); // Remove the user from the list
+              );
               toast.error('User deleted!');
             } catch (err) {
               toast.error('Failed to delete user');
             }
-            setIsDeletePopupOpen(false); // Close the popup
-            setUserToDelete(null); // Clear the userId
+            setIsDeletePopupOpen(false);
+            setUserToDelete(null);
           }
         }}
         onCancel={() => {
-          setIsDeletePopupOpen(false); // Close the popup without deleting the user
-          setUserToDelete(null); // Clear the userId
+          setIsDeletePopupOpen(false);
+          setUserToDelete(null);
         }}
       />
       <ToastContainer />

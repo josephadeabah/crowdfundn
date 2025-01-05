@@ -154,6 +154,35 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
+  // Function to remove a role from a user
+  const removeRoleFromUser = useCallback(
+    async (userId: number, roleName: string) => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${userId}/remove_role`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ role_name: roleName }),
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to remove role from user');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
+
   // Function to make a user Super Admin
   const makeUserAdmin = useCallback(
     async (userId: number, isAdmin: boolean) => {
@@ -259,6 +288,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       fetchUserProfile,
       hasRole,
       assignRoleToUser,
+      removeRoleFromUser,
       makeUserAdmin,
       blockUser,
       activateUser,
@@ -272,6 +302,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       token,
       hasRole,
       assignRoleToUser,
+      removeRoleFromUser,
       makeUserAdmin,
       blockUser,
       activateUser,
