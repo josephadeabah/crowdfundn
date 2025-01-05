@@ -175,9 +175,9 @@ const RegisterForm: React.FC = () => {
     return error;
   };
 
-  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setTermsAccepted(event.target.checked);
-  };
+  // const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+  //   setTermsAccepted(event.target.checked);
+  // };
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -600,27 +600,34 @@ const RegisterForm: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {renderStep()}
             {currentStep === 3 && (
-              <div className="mt-4">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={termsAccepted}
-                    onChange={handleCheckboxChange}
-                    className="h-4 w-4 text-green-600 border-gray-300 rounded"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">
-                    I agree to BantuHive's{' '}
-                    <a
-                      href="/terms"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-green-700 hover:underline"
-                    >
-                      Terms and Conditions
-                    </a>
-                  </span>
+              <div className="flex items-start mt-4">
+              <input
+                id="terms"
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={() => setTermsAccepted(!termsAccepted)}
+                className="peer hidden"
+                required
+              />
+              <div className="flex items-center">
+                <div className="w-5 h-5 rounded border-2 border-gray-300 peer-checked:border-green-600 peer-checked:bg-green-600 flex justify-center items-center cursor-pointer">
+                  <label htmlFor="terms" className="cursor-pointer w-full h-full"></label>
+                </div>
+                <label
+                  htmlFor="terms"
+                  className="ml-2 text-sm text-gray-700"
+                >
+                  I accept the{" "}
+                  <a
+                    href="/terms"
+                    target="_blank"
+                    className="text-green-600 underline hover:text-green-700"
+                  >
+                    Terms and Conditions
+                  </a>
                 </label>
               </div>
+            </div>            
             )}
             <div className="flex justify-between mt-8">
               {currentStep > 1 && (
