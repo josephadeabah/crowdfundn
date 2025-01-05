@@ -606,7 +606,7 @@ const RegisterForm: React.FC = () => {
                     type="checkbox"
                     checked={termsAccepted}
                     onChange={handleCheckboxChange}
-                    className={`h-4 w-4 text-green-600 border-gray-300 rounded ${termsAccepted ? 'bg-green-600' : 'bg-white'}`}
+                    className="h-4 w-4 text-green-600 border-gray-300 rounded checked:bg-green-600"
                   />
                   <span className="ml-2 text-sm text-gray-700">
                     I agree to the{' '}
