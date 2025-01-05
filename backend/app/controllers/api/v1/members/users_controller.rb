@@ -4,7 +4,7 @@ module Api
       class UsersController < ApplicationController
         before_action :authenticate_request, except: [:index]
         before_action :authorize_admin, only: [:make_admin]
-        before_action :set_user, only: %i[make_admin make_admin_role show_by_id assign_role show_subaccount update_subaccount destroy block_user activate_user] # Added :assign_role
+        before_action :set_user, only: %i[make_admin make_admin_role show_by_id assign_role remove_role show_subaccount update_subaccount destroy block_user activate_user] # Added :assign_role
         rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
         def index
@@ -259,6 +259,8 @@ module Api
         end
 
         def remove_role
+          return render json: { error: 'User not found' }, status: :not_found if @user.nil?
+        
           role = Role.find_by(name: params[:role_name])
           if role.present?
             if @user.roles.include?(role)
@@ -270,7 +272,7 @@ module Api
           else
             render json: { error: 'Role not found' }, status: :unprocessable_entity
           end
-        end
+        end        
         
 
         def update
