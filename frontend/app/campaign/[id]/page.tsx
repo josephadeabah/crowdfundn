@@ -46,13 +46,23 @@ const SingleCampaignPage: React.FC = () => {
     if (selectedReward) setPledgeAmount(selectedReward.amount.toString());
   };
 
+  const stripHtmlTags = (html: string): string => {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || '';
+  };
+
   const handleShare = async () => {
     const currentUrl = window.location.href;
+    const campaignTitle = currentCampaign?.title || 'Fundraising Campaign';
+    const campaignDescription = currentCampaign?.description?.body
+      ? stripHtmlTags(currentCampaign.description.body)
+      : '';
+
     try {
       if (navigator.share) {
         await navigator.share({
-          title: `Fundraising Details - ${currentCampaign?.title}`,
-          text: `Check out my fundraising details for "${currentCampaign?.title}": ${currentCampaign?.description?.body || ''}`,
+          title: `Fundraising Details - ${campaignTitle}`,
+          text: `Check out my fundraising details for "${campaignTitle}": ${campaignDescription}`,
           url: currentUrl,
         });
       } else {
