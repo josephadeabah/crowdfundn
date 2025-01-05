@@ -601,34 +601,38 @@ const RegisterForm: React.FC = () => {
             {renderStep()}
             {currentStep === 3 && (
              <div className="flex items-start mt-4">
-               <input
-                 id="terms"
-                 type="checkbox"
-                 checked={termsAccepted}
-                 onChange={() => setTermsAccepted(!termsAccepted)}
-                 className="peer hidden"
-                 required
-               />
-               <div
-                 onClick={() => setTermsAccepted(!termsAccepted)} // Allow clicking on the custom checkbox
-                 className="w-5 h-5 rounded border-2 border-gray-300 peer-checked:border-green-600 peer-checked:bg-green-600 flex justify-center items-center cursor-pointer"
+             {/* Hidden Input Checkbox */}
+             <input
+               id="terms"
+               type="checkbox"
+               checked={termsAccepted}
+               onChange={() => setTermsAccepted(!termsAccepted)}
+               className="peer hidden"
+               required
+             />
+             
+             {/* Custom Checkbox */}
+             <label
+               htmlFor="terms"
+               className="w-5 h-5 rounded border-2 border-gray-300 flex justify-center items-center cursor-pointer
+                          peer-checked:border-green-600 peer-checked:bg-green-600"
+             ></label>
+             
+             {/* Text Label */}
+             <label
+               htmlFor="terms"
+               className="ml-2 text-sm text-gray-700 cursor-pointer"
+             >
+               I accept the{" "}
+               <a
+                 href="/terms"
+                 target="_blank"
+                 className="text-green-600 underline hover:text-green-700"
                >
-                 <label htmlFor="terms" className="cursor-pointer w-full h-full"></label>
-               </div>
-               <label
-                 htmlFor="terms"
-                 className="ml-2 text-sm text-gray-700"
-               >
-                 I accept the{" "}
-                 <a
-                   href="/terms"
-                   target="_blank"
-                   className="text-green-600 underline hover:text-green-700"
-                 >
-                   Terms and Conditions
-                 </a>
-               </label>
-             </div>                        
+                 Terms and Conditions
+               </a>
+             </label>
+           </div>                       
             )}
             <div className="flex justify-between mt-8">
               {currentStep > 1 && (
