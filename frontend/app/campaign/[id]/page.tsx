@@ -51,12 +51,20 @@ const SingleCampaignPage: React.FC = () => {
     return doc.body.textContent || '';
   };
 
+  const truncateText = (text: string, maxLength: number): string => {
+    if (text.length > maxLength) {
+      return `${text.slice(0, maxLength)}...`;
+    }
+    return text;
+  };
+
   const handleShare = async () => {
     const currentUrl = window.location.href;
     const campaignTitle = currentCampaign?.title || 'Fundraising Campaign';
-    const campaignDescription = currentCampaign?.description?.body
+    const rawDescription = currentCampaign?.description?.body
       ? stripHtmlTags(currentCampaign.description.body)
       : '';
+    const campaignDescription = truncateText(rawDescription, 100); // Limit to 100 characters
 
     try {
       if (navigator.share) {
