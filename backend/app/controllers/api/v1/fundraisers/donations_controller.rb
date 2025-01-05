@@ -42,28 +42,28 @@ module Api
           if @current_user.nil?
             return render json: { error: 'You need to log in to access donations.' }, status: :unauthorized
           end
-          
-          page = params[:page] || 1
-          per_page = params[:per_page] || 10
-          
+        
+          # Fetch campaigns owned by the fundraiser
           campaigns = Campaign.where(fundraiser_id: @current_user.id)
-          
+        
+          # Fetch donations for those campaigns with successful status
           donations = Donation.where(status: 'successful')
-                              .where('user_id IS NULL OR user_id = ?', @current_user.id)
                               .where(campaign_id: campaigns.pluck(:id))
                               .order(created_at: :desc)
-                              .page(page)
-                              .per(per_page)
-          
+                              .page(params[:page] || 1)
+                              .per(params[:per_page] || 10)
+        
+          # Prepare pagination details
           pagination = {
             current_page: donations.current_page,
             total_pages: donations.total_pages,
             per_page: donations.limit_value,
             total_count: donations.total_count
           }
-          
+        
+          # Render the response
           render json: { donations: donations, pagination: pagination }, status: :ok
-        end
+        end        
 
         def create
           campaign = Campaign.find_by(id: params[:campaign_id])
