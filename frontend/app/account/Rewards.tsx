@@ -167,7 +167,10 @@ const RewardsPage: React.FC = () => {
             <>
               {campaigns.every((campaign) => campaign.rewards.length === 0) ? (
                 <p className="text-gray-500 text-lg">
-                  You have not created any rewards yet!
+                  You have not created any rewards yet!. Use this page to create
+                  items that you can give to your backers who donate the amount
+                  you specify in your items. The reward could be in cash or
+                  kind.
                 </p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

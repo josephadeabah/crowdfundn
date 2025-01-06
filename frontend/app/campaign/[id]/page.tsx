@@ -188,7 +188,7 @@ const SingleCampaignPage: React.FC = () => {
                 src={currentCampaign?.media || '/bantuhive.svg'}
                 alt="fundraising thumbnail"
                 loading="eager"
-                layout="fill"
+                layout="intrinsic"
                 objectFit="cover"
               />
             </div>
