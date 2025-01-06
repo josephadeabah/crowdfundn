@@ -166,7 +166,7 @@ const RewardsPage: React.FC = () => {
           ) : (
             <>
               {campaigns.every((campaign) => campaign.rewards.length === 0) ? (
-                <p className="text-gray-500 text-lg">
+                <p className="text-gray-500 text-sm">
                   You have not created any rewards yet!. Use this page to create
                   items that you can give to your backers who donate the amount
                   you specify in your items. The reward could be in cash, material or
