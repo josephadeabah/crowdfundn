@@ -169,7 +169,7 @@ const RewardsPage: React.FC = () => {
                 <p className="text-gray-500 text-lg">
                   You have not created any rewards yet!. Use this page to create
                   items that you can give to your backers who donate the amount
-                  you specify in your items. The reward could be in cash or
+                  you specify in your items. The reward could be in cash, material or
                   kind.
                 </p>
               ) : (
