@@ -11,6 +11,7 @@ Once you’re in the settings, enter your Bank Name and Account Number. This is 
 ### 3. Click on Transfers
 
 Now that your account is set up, navigate to the **Transfers** section. This is where you’ll manage all your fund withdrawal requests. Ready to request a transfer? Let’s continue!
+![Select Bank](/guides/Transaferspage.png#markdown-transferspage)
 
 ### 4. Choose the campaign you would like to withdraw funds for
 

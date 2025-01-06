@@ -185,3 +185,9 @@ img[src*='#markdown-selectbank'] {
   height: 400px;
   object-fit: contain;
 }
+
+img[src*='#markdown-transferspage'] {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
+}
