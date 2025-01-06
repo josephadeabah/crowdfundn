@@ -175,7 +175,7 @@ const Privacy = () => {
         </ul>
         <p className="text-lg leading-relaxed mt-4">
           If you wish to exercise any of these rights, please contact us at
-          support@bantuhive.com.
+          help@bantuhive.com.
         </p>
       </div>
 
