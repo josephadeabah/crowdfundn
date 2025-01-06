@@ -9,7 +9,7 @@ export default function Head() {
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta
         name="keywords"
-        content="fundraising, Africa, diaspora, charity, donations, nonprofit, crowdfunding"
+        content="fundraising, Africa, diaspora, charity, donations, nonprofit, crowdfunding africawerise africarising startup crowdfundingstartup fintech"
       />
       <meta
         property="og:title"
@@ -35,7 +35,7 @@ export default function Head() {
         content="Fundraising Made Easy for Africa & Diaspora"
       />
       <link rel="icon" href="/bantuhive.ico" type="image/x-icon" />
-      <link rel="icon" href="/bantu-hive.svg" type="image/svg+xml" />
+      {/* <link rel="icon" href="/bantu-hive.svg" type="image/svg+xml" /> */}
       <link rel="canonical" href="https://bantuhive.com" />
 
       {/* Structured Data */}
@@ -47,7 +47,7 @@ export default function Head() {
             '@type': 'Organization',
             name: 'Bantu Hive',
             url: 'https://bantuhive.com',
-            logo: 'https://bantuhive.com/bantu-hive.svg',
+            logo: 'https://bantuhive.com/bantuhive.ico',
             description:
               'BantuHive operates as a premier crowdfunding platform focused on facilitating fundraising efforts across Africa and the Diaspora.',
             foundingDate: '2024',
