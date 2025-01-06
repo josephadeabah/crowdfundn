@@ -183,12 +183,12 @@ const SingleCampaignPage: React.FC = () => {
               {currentCampaign?.title}
             </h1>
             {/* Campaign Image */}
-            <div className="relative w-full aspect-video rounded-md overflow-hidden mb-4">
+            <div className="relative w-full aspect-video rounded-md h-full mb-4">
               <Image
                 src={currentCampaign?.media || '/bantuhive.svg'}
                 alt="fundraising thumbnail"
                 loading="eager"
-                layout="intrinsic"
+                layout="fill"
                 objectFit="cover"
               />
             </div>
