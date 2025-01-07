@@ -388,7 +388,7 @@ module Api
             bank_name: transfer_data[:recipient][:details][:bank_name],
             status: transfer_data[:status],
             currency: transfer_data[:currency],
-            user: campaign.fundraiser_id,
+            user: campaign.fundraiser.id,
             campaign: campaign.id
           }
         
