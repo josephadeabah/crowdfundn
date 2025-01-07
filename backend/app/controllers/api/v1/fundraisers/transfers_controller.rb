@@ -404,8 +404,8 @@ module Api
           # Create or update the transfer in the database
           transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer[:transfer_code])
           transfer_record.update(
-            user: transfer_data.dig(:metadata, :user_id),  # Associate with the logged-in user
-            campaign: transfer_data.dig(:metadata, :campaign_id),
+            user: campaign.fundraiser_id,  # Associate with the logged-in user
+            campaign: campaign.id,  # Associate with the campaign
             bank_name: transfer[:bank_name],
             account_number: transfer[:account_number],
             amount: transfer[:amount],
@@ -429,26 +429,24 @@ module Api
         # Fetch transfers from Paystack for the logged-in user
         def fetch_transfers_from_paystack
           @fundraiser = @current_user
-          subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
+          subaccounts = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
           
-          unless subaccount
-            render json: { error: "No subaccount found for this user" }, status: :not_found
-            return
-          end
-        
-          Rails.logger.info "Fetching transfers for subaccount #{subaccount.transfer_code}..."
-          response = @paystack_service.fetch_transfers(subaccount.transfer_code)
-          Rails.logger.info "Transfers response: #{response.inspect}"
-          
-          if response[:status] && response[:data].present?
-            # Loop through each transfer and save it to the database
-            response[:data].each do |transfer_data|
-              save_transfer_from_paystack(transfer_data)
+          # Fetch transfers for each subaccount
+          subaccounts.each do |subaccount|
+            response = @paystack_service.fetch_transfers(subaccount.transfer_code)
+            
+            if response[:status] && response[:data].present?
+              # Loop through each transfer and save it to the database
+              response[:data].each do |transfer_data|
+                save_transfer_from_paystack(transfer_data)
+              end
+            else
+              render json: { error: "No transfers found or an error occurred" }, status: :unprocessable_entity
+              return
             end
-            render json: { message: "Transfers fetched and saved successfully" }, status: :ok
-          else
-            render json: { error: "No transfers found or an error occurred" }, status: :unprocessable_entity
           end
+
+          render json: { message: "Transfers fetched and saved successfully" }, status: :ok
         end
       
         private
