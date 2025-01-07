@@ -388,8 +388,8 @@ module Api
             bank_name: transfer_data[:recipient][:details][:bank_name],
             status: transfer_data[:status],
             currency: transfer_data[:currency],
-            user_id: campaign.fundraiser_id,
-            campaign_id: campaign.id
+            user: campaign.fundraiser_id,
+            campaign: campaign.id
           }
         
           # Create or update transfer record
