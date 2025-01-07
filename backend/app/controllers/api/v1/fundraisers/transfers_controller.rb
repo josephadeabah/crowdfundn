@@ -429,26 +429,26 @@ module Api
         # Fetch transfers from Paystack for the logged-in user
         def fetch_transfers_from_paystack
           @fundraiser = @current_user
-          subaccounts = Subaccount.find_by(subaccount_code: @fundraiser.subaccount.id)
+          subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
           
-          # Fetch transfers for each subaccount
-          subaccounts.each do |subaccount|
-            Rails.logger.info "Fetching transfers for subaccount #{subaccount.transfer_code}..."
-            response = @paystack_service.fetch_transfers(subaccount.transfer_code)
-            Rails.logger.info "Transfers response: #{response.inspect}"
-            
-            if response[:status] && response[:data].present?
-              # Loop through each transfer and save it to the database
-              response[:data].each do |transfer_data|
-                save_transfer_from_paystack(transfer_data)
-              end
-            else
-              render json: { error: "No transfers found or an error occurred" }, status: :unprocessable_entity
-              return
-            end
+          unless subaccount
+            render json: { error: "No subaccount found for this user" }, status: :not_found
+            return
           end
-
-          render json: { message: "Transfers fetched and saved successfully" }, status: :ok
+        
+          Rails.logger.info "Fetching transfers for subaccount #{subaccount.transfer_code}..."
+          response = @paystack_service.fetch_transfers(subaccount.transfer_code)
+          Rails.logger.info "Transfers response: #{response.inspect}"
+          
+          if response[:status] && response[:data].present?
+            # Loop through each transfer and save it to the database
+            response[:data].each do |transfer_data|
+              save_transfer_from_paystack(transfer_data)
+            end
+            render json: { message: "Transfers fetched and saved successfully" }, status: :ok
+          else
+            render json: { error: "No transfers found or an error occurred" }, status: :unprocessable_entity
+          end
         end
       
         private
