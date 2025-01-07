@@ -383,7 +383,7 @@ def fetch_transfers_from_paystack
     transfers_data.each do |transfer_data|
       Transfer.find_or_create_by(transfer_code: transfer_data[:transfer_code]) do |transfer|
         transfer.assign_attributes(
-          user_id: user_id,
+          user_id: user.id,
           campaign_id: transfer_data.dig(:metadata, :campaign_id),
           transfer_code: transfer_data[:transfer_code],
           amount: transfer_data[:amount],
