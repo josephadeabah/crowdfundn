@@ -434,6 +434,8 @@ module Api
           # Fetch transfers for each subaccount
           subaccounts.each do |subaccount|
             response = @paystack_service.fetch_transfers(subaccount.transfer_code)
+
+            Rails.logger.info "Transfers response: #{response.inspect}"
             
             if response[:status] && response[:data].present?
               # Loop through each transfer and save it to the database
