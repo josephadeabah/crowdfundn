@@ -433,7 +433,7 @@ module Api
           
           # Fetch transfers for each subaccount
           subaccounts.each do |subaccount|
-            response = @paystack_service.fetch_transfers(subaccount.transfer_code)
+            response = @paystack_service.fetch_transfer(subaccount.transfer_code)
             
             if response[:status] && response[:data].present?
               # Loop through each transfer and save it to the database
