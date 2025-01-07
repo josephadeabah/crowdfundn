@@ -350,26 +350,23 @@ module Api
         end        
 
        # Fetch transfers for the logged-in user
-      # Fetch transfers for the logged-in user
-def fetch_user_transfers
-  page = params[:page] || 1
-  page_size = params[:pageSize] || 8
+      def fetch_user_transfers
+        page = params[:page] || 1
+        page_size = params[:pageSize] || 8
 
-  @transfers = @current_user.transfers.includes(:campaign).order(created_at: :desc).page(page).per(page_size)
+        @transfers = @current_user.transfers.includes(:campaign).order(created_at: :desc).page(page).per(page_size)
 
-  if @transfers.any?
-    render json: {
-      transfers: @transfers.as_json(include: :campaign),
-      current_page: @transfers.current_page,
-      total_pages: @transfers.total_pages,
-      total_count: @transfers.total_count
-    }, status: :ok
-  else
-    render json: { message: "No transfers found." }, status: :ok
-  end
-end
-
-      
+        if @transfers.any?
+          render json: {
+            transfers: @transfers.as_json(include: :campaign),
+            current_page: @transfers.current_page,
+            total_pages: @transfers.total_pages,
+            total_count: @transfers.total_count
+          }, status: :ok
+        else
+          render json: { message: "No transfers found." }, status: :ok
+        end
+      end
 
         # Save a transfer from Paystack to the database
         def save_transfer_from_paystack(transfer_data)
