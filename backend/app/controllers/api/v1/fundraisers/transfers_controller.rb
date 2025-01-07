@@ -429,7 +429,7 @@ module Api
         # Fetch transfers from Paystack for the logged-in user
         def fetch_transfers_from_paystack
           @fundraiser = @current_user
-          subaccounts = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
+          subaccounts = Subaccount.find_by(subaccount_code: @fundraiser.subaccount.id)
           
           # Fetch transfers for each subaccount
           subaccounts.each do |subaccount|
