@@ -377,8 +377,8 @@ module Api
       
       # Fetch transfers from Paystack and sync with the local database
       def fetch_transfers_from_paystack_and_render
-        user = @current_user
-        response = @paystack_service.fetch_transfer(user.subaccount_id)
+        @user = @current_user
+        response = @paystack_service.fetch_transfer(@user.subaccount_id)
       
         if response[:status]
           # Parse and sync Paystack transfer data
@@ -386,7 +386,7 @@ module Api
           transfers_data&.each do |transfer_data|
             Transfer.find_or_initialize_by(transfer_code: transfer_data[:transfer_code]).tap do |transfer|
               transfer.assign_attributes(
-                user_id: user.id,
+                user_id: @user.id,
                 campaign_id: transfer_data.dig(:metadata, :campaign_id),
                 amount: transfer_data[:amount],
                 currency: transfer_data[:currency],
