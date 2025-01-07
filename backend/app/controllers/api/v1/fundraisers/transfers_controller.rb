@@ -350,62 +350,76 @@ module Api
         end        
 
        # Fetch transfers for the logged-in user
-      # Fetch user transfers (from database)
-def fetch_user_transfers
-
-  page = params[:page] || 1
-  page_size = params[:pageSize] || 8
-
-  # Query the database for transfers belonging to the current user with pagination and order by created_at
-  @transfers = Transfer.where(user_id: @current_user.id).includes(:campaign).order(created_at: :desc).page(page).per(page_size)
-
-  # Check if transfers are present
-  if @transfers.any?
-    render json: {
-      transfers: @transfers.as_json(include: :campaign),
-      current_page: @transfers.current_page,
-      total_pages: @transfers.total_pages,
-      total_count: @transfers.total_count
-    }, status: :ok
-    # Fallback: attempt to fetch from Paystack if no local records exist
-    fetch_transfers_from_paystack
-  end
-end
-
-# Fetch transfers from Paystack and sync to local database
-def fetch_transfers_from_paystack
-  user = @current_user
-  response = @paystack_service.fetch_transfer(user.subaccount_id)
-
-  if response[:status]
-    # Sync transfers to local database
-    transfers_data = response.dig(:data)
-    transfers_data.each do |transfer_data|
-      Transfer.find_or_create_by(transfer_code: transfer_data[:transfer_code]) do |transfer|
-        transfer.assign_attributes(
-          user_id: user.id,
-          campaign_id: transfer_data.dig(:metadata, :campaign_id),
-          transfer_code: transfer_data[:transfer_code],
-          amount: transfer_data[:amount],
-          currency: transfer_data[:currency],
-          status: transfer_data[:status],
-          reason: transfer_data[:reason],
-          recipient: transfer_data.dig(:recipient),
-          created_at: transfer_data[:created_at]
-        )
-      end
-    end
-
-    # Return updated transfers
-    transfers = Transfer.where(user_id: user_id)
-    render json: {transfers: transfers}, status: :ok
-  else
-    render json: { error: response[:message] || "Failed to fetch transfers from Paystack" }, status: :unprocessable_entity
-  end
-rescue => e
-  Rails.logger.error "Error fetching transfers from Paystack: #{e.message}"
-  render json: { error: "An error occurred while fetching transfers. Please try again later." }, status: :internal_server_error
-end
+       def fetch_user_transfers
+        page = params[:page] || 1
+        page_size = params[:pageSize] || 8
+      
+        # Query local transfers belonging to the current user
+        @transfers = Transfer
+                      .where(user_id: @current_user.id)
+                      .includes(:campaign)
+                      .order(created_at: :desc)
+                      .page(page)
+                      .per(page_size)
+      
+        if @transfers.any?
+          render json: {
+            transfers: @transfers.as_json(include: :campaign),
+            current_page: @transfers.current_page,
+            total_pages: @transfers.total_pages,
+            total_count: @transfers.total_count
+          }, status: :ok
+        else
+          # Fetch transfers from Paystack if no local records exist
+          fetch_transfers_from_paystack_and_render
+        end
+       end
+      
+      # Fetch transfers from Paystack and sync with the local database
+      def fetch_transfers_from_paystack_and_render
+        user = @current_user
+        response = @paystack_service.fetch_transfer(user.subaccount_id)
+      
+        if response[:status]
+          # Parse and sync Paystack transfer data
+          transfers_data = response.dig(:data)
+          transfers_data&.each do |transfer_data|
+            Transfer.find_or_initialize_by(transfer_code: transfer_data[:transfer_code]).tap do |transfer|
+              transfer.assign_attributes(
+                user_id: user.id,
+                campaign_id: transfer_data.dig(:metadata, :campaign_id),
+                amount: transfer_data[:amount],
+                currency: transfer_data[:currency],
+                status: transfer_data[:status],
+                reason: transfer_data[:reason],
+                recipient: transfer_data[:recipient],
+                created_at: transfer_data[:created_at]
+              )
+              transfer.save! # Ensure saving is robust and errors are logged
+            end
+          end
+      
+          # Return all user transfers after syncing
+          synced_transfers = Transfer
+                              .where(user_id: user.id)
+                              .includes(:campaign)
+                              .order(created_at: :desc)
+                              .page(params[:page] || 1)
+                              .per(params[:pageSize] || 8)
+      
+          render json: {
+            transfers: synced_transfers.as_json(include: :campaign),
+            current_page: synced_transfers.current_page,
+            total_pages: synced_transfers.total_pages,
+            total_count: synced_transfers.total_count
+          }, status: :ok
+        else
+          render json: { error: response[:message] || "Failed to fetch transfers from Paystack" }, status: :unprocessable_entity
+        end
+      rescue => e
+        Rails.logger.error "Error fetching transfers from Paystack: #{e.message}\n#{e.backtrace.join("\n")}"
+        render json: { error: "An error occurred while fetching transfers. Please try again later." }, status: :internal_server_error
+      end      
 
       
         private
