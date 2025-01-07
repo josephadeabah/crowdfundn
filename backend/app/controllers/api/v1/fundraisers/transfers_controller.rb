@@ -375,7 +375,7 @@ end
 # Fetch transfers from Paystack and sync to local database
 def fetch_transfers_from_paystack
   user = @current_user
-  response = @paystack_service.fetch_transfer(subaccount_code: user.subaccount_id)
+  response = @paystack_service.fetch_transfer(user.subaccount_id)
 
   if response[:status]
     # Sync transfers to local database
