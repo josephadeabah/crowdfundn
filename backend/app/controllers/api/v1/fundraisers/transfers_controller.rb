@@ -375,79 +375,95 @@ module Api
       
 
         # Save a transfer from Paystack to the database
-        def save_transfer_from_paystack(transfer_data)
-          campaign = Campaign.find_by(id: transfer_data.dig(:metadata, :campaign_id))
+        # Save a transfer from Paystack to the database
+def save_transfer_from_paystack(transfer_data)
+  # Find the campaign associated with the transfer using the campaign_id from metadata
+  campaign = Campaign.find_by(id: transfer_data.dig(:metadata, :campaign_id))
 
-          if campaign.nil?
-            Rails.logger.error "Campaign with ID #{transfer_data.dig(:metadata, :campaign_id)} does not exist."
-            render json: { error: "Campaign not found" }, status: :unprocessable_entity
-            return
-          end
+  if campaign.nil?
+    Rails.logger.error "Campaign with ID #{transfer_data.dig(:metadata, :campaign_id)} does not exist."
+    render json: { error: "Campaign not found" }, status: :unprocessable_entity
+    return
+  end
 
-          # Here we extract the relevant transfer data from the Paystack API response
-          transfer = {
-            transfer_code: transfer_data[:transfer_code],
-            reference: transfer_data[:reference],
-            amount: transfer_data[:amount],
-            reason: transfer_data[:reason],
-            account_name: transfer_data[:recipient][:name],
-            recipient_code: transfer_data[:recipient][:recipient_code],
-            account_number: transfer_data[:recipient][:details][:account_number],
-            bank_name: transfer_data[:recipient][:details][:bank_name],
-            status: transfer_data[:status],
-            currency: transfer_data[:currency],
-            created_at: transfer_data[:createdAt]
-          }
+  # Extract relevant transfer data from the Paystack API response
+  transfer = {
+    transfer_code: transfer_data[:transfer_code],
+    reference: transfer_data[:reference],
+    amount: transfer_data[:amount],
+    reason: transfer_data[:reason],
+    account_name: transfer_data[:recipient][:name],
+    recipient_code: transfer_data[:recipient][:recipient_code],
+    account_number: transfer_data[:recipient][:details][:account_number],
+    bank_name: transfer_data[:recipient][:details][:bank_name],
+    status: transfer_data[:status],
+    currency: transfer_data[:currency],
+    created_at: transfer_data[:createdAt]
+  }
 
-          campaign = Transfers.find_by(campaign_id: transfer_data.dig(:metadata, :campaign_id))
+  # Create or update the transfer record in the database
+  transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer[:transfer_code])
+  transfer_record.update(
+    user: campaign.fundraiser_id, # Associate with the logged-in user
+    campaign: campaign, # Associate with the campaign
+    bank_name: transfer[:bank_name],
+    account_number: transfer[:account_number],
+    amount: transfer[:amount],
+    currency: transfer[:currency],
+    status: transfer[:status],
+    reason: transfer[:reason],
+    recipient_code: transfer[:recipient_code],
+    reference: transfer[:reference],
+    created_at: transfer[:created_at] # Add created_at for tracking
+  )
 
-          # Create or update the transfer in the database
-          transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer[:transfer_code])
-          transfer_record.update(
-            user: campaign.fundraiser_id,  # Associate with the logged-in user
-            campaign: campaign,  # Associate with the campaign
-            bank_name: transfer[:bank_name],
-            account_number: transfer[:account_number],
-            amount: transfer[:amount],
-            currency: transfer[:currency],
-            status: transfer[:status],
-            reason: transfer[:reason],
-            recipient_code: transfer[:recipient_code],
-            failure_reason: transfer[:failure_reason],
-            completed_at: transfer[:completed_at],
-            reversed_at: transfer[:reversed_at],
-            reference: transfer[:reference]
-          )
+  if transfer_record.save
+    Rails.logger.info "Transfer saved successfully for #{transfer[:transfer_code]}"
+  else
+    Rails.logger.error "Failed to save transfer for #{transfer[:transfer_code]}"
+  end
+end
 
-          if transfer_record.save
-            render json: { message: "Transfer saved successfully" }, status: :ok
-          else
-            render json: { error: "Failed to save transfer" }, status: :unprocessable_entity
-          end
-        end
+# Fetch transfers from Paystack for the logged-in user
+def fetch_transfers_from_paystack
+  @fundraiser = current_user
+  subaccounts = Subaccount.where(subaccount_code: @fundraiser.subaccount_id) # Fetch all subaccounts
 
-        # Fetch transfers from Paystack for the logged-in user
-        def fetch_transfers_from_paystack
-          @fundraiser = current_user
-          subaccounts = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
-          
-          # Fetch transfers for each subaccount
-          subaccounts.each do |subaccount|
-            response = @paystack_service.fetch_transfers(subaccount.transfer_code)
-            
-            if response[:status] && response[:data].present?
-              # Loop through each transfer and save it to the database
-              response[:data].each do |transfer_data|
-                save_transfer_from_paystack(transfer_data)
-              end
-            else
-              render json: { error: "No transfers found or an error occurred" }, status: :unprocessable_entity
-              return
-            end
-          end
+  all_transfers = [] # To store all transfers
 
-          render json: { message: "Transfers fetched and saved successfully" }, status: :ok
-        end
+  subaccounts.each do |subaccount|
+    # Fetch the transfers for each subaccount
+    response = @paystack_service.fetch_transfers(subaccount.transfer_code)
+
+    if response[:status] && response[:data].present?
+      # Loop through each transfer and save it to the database
+      response[:data].each do |transfer_data|
+        save_transfer_from_paystack(transfer_data) # Save the transfer
+        all_transfers.push({
+          transfer_code: transfer_data[:transfer_code],
+          reference: transfer_data[:reference],
+          amount: transfer_data[:amount],
+          status: transfer_data[:status],
+          name: transfer_data[:recipient][:name],
+          reason: transfer_data[:reason],
+          account_number: transfer_data[:recipient][:details][:account_number],
+          bank_name: transfer_data[:recipient][:details][:bank_name],
+          createdAt: transfer_data[:createdAt]
+        })
+      end
+    else
+      Rails.logger.error "No transfers found or an error occurred for subaccount #{subaccount.transfer_code}"
+    end
+  end
+
+  # Respond with all the fetched transfers
+  if all_transfers.any?
+    render json: { status: true, transfers: all_transfers }, status: :ok
+  else
+    render json: { status: false, message: "No transfers found for the user" }, status: :not_found
+  end
+end
+
       
         private
 
