@@ -428,12 +428,13 @@ module Api
 
         # Fetch transfers from Paystack for the logged-in user
         def fetch_transfers_from_paystack
-          subaccounts = @current_user.subaccount
+          @fundraiser = @current_user
+          subaccounts = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
           
           # Fetch transfers for each subaccount
           subaccounts.each do |subaccount|
+            Rails.logger.info "Fetching transfers for subaccount #{subaccount.transfer_code}..."
             response = @paystack_service.fetch_transfers(subaccount.transfer_code)
-
             Rails.logger.info "Transfers response: #{response.inspect}"
             
             if response[:status] && response[:data].present?
