@@ -415,6 +415,8 @@ module Api
         
           subaccounts.each do |subaccount|
             response = @paystack_service.fetch_transfer(subaccount.transfer_code)
+            Rails.logger.info "Transfer response: #{response.inspect}"
+            Rails.logger.debug "Transfer response: #{response.inspect}"
         
             if response[:status] && response[:data].present?
               response[:data].each do |transfer_data|
