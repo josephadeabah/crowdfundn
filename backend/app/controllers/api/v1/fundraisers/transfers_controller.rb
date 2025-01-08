@@ -378,7 +378,7 @@ module Api
 
         # Save a transfer from Paystack to the database
         def save_transfer_from_paystack(transfer_data)
-          campaigns = Campaign.where(fundraiser_id: @current_user.id)
+          campaigns = Campaign.where(fundraiser_id: @current_user&.id)
         
           if campaigns.empty?
             Rails.logger.error "No campaigns found for user #{@current_user.id}."
