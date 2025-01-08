@@ -351,6 +351,7 @@ module Api
 
        # Fetch transfers for the logged-in user
       def fetch_user_transfers
+        fetch_transfers_from_paystack
         page = params[:page] || 1
         page_size = params[:pageSize] || 8
 
