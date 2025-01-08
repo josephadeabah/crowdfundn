@@ -378,7 +378,11 @@ module Api
 
         # Save a transfer from Paystack to the database
         def save_transfer_from_paystack(transfer_data)
-          @campaigns = @current_user.campaigns
+          page = params[:page] || 1
+          page_size = params[:pageSize] || 12
+          
+          # Retrieve user's campaigns with pagination and order by most recent
+          @campaigns = @current_user.campaigns.order(created_at: :desc).page(page).per(page_size)
           Rails.logger.info "Campaignsssss found: #{@campaigns.inspect}"
         
           if @campaigns.empty?
