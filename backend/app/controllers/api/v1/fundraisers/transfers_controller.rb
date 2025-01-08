@@ -366,7 +366,7 @@ module Api
           return
         end
       
-        @transfers = Transfer.where(user_id: @current_user.id).includes(:campaign).order(created_at: :desc).page(page).per(page_size)
+        @transfers = Transfer.find_by(user_id: @current_user.id).includes(:campaign).order(created_at: :desc).page(page).per(page_size)
       
         Rails.logger.info "Transfers found: #{@transfers.inspect}"
       
