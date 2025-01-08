@@ -42,6 +42,7 @@ interface TransferState {
   totalPages: number; // total pages
   totalCount: number; // total items count
   fetchTransfers: (page: number) => void; // accepts page parameter
+  fetchTransfersFromPaystack: () => Promise<void>;
   createTransferRecipient: (
     campaignId: string | number,
   ) => Promise<CreateTransferRecipientResponseType>;
@@ -78,6 +79,8 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
           return;
         }
 
+        fetchTransfersFromPaystack();
+
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/fetch_user_transfers?page=${page}&per_page=8`, // Adjust per_page as needed
           {
@@ -111,6 +114,40 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       }
     },
     [user, token],
+  );
+
+  const fetchTransfersFromPaystack = useCallback(
+    async (): Promise<void> => {
+      setLoading(true);
+      setError(null);
+
+      try {
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/fetch_transfers_from_paystack`, // Adjust per_page as needed
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+          },
+        );
+
+        if (!response.ok) {
+          setError('Failed to fetch transfers');
+          return;
+        }
+
+        const responseData = await response.json();
+
+        return responseData;
+      } catch (err: any) {
+        setError(err || 'Error fetching transfers');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
   );
 
   const fetchSettlementStatus = useCallback(async (): Promise<void> => {
@@ -246,6 +283,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       totalPages,
       totalCount,
       fetchTransfers,
+      fetchTransfersFromPaystack,
       createTransferRecipient,
       initiateTransfer,
       fetchSettlementStatus,
@@ -259,6 +297,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
       totalPages,
       totalCount,
       fetchTransfers,
+      fetchTransfersFromPaystack,
       createTransferRecipient,
       initiateTransfer,
       fetchSettlementStatus,
