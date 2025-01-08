@@ -10,29 +10,25 @@ module Api
         def approve_transfer
           payload = request.body.read
           signature = request.headers['X-Paystack-Signature']
-        
+
           if @paystack_service.verify_paystack_signature(payload, signature)
             begin
               transfer_details = JSON.parse(payload, symbolize_names: true)
               decision = process_transfer_approval(transfer_details)
               if decision[:approve]
                 render json: { message: 'Transfer approved' }, status: :ok
-                return # Ensure the action ends here if the transfer is approved
               else
                 render json: { message: 'Transfer rejected', reason: decision[:reason] }, status: :bad_request
-                return # Ensure the action ends here if the transfer is rejected
               end
             rescue JSON::ParserError => e
               Rails.logger.error "Invalid JSON payload: #{e.message}"
               render json: { error: 'Invalid JSON payload' }, status: :unprocessable_entity
-              return # Ensure the action ends here if there is a JSON parsing error
             end
           else
             Rails.logger.error "Invalid Paystack signature"
             render json: { error: 'Invalid signature' }, status: :forbidden
-            return # Ensure the action ends here if the signature is invalid
           end
-        end        
+        end
 
         def resolve_account_details
           response = @paystack_service.resolve_account_details(
@@ -355,7 +351,12 @@ module Api
 
        # Fetch transfers for the logged-in user
        def fetch_user_transfers
-        fetch_transfers_from_paystack
+        begin
+          fetch_transfers_from_paystack
+        rescue => e
+          Rails.logger.error "Error fetching transfers from Paystack: #{e.message}"
+        end
+      
         page = params[:page] || 1
         page_size = params[:pageSize] || 8
       
@@ -366,26 +367,20 @@ module Api
         end
       
         @transfers = Transfer.where(user_id: @current_user.id).includes(:campaign).order(created_at: :desc).page(page).per(page_size)
-
+      
         Rails.logger.info "Transfers found: #{@transfers.inspect}"
-        
-        if @transfers.empty?
-          Rails.logger.error "No transfers found for user #{@current_user.id}"
-        end
       
         if @transfers.any?
           render json: {
-            transfers: @transfers.map { |transfer| 
-              transfer.as_json.merge(campaign: transfer.campaign.nil? ? nil : transfer.campaign.as_json)
-            },
+            transfers: @transfers.as_json(include: :campaign),
             current_page: @transfers.current_page,
             total_pages: @transfers.total_pages,
             total_count: @transfers.total_count
-          }, status: :ok          
+          }, status: :ok
         else
           render json: { message: "No transfers found." }, status: :ok
         end
-       end      
+       end           
 
         # Save a transfer from Paystack to the database
         def save_transfer_from_paystack(transfer_data)
