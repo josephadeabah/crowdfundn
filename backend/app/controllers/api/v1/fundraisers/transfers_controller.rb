@@ -351,11 +351,11 @@ module Api
 
        # Fetch transfers for the logged-in user
        def fetch_user_transfers
-        begin
-          fetch_transfers_from_paystack
-        rescue => e
-          Rails.logger.error "Error fetching transfers from Paystack: #{e.message}"
-        end
+        # begin
+        #   fetch_transfers_from_paystack
+        # rescue => e
+        #   Rails.logger.error "Error fetching transfers from Paystack: #{e.message}"
+        # end
       
         page = params[:page] || 1
         page_size = params[:pageSize] || 8
