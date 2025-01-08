@@ -406,7 +406,9 @@ module Api
 
         # Fetch transfers from Paystack for the logged-in user
         def fetch_transfers_from_paystack
-          subaccounts = Subaccount.where(subaccount_code: @current_user.subaccount_id)
+          user = User.find_by(subaccount_id: @current_user.subaccount_id)
+
+          subaccounts = Subaccount.where(subaccount_code: user.subaccount_id)
         
           if subaccounts.empty?
             render json: { error: "No subaccounts found for the current user." }, status: :unprocessable_entity
