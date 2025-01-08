@@ -355,7 +355,18 @@ module Api
         page = params[:page] || 1
         page_size = params[:pageSize] || 8
 
+        if @current_user.nil?
+          Rails.logger.error "Current user not found"
+          render json: { error: 'User not found' }, status: :not_found
+          return
+        end
+        Rails.logger.info "Fetching transfers for page #{page} with page_size #{page_size}"
+        Rails.logger.info "Fetching transfers for user #{@current_user.id}"
         @transfers = @current_user.transfers.includes(:campaign).order(created_at: :desc).page(page).per(page_size)
+        
+        if @transfers.empty?
+          Rails.logger.error "No transfers found for user #{@current_user.id}"
+        end
 
         if @transfers.any?
           render json: {
