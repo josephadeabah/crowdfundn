@@ -46,6 +46,7 @@ Rails.application.routes.draw do
             post :initialize_transfer
             post :finalize_transfer
             post :initiate_bulk_transfer
+            get :fetch_transfers_from_paystack
             get :fetch_transfers
             get :fetch_user_transfers
             get :verify_transfer
