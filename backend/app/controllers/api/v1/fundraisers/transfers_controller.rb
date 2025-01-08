@@ -371,10 +371,11 @@ module Api
 
         # Save a transfer from Paystack to the database
         def save_transfer_from_paystack(transfer_data)
-          campaign = Campaign.find_by(id: @current_user&.campaigns.pluck(:id))
-          if campaign.nil?
-            Rails.logger.error "Campaign not found for ID #{transfer_data.dig(:metadata, :campaign_id)}."
-            return { success: false, error: "Campaign not found" }
+          campaigns = @current_user.campaigns
+        
+          if campaigns.empty?
+            Rails.logger.error "No campaigns found for user #{@current_user.id}."
+            return { success: false, error: "No campaigns found for the current user" }
           end
         
           # Extract and map transfer data
@@ -389,21 +390,25 @@ module Api
             bank_name: transfer_data[:recipient][:details][:bank_name],
             status: transfer_data[:status],
             currency: transfer_data[:currency],
-            user: campaign.fundraiser_id,
-            campaign: campaign.id
           }
         
-          # Create or update transfer record
-          transfer = Transfer.find_or_initialize_by(transfer_code: transfer_data[:transfer_code])
-          transfer.assign_attributes(transfer_attrs)
+          # Save transfer for all campaigns
+          campaigns.each do |campaign|
+            transfer_attrs[:user] = campaign.fundraiser_id
+            transfer_attrs[:campaign] = campaign.id
         
-          if transfer.save
-            { success: true }
-          else
-            Rails.logger.error "Failed to save transfer: #{transfer.errors.full_messages.join(', ')}"
-            { success: false, error: transfer.errors.full_messages }
+            transfer = Transfer.find_or_initialize_by(transfer_code: transfer_data[:transfer_code])
+            transfer.assign_attributes(transfer_attrs)
+        
+            if transfer.save
+              Rails.logger.info "Transfer saved for campaign #{campaign.id}"
+            else
+              Rails.logger.error "Failed to save transfer for campaign #{campaign.id}: #{transfer.errors.full_messages.join(', ')}"
+            end
           end
-        end        
+        
+          { success: true }
+        end               
 
         # Fetch transfers from Paystack for the logged-in user
         def fetch_transfers_from_paystack
