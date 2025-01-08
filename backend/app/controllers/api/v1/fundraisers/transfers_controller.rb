@@ -406,33 +406,24 @@ module Api
 
         # Fetch transfers from Paystack for the logged-in user
         def fetch_transfers_from_paystack
-          user = User.find_by(subaccount_id: @current_user.subaccount_id)
-
-          subaccounts = Subaccount.where(subaccount_code: user.subaccount_id)
-        
-          if subaccounts.empty?
-            render json: { error: "No subaccounts found for the current user." }, status: :unprocessable_entity
-            return
-          end
-        
-          subaccounts.each do |subaccount|
-            response = @paystack_service.fetch_transfer(subaccount.transfer_code)
-            Rails.logger.info "Paystack response: #{response.inspect || 'No response received'}"
-        
-            if response[:status] && response[:data].present?
-              response[:data].each do |transfer_data|
-                result = save_transfer_from_paystack(transfer_data)
-                unless result[:success]
-                  Rails.logger.error "Failed to save transfer for #{transfer_data[:reference]}: #{result[:error]}"
-                end
+          # Fetch all transfers from Paystack without filtering by subaccount
+          response = @paystack_service.fetch_transfer()
+          Rails.logger.info "Paystack response: #{response.inspect || 'No response received'}"
+          
+          if response[:status] && response[:data].present?
+            response[:data].each do |transfer_data|
+              result = save_transfer_from_paystack(transfer_data)
+              unless result[:success]
+                Rails.logger.error "Failed to save transfer for #{transfer_data[:reference]}: #{result[:error]}"
               end
-            else
-              Rails.logger.error "Error fetching transfers for subaccount #{subaccount.id}: #{response[:message]}"
             end
+          else
+            Rails.logger.error "Error fetching transfers: #{response[:message]}"
           end
         
           render json: { message: "Transfers fetched and processed successfully." }, status: :ok
-        end        
+        end
+               
       
         private
 

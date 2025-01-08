@@ -365,8 +365,8 @@ class PaystackService
    end
 
   # Fetch transfer details
-  def fetch_transfer(id_or_code)
-    uri = URI("#{PAYSTACK_BASE_URL}/transfer/#{id_or_code}")
+  def fetch_transfer
+    uri = URI("#{PAYSTACK_BASE_URL}/transfer")
     response = make_get_request(uri)
     parse_response(response)
   end
