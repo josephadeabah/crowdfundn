@@ -394,8 +394,8 @@ module Api
         
           # Save transfer for all campaigns
           campaigns.each do |campaign|
-            transfer_attrs[:user] = campaign.fundraiser_id
-            transfer_attrs[:campaign] = campaign.id
+            transfer_attrs[:user_id] = campaign.fundraiser_id
+            transfer_attrs[:campaign_id] = campaign.id
         
             transfer = Transfer.find_or_initialize_by(transfer_code: transfer_data[:transfer_code])
             transfer.assign_attributes(transfer_attrs)
