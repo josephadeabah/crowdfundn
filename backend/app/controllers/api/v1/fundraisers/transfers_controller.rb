@@ -3,7 +3,7 @@ module Api
     module Fundraisers
       class TransfersController < ApplicationController
         include ErrorHandler
-        before_action :authenticate_request, only: %i[fetch_user_transfers]
+        before_action :authenticate_request, only: %i[fetch_user_transfers save_transfer_from_paystack]
         before_action :set_transfer_service
 
         # Approve or reject a transfer based on the payload
@@ -371,7 +371,7 @@ module Api
 
         # Save a transfer from Paystack to the database
         def save_transfer_from_paystack(transfer_data)
-          campaign = Campaign.find_by(id: transfer_data.dig(:metadata, :campaign_id))
+          campaign = Campaign.find_by(id: @current_user&.campaigns.pluck(:id))
           if campaign.nil?
             Rails.logger.error "Campaign not found for ID #{transfer_data.dig(:metadata, :campaign_id)}."
             return { success: false, error: "Campaign not found" }
@@ -389,7 +389,7 @@ module Api
             bank_name: transfer_data[:recipient][:details][:bank_name],
             status: transfer_data[:status],
             currency: transfer_data[:currency],
-            user: campaign.fundraiser.id,
+            user: campaign.fundraiser_id,
             campaign: campaign.id
           }
         

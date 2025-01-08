@@ -84,7 +84,11 @@ class PaystackWebhook::ChargeSuccessHandler
         full_name: response.dig(:data, :metadata, :donor_name), # Update full_name with donor's name
         email: response.dig(:data, :customer, :email),
         phone: response.dig(:data, :metadata, :phone),
-        metadata: donation.metadata.merge(anonymous_token: session_token) # Add session_token to metadata
+        metadata: { 
+          anonymous_token: session_token,
+          user_id: user_id,  # Add user_id to metadata
+          campaign_id: campaign_id  # Add campaign_id to metadata
+        } # Replacing the existing metadata entirely
       )
 
       # Update the related campaign
