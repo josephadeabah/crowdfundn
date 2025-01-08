@@ -384,7 +384,7 @@ module Api
             reference: transfer_data[:reference],
             amount: transfer_data[:amount],
             reason: transfer_data[:reason],
-            account_name: transfer_data[:recipient][:name],
+            user_name: transfer_data[:recipient][:name],
             recipient_code: transfer_data[:recipient][:recipient_code],
             account_number: transfer_data[:recipient][:details][:account_number],
             bank_name: transfer_data[:recipient][:details][:bank_name],
