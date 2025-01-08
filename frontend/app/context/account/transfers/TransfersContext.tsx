@@ -79,7 +79,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
           return;
         }
 
-        fetchTransfersFromPaystack();
+        await fetchTransfersFromPaystack();
 
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/fetch_user_transfers?page=${page}&per_page=8`, // Adjust per_page as needed
