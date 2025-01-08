@@ -407,7 +407,7 @@ module Api
         # Fetch transfers from Paystack for the logged-in user
         def fetch_transfers_from_paystack
           # Fetch all transfers from Paystack without filtering by subaccount
-          response = @paystack_service.fetch_transfer()
+          response = @paystack_service.fetch_transfer
           Rails.logger.info "Paystack response: #{response.inspect || 'No response received'}"
           
           if response[:status] && response[:data].present?
