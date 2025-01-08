@@ -350,19 +350,35 @@ module Api
         end        
 
        # Fetch transfers for the logged-in user
-       def fetch_user_transfers
+      def fetch_user_transfers
         fetch_transfers_from_paystack
-        @transfers = @current_user.transfers.includes(:campaign).order(created_at: :desc).page(params[:page]).per(params[:per_page])
-      
-        if @transfers.present?
-          render json: {transfers: @transfers}, status: :ok
-        else
-          render json: { error: 'No transfers found' }, status: :not_found
+        page = params[:page] || 1
+        page_size = params[:pageSize] || 8
+
+        if @current_user.nil?
+          Rails.logger.error "Current user not found"
+          render json: { error: 'User not found' }, status: :not_found
+          return
         end
-       rescue => e
-        render json: { error: e.message }, status: :unprocessable_entity
-       end
-      
+        Rails.logger.info "Fetching transfers for page #{page} with page_size #{page_size}"
+        Rails.logger.info "Fetching transfers for user #{@current_user.inspect}"
+        @transfers = @current_user.transfers.includes(:campaign).order(created_at: :desc).page(page).per(page_size)
+        
+        if @transfers.empty?
+          Rails.logger.error "No transfers found for user #{@current_user.id}"
+        end
+
+        if @transfers.any?
+          render json: {
+            transfers: @transfers.as_json(include: :campaign),
+            current_page: @transfers.current_page,
+            total_pages: @transfers.total_pages,
+            total_count: @transfers.total_count
+          }, status: :ok
+        else
+          render json: { message: "No transfers found." }, status: :ok
+        end
+      end
 
         # Save a transfer from Paystack to the database
         def save_transfer_from_paystack(transfer_data)
