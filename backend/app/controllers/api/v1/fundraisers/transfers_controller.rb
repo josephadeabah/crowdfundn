@@ -354,7 +354,7 @@ module Api
         page = params[:page] || 1
         page_size = params[:pageSize] || 8
 
-        @transfers = User.transfers.includes(:campaign).order(created_at: :desc).page(page).per(page_size)
+        @transfers = @current_user.transfers.includes(:campaign).order(created_at: :desc).page(page).per(page_size)
 
         if @transfers.any?
           render json: {
