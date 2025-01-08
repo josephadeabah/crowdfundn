@@ -351,12 +351,6 @@ module Api
 
        # Fetch transfers for the logged-in user
        def fetch_user_transfers
-        # begin
-        #   fetch_transfers_from_paystack
-        # rescue => e
-        #   Rails.logger.error "Error fetching transfers from Paystack: #{e.message}"
-        # end
-      
         page = params[:page] || 1
         page_size = params[:pageSize] || 8
       
@@ -366,7 +360,7 @@ module Api
           return
         end
       
-        @transfers = Transfer.find_by(user_id: @current_user.id).includes(:campaign).order(created_at: :desc).page(page).per(page_size)
+        @transfers = Transfer.where(user_id: @current_user.id).includes(:campaign).order(created_at: :desc).page(page).per(page_size)
       
         Rails.logger.info "Transfers found: #{@transfers.inspect}"
       
