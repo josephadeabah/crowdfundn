@@ -10,25 +10,29 @@ module Api
         def approve_transfer
           payload = request.body.read
           signature = request.headers['X-Paystack-Signature']
-
+        
           if @paystack_service.verify_paystack_signature(payload, signature)
             begin
               transfer_details = JSON.parse(payload, symbolize_names: true)
               decision = process_transfer_approval(transfer_details)
               if decision[:approve]
                 render json: { message: 'Transfer approved' }, status: :ok
+                return # Ensure the action ends here if the transfer is approved
               else
                 render json: { message: 'Transfer rejected', reason: decision[:reason] }, status: :bad_request
+                return # Ensure the action ends here if the transfer is rejected
               end
             rescue JSON::ParserError => e
               Rails.logger.error "Invalid JSON payload: #{e.message}"
               render json: { error: 'Invalid JSON payload' }, status: :unprocessable_entity
+              return # Ensure the action ends here if there is a JSON parsing error
             end
           else
             Rails.logger.error "Invalid Paystack signature"
             render json: { error: 'Invalid signature' }, status: :forbidden
+            return # Ensure the action ends here if the signature is invalid
           end
-        end
+        end        
 
         def resolve_account_details
           response = @paystack_service.resolve_account_details(
