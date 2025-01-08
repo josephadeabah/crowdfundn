@@ -373,16 +373,16 @@ module Api
           Rails.logger.error "No transfers found for user #{@current_user.id}"
         end
       
-        if @transfers.any?
-          render json: {
-            transfers: @transfers.as_json(include: :campaign),
-            current_page: @transfers.current_page,
-            total_pages: @transfers.total_pages,
-            total_count: @transfers.total_count
-          }, status: :ok
-        else
+        render json: {
+          transfers: @transfers.map { |transfer| 
+            transfer.as_json.merge(campaign: transfer.campaign.nil? ? nil : transfer.campaign.as_json)
+          },
+          current_page: @transfers.current_page,
+          total_pages: @transfers.total_pages,
+          total_count: @transfers.total_count
+        }, status: :ok        
+       else
           render json: { message: "No transfers found." }, status: :ok
-        end
        end      
 
         # Save a transfer from Paystack to the database
