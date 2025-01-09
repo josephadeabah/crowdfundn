@@ -376,7 +376,7 @@ module Api
 
         # Save a transfer from Paystack to the database
         def save_transfer_from_paystack(transfer_data)
-          # campaign = Campaign.find_by(id: transfer_data.dig(:metadata, :campaign_id))
+          campaign = Campaign.find_by(id: transfer_data.dig(:metadata, :campaign_id))
 
           # if campaign.nil?
           #   Rails.logger.error "Campaign with ID #{transfer_data.dig(:metadata, :campaign_id)} does not exist."
@@ -404,8 +404,8 @@ module Api
           # Create or update the transfer in the database
           transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer[:transfer_code])
           transfer_record.update(
-            # user_id: campaign.fundraiser_id,  # Associate with the logged-in user
-            # campaign_id: campaign.id,  # Associate with the campaign
+            user_id: campaign.fundraiser_id,  # Associate with the logged-in user
+            campaign_id: campaign.id,  # Associate with the campaign
             bank_name: transfer[:bank_name],
             account_number: transfer[:account_number],
             amount: transfer[:amount] / 100.0,  # Convert amount to naira
