@@ -374,61 +374,22 @@ module Api
       end
 
         # Fetch transfers from Paystack for the logged-in user
-        # Fetch transfers from Paystack for the logged-in user
         def fetch_transfers_from_paystack
           @fundraiser = @current_user
           subaccounts = Subaccount.where(subaccount_code: @fundraiser.subaccount_id)
-
+          
           # Fetch transfers for each subaccount
           subaccounts.each do |subaccount|
             response = @paystack_service.fetch_transfer(subaccount.transfer_code)
-
+                        
             # Check if response is successful
             if response[:status] && response[:data].present?
               # If data is an array (multiple transfers)
               if response[:data].is_a?(Array)
                 response[:data].each do |transfer_data|
-                  # Find an existing transfer record, if any, using the transfer_code
-                  existing_transfer = Transfer.find_by(transfer_code: transfer_data[:transfer_code])
-
-                  # Only create a new record if no existing transfer is found
-                  unless existing_transfer
-                    transfer_record.assign_attributes(
-                      user_id: subaccount.user_id,  # Associate with the logged-in user
-                      campaign_id: subaccount.campaign_id,  # Associate with the campaign
-                      bank_name: transfer_data[:recipient][:details][:bank_name],
-                      account_number: transfer_data[:recipient][:details][:account_number],
-                      amount: transfer_data[:amount] / 100.0,  # Convert amount to naira
-                      currency: transfer_data[:currency],
-                      status: transfer_data[:status],
-                      reason: transfer_data[:reason],
-                      recipient_code: transfer_data[:recipient][:recipient_code],
-                      reference: transfer_data[:reference],
-                      created_at: transfer_data[:createdAt]
-                    )
-
-                    # Save the new transfer record
-                    if transfer_record.save
-                      Rails.logger.info "Transfer with code #{transfer_data[:transfer_code]} saved successfully"
-                    else
-                      Rails.logger.error "Failed to save transfer with code #{transfer_data[:transfer_code]}"
-                      render json: { error: "Failed to save transfer" }, status: :unprocessable_entity
-                      return
-                    end
-                  else
-                    Rails.logger.info "Transfer with code #{transfer_data[:transfer_code]} already exists, skipping."
-                  end
-                end
-              # If data is a single transfer object (hash)
-              elsif response[:data].is_a?(Hash)
-                # Extract relevant transfer data directly from transfer_data
-                transfer_data = response[:data]
-
-                # Find an existing transfer record, if any, using the transfer_code
-                existing_transfer = Transfer.find_by(transfer_code: transfer_data[:transfer_code])
-
-                # Only create a new record if no existing transfer is found
-                unless existing_transfer
+                  # Extract relevant transfer data directly from transfer_data
+                  transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer_data[:transfer_code])
+        
                   transfer_record.assign_attributes(
                     user_id: subaccount.user_id,  # Associate with the logged-in user
                     campaign_id: subaccount.campaign_id,  # Associate with the campaign
@@ -442,8 +403,8 @@ module Api
                     reference: transfer_data[:reference],
                     created_at: transfer_data[:createdAt]
                   )
-
-                  # Save the new transfer record
+        
+                  # Save the transfer record
                   if transfer_record.save
                     Rails.logger.info "Transfer with code #{transfer_data[:transfer_code]} saved successfully"
                   else
@@ -451,8 +412,35 @@ module Api
                     render json: { error: "Failed to save transfer" }, status: :unprocessable_entity
                     return
                   end
+                end
+              # If data is a single transfer object (hash)
+              elsif response[:data].is_a?(Hash)
+                # Extract relevant transfer data directly from transfer_data
+                transfer_data = response[:data]
+                
+                transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer_data[:transfer_code])
+        
+                transfer_record.assign_attributes(
+                  user_id: subaccount.user_id,  # Associate with the logged-in user
+                  campaign_id: subaccount.campaign_id,  # Associate with the campaign
+                  bank_name: transfer_data[:recipient][:details][:bank_name],
+                  account_number: transfer_data[:recipient][:details][:account_number],
+                  amount: transfer_data[:amount] / 100.0,  # Convert amount to naira
+                  currency: transfer_data[:currency],
+                  status: transfer_data[:status],
+                  reason: transfer_data[:reason],
+                  recipient_code: transfer_data[:recipient][:recipient_code],
+                  reference: transfer_data[:reference],
+                  created_at: transfer_data[:createdAt]
+                )
+        
+                # Save the transfer record
+                if transfer_record.save
+                  Rails.logger.info "Transfer with code #{transfer_data[:transfer_code]} saved successfully"
                 else
-                  Rails.logger.info "Transfer with code #{transfer_data[:transfer_code]} already exists, skipping."
+                  Rails.logger.error "Failed to save transfer with code #{transfer_data[:transfer_code]}"
+                  render json: { error: "Failed to save transfer" }, status: :unprocessable_entity
+                  return
                 end
               else
                 Rails.logger.error "Expected an array or hash but got: #{response[:data].inspect}"
@@ -465,8 +453,9 @@ module Api
               return
             end
           end
-        end
-                      
+        
+          render json: { message: "Transfers fetched and saved successfully" }, status: :ok
+        end                            
       
         private
 
