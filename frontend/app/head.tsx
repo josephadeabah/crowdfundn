@@ -37,6 +37,45 @@ export default function Head() {
       <link rel="icon" href="/bantuhive.ico" type="image/x-icon" />
       <link rel="icon" href="/bantuhive.png" sizes="32x32" />
       <link rel="icon" href="/bantuhive.svg" type="image/svg+xml" />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: 'Bantu Hive',
+            url: 'https://bantuhive.com',
+            logo: 'https://bantuhive.com/bantuhive.ico',
+            description:
+              'BantuHive operates as a premier crowdfunding platform focused on facilitating fundraising efforts across Africa and the Diaspora.',
+            foundingDate: '2024',
+            foundingLocation: {
+              '@type': 'Place',
+              name: 'Africa',
+            },
+            contactPoint: {
+              '@type': 'ContactPoint',
+              telephone: '+233200415683',
+              contactType: 'customer service',
+              email: 'help@bantuhive.com',
+              areaServed: 'Africa, Diaspora',
+            },
+            address: {
+              '@type': 'PostalAddress',
+              streetAddress: 'IVY Street, Kingstel Hotel Avenue',
+              addressLocality: 'Takoradi',
+              addressRegion: 'Western Region',
+              postalCode: '982',
+              addressCountry: 'Ghana',
+            },
+            sameAs: [
+              'https://web.facebook.com/profile.php?id=61568192851056',
+              'https://www.instagram.com/bantuhive_fund/',
+              'https://www.linkedin.com/company/bantu-hive/about/',
+            ],
+          }),
+        }}
+      />
     </head>
   );
 }
