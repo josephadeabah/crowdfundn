@@ -442,9 +442,9 @@ module Api
               # If data is an array (multiple transfers)
               if response[:data].is_a?(Array)
                 response[:data].each do |transfer_data|
-                    # Extract relevant transfer data directly from transfer_data
+                  # Extract relevant transfer data directly from transfer_data
                   transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer_data[:transfer_code])
-
+        
                   transfer_record.assign_attributes(
                     user_id: subaccount.user_id,  # Associate with the logged-in user
                     campaign_id: subaccount.campaign_id,  # Associate with the campaign
@@ -458,19 +458,45 @@ module Api
                     reference: transfer_data[:reference],
                     created_at: transfer_data[:createdAt]
                   )
-
+        
                   # Save the transfer record
                   if transfer_record.save
                     Rails.logger.info "Transfer with code #{transfer_data[:transfer_code]} saved successfully"
-                    render json: { message: "Transfer saved successfully" }, status: :ok
                   else
                     Rails.logger.error "Failed to save transfer with code #{transfer_data[:transfer_code]}"
                     render json: { error: "Failed to save transfer" }, status: :unprocessable_entity
+                    return
                   end
                 end
               # If data is a single transfer object (hash)
               elsif response[:data].is_a?(Hash)
-                save_transfer_from_paystack(response[:data])
+                # Extract relevant transfer data directly from transfer_data
+                transfer_data = response[:data]
+                
+                transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer_data[:transfer_code])
+        
+                transfer_record.assign_attributes(
+                  user_id: subaccount.user_id,  # Associate with the logged-in user
+                  campaign_id: subaccount.campaign_id,  # Associate with the campaign
+                  bank_name: transfer_data[:recipient][:details][:bank_name],
+                  account_number: transfer_data[:recipient][:details][:account_number],
+                  amount: transfer_data[:amount] / 100.0,  # Convert amount to naira
+                  currency: transfer_data[:currency],
+                  status: transfer_data[:status],
+                  reason: transfer_data[:reason],
+                  recipient_code: transfer_data[:recipient][:recipient_code],
+                  reference: transfer_data[:reference],
+                  created_at: transfer_data[:createdAt]
+                )
+        
+                # Save the transfer record
+                if transfer_record.save
+                  Rails.logger.info "Transfer with code #{transfer_data[:transfer_code]} saved successfully"
+                else
+                  Rails.logger.error "Failed to save transfer with code #{transfer_data[:transfer_code]}"
+                  render json: { error: "Failed to save transfer" }, status: :unprocessable_entity
+                  return
+                end
               else
                 Rails.logger.error "Expected an array or hash but got: #{response[:data].inspect}"
                 render json: { error: "Unexpected response format" }, status: :unprocessable_entity
@@ -484,7 +510,7 @@ module Api
           end
         
           render json: { message: "Transfers fetched and saved successfully" }, status: :ok
-        end                     
+        end                            
       
         private
 
