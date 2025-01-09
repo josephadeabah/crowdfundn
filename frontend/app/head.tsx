@@ -1,6 +1,8 @@
-export default function Head() {
+import Head from 'next/head';
+
+export default function HeadContent() {
   return (
-    <>
+    <Head>
       <title>Fundraising Made Easy for Africa & Diaspora</title>
       <meta
         name="description"
@@ -78,6 +80,6 @@ export default function Head() {
           }),
         }}
       />
-    </>
+    </Head>
   );
 }
