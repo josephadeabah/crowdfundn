@@ -355,7 +355,7 @@ module Api
         @fundraiser = @current_user
         
         # Fetch subaccounts linked to the fundraiser, assuming subaccount_code is being compared with subaccount_id
-        subaccounts = Subaccount.where(subaccount_code: @fundraiser.subaccount_id)
+        subaccounts = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
         
         # Define pagination parameters with defaults
         page = params[:page] || 1
