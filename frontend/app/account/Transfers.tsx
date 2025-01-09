@@ -17,6 +17,7 @@ export default function Transfers() {
   } = useCampaignContext();
   const {
     fetchTransfers,
+    fetchTransfersFromPaystack,
     createTransferRecipient,
     initiateTransfer,
     transfers,
@@ -51,6 +52,11 @@ export default function Transfers() {
   }, [fetchCampaigns]);
 
   useEffect(() => {
+    fetchTransfersFromPaystack();
+  }, [fetchTransfersFromPaystack]);
+
+  useEffect(() => {
+    fetchTransfersFromPaystack();
     fetchTransfers(currentPage);
   }, [fetchTransfers, currentPage]);
 
@@ -83,6 +89,7 @@ export default function Transfers() {
           } else {
             // Success toast if transfer initiation is successful
             showToast('Success', 'Transfer initiated successfully', 'success');
+            fetchTransfersFromPaystack();
             fetchTransfers(currentPage);
             fetchCampaigns(); // Refresh the campaigns list
           }
