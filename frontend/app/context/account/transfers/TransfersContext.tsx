@@ -128,7 +128,8 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
           {
             method: 'GET',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
             },
           },
         );
@@ -147,7 +148,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [],
+    [user, token],
   );
 
   const fetchSettlementStatus = useCallback(async (): Promise<void> => {
