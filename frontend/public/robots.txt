@@ -9,8 +9,5 @@ Allow: /
 # Host
 Host: https://bantuhive.com
 
-# Block access to the old sitemap.xml
-Disallow: /sitemap.xml
-
-# Optionally, provide a new sitemap
-Sitemap: https://bantuhive.com/sitemap-0.xml
+# Sitemaps
+Sitemap: https://bantuhive.com/sitemap.xml
