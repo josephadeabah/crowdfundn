@@ -378,7 +378,10 @@ module Api
 
         # Save a transfer from Paystack to the database
         def save_transfer_from_paystack(transfer_data)
-          @campaigns = Campaign.where(fundraiser_id: transfer_data[:recipient][:metadata][:user_id])
+          user_id = transfer_data[:recipient][:metadata][:user_id] # Make sure metadata is available
+          campaign_id = transfer_data[:recipient][:metadata][:campaign_id]
+
+          @campaigns = Campaign.where(fundraiser_id: user_id).where(id: campaign_id)
           Rails.logger.info "Campaignsssss found: #{@campaigns.inspect}"
         
           if @campaigns.empty?
