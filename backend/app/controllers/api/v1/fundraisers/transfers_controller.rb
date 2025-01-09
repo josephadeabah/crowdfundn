@@ -434,22 +434,28 @@ module Api
           # Fetch transfers for each subaccount
           subaccounts.each do |subaccount|
             response = @paystack_service.fetch_transfer(subaccount.transfer_code)
-
+            
             Rails.logger.info "Paystack Transfer response: #{response.inspect}"
             
             if response[:status] && response[:data].present?
-              # Loop through each transfer and save it to the database
-              response[:data].each do |transfer_data|
-                save_transfer_from_paystack(transfer_data)
+              # Check if response[:data] is an array
+              if response[:data].is_a?(Array)
+                response[:data].each do |transfer_data|
+                  save_transfer_from_paystack(transfer_data)
+                end
+              else
+                Rails.logger.error "Expected an array but got: #{response[:data].inspect}"
+                render json: { error: "Unexpected response format" }, status: :unprocessable_entity
+                return
               end
             else
               render json: { error: "No transfers found or an error occurred" }, status: :unprocessable_entity
               return
             end
           end
-
+        
           render json: { message: "Transfers fetched and saved successfully" }, status: :ok
-        end
+        end        
       
         private
 
