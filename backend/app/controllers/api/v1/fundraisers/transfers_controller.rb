@@ -393,7 +393,7 @@ module Api
 
                   # Only create a new record if no existing transfer is found
                   unless existing_transfer
-                    transfer_record = Transfer.new(
+                    transfer_record.assign_attributes(
                       user_id: subaccount.user_id,  # Associate with the logged-in user
                       campaign_id: subaccount.campaign_id,  # Associate with the campaign
                       bank_name: transfer_data[:recipient][:details][:bank_name],
@@ -429,7 +429,7 @@ module Api
 
                 # Only create a new record if no existing transfer is found
                 unless existing_transfer
-                  transfer_record = Transfer.new(
+                  transfer_record.assign_attributes(
                     user_id: subaccount.user_id,  # Associate with the logged-in user
                     campaign_id: subaccount.campaign_id,  # Associate with the campaign
                     bank_name: transfer_data[:recipient][:details][:bank_name],
