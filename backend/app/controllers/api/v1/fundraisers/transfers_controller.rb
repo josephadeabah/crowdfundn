@@ -350,17 +350,26 @@ module Api
         end        
 
        # Fetch transfers for the logged-in user
-      def fetch_user_transfers
+       def fetch_user_transfers
+        # Get the current fundraiser (user)
         @fundraiser = @current_user
-      
-        # Define pagination parameters
+        
+        # Fetch subaccounts linked to the fundraiser, assuming subaccount_code is being compared with subaccount_id
+        subaccounts = Subaccount.where(subaccount_code: @fundraiser.subaccount_id)
+        
+        # Define pagination parameters with defaults
         page = params[:page] || 1
         page_size = params[:pageSize] || 8
-      
-        # Query the database for transfers belonging to the current user with pagination and order by created_at
-        @transfers = @fundraiser.transfers.includes(:campaign).order(created_at: :desc).page(page).per(page_size)
-      
-        # Check if transfers are present
+        
+        # Query for transfers with proper association and ordering
+        @transfers = @fundraiser.transfers
+                                 .where(recipient_code: subaccounts.pluck(:recipient_code))
+                                 .includes(:campaign)
+                                 .order(created_at: :desc)
+                                 .page(page)
+                                 .per(page_size)
+        
+        # Check if any transfers exist
         if @transfers.any?
           render json: {
             transfers: @transfers.as_json(include: :campaign),
@@ -370,8 +379,8 @@ module Api
           }, status: :ok
         else
           render json: { error: "No transfers found for this user" }, status: :not_found
-        end        
-      end
+        end
+       end      
 
         # Fetch transfers from Paystack for the logged-in user
         def fetch_transfers_from_paystack
