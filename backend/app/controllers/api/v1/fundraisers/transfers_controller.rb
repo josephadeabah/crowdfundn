@@ -375,56 +375,56 @@ module Api
       
 
         # Save a transfer from Paystack to the database
-        def save_transfer_from_paystack(transfer_data)
-          campaign = Campaign.find_by(id: transfer_data.dig(:metadata, :campaign_id))
+        # def save_transfer_from_paystack(transfer_data)
+        #   campaign = Campaign.find_by(id: transfer_data.dig(:metadata, :campaign_id))
 
-          # if campaign.nil?
-          #   Rails.logger.error "Campaign with ID #{transfer_data.dig(:metadata, :campaign_id)} does not exist."
-          #   render json: { error: "Campaign not found" }, status: :unprocessable_entity
-          #   return
-          # end
+        #   # if campaign.nil?
+        #   #   Rails.logger.error "Campaign with ID #{transfer_data.dig(:metadata, :campaign_id)} does not exist."
+        #   #   render json: { error: "Campaign not found" }, status: :unprocessable_entity
+        #   #   return
+        #   # end
 
-          # Here we extract the relevant transfer data from the Paystack API response
-          transfer = {
-            transfer_code: transfer_data[:transfer_code],
-            reference: transfer_data[:reference],
-            amount: transfer_data[:amount],
-            reason: transfer_data[:reason],
-            account_name: transfer_data[:recipient][:name],
-            recipient_code: transfer_data[:recipient][:recipient_code],
-            account_number: transfer_data[:recipient][:details][:account_number],
-            bank_name: transfer_data[:recipient][:details][:bank_name],
-            status: transfer_data[:status],
-            currency: transfer_data[:currency],
-            created_at: transfer_data[:createdAt]
-          }
+        #   # Here we extract the relevant transfer data from the Paystack API response
+        #   transfer = {
+        #     transfer_code: transfer_data[:transfer_code],
+        #     reference: transfer_data[:reference],
+        #     amount: transfer_data[:amount],
+        #     reason: transfer_data[:reason],
+        #     account_name: transfer_data[:recipient][:name],
+        #     recipient_code: transfer_data[:recipient][:recipient_code],
+        #     account_number: transfer_data[:recipient][:details][:account_number],
+        #     bank_name: transfer_data[:recipient][:details][:bank_name],
+        #     status: transfer_data[:status],
+        #     currency: transfer_data[:currency],
+        #     created_at: transfer_data[:createdAt]
+        #   }
 
-          # campaign = Transfers.find_by(transfer_code: transfer_data.digest(:transfer_code))
+        #   # campaign = Transfers.find_by(transfer_code: transfer_data.digest(:transfer_code))
 
-          # Create or update the transfer in the database
-          transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer[:transfer_code])
-          transfer_record.update(
-            user_id: campaign.fundraiser.id,  # Associate with the logged-in user
-            campaign_id: campaign.id,  # Associate with the campaign
-            bank_name: transfer[:bank_name],
-            account_number: transfer[:account_number],
-            amount: transfer[:amount] / 100.0,  # Convert amount to naira
-            currency: transfer[:currency],
-            status: transfer[:status],
-            reason: transfer[:reason],
-            recipient_code: transfer[:recipient_code],
-            failure_reason: transfer[:failure_reason],
-            completed_at: transfer[:completed_at],
-            reversed_at: transfer[:reversed_at],
-            reference: transfer[:reference]
-          )
+        #   # Create or update the transfer in the database
+        #   transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer[:transfer_code])
+        #   transfer_record.update(
+        #     user_id: campaign.fundraiser.id,  # Associate with the logged-in user
+        #     campaign_id: campaign.id,  # Associate with the campaign
+        #     bank_name: transfer[:bank_name],
+        #     account_number: transfer[:account_number],
+        #     amount: transfer[:amount] / 100.0,  # Convert amount to naira
+        #     currency: transfer[:currency],
+        #     status: transfer[:status],
+        #     reason: transfer[:reason],
+        #     recipient_code: transfer[:recipient_code],
+        #     failure_reason: transfer[:failure_reason],
+        #     completed_at: transfer[:completed_at],
+        #     reversed_at: transfer[:reversed_at],
+        #     reference: transfer[:reference]
+        #   )
 
-          if transfer_record.save
-            render json: { message: "Transfer saved successfully" }, status: :ok
-          else
-            render json: { error: "Failed to save transfer" }, status: :unprocessable_entity
-          end
-        end
+        #   if transfer_record.save
+        #     render json: { message: "Transfer saved successfully" }, status: :ok
+        #   else
+        #     render json: { error: "Failed to save transfer" }, status: :unprocessable_entity
+        #   end
+        # end
 
         # Fetch transfers from Paystack for the logged-in user
         def fetch_transfers_from_paystack
@@ -442,7 +442,31 @@ module Api
               # If data is an array (multiple transfers)
               if response[:data].is_a?(Array)
                 response[:data].each do |transfer_data|
-                  save_transfer_from_paystack(transfer_data)
+                    # Extract relevant transfer data directly from transfer_data
+                  transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer_data[:transfer_code])
+
+                  transfer_record.assign_attributes(
+                    user_id: subaccount.user_id,  # Associate with the logged-in user
+                    campaign_id: subaccount.campaign_id,  # Associate with the campaign
+                    bank_name: transfer_data[:recipient][:details][:bank_name],
+                    account_number: transfer_data[:recipient][:details][:account_number],
+                    amount: transfer_data[:amount] / 100.0,  # Convert amount to naira
+                    currency: transfer_data[:currency],
+                    status: transfer_data[:status],
+                    reason: transfer_data[:reason],
+                    recipient_code: transfer_data[:recipient][:recipient_code],
+                    reference: transfer_data[:reference],
+                    created_at: transfer_data[:createdAt]
+                  )
+
+                  # Save the transfer record
+                  if transfer_record.save
+                    Rails.logger.info "Transfer with code #{transfer_data[:transfer_code]} saved successfully"
+                    render json: { message: "Transfer saved successfully" }, status: :ok
+                  else
+                    Rails.logger.error "Failed to save transfer with code #{transfer_data[:transfer_code]}"
+                    render json: { error: "Failed to save transfer" }, status: :unprocessable_entity
+                  end
                 end
               # If data is a single transfer object (hash)
               elsif response[:data].is_a?(Hash)
