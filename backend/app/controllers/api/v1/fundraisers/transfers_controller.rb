@@ -408,7 +408,7 @@ module Api
             campaign: campaign.id,  # Associate with the campaign
             bank_name: transfer[:bank_name],
             account_number: transfer[:account_number],
-            amount: transfer[:amount],
+            amount: transfer[:amount] / 100.0,  # Convert amount to naira
             currency: transfer[:currency],
             status: transfer[:status],
             reason: transfer[:reason],
