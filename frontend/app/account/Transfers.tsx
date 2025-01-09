@@ -56,7 +56,6 @@ export default function Transfers() {
   }, [fetchTransfersFromPaystack]);
 
   useEffect(() => {
-    fetchTransfersFromPaystack();
     fetchTransfers(currentPage);
   }, [, fetchTransfers, currentPage]);
 
