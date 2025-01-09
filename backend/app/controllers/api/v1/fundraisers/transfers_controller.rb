@@ -433,7 +433,7 @@ module Api
           
           # Fetch transfers for each subaccount
           subaccounts.each do |subaccount|
-            response = @paystack_service.fetch_transfer(subaccount.recipient_code)
+            response = @paystack_service.fetch_transfer(subaccount.transfer_code)
 
             Rails.logger.info "Paystack Transfer response: #{response.inspect}"
             
