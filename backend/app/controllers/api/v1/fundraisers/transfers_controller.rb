@@ -3,7 +3,7 @@ module Api
     module Fundraisers
       class TransfersController < ApplicationController
         include ErrorHandler
-        before_action :authenticate_request, only: %i[fetch_user_transfers save_transfer_from_paystack]
+        before_action :authenticate_request, only: %i[fetch_user_transfers fetch_transfers_from_paystack]
         before_action :set_transfer_service
 
         # Approve or reject a transfer based on the payload
@@ -350,20 +350,17 @@ module Api
         end        
 
        # Fetch transfers for the logged-in user
-       def fetch_user_transfers
+      def fetch_user_transfers
+        @fundraiser = @current_user
+      
+        # Define pagination parameters
         page = params[:page] || 1
         page_size = params[:pageSize] || 8
       
-        if @current_user.nil?
-          Rails.logger.error "Current user not found"
-          render json: { error: 'User not found' }, status: :not_found
-          return
-        end
+        # Query the database for transfers belonging to the current user with pagination and order by created_at
+        @transfers = @fundraiser.transfers.includes(:campaign).order(created_at: :desc).page(page).per(page_size)
       
-        @transfers = Transfer.where(user_id: @current_user.id).includes(:campaign).order(created_at: :desc).page(page).per(page_size)
-      
-        Rails.logger.info "Transfers found: #{@transfers.inspect}"
-      
+        # Check if transfers are present
         if @transfers.any?
           render json: {
             transfers: @transfers.as_json(include: :campaign),
@@ -372,75 +369,85 @@ module Api
             total_count: @transfers.total_count
           }, status: :ok
         else
-          render json: { message: "No transfers found." }, status: :ok
-        end
-       end           
+          render json: { error: "No transfers found for this user" }, status: :not_found
+        end        
+      end
+      
 
         # Save a transfer from Paystack to the database
         def save_transfer_from_paystack(transfer_data)
-          user_id = @current_user.id # Make sure metadata is available
-          campaign_id = transfer_data[:recipient][:metadata][:campaign_id]
+          campaign = Campaign.find_by(id: transfer_data.dig(:metadata, :campaign_id))
 
-          @campaigns = Campaign.where(fundraiser_id: user_id).where(id: campaign_id)
-          Rails.logger.info "Campaignsssss found: #{@campaigns.inspect}"
-        
-          if @campaigns.empty?
-            Rails.logger.error "No campaigns found for user #{@current_user.id}."
-            return { success: false, error: "No campaigns found for the current user" }
+          if campaign.nil?
+            Rails.logger.error "Campaign with ID #{transfer_data.dig(:metadata, :campaign_id)} does not exist."
+            render json: { error: "Campaign not found" }, status: :unprocessable_entity
+            return
           end
-        
-          # Extract and map transfer data
-          transfer_attrs = {
+
+          # Here we extract the relevant transfer data from the Paystack API response
+          transfer = {
             transfer_code: transfer_data[:transfer_code],
             reference: transfer_data[:reference],
             amount: transfer_data[:amount],
             reason: transfer_data[:reason],
-            user_name: transfer_data[:recipient][:name],
+            account_name: transfer_data[:recipient][:name],
             recipient_code: transfer_data[:recipient][:recipient_code],
             account_number: transfer_data[:recipient][:details][:account_number],
             bank_name: transfer_data[:recipient][:details][:bank_name],
             status: transfer_data[:status],
             currency: transfer_data[:currency],
+            created_at: transfer_data[:createdAt]
           }
-        
-          # Save transfer for all campaigns
-          @campaigns.each do |campaign|
-            transfer_attrs[:user_id] = campaign.fundraiser_id
-            transfer_attrs[:campaign_id] = campaign.id
-        
-            transfer = Transfer.find_or_initialize_by(transfer_code: transfer_data[:transfer_code])
-            transfer.assign_attributes(transfer_attrs)
-        
-            if transfer.save
-              Rails.logger.info "Transfer saved for campaign #{campaign.id}"
-            else
-              Rails.logger.error "Failed to save transfer for campaign #{campaign.id}: #{transfer.errors.full_messages.join(', ')}"
-            end
+
+          campaign = Transfers.find_by(campaign_id: transfer_data.dig(:metadata, :campaign_id))
+
+          # Create or update the transfer in the database
+          transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer[:transfer_code])
+          transfer_record.update(
+            user: campaign.fundraiser_id,  # Associate with the logged-in user
+            campaign: campaign.id,  # Associate with the campaign
+            bank_name: transfer[:bank_name],
+            account_number: transfer[:account_number],
+            amount: transfer[:amount],
+            currency: transfer[:currency],
+            status: transfer[:status],
+            reason: transfer[:reason],
+            recipient_code: transfer[:recipient_code],
+            failure_reason: transfer[:failure_reason],
+            completed_at: transfer[:completed_at],
+            reversed_at: transfer[:reversed_at],
+            reference: transfer[:reference]
+          )
+
+          if transfer_record.save
+            render json: { message: "Transfer saved successfully" }, status: :ok
+          else
+            render json: { error: "Failed to save transfer" }, status: :unprocessable_entity
           end
-        
-          { success: true }
-        end               
+        end
 
         # Fetch transfers from Paystack for the logged-in user
         def fetch_transfers_from_paystack
-          # Fetch all transfers from Paystack without filtering by subaccount
-          response = @paystack_service.fetch_transfer
-          Rails.logger.info "Paystack response: #{response.inspect || 'No response received'}"
+          @fundraiser = @current_user
+          subaccounts = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
           
-          if response[:status] && response[:data].present?
-            response[:data].each do |transfer_data|
-              result = save_transfer_from_paystack(transfer_data)
-              unless result[:success]
-                Rails.logger.error "Failed to save transfer for #{transfer_data[:reference]}: #{result[:error]}"
+          # Fetch transfers for each subaccount
+          subaccounts.each do |subaccount|
+            response = @paystack_service.fetch_transfers(subaccount.transfer_code)
+            
+            if response[:status] && response[:data].present?
+              # Loop through each transfer and save it to the database
+              response[:data].each do |transfer_data|
+                save_transfer_from_paystack(transfer_data)
               end
+            else
+              render json: { error: "No transfers found or an error occurred" }, status: :unprocessable_entity
+              return
             end
-          else
-            Rails.logger.error "Error fetching transfers: #{response[:message]}"
           end
-        
-          render json: { message: "Transfers fetched and processed successfully." }, status: :ok
+
+          render json: { message: "Transfers fetched and saved successfully" }, status: :ok
         end
-               
       
         private
 
