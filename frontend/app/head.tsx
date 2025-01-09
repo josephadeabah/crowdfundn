@@ -36,12 +36,12 @@ export default function HeadContent() {
         name="twitter:title"
         content="Fundraising Made Easy for Africa & Diaspora"
       />
-      <link rel="icon" href="/bantuhive.ico" type="image/x-icon" />
+      <link rel="icon" href="/bantuhive.ico" />
       {/* <link rel="icon" href="/bantu-hive.svg" type="image/svg+xml" /> */}
       {/* <link rel="canonical" href="https://bantuhive.com" /> */}
 
       {/* Structured Data */}
-      <script
+      {/* <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
@@ -79,7 +79,7 @@ export default function HeadContent() {
             ],
           }),
         }}
-      />
+      /> */}
     </Head>
   );
 }

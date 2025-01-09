@@ -277,13 +277,13 @@ export default function Transfers() {
           </div>
           {/* Pagination Component */}
           <div className="w-full max-w-3xl mx-auto py-12">
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={fetchTransfers}
-            />
-          )}
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={fetchTransfers}
+              />
+            )}
           </div>
         </div>
       </div>

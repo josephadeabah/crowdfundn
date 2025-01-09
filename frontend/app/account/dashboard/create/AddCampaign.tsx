@@ -305,7 +305,7 @@ const CreateCampaign = () => {
               <RichTextEditor
                 value={content}
                 onChange={setContent}
-                placeholder="Enter the fundraiser description here..."
+                placeholder="Add detailed description of what you're fundraising for..."
                 id="rte"
                 controls={[
                   ['bold', 'italic', 'underline'],
