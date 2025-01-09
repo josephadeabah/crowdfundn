@@ -53,8 +53,12 @@ export default function Transfers() {
 
   useEffect(() => {
     fetchTransfersFromPaystack();
+  }, [fetchTransfersFromPaystack]);
+
+  useEffect(() => {
+    fetchTransfersFromPaystack();
     fetchTransfers(currentPage);
-  }, [fetchTransfersFromPaystack, fetchTransfers, currentPage]);
+  }, [, fetchTransfers, currentPage]);
 
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
