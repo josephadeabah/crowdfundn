@@ -363,7 +363,7 @@ module Api
         
         # Query for transfers with proper association and ordering
         @transfers = @fundraiser.transfers
-                                 .where(recipient_code: subaccounts.pluck(:recipient_code))
+                                 .where(recipient_code: subaccounts.recipient_code)
                                  .includes(:campaign)
                                  .order(created_at: :desc)
                                  .page(page)
