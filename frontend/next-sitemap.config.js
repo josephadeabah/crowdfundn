@@ -24,7 +24,7 @@ const config = {
         allow: '/',
       },
     ],
-    additionalSitemaps: ['https://bantuhive.com/sitemap.xml'],
+    additionalSitemaps: ['https://bantuhive.com/sitemap-0.xml'],
   },
 };
 
