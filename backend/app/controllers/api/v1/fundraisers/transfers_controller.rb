@@ -404,7 +404,7 @@ module Api
           # Create or update the transfer in the database
           transfer_record = Transfer.find_or_initialize_by(transfer_code: transfer[:transfer_code])
           transfer_record.update(
-            user_id: @current_user.id,  # Associate with the logged-in user
+            user_id: campaign.fundraiser.id,  # Associate with the logged-in user
             campaign_id: campaign.id,  # Associate with the campaign
             bank_name: transfer[:bank_name],
             account_number: transfer[:account_number],
