@@ -1,8 +1,6 @@
-import Head from 'next/head';
-
-export default function HeadContent() {
+export default function Head() {
   return (
-    <Head>
+    <head>
       <title>Fundraising Made Easy for Africa & Diaspora</title>
       <meta
         name="description"
@@ -39,6 +37,6 @@ export default function HeadContent() {
       <link rel="icon" href="/bantuhive.ico" type="image/x-icon" />
       <link rel="icon" href="/bantuhive.png" sizes="32x32" />
       <link rel="icon" href="/bantuhive.svg" type="image/svg+xml" />
-    </Head>
+    </head>
   );
 }
