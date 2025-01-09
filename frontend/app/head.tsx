@@ -38,7 +38,7 @@ export default function HeadContent() {
       />
       <link rel="icon" href="/bantuhive.ico" type="image/x-icon" />
       {/* <link rel="icon" href="/bantu-hive.svg" type="image/svg+xml" /> */}
-      <link rel="canonical" href="https://bantuhive.com" />
+      {/* <link rel="canonical" href="https://bantuhive.com" /> */}
 
       {/* Structured Data */}
       <script
