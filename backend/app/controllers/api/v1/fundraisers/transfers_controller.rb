@@ -437,25 +437,31 @@ module Api
             
             Rails.logger.info "Paystack Transfer response: #{response.inspect}"
             
+            # Check if response is successful
             if response[:status] && response[:data].present?
               # Check if response[:data] is an array
               if response[:data].is_a?(Array)
                 response[:data].each do |transfer_data|
                   save_transfer_from_paystack(transfer_data)
                 end
+              elsif response[:data].is_a?(Hash)
+                Rails.logger.error "Expected an array but got a hash: #{response[:data].inspect}"
+                render json: { error: "Unexpected response format (received a hash instead of an array)" }, status: :unprocessable_entity
+                return
               else
-                Rails.logger.error "Expected an array but got: #{response[:data].inspect}"
+                Rails.logger.error "Expected an array or hash but got: #{response[:data].inspect}"
                 render json: { error: "Unexpected response format" }, status: :unprocessable_entity
                 return
               end
             else
+              Rails.logger.error "No transfers found or an error occurred. Response: #{response.inspect}"
               render json: { error: "No transfers found or an error occurred" }, status: :unprocessable_entity
               return
             end
           end
         
           render json: { message: "Transfers fetched and saved successfully" }, status: :ok
-        end        
+        end               
       
         private
 
