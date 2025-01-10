@@ -209,22 +209,18 @@ const TeamCarousel = () => {
               className="w-full flex-shrink-0 px-4 py-4 sm:w-1/2 md:w-1/3"
             >
               <div
-                className="h-96 bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden cursor-pointer transform transition-transform duration-300 hover:scale-105"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden cursor-pointer transform transition-transform duration-300 hover:scale-105"
                 onClick={() => openModal(member)}
                 onKeyDown={(e) => e.key === 'Enter' && openModal(member)}
                 tabIndex={0}
                 role="button"
                 aria-label={`View ${member.name}'s profile`}
               >
-                <div className="relative w-full h-full">
-                  {' '}
-                  {/* Set a fixed height */}
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-full object-cover" // Ensures the image covers the container
-                  />
-                </div>
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  className="w-full h-full object-cover" // Adjust based on image needs
+                />
                 <div className="p-6">
                   <h3 className="text-xl font-semibold mb-2">{member.name}</h3>
                   <p className="text-gray-600 dark:text-gray-50 mb-2">
