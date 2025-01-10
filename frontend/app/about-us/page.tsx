@@ -209,7 +209,7 @@ const TeamCarousel = () => {
               className="w-full flex-shrink-0 px-4 py-4 sm:w-1/2 md:w-1/3"
             >
               <div
-                className="h-64 bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden cursor-pointer transform transition-transform duration-300 hover:scale-105"
+                className="h-96 bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden cursor-pointer transform transition-transform duration-300 hover:scale-105"
                 onClick={() => openModal(member)}
                 onKeyDown={(e) => e.key === 'Enter' && openModal(member)}
                 tabIndex={0}
