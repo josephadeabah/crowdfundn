@@ -219,7 +219,7 @@ const TeamCarousel = () => {
                 <img
                   src={member.image}
                   alt={member.name}
-                  className={`w-full h-40 ${currentIndex === 0 ? 'object-cover' : 'object-contain'}`} 
+                  className="w-full h-40 object-[60%_30%]" // Adjust based on image needs
                 />
                 <div className="p-6">
                   <h3 className="text-xl font-semibold mb-2">{member.name}</h3>
