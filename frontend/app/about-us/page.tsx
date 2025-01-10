@@ -52,7 +52,7 @@ const TeamCarousel = () => {
       name: 'Joseph Adeabah',
       position: 'Co-Founder & Co-CEO, CTO',
       description: 'West African Region',
-      image: '/abeansah.jpg',
+      image: '/abeansah.png',
       fullDescription:
         'Joseph Adeabah is an innovative technologist with over 6 years of experience in the tech industry. As CTO and Co-CEO, he leads the company’s technology strategy and product development, while sharing executive leadership responsibilities as Co-CEO.',
       socialLinks: {
