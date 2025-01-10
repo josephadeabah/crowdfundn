@@ -216,11 +216,15 @@ const TeamCarousel = () => {
                 role="button"
                 aria-label={`View ${member.name}'s profile`}
               >
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  className="w-full h-full object-cover" // Adjust based on image needs
-                />
+                <div className="relative w-full h-40">
+                  {' '}
+                  {/* Set a fixed height */}
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full h-full object-cover" // Ensures the image covers the container
+                  />
+                </div>
                 <div className="p-6">
                   <h3 className="text-xl font-semibold mb-2">{member.name}</h3>
                   <p className="text-gray-600 dark:text-gray-50 mb-2">
