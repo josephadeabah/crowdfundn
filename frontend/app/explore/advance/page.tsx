@@ -474,14 +474,14 @@ const CampaignsPage = () => {
             </>
           )}
         </div>
-        {pagination.totalPages > 1 && (
-          <Pagination
-            currentPage={pagination.currentPage || page}
-            totalPages={pagination.totalPages}
-            onPageChange={handlePageChange}
-          />
-        )}
       </div>
+      {pagination.totalPages > 1 && (
+        <Pagination
+          currentPage={pagination.currentPage || page}
+          totalPages={pagination.totalPages}
+          onPageChange={handlePageChange}
+          />
+      )}
     </div>
   );
 };
