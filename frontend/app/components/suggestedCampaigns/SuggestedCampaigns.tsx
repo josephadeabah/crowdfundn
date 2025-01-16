@@ -13,7 +13,7 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '../toast/Toast';
-import CampaignsLoader from '@/app/loaders/CampaignsLoader';
+import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 
 const SuggestedCampaignsComponent = ({
   currentCategory,
@@ -85,7 +85,7 @@ const SuggestedCampaignsComponent = ({
     await unfavoriteCampaign(campaignId);
   };
 
-  if (loading) return <CampaignsLoader />;
+  if (loading) return <CampaignCardLoader />;
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;
   if (!filteredCampaigns.length)
     return (
