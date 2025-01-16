@@ -65,9 +65,9 @@ const SuggestedCampaignsComponent = () => {
 
   return (
     <div className="w-full bg-white md:p-4">
-      {/* {loading ? (
+      {loading ? (
         <p>Loading campaigns...</p> // Add a loader component if needed
-      ) : ( */}
+      ) : (
         <>
           {Object.keys(campaignsGroupedByCategory).length > 0 ? (
             Object.entries(campaignsGroupedByCategory).map(
@@ -158,7 +158,7 @@ const SuggestedCampaignsComponent = () => {
             </p>
           )}
         </>
-      {/* )} */}
+      )}
       {toast.isOpen && (
         <ToastComponent
           isOpen={toast.isOpen}

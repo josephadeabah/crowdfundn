@@ -96,7 +96,7 @@ export const CategoryProvider = ({ children }: { children: ReactNode }) => {
       fetchGroupedCampaigns,
       fetchCampaignsForCategory,
     }),
-    [campaignsGroupedByCategory, loading, error],
+    [campaignsGroupedByCategory, loading, error, fetchGroupedCampaigns, fetchCampaignsForCategory],
   );
 
   return (
