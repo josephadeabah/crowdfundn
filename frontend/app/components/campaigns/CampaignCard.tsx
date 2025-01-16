@@ -142,7 +142,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 initial="hidden"
                 animate="visible"
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white shadow dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 transform hover:shadow-lg transition-transform duration-300 cursor-pointer overflow-hidden"
+                className="bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 transform hover:shadow-lg transition-transform duration-300 cursor-pointer overflow-hidden"
               >
                 <Link
                   href={`/campaign/${campaign.id}?${generateRandomString()}`}
