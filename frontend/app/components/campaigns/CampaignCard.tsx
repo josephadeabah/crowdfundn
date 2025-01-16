@@ -119,7 +119,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   if (error) return <ErrorPage />;
 
   return (
-    <div className="w-full max-w-7xl mx-auto bg-white md:p-4 p-3">
+    <div className="w-full max-w-7xl mx-auto bg-white md:p-4">
       {/* Toast component for notifications */}
       <ToastComponent
         isOpen={toast.isOpen}
@@ -231,6 +231,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       )}
 
       {/* Pagination */}
+      <div className="p-3">
       {pagination.totalPages > 1 && (
         <Pagination
           currentPage={pagination.currentPage || page}
@@ -238,6 +239,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
           onPageChange={handlePageChange}
         />
       )}
+      </div>
     </div>
   );
 };
