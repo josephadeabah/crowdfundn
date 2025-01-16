@@ -135,9 +135,7 @@ const SuggestedCampaignsComponent = () => {
                             campaign.transferred_amount,
                           ).toLocaleString()}{' '}
                           of {campaign.currency_symbol}
-                          {parseFloat(
-                            campaign.goal_amount,
-                          ).toLocaleString()}
+                          {parseFloat(campaign.goal_amount).toLocaleString()}
                         </div>
                       </div>
                     </div>

@@ -1,11 +1,12 @@
-import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import React, {
   createContext,
   useState,
   useContext,
   ReactNode,
   useMemo,
+  useCallback,
 } from 'react';
+import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 
 interface CategoryState {
   campaignsGroupedByCategory: Record<
@@ -38,56 +39,61 @@ export const CategoryProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchGroupedCampaigns = async (
-    page = 1,
-    pageSize = 4,
-  ): Promise<void> => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/group_by_category?page=${page}&page_size=${pageSize}`,
-      );
-      if (!response.ok) throw new Error('Failed to fetch campaigns');
-      const data = await response.json();
-      setCampaignsGroupedByCategory(data.grouped_campaigns);
-    } catch (err: any) {
-      console.error('Error fetching campaigns:', err);
-      setError(err.message || 'Error fetching campaigns');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchCampaignsForCategory = async (category: string, page = 1) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/group_by_category?page=${page}&page_size=4`,
-      );
-      if (!response.ok) throw new Error('Failed to fetch campaigns');
-      const data = await response.json();
-      const categoryData = data.grouped_campaigns[category];
-
-      if (categoryData) {
-        setCampaignsGroupedByCategory((prev) => ({
-          ...prev,
-          [category]: {
-            campaigns: categoryData.campaigns,
-            current_page: categoryData.current_page,
-            total_pages: categoryData.total_pages,
-          },
-        }));
+  // Memoize the fetchGroupedCampaigns function
+  const fetchGroupedCampaigns = useCallback(
+    async (page = 1, pageSize = 4): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/group_by_category?page=${page}&page_size=${pageSize}`,
+        );
+        if (!response.ok) throw new Error('Failed to fetch campaigns');
+        const data = await response.json();
+        setCampaignsGroupedByCategory(data.grouped_campaigns);
+      } catch (err: any) {
+        console.error('Error fetching campaigns:', err);
+        setError(err.message || 'Error fetching campaigns');
+      } finally {
+        setLoading(false);
       }
-    } catch (err: any) {
-      console.error('Error fetching campaigns for category:', err);
-      setError(err.message || 'Error fetching campaigns');
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [], // No dependencies needed here because the URL and function logic are static
+  );
 
+  const fetchCampaignsForCategory = useCallback(
+    async (category: string, page = 1) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/group_by_category?page=${page}&page_size=4`,
+        );
+        if (!response.ok) throw new Error('Failed to fetch campaigns');
+        const data = await response.json();
+        const categoryData = data.grouped_campaigns[category];
+
+        if (categoryData) {
+          setCampaignsGroupedByCategory((prev) => ({
+            ...prev,
+            [category]: {
+              campaigns: categoryData.campaigns,
+              current_page: categoryData.current_page,
+              total_pages: categoryData.total_pages,
+            },
+          }));
+        }
+      } catch (err: any) {
+        console.error('Error fetching campaigns for category:', err);
+        setError(err.message || 'Error fetching campaigns');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [], // No dependencies because the URL and function logic are static
+  );
+
+  // Memoize the context value
   const contextValue = useMemo(
     () => ({
       campaignsGroupedByCategory,
