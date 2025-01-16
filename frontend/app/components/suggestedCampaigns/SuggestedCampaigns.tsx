@@ -85,7 +85,12 @@ const SuggestedCampaignsComponent = ({
     await unfavoriteCampaign(campaignId);
   };
 
-  if (loading) return <CampaignCardLoader />;
+  if (loading)
+    return (
+      <div className="w-full max-w-7xl mx-auto">
+        <CampaignCardLoader />
+      </div>
+    );
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;
   if (!filteredCampaigns.length)
     return (
@@ -95,7 +100,7 @@ const SuggestedCampaignsComponent = ({
     );
 
   return (
-    <div className="max-w-7xl mx-auto bg-white md:p-4">
+    <div className="w-full max-w-7xl mx-auto bg-white md:p-4">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
