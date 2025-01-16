@@ -119,7 +119,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   if (error) return <ErrorPage />;
 
   return (
-    <div className="bg-white p-1">
+    <div className="bg-white md:p-4">
       {/* Toast component for notifications */}
       <ToastComponent
         isOpen={toast.isOpen}
