@@ -8,7 +8,7 @@ module Api
 
         def index
           page = params[:page] || 1
-          page_size = params[:pageSize] || 12
+          page_size = params[:pageSize] || 15
           
           sort_by = params[:sortBy] || 'created_at'
           sort_order = params[:sortOrder] || 'desc'
