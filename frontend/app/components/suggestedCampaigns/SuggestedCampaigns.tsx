@@ -95,7 +95,7 @@ const SuggestedCampaignsComponent = ({
     );
 
   return (
-    <div className="w-full max-w-7xl mx-auto bg-white md:p-4">
+    <div className="max-w-7xl mx-auto bg-white md:p-4">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
