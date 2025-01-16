@@ -14,6 +14,7 @@ import RewardSelection from '@/app/components/selectreward/RewardSelection';
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
 import ProgressRing from '@/app/components/ring/ProgressRing';
 import DonationList from '@/app/components/backerlist/DonationList';
+import SuggestedCampaignsComponent from '@/app/components/suggestedCampaigns/SuggestedCampaigns';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<
@@ -341,6 +342,7 @@ const SingleCampaignPage: React.FC = () => {
           </div>
         )}
       </div>
+      <SuggestedCampaignsComponent />
     </div>
   );
 };

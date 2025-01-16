@@ -480,7 +480,7 @@ const CampaignsPage = () => {
           currentPage={pagination.currentPage || page}
           totalPages={pagination.totalPages}
           onPageChange={handlePageChange}
-          />
+        />
       )}
     </div>
   );
