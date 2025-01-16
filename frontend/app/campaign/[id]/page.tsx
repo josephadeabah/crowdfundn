@@ -342,7 +342,9 @@ const SingleCampaignPage: React.FC = () => {
           </div>
         )}
       </div>
-      <SuggestedCampaignsComponent />
+      <SuggestedCampaignsComponent
+        currentCategory={currentCampaign?.category}
+      />
     </div>
   );
 };
