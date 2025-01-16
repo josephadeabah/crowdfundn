@@ -230,8 +230,8 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         </div>
       )}
 
-      {/* Pagination */}
-      <div className="p-3">
+      {/* Commenting the Pagination here for now */}
+      {/* <div className="p-3">
       {pagination.totalPages > 1 && (
         <Pagination
           currentPage={pagination.currentPage || page}
@@ -239,7 +239,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
           onPageChange={handlePageChange}
         />
       )}
-      </div>
+      </div> */}
     </div>
   );
 };
