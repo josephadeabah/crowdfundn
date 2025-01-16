@@ -65,30 +65,24 @@ const SuggestedCampaignsComponent = () => {
     await unfavoriteCampaign(campaignId);
   };
 
-  if (error) {
-    return (
-      <p className="text-center text-red-500">
-        Failed to load campaigns: {error}
-      </p>
-    );
-  }
-
-  if (loading) {
-    return <p>Loading campaigns...</p>;
-  }
-
-  if (!Object.keys(campaignsGroupedByCategory).length) {
-    return (
-      <p className="text-center text-gray-500">
-        No campaigns found. Try adjusting your filters or search terms.
-      </p>
-    );
-  }
+  // Destructure campaigns directly
+  const categories = Object.entries(campaignsGroupedByCategory);
 
   return (
     <div className="w-full bg-white md:p-4">
-      {Object.entries(campaignsGroupedByCategory).map(
-        ([category, { campaigns }]) => (
+      {/* Handle error */}
+      {error && (
+        <p className="text-center text-red-500">
+          Failed to load campaigns: {error}
+        </p>
+      )}
+
+      {/* Handle loading state */}
+      {loading ? (
+        <p className="text-center">Loading campaigns...</p>
+      ) : categories.length > 0 ? (
+        // Render campaigns grouped by category
+        categories.map(([category, { campaigns }], index) => (
           <div key={category} className="mb-8">
             <h2 className="text-xl font-bold text-gray-800 mb-4">{category}</h2>
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 px-4">
@@ -141,7 +135,9 @@ const SuggestedCampaignsComponent = () => {
                             campaign.transferred_amount,
                           ).toLocaleString()}{' '}
                           of {campaign.currency_symbol}
-                          {parseFloat(campaign.goal_amount).toLocaleString()}
+                          {parseFloat(
+                            campaign.goal_amount,
+                          ).toLocaleString()}
                         </div>
                       </div>
                     </div>
@@ -165,8 +161,14 @@ const SuggestedCampaignsComponent = () => {
               ))}
             </div>
           </div>
-        ),
+        ))
+      ) : (
+        <p className="text-center text-gray-500">
+          No campaigns found. Try adjusting your filters or search terms.
+        </p>
       )}
+
+      {/* Toast notifications */}
       {toast.isOpen && (
         <ToastComponent
           isOpen={toast.isOpen}
