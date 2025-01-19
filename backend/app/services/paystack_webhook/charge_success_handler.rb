@@ -72,6 +72,9 @@ class PaystackWebhook::ChargeSuccessHandler
       campaign_id = response.dig(:data, :metadata, :campaign_id)
       session_token = response.dig(:data, :metadata, :anonymous_token)
 
+      # Extract campaign metadata (title, description, etc.)
+      campaign_metadata = response.dig(:data, :metadata, :campaign_metadata) || {}
+
       # Step 5: Update the donation record with extracted metadata and transaction details
       donation.update!(
         status: 'successful',
@@ -87,7 +90,8 @@ class PaystackWebhook::ChargeSuccessHandler
         metadata: { 
           anonymous_token: session_token,
           user_id: user_id,  # Add user_id to metadata
-          campaign_id: campaign_id  # Add campaign_id to metadata
+          campaign_id: campaign_id,  # Add campaign_id to metadata
+          campaign_metadata: campaign_metadata # Add campaign metadata to donation
         } # Replacing the existing metadata entirely
       )
 
