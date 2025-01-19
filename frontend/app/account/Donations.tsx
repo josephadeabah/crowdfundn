@@ -115,7 +115,7 @@ export default function Donations() {
               </thead>
               <tbody>
                 {donations.map((donation) => {
-                  const campaign = donation.metadata?.campaign || {};
+                  const campaign = donation.metadata?.campaign_metadata || {};
                   return (
                     <DonationRow
                       key={donation.id}
