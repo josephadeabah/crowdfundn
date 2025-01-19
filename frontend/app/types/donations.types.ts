@@ -27,6 +27,7 @@ export interface Donation {
     session_token: string;
     custom_data: string;
     campaign: SingleCampaignResponseDataType;
+    campaign_metadata: SingleCampaignResponseDataType;
   };
   donation: {
     message: string;
