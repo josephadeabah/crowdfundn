@@ -356,115 +356,124 @@ const CampaignsPage = () => {
 
         {/* Campaigns Section */}
         <div className="w-full bg-white md:p-1">
-  {loading ? (
-    <CampaignCardLoader />
-  ) : (
-    <>
-      {campaigns && campaigns.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 px-2 md:p-0 relative">
-          {campaigns
-            .filter((campaign) => campaign.permissions.is_public)
-            .map((campaign, index) => {
-              const fundraiserCurrency =
-                campaign?.currency_symbol || campaign?.currency?.toUpperCase();
+          {loading ? (
+            <CampaignCardLoader />
+          ) : (
+            <>
+              {campaigns && campaigns.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 px-2 md:p-0 relative">
+                  {campaigns
+                    .filter((campaign) => campaign.permissions.is_public)
+                    .map((campaign, index) => {
+                      const fundraiserCurrency =
+                        campaign?.currency_symbol ||
+                        campaign?.currency?.toUpperCase();
 
-              return (
-                <motion.div
-                  key={campaign.id}
-                  initial="hidden"
-                  animate="visible"
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 rounded-lg transform hover:scale-105 hover:shadow-xl transition-transform duration-300 cursor-pointer overflow-hidden"
-                >
-                  <Link
-                    href={`/campaign/${campaign.id}?${generateRandomString()}`}
-                  >
-                    <div className="relative w-full h-0 pb-[100%]">
-                      <Image
-                        src={campaign?.media || '/bantuhive.svg'}
-                        alt="media thumbnail"
-                        layout="fill"
-                        objectFit="cover"
-                        className="absolute top-0 left-0 w-full h-full rounded-t"
-                      />
-                      {/* Hover Overlay */}
-                      <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                        <h3 className="text-lg font-bold text-white truncate mb-1">
-                          {campaign?.title}
-                        </h3>
-                        <div className="text-sm text-orange-400 truncate mb-1">
-                          {deslugify(campaign?.category)}
-                        </div>
-                        <div className="flex justify-between items-center text-xs font-semibold text-gray-300 mb-2">
-                          <span>{campaign.total_donors || 0} Backers</span>
-                          <span>{campaign.remaining_days} days left</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="px-2 py-2 dark:text-gray-50">
-                      <div className="w-full text-xs">
-                        <Progress
-                          firstProgress={
-                            (Number(campaign?.transferred_amount) /
-                              Number(campaign?.goal_amount)) *
-                            100
-                          }
-                          firstTooltipContent={`Progress: ${
-                            (Number(campaign?.transferred_amount) /
-                              Number(campaign?.goal_amount)) *
-                            100
-                          }%`}
-                        />
-                      </div>
-                      <div className="w-full text-xs text-gray-600 flex flex-col">
-                      <h3 className="text-lg font-bold text-gray-700 truncate mb-1">
-                          {campaign?.title}
-                        </h3>
-                        <p className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
-                          {fundraiserCurrency}
-                          {!isNaN(parseFloat(campaign.transferred_amount))
-                            ? parseFloat(
-                                campaign.transferred_amount,
-                              ).toLocaleString()
-                            : 0}
-                          <span className="text-gray-600 dark:text-gray-100 truncate">
-                            <span className="text-xs p-1">of</span>
-                            {fundraiserCurrency}
-                            {parseFloat(campaign.goal_amount).toLocaleString()}
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                  {/* Favorite/Unfavorite Icon */}
-                  <div
-                    className="absolute top-2 right-2 p-2 bg-transparent rounded-full shadow-md cursor-pointer hover:bg-gray-100"
-                    onClick={(e) => {
-                      e.preventDefault(); // Prevent link navigation
-                      campaign.favorited
-                        ? handleUnfavorite(campaign.id.toString())
-                        : handleFavorite(campaign.id.toString());
-                    }}
-                  >
-                    {campaign.favorited ? (
-                      <FaBookmark className="text-orange-500" />
-                    ) : (
-                      <FaRegBookmark className="text-gray-50" />
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })}
+                      return (
+                        <motion.div
+                          key={campaign.id}
+                          initial="hidden"
+                          animate="visible"
+                          transition={{ duration: 0.5, delay: index * 0.1 }}
+                          className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 rounded-lg transform hover:scale-105 hover:shadow-xl transition-transform duration-300 cursor-pointer overflow-hidden"
+                        >
+                          <Link
+                            href={`/campaign/${campaign.id}?${generateRandomString()}`}
+                          >
+                            <div className="relative w-full h-0 pb-[100%]">
+                              <Image
+                                src={campaign?.media || '/bantuhive.svg'}
+                                alt="media thumbnail"
+                                layout="fill"
+                                objectFit="cover"
+                                className="absolute top-0 left-0 w-full h-full rounded-t"
+                              />
+                              {/* Hover Overlay */}
+                              <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                                <h3 className="text-lg font-bold text-white truncate mb-1">
+                                  {campaign?.title}
+                                </h3>
+                                <div className="text-sm text-orange-400 truncate mb-1">
+                                  {deslugify(campaign?.category)}
+                                </div>
+                                <div className="flex justify-between items-center text-xs font-semibold text-gray-300 mb-2">
+                                  <span>
+                                    {campaign.total_donors || 0} Backers
+                                  </span>
+                                  <span>
+                                    {campaign.remaining_days} days left
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="px-2 py-2 dark:text-gray-50">
+                              <div className="w-full text-xs">
+                                <Progress
+                                  firstProgress={
+                                    (Number(campaign?.transferred_amount) /
+                                      Number(campaign?.goal_amount)) *
+                                    100
+                                  }
+                                  firstTooltipContent={`Progress: ${
+                                    (Number(campaign?.transferred_amount) /
+                                      Number(campaign?.goal_amount)) *
+                                    100
+                                  }%`}
+                                />
+                              </div>
+                              <div className="w-full text-xs text-gray-600 flex flex-col">
+                                <h3 className="text-lg font-bold text-gray-700 truncate mb-1">
+                                  {campaign?.title}
+                                </h3>
+                                <p className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
+                                  {fundraiserCurrency}
+                                  {!isNaN(
+                                    parseFloat(campaign.transferred_amount),
+                                  )
+                                    ? parseFloat(
+                                        campaign.transferred_amount,
+                                      ).toLocaleString()
+                                    : 0}
+                                  <span className="text-gray-600 dark:text-gray-100 truncate">
+                                    <span className="text-xs p-1">of</span>
+                                    {fundraiserCurrency}
+                                    {parseFloat(
+                                      campaign.goal_amount,
+                                    ).toLocaleString()}
+                                  </span>
+                                </p>
+                              </div>
+                            </div>
+                          </Link>
+                          {/* Favorite/Unfavorite Icon */}
+                          <div
+                            className="absolute top-2 right-2 p-2 bg-transparent rounded-full shadow-md cursor-pointer hover:bg-gray-100"
+                            onClick={(e) => {
+                              e.preventDefault(); // Prevent link navigation
+                              campaign.favorited
+                                ? handleUnfavorite(campaign.id.toString())
+                                : handleFavorite(campaign.id.toString());
+                            }}
+                          >
+                            {campaign.favorited ? (
+                              <FaBookmark className="text-orange-500" />
+                            ) : (
+                              <FaRegBookmark className="text-gray-50" />
+                            )}
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                </div>
+              ) : (
+                <p className="text-center text-gray-500">
+                  No campaigns found. Try adjusting your filters or search
+                  terms.
+                </p>
+              )}
+            </>
+          )}
         </div>
-      ) : (
-        <p className="text-center text-gray-500">
-          No campaigns found. Try adjusting your filters or search terms.
-        </p>
-      )}
-    </>
-  )}
-</div>
-
       </div>
       {pagination.totalPages > 1 && (
         <Pagination
