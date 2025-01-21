@@ -25,7 +25,7 @@ const Progress: React.FC<ProgressBarProps> = ({
       {/* Progress labels */}
       <div className="text-md flex items-center justify-between font-bold">
         <span
-          className="text-green-500"
+          className="text-green-600"
           data-tooltip-id="performance-tooltip"
           data-tooltip-content={firstTooltipContent}
         >
@@ -39,7 +39,7 @@ const Progress: React.FC<ProgressBarProps> = ({
           {secondProgress && `${Math.round(Number(secondProgress))}%`}
         </span>
         <span
-          className="text-green-500"
+          className="text-green-600"
           data-tooltip-id="employee-tooltip"
           data-tooltip-content={thirdTooltipContent}
         >
