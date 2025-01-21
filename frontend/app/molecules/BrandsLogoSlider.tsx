@@ -30,15 +30,15 @@ export function BrandsLogoSlider() {
 
   // Trusted brands data in the desired format
   const trustedBrands: Brand[] = [
-    { name: 'Flutterwave', id: 'flutterwave' },
+    // { name: 'Flutterwave', id: 'flutterwave' },
     { name: 'Paystack', id: 'paystack' },
-    { name: 'Visa', id: 'visa' },
-    { name: 'Mastercard', id: 'mastercard' },
+    // { name: 'Visa', id: 'visa' },
+    // { name: 'Mastercard', id: 'mastercard' },
     { name: 'Stanbic', id: 'ibanking.stanbicibtcbank' },
     { name: 'MTN', id: 'mtn' },
-    { name: 'Red Cross', id: 'redcross' },
-    { name: 'Save the Children', id: 'savechildren' },
-    { name: 'Vodafone', id: 'vodafone' },
+    // { name: 'Red Cross', id: 'redcross' },
+    // { name: 'Save the Children', id: 'savechildren' },
+    // { name: 'Vodafone', id: 'vodafone' },
   ];
 
   // Chunk the brands into groups of 3
