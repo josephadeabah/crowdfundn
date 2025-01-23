@@ -18,7 +18,7 @@ const Progress: React.FC<ProgressBarProps> = ({
   firstTooltipContent,
   secondTooltipContent,
   thirdTooltipContent,
-  className = 'h-3', // Default className for height
+  className = 'h-2', // Default className for height
 }) => {
   return (
     <div className="w-full">
