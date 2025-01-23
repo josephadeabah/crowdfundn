@@ -119,7 +119,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   if (error) return <ErrorPage />;
 
   return (
-    <div className="w-full max-w-7xl mx-auto bg-gray-50 md:p-4">
+    <div className="w-full max-w-7xl mx-auto bg-white md:p-4">
       {/* Toast component for notifications */}
       <ToastComponent
         isOpen={toast.isOpen}
@@ -142,7 +142,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 initial="hidden"
                 animate="visible"
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 rounded-lg transform hover:scale-105 hover:shadow-xl transition-transform duration-300 cursor-pointer overflow-hidden"
+                className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 hover:shadow-xl transition-transform duration-300 cursor-pointer overflow-hidden"
               >
                 <Link
                   href={`/campaign/${campaign.id}?${generateRandomString()}`}
@@ -153,7 +153,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       alt="media thumbnail"
                       layout="fill"
                       objectFit="cover"
-                      className="absolute top-0 left-0 w-full h-full rounded-t"
+                      className="absolute top-0 left-0 w-full h-full"
                     />
                     {/* Hover Overlay */}
                     <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
@@ -169,7 +169,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       </div>
                     </div>
                   </div>
-                  <div className="px-2 py-2 dark:text-gray-50">
+                  <div className="px-2 py-2 bg-gray-50 dark:text-gray-50">
                     <div className="w-full text-xs">
                       <Progress
                         firstProgress={
