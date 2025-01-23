@@ -28,37 +28,31 @@ const BackingPeriodSelector: React.FC<BackingPeriodSelectorProps> = ({
           </label>
         </div>
 
-        {/* Message for non-logged-in users */}
-        {!user && (
-          <p className="text-sm text-gray-500 mb-4">
-            You must be logged in to support the fundraiser using these options.
-          </p>
+        {/* Show other options only if user is logged in */}
+        {user && (
+          <div className="space-y-3">
+            {[
+              'hourly',
+              'daily',
+              'weekly',
+              'monthly',
+              'quartely',
+              'biannually',
+              'annualy',
+            ].map((option) => (
+              <div key={option} className="flex items-center space-x-3">
+                <RadioGroupItem
+                  value={option}
+                  id={option}
+                  className="h-5 w-5"
+                />
+                <label htmlFor={option} className="text-gray-700 capitalize">
+                  {option}
+                </label>
+              </div>
+            ))}
+          </div>
         )}
-
-        {/* Other options, disabled for non-logged-in users */}
-        <div className="space-y-3">
-          {[
-            'hourly',
-            'daily',
-            'weekly',
-            'monthly',
-            'quartely',
-            'biannually',
-            'annualy',
-          ].map((option) => (
-            <div key={option} className="flex items-center space-x-3">
-              <RadioGroupItem
-                value={option}
-                id={option}
-                className="h-5 w-5"
-                disabled={!user}
-              />
-              <label htmlFor={option} className="text-gray-700 capitalize">
-                {option}
-              </label>
-            </div>
-          ))}
-        </div>
       </RadioGroup>
     </div>
   );
