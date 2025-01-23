@@ -377,7 +377,7 @@ const CampaignsPage = () => {
                           initial="hidden"
                           animate="visible"
                           transition={{ duration: 0.5, delay: index * 0.1 }}
-                          className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 transform hover:scale-105 hover:shadow-xl transition-transform duration-300 cursor-pointer overflow-hidden"
+                          className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 hover:shadow-xl transition-transform duration-300 cursor-pointer overflow-hidden"
                         >
                           <Link
                             href={`/campaign/${campaign.id}?${generateRandomString()}`}
