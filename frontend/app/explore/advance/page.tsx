@@ -193,169 +193,175 @@ const CampaignsPage = () => {
         description={toast.description}
         type={toast.type}
       />
-     <div className="w-full bg-gray-50 mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Header Section */}
-      <motion.h4
-        ref={ref}
-        variants={fadeInUp}
-        initial="hidden"
-        animate={controls}
-        transition={{ duration: 0.5 }}
-        className="text-3xl sm:text-4xl font-bold text-center text-gray-800 py-8"
-      >
-        Find and support the causes that matter most to you.
-      </motion.h4>
-
-      {/* Search Section */}
-      <div className="flex justify-center mb-6">
-        <div className="w-full max-w-2xl flex flex-col sm:flex-row gap-2">
-          <input
-            id="search"
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:bg-gray-700 dark:text-white"
-            placeholder="Search for a campaign"
-          />
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            onClick={handleSearch}
-            whileTap={{ scale: 0.95 }}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300"
-          >
-            Search
-          </motion.button>
+      <div className="w-full bg-gray-50 mx-auto">
+        <motion.h4
+          ref={ref}
+          variants={fadeInUp}
+          initial="hidden"
+          animate={controls}
+          transition={{ duration: 0.5 }}
+          className="text-4xl font-bold text-center text-gray-800 py-6"
+        >
+          Find and support the causes that matter most to you.
+        </motion.h4>
+        {/* Search Section */}
+        <div className="flex justify-center mb-1">
+          <div className="w-full max-w-2xl mx-auto flex py-6">
+            <input
+              id="search"
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="mt-1 block w-full sm:w-3/4 sm:px-2 md:w-full px-4 py-2 rounded-md border border-gray-100 focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white mr-1"
+              placeholder="Search for a campaign"
+            />
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              onClick={handleSearch}
+              whileTap={{ scale: 0.95 }}
+              className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300 w-full sm:w-auto"
+            >
+              Search
+            </motion.button>
+          </div>
         </div>
       </div>
-
-      {/* Main Content Section */}
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col md:flex-row gap-1">
         {/* Filters Section */}
-        <aside className="w-full lg:w-1/4 bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-xl font-semibold mb-6">Find & Fund</h2>
-          <div className="space-y-6">
-            <div>
-              <label htmlFor="sortBy" className="block text-sm font-medium mb-2">
-                Sort By
-              </label>
-              <select
-                id="sortBy"
-                value={sortBy}
-                onChange={handleSortChange}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="created_at">Date Created</option>
-                <option value="goal_amount">Goal Amount</option>
-                <option value="location">Location</option>
-              </select>
-            </div>
+        <aside className="w-full md:w-1/4 p-4 border border-gray-50 bg-white">
+          <h2 className="text-lg font-semibold mb-4">Find & Fund</h2>
+          <div className="mb-4">
+            <label htmlFor="sortBy" className="block text-sm font-medium mb-1">
+              Sort By
+            </label>
+            <select
+              id="sortBy"
+              value={sortBy}
+              onChange={handleSortChange}
+              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
+            >
+              <option value="created_at">Date Created</option>
+              <option value="goal_amount">Goal Amount</option>
+              <option value="location">Location</option>
+            </select>
+          </div>
 
-            <div>
-              <label htmlFor="sortOrder" className="block text-sm font-medium mb-2">
-                Sort Order
-              </label>
-              <select
-                id="sortOrder"
-                value={sortOrder}
-                onChange={handleOrderChange}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
-              </select>
-            </div>
+          <div className="mb-4">
+            <label
+              htmlFor="sortOrder"
+              className="block text-sm font-medium mb-1"
+            >
+              Sort Order
+            </label>
+            <select
+              id="sortOrder"
+              value={sortOrder}
+              onChange={handleOrderChange}
+              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
+            >
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
 
-            <div>
-              <label htmlFor="dateRange" className="block text-sm font-medium mb-2">
-                Date Created
-              </label>
-              <select
-                id="dateRange"
-                value={dateRange}
-                onChange={handleDateRangeChange}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all_time">All Time</option>
-                <option value="today">Today</option>
-                <option value="last_7_days">Last 7 Days</option>
-                <option value="last_30_days">Last 30 Days</option>
-                <option value="last_60_days">Last 60 Days</option>
-                <option value="last_90_days">Last 90 Days</option>
-                <option value="this_month">This Month</option>
-                <option value="last_month">Last Month</option>
-                <option value="this_year">This Year</option>
-                <option value="last_year">Last Year</option>
-              </select>
-            </div>
+          <div className="mb-4">
+            <label
+              htmlFor="dateRange"
+              className="block text-sm font-medium mb-1"
+            >
+              Date Created
+            </label>
+            <select
+              id="dateRange"
+              value={dateRange}
+              onChange={handleDateRangeChange}
+              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
+            >
+              <option value="all_time">All Time</option>
+              <option value="today">Today</option>
+              <option value="last_7_days">Last 7 Days</option>
+              <option value="last_30_days">Last 30 Days</option>
+              <option value="last_60_days">Last 60 Days</option>
+              <option value="last_90_days">Last 90 Days</option>
+              <option value="this_month">This Month</option>
+              <option value="last_month">Last Month</option>
+              <option value="this_year">This Year</option>
+              <option value="last_year">Last Year</option>
+            </select>
+          </div>
 
-            <div>
-              <label htmlFor="goalRange" className="block text-sm font-medium mb-2">
-                Goal Amount
-              </label>
-              <select
-                id="goalRange"
-                value={goalRange}
-                onChange={handleGoalRangeChange}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">All</option>
-                <option value="0-500">
-                  {userProfile?.currency.toUpperCase() || 'GHS'}0 -{' '}
-                  {userProfile?.currency.toUpperCase() || 'GHS'}500
-                </option>
-                <option value="500-1000">
-                  {userProfile?.currency.toUpperCase() || 'GHS'}500 -{' '}
-                  {userProfile?.currency.toUpperCase() || 'GHS'}1,000
-                </option>
-                <option value="1000-5000">
-                  {userProfile?.currency.toUpperCase() || 'GHS'}1,000 -{' '}
-                  {userProfile?.currency.toUpperCase() || 'GHS'}5,000
-                </option>
-                <option value="5000-10000">
-                  {userProfile?.currency.toUpperCase() || 'GHS'}5,000 -{' '}
-                  {userProfile?.currency.toUpperCase() || 'GHS'}10,000
-                </option>
-                <option value="10000-50000">
-                  {userProfile?.currency.toUpperCase() || 'GHS'}10,000 -{' '}
-                  {userProfile?.currency.toUpperCase() || 'GHS'}50,000
-                </option>
-                <option value="50000-100000">
-                  {userProfile?.currency.toUpperCase() || 'GHS'}50,000 -{' '}
-                  {userProfile?.currency.toUpperCase() || 'GHS'}10,0000
-                </option>
-              </select>
-            </div>
+          <div className="mb-4">
+            <label
+              htmlFor="goalRange"
+              className="block text-sm font-medium mb-1"
+            >
+              Goal Amount
+            </label>
+            <select
+              id="goalRange"
+              value={goalRange}
+              onChange={handleGoalRangeChange}
+              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
+            >
+              <option value="all">All</option>
+              <option value="0-500">
+                {userProfile?.currency.toUpperCase() || 'GHS'}0 -{' '}
+                {userProfile?.currency.toUpperCase() || 'GHS'}500
+              </option>
+              <option value="500-1000">
+                {userProfile?.currency.toUpperCase() || 'GHS'}500 -{' '}
+                {userProfile?.currency.toUpperCase() || 'GHS'}1,000
+              </option>
+              <option value="1000-5000">
+                {userProfile?.currency.toUpperCase() || 'GHS'}1,000 -{' '}
+                {userProfile?.currency.toUpperCase() || 'GHS'}5,000
+              </option>
+              <option value="5000-10000">
+                {userProfile?.currency.toUpperCase() || 'GHS'}5,000 -{' '}
+                {userProfile?.currency.toUpperCase() || 'GHS'}10,000
+              </option>
+              <option value="10000-50000">
+                {userProfile?.currency.toUpperCase() || 'GHS'}10,000 -{' '}
+                {userProfile?.currency.toUpperCase() || 'GHS'}50,000
+              </option>
+              <option value="50000-100000">
+                {userProfile?.currency.toUpperCase() || 'GHS'}50,000 -{' '}
+                {userProfile?.currency.toUpperCase() || 'GHS'}10,0000
+              </option>
+            </select>
+          </div>
 
-            <div>
-              <label htmlFor="location" className="block text-sm font-medium mb-2">
-                Location
-              </label>
-              <select
-                id="location"
-                value={location}
-                onChange={handleLocationChange}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">All</option>
-                <option value="Nigeria">Nigeria</option>
-                <option value="Kenya">Kenya</option>
-                <option value="Ghana">Ghana</option>
-                <option value="South Africa">South Africa</option>
-                <option value="Eswatini">Eswatini</option>
-              </select>
-            </div>
+          <div className="mb-4">
+            <label
+              htmlFor="location"
+              className="block text-sm font-medium mb-1"
+            >
+              Location
+            </label>
+            <select
+              id="location"
+              value={location}
+              onChange={handleLocationChange}
+              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
+            >
+              <option value="all">All</option>
+              <option value="Nigeria">Nigeria</option>
+              <option value="Kenya">Kenya</option>
+              <option value="Ghana">Ghana</option>
+              <option value="South Africa">South Africa</option>
+              <option value="Eswatini">Eswatini</option>
+            </select>
           </div>
         </aside>
 
-
         {/* Campaigns Section */}
-        <div className="w-full bg-gray-50 md:p-1">
+        <div className="w-full bg-white md:p-1">
           {loading ? (
             <CampaignCardLoader />
           ) : (
             <>
               {campaigns && campaigns.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 px-3 md:p-0 relative">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 px-2 md:p-0 relative">
                   {campaigns
                     .filter((campaign) => campaign.permissions.is_public)
                     .map((campaign, index) => {
@@ -476,7 +482,6 @@ const CampaignsPage = () => {
           onPageChange={handlePageChange}
         />
       )}
-    </div>
     </div>
   );
 };
