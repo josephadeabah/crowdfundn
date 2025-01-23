@@ -193,7 +193,7 @@ const CampaignsPage = () => {
         description={toast.description}
         type={toast.type}
       />
-      <div className="w-full bg-gray-50 mx-auto">
+      <div className="w-full bg-green-600 mx-auto">
         <motion.h4
           ref={ref}
           variants={fadeInUp}
@@ -206,24 +206,26 @@ const CampaignsPage = () => {
         </motion.h4>
         {/* Search Section */}
         <div className="flex justify-center mb-1">
-          <div className="w-full max-w-2xl mx-auto flex py-6">
-            <input
-              id="search"
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="mt-1 block w-full sm:w-3/4 sm:px-2 md:w-full px-4 py-2 rounded-md border border-gray-100 focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white mr-1"
-              placeholder="Search for a campaign"
-            />
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              onClick={handleSearch}
-              whileTap={{ scale: 0.95 }}
-              className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300 w-full sm:w-auto"
-            >
-              Search
-            </motion.button>
-          </div>
+        <div className="w-full max-w-2xl mx-auto flex py-6">
+  <div className="relative flex items-center w-full">
+    <input
+      id="search"
+      type="text"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:bg-gray-700 dark:text-white pr-24" // Added padding-right for button
+      placeholder="Search for a campaign"
+    />
+    <motion.button
+      whileHover={{ scale: 1.05 }}
+      onClick={handleSearch}
+      whileTap={{ scale: 0.95 }}
+      className="absolute right-0 bg-blue-600 text-white px-6 py-3 rounded-r-lg font-semibold hover:bg-blue-700 transition-colors duration-300"
+    >
+      Search
+    </motion.button>
+  </div>
+</div>
         </div>
       </div>
       <div className="flex flex-col md:flex-row gap-1">
@@ -361,7 +363,7 @@ const CampaignsPage = () => {
           ) : (
             <>
               {campaigns && campaigns.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 px-2 md:p-0 relative">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 px-3 md:p-0 relative">
                   {campaigns
                     .filter((campaign) => campaign.permissions.is_public)
                     .map((campaign, index) => {
