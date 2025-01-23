@@ -161,7 +161,7 @@ export default function Dashboard() {
               You must widthdraw your funds in chunks as you fundraise. Learn
               more{' '}
               <a
-                href="/terms"
+                href="/articles/how-to-withdraw-funds"
                 target="_blank"
                 className="no-underline text-blue-400"
               >
