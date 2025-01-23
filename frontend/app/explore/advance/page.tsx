@@ -363,7 +363,7 @@ const CampaignsPage = () => {
           ) : (
             <>
               {campaigns && campaigns.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 px-3 md:p-0 relative">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 px-4 md:p-0 relative">
                   {campaigns
                     .filter((campaign) => campaign.permissions.is_public)
                     .map((campaign, index) => {
@@ -377,7 +377,7 @@ const CampaignsPage = () => {
                           initial="hidden"
                           animate="visible"
                           transition={{ duration: 0.5, delay: index * 0.1 }}
-                          className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 rounded-lg transform hover:scale-105 hover:shadow-xl transition-transform duration-300 cursor-pointer overflow-hidden"
+                          className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 transform hover:scale-105 hover:shadow-xl transition-transform duration-300 cursor-pointer overflow-hidden"
                         >
                           <Link
                             href={`/campaign/${campaign.id}?${generateRandomString()}`}
@@ -388,7 +388,7 @@ const CampaignsPage = () => {
                                 alt="media thumbnail"
                                 layout="fill"
                                 objectFit="cover"
-                                className="absolute top-0 left-0 w-full h-full rounded-t"
+                                className="absolute top-0 left-0 w-full h-full"
                               />
                               {/* Hover Overlay */}
                               <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
