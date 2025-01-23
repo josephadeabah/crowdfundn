@@ -408,7 +408,7 @@ const CampaignsPage = () => {
                                 </div>
                               </div>
                             </div>
-                            <div className="px-2 py-2 dark:text-gray-50">
+                            <div className="px-2 py-2 bg-gray-50 dark:text-gray-50">
                               <div className="w-full text-xs">
                                 <Progress
                                   firstProgress={
