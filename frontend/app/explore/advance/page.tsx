@@ -200,13 +200,13 @@ const CampaignsPage = () => {
           initial="hidden"
           animate={controls}
           transition={{ duration: 0.5 }}
-          className="text-4xl font-bold text-center text-gray-800 py-6"
+          className="text-4xl font-bold text-center py-6"
         >
           Find and support the causes that matter most to you.
         </motion.h4>
         {/* Search Section */}
         <div className="flex justify-center mb-1">
-        <div className="w-full max-w-2xl mx-auto flex py-6">
+        <div className="w-full max-w-2xl mx-auto flex p-6">
   <div className="relative flex items-center w-full">
     <input
       id="search"
