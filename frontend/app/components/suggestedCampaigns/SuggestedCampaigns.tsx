@@ -94,7 +94,7 @@ const SuggestedCampaignsComponent = ({
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;
   if (!filteredCampaigns.length)
     return (
-      <p className="text-center text-gray-500">
+      <p className="w-full bg-gray-50 p-4 text-center text-gray-500">
         No suggested campaigns available.
       </p>
     );
