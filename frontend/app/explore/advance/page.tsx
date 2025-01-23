@@ -193,7 +193,7 @@ const CampaignsPage = () => {
         description={toast.description}
         type={toast.type}
       />
-      <div className="w-full bg-green-600 mx-auto">
+      <div className="w-full bg-green-600 text-white mx-auto">
         <motion.h4
           ref={ref}
           variants={fadeInUp}
@@ -213,14 +213,14 @@ const CampaignsPage = () => {
       type="text"
       value={searchTerm}
       onChange={(e) => setSearchTerm(e.target.value)}
-      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:bg-gray-700 dark:text-white pr-24" // Added padding-right for button
+      className="w-full px-4 py-3 border border-gray-50 rounded focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white pr-24" // Added padding-right for button
       placeholder="Search for a campaign"
     />
     <motion.button
       whileHover={{ scale: 1.05 }}
       onClick={handleSearch}
       whileTap={{ scale: 0.95 }}
-      className="absolute right-0 bg-blue-600 text-white px-6 py-3 rounded-r-lg font-semibold hover:bg-blue-700 transition-colors duration-300"
+      className="absolute right-0 bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-6 py-3 rounded-r-lg font-semibold hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300"
     >
       Search
     </motion.button>
