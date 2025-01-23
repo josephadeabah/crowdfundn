@@ -193,7 +193,7 @@ const CampaignsPage = () => {
         description={toast.description}
         type={toast.type}
       />
-      <div className="w-full bg-green-600 text-white mx-auto">
+      <div className="w-full mx-auto">
         <motion.h4
           ref={ref}
           variants={fadeInUp}
