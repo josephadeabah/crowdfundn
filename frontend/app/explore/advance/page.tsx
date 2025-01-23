@@ -193,7 +193,7 @@ const CampaignsPage = () => {
         description={toast.description}
         type={toast.type}
       />
-      <div className="w-full bg-white mx-auto">
+      <div className="w-full bg-gray-50 mx-auto">
         <motion.h4
           ref={ref}
           variants={fadeInUp}
@@ -355,13 +355,13 @@ const CampaignsPage = () => {
         </aside>
 
         {/* Campaigns Section */}
-        <div className="w-full bg-white md:p-1">
+        <div className="w-full bg-gray-50 md:p-1">
           {loading ? (
             <CampaignCardLoader />
           ) : (
             <>
               {campaigns && campaigns.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 px-2 md:p-0 relative">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 px-3 md:p-0 relative">
                   {campaigns
                     .filter((campaign) => campaign.permissions.is_public)
                     .map((campaign, index) => {
