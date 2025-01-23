@@ -206,7 +206,7 @@ const CampaignsPage = () => {
         </motion.h4>
         {/* Search Section */}
         <div className="flex justify-center mb-1">
-          <div className="w-full max-w-2xl sm:mx-auto flex justify-end p-6">
+          <div className="w-full max-w-2xl sm:mx-auto flex md:justify-end p-6">
             <div className="relative flex items-center w-full">
               <input
                 id="search"
