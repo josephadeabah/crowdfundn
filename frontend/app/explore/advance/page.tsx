@@ -206,26 +206,26 @@ const CampaignsPage = () => {
         </motion.h4>
         {/* Search Section */}
         <div className="flex justify-center mb-1">
-        <div className="w-full max-w-2xl mx-auto flex p-6">
-  <div className="relative flex items-center w-full">
-    <input
-      id="search"
-      type="text"
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      className="w-full px-4 py-3 border border-gray-50 rounded focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white pr-24" // Added padding-right for button
-      placeholder="Search for a campaign"
-    />
-    <motion.button
-      whileHover={{ scale: 1.05 }}
-      onClick={handleSearch}
-      whileTap={{ scale: 0.95 }}
-      className="absolute right-0 bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-6 py-3 rounded-r-lg font-semibold hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300"
-    >
-      Search
-    </motion.button>
-  </div>
-</div>
+          <div className="w-full max-w-2xl mx-auto flex p-6">
+            <div className="relative flex items-center w-full">
+              <input
+                id="search"
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-50 rounded focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white pr-24" // Added padding-right for button
+                placeholder="Search for a campaign"
+              />
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                onClick={handleSearch}
+                whileTap={{ scale: 0.95 }}
+                className="absolute right-0 bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-6 py-3 rounded-r-lg font-semibold hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300"
+              >
+                Search
+              </motion.button>
+            </div>
+          </div>
         </div>
       </div>
       <div className="flex flex-col md:flex-row gap-1">
