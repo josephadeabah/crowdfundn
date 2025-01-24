@@ -176,15 +176,15 @@ const TeamCarousel = () => {
         <p className="text-lg leading-8 text-gray-700 mb-6">
           Crowdfunding is an online method of obtaining funds for your
           initiatives through small contributions from a large crowd of people.
-          It is an alternative financing for projects, ideas
-          or causes by reaching out to a huge number of people via an online
-          platform. Rather than depending on traditional funding sources such as
-          loans or personal savings, crowdfunding allows individuals to exhibit
-          their projects and causes, and gain support from a community of backers.
+          It is an alternative financing for projects, ideas or causes by
+          reaching out to a huge number of people via an online platform. Rather
+          than depending on traditional funding sources such as loans or
+          personal savings, crowdfunding allows individuals to exhibit their
+          projects and causes, and gain support from a community of backers.
           <p className="text-lg leading-8 text-gray-700 mb-6 mt-6">
-              Bantu Hive operates a reward-based and gamified crowdfunding
-              model. It currently operates in Ghana, with plans for future
-              expansion across Africa.
+            Bantu Hive operates a reward-based and gamified crowdfunding model.
+            It currently operates in Ghana, with plans for future expansion
+            across Africa.
           </p>
           <p>
             The term <strong>"gamified"</strong> refers to the process of adding
