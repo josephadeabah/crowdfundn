@@ -116,7 +116,7 @@ const SingleCampaignPage: React.FC = () => {
 
   return (
     <>
-          <Head>
+      <head>
         <title>{String(currentCampaign?.title)}</title>
         <meta name="description" content={String(currentCampaign?.description)} />
         <meta property="og:title" content={String(currentCampaign?.title)} />
@@ -135,7 +135,7 @@ const SingleCampaignPage: React.FC = () => {
             "remainingDays": String(currentCampaign?.remaining_days),
           })}
         </script>
-      </Head>    
+      </head>    
     <div className="w-full dark:bg-gray-800">
       <div className="max-w-7xl mx-auto px-2 mt-3 py-8">
         {/* Horizontal Tabs */}
