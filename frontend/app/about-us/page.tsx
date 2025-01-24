@@ -185,11 +185,13 @@ const TeamCarousel = () => {
           collaboration and empowering individuals to bring their creative,
           business, or charitable ideas to life through small contributions from
           many people.
-          <h4>
-            Bantu Hive operates a reward-based and gamified crowdfunding model.
-            It currently operates in Ghana, with plans for future expansion
-            across Africa.
-          </h4>
+          <p>
+            <h6>
+              Bantu Hive operates a reward-based and gamified crowdfunding
+              model. It currently operates in Ghana, with plans for future
+              expansion across Africa.
+            </h6>
+          </p>
           <p>
             The term <strong>"gamified"</strong> refers to the process of adding
             game-like elements or mechanics to activities like donating or
