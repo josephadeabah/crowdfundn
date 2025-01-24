@@ -15,7 +15,6 @@ import { useDonationsContext } from '@/app/context/account/donations/DonationsCo
 import ProgressRing from '@/app/components/ring/ProgressRing';
 import DonationList from '@/app/components/backerlist/DonationList';
 import SuggestedCampaignsComponent from '@/app/components/suggestedCampaigns/SuggestedCampaigns';
-import Head from 'next/head';
 
 
 const SingleCampaignPage: React.FC = () => {
@@ -117,16 +116,16 @@ const SingleCampaignPage: React.FC = () => {
 
   return (
     <>
-      <Head>
-        <title>{String(currentCampaign?.title)}</title>
+      <head>
+        <title>{String(currentCampaign?.title) || "Support this amazing campaign!"}</title>
         <meta
           name="description"
-          content={String(currentCampaign?.description?.body)}
+          content={String(currentCampaign?.description?.body) || "Support this amazing campaign!"}
         />
-        <meta property="og:title" content={String(currentCampaign?.title)} />
+        <meta property="og:title" content={String(currentCampaign?.title) || "Support this amazing campaign!"} />
         <meta
           property="og:description"
-          content={String(currentCampaign?.description?.body)}
+          content={String(currentCampaign?.description?.body) || "Support this amazing campaign!"}
         />
         <meta
           property="og:image"
@@ -136,16 +135,16 @@ const SingleCampaignPage: React.FC = () => {
           {JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'Campaign',
-            name: String(currentCampaign?.title),
-            description: String(currentCampaign?.description?.body),
+            name: String(currentCampaign?.title) || "Support this amazing campaign!",
+            description: String(currentCampaign?.description?.body) || "Support this amazing campaign!",
             image: String(currentCampaign?.media) || '/bantuhive.svg',
-            currency: String(currentCampaign?.currency),
-            goalAmount: String(currentCampaign?.goal_amount),
-            raisedAmount: String(currentCampaign?.transferred_amount),
-            remainingDays: String(currentCampaign?.remaining_days),
+            currency: String(currentCampaign?.currency) || "Support this amazing campaign!",
+            goalAmount: String(currentCampaign?.goal_amount) || "Support this amazing campaign!",
+            raisedAmount: String(currentCampaign?.transferred_amount) || "Support this amazing campaign!",
+            remainingDays: String(currentCampaign?.remaining_days) || "Support this amazing campaign!",
           })}
         </script>
-      </Head>
+      </head>
       <div className="w-full dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-2 mt-3 py-8">
           {/* Horizontal Tabs */}
