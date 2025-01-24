@@ -176,7 +176,7 @@ const TeamCarousel = () => {
         <p className="text-lg leading-8 text-gray-700 mb-6">
           Crowdfunding is an online method of obtaining funds for your
           initiatives through small contributions from a large crowd of people.
-          It is a contemporary method of obtaining funding for projects, ideas
+          It is an alternative financing for projects, ideas
           or causes by reaching out to a huge number of people via an online
           platform. Rather than depending on traditional funding sources such as
           loans or personal savings, crowdfunding allows individuals to exhibit
