@@ -181,11 +181,7 @@ const TeamCarousel = () => {
           platform. Rather than depending on traditional funding sources such as
           loans or personal savings, crowdfunding allows individuals to exhibit
           their projects and gain support from a community of backers.
-          Crowdfunding allows aspirations to become a reality by fostering
-          collaboration and empowering individuals to bring their creative,
-          business, or charitable ideas to life through small contributions from
-          many people.
-          <p>
+          <p className="leading-8 text-gray-700 mb-6">
             <h6>
               Bantu Hive operates a reward-based and gamified crowdfunding
               model. It currently operates in Ghana, with plans for future
