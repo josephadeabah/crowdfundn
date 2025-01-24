@@ -180,7 +180,7 @@ const TeamCarousel = () => {
           or causes by reaching out to a huge number of people via an online
           platform. Rather than depending on traditional funding sources such as
           loans or personal savings, crowdfunding allows individuals to exhibit
-          their projects and gain support from a community of backers.
+          their projects and causes, and gain support from a community of backers.
           <p className="text-lg leading-8 text-gray-700 mb-6 mt-6">
               Bantu Hive operates a reward-based and gamified crowdfunding
               model. It currently operates in Ghana, with plans for future
