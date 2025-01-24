@@ -424,9 +424,11 @@ const CampaignsPage = () => {
                                 />
                               </div>
                               <div className="w-full text-xs text-gray-600 flex flex-col">
+                                <head>
                                 <h3 className="text-lg font-bold text-gray-700 truncate mb-1">
                                   {campaign?.title}
                                 </h3>
+                                </head>
                                 <p className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
                                   {fundraiserCurrency}
                                   {!isNaN(
