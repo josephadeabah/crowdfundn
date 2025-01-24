@@ -15,7 +15,7 @@ import { useDonationsContext } from '@/app/context/account/donations/DonationsCo
 import ProgressRing from '@/app/components/ring/ProgressRing';
 import DonationList from '@/app/components/backerlist/DonationList';
 import SuggestedCampaignsComponent from '@/app/components/suggestedCampaigns/SuggestedCampaigns';
-import Head from 'next/head';
+
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<
