@@ -170,6 +170,58 @@ const TeamCarousel = () => {
           someone's education possible, Bantuhive is here to amplify your
           efforts.
         </p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          What is Crowdfunding?
+        </h2>
+        <p className="text-lg leading-8 text-gray-700 mb-6">
+          Crowdfunding is an online method of obtaining funds for your
+          initiatives through small contributions from a large crowd of people.
+          It is a contemporary method of obtaining funding for projects, ideas
+          or causes by reaching out to a huge number of people via an online
+          platform. Rather than depending on traditional funding sources such as
+          loans or personal savings, crowdfunding allows individuals to exhibit
+          their projects and gain support from a community of backers.
+          Crowdfunding allows aspirations to become a reality by fostering
+          collaboration and empowering individuals to bring their creative,
+          business, or charitable ideas to life through small contributions from
+          many people.
+          <h4>
+            Bantu Hive operates a reward-based and gamified crowdfunding model.
+            It currently operates in Ghana, with plans for future expansion
+            across Africa.
+          </h4>
+          <p>
+            The term <strong>"gamified"</strong> refers to the process of adding
+            game-like elements or mechanics to activities like donating or
+            supporting a campaign. These elements are designed to make the
+            experience more engaging, fun, and motivating by incorporating
+            features commonly found in games, such as:
+          </p>
+          <ul>
+            <li>
+              <strong>Points or Scores</strong>: Earning points for donating to
+              campaigns or completing support tasks.
+            </li>
+            <li>
+              <strong>Badges or Achievements</strong>: Receiving rewards for
+              reaching donation milestones or supporting multiple campaigns.
+            </li>
+            <li>
+              <strong>Leaderboards</strong>: Competing with others by ranking on
+              a leaderboard for top supporters or most active contributors.
+            </li>
+            <li>
+              <strong>Challenges or Quests</strong>: Completing specific tasks,
+              like sharing a campaign or donating a certain amount, to unlock
+              rewards.
+            </li>
+            <li>
+              <strong>Progress Tracking</strong>: Visualizing your impact
+              through progress bars, showing how close a campaign is to its goal
+              or how much you've contributed.
+            </li>
+          </ul>
+        </p>
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Story</h2>
         <p className="text-lg leading-8 text-gray-700 mb-6">
           The idea for Bantuhive was born out of personal experience. One of our
