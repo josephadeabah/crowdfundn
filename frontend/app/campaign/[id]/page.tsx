@@ -15,6 +15,7 @@ import { useDonationsContext } from '@/app/context/account/donations/DonationsCo
 import ProgressRing from '@/app/components/ring/ProgressRing';
 import DonationList from '@/app/components/backerlist/DonationList';
 import SuggestedCampaignsComponent from '@/app/components/suggestedCampaigns/SuggestedCampaigns';
+import Head from 'next/head';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<
@@ -114,6 +115,27 @@ const SingleCampaignPage: React.FC = () => {
   if (loading) return <SingleCampaignLoader />;
 
   return (
+    <>
+          <Head>
+        <title>{String(currentCampaign?.title)}</title>
+        <meta name="description" content={String(currentCampaign?.description)} />
+        <meta property="og:title" content={String(currentCampaign?.title)} />
+        <meta property="og:description" content={String(currentCampaign?.description)} />
+        <meta property="og:image" content={String(currentCampaign?.media) || '/bantuhive.svg'} />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Campaign",
+            "name": String(currentCampaign?.title),
+            "description": String(currentCampaign?.description),
+            "image": String(currentCampaign?.media) || '/bantuhive.svg',
+            "currency": String(currentCampaign?.currency),
+            "goalAmount": String(currentCampaign?.goal_amount),
+            "raisedAmount": String(currentCampaign?.transferred_amount),
+            "remainingDays": String(currentCampaign?.remaining_days),
+          })}
+        </script>
+      </Head>    
     <div className="w-full dark:bg-gray-800">
       <div className="max-w-7xl mx-auto px-2 mt-3 py-8">
         {/* Horizontal Tabs */}
@@ -346,6 +368,7 @@ const SingleCampaignPage: React.FC = () => {
         currentCategory={currentCampaign?.category}
       />
     </div>
+    </>
   );
 };
 
