@@ -15,6 +15,7 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '../toast/Toast';
+import Head from 'next/head';
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -144,6 +145,27 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 hover:shadow-xl transition-transform duration-300 cursor-pointer overflow-hidden"
               >
+                 {/* Add Head and Meta Tags for SEO */}
+                 <Head>
+                    <title>{campaign.title}</title>
+                    <meta name="description" content={String(campaign.description)} />
+                    <meta property="og:title" content={String(campaign.title)} />
+                    <meta property="og:description" content={String(campaign.description)} />
+                    <meta property="og:image" content={campaign.media || '/bantuhive.svg'} />
+                    <script type="application/ld+json">
+                      {JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "Campaign",
+                        "name": campaign.title,
+                        "description": campaign.description,
+                        "image": campaign.media || '/bantuhive.svg',
+                        "currency": campaign.currency,
+                        "goalAmount": campaign.goal_amount,
+                        "raisedAmount": campaign.transferred_amount,
+                        "remainingDays": campaign.remaining_days,
+                      })}
+                    </script>
+                  </Head>
                 <Link
                   href={`/campaign/${campaign.id}?${generateRandomString()}`}
                 >
@@ -185,11 +207,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       />
                     </div>
                     <div className="w-full text-xs text-gray-600 flex flex-col">
-                      <head>
                       <h3 className="text-lg font-bold text-gray-700 truncate mb-1">
                         {campaign?.title}
                       </h3>
-                      </head>
                       <p className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
                         {fundraiserCurrency}
                         {!isNaN(parseFloat(campaign.transferred_amount))
