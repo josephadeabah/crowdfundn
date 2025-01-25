@@ -14,8 +14,7 @@ import { FaHandHoldingUsd } from 'react-icons/fa';
 import { useAuth } from './context/auth/AuthContext';
 import CampaignCard from './components/campaigns/CampaignCard';
 import { useCampaignContext } from './context/account/campaign/CampaignsContext';
-import SummaryCard from './molecules/SummaryCard';
-import TwoColumnLayout from './molecules/SummaryCard';
+import SummaryCardComponent from './molecules/SummaryCard';
 
 const HomePage = () => {
   const wordRef = React.useRef<HTMLDivElement | null>(null);
@@ -143,8 +142,7 @@ const HomePage = () => {
 
   return (
     <div className="text-gray-700 dark:text-gray-50 min-h-screen">
-      <TwoColumnLayout />
-
+      <SummaryCardComponent />
       <main className="max-w-7xl mx-auto">
         <div className="flex items-center justify-center">
           <div className="absolute inset-0 bg-cover bg-center" />

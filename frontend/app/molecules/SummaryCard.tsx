@@ -348,7 +348,7 @@ const Leaderboard: React.FC = () => {
 };
 
 // Two-Column Layout
-const TwoColumnLayout: React.FC = () => {
+const SummaryCardComponent: React.FC = () => {
   return (
     <div className="w-full flex flex-col md:flex-row gap-6">
       {/* Left Column - SummaryCard */}
@@ -364,4 +364,4 @@ const TwoColumnLayout: React.FC = () => {
   );
 };
 
-export default TwoColumnLayout;
+export default SummaryCardComponent;
