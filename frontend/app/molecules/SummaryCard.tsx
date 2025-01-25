@@ -89,44 +89,51 @@ const Leaderboard: React.FC = () => {
   const certificates = [
     {
       title: 'Certificate of Generosity',
-      description: 'Highlights your commitment to spreading kindness and supporting meaningful causes.',
-      icon: <FaHandHoldingHeart className="w-8 h-8" />,
+      description:
+        'Highlights your commitment to spreading kindness and supporting meaningful causes.',
+      icon: <FaHandHoldingHeart className="w-5 h-5" />,
       color: 'text-purple-500',
     },
     {
       title: 'Ambassador of Impact Award',
-      description: 'Celebrates individuals who actively amplify campaigns and drive meaningful change.',
-      icon: <FaBullhorn className="w-8 h-8" />,
+      description:
+        'Celebrates individuals who actively amplify campaigns and drive meaningful change.',
+      icon: <FaBullhorn className="w-5 h-5" />,
       color: 'text-blue-500',
     },
     {
       title: 'Community Champion Certificate',
-      description: 'Honors those who lead by example in creating a supportive and engaged community.',
-      icon: <FaUsers className="w-8 h-8" />,
+      description:
+        'Honors those who lead by example in creating a supportive and engaged community.',
+      icon: <FaUsers className="w-5 h-5" />,
       color: 'text-green-500',
     },
     {
       title: 'Honor of Advocacy',
-      description: 'Recognizes passionate individuals advocating for diverse causes through sharing.',
-      icon: <FaMicrophone className="w-8 h-8" />,
+      description:
+        'Recognizes passionate individuals advocating for diverse causes through sharing.',
+      icon: <FaMicrophone className="w-5 h-5" />,
       color: 'text-yellow-500',
     },
     {
       title: 'Beacon of Hope Award',
-      description: 'Symbolizes your role in bringing hope and visibility to important causes.',
-      icon: <FaLightbulb className="w-8 h-8" />,
+      description:
+        'Symbolizes your role in bringing hope and visibility to important causes.',
+      icon: <FaLightbulb className="w-5 h-5" />,
       color: 'text-orange-500',
     },
     {
       title: 'Certificate of Social Impact',
-      description: 'Emphasizes the tangible difference you have made by supporting and sharing campaigns.',
-      icon: <FaHandsHelping className="w-8 h-8" />,
+      description:
+        'Emphasizes the tangible difference you have made by supporting and sharing campaigns.',
+      icon: <FaHandsHelping className="w-5 h-5" />,
       color: 'text-red-500',
     },
     {
       title: 'Certificate of Empowerment',
-      description: 'Highlights how you empower others by amplifying their stories and campaigns.',
-      icon: <FaStar className="w-8 h-8" />,
+      description:
+        'Highlights how you empower others by amplifying their stories and campaigns.',
+      icon: <FaStar className="w-5 h-5" />,
       color: 'text-pink-500',
     },
   ];
@@ -181,7 +188,9 @@ const Leaderboard: React.FC = () => {
 
           {/* Top Backers with Most Rewards Section */}
           <div>
-            <h3 className="text-lg font-semibold mb-2">Top Backers with Most Rewards</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              Top Backers with Most Rewards
+            </h3>
             <div className="flex -space-x-3">
               {topBackersWithRewards.slice(0, 5).map((backer, index) => (
                 <div
@@ -205,7 +214,9 @@ const Leaderboard: React.FC = () => {
         <div className="w-full md:w-1/2">
           {/* Top Fundraisers with Best Campaign Graphics Section */}
           <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-2">Top Fundraisers with Best Campaign Graphics</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              Top Fundraisers with Best Campaign Graphics
+            </h3>
             <div className="flex -space-x-3">
               {topFundraisersGraphics.slice(0, 5).map((fundraiser, index) => (
                 <div
@@ -226,7 +237,9 @@ const Leaderboard: React.FC = () => {
 
           {/* Top Fundraisers with Best Stories Section */}
           <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-2">Top Fundraisers with Best Stories</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              Top Fundraisers with Best Stories
+            </h3>
             <div className="flex -space-x-3">
               {topFundraisersStories.slice(0, 5).map((fundraiser, index) => (
                 <div
@@ -247,18 +260,20 @@ const Leaderboard: React.FC = () => {
 
           {/* Get Featured and Win Certificates Section */}
           <div>
-  <h3 className="text-lg font-semibold mb-4">Get Featured and Win Certificates</h3>
-  <div className="flex flex-wrap gap-3">
-    {certificates.map((certificate, index) => (
-      <div
-        key={index}
-        className={`${certificate.color} p-3 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:scale-105 transition-transform duration-200 ease-in-out`}
-      >
-        {certificate.icon}
-      </div>
-    ))}
-  </div>
-</div>
+            <h3 className="text-lg font-semibold mb-4">
+              Get Featured and Win Rewards and Special Certificates
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              {certificates.map((certificate, index) => (
+                <div
+                  key={index}
+                  className={`${certificate.color} p-2 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:scale-105 transition-transform duration-200 ease-in-out`}
+                >
+                  {certificate.icon}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
