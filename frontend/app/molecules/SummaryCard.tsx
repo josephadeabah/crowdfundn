@@ -58,68 +58,137 @@ const Leaderboard: React.FC = () => {
     { name: 'Charlie Davis', rewards: 1 },
   ];
 
+  // Mock data for Top Fundraisers with Best Campaign Graphics
+  const topFundraisersGraphics = [
+    { name: 'John Doe', campaign: 'Education for All' },
+    { name: 'Jane Smith', campaign: 'Clean Water Initiative' },
+    { name: 'Alice Johnson', campaign: 'Save the Forests' },
+    { name: 'Bob Brown', campaign: 'Animal Rescue' },
+    { name: 'Charlie Davis', campaign: 'Tech for Good' },
+  ];
+
+  // Mock data for Top Fundraisers with Best Stories
+  const topFundraisersStories = [
+    { name: 'John Doe', campaign: 'Education for All' },
+    { name: 'Jane Smith', campaign: 'Clean Water Initiative' },
+    { name: 'Alice Johnson', campaign: 'Save the Forests' },
+    { name: 'Bob Brown', campaign: 'Animal Rescue' },
+    { name: 'Charlie Davis', campaign: 'Tech for Good' },
+  ];
+
   return (
     <div className="w-full bg-white dark:bg-gray-800 p-6 rounded-lg">
-      {/* Top Backers Section */}
-      <div className="mb-2">
-        <h3 className="text-lg font-semibold mb-2">Top Backers</h3>
-        <div className="flex -space-x-3">
-          {topBackers.slice(0, 5).map((backer, index) => (
-            <div
-              key={index}
-              className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
-              style={{ zIndex: topBackers.length - index }}
-            >
-              <Avatar name={backer.name} size="sm" />
+      {/* Two-Column Layout */}
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Left Column - Top Backers, Most Active Backers, Top Backers with Most Rewards */}
+        <div className="w-full md:w-1/2">
+          {/* Top Backers Section */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-2">Top Backers</h3>
+            <div className="flex -space-x-3">
+              {topBackers.slice(0, 5).map((backer, index) => (
+                <div
+                  key={index}
+                  className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
+                  style={{ zIndex: topBackers.length - index }}
+                >
+                  <Avatar name={backer.name} size="sm" />
+                </div>
+              ))}
+              {topBackers.length > 5 && (
+                <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  +{topBackers.length - 5}
+                </div>
+              )}
             </div>
-          ))}
-          {topBackers.length > 5 && (
-            <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
-              +{topBackers.length - 5}
-            </div>
-          )}
-        </div>
-      </div>
+          </div>
 
-      {/* Most Active Backers Section */}
-      <div className="mb-2">
-        <h3 className="text-lg font-semibold mb-2">Most Active Backers</h3>
-        <div className="flex -space-x-3">
-          {mostActiveBackers.slice(0, 5).map((backer, index) => (
-            <div
-              key={index}
-              className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
-              style={{ zIndex: mostActiveBackers.length - index }}
-            >
-              <Avatar name={backer.name} size="sm" />
+          {/* Most Active Backers Section */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-2">Most Active Backers</h3>
+            <div className="flex -space-x-3">
+              {mostActiveBackers.slice(0, 5).map((backer, index) => (
+                <div
+                  key={index}
+                  className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
+                  style={{ zIndex: mostActiveBackers.length - index }}
+                >
+                  <Avatar name={backer.name} size="sm" />
+                </div>
+              ))}
+              {mostActiveBackers.length > 5 && (
+                <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  +{mostActiveBackers.length - 5}
+                </div>
+              )}
             </div>
-          ))}
-          {mostActiveBackers.length > 5 && (
-            <div className="relative flex items-center justify-center w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
-              +{mostActiveBackers.length - 5}
-            </div>
-          )}
-        </div>
-      </div>
+          </div>
 
-      {/* Top Backers with Most Rewards Section */}
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Top Backers with Most Rewards</h3>
-        <div className="flex -space-x-3">
-          {topBackersWithRewards.slice(0, 5).map((backer, index) => (
-            <div
-              key={index}
-              className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
-              style={{ zIndex: topBackersWithRewards.length - index }}
-            >
-              <Avatar name={backer.name} size="sm" />
+          {/* Top Backers with Most Rewards Section */}
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Top Backers with Most Rewards</h3>
+            <div className="flex -space-x-3">
+              {topBackersWithRewards.slice(0, 5).map((backer, index) => (
+                <div
+                  key={index}
+                  className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
+                  style={{ zIndex: topBackersWithRewards.length - index }}
+                >
+                  <Avatar name={backer.name} size="sm" />
+                </div>
+              ))}
+              {topBackersWithRewards.length > 5 && (
+                <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  +{topBackersWithRewards.length - 5}
+                </div>
+              )}
             </div>
-          ))}
-          {topBackersWithRewards.length > 5 && (
-            <div className="relative flex items-center justify-center w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
-              +{topBackersWithRewards.length - 5}
+          </div>
+        </div>
+
+        {/* Right Column - Top Fundraisers with Best Campaign Graphics, Top Fundraisers with Best Stories */}
+        <div className="w-full md:w-1/2">
+          {/* Top Fundraisers with Best Campaign Graphics Section */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-2">Top Fundraisers with Best Campaign Graphics</h3>
+            <div className="flex -space-x-3">
+              {topFundraisersGraphics.slice(0, 5).map((fundraiser, index) => (
+                <div
+                  key={index}
+                  className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
+                  style={{ zIndex: topFundraisersGraphics.length - index }}
+                >
+                  <Avatar name={fundraiser.name} size="sm" />
+                </div>
+              ))}
+              {topFundraisersGraphics.length > 5 && (
+                <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  +{topFundraisersGraphics.length - 5}
+                </div>
+              )}
             </div>
-          )}
+          </div>
+
+          {/* Top Fundraisers with Best Stories Section */}
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Top Fundraisers with Best Stories</h3>
+            <div className="flex -space-x-3">
+              {topFundraisersStories.slice(0, 5).map((fundraiser, index) => (
+                <div
+                  key={index}
+                  className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
+                  style={{ zIndex: topFundraisersStories.length - index }}
+                >
+                  <Avatar name={fundraiser.name} size="sm" />
+                </div>
+              ))}
+              {topFundraisersStories.length > 5 && (
+                <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  +{topFundraisersStories.length - 5}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
