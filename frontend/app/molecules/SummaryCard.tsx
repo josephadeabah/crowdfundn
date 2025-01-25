@@ -2,6 +2,15 @@
 
 import React from 'react';
 import Avatar from '../components/avatar/Avatar';
+import {
+  FaHandHoldingHeart,
+  FaBullhorn,
+  FaUsers,
+  FaMicrophone,
+  FaLightbulb,
+  FaHandsHelping,
+  FaStar,
+} from 'react-icons/fa';
 
 // SummaryCard Component
 const SummaryCard: React.FC = () => {
@@ -76,6 +85,52 @@ const Leaderboard: React.FC = () => {
     { name: 'Charlie Davis', campaign: 'Tech for Good' },
   ];
 
+  // Certificate Data
+  const certificates = [
+    {
+      title: 'Certificate of Generosity',
+      description: 'Highlights your commitment to spreading kindness and supporting meaningful causes.',
+      icon: <FaHandHoldingHeart className="w-8 h-8" />,
+      color: 'text-purple-500',
+    },
+    {
+      title: 'Ambassador of Impact Award',
+      description: 'Celebrates individuals who actively amplify campaigns and drive meaningful change.',
+      icon: <FaBullhorn className="w-8 h-8" />,
+      color: 'text-blue-500',
+    },
+    {
+      title: 'Community Champion Certificate',
+      description: 'Honors those who lead by example in creating a supportive and engaged community.',
+      icon: <FaUsers className="w-8 h-8" />,
+      color: 'text-green-500',
+    },
+    {
+      title: 'Honor of Advocacy',
+      description: 'Recognizes passionate individuals advocating for diverse causes through sharing.',
+      icon: <FaMicrophone className="w-8 h-8" />,
+      color: 'text-yellow-500',
+    },
+    {
+      title: 'Beacon of Hope Award',
+      description: 'Symbolizes your role in bringing hope and visibility to important causes.',
+      icon: <FaLightbulb className="w-8 h-8" />,
+      color: 'text-orange-500',
+    },
+    {
+      title: 'Certificate of Social Impact',
+      description: 'Emphasizes the tangible difference you have made by supporting and sharing campaigns.',
+      icon: <FaHandsHelping className="w-8 h-8" />,
+      color: 'text-red-500',
+    },
+    {
+      title: 'Certificate of Empowerment',
+      description: 'Highlights how you empower others by amplifying their stories and campaigns.',
+      icon: <FaStar className="w-8 h-8" />,
+      color: 'text-pink-500',
+    },
+  ];
+
   return (
     <div className="w-full bg-white dark:bg-gray-800 p-6 rounded-lg">
       {/* Two-Column Layout */}
@@ -146,7 +201,7 @@ const Leaderboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column - Top Fundraisers with Best Campaign Graphics, Top Fundraisers with Best Stories */}
+        {/* Right Column - Top Fundraisers with Best Campaign Graphics, Top Fundraisers with Best Stories, Certificates */}
         <div className="w-full md:w-1/2">
           {/* Top Fundraisers with Best Campaign Graphics Section */}
           <div className="mb-6">
@@ -170,7 +225,7 @@ const Leaderboard: React.FC = () => {
           </div>
 
           {/* Top Fundraisers with Best Stories Section */}
-          <div>
+          <div className="mb-6">
             <h3 className="text-lg font-semibold mb-2">Top Fundraisers with Best Stories</h3>
             <div className="flex -space-x-3">
               {topFundraisersStories.slice(0, 5).map((fundraiser, index) => (
@@ -187,6 +242,29 @@ const Leaderboard: React.FC = () => {
                   +{topFundraisersStories.length - 5}
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Get Featured and Win Certificates Section */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Get Featured and Win Certificates</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {certificates.map((certificate, index) => (
+                <div
+                  key={index}
+                  className="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm"
+                >
+                  <div className={`${certificate.color} mr-4`}>{certificate.icon}</div>
+                  <div>
+                    <h4 className="font-semibold text-gray-800 dark:text-gray-200">
+                      {certificate.title}
+                    </h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {certificate.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
