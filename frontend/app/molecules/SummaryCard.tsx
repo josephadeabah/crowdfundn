@@ -70,7 +70,7 @@ const Leaderboard: React.FC = () => {
               className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
               style={{ zIndex: topBackers.length - index }}
             >
-              <Avatar name={backer.name} size="md" />
+              <Avatar name={backer.name} size="sm" />
             </div>
           ))}
           {topBackers.length > 5 && (
@@ -91,7 +91,7 @@ const Leaderboard: React.FC = () => {
               className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
               style={{ zIndex: mostActiveBackers.length - index }}
             >
-              <Avatar name={backer.name} size="md" />
+              <Avatar name={backer.name} size="sm" />
             </div>
           ))}
           {mostActiveBackers.length > 5 && (
@@ -112,7 +112,7 @@ const Leaderboard: React.FC = () => {
               className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
               style={{ zIndex: topBackersWithRewards.length - index }}
             >
-              <Avatar name={backer.name} size="md" />
+              <Avatar name={backer.name} size="sm" />
             </div>
           ))}
           {topBackersWithRewards.length > 5 && (
