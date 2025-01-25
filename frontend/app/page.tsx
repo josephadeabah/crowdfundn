@@ -225,19 +225,19 @@ const HomePage = () => {
                 {
                   title: 'Back a Cause and Make a Difference',
                   description:
-                    'Donate to a Cause You Care About with Confidence, Purpose and Ease.',
+                    'Donate to a Cause You Care About with Confidence, Purpose, Ease and Fun.',
                   icon: <FaHandHoldingUsd size={80} />,
                 },
                 {
                   title: 'Rewards & Recognition',
                   description:
-                    'Earn recognition and rewards for your contributions.',
+                    'Earn recognition and rewards and certifications for your contributions.',
                   icon: <FiAward size={80} />,
                 },
                 {
                   title: 'Track Your Impact',
                   description:
-                    'Monitor campaign analytics to see how your efforts are making a difference.',
+                    'Monitor campaign to see how your efforts are making a difference.',
                   icon: <FiBarChart size={80} />,
                 },
               ].map((item, index) => (
@@ -259,7 +259,7 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-        <CTa />
+        {/* <CTa /> */}
       </main>
 
       <div id="projects" className="dark:bg-gray-950 dark:text-gray-50">
