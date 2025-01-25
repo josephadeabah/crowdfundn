@@ -143,9 +143,7 @@ const HomePage = () => {
 
   return (
     <div className="text-gray-700 dark:text-gray-50 min-h-screen">
-      <div className="w-full flex ">
       <TwoColumnLayout />
-      </div>
       
       <main className="max-w-7xl mx-auto">
         <div className="flex items-center justify-center">
