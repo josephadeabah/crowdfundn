@@ -231,7 +231,7 @@ const HomePage = () => {
                 {
                   title: 'Rewards & Recognition',
                   description:
-                    'Earn recognition and rewards and certifications for your contributions.',
+                    'Earn recognition, rewards and certifications for your contributions.',
                   icon: <FiAward size={80} />,
                 },
                 {
@@ -259,7 +259,6 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-        {/* <CTa /> */}
       </main>
 
       <div id="projects" className="dark:bg-gray-950 dark:text-gray-50">
