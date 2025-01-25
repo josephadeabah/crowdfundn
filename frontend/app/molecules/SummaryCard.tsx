@@ -158,7 +158,7 @@ const Leaderboard: React.FC = () => {
                 </div>
               ))}
               {topBackers.length > 5 && (
-                <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
+                <div className="relative flex items-center justify-center w-9 h-9 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
                   +{topBackers.length - 5}
                 </div>
               )}
