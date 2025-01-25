@@ -1,6 +1,5 @@
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
-import { Helmet } from 'react-helmet';
 import DonationButton from '@/app/components/donate/DonationButton';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useParams } from 'next/navigation';
@@ -115,27 +114,6 @@ const SingleCampaignPage: React.FC = () => {
   if (loading) return <SingleCampaignLoader />;
 
   return (
-    <>
-      {/* Add SEO Tags using Helmet */}
-      <Helmet>
-        <title>{currentCampaign?.title || 'Campaign Page'}</title>
-        <meta
-          name="description"
-          content={currentCampaign?.description?.body || 'Campaign Description'}
-        />
-        <meta
-          property="og:title"
-          content={currentCampaign?.title || 'Campaign Page'}
-        />
-        <meta
-          property="og:description"
-          content={currentCampaign?.description?.body || 'Campaign Description'}
-        />
-        <meta
-          property="og:image"
-          content={currentCampaign?.media || '/bantuhive.svg'}
-        />
-      </Helmet>
       <div className="w-full dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-2 mt-3 py-8">
           {/* Horizontal Tabs */}
@@ -369,7 +347,6 @@ const SingleCampaignPage: React.FC = () => {
           currentCategory={currentCampaign?.category}
         />
       </div>
-    </>
   );
 };
 
