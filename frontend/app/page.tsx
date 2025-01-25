@@ -14,7 +14,8 @@ import { FaHandHoldingUsd } from 'react-icons/fa';
 import { useAuth } from './context/auth/AuthContext';
 import CampaignCard from './components/campaigns/CampaignCard';
 import { useCampaignContext } from './context/account/campaign/CampaignsContext';
-import { SummaryCard, Leaderboard } from './molecules/SummaryCard';
+import SummaryCard from './molecules/SummaryCard';
+import TwoColumnLayout from './molecules/SummaryCard';
 
 const HomePage = () => {
   const wordRef = React.useRef<HTMLDivElement | null>(null);
@@ -142,17 +143,7 @@ const HomePage = () => {
 
   return (
     <div className="text-gray-700 dark:text-gray-50 min-h-screen">
-          <div className="w-full flex flex-col md:flex-row gap-6 p-6">
-      {/* Left Column - SummaryCard */}
-      <div className="w-full md:w-1/3">
-        <SummaryCard />
-      </div>
-
-      {/* Right Column - Leaderboard */}
-      <div className="w-full md:w-2/3">
-        <Leaderboard />
-      </div>
-    </div>
+      <TwoColumnLayout />
       
       <main className="max-w-7xl mx-auto">
         <div className="flex items-center justify-center">
