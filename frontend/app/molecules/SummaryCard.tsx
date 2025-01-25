@@ -151,7 +151,7 @@ const Leaderboard: React.FC = () => {
         {/* Left Column - Top Backers, Most Active Backers, Top Backers with Most Rewards */}
         <div className="w-full md:w-1/2">
           {/* Top Backers Section */}
-          <div className="mb-6">
+          <div className="mb-3">
             <h3 className="text-lg font-semibold mb-2">Top Backers</h3>
             <div className="flex -space-x-3">
               {topBackers.slice(0, 5).map((backer, index) => (
@@ -181,7 +181,7 @@ const Leaderboard: React.FC = () => {
           </div>
 
           {/* Most Active Backers Section */}
-          <div className="mb-6">
+          <div className="mb-3">
             <h3 className="text-lg font-semibold mb-2">Most Active Backers</h3>
             <div className="flex -space-x-3">
               {mostActiveBackers.slice(0, 5).map((backer, index) => (
@@ -248,7 +248,7 @@ const Leaderboard: React.FC = () => {
         {/* Right Column - Top Fundraisers with Best Campaign Graphics, Top Fundraisers with Best Stories, Certificates */}
         <div className="w-full md:w-1/2">
           {/* Top Fundraisers with Best Campaign Graphics Section */}
-          <div className="mb-6">
+          <div className="mb-3">
             <h3 className="text-lg font-semibold mb-2">
               Top Fundraisers with Best Campaign Graphics
             </h3>
@@ -280,7 +280,7 @@ const Leaderboard: React.FC = () => {
           </div>
 
           {/* Top Fundraisers with Best Stories Section */}
-          <div className="mb-6">
+          <div className="mb-3">
             <h3 className="text-lg font-semibold mb-2">
               Top Fundraisers with Best Stories
             </h3>
@@ -350,7 +350,7 @@ const Leaderboard: React.FC = () => {
 // Two-Column Layout
 const TwoColumnLayout: React.FC = () => {
   return (
-    <div className="w-full flex flex-col md:flex-row gap-6 p-6">
+    <div className="w-full flex flex-col md:flex-row gap-6 p-3">
       {/* Left Column - SummaryCard */}
       <div className="w-full md:w-1/3">
         <SummaryCard />
