@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import * as React from 'react';
 import Avatar from '../components/avatar/Avatar';
 import {
   FaHandHoldingHeart,
@@ -11,6 +11,8 @@ import {
   FaHandsHelping,
   FaStar,
 } from 'react-icons/fa';
+import { Popover, PopoverContent, PopoverTrigger } from '../components/popover/Popover';
+
 
 // SummaryCard Component
 const SummaryCard: React.FC = () => {
@@ -149,13 +151,22 @@ const Leaderboard: React.FC = () => {
             <h3 className="text-lg font-semibold mb-2">Top Backers</h3>
             <div className="flex -space-x-3">
               {topBackers.slice(0, 5).map((backer, index) => (
-                <div
-                  key={index}
-                  className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
-                  style={{ zIndex: topBackers.length - index }}
-                >
-                  <Avatar name={backer.name} size="sm" />
-                </div>
+                <Popover key={index}>
+                  <PopoverTrigger asChild>
+                    <div
+                      className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
+                      style={{ zIndex: topBackers.length - index }}
+                    >
+                      <Avatar name={backer.name} size="sm" />
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">{backer.name}</h4>
+                      <p className="text-sm">Amount: {backer.amount}</p>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               ))}
               {topBackers.length > 5 && (
                 <div className="relative flex items-center justify-center w-9 h-9 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
@@ -170,13 +181,24 @@ const Leaderboard: React.FC = () => {
             <h3 className="text-lg font-semibold mb-2">Most Active Backers</h3>
             <div className="flex -space-x-3">
               {mostActiveBackers.slice(0, 5).map((backer, index) => (
-                <div
-                  key={index}
-                  className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
-                  style={{ zIndex: mostActiveBackers.length - index }}
-                >
-                  <Avatar name={backer.name} size="sm" />
-                </div>
+                <Popover key={index}>
+                  <PopoverTrigger asChild>
+                    <div
+                      className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
+                      style={{ zIndex: mostActiveBackers.length - index }}
+                    >
+                      <Avatar name={backer.name} size="sm" />
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">{backer.name}</h4>
+                      <p className="text-sm">
+                        Contributions: {backer.contributions}
+                      </p>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               ))}
               {mostActiveBackers.length > 5 && (
                 <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
@@ -193,13 +215,22 @@ const Leaderboard: React.FC = () => {
             </h3>
             <div className="flex -space-x-3">
               {topBackersWithRewards.slice(0, 5).map((backer, index) => (
-                <div
-                  key={index}
-                  className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
-                  style={{ zIndex: topBackersWithRewards.length - index }}
-                >
-                  <Avatar name={backer.name} size="sm" />
-                </div>
+                <Popover key={index}>
+                  <PopoverTrigger asChild>
+                    <div
+                      className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
+                      style={{ zIndex: topBackersWithRewards.length - index }}
+                    >
+                      <Avatar name={backer.name} size="sm" />
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">{backer.name}</h4>
+                      <p className="text-sm">Rewards: {backer.rewards}</p>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               ))}
               {topBackersWithRewards.length > 5 && (
                 <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
@@ -219,13 +250,24 @@ const Leaderboard: React.FC = () => {
             </h3>
             <div className="flex -space-x-3">
               {topFundraisersGraphics.slice(0, 5).map((fundraiser, index) => (
-                <div
-                  key={index}
-                  className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
-                  style={{ zIndex: topFundraisersGraphics.length - index }}
-                >
-                  <Avatar name={fundraiser.name} size="sm" />
-                </div>
+                <Popover key={index}>
+                  <PopoverTrigger asChild>
+                    <div
+                      className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
+                      style={{ zIndex: topFundraisersGraphics.length - index }}
+                    >
+                      <Avatar name={fundraiser.name} size="sm" />
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">{fundraiser.name}</h4>
+                      <p className="text-sm">
+                        Campaign: {fundraiser.campaign}
+                      </p>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               ))}
               {topFundraisersGraphics.length > 5 && (
                 <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
@@ -242,13 +284,24 @@ const Leaderboard: React.FC = () => {
             </h3>
             <div className="flex -space-x-3">
               {topFundraisersStories.slice(0, 5).map((fundraiser, index) => (
-                <div
-                  key={index}
-                  className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
-                  style={{ zIndex: topFundraisersStories.length - index }}
-                >
-                  <Avatar name={fundraiser.name} size="sm" />
-                </div>
+                <Popover key={index}>
+                  <PopoverTrigger asChild>
+                    <div
+                      className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
+                      style={{ zIndex: topFundraisersStories.length - index }}
+                    >
+                      <Avatar name={fundraiser.name} size="sm" />
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">{fundraiser.name}</h4>
+                      <p className="text-sm">
+                        Campaign: {fundraiser.campaign}
+                      </p>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               ))}
               {topFundraisersStories.length > 5 && (
                 <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
@@ -265,12 +318,21 @@ const Leaderboard: React.FC = () => {
             </h3>
             <div className="flex flex-wrap gap-3">
               {certificates.map((certificate, index) => (
-                <div
-                  key={index}
-                  className={`${certificate.color} p-2 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:scale-105 transition-transform duration-200 ease-in-out`}
-                >
-                  {certificate.icon}
-                </div>
+                <Popover key={index}>
+                  <PopoverTrigger asChild>
+                    <div
+                      className={`${certificate.color} p-2 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:scale-105 transition-transform duration-200 ease-in-out`}
+                    >
+                      {certificate.icon}
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">{certificate.title}</h4>
+                      <p className="text-sm">{certificate.description}</p>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               ))}
             </div>
           </div>
