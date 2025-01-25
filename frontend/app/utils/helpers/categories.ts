@@ -58,6 +58,7 @@ const categoryLabels = [
   'Local Business Support',
   'Local Farmers Support',
   'Marine Conservation',
+  'Marriage',
   'Mental Health',
   'Microfinance',
   'Organic Farming',
@@ -79,7 +80,6 @@ const categoryLabels = [
   'Veterans Support',
   'Water and Sanitation',
   'Wildlife Conservation',
-  'Weddings',
   "Women's Empowerment",
   'Youth Development',
 ];
