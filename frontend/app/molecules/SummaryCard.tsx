@@ -4,7 +4,7 @@ import React from 'react';
 import Avatar from '../components/avatar/Avatar';
 
 // SummaryCard Component
-const SummaryCard: React.FC = () => {
+export const SummaryCard: React.FC = () => {
   return (
     <div
       className="w-full bg-green-50 text-green-600 dark:bg-gray-800 dark:text-green-400 p-6 rounded-lg shadow-md"
@@ -26,7 +26,7 @@ const SummaryCard: React.FC = () => {
   );
 };
 
-const Leaderboard: React.FC = () => {
+export const Leaderboard: React.FC = () => {
   const topDonors = [
     { name: 'John Doe', amount: '$1,000' },
     { name: 'Jane Smith', amount: '$800' },
@@ -46,7 +46,7 @@ const Leaderboard: React.FC = () => {
           >
             {/* Left Side: Avatar and Donor Name */}
             <div className="flex items-center space-x-4">
-              <Avatar name={donor.name} size="md" />
+              <Avatar name={donor.name} size="sm" />
               <span className="text-gray-600 dark:text-gray-400">
                 {donor.name}
               </span>
@@ -60,23 +60,3 @@ const Leaderboard: React.FC = () => {
     </div>
   );
 };
-
-
-// Two-Column Layout
-const TwoColumnLayout: React.FC = () => {
-  return (
-    <div className="w-full flex flex-col md:flex-row gap-6 p-6">
-      {/* Left Column - SummaryCard */}
-      <div className="w-full md:w-1/3">
-        <SummaryCard />
-      </div>
-
-      {/* Right Column - Leaderboard */}
-      <div className="w-full md:w-2/3">
-        <Leaderboard />
-      </div>
-    </div>
-  );
-};
-
-export default TwoColumnLayout;
