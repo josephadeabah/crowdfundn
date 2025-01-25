@@ -32,11 +32,6 @@ const Leaderboard: React.FC = () => {
     { name: 'John Doe', amount: '$1,000' },
     { name: 'Jane Smith', amount: '$800' },
     { name: 'Alice Johnson', amount: '$600' },
-    { name: 'Bob Brown', amount: '$500' },
-    { name: 'Charlie Davis', amount: '$400' },
-    { name: 'Eve White', amount: '$300' },
-    { name: 'Frank Green', amount: '$200' },
-    { name: 'Grace Black', amount: '$100' },
   ];
 
   return (
