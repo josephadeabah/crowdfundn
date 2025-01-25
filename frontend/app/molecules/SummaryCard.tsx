@@ -17,10 +17,10 @@ const SummaryCard: React.FC = () => {
         >
           Support, Empower, Thrive with Bantu Hive
         </h2>
-        <h3 className="text-gray-700 dark:text-gray-200 text-center md:text-left">
+        <div className="text-base text-gray-700 dark:text-gray-200 text-center md:text-left">
           Raise money when you need, fund, or support causes you care about.
           Reach donors, and make a difference.
-        </h3>
+        </div>
       </div>
     </div>
   );
