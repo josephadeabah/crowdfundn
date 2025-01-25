@@ -145,7 +145,7 @@ const Leaderboard: React.FC = () => {
   ];
 
   return (
-    <div className="w-full bg-white dark:bg-gray-800 p-6 rounded-l-lg rounded-r-none">
+    <div className="w-full bg-white dark:bg-gray-800 p-4 md:p-0 rounded-l-lg rounded-r-none">
       {/* Two-Column Layout */}
       <div className="flex flex-col md:flex-row gap-6">
         {/* Left Column - Top Backers, Most Active Backers, Top Backers with Most Rewards */}
@@ -350,14 +350,14 @@ const Leaderboard: React.FC = () => {
 // Two-Column Layout
 const TwoColumnLayout: React.FC = () => {
   return (
-    <div className="w-full flex flex-col md:flex-row gap-6 p-4">
+    <div className="w-full flex flex-col md:flex-row gap-6">
       {/* Left Column - SummaryCard */}
-      <div className="w-full md:w-1/3">
+      <div className="w-full md:w-1/3 p-4">
         <SummaryCard />
       </div>
 
       {/* Right Column - Leaderboard */}
-      <div className="w-full md:w-2/3 md:p-0">
+      <div className="w-full md:w-2/3">
         <Leaderboard />
       </div>
     </div>
