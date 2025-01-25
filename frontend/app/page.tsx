@@ -15,6 +15,7 @@ import { useAuth } from './context/auth/AuthContext';
 import CampaignCard from './components/campaigns/CampaignCard';
 import { useCampaignContext } from './context/account/campaign/CampaignsContext';
 import SummaryCard from './molecules/SummaryCard';
+import TwoColumnLayout from './molecules/SummaryCard';
 
 const HomePage = () => {
   const wordRef = React.useRef<HTMLDivElement | null>(null);
@@ -142,7 +143,10 @@ const HomePage = () => {
 
   return (
     <div className="text-gray-700 dark:text-gray-50 min-h-screen">
-      <SummaryCard />
+      <div className="w-full flex ">
+      <TwoColumnLayout />
+      </div>
+      
       <main className="max-w-7xl mx-auto">
         <div className="flex items-center justify-center">
           <div className="absolute inset-0 bg-cover bg-center" />

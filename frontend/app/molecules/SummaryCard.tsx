@@ -1,58 +1,82 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
+import Avatar from '../components/avatar/Avatar';
 
+// SummaryCard Component
 const SummaryCard: React.FC = () => {
-  // useEffect(() => {
-  //   const lastLoaded = localStorage.getItem('surveyMonkeyLastLoaded');
-  //   const currentTime = new Date().getTime();
-  //   // Check if the script was loaded within the last 24 hours
-  //   if (
-  //     !lastLoaded ||
-  //     currentTime - parseInt(lastLoaded) >= 24 * 60 * 60 * 1000
-  //   ) {
-  //     // Dynamically create and insert the SurveyMonkey script into the document
-  //     const script = document.createElement('script');
-  //     script.type = 'text/javascript';
-  //     script.async = true;
-  //     script.id = 'smcx-sdk';
-  //     script.src =
-  //       'https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgd49YS4rryGNzeLvxp2jzCxpDbJgT8pmCb6alk9fI1p26.js';
-  //     const scriptTag = document.getElementsByTagName('script')[0];
-  //     scriptTag.parentNode?.insertBefore(script, scriptTag);
-
-  //     // Store the time when the script was loaded
-  //     localStorage.setItem('surveyMonkeyLastLoaded', currentTime.toString());
-  //   } else {
-  //     console.log('SurveyMonkey script not loaded due to 24-hour condition.');
-  //   }
-  // }, []);
-
   return (
     <div
-      className="w-full bg-green-50 text-green-600 dark:bg-gray-800 dark:text-green-400 py-4"
+      className="w-full bg-green-50 text-green-600 dark:bg-gray-800 dark:text-green-400 p-6 rounded-lg shadow-md"
       style={{ pointerEvents: 'auto', position: 'relative' }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Flex Container */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between md:space-x-8 space-y-4 md:space-y-0">
-          {/* Left Section */}
-          <div className="flex-1 text-center md:text-left md:max-w-[60%]">
-            <h2
-              className="text-green-600 dark:text-green-400 font-bold leading-tight"
-              style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.1)' }}
-            >
-              Support, Empower, Thrive with Bantu Hive
-            </h2>
-            <h3 className="mt-1 text-gray-700 dark:text-gray-200">
-              Raise money when you need, fund, or support causes you care about.
-              Reach donors, and make a difference.
-            </h3>
-          </div>
-        </div>
+      <div className="flex flex-col items-center md:items-start space-y-4">
+        <h2
+          className="text-green-600 dark:text-green-400 font-bold leading-tight text-center md:text-left"
+          style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.1)' }}
+        >
+          Support, Empower, Thrive with Bantu Hive
+        </h2>
+        <h3 className="text-gray-700 dark:text-gray-200 text-center md:text-left">
+          Raise money when you need, fund, or support causes you care about.
+          Reach donors, and make a difference.
+        </h3>
       </div>
     </div>
   );
 };
 
-export default SummaryCard;
+const Leaderboard: React.FC = () => {
+  const topDonors = [
+    { name: 'John Doe', amount: '$1,000' },
+    { name: 'Jane Smith', amount: '$800' },
+    { name: 'Alice Johnson', amount: '$600' },
+    { name: 'Bob Brown', amount: '$500' },
+    { name: 'Charlie Davis', amount: '$400' },
+  ];
+
+  return (
+    <div className="w-full bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+      <h2 className="text-xl font-bold mb-4">Top Contributors</h2>
+      <ul>
+        {topDonors.map((donor, index) => (
+          <li
+            key={index}
+            className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700"
+          >
+            {/* Left Side: Avatar and Donor Name */}
+            <div className="flex items-center space-x-4">
+              <Avatar name={donor.name} size="md" />
+              <span className="text-gray-600 dark:text-gray-400">
+                {donor.name}
+              </span>
+            </div>
+
+            {/* Right Side: Donation Amount */}
+            <span className="font-semibold">{donor.amount}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+
+// Two-Column Layout
+const TwoColumnLayout: React.FC = () => {
+  return (
+    <div className="w-full flex flex-col md:flex-row gap-6 p-6">
+      {/* Left Column - SummaryCard */}
+      <div className="w-full md:w-1/3">
+        <SummaryCard />
+      </div>
+
+      {/* Right Column - Leaderboard */}
+      <div className="w-full md:w-2/3">
+        <Leaderboard />
+      </div>
+    </div>
+  );
+};
+
+export default TwoColumnLayout;
