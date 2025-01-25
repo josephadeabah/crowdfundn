@@ -313,7 +313,7 @@ const Leaderboard: React.FC = () => {
 
           {/* Get Featured and Win Certificates Section */}
           <div>
-            <h3 className="text-sm font-semibold mb-4 text-violet-500">
+            <h3 className="text-sm font-semibold mb-4 text-cyan-500">
               Get Featured and Win Rewards and Special Certificates
             </h3>
             <div className="flex flex-wrap gap-3">
