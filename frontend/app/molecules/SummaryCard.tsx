@@ -11,8 +11,11 @@ import {
   FaHandsHelping,
   FaStar,
 } from 'react-icons/fa';
-import { Popover, PopoverContent, PopoverTrigger } from '../components/popover/Popover';
-
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '../components/popover/Popover';
 
 // SummaryCard Component
 const SummaryCard: React.FC = () => {
@@ -161,7 +164,7 @@ const Leaderboard: React.FC = () => {
                     </div>
                   </PopoverTrigger>
                   <PopoverContent>
-                    <div className="space-y-2">
+                    <div className="space-y-2 p-2">
                       <h4 className="font-semibold">{backer.name}</h4>
                       <p className="text-sm">Amount: {backer.amount}</p>
                     </div>
@@ -191,7 +194,7 @@ const Leaderboard: React.FC = () => {
                     </div>
                   </PopoverTrigger>
                   <PopoverContent>
-                    <div className="space-y-2">
+                    <div className="space-y-2 p-2">
                       <h4 className="font-semibold">{backer.name}</h4>
                       <p className="text-sm">
                         Contributions: {backer.contributions}
@@ -225,7 +228,7 @@ const Leaderboard: React.FC = () => {
                     </div>
                   </PopoverTrigger>
                   <PopoverContent>
-                    <div className="space-y-2">
+                    <div className="space-y-2 p-2">
                       <h4 className="font-semibold">{backer.name}</h4>
                       <p className="text-sm">Rewards: {backer.rewards}</p>
                     </div>
@@ -260,11 +263,9 @@ const Leaderboard: React.FC = () => {
                     </div>
                   </PopoverTrigger>
                   <PopoverContent>
-                    <div className="space-y-2">
+                    <div className="space-y-2 p-2">
                       <h4 className="font-semibold">{fundraiser.name}</h4>
-                      <p className="text-sm">
-                        Campaign: {fundraiser.campaign}
-                      </p>
+                      <p className="text-sm">Campaign: {fundraiser.campaign}</p>
                     </div>
                   </PopoverContent>
                 </Popover>
@@ -294,11 +295,9 @@ const Leaderboard: React.FC = () => {
                     </div>
                   </PopoverTrigger>
                   <PopoverContent>
-                    <div className="space-y-2">
+                    <div className="space-y-2 p-2">
                       <h4 className="font-semibold">{fundraiser.name}</h4>
-                      <p className="text-sm">
-                        Campaign: {fundraiser.campaign}
-                      </p>
+                      <p className="text-sm">Campaign: {fundraiser.campaign}</p>
                     </div>
                   </PopoverContent>
                 </Popover>
@@ -313,29 +312,29 @@ const Leaderboard: React.FC = () => {
 
           {/* Get Featured and Win Certificates Section */}
           <div>
-  <h3 className="text-sm font-semibold mb-4 text-violet-500">
-    Get Featured and Win Rewards and Special Certificates
-  </h3>
-  <div className="flex flex-wrap gap-3">
-    {certificates.map((certificate, index) => (
-      <Popover key={index}>
-        <PopoverTrigger asChild>
-          <button
-            className={`${certificate.color} p-2 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:scale-105 transition-transform duration-200 ease-in-out`}
-          >
-            {certificate.icon}
-          </button>
-        </PopoverTrigger>
-        <PopoverContent>
-          <div className="space-y-2">
-            <h4 className="font-semibold">{certificate.title}</h4>
-            <p className="text-sm">{certificate.description}</p>
+            <h3 className="text-sm font-semibold mb-4 text-violet-500">
+              Get Featured and Win Rewards and Special Certificates
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              {certificates.map((certificate, index) => (
+                <Popover key={index}>
+                  <PopoverTrigger asChild>
+                    <button
+                      className={`${certificate.color} p-2 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:scale-105 transition-transform duration-200 ease-in-out`}
+                    >
+                      {certificate.icon}
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <div className="space-y-2 p-2">
+                      <h4 className="font-semibold">{certificate.title}</h4>
+                      <p className="text-sm">{certificate.description}</p>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              ))}
+            </div>
           </div>
-        </PopoverContent>
-      </Popover>
-    ))}
-  </div>
-</div>
         </div>
       </div>
     </div>
