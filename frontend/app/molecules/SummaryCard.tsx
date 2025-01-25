@@ -16,6 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '../components/popover/Popover';
+import { Button } from '../components/button/Button';
 
 // SummaryCard Component
 const SummaryCard: React.FC = () => {
@@ -320,9 +321,10 @@ const Leaderboard: React.FC = () => {
                 <Popover key={index}>
                   <PopoverTrigger asChild>
                     <button
-                      className={`${certificate.color} p-2 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:scale-105 transition-transform duration-200 ease-in-out`}
+                      className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
+                      style={{ zIndex: certificates.length - index }}
                     >
-                      {certificate.icon}
+                      <Button className={`${certificate.color} p-2 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:scale-105 transition-transform duration-200 ease-in-out`}>{certificate.icon}</Button>
                     </button>
                   </PopoverTrigger>
                   <PopoverContent>
