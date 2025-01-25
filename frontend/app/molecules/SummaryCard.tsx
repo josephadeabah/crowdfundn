@@ -350,14 +350,14 @@ const Leaderboard: React.FC = () => {
 // Two-Column Layout
 const TwoColumnLayout: React.FC = () => {
   return (
-    <div className="w-full flex flex-col md:flex-row gap-6 p-3 md:p-0">
+    <div className="w-full flex flex-col md:flex-row gap-6 p-4">
       {/* Left Column - SummaryCard */}
       <div className="w-full md:w-1/3">
         <SummaryCard />
       </div>
 
       {/* Right Column - Leaderboard */}
-      <div className="w-full md:w-2/3">
+      <div className="w-full md:w-2/3 md:p-0">
         <Leaderboard />
       </div>
     </div>
