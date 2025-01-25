@@ -255,14 +255,14 @@ const Leaderboard: React.FC = () => {
                   className="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm"
                 >
                   <div className={`${certificate.color} mr-4`}>{certificate.icon}</div>
-                  <div>
+                  {/* <div>
                     <h4 className="font-semibold text-gray-800 dark:text-gray-200">
                       {certificate.title}
                     </h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       {certificate.description}
                     </p>
-                  </div>
+                  </div> */}
                 </div>
               ))}
             </div>
