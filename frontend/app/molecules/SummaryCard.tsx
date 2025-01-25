@@ -145,7 +145,7 @@ const Leaderboard: React.FC = () => {
   ];
 
   return (
-    <div className="w-full bg-white dark:bg-gray-800 p-6 rounded-lg">
+    <div className="w-full bg-white dark:bg-gray-800 p-6 rounded-l-lg rounded-r-none">
       {/* Two-Column Layout */}
       <div className="flex flex-col md:flex-row gap-6">
         {/* Left Column - Top Backers, Most Active Backers, Top Backers with Most Rewards */}
