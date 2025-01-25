@@ -7,7 +7,7 @@ import Avatar from '../components/avatar/Avatar';
 const SummaryCard: React.FC = () => {
   return (
     <div
-      className="w-full bg-green-50 text-green-600 dark:bg-gray-800 dark:text-green-400 p-6 rounded-lg shadow-md"
+      className="w-full bg-green-50 text-green-600 dark:bg-gray-800 dark:text-green-400 p-6 rounded-lg"
       style={{ pointerEvents: 'auto', position: 'relative' }}
     >
       <div className="flex flex-col items-center md:items-start space-y-4">
@@ -59,10 +59,10 @@ const Leaderboard: React.FC = () => {
   ];
 
   return (
-    <div className="w-full bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+    <div className="w-full bg-white dark:bg-gray-800 p-6 rounded-lg">
       {/* Top Backers Section */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-4">Top Backers</h3>
+      <div className="mb-2">
+        <h3 className="text-lg font-semibold mb-2">Top Backers</h3>
         <div className="flex -space-x-3">
           {topBackers.slice(0, 5).map((backer, index) => (
             <div
@@ -82,8 +82,8 @@ const Leaderboard: React.FC = () => {
       </div>
 
       {/* Most Active Backers Section */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-4">Most Active Backers</h3>
+      <div className="mb-2">
+        <h3 className="text-lg font-semibold mb-2">Most Active Backers</h3>
         <div className="flex -space-x-3">
           {mostActiveBackers.slice(0, 5).map((backer, index) => (
             <div
@@ -104,7 +104,7 @@ const Leaderboard: React.FC = () => {
 
       {/* Top Backers with Most Rewards Section */}
       <div>
-        <h3 className="text-lg font-semibold mb-4">Top Backers with Most Rewards</h3>
+        <h3 className="text-lg font-semibold mb-2">Top Backers with Most Rewards</h3>
         <div className="flex -space-x-3">
           {topBackersWithRewards.slice(0, 5).map((backer, index) => (
             <div
