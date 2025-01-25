@@ -324,7 +324,11 @@ const Leaderboard: React.FC = () => {
                       className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
                       style={{ zIndex: certificates.length - index }}
                     >
-                      <Button className={`${certificate.color} p-2 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:scale-105 transition-transform duration-200 ease-in-out`}>{certificate.icon}</Button>
+                      <Button
+                        className={`${certificate.color} p-2 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:scale-105 transition-transform duration-200 ease-in-out`}
+                      >
+                        {certificate.icon}
+                      </Button>
                     </button>
                   </PopoverTrigger>
                   <PopoverContent>
