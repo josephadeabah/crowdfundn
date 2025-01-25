@@ -247,26 +247,18 @@ const Leaderboard: React.FC = () => {
 
           {/* Get Featured and Win Certificates Section */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Get Featured and Win Certificates</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {certificates.map((certificate, index) => (
-                <div
-                  key={index}
-                  className="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm"
-                >
-                  <div className={`${certificate.color} mr-4`}>{certificate.icon}</div>
-                  {/* <div>
-                    <h4 className="font-semibold text-gray-800 dark:text-gray-200">
-                      {certificate.title}
-                    </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {certificate.description}
-                    </p>
-                  </div> */}
-                </div>
-              ))}
-            </div>
-          </div>
+  <h3 className="text-lg font-semibold mb-4">Get Featured and Win Certificates</h3>
+  <div className="flex flex-wrap gap-3">
+    {certificates.map((certificate, index) => (
+      <div
+        key={index}
+        className={`${certificate.color} p-3 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:scale-105 transition-transform duration-200 ease-in-out`}
+      >
+        {certificate.icon}
+      </div>
+    ))}
+  </div>
+</div>
         </div>
       </div>
     </div>
