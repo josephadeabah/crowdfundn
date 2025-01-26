@@ -363,7 +363,7 @@ const CampaignsPage = () => {
           ) : (
             <>
               {campaigns && campaigns.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 relative">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 relative">
                   {campaigns
                     .filter((campaign) => campaign.permissions.is_public)
                     .map((campaign, index) => {
