@@ -17,7 +17,6 @@ import {
   PopoverTrigger,
 } from '../components/popover/Popover';
 import { Button } from '../components/button/Button';
-import Link from 'next/link'; // Import Link from Next.js for navigation
 
 // SummaryCard Component
 const SummaryCard: React.FC = () => {
@@ -153,9 +152,7 @@ const Leaderboard: React.FC = () => {
         <div className="w-full md:w-1/2">
           {/* Top Backers Section */}
           <div className="mb-3">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-semibold">Top Backers</h3>
-            </div>
+            <h3 className="text-lg font-semibold mb-2">Top Backers</h3>
             <div className="flex -space-x-3">
               {topBackers.slice(0, 5).map((backer, index) => (
                 <Popover key={index}>
@@ -180,30 +177,12 @@ const Leaderboard: React.FC = () => {
                   +{topBackers.length - 5}
                 </div>
               )}
-              {topBackers.length > 5 && (
-                <Link
-                  href="/top-backers" // Replace with the actual route
-                  className="text-sm text-cyan-500 ml-3 hover:underline"
-                >
-                  View All
-                </Link>
-              )}
             </div>
           </div>
 
           {/* Most Active Backers Section */}
           <div className="mb-3">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-semibold">Most Active Backers</h3>
-              {mostActiveBackers.length > 5 && (
-                <Link
-                  href="/most-active-backers" // Replace with the actual route
-                  className="text-sm text-blue-500 hover:underline"
-                >
-                  View All
-                </Link>
-              )}
-            </div>
+            <h3 className="text-lg font-semibold mb-2">Most Active Backers</h3>
             <div className="flex -space-x-3">
               {mostActiveBackers.slice(0, 5).map((backer, index) => (
                 <Popover key={index}>
@@ -235,19 +214,9 @@ const Leaderboard: React.FC = () => {
 
           {/* Top Backers with Most Rewards Section */}
           <div>
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-semibold">
-                Top Backers with Most Rewards
-              </h3>
-              {topBackersWithRewards.length > 5 && (
-                <Link
-                  href="/top-backers-rewards" // Replace with the actual route
-                  className="text-sm text-blue-500 hover:underline"
-                >
-                  View All
-                </Link>
-              )}
-            </div>
+            <h3 className="text-lg font-semibold mb-2">
+              Top Backers with Most Rewards
+            </h3>
             <div className="flex -space-x-3">
               {topBackersWithRewards.slice(0, 5).map((backer, index) => (
                 <Popover key={index}>
@@ -280,19 +249,9 @@ const Leaderboard: React.FC = () => {
         <div className="w-full md:w-1/2">
           {/* Top Fundraisers with Best Campaign Graphics Section */}
           <div className="mb-3">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-semibold">
-                Top Fundraisers with Best Campaign Graphics
-              </h3>
-              {topFundraisersGraphics.length > 5 && (
-                <Link
-                  href="/top-fundraisers-graphics" // Replace with the actual route
-                  className="text-sm text-blue-500 hover:underline"
-                >
-                  View All
-                </Link>
-              )}
-            </div>
+            <h3 className="text-lg font-semibold mb-2">
+              Top Fundraisers with Best Campaign Graphics
+            </h3>
             <div className="flex -space-x-3">
               {topFundraisersGraphics.slice(0, 5).map((fundraiser, index) => (
                 <Popover key={index}>
@@ -322,19 +281,9 @@ const Leaderboard: React.FC = () => {
 
           {/* Top Fundraisers with Best Stories Section */}
           <div className="mb-3">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-semibold">
-                Top Fundraisers with Best Stories
-              </h3>
-              {topFundraisersStories.length > 5 && (
-                <Link
-                  href="/top-fundraisers-stories" // Replace with the actual route
-                  className="text-sm text-blue-500 hover:no-underline"
-                >
-                  View All
-                </Link>
-              )}
-            </div>
+            <h3 className="text-lg font-semibold mb-2">
+              Top Fundraisers with Best Stories
+            </h3>
             <div className="flex -space-x-3">
               {topFundraisersStories.slice(0, 5).map((fundraiser, index) => (
                 <Popover key={index}>
