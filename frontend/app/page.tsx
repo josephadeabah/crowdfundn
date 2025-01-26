@@ -262,8 +262,8 @@ const HomePage = () => {
       </main>
 
       <div id="projects" className="dark:bg-gray-950 dark:text-gray-50">
-        <div className="">
-          <h2 className="text-4xl font-bold mb-8 text-center">
+        <div className="w-full">
+          <h2 className="text-4xl font-bold mb-8 mt-4 text-center">
             Fundraising Now
           </h2>
           <div className="w-full bg-white">
