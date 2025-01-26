@@ -8,7 +8,7 @@ class LeaderboardService
     end
   
     def self.fetch_top_backers(last_week: false)
-      donations = Donation.successful.joins(:user)
+      donations = Donation.successful.joins(:user).where.not(user_id: nil)
       donations = donations.where('donations.created_at >= ?', 1.week.ago) if last_week
   
       donations
@@ -28,7 +28,7 @@ class LeaderboardService
     end
   
     def self.fetch_most_active_backers(last_week: false)
-      donations = Donation.successful.joins(:user)
+      donations = Donation.successful.joins(:user).where.not(user_id: nil)
       donations = donations.where('donations.created_at >= ?', 1.week.ago) if last_week
   
       donations
@@ -60,9 +60,9 @@ class LeaderboardService
           {
             name: campaign.full_name,
             total_raised: campaign.total_raised,
-            category_interest: donation.user.category,
+            category_interest: campaign.user.category,
             country: campaign.user.country,
-            bio: donation.user.profile.description
+            bio: campaign.user.profile.description
           }
         end
     end
