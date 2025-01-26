@@ -46,7 +46,7 @@ const Leaderboard: React.FC = () => {
   // Enhanced mock data for Top Backers
   const topBackers = [
     {
-      name: 'Kwame Asante',
+      name: 'Kwame Damien',
       amount: '$1,000',
       avatar: 'https://example.com/avatar1.jpg',
       categoryInterest: 'Education',
@@ -90,7 +90,7 @@ const Leaderboard: React.FC = () => {
   // Enhanced mock data for Most Active Backers
   const mostActiveBackers = [
     {
-      name: 'Kwame Asante',
+      name: 'Kwame Damien',
       contributions: 12,
       avatar: 'https://example.com/avatar1.jpg',
       categoryInterest: 'Education',
@@ -134,7 +134,7 @@ const Leaderboard: React.FC = () => {
   // Enhanced mock data for Top Backers with Most Rewards
   const topBackersWithRewards = [
     {
-      name: 'Kwame Asante',
+      name: 'Kwame Damien',
       rewards: 5,
       avatar: 'https://example.com/avatar1.jpg',
       categoryInterest: 'Education',
@@ -178,7 +178,7 @@ const Leaderboard: React.FC = () => {
   // Enhanced mock data for Top Fundraisers with Best Campaign Graphics
   const topFundraisersGraphics = [
     {
-      name: 'Kwame Asante',
+      name: 'Kwame Damien',
       campaign: 'Education for All',
       avatar: 'https://example.com/avatar1.jpg',
       categoryInterest: 'Education',
@@ -222,7 +222,7 @@ const Leaderboard: React.FC = () => {
   // Enhanced mock data for Top Fundraisers with Best Stories
   const topFundraisersStories = [
     {
-      name: 'Kwame Asante',
+      name: 'Kwame Damien',
       campaign: 'Education for All',
       avatar: 'https://example.com/avatar1.jpg',
       categoryInterest: 'Education',
