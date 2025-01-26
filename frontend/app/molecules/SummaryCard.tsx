@@ -85,6 +85,22 @@ const Leaderboard: React.FC = () => {
       country: 'South Africa',
       bio: 'Supports tech-driven solutions for social good.',
     },
+    {
+      name: 'Alemayehu Teshome',
+      campaign: 'Boost Local Markets',
+      avatar: 'https://example.com/avatar6.jpg',
+      categoryInterest: 'Local Business Support',
+      country: 'Ethiopia',
+      bio: 'Dedicated to empowering local businesses and entrepreneurs.',
+    },
+    {
+      name: 'Chisomo Banda',
+      campaign: 'Care for Communities',
+      avatar: 'https://example.com/avatar7.jpg',
+      categoryInterest: 'Charity',
+      country: 'Malawi',
+      bio: 'Committed to supporting charitable initiatives for vulnerable communities.',
+    }    
   ];
 
   // Enhanced mock data for Most Active Backers
