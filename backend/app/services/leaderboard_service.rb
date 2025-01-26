@@ -8,7 +8,9 @@ class LeaderboardService
     end
   
     def self.fetch_top_backers(last_week: false)
-      donations = Donation.successful.joins(:user).where.not(user_id: nil)
+      donations = Donation.successful
+                         .joins(:user) # Ensure the User model is joined
+                         .where.not(user_id: nil) # Filter out donations without a user
       donations = donations.where('donations.created_at >= ?', 1.week.ago) if last_week
   
       donations
@@ -20,15 +22,17 @@ class LeaderboardService
           {
             name: donation.full_name,
             amount: donation.total_donated,
-            category_interest: donation.user.category,
+            category_interest: donation.user.category, # Ensure this field exists in the User model
             country: donation.user.country,
-            bio: donation.user.profile.description
+            bio: donation.user.bio
           }
         end
     end
   
     def self.fetch_most_active_backers(last_week: false)
-      donations = Donation.successful.joins(:user).where.not(user_id: nil)
+      donations = Donation.successful
+                         .joins(:user) # Ensure the User model is joined
+                         .where.not(user_id: nil) # Filter out donations without a user
       donations = donations.where('donations.created_at >= ?', 1.week.ago) if last_week
   
       donations
@@ -40,15 +44,16 @@ class LeaderboardService
           {
             name: donation.full_name,
             contributions: donation.total_contributions,
-            category_interest: donation.user.category,
+            category_interest: donation.user.category, # Ensure this field exists in the User model
             country: donation.user.country,
-            bio: donation.user.profile.description
+            bio: donation.user.bio
           }
         end
     end
   
     def self.fetch_top_fundraisers(last_week: false)
-      campaigns = Campaign.active.joins(:fundraiser)
+      campaigns = Campaign.active
+                         .joins(:fundraiser) # Ensure the Fundraiser (User) model is joined
       campaigns = campaigns.where('campaigns.created_at >= ?', 1.week.ago) if last_week
   
       campaigns
@@ -60,11 +65,10 @@ class LeaderboardService
           {
             name: campaign.full_name,
             total_raised: campaign.total_raised,
-            category_interest: campaign.user.category,
+            category_interest: campaign.user.category, # Ensure this field exists in the User model
             country: campaign.user.country,
-            bio: campaign.user.profile.description
+            bio: campaign.user.bio
           }
         end
     end
 end
-  
