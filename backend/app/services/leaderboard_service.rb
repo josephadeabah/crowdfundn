@@ -65,8 +65,8 @@ class LeaderboardService
           {
             name: campaign.full_name,
             total_raised: campaign.total_raised,
-            category_interest: campaign.user.category, # Ensure this field exists in the User model
-            country: campaign.user.country,
+            category_interest: campaign.category, # Ensure this field exists in the User model
+            country: campaign.country,
             bio: campaign.user.profile.description
           }
         end
