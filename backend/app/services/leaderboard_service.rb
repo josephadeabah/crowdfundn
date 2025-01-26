@@ -24,7 +24,7 @@ class LeaderboardService
             amount: donation.total_donated,
             category_interest: donation.user.category, # Ensure this field exists in the User model
             country: donation.user.country,
-            bio: donation.user.bio
+            bio: campaign.user.profile.description
           }
         end
     end
@@ -46,7 +46,7 @@ class LeaderboardService
             contributions: donation.total_contributions,
             category_interest: donation.user.category, # Ensure this field exists in the User model
             country: donation.user.country,
-            bio: donation.user.bio
+            bio: campaign.user.profile.description
           }
         end
     end
@@ -67,7 +67,7 @@ class LeaderboardService
             total_raised: campaign.total_raised,
             category_interest: campaign.user.category, # Ensure this field exists in the User model
             country: campaign.user.country,
-            bio: campaign.user.bio
+            bio: campaign.user.profile.description
           }
         end
     end
