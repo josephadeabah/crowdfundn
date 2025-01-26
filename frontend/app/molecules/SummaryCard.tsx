@@ -100,7 +100,7 @@ const Leaderboard: React.FC = () => {
       categoryInterest: 'Charity',
       country: 'Malawi',
       bio: 'Committed to supporting charitable initiatives for vulnerable communities.',
-    }    
+    },
   ];
 
   // Enhanced mock data for Most Active Backers
@@ -252,6 +252,14 @@ const Leaderboard: React.FC = () => {
       categoryInterest: 'Education',
       country: 'Ghana',
       bio: 'Passionate about supporting education initiatives worldwide.',
+    },
+    {
+      name: 'Arafat Dokurugu Sulley',
+      campaign: 'Education for All',
+      avatar: 'https://example.com/avatar1.jpg',
+      categoryInterest: 'Arts Education',
+      country: 'Ghana',
+      bio: 'Passionate about supporting Arts education initiatives worldwide.',
     },
     {
       name: 'Amina Diallo',
@@ -587,7 +595,7 @@ const Leaderboard: React.FC = () => {
               Top Fundraisers with Best Stories
             </h3>
             <div className="flex -space-x-3">
-              {topFundraisersStories.slice(0, 5).map((fundraiser, index) => (
+              {topFundraisersStories.slice(0, 6).map((fundraiser, index) => (
                 <Popover key={index}>
                   <PopoverTrigger asChild>
                     <div
@@ -634,9 +642,9 @@ const Leaderboard: React.FC = () => {
                   </PopoverContent>
                 </Popover>
               ))}
-              {topFundraisersStories.length > 5 && (
+              {topFundraisersStories.length > 6 && (
                 <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
-                  +{topFundraisersStories.length - 5}
+                  +{topFundraisersStories.length - 6}
                 </div>
               )}
             </div>
