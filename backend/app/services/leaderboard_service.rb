@@ -9,7 +9,7 @@ class LeaderboardService
   
     def self.fetch_top_backers(last_week: false)
       donations = Donation.successful
-                         .joins(:user) # Ensure the User model is joined
+                         .joins(:user_id) # Ensure the User model is joined
                          .where.not(user_id: nil) # Filter out donations without a user
       donations = donations.where('donations.created_at >= ?', 1.week.ago) if last_week
   
@@ -31,7 +31,7 @@ class LeaderboardService
   
     def self.fetch_most_active_backers(last_week: false)
       donations = Donation.successful
-                         .joins(:user) # Ensure the User model is joined
+                         .joins(:user_id) # Ensure the User model is joined
                          .where.not(user_id: nil) # Filter out donations without a user
       donations = donations.where('donations.created_at >= ?', 1.week.ago) if last_week
   
