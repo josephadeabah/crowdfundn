@@ -5,7 +5,6 @@ import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 
 import { CarouselPlugin } from './molecules/CarouselPlugin';
-import { BrandsLogoSlider } from './molecules/BrandsLogoSlider';
 import DownloadApp from './molecules/DownloadApp';
 import ChatbotComponent from './chatbot/ChatbotComponent';
 import { FaHandHoldingUsd } from 'react-icons/fa';
@@ -277,7 +276,7 @@ const HomePage = () => {
 
       <div id="brands" className="mt-20">
         <DownloadApp />
-        <BrandsLogoSlider />
+        {/* <BrandsLogoSlider /> */}
       </div>
 
       <div className="mb-8 text-gray-700 dark:bg-gray-950 dark:text-gray-50">
