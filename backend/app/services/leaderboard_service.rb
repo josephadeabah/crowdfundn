@@ -21,7 +21,6 @@ class LeaderboardService
             name: donation.full_name,
             amount: donation.total_donated,
             category_interest: donation.user.category,
-            avatar: donation.avatar_url,
             country: donation.user.country,
             bio: donation.user.profile.description
           }
@@ -42,7 +41,6 @@ class LeaderboardService
             name: donation.full_name,
             contributions: donation.total_contributions,
             category_interest: donation.user.category,
-            avatar: donation.avatar_url,
             country: donation.user.country,
             bio: donation.user.profile.description
           }
@@ -62,7 +60,7 @@ class LeaderboardService
           {
             name: campaign.full_name,
             total_raised: campaign.total_raised,
-            avatar: campaign.avatar_url,
+            category_interest: donation.user.category,
             country: campaign.user.country,
             bio: donation.user.profile.description
           }
