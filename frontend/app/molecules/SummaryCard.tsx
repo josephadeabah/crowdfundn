@@ -107,7 +107,7 @@ const Leaderboard: React.FC = () => {
   const mostActiveBackers = [
     {
       name: 'Chisomo Banda',
-      campaign: 'Care for Communities',
+      contributions: 5,
       avatar: 'https://example.com/avatar7.jpg',
       categoryInterest: 'Charity',
       country: 'Malawi',
