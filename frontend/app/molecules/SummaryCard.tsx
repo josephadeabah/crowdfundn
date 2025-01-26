@@ -246,12 +246,12 @@ const Leaderboard: React.FC = () => {
   // Enhanced mock data for Top Fundraisers with Best Stories
   const topFundraisersStories = [
     {
-      name: 'Kwame Damien',
-      campaign: 'Education for All',
+      name: 'Jude Fillip Homba',
+      campaign: 'Supporting less privileged and putting them to learn a Skill',
       avatar: 'https://example.com/avatar1.jpg',
-      categoryInterest: 'Education',
+      categoryInterest: 'Youth Development',
       country: 'Ghana',
-      bio: 'Passionate about supporting education initiatives worldwide.',
+      bio: 'Passionate about supporting Youth initiatives in my Community.',
     },
     {
       name: 'Arafat Dokurugu Sulley',
@@ -259,7 +259,7 @@ const Leaderboard: React.FC = () => {
       avatar: 'https://example.com/avatar1.jpg',
       categoryInterest: 'Arts Education',
       country: 'Ghana',
-      bio: 'Passionate about supporting Arts education initiatives in Ghana.',
+      bio: 'Passionate about supporting Arts education initiatives in my Township.',
     },
     {
       name: 'Amina Diallo',
