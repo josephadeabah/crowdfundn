@@ -106,6 +106,14 @@ const Leaderboard: React.FC = () => {
   // Enhanced mock data for Most Active Backers
   const mostActiveBackers = [
     {
+      name: 'Chisomo Banda',
+      campaign: 'Care for Communities',
+      avatar: 'https://example.com/avatar7.jpg',
+      categoryInterest: 'Charity',
+      country: 'Malawi',
+      bio: 'Committed to supporting charitable initiatives for vulnerable communities.',
+    },
+    {
       name: 'Kwame Damien',
       contributions: 12,
       avatar: 'https://example.com/avatar1.jpg',
@@ -397,7 +405,7 @@ const Leaderboard: React.FC = () => {
           <div className="mb-3">
             <h3 className="text-lg font-semibold mb-2">Most Active Backers</h3>
             <div className="flex -space-x-3">
-              {mostActiveBackers.slice(0, 5).map((backer, index) => (
+              {mostActiveBackers.slice(0, 6).map((backer, index) => (
                 <Popover key={index}>
                   <PopoverTrigger asChild>
                     <div
@@ -442,9 +450,9 @@ const Leaderboard: React.FC = () => {
                   </PopoverContent>
                 </Popover>
               ))}
-              {mostActiveBackers.length > 5 && (
+              {mostActiveBackers.length > 6 && (
                 <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
-                  +{mostActiveBackers.length - 5}
+                  +{mostActiveBackers.length - 6}
                 </div>
               )}
             </div>
