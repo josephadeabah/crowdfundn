@@ -43,52 +43,224 @@ const SummaryCard: React.FC = () => {
 
 // Leaderboard Component
 const Leaderboard: React.FC = () => {
-  // Mock data for Top Backers
+  // Enhanced mock data for Top Backers
   const topBackers = [
-    { name: 'John Doe', amount: '$1,000' },
-    { name: 'Jane Smith', amount: '$800' },
-    { name: 'Alice Johnson', amount: '$600' },
-    { name: 'Bob Brown', amount: '$500' },
-    { name: 'Charlie Davis', amount: '$400' },
-    { name: 'Eve White', amount: '$300' },
-    { name: 'Frank Green', amount: '$200' },
-    { name: 'Grace Black', amount: '$100' },
+    {
+      name: 'John Doe',
+      amount: '$1,000',
+      avatar: 'https://example.com/avatar1.jpg',
+      categoryInterest: 'Education',
+      country: 'USA',
+      bio: 'Passionate about supporting education initiatives worldwide.',
+    },
+    {
+      name: 'Jane Smith',
+      amount: '$800',
+      avatar: 'https://example.com/avatar2.jpg',
+      categoryInterest: 'Environment',
+      country: 'Canada',
+      bio: 'Dedicated to environmental conservation and sustainability.',
+    },
+    {
+      name: 'Alice Johnson',
+      amount: '$600',
+      avatar: 'https://example.com/avatar3.jpg',
+      categoryInterest: 'Healthcare',
+      country: 'UK',
+      bio: 'Advocate for accessible healthcare for all.',
+    },
+    {
+      name: 'Bob Brown',
+      amount: '$500',
+      avatar: 'https://example.com/avatar4.jpg',
+      categoryInterest: 'Animal Welfare',
+      country: 'Australia',
+      bio: 'Committed to animal rescue and welfare programs.',
+    },
+    {
+      name: 'Charlie Davis',
+      amount: '$400',
+      avatar: 'https://example.com/avatar5.jpg',
+      categoryInterest: 'Technology',
+      country: 'Germany',
+      bio: 'Supports tech-driven solutions for social good.',
+    },
   ];
 
-  // Mock data for Most Active Backers
+  // Enhanced mock data for Most Active Backers
   const mostActiveBackers = [
-    { name: 'John Doe', contributions: 12 },
-    { name: 'Jane Smith', contributions: 10 },
-    { name: 'Alice Johnson', contributions: 8 },
-    { name: 'Bob Brown', contributions: 7 },
-    { name: 'Charlie Davis', contributions: 6 },
+    {
+      name: 'John Doe',
+      contributions: 12,
+      avatar: 'https://example.com/avatar1.jpg',
+      categoryInterest: 'Education',
+      country: 'USA',
+      bio: 'Passionate about supporting education initiatives worldwide.',
+    },
+    {
+      name: 'Jane Smith',
+      contributions: 10,
+      avatar: 'https://example.com/avatar2.jpg',
+      categoryInterest: 'Environment',
+      country: 'Canada',
+      bio: 'Dedicated to environmental conservation and sustainability.',
+    },
+    {
+      name: 'Alice Johnson',
+      contributions: 8,
+      avatar: 'https://example.com/avatar3.jpg',
+      categoryInterest: 'Healthcare',
+      country: 'UK',
+      bio: 'Advocate for accessible healthcare for all.',
+    },
+    {
+      name: 'Bob Brown',
+      contributions: 7,
+      avatar: 'https://example.com/avatar4.jpg',
+      categoryInterest: 'Animal Welfare',
+      country: 'Australia',
+      bio: 'Committed to animal rescue and welfare programs.',
+    },
+    {
+      name: 'Charlie Davis',
+      contributions: 6,
+      avatar: 'https://example.com/avatar5.jpg',
+      categoryInterest: 'Technology',
+      country: 'Germany',
+      bio: 'Supports tech-driven solutions for social good.',
+    },
   ];
 
-  // Mock data for Top Backers with Most Rewards
+  // Enhanced mock data for Top Backers with Most Rewards
   const topBackersWithRewards = [
-    { name: 'John Doe', rewards: 5 },
-    { name: 'Jane Smith', rewards: 4 },
-    { name: 'Alice Johnson', rewards: 3 },
-    { name: 'Bob Brown', rewards: 2 },
-    { name: 'Charlie Davis', rewards: 1 },
+    {
+      name: 'John Doe',
+      rewards: 5,
+      avatar: 'https://example.com/avatar1.jpg',
+      categoryInterest: 'Education',
+      country: 'USA',
+      bio: 'Passionate about supporting education initiatives worldwide.',
+    },
+    {
+      name: 'Jane Smith',
+      rewards: 4,
+      avatar: 'https://example.com/avatar2.jpg',
+      categoryInterest: 'Environment',
+      country: 'Canada',
+      bio: 'Dedicated to environmental conservation and sustainability.',
+    },
+    {
+      name: 'Alice Johnson',
+      rewards: 3,
+      avatar: 'https://example.com/avatar3.jpg',
+      categoryInterest: 'Healthcare',
+      country: 'UK',
+      bio: 'Advocate for accessible healthcare for all.',
+    },
+    {
+      name: 'Bob Brown',
+      rewards: 2,
+      avatar: 'https://example.com/avatar4.jpg',
+      categoryInterest: 'Animal Welfare',
+      country: 'Australia',
+      bio: 'Committed to animal rescue and welfare programs.',
+    },
+    {
+      name: 'Charlie Davis',
+      rewards: 1,
+      avatar: 'https://example.com/avatar5.jpg',
+      categoryInterest: 'Technology',
+      country: 'Germany',
+      bio: 'Supports tech-driven solutions for social good.',
+    },
   ];
 
-  // Mock data for Top Fundraisers with Best Campaign Graphics
+  // Enhanced mock data for Top Fundraisers with Best Campaign Graphics
   const topFundraisersGraphics = [
-    { name: 'John Doe', campaign: 'Education for All' },
-    { name: 'Jane Smith', campaign: 'Clean Water Initiative' },
-    { name: 'Alice Johnson', campaign: 'Save the Forests' },
-    { name: 'Bob Brown', campaign: 'Animal Rescue' },
-    { name: 'Charlie Davis', campaign: 'Tech for Good' },
+    {
+      name: 'John Doe',
+      campaign: 'Education for All',
+      avatar: 'https://example.com/avatar1.jpg',
+      categoryInterest: 'Education',
+      country: 'USA',
+      bio: 'Passionate about supporting education initiatives worldwide.',
+    },
+    {
+      name: 'Jane Smith',
+      campaign: 'Clean Water Initiative',
+      avatar: 'https://example.com/avatar2.jpg',
+      categoryInterest: 'Environment',
+      country: 'Canada',
+      bio: 'Dedicated to environmental conservation and sustainability.',
+    },
+    {
+      name: 'Alice Johnson',
+      campaign: 'Save the Forests',
+      avatar: 'https://example.com/avatar3.jpg',
+      categoryInterest: 'Environment',
+      country: 'UK',
+      bio: 'Advocate for accessible healthcare for all.',
+    },
+    {
+      name: 'Bob Brown',
+      campaign: 'Animal Rescue',
+      avatar: 'https://example.com/avatar4.jpg',
+      categoryInterest: 'Animal Welfare',
+      country: 'Australia',
+      bio: 'Committed to animal rescue and welfare programs.',
+    },
+    {
+      name: 'Charlie Davis',
+      campaign: 'Tech for Good',
+      avatar: 'https://example.com/avatar5.jpg',
+      categoryInterest: 'Technology',
+      country: 'Germany',
+      bio: 'Supports tech-driven solutions for social good.',
+    },
   ];
 
-  // Mock data for Top Fundraisers with Best Stories
+  // Enhanced mock data for Top Fundraisers with Best Stories
   const topFundraisersStories = [
-    { name: 'John Doe', campaign: 'Education for All' },
-    { name: 'Jane Smith', campaign: 'Clean Water Initiative' },
-    { name: 'Alice Johnson', campaign: 'Save the Forests' },
-    { name: 'Bob Brown', campaign: 'Animal Rescue' },
-    { name: 'Charlie Davis', campaign: 'Tech for Good' },
+    {
+      name: 'John Doe',
+      campaign: 'Education for All',
+      avatar: 'https://example.com/avatar1.jpg',
+      categoryInterest: 'Education',
+      country: 'USA',
+      bio: 'Passionate about supporting education initiatives worldwide.',
+    },
+    {
+      name: 'Jane Smith',
+      campaign: 'Clean Water Initiative',
+      avatar: 'https://example.com/avatar2.jpg',
+      categoryInterest: 'Environment',
+      country: 'Canada',
+      bio: 'Dedicated to environmental conservation and sustainability.',
+    },
+    {
+      name: 'Alice Johnson',
+      campaign: 'Save the Forests',
+      avatar: 'https://example.com/avatar3.jpg',
+      categoryInterest: 'Environment',
+      country: 'UK',
+      bio: 'Advocate for accessible healthcare for all.',
+    },
+    {
+      name: 'Bob Brown',
+      campaign: 'Animal Rescue',
+      avatar: 'https://example.com/avatar4.jpg',
+      categoryInterest: 'Animal Welfare',
+      country: 'Australia',
+      bio: 'Committed to animal rescue and welfare programs.',
+    },
+    {
+      name: 'Charlie Davis',
+      campaign: 'Tech for Good',
+      avatar: 'https://example.com/avatar5.jpg',
+      categoryInterest: 'Technology',
+      country: 'Germany',
+      bio: 'Supports tech-driven solutions for social good.',
+    },
   ];
 
   // Certificate Data
@@ -164,10 +336,35 @@ const Leaderboard: React.FC = () => {
                       <Avatar name={backer.name} size="sm" />
                     </div>
                   </PopoverTrigger>
-                  <PopoverContent>
-                    <div className="space-y-2 p-2">
-                      <h4 className="font-semibold">{backer.name}</h4>
-                      <p className="text-sm">Amount: {backer.amount}</p>
+                  <PopoverContent className="w-96">
+                    <div className="space-y-4 p-4">
+                      <div className="flex items-center space-x-4">
+                        <Avatar name={backer.name} size="xl" />
+                        <div>
+                          <h4 className="font-semibold text-lg">
+                            {backer.name}
+                          </h4>
+                          <p className="text-sm text-gray-500">
+                            {backer.country}
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">
+                          Category Interest
+                        </p>
+                        <p className="text-sm text-gray-700">
+                          {backer.categoryInterest}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">Bio</p>
+                        <p className="text-sm text-gray-700">{backer.bio}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">Total Donated</p>
+                        <p className="text-sm text-gray-700">{backer.amount}</p>
+                      </div>
                     </div>
                   </PopoverContent>
                 </Popover>
@@ -194,12 +391,37 @@ const Leaderboard: React.FC = () => {
                       <Avatar name={backer.name} size="sm" />
                     </div>
                   </PopoverTrigger>
-                  <PopoverContent>
-                    <div className="space-y-2 p-2">
-                      <h4 className="font-semibold">{backer.name}</h4>
-                      <p className="text-sm">
-                        Contributions: {backer.contributions}
-                      </p>
+                  <PopoverContent className="w-96">
+                    <div className="space-y-4 p-4">
+                      <div className="flex items-center space-x-4">
+                        <Avatar name={backer.name} size="xl" />
+                        <div>
+                          <h4 className="font-semibold text-lg">
+                            {backer.name}
+                          </h4>
+                          <p className="text-sm text-gray-500">
+                            {backer.country}
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">
+                          Category Interest
+                        </p>
+                        <p className="text-sm text-gray-700">
+                          {backer.categoryInterest}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">Bio</p>
+                        <p className="text-sm text-gray-700">{backer.bio}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">Contributions</p>
+                        <p className="text-sm text-gray-700">
+                          {backer.contributions}
+                        </p>
+                      </div>
                     </div>
                   </PopoverContent>
                 </Popover>
@@ -228,10 +450,37 @@ const Leaderboard: React.FC = () => {
                       <Avatar name={backer.name} size="sm" />
                     </div>
                   </PopoverTrigger>
-                  <PopoverContent>
-                    <div className="space-y-2 p-2">
-                      <h4 className="font-semibold">{backer.name}</h4>
-                      <p className="text-sm">Rewards: {backer.rewards}</p>
+                  <PopoverContent className="w-96">
+                    <div className="space-y-4 p-4">
+                      <div className="flex items-center space-x-4">
+                        <Avatar name={backer.name} size="xl" />
+                        <div>
+                          <h4 className="font-semibold text-lg">
+                            {backer.name}
+                          </h4>
+                          <p className="text-sm text-gray-500">
+                            {backer.country}
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">
+                          Category Interest
+                        </p>
+                        <p className="text-sm text-gray-700">
+                          {backer.categoryInterest}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">Bio</p>
+                        <p className="text-sm text-gray-700">{backer.bio}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">Rewards</p>
+                        <p className="text-sm text-gray-700">
+                          {backer.rewards}
+                        </p>
+                      </div>
                     </div>
                   </PopoverContent>
                 </Popover>
@@ -263,10 +512,39 @@ const Leaderboard: React.FC = () => {
                       <Avatar name={fundraiser.name} size="sm" />
                     </div>
                   </PopoverTrigger>
-                  <PopoverContent>
-                    <div className="space-y-2 p-2">
-                      <h4 className="font-semibold">{fundraiser.name}</h4>
-                      <p className="text-sm">Campaign: {fundraiser.campaign}</p>
+                  <PopoverContent className="w-96">
+                    <div className="space-y-4 p-4">
+                      <div className="flex items-center space-x-4">
+                        <Avatar name={fundraiser.name} size="xl" />
+                        <div>
+                          <h4 className="font-semibold text-lg">
+                            {fundraiser.name}
+                          </h4>
+                          <p className="text-sm text-gray-500">
+                            {fundraiser.country}
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">
+                          Category Interest
+                        </p>
+                        <p className="text-sm text-gray-700">
+                          {fundraiser.categoryInterest}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">Bio</p>
+                        <p className="text-sm text-gray-700">
+                          {fundraiser.bio}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">Campaign</p>
+                        <p className="text-sm text-gray-700">
+                          {fundraiser.campaign}
+                        </p>
+                      </div>
                     </div>
                   </PopoverContent>
                 </Popover>
@@ -295,10 +573,39 @@ const Leaderboard: React.FC = () => {
                       <Avatar name={fundraiser.name} size="sm" />
                     </div>
                   </PopoverTrigger>
-                  <PopoverContent>
-                    <div className="space-y-2 p-2">
-                      <h4 className="font-semibold">{fundraiser.name}</h4>
-                      <p className="text-sm">Campaign: {fundraiser.campaign}</p>
+                  <PopoverContent className="w-96">
+                    <div className="space-y-4 p-4">
+                      <div className="flex items-center space-x-4">
+                        <Avatar name={fundraiser.name} size="xl" />
+                        <div>
+                          <h4 className="font-semibold text-lg">
+                            {fundraiser.name}
+                          </h4>
+                          <p className="text-sm text-gray-500">
+                            {fundraiser.country}
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">
+                          Category Interest
+                        </p>
+                        <p className="text-sm text-gray-700">
+                          {fundraiser.categoryInterest}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">Bio</p>
+                        <p className="text-sm text-gray-700">
+                          {fundraiser.bio}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">Campaign</p>
+                        <p className="text-sm text-gray-700">
+                          {fundraiser.campaign}
+                        </p>
+                      </div>
                     </div>
                   </PopoverContent>
                 </Popover>
