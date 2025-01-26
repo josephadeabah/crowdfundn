@@ -155,14 +155,6 @@ const Leaderboard: React.FC = () => {
           <div className="mb-3">
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-lg font-semibold">Top Backers</h3>
-              {topBackers.length > 5 && (
-                <Link
-                  href="/top-backers" // Replace with the actual route
-                  className="text-sm text-blue-500 hover:underline"
-                >
-                  View All
-                </Link>
-              )}
             </div>
             <div className="flex -space-x-3">
               {topBackers.slice(0, 5).map((backer, index) => (
@@ -187,6 +179,14 @@ const Leaderboard: React.FC = () => {
                 <div className="relative flex items-center justify-center w-9 h-9 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
                   +{topBackers.length - 5}
                 </div>
+              )}
+              {topBackers.length > 5 && (
+                <Link
+                  href="/top-backers" // Replace with the actual route
+                  className="text-sm text-blue-500 ml-3 hover:underline"
+                >
+                  View All
+                </Link>
               )}
             </div>
           </div>
