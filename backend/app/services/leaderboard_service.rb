@@ -13,7 +13,7 @@ class LeaderboardService
   
       donations
         .group('users.id')
-        .select('users.id, users.full_name, users.avatar_url, SUM(donations.amount) as total_donated')
+        .select('users.id, users.full_name, SUM(donations.amount) as total_donated')
         .order('total_donated DESC')
         .limit(5)
         .map do |donation|
@@ -33,7 +33,7 @@ class LeaderboardService
   
       donations
         .group('users.id')
-        .select('users.id, users.full_name, users.avatar_url, COUNT(donations.id) as total_contributions')
+        .select('users.id, users.full_name, COUNT(donations.id) as total_contributions')
         .order('total_contributions DESC')
         .limit(5)
         .map do |donation|
@@ -53,7 +53,7 @@ class LeaderboardService
   
       campaigns
         .group('users.id')
-        .select('users.id, users.full_name, users.avatar_url, SUM(campaigns.current_amount) as total_raised')
+        .select('users.id, users.full_name, SUM(campaigns.current_amount) as total_raised')
         .order('total_raised DESC')
         .limit(5)
         .map do |campaign|
