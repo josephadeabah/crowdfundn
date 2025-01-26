@@ -183,7 +183,7 @@ const Leaderboard: React.FC = () => {
               {topBackers.length > 5 && (
                 <Link
                   href="/top-backers" // Replace with the actual route
-                  className="text-sm text-blue-500 ml-3 hover:underline"
+                  className="text-sm text-cyan-500 ml-3 hover:underline"
                 >
                   View All
                 </Link>
