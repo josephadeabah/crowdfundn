@@ -262,7 +262,7 @@ const HomePage = () => {
       </main>
 
       <div id="projects" className="dark:bg-gray-950 dark:text-gray-50">
-        <div className="max-w-7xl mx-auto">
+        <div className="">
           <h2 className="text-4xl font-bold mb-8 text-center">
             Fundraising Now
           </h2>
