@@ -266,7 +266,7 @@ const HomePage = () => {
           <h2 className="text-4xl font-bold mb-8 text-center">
             Fundraising Now
           </h2>
-          <div className="w-full">
+          <div className="w-full p-0">
             <CampaignCard
               campaigns={campaigns}
               loading={loading}
