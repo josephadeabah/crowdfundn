@@ -259,7 +259,7 @@ const Leaderboard: React.FC = () => {
       avatar: 'https://example.com/avatar1.jpg',
       categoryInterest: 'Arts Education',
       country: 'Ghana',
-      bio: 'Passionate about supporting Arts education initiatives worldwide.',
+      bio: 'Passionate about supporting Arts education initiatives in Ghana.',
     },
     {
       name: 'Amina Diallo',
