@@ -93,6 +93,10 @@ Rails.application.routes.draw do
       namespace :metrics do
         get 'dashboard', to: 'metrics#dashboard'
       end
+      # Add leaderboard routes
+      namespace :leaderboard do
+        get 'index', to: 'leaderboard#index'
+      end
 
     end
   end
