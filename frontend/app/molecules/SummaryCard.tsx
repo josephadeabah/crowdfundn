@@ -131,7 +131,7 @@ const Leaderboard: React.FC = () => {
           <div className="mb-3">
             <h3 className="text-lg font-semibold mb-2">Top Backers</h3>
             <div className="flex -space-x-3">
-              {topBackers.slice(0, 5).map((backer, index) => (
+              {topBackers.map((backer, index) => (
                 <Popover key={index}>
                   <PopoverTrigger asChild>
                     <div
@@ -186,7 +186,7 @@ const Leaderboard: React.FC = () => {
           <div className="mb-3">
             <h3 className="text-lg font-semibold mb-2">Most Active Backers</h3>
             <div className="flex -space-x-3">
-              {mostActiveBackers.slice(0, 6).map((backer, index) => (
+              {mostActiveBackers.map((backer, index) => (
                 <Popover key={index}>
                   <PopoverTrigger asChild>
                     <div
@@ -245,7 +245,7 @@ const Leaderboard: React.FC = () => {
               Top Backers with Most Rewards
             </h3>
             <div className="flex -space-x-3">
-              {topBackersWithRewards.slice(0, 5).map((backer, index) => (
+              {topBackersWithRewards.map((backer, index) => (
                 <Popover key={index}>
                   <PopoverTrigger asChild>
                     <div
@@ -307,7 +307,7 @@ const Leaderboard: React.FC = () => {
               Top Fundraisers with Best Campaign Graphics
             </h3>
             <div className="flex -space-x-3">
-              {topFundraisersGraphics.slice(0, 5).map((fundraiser, index) => (
+              {topFundraisersGraphics.map((fundraiser, index) => (
                 <Popover key={index}>
                   <PopoverTrigger asChild>
                     <div
@@ -368,7 +368,7 @@ const Leaderboard: React.FC = () => {
               Top Fundraisers with Best Stories
             </h3>
             <div className="flex -space-x-3">
-              {topFundraisersStories.slice(0, 6).map((fundraiser, index) => (
+              {topFundraisersStories.map((fundraiser, index) => (
                 <Popover key={index}>
                   <PopoverTrigger asChild>
                     <div
