@@ -9,7 +9,7 @@ class LeaderboardService
 
   def self.top_backers(last_week: false, user: nil)
     donations = Donation.successful.where.not(user_id: nil)
-    donations = filter_last_week(donations) if last_week
+    donations = filter_last_week(donations, table: 'donations') if last_week
 
     # Optional: Exclude the current user from the leaderboard if needed
     donations = donations.where.not(user_id: user.id) if user
@@ -33,7 +33,7 @@ class LeaderboardService
 
   def self.most_active_backers(last_week: false, user: nil)
     donations = Donation.successful.where.not(user_id: nil)
-    donations = filter_last_week(donations) if last_week
+    donations = filter_last_week(donations, table: 'donations') if last_week
 
     # Optional: Exclude the current user from the leaderboard if needed
     donations = donations.where.not(user_id: user.id) if user
@@ -57,7 +57,7 @@ class LeaderboardService
 
   def self.top_fundraisers(last_week: false, user: nil)
     campaigns = Campaign.active
-    campaigns = filter_last_week(campaigns) if last_week
+    campaigns = filter_last_week(campaigns, table: 'campaigns') if last_week
 
     # Optional: Exclude campaigns created by the current user if needed
     campaigns = campaigns.where.not(user_id: user.id) if user
@@ -81,7 +81,7 @@ class LeaderboardService
 
   private
 
-  def self.filter_last_week(scope)
-    scope.where('created_at >= ?', 1.week.ago)
+  def self.filter_last_week(scope, table:)
+    scope.where("#{table}.created_at >= ?", 1.week.ago) # Explicitly qualify created_at
   end
 end
