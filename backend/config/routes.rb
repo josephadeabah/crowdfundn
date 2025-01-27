@@ -82,7 +82,6 @@ Rails.application.routes.draw do
           get 'public_donations', to: 'donations#public_donations'
           get 'group_by_category', on: :collection
           get 'statistics', on: :collection
-          get 'leaderboard', on: :collection
           resources :updates, only: %i[create update destroy]
           resources :comments, only: %i[create index destroy]
           resources :rewards, only: %i[index show create update destroy]
@@ -90,13 +89,18 @@ Rails.application.routes.draw do
         end
       end
 
+      # Leaderboard routes
+      namespace :leaderboard do
+        get 'top_backers', to: 'leaderboard#top_backers'
+        get 'most_active_backers', to: 'leaderboard#most_active_backers'
+        get 'top_backers_with_rewards', to: 'leaderboard#top_backers_with_rewards'
+        get 'top_fundraisers_graphics', to: 'leaderboard#top_fundraisers_graphics'
+        get 'top_fundraisers_stories', to: 'leaderboard#top_fundraisers_stories'
+      end
+
       # Add the metrics routes
       namespace :metrics do
         get 'dashboard', to: 'metrics#dashboard'
-      end
-      # Add leaderboard routes
-      namespace :leaderboard do
-        get 'index', to: 'leaderboard#index'
       end
 
     end
