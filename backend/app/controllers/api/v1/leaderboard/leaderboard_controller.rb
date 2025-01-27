@@ -31,7 +31,7 @@ module Api
         def top_backers_with_rewards
           top_backers_with_rewards = User.joins(:donations)
                                          .select(
-                                           'users.*, COUNT(donations.campaigns.reward_id) as rewards'
+                                           'users.*, COUNT(donations.reward_id) as rewards'
                                          )
                                          .group('users.id')
                                          .order('rewards DESC')
@@ -86,7 +86,7 @@ module Api
   
         def serialize_backer_with_rewards(user)
           {
-            name: user.name,
+            name: user.full_name,
             rewards: user.rewards,
             # avatar: user.avatar_url,
             categoryInterest: user.category,
@@ -97,7 +97,7 @@ module Api
   
         def serialize_fundraiser(user)
           {
-            name: user.name,
+            name: user.full_name,
             campaign: user.campaign_name,
             # avatar: user.avatar_url,
             categoryInterest: user.category,
