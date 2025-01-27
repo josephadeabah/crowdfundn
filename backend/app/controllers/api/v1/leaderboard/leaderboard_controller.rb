@@ -77,7 +77,7 @@ module Api
             name: user.full_name,
             contributions: user.total_contributions,
             # avatar: user.avatar_url,
-            categoryInterest: user.category,
+            category_interest: user.category,
             country: user.country,
             bio: user.profile.description
           }
@@ -88,7 +88,7 @@ module Api
             name: user.full_name,
             rewards: user.rewards,
             # avatar: user.avatar_url,
-            categoryInterest: user.category,
+            category_interest: user.category,
             country: user.country,
             bio: user.profile.description
           }
@@ -99,7 +99,7 @@ module Api
             name: user.full_name,
             campaign: user.campaign_name,
             # avatar: user.avatar_url,
-            categoryInterest: user.category,
+            category_interest: user.category,
             country: user.country,
             bio: user.profile.description
           }
