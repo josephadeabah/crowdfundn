@@ -2,7 +2,7 @@ module Api
   module V1
     module Fundraisers
       class CampaignsController < ApplicationController
-        before_action :authenticate_request, only: %i[index create update destroy my_campaigns statistics leaderboard favorite unfavorite favorites]  # Ensure user is authenticated
+        before_action :authenticate_request, only: %i[index create update destroy my_campaigns statistics favorite unfavorite favorites]  # Ensure user is authenticated
         before_action :set_campaign, only: %i[show update destroy webhook_status_update favorite unfavorite]
         before_action :authorize_campaign_user!, only: %i[update destroy]  # Ensure user authorization for these actions
 
@@ -179,13 +179,6 @@ module Api
         def statistics
           stats = CampaignStatisticsService.calculate_for_user(@current_user)
           render json: stats, status: :ok
-        end
-
-        def leaderboard
-          leaderboard_data = LeaderboardService.fetch_weekly_leaderboard(@current_user)  # Pass @current_user here
-          render json: leaderboard_data, status: :ok
-        rescue StandardError => e
-          render json: { error: e.message }, status: :internal_server_error
         end
 
       # POST /api/v1/fundraisers/campaigns/:id/favorite
