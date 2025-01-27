@@ -300,7 +300,7 @@ const Leaderboard: React.FC = () => {
                 )}
               </div>
             ) : (
-              <p className="text-gray-500">No data available at the moment</p>
+              <p className="text-gray-500">No data available in this group</p>
             )}
           </div>
         </div>
