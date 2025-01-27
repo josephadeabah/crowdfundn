@@ -133,7 +133,7 @@ const LeaderboardSkeletonLoader: React.FC = () => {
                 .map((_, index) => (
                   <div
                     key={index}
-                    className="w-20 h-20 rounded-lg bg-gray-50 dark:bg-gray-700"
+                    className="w-8 h-8 rounded-lg bg-gray-50 dark:bg-gray-700"
                   >
                     <Skeleton height="100%" />
                   </div>
