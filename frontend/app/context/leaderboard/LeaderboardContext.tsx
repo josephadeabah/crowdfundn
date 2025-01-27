@@ -87,10 +87,10 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
 
     try {
-      if (!user) {
-        setError('You are not authenticated');
-        return;
-      }
+    //   if (!user) {
+    //     setError('You are not authenticated');
+    //     return;
+    //   }
 
       const endpoints = [
         'top_backers',
