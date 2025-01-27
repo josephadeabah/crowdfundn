@@ -11,6 +11,7 @@ import { AuthProvider } from './auth/AuthContext';
 import { CategoryProvider } from './categories/CategoryContext';
 import { CampaignCommentsProvider } from './account/comments/CommentsContext';
 import { MetricsProvider } from './admin/metrics/MetricsContext';
+import { LeaderboardProvider } from './leaderboard/LeaderboardContext';
 
 export const GlobalContextProvider = ({
   children,
@@ -27,7 +28,9 @@ export const GlobalContextProvider = ({
                 <TransferProvider>
                   <CampaignCommentsProvider>
                     <CategoryProvider>
-                      <MetricsProvider>{children}</MetricsProvider>
+                      <MetricsProvider>
+                        <LeaderboardProvider>{children}</LeaderboardProvider>
+                      </MetricsProvider>
                     </CategoryProvider>
                   </CampaignCommentsProvider>
                 </TransferProvider>

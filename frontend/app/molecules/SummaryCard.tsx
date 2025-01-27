@@ -17,6 +17,8 @@ import {
   PopoverTrigger,
 } from '../components/popover/Popover';
 import { Button } from '../components/button/Button';
+import { useEffect } from 'react';
+import { useLeaderboardContext } from '../context/leaderboard/LeaderboardContext';
 
 // SummaryCard Component
 const SummaryCard: React.FC = () => {
@@ -43,257 +45,28 @@ const SummaryCard: React.FC = () => {
 
 // Leaderboard Component
 const Leaderboard: React.FC = () => {
-  // Enhanced mock data for Top Backers
-  const topBackers = [
-    {
-      name: 'Kwame Damien',
-      amount: '$1,000',
-      avatar: 'https://example.com/avatar1.jpg',
-      categoryInterest: 'Education',
-      country: 'Ghana',
-      bio: 'Passionate about supporting education initiatives worldwide.',
-    },
-    {
-      name: 'Amina Diallo',
-      amount: '$800',
-      avatar: 'https://example.com/avatar2.jpg',
-      categoryInterest: 'Environment',
-      country: 'Senegal',
-      bio: 'Dedicated to environmental conservation and sustainability.',
-    },
-    {
-      name: 'Chinedu Okonkwo',
-      amount: '$600',
-      avatar: 'https://example.com/avatar3.jpg',
-      categoryInterest: 'Healthcare',
-      country: 'Nigeria',
-      bio: 'Advocate for accessible healthcare for all.',
-    },
-    {
-      name: 'Fatima Zahra',
-      amount: '$500',
-      avatar: 'https://example.com/avatar4.jpg',
-      categoryInterest: 'Animal Welfare',
-      country: 'Morocco',
-      bio: 'Committed to animal rescue and welfare programs.',
-    },
-    {
-      name: 'Thabo Mbeki',
-      amount: '$400',
-      avatar: 'https://example.com/avatar5.jpg',
-      categoryInterest: 'Technology',
-      country: 'South Africa',
-      bio: 'Supports tech-driven solutions for social good.',
-    },
-    {
-      name: 'Alemayehu Teshome',
-      campaign: 'Boost Local Markets',
-      avatar: 'https://example.com/avatar6.jpg',
-      categoryInterest: 'Local Business Support',
-      country: 'Ethiopia',
-      bio: 'Dedicated to empowering local businesses and entrepreneurs.',
-    },
-    {
-      name: 'Chisomo Banda',
-      campaign: 'Care for Communities',
-      avatar: 'https://example.com/avatar7.jpg',
-      categoryInterest: 'Charity',
-      country: 'Malawi',
-      bio: 'Committed to supporting charitable initiatives for vulnerable communities.',
-    },
-  ];
+  const {
+    topBackers,
+    mostActiveBackers,
+    topBackersWithRewards,
+    topFundraisersGraphics,
+    topFundraisersStories,
+    loading,
+    error,
+    fetchLeaderboardData,
+  } = useLeaderboardContext(); // Access the context
 
-  // Enhanced mock data for Most Active Backers
-  const mostActiveBackers = [
-    {
-      name: 'Chisomo Banda',
-      contributions: 5,
-      avatar: 'https://example.com/avatar7.jpg',
-      categoryInterest: 'Charity',
-      country: 'Malawi',
-      bio: 'Committed to supporting charitable initiatives for vulnerable communities.',
-    },
-    {
-      name: 'Kwame Damien',
-      contributions: 12,
-      avatar: 'https://example.com/avatar1.jpg',
-      categoryInterest: 'Education',
-      country: 'Ghana',
-      bio: 'Passionate about supporting education initiatives worldwide.',
-    },
-    {
-      name: 'Amina Diallo',
-      contributions: 10,
-      avatar: 'https://example.com/avatar2.jpg',
-      categoryInterest: 'Environment',
-      country: 'Senegal',
-      bio: 'Dedicated to environmental conservation and sustainability.',
-    },
-    {
-      name: 'Chinedu Okonkwo',
-      contributions: 8,
-      avatar: 'https://example.com/avatar3.jpg',
-      categoryInterest: 'Healthcare',
-      country: 'Nigeria',
-      bio: 'Advocate for accessible healthcare for all.',
-    },
-    {
-      name: 'Fatima Zahra',
-      contributions: 7,
-      avatar: 'https://example.com/avatar4.jpg',
-      categoryInterest: 'Animal Welfare',
-      country: 'Morocco',
-      bio: 'Committed to animal rescue and welfare programs.',
-    },
-    {
-      name: 'Thabo Mbeki',
-      contributions: 6,
-      avatar: 'https://example.com/avatar5.jpg',
-      categoryInterest: 'Technology',
-      country: 'South Africa',
-      bio: 'Supports tech-driven solutions for social good.',
-    },
-  ];
+  useEffect(() => {
+    fetchLeaderboardData(); // Fetch leaderboard data on component mount
+  }, [fetchLeaderboardData]);
 
-  // Enhanced mock data for Top Backers with Most Rewards
-  const topBackersWithRewards = [
-    {
-      name: 'Kwame Damien',
-      rewards: 5,
-      avatar: 'https://example.com/avatar1.jpg',
-      categoryInterest: 'Education',
-      country: 'Ghana',
-      bio: 'Passionate about supporting education initiatives worldwide.',
-    },
-    {
-      name: 'Amina Diallo',
-      rewards: 4,
-      avatar: 'https://example.com/avatar2.jpg',
-      categoryInterest: 'Environment',
-      country: 'Senegal',
-      bio: 'Dedicated to environmental conservation and sustainability.',
-    },
-    {
-      name: 'Chinedu Okonkwo',
-      rewards: 3,
-      avatar: 'https://example.com/avatar3.jpg',
-      categoryInterest: 'Healthcare',
-      country: 'Nigeria',
-      bio: 'Advocate for accessible healthcare for all.',
-    },
-    {
-      name: 'Fatima Zahra',
-      rewards: 2,
-      avatar: 'https://example.com/avatar4.jpg',
-      categoryInterest: 'Animal Welfare',
-      country: 'Morocco',
-      bio: 'Committed to animal rescue and welfare programs.',
-    },
-    {
-      name: 'Thabo Mbeki',
-      rewards: 1,
-      avatar: 'https://example.com/avatar5.jpg',
-      categoryInterest: 'Technology',
-      country: 'South Africa',
-      bio: 'Supports tech-driven solutions for social good.',
-    },
-  ];
+  if (loading) {
+    return <div>Loading leaderboard data...</div>;
+  }
 
-  // Enhanced mock data for Top Fundraisers with Best Campaign Graphics
-  const topFundraisersGraphics = [
-    {
-      name: 'Kwame Damien',
-      campaign: 'Education for All',
-      avatar: 'https://example.com/avatar1.jpg',
-      categoryInterest: 'Education',
-      country: 'Ghana',
-      bio: 'Passionate about supporting education initiatives worldwide.',
-    },
-    {
-      name: 'Amina Diallo',
-      campaign: 'Clean Water Initiative',
-      avatar: 'https://example.com/avatar2.jpg',
-      categoryInterest: 'Environment',
-      country: 'Senegal',
-      bio: 'Dedicated to environmental conservation and sustainability.',
-    },
-    {
-      name: 'Chinedu Okonkwo',
-      campaign: 'Save the Forests',
-      avatar: 'https://example.com/avatar3.jpg',
-      categoryInterest: 'Environment',
-      country: 'Nigeria',
-      bio: 'Advocate for accessible healthcare for all.',
-    },
-    {
-      name: 'Fatima Zahra',
-      campaign: 'Animal Rescue',
-      avatar: 'https://example.com/avatar4.jpg',
-      categoryInterest: 'Animal Welfare',
-      country: 'Morocco',
-      bio: 'Committed to animal rescue and welfare programs.',
-    },
-    {
-      name: 'Thabo Mbeki',
-      campaign: 'Tech for Good',
-      avatar: 'https://example.com/avatar5.jpg',
-      categoryInterest: 'Technology',
-      country: 'South Africa',
-      bio: 'Supports tech-driven solutions for social good.',
-    },
-  ];
-
-  // Enhanced mock data for Top Fundraisers with Best Stories
-  const topFundraisersStories = [
-    {
-      name: 'Jude Fillip Homba',
-      campaign: 'Supporting less privileged and putting them to learn a Skill',
-      avatar: 'https://example.com/avatar1.jpg',
-      categoryInterest: 'Youth Development',
-      country: 'Ghana',
-      bio: 'Passionate about supporting Youth initiatives in my Community.',
-    },
-    {
-      name: 'Arafat Dokurugu Sulley',
-      campaign: 'Education for All',
-      avatar: 'https://example.com/avatar1.jpg',
-      categoryInterest: 'Arts Education',
-      country: 'Ghana',
-      bio: 'Passionate about supporting Arts education initiatives in my Township.',
-    },
-    {
-      name: 'Amina Diallo',
-      campaign: 'Clean Water Initiative',
-      avatar: 'https://example.com/avatar2.jpg',
-      categoryInterest: 'Environment',
-      country: 'Senegal',
-      bio: 'Dedicated to environmental conservation and sustainability.',
-    },
-    {
-      name: 'Chinedu Okonkwo',
-      campaign: 'Save the Forests',
-      avatar: 'https://example.com/avatar3.jpg',
-      categoryInterest: 'Environment',
-      country: 'Nigeria',
-      bio: 'Advocate for accessible healthcare for all.',
-    },
-    {
-      name: 'Fatima Zahra',
-      campaign: 'Animal Rescue',
-      avatar: 'https://example.com/avatar4.jpg',
-      categoryInterest: 'Animal Welfare',
-      country: 'Morocco',
-      bio: 'Committed to animal rescue and welfare programs.',
-    },
-    {
-      name: 'Thabo Mbeki',
-      campaign: 'Tech for Good',
-      avatar: 'https://example.com/avatar5.jpg',
-      categoryInterest: 'Technology',
-      country: 'South Africa',
-      bio: 'Supports tech-driven solutions for social good.',
-    },
-  ];
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   // Certificate Data
   const certificates = [
