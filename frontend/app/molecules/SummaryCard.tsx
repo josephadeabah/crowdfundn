@@ -19,6 +19,8 @@ import {
 import { Button } from '../components/button/Button';
 import { useEffect } from 'react';
 import { useLeaderboardContext } from '../context/leaderboard/LeaderboardContext';
+import { deslugify } from '../utils/helpers/categories';
+import LeaderboardSkeletonLoader from '../loaders/LeaderboardSkeletonLoader';
 
 // SummaryCard Component
 const SummaryCard: React.FC = () => {
@@ -61,7 +63,7 @@ const Leaderboard: React.FC = () => {
   }, [fetchLeaderboardData]);
 
   if (loading) {
-    return <div>Loading leaderboard data...</div>;
+    return <LeaderboardSkeletonLoader />;
   }
 
   if (error) {
@@ -159,7 +161,7 @@ const Leaderboard: React.FC = () => {
                           Category Interest
                         </p>
                         <p className="text-sm text-gray-700">
-                          {backer.category_interest}
+                          {deslugify(backer.category_interest)}
                         </p>
                       </div>
                       <div>
@@ -214,7 +216,7 @@ const Leaderboard: React.FC = () => {
                           Category Interest
                         </p>
                         <p className="text-sm text-gray-700">
-                          {backer.category_interest}
+                          {deslugify(backer.category_interest)}
                         </p>
                       </div>
                       <div>
@@ -244,58 +246,62 @@ const Leaderboard: React.FC = () => {
             <h3 className="text-lg font-semibold mb-2">
               Top Backers with Most Rewards
             </h3>
-            <div className="flex -space-x-3">
-              {topBackersWithRewards?.map((backer, index) => (
-                <Popover key={index}>
-                  <PopoverTrigger asChild>
-                    <div
-                      className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
-                      style={{ zIndex: topBackersWithRewards.length - index }}
-                    >
-                      <Avatar name={backer.name} size="sm" />
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-96">
-                    <div className="space-y-4 p-4">
-                      <div className="flex items-center space-x-4">
-                        <Avatar name={backer.name} size="xl" />
+            {topBackersWithRewards && topBackersWithRewards.length > 0 ? (
+              <div className="flex -space-x-3">
+                {topBackersWithRewards.map((backer, index) => (
+                  <Popover key={index}>
+                    <PopoverTrigger asChild>
+                      <div
+                        className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
+                        style={{ zIndex: topBackersWithRewards.length - index }}
+                      >
+                        <Avatar name={backer.name} size="sm" />
+                      </div>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-96">
+                      <div className="space-y-4 p-4">
+                        <div className="flex items-center space-x-4">
+                          <Avatar name={backer.name} size="xl" />
+                          <div>
+                            <h4 className="font-semibold text-lg">
+                              {backer.name}
+                            </h4>
+                            <p className="text-sm text-gray-500">
+                              {backer.country}
+                            </p>
+                          </div>
+                        </div>
                         <div>
-                          <h4 className="font-semibold text-lg">
-                            {backer.name}
-                          </h4>
-                          <p className="text-sm text-gray-500">
-                            {backer.country}
+                          <p className="text-sm font-semibold">
+                            Category Interest
+                          </p>
+                          <p className="text-sm text-gray-700">
+                            {deslugify(backer.category_interest)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold">Bio</p>
+                          <p className="text-sm text-gray-700">{backer.bio}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold">Rewards</p>
+                          <p className="text-sm text-gray-700">
+                            {backer.rewards}
                           </p>
                         </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-semibold">
-                          Category Interest
-                        </p>
-                        <p className="text-sm text-gray-700">
-                          {backer.category_interest}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold">Bio</p>
-                        <p className="text-sm text-gray-700">{backer.bio}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold">Rewards</p>
-                        <p className="text-sm text-gray-700">
-                          {backer.rewards}
-                        </p>
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              ))}
-              {topBackersWithRewards?.length > 5 && (
-                <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
-                  +{topBackersWithRewards?.length - 5}
-                </div>
-              )}
-            </div>
+                    </PopoverContent>
+                  </Popover>
+                ))}
+                {topBackersWithRewards?.length > 5 && (
+                  <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
+                    +{topBackersWithRewards.length - 5}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="text-gray-500">No data available at the moment</p>
+            )}
           </div>
         </div>
 
@@ -335,7 +341,7 @@ const Leaderboard: React.FC = () => {
                           Category Interest
                         </p>
                         <p className="text-sm text-gray-700">
-                          {fundraiser.category_interest}
+                          {deslugify(fundraiser.category_interest)}
                         </p>
                       </div>
                       <div>
@@ -396,7 +402,7 @@ const Leaderboard: React.FC = () => {
                           Category Interest
                         </p>
                         <p className="text-sm text-gray-700">
-                          {fundraiser.category_interest}
+                          {deslugify(fundraiser.category_interest)}
                         </p>
                       </div>
                       <div>

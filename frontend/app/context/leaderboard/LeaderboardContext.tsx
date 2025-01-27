@@ -85,7 +85,6 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
 
     try {
-
       const endpoints = [
         'top_backers',
         'most_active_backers',
@@ -119,12 +118,8 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
       setTopBackersWithRewards(
         topBackersWithRewardsData.top_backers_with_rewards,
       );
-      setTopFundraisersGraphics(
-        topFundraisersGraphicsData,
-      );
-      setTopFundraisersStories(
-        topFundraisersStoriesData,
-      );
+      setTopFundraisersGraphics(topFundraisersGraphicsData);
+      setTopFundraisersStories(topFundraisersStoriesData);
     } catch (err: any) {
       setError(err || 'Error fetching leaderboard data');
     } finally {
