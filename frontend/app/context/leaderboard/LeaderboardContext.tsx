@@ -137,7 +137,7 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [user, token]);
+  }, []);
 
   const contextValue = useMemo(
     () => ({
