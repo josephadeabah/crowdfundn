@@ -25,9 +25,9 @@ const LeaderboardSkeletonLoader: React.FC = () => {
                     <Skeleton circle height="100%" />
                   </div>
                 ))}
-              <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full">
+              {/* <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full">
                 <Skeleton circle height="100%" />
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -47,9 +47,9 @@ const LeaderboardSkeletonLoader: React.FC = () => {
                     <Skeleton circle height="100%" />
                   </div>
                 ))}
-              <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full">
+              {/* <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full">
                 <Skeleton circle height="100%" />
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -69,9 +69,9 @@ const LeaderboardSkeletonLoader: React.FC = () => {
                     <Skeleton circle height="100%" />
                   </div>
                 ))}
-              <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full">
+              {/* <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full">
                 <Skeleton circle height="100%" />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -94,9 +94,9 @@ const LeaderboardSkeletonLoader: React.FC = () => {
                     <Skeleton circle height="100%" />
                   </div>
                 ))}
-              <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full">
+              {/* <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full">
                 <Skeleton circle height="100%" />
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -116,9 +116,9 @@ const LeaderboardSkeletonLoader: React.FC = () => {
                     <Skeleton circle height="100%" />
                   </div>
                 ))}
-              <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full">
+              {/* <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full">
                 <Skeleton circle height="100%" />
-              </div>
+              </div> */}
             </div>
           </div>
 
