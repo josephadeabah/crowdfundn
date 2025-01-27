@@ -128,7 +128,7 @@ const LeaderboardSkeletonLoader: React.FC = () => {
               <Skeleton width={300} />
             </h3>
             <div className="flex flex-wrap gap-3">
-              {Array(4)
+              {Array(7)
                 .fill(null)
                 .map((_, index) => (
                   <div
