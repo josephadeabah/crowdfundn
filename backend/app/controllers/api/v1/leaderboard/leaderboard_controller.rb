@@ -2,7 +2,6 @@ module Api
   module V1
     module Leaderboard
       class LeaderboardController < ApplicationController
-        # before_action :authenticate_request, only: %i[]
         
         def top_backers
           top_backers = User.joins(:donations)
