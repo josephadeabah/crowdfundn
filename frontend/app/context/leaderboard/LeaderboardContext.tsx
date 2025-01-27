@@ -102,7 +102,7 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
 
       const dataPromises = endpoints.map((endpoint) =>
         fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/leaderboard/${endpoint}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/leaderboard/${endpoint}`,
           {
             method: 'GET',
             headers: {
