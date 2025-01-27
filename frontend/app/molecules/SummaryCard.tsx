@@ -369,7 +369,7 @@ const Leaderboard: React.FC = () => {
             </h3>
             <div className="flex -space-x-3">
               {topFundraisersStories?.map((fundraiser, index) => (
-                <Popover key={index}>
+                <Popover key={fundraiser.name}>
                   <PopoverTrigger asChild>
                     <div
                       className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
