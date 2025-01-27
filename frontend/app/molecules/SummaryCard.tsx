@@ -131,7 +131,7 @@ const Leaderboard: React.FC = () => {
           <div className="mb-3">
             <h3 className="text-lg font-semibold mb-2">Top Backers</h3>
             <div className="flex -space-x-3">
-              {topBackers.map((backer, index) => (
+              {topBackers?.map((backer, index) => (
                 <Popover key={index}>
                   <PopoverTrigger asChild>
                     <div
@@ -174,9 +174,9 @@ const Leaderboard: React.FC = () => {
                   </PopoverContent>
                 </Popover>
               ))}
-              {topBackers.length > 5 && (
+              {topBackers?.length > 5 && (
                 <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
-                  +{topBackers.length - 5}
+                  +{topBackers?.length - 5}
                 </div>
               )}
             </div>
@@ -186,7 +186,7 @@ const Leaderboard: React.FC = () => {
           <div className="mb-3">
             <h3 className="text-lg font-semibold mb-2">Most Active Backers</h3>
             <div className="flex -space-x-3">
-              {mostActiveBackers.map((backer, index) => (
+              {mostActiveBackers?.map((backer, index) => (
                 <Popover key={index}>
                   <PopoverTrigger asChild>
                     <div
@@ -231,9 +231,9 @@ const Leaderboard: React.FC = () => {
                   </PopoverContent>
                 </Popover>
               ))}
-              {mostActiveBackers.length > 6 && (
+              {mostActiveBackers?.length > 6 && (
                 <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
-                  +{mostActiveBackers.length - 6}
+                  +{mostActiveBackers?.length - 6}
                 </div>
               )}
             </div>
@@ -245,7 +245,7 @@ const Leaderboard: React.FC = () => {
               Top Backers with Most Rewards
             </h3>
             <div className="flex -space-x-3">
-              {topBackersWithRewards.map((backer, index) => (
+              {topBackersWithRewards?.map((backer, index) => (
                 <Popover key={index}>
                   <PopoverTrigger asChild>
                     <div
@@ -290,9 +290,9 @@ const Leaderboard: React.FC = () => {
                   </PopoverContent>
                 </Popover>
               ))}
-              {topBackersWithRewards.length > 5 && (
+              {topBackersWithRewards?.length > 5 && (
                 <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
-                  +{topBackersWithRewards.length - 5}
+                  +{topBackersWithRewards?.length - 5}
                 </div>
               )}
             </div>
@@ -307,7 +307,7 @@ const Leaderboard: React.FC = () => {
               Top Fundraisers with Best Campaign Graphics
             </h3>
             <div className="flex -space-x-3">
-              {topFundraisersGraphics.map((fundraiser, index) => (
+              {topFundraisersGraphics?.map((fundraiser, index) => (
                 <Popover key={index}>
                   <PopoverTrigger asChild>
                     <div
@@ -354,9 +354,9 @@ const Leaderboard: React.FC = () => {
                   </PopoverContent>
                 </Popover>
               ))}
-              {topFundraisersGraphics.length > 5 && (
+              {topFundraisersGraphics?.length > 5 && (
                 <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
-                  +{topFundraisersGraphics.length - 5}
+                  +{topFundraisersGraphics?.length - 5}
                 </div>
               )}
             </div>
@@ -368,7 +368,7 @@ const Leaderboard: React.FC = () => {
               Top Fundraisers with Best Stories
             </h3>
             <div className="flex -space-x-3">
-              {topFundraisersStories.map((fundraiser, index) => (
+              {topFundraisersStories?.map((fundraiser, index) => (
                 <Popover key={index}>
                   <PopoverTrigger asChild>
                     <div
@@ -415,9 +415,9 @@ const Leaderboard: React.FC = () => {
                   </PopoverContent>
                 </Popover>
               ))}
-              {topFundraisersStories.length > 6 && (
+              {topFundraisersStories?.length > 6 && (
                 <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
-                  +{topFundraisersStories.length - 6}
+                  +{topFundraisersStories?.length - 6}
                 </div>
               )}
             </div>
