@@ -48,7 +48,7 @@ const Leaderboard: React.FC = () => {
   const {
     topBackers,
     mostActiveBackers,
-    topBackersWithRewards,
+    // topBackersWithRewards,
     topFundraisersGraphics,
     topFundraisersStories,
     loading,
@@ -240,7 +240,7 @@ const Leaderboard: React.FC = () => {
           </div>
 
           {/* Top Backers with Most Rewards Section */}
-          <div>
+          {/* <div>
             <h3 className="text-lg font-semibold mb-2">
               Top Backers with Most Rewards
             </h3>
@@ -296,7 +296,7 @@ const Leaderboard: React.FC = () => {
                 </div>
               )}
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Right Column - Top Fundraisers with Best Campaign Graphics, Top Fundraisers with Best Stories, Certificates */}
