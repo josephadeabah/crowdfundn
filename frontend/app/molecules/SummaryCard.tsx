@@ -371,7 +371,7 @@ const Leaderboard: React.FC = () => {
           {/* Top Fundraisers with Best Stories Section */}
           <div className="mb-3">
             <h3 className="text-lg font-semibold mb-2">
-              Top Fundraisers with Best Stories
+              Top Fundraisers with Best Presented Stories
             </h3>
             <div className="flex -space-x-3">
               {topFundraisersStories?.map((fundraiser, index) => (
