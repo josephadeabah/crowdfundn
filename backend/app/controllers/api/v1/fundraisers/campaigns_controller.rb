@@ -181,6 +181,13 @@ module Api
           render json: stats, status: :ok
         end
 
+        def leaderboard
+          leaderboard_data = LeaderboardService.fetch_weekly_leaderboard(@current_user)  # Pass @current_user here
+          render json: leaderboard_data, status: :ok
+        rescue StandardError => e
+          render json: { error: e.message }, status: :internal_server_error
+        end
+
       # POST /api/v1/fundraisers/campaigns/:id/favorite
       def favorite
         if @current_user.favorites.create(campaign: @campaign)

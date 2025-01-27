@@ -82,6 +82,7 @@ Rails.application.routes.draw do
           get 'public_donations', to: 'donations#public_donations'
           get 'group_by_category', on: :collection
           get 'statistics', on: :collection
+          get 'leaderboard', on: :collection
           resources :updates, only: %i[create update destroy]
           resources :comments, only: %i[create index destroy]
           resources :rewards, only: %i[index show create update destroy]
