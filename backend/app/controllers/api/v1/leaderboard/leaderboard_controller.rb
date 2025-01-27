@@ -10,7 +10,7 @@ module Api
                               'users.*, SUM(donations.amount) as total_amount'
                             )
                             .group('users.id')
-                            .order('current_amount DESC')
+                            .order('total_amount DESC')
                             .limit(7)
   
           render json: top_backers.map { |user| serialize_backer(user) }
