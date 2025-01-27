@@ -121,16 +121,16 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
         topFundraisersStoriesData,
       ] = await Promise.all(dataPromises);
 
-      setTopBackers(topBackersData.top_backers);
-      setMostActiveBackers(mostActiveBackersData.most_active_backers);
+      setTopBackers(topBackersData.data);
+      setMostActiveBackers(mostActiveBackersData.data);
     //   setTopBackersWithRewards(
     //     topBackersWithRewardsData.top_backers_with_rewards,
     //   );
       setTopFundraisersGraphics(
-        topFundraisersGraphicsData.top_fundraisers_graphics,
+        topFundraisersGraphicsData.data,
       );
       setTopFundraisersStories(
-        topFundraisersStoriesData.top_fundraisers_stories,
+        topFundraisersStoriesData.data,
       );
     } catch (err: any) {
       setError(err || 'Error fetching leaderboard data');
