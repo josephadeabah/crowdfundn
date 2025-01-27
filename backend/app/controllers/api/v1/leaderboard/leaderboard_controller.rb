@@ -64,22 +64,22 @@ module Api
   
         def serialize_backer(user)
           {
-            name: user.name,
+            name: user.full_name,
             amount: "$#{user.total_amount.to_i}",
-            avatar: user.avatar_url,
-            categoryInterest: user.category,
-            country: user.profile.country,
+            # avatar: user.avatar_url,
+            category_interest: user.category,
+            country: user.country,
             bio: user.profile.description
           }
         end
   
         def serialize_active_backer(user)
           {
-            name: user.name,
+            name: user.full_name,
             contributions: user.total_contributions,
-            avatar: user.avatar_url,
+            # avatar: user.avatar_url,
             categoryInterest: user.category,
-            country: user.profile.country,
+            country: user.country,
             bio: user.profile.description
           }
         end
@@ -88,9 +88,9 @@ module Api
           {
             name: user.name,
             rewards: user.rewards,
-            avatar: user.avatar_url,
+            # avatar: user.avatar_url,
             categoryInterest: user.category,
-            country: user.profile.country,
+            country: user.country,
             bio: user.profile.description
           }
         end
@@ -99,9 +99,9 @@ module Api
           {
             name: user.name,
             campaign: user.campaign_name,
-            avatar: user.avatar_url,
+            # avatar: user.avatar_url,
             categoryInterest: user.category,
-            country: user.profile.country,
+            country: user.country,
             bio: user.profile.description
           }
         end
