@@ -89,7 +89,7 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
       const endpoints = [
         'top_backers',
         'most_active_backers',
-        // 'top_backers_with_rewards',
+        'top_backers_with_rewards',
         'top_fundraisers_graphics',
         'top_fundraisers_stories',
       ];
@@ -116,9 +116,9 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
 
       setTopBackers(topBackersData);
       setMostActiveBackers(mostActiveBackersData);
-    //   setTopBackersWithRewards(
-    //     topBackersWithRewardsData.top_backers_with_rewards,
-    //   );
+      setTopBackersWithRewards(
+        topBackersWithRewardsData.top_backers_with_rewards,
+      );
       setTopFundraisersGraphics(
         topFundraisersGraphicsData,
       );
