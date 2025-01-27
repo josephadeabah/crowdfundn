@@ -159,7 +159,7 @@ const Leaderboard: React.FC = () => {
                           Category Interest
                         </p>
                         <p className="text-sm text-gray-700">
-                          {backer.categoryInterest}
+                          {backer.category_interest}
                         </p>
                       </div>
                       <div>
@@ -214,7 +214,7 @@ const Leaderboard: React.FC = () => {
                           Category Interest
                         </p>
                         <p className="text-sm text-gray-700">
-                          {backer.categoryInterest}
+                          {backer.category_interest}
                         </p>
                       </div>
                       <div>
@@ -240,7 +240,7 @@ const Leaderboard: React.FC = () => {
           </div>
 
           {/* Top Backers with Most Rewards Section */}
-          {/* <div>
+          <div>
             <h3 className="text-lg font-semibold mb-2">
               Top Backers with Most Rewards
             </h3>
@@ -273,7 +273,7 @@ const Leaderboard: React.FC = () => {
                           Category Interest
                         </p>
                         <p className="text-sm text-gray-700">
-                          {backer.categoryInterest}
+                          {backer.category_interest}
                         </p>
                       </div>
                       <div>
@@ -296,7 +296,7 @@ const Leaderboard: React.FC = () => {
                 </div>
               )}
             </div>
-          </div> */}
+          </div>
         </div>
 
         {/* Right Column - Top Fundraisers with Best Campaign Graphics, Top Fundraisers with Best Stories, Certificates */}
@@ -335,7 +335,7 @@ const Leaderboard: React.FC = () => {
                           Category Interest
                         </p>
                         <p className="text-sm text-gray-700">
-                          {fundraiser.categoryInterest}
+                          {fundraiser.category_interest}
                         </p>
                       </div>
                       <div>
@@ -396,7 +396,7 @@ const Leaderboard: React.FC = () => {
                           Category Interest
                         </p>
                         <p className="text-sm text-gray-700">
-                          {fundraiser.categoryInterest}
+                          {fundraiser.category_interest}
                         </p>
                       </div>
                       <div>

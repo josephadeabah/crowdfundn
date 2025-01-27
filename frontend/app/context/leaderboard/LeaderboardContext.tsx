@@ -11,7 +11,7 @@ import { useAuth } from '../auth/AuthContext';
 interface TopbackersData {
   name: string;
   amount: string;
-  categoryInterest: string;
+  category_interest: string;
   country: string;
   bio: string;
 }
@@ -19,7 +19,7 @@ interface TopbackersData {
 interface MostActiveBackersData {
   name: string;
   contributions: string;
-  categoryInterest: string;
+  category_interest: string;
   country: string;
   bio: string;
 }
@@ -27,7 +27,7 @@ interface MostActiveBackersData {
 interface TopBackersWithRewardsData {
   name: string;
   rewards: string;
-  categoryInterest: string;
+  category_interest: string;
   country: string;
   bio: string;
 }
@@ -35,7 +35,7 @@ interface TopBackersWithRewardsData {
 interface TopFundraisersGraphicsData {
   name: string;
   campaign: string;
-  categoryInterest: string;
+  category_interest: string;
   country: string;
   bio: string;
 }
@@ -43,7 +43,7 @@ interface TopFundraisersGraphicsData {
 interface TopFundraisersStoriesData {
   name: string;
   campaign: string;
-  categoryInterest: string;
+  category_interest: string;
   country: string;
   bio: string;
 }
