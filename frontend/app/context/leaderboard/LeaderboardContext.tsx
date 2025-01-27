@@ -80,17 +80,11 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { user, token } = useAuth();
-
   const fetchLeaderboardData = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
 
     try {
-    //   if (!user) {
-    //     setError('You are not authenticated');
-    //     return;
-    //   }
 
       const endpoints = [
         'top_backers',
@@ -107,7 +101,6 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-            //   Authorization: `Bearer ${token}`,
             },
           },
         ).then((response) => response.json()),
