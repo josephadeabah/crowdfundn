@@ -6,6 +6,7 @@ import {
   PopoverTrigger,
 } from '@/app/components/popover/Popover';
 import { useLeaderboardContext } from '@/app/context/leaderboard/LeaderboardContext';
+import { deslugify } from '@/app/utils/helpers/categories';
 import React, { useEffect, useState } from 'react';
 
 const LeaderboardBackersPage = () => {
@@ -151,7 +152,7 @@ const LeaderboardBackersPage = () => {
                                 Category Interest
                               </p>
                               <p className="text-sm text-gray-600">
-                                {backer.category_interest || 'N/A'}
+                                {deslugify(backer.category_interest) || 'N/A'}
                               </p>
                             </div>
                             <div>

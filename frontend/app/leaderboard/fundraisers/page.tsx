@@ -6,6 +6,7 @@ import {
   PopoverTrigger,
 } from '@/app/components/popover/Popover';
 import { useLeaderboardContext } from '@/app/context/leaderboard/LeaderboardContext';
+import { deslugify } from '@/app/utils/helpers/categories';
 import React, { useEffect } from 'react';
 
 const LeaderboardFundraisersPage = () => {
@@ -78,6 +79,15 @@ const LeaderboardFundraisersPage = () => {
                             </div>
                             <div>
                               <p className="text-sm font-semibold text-gray-700">
+                                Category Interest
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                {deslugify(fundraiser.category_interest) ||
+                                  'N/A'}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-gray-700">
                                 Campaign Name
                               </p>
                               <p className="text-sm text-gray-600">
@@ -103,8 +113,8 @@ const LeaderboardFundraisersPage = () => {
                           </div>
                         </PopoverContent>
                       </Popover>
-                      <span className="text-gray-700">{fundraiser.name}</span>
-                    </td>
+                      <span className="text-gray-700 truncate max-w-[150px] block">{fundraiser.name}</span>
+                      </td>
                     <td className="px-4 py-2 text-gray-700">
                       {fundraiser.campaign || 'N/A'}
                     </td>
