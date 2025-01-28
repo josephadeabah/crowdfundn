@@ -1,4 +1,6 @@
 'use client';
+import Avatar from '@/app/components/avatar/Avatar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/popover/Popover';
 import { useLeaderboardContext } from '@/app/context/leaderboard/LeaderboardContext';
 import React, { useEffect, useState } from 'react';
 
@@ -11,12 +13,12 @@ const LeaderboardBackersPage = () => {
     fetchLeaderboardData,
   } = useLeaderboardContext(); // Access the context
 
+  const [activeTab, setActiveTab] = useState('all-time');
+  const [selectedCategory, setSelectedCategory] = useState('topBackers');
+
   useEffect(() => {
     fetchLeaderboardData(); // Fetch leaderboard data on component mount
   }, [fetchLeaderboardData]);
-
-  const [activeTab, setActiveTab] = useState('all-time');
-  const [selectedCategory, setSelectedCategory] = useState('topBackers');
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
@@ -25,18 +27,14 @@ const LeaderboardBackersPage = () => {
   const getFilteredData = (data: any[]) => {
     switch (activeTab) {
       case 'this-week':
-        // Filter data for this week
-        return data.filter((item) => isWithinThisWeek(item.date));
+        return data.filter((item) => isWithinThisWeek(item.date)); // Mock filtering logic
       case 'this-month':
-        // Filter data for this month
-        return data.filter((item) => isWithinThisMonth(item.date));
+        return data.filter((item) => isWithinThisMonth(item.date)); // Mock filtering logic
       default:
-        // Default to "All Time"
         return data;
     }
   };
 
-  // Mock filtering functions (replace with your actual logic)
   const isWithinThisWeek = (date: string) => {
     const now = new Date();
     const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
@@ -59,52 +57,35 @@ const LeaderboardBackersPage = () => {
       : getFilteredData(mostActiveBackers);
 
   return (
-    <div className="px-4 py-5 flex flex-col items-center flex-grow min-h-screen">
-      <div className="w-full max-w-4xl  bg-white">
+    <div className="px-4 py-5 flex flex-col items-center flex-grow bg-white min-h-screen">
+      <div className="w-full max-w-3xl">
         <div className="p-4 flex justify-between">
           <div>
-            <h1 className="text-2xl md:text-[32px] font-bold text-white">Leaderboard</h1>
-            <p className="text-sm text-[#90accb]">
+            <h1 className="text-2xl md:text-[32px] font-bold text-black">Leaderboard</h1>
+            <p className="text-sm text-gray-600">
               The top 100 Backers and their scores
             </p>
           </div>
         </div>
         <div className="py-3">
-          <div className="flex justify-between">
-            <div className="flex border-b border-[#314c68]">
-              <button
-                className={`flex-1 text-sm font-bold text-center py-4 border-b-2 ${
-                  activeTab === 'all-time'
-                    ? 'border-b-[#2589f4] text-white'
-                    : 'border-b-transparent text-[#90accb]'
-                }`}
-                onClick={() => handleTabClick('all-time')}
-              >
-                All time
-              </button>
-              <button
-                className={`flex-1 text-sm font-bold text-center py-4 border-b-2 ${
-                  activeTab === 'this-month'
-                    ? 'border-b-[#2589f4] text-white'
-                    : 'border-b-transparent text-[#90accb]'
-                }`}
-                onClick={() => handleTabClick('this-month')}
-              >
-                This month
-              </button>
-              <button
-                className={`flex-1 text-sm font-bold text-center py-4 border-b-2 ${
-                  activeTab === 'this-week'
-                    ? 'border-b-[#2589f4] text-white'
-                    : 'border-b-transparent text-[#90accb]'
-                }`}
-                onClick={() => handleTabClick('this-week')}
-              >
-                This week
-              </button>
+          <div className="w-full flex justify-between items-center">
+            <div className="flex space-x-4 border-b border-gray-300">
+              {['all-time', 'this-month', 'this-week'].map((tab) => (
+                <button
+                  key={tab}
+                  className={`text-sm font-bold py-2 ${
+                    activeTab === tab
+                      ? 'border-b-2 border-blue-500 text-black'
+                      : 'text-gray-600'
+                  }`}
+                  onClick={() => handleTabClick(tab)}
+                >
+                  {tab.replace('-', ' ').replace(/^\w/, (c) => c.toUpperCase())}
+                </button>
+              ))}
             </div>
             <select
-              className="ml-4 p-2 rounded bg-[#223549] text-white"
+              className="ml-4 p-2 rounded bg-gray-100 border text-gray-700"
               onChange={(e) => setSelectedCategory(e.target.value)}
             >
               <option value="topBackers">Top Backers</option>
@@ -114,28 +95,68 @@ const LeaderboardBackersPage = () => {
         </div>
         <div className="px-4 py-3">
           {loading ? (
-            <p className="text-center text-[#90accb]">Loading...</p>
+            <p className="text-center text-gray-600">Loading...</p>
           ) : error ? (
             <p className="text-center text-red-500">{error}</p>
           ) : (
             <table className="w-full text-left">
-              <thead className="bg-[#182634]">
+              <thead className="bg-gray-100">
                 <tr>
-                  <th className="px-4 py-3 text-white text-sm font-medium">Rank</th>
-                  <th className="px-4 py-3 text-white text-sm font-medium">User</th>
-                  <th className="px-4 py-3 text-white text-sm font-medium">Backed</th>
-                  <th className="px-4 py-3 text-white text-sm font-medium">Score</th>
+                  <th className="px-4 py-3 text-gray-800 text-sm font-medium">Rank</th>
+                  <th className="px-4 py-3 text-gray-800 text-sm font-medium">User</th>
+                  <th className="px-4 py-3 text-gray-800 text-sm font-medium">Backed</th>
+                  <th className="px-4 py-3 text-gray-800 text-sm font-medium">Score</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredData.map((item, index) => (
-                  <tr key={index} className="border-t border-[#314c68]">
-                    <td className="px-4 py-2 text-[#90accb]">{index + 1}</td>
-                    <td className="px-4 py-2 text-[#90accb]">{item.name}</td>
-                    <td className="px-4 py-2 text-[#90accb]">{item.amount}</td>
-                    <td className="px-4 py-2 text-[#90accb]">
-                      {item.contributions || item.rewards}
+                {filteredData.map((backer, index) => (
+                  <tr key={index} className="border-t border-gray-300">
+                    <td className="px-4 py-2 text-gray-600">{index + 1}</td>
+                    <td className="px-4 py-2 flex items-center space-x-3">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <div className="relative cursor-pointer">
+                          <Avatar name={backer.name} size="sm" />
+                          </div>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80 p-4 shadow-lg">
+                          <div className="space-y-4">
+                            <div className="flex items-center space-x-4">
+                            <Avatar name={backer.name} size="sm" />
+                              <div>
+                                <h4 className="font-semibold text-lg text-gray-800">
+                                  {backer.name}
+                                </h4>
+                                <p className="text-sm text-gray-500">
+                                  {backer.country || 'Unknown'}
+                                </p>
+                              </div>
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-gray-700">
+                                Category Interest
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                {backer.category_interest || 'N/A'}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-gray-700">Bio</p>
+                              <p className="text-sm text-gray-600">{backer.bio || 'N/A'}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-gray-700">
+                                Total Donated
+                              </p>
+                              <p className="text-sm text-gray-600">{backer.amount || 'N/A'}</p>
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                      <span className="text-gray-700">{backer.name}</span>
                     </td>
+                    <td className="px-4 py-2 text-gray-700">{backer.amount}</td>
+                    <td className="px-4 py-2 text-gray-700">{backer.score || 'N/A'}</td>
                   </tr>
                 ))}
               </tbody>
