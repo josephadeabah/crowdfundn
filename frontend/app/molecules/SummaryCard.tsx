@@ -26,7 +26,7 @@ import LeaderboardSkeletonLoader from '../loaders/LeaderboardSkeletonLoader';
 const SummaryCard: React.FC = () => {
   return (
     <div
-      className="w-full bg-green-50 text-green-600 dark:bg-gray-800 dark:text-green-400 p-6 rounded-lg"
+      className="w-full bg-green-50 text-green-600 dark:bg-gray-800 dark:text-green-400 p-4 rounded-lg"
       style={{ pointerEvents: 'auto', position: 'relative' }}
     >
       <div className="flex flex-col items-center md:items-start space-y-4">
@@ -124,7 +124,7 @@ const Leaderboard: React.FC = () => {
   ];
 
   return (
-    <div className="w-full bg-white dark:bg-gray-800">
+    <div className="w-full bg-white dark:bg-gray-800 p-4">
       {/* Two-Column Layout */}
       <div className="flex flex-col md:flex-row gap-6">
         {/* Left Column - Top Backers, Most Active Backers, Top Backers with Most Rewards */}
