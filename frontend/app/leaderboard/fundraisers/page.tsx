@@ -86,6 +86,14 @@ const LeaderboardFundraisersPage = () => {
                             </div>
                             <div>
                               <p className="text-sm font-semibold text-gray-700">
+                                Bio
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                {fundraiser.bio || 'N/A'}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-gray-700">
                                 Total Raised
                               </p>
                               <p className="text-sm text-gray-600">
