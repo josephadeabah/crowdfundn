@@ -18,7 +18,7 @@ const LeaderboardFundraisersPage = () => {
 
   return (
     <div className="px-4 py-5 flex flex-col items-center flex-grow bg-white min-h-screen">
-      <div className="w-full max-w-3xl">
+      <div className="w-full max-w-xl">
         <div className="p-4 flex justify-between">
           <div>
             <h1 className="text-2xl md:text-[32px] font-bold text-black">
