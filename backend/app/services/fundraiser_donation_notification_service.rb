@@ -6,7 +6,7 @@ class FundraiserDonationNotificationService
       campaign_name = donation.campaign.title
       transaction_amount = donation.gross_amount.to_f
       transaction_date = donation.created_at.strftime('%B %d, %Y')
-      currency_symbol = donation.campaign.currency_symbol
+      currency_symbol = donation.metadata.campaign_metadata.currency
       redirect_url = donation.metadata['redirect_url']
   
       send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
