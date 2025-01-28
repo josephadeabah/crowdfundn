@@ -1,4 +1,5 @@
 // pages/leaderboard.tsx
+import React from 'react';
 
 const LeaderboardBackersPage = () => {
   return (
