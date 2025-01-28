@@ -2,7 +2,7 @@ class FundraiserDonationNotificationService
     def self.send_notification_email(donation)
       fundraiser_email = donation.campaign.fundraiser.email
       fundraiser_name = donation.campaign.fundraiser.full_name
-      donor_name = donation.anonymous? ? 'Anonymous Donor' : donation.full_name
+      donor_name = donation.full_name.blank? ? 'Anonymous Donor' : donation.full_name
       campaign_name = donation.campaign.title
       transaction_amount = donation.gross_amount.to_f
       transaction_date = donation.created_at.strftime('%B %d, %Y')
