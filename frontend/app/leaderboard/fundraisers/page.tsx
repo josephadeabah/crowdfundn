@@ -113,8 +113,10 @@ const LeaderboardFundraisersPage = () => {
                           </div>
                         </PopoverContent>
                       </Popover>
-                      <span className="text-gray-700 truncate max-w-[150px] block">{fundraiser.name}</span>
-                      </td>
+                      <span className="text-gray-700 truncate max-w-[150px] block">
+                        {fundraiser.name}
+                      </span>
+                    </td>
                     <td className="px-4 py-2 text-gray-700">
                       {fundraiser.campaign || 'N/A'}
                     </td>
@@ -127,48 +129,49 @@ const LeaderboardFundraisersPage = () => {
             </table>
           )}
         </div>
-      </div>
-            {/* How-to Section */}
-            <div className="w-full max-w-4xl mt-10 bg-gray-50 border border-gray-200 rounded-md p-6">
-        <h2 className="text-xl font-semibold text-gray-900">
-          How do I get on the leaderboard?
-        </h2>
+        {/* How-to Section */}
+        <div className="w-full max-w-4xl mt-10 bg-gray-50 border border-gray-200 rounded-md p-6">
+          <h2 className="text-xl font-semibold text-gray-900">
+            How do I get on the leaderboard?
+          </h2>
 
-        <div className="mt-4 space-y-4 text-gray-700">
-          <div>
-            <h3 className="text-lg font-medium text-gray-800">
-              Top Projects Requirement
-            </h3>
-            <p className="text-sm">
-              You have to be in the top 5% of all projects based on total funds
-              raised. So if there are 100 projects, you'd need to be in the top
-              5. If there are 10,000 projects, you'd need to be in the top 500.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-lg font-medium text-gray-800">
-              Project Progress
-            </h3>
-            <p className="text-sm">
-              You can track your progress on your project page. This will show
-              your current rank and how much money you've raised. You can also
-              see how many days are left in your campaign.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-lg font-medium text-gray-800">
-              What happens if I make the leaderboard?
-            </h3>
-            <p className="text-sm">
-              If you make the leaderboard, you'll get a special badge on your
-              project. This is a great way to show potential backers that your
-              project is popular.
-            </p>
-            <p className="text-sm mt-2">
-              You'll also get a shout-out in our weekly newsletter. This goes
-              out to thousands of people who love to discover new projects. It's
-              a great way to get some extra attention for your campaign.
-            </p>
+          <div className="mt-4 space-y-4 text-gray-700">
+            <div>
+              <h3 className="text-lg font-medium text-gray-800">
+                Top Projects Requirement
+              </h3>
+              <p className="text-sm">
+                You have to be in the top 5% of all projects based on total
+                funds raised. So if there are 100 projects, you'd need to be in
+                the top 5. If there are 10,000 projects, you'd need to be in the
+                top 500.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-gray-800">
+                Project Progress
+              </h3>
+              <p className="text-sm">
+                You can track your progress on your project page. This will show
+                your current rank and how much money you've raised. You can also
+                see how many days are left in your campaign.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-gray-800">
+                What happens if I make the leaderboard?
+              </h3>
+              <p className="text-sm">
+                If you make the leaderboard, you'll get a special badge on your
+                project. This is a great way to show potential backers that your
+                project is popular.
+              </p>
+              <p className="text-sm mt-2">
+                You'll also get a shout-out in our weekly newsletter. This goes
+                out to thousands of people who love to discover new projects.
+                It's a great way to get some extra attention for your campaign.
+              </p>
+            </div>
           </div>
         </div>
       </div>
