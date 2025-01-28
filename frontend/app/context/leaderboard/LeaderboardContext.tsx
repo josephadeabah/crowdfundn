@@ -116,7 +116,7 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
       setTopBackers(topBackersData);
       setMostActiveBackers(mostActiveBackersData);
       setTopBackersWithRewards(
-        topBackersWithRewardsData.top_backers_with_rewards,
+        topBackersWithRewardsData,
       );
       setTopFundraisersGraphics(topFundraisersGraphicsData);
       setTopFundraisersStories(topFundraisersStoriesData);
