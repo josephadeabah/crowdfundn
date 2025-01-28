@@ -485,7 +485,7 @@ const SummaryCardComponent: React.FC = () => {
   return (
     <div className="w-full flex flex-col md:flex-row gap-6 py-12">
       {/* Left Column - SummaryCard */}
-      <div className="w-full md:w-1/3 p-4">
+      <div className="w-full md:w-1/3">
         <SummaryCard />
       </div>
 
