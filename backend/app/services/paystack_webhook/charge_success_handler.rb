@@ -75,6 +75,11 @@ class PaystackWebhook::ChargeSuccessHandler
       # Extract campaign metadata (title, description, etc.)
       campaign_metadata = response.dig(:data, :metadata, :campaign_metadata) || {}
 
+          # Extract subaccount contact details
+      subaccount_name = response.dig(:data, :subaccount, :primary_contact_name) || "No contact name"
+      subaccount_contact = response.dig(:data, :subaccount, :primary_contact_email) || "No contact email"
+      subaccount_phone = response.dig(:data, :subaccount, :primary_contact_phone) || "No contact phone"
+
       # Step 5: Update the donation record with extracted metadata and transaction details
       donation.update!(
         status: 'successful',
@@ -91,7 +96,12 @@ class PaystackWebhook::ChargeSuccessHandler
           anonymous_token: session_token,
           user_id: user_id,  # Add user_id to metadata
           campaign_id: campaign_id,  # Add campaign_id to metadata
-          campaign_metadata: campaign_metadata # Add campaign metadata to donation
+          campaign_metadata: campaign_metadata, # Add campaign metadata to donation
+          subaccount_contact: {
+            name: subaccount_name,
+            email: subaccount_contact,
+            phone: subaccount_phone
+          }
         } # Replacing the existing metadata entirely
       )
 
@@ -107,6 +117,7 @@ class PaystackWebhook::ChargeSuccessHandler
 
       # Send confirmation email to the donor
       DonationConfirmationEmailService.send_confirmation_email(donation)
+      FundraiserDonationNotificationService.send_notification_email(donation)
     else
       # If the transaction status isn't 'success', update the donation and raise an error
       donation.update!(status: transaction_status)
