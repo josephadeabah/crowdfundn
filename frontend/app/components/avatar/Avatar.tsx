@@ -34,23 +34,23 @@ const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
       '#0000FF', // Blue
       '#4B0082', // Indigo
       '#8B00FF', // Violet
-  
+
       // Additional vibrant colors
       '#FF1493', // Deep Pink
       '#00CED1', // Dark Turquoise
       '#FFD700', // Gold
       '#ADFF2F', // Green Yellow
-  
+
       // Primary colors
       '#FF0000', // Red
       '#00FF00', // Green
       '#0000FF', // Blue
-  
+
       // Secondary colors
       '#FFFF00', // Yellow
       '#FF7F00', // Orange
       '#8B00FF', // Violet
-  
+
       // Tertiary colors
       '#FF1493', // Deep Pink
       '#FFD700', // Gold
@@ -58,7 +58,7 @@ const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
       '#00CED1', // Dark Turquoise
       '#4B0082', // Indigo
       '#8A2BE2', // Blue Violet
-  
+
       // Complementary colors
       '#FF4500', // Orange Red
       '#32CD32', // Lime Green
@@ -66,7 +66,7 @@ const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
       '#FF6347', // Tomato
       '#7FFF00', // Chartreuse
       '#6A5ACD', // Slate Blue
-  
+
       // Neutral tones
       '#708090', // Slate Gray
       '#2F4F4F', // Dark Slate Gray
@@ -74,7 +74,7 @@ const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
       '#A52A2A', // Brown
       '#5F9EA0', // Cadet Blue
     ];
-  
+
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -82,7 +82,6 @@ const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
     const colorIndex = Math.abs(hash) % colors.length; // Ensures consistent indexing
     return colors[colorIndex];
   };
-  
 
   const sizeClasses: Record<string, string> = {
     sm: 'w-8 h-8 text-xs',

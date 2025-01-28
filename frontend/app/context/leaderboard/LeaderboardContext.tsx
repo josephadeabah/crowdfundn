@@ -26,7 +26,7 @@ interface MostActiveBackersData {
 
 interface TopBackersWithRewardsData {
   name: string;
-  rewards: string;
+  rewards: number;
   category_interest: string;
   country: string;
   bio: string;
@@ -115,9 +115,7 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
 
       setTopBackers(topBackersData);
       setMostActiveBackers(mostActiveBackersData);
-      setTopBackersWithRewards(
-        topBackersWithRewardsData,
-      );
+      setTopBackersWithRewards(topBackersWithRewardsData);
       setTopFundraisersGraphics(topFundraisersGraphicsData);
       setTopFundraisersStories(topFundraisersStoriesData);
     } catch (err: any) {
