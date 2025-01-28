@@ -80,6 +80,10 @@ const Navbar = () => {
       { label: 'By Category', href: '/explore/category' },
       { label: 'By Advance Filtering', href: '/explore/advance' },
     ],
+    Leaderboard: [
+      { label: 'Backers', href: '/leaderboard/backers' },
+      { label: 'Fundraisers', href: '/leaderboard/fundraisers' },
+    ],
   };
 
   if (loading) {
