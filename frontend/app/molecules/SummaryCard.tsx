@@ -247,9 +247,9 @@ const Leaderboard: React.FC = () => {
               Top Backers with Most Rewards
             </h3>
             {topBackersWithRewards && topBackersWithRewards.length > 0 ? (
-              <div className="flex -space-x-3">
-                {topBackersWithRewards.some((backer) => backer.rewards > 0) ? (
-                  topBackersWithRewards.map(
+              topBackersWithRewards.some((backer) => backer.rewards > 0) ? (
+                <div className="flex -space-x-3">
+                  {topBackersWithRewards.map(
                     (backer, index) =>
                       backer.rewards > 0 && (
                         <Popover key={index}>
@@ -300,22 +300,20 @@ const Leaderboard: React.FC = () => {
                           </PopoverContent>
                         </Popover>
                       ),
-                  )
-                ) : (
-                  <p className="text-gray-500">
-                    No data available in this group
-                  </p>
-                )}
-                {topBackersWithRewards?.filter((backer) => backer.rewards > 0)
-                  .length > 5 && (
-                  <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
-                    +
-                    {topBackersWithRewards.filter(
-                      (backer) => backer.rewards > 0,
-                    ).length - 5}
-                  </div>
-                )}
-              </div>
+                  )}
+                  {topBackersWithRewards.filter((backer) => backer.rewards > 0)
+                    .length > 5 && (
+                    <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
+                      +
+                      {topBackersWithRewards.filter(
+                        (backer) => backer.rewards > 0,
+                      ).length - 5}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-gray-500">No data available in this group</p>
+              )
             ) : (
               <p className="text-gray-500">No data available in this group</p>
             )}
