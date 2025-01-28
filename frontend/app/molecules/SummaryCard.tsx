@@ -26,7 +26,7 @@ import LeaderboardSkeletonLoader from '../loaders/LeaderboardSkeletonLoader';
 const SummaryCard: React.FC = () => {
   return (
     <div
-      className="w-full bg-green-50 text-green-600 dark:bg-gray-800 dark:text-green-400 py-4 rounded-lg"
+      className="w-full bg-green-50 text-green-600 dark:bg-gray-800 dark:text-green-400 p-2 md:py-4 md:px-0 rounded-lg"
       style={{ pointerEvents: 'auto', position: 'relative' }}
     >
       <div className="flex flex-col items-center md:items-start space-y-4">
