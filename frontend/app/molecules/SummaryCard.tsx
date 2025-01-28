@@ -491,7 +491,7 @@ const SummaryCardComponent: React.FC = () => {
 
       {/* Right Column - Leaderboard */}
       <div className="w-full md:w-2/3">
-        <Leaderboard />
+        {/* <Leaderboard /> */}
       </div>
     </div>
   );
