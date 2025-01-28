@@ -185,6 +185,53 @@ const LeaderboardBackersPage = () => {
             </table>
           )}
         </div>
+
+        {/* How-to Section */}
+        <div className="w-full max-w-4xl mt-10 bg-gray-50 border border-gray-200 rounded-md p-6">
+          <h2 className="text-xl font-semibold text-gray-900">
+            How do I get on the leaderboard?
+          </h2>
+
+          <div className="mt-4 space-y-4 text-gray-700">
+            <div>
+              <h3 className="text-lg font-medium text-gray-800">
+                Top Projects Requirement
+              </h3>
+              <p className="text-sm">
+                You have to be in the top 5% of all projects based on total
+                funds donated. So if there are 100 projects, you'd need to be in
+                the top 5. If there are 10,000 projects, you'd need to be in the
+                top 500.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-gray-800">
+                Project Progress
+              </h3>
+              <p className="text-sm">
+                You can track your progress on your project page. This will show
+                your current rank and how much money you've raised. You can also
+                see how many days are left in your campaign.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-gray-800">
+                What happens if I make the leaderboard?
+              </h3>
+              <p className="text-sm">
+                If you make the leaderboard, you'll get a special badge on your
+                profile and depending on the points you make, you can unlock a
+                special certificate of honor. This is a great way to show our
+                appreaciation for the impact you're making in the world.
+              </p>
+              <p className="text-sm mt-2">
+                You'll also get a shout-out in our weekly newsletter. This goes
+                out to thousands of people who love to discover new projects.
+                It's a great way to get some extra attention for your campaign.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

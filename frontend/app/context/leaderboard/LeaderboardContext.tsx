@@ -43,6 +43,9 @@ interface TopFundraisersGraphicsData {
 interface TopFundraisersStoriesData {
   name: string;
   campaign: string;
+  amount: number;
+  score: number;
+  rank: number;
   category_interest: string;
   country: string;
   bio: string;
