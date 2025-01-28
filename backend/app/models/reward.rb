@@ -1,6 +1,7 @@
 class Reward < ApplicationRecord
   belongs_to :campaign
   has_one_attached :image
+  has_many :donations
 
   validates :title, :description, :amount, presence: true
   validates :amount, numericality: { greater_than: 0 }

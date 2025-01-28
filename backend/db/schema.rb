@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_01_09_011455) do
+ActiveRecord::Schema[7.1].define(version: 2025_01_28_151306) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -114,6 +114,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_09_011455) do
     t.string "plan"
     t.string "subscription_code"
     t.decimal "platform_fee", precision: 10, scale: 2, default: "0.0"
+    t.integer "reward_id"
     t.index ["campaign_id"], name: "index_donations_on_campaign_id"
     t.index ["status"], name: "index_donations_on_status"
     t.index ["user_id"], name: "index_donations_on_user_id"
