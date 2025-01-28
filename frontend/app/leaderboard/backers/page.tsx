@@ -1,6 +1,10 @@
 'use client';
 import Avatar from '@/app/components/avatar/Avatar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/popover/Popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/app/components/popover/Popover';
 import { useLeaderboardContext } from '@/app/context/leaderboard/LeaderboardContext';
 import React, { useEffect, useState } from 'react';
 
@@ -61,7 +65,9 @@ const LeaderboardBackersPage = () => {
       <div className="w-full max-w-3xl">
         <div className="p-4 flex justify-between">
           <div>
-            <h1 className="text-2xl md:text-[32px] font-bold text-black">Leaderboard</h1>
+            <h1 className="text-2xl md:text-[32px] font-bold text-black">
+              Leaderboard
+            </h1>
             <p className="text-sm text-gray-600">
               The top 100 Backers and their scores
             </p>
@@ -102,10 +108,18 @@ const LeaderboardBackersPage = () => {
             <table className="w-full text-left">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="px-4 py-3 text-gray-800 text-sm font-medium">Rank</th>
-                  <th className="px-4 py-3 text-gray-800 text-sm font-medium">User</th>
-                  <th className="px-4 py-3 text-gray-800 text-sm font-medium">Backed</th>
-                  <th className="px-4 py-3 text-gray-800 text-sm font-medium">Score</th>
+                  <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                    Rank
+                  </th>
+                  <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                    User
+                  </th>
+                  <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                    Backed
+                  </th>
+                  <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                    Score
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -116,13 +130,13 @@ const LeaderboardBackersPage = () => {
                       <Popover>
                         <PopoverTrigger asChild>
                           <div className="relative cursor-pointer">
-                          <Avatar name={backer.name} size="sm" />
+                            <Avatar name={backer.name} size="sm" />
                           </div>
                         </PopoverTrigger>
                         <PopoverContent className="w-80 p-4 shadow-lg">
                           <div className="space-y-4">
                             <div className="flex items-center space-x-4">
-                            <Avatar name={backer.name} size="sm" />
+                              <Avatar name={backer.name} size="sm" />
                               <div>
                                 <h4 className="font-semibold text-lg text-gray-800">
                                   {backer.name}
@@ -141,14 +155,20 @@ const LeaderboardBackersPage = () => {
                               </p>
                             </div>
                             <div>
-                              <p className="text-sm font-semibold text-gray-700">Bio</p>
-                              <p className="text-sm text-gray-600">{backer.bio || 'N/A'}</p>
+                              <p className="text-sm font-semibold text-gray-700">
+                                Bio
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                {backer.bio || 'N/A'}
+                              </p>
                             </div>
                             <div>
                               <p className="text-sm font-semibold text-gray-700">
                                 Total Donated
                               </p>
-                              <p className="text-sm text-gray-600">{backer.amount || 'N/A'}</p>
+                              <p className="text-sm text-gray-600">
+                                {backer.amount || 'N/A'}
+                              </p>
                             </div>
                           </div>
                         </PopoverContent>
@@ -156,7 +176,9 @@ const LeaderboardBackersPage = () => {
                       <span className="text-gray-700">{backer.name}</span>
                     </td>
                     <td className="px-4 py-2 text-gray-700">{backer.amount}</td>
-                    <td className="px-4 py-2 text-gray-700">{backer.score || 'N/A'}</td>
+                    <td className="px-4 py-2 text-gray-700">
+                      {backer.score || 'N/A'}
+                    </td>
                   </tr>
                 ))}
               </tbody>
