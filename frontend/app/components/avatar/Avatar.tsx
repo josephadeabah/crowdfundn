@@ -24,13 +24,29 @@ const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
   }, [name]);
 
   const generateColor = (str: string): string => {
+    // Rainbow colors + additional vibrant colors
+    const colors = [
+      '#FF0000', // Red
+      '#FF7F00', // Orange
+      '#FFFF00', // Yellow
+      '#00FF00', // Green
+      '#0000FF', // Blue
+      '#4B0082', // Indigo
+      '#8B00FF', // Violet
+      '#FF1493', // Deep Pink
+      '#00CED1', // Dark Turquoise
+      '#FFD700', // Gold
+      '#ADFF2F', // Green Yellow
+    ];
+  
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    const c = (hash & 0x00ffffff).toString(16).toUpperCase();
-    return '#' + '00000'.substring(0, 6 - c.length) + c;
+    const colorIndex = Math.abs(hash) % colors.length; // Ensures consistent indexing
+    return colors[colorIndex];
   };
+  
 
   const sizeClasses: Record<string, string> = {
     sm: 'w-8 h-8 text-xs',
