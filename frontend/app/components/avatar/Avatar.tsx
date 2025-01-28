@@ -24,8 +24,9 @@ const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
   }, [name]);
 
   const generateColor = (str: string): string => {
-    // Rainbow colors + additional vibrant colors
+    // Combine all colors: Rainbow, Primary, Secondary, Tertiary, Complementary, Vibrant, and Neutral
     const colors = [
+      // Rainbow colors
       '#FF0000', // Red
       '#FF7F00', // Orange
       '#FFFF00', // Yellow
@@ -33,10 +34,45 @@ const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
       '#0000FF', // Blue
       '#4B0082', // Indigo
       '#8B00FF', // Violet
+  
+      // Additional vibrant colors
       '#FF1493', // Deep Pink
       '#00CED1', // Dark Turquoise
       '#FFD700', // Gold
       '#ADFF2F', // Green Yellow
+  
+      // Primary colors
+      '#FF0000', // Red
+      '#00FF00', // Green
+      '#0000FF', // Blue
+  
+      // Secondary colors
+      '#FFFF00', // Yellow
+      '#FF7F00', // Orange
+      '#8B00FF', // Violet
+  
+      // Tertiary colors
+      '#FF1493', // Deep Pink
+      '#FFD700', // Gold
+      '#ADFF2F', // Green Yellow
+      '#00CED1', // Dark Turquoise
+      '#4B0082', // Indigo
+      '#8A2BE2', // Blue Violet
+  
+      // Complementary colors
+      '#FF4500', // Orange Red
+      '#32CD32', // Lime Green
+      '#1E90FF', // Dodger Blue
+      '#FF6347', // Tomato
+      '#7FFF00', // Chartreuse
+      '#6A5ACD', // Slate Blue
+  
+      // Neutral tones
+      '#708090', // Slate Gray
+      '#2F4F4F', // Dark Slate Gray
+      '#D2691E', // Chocolate
+      '#A52A2A', // Brown
+      '#5F9EA0', // Cadet Blue
     ];
   
     let hash = 0;
