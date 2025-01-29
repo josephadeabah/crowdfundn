@@ -310,7 +310,7 @@ const RewardsPage: React.FC = () => {
           {/* Unlock Your Reward Section */}
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
             <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">
-              Unlock Your Hidden Honor
+              Unlock Your Hidden Certificate of Honor
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center">
               {/* Bronze Reward */}
