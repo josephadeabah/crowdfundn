@@ -295,6 +295,50 @@ const RewardsPage: React.FC = () => {
             </div>
           </div>
 
+          {/* Unlock your reward */}
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
+            <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
+              Unlock Your Hidden Reward.
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* User Rank */}
+              <div
+                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 1000 ? '' : 'filter blur-sm'}`}
+              >
+                <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  Rank
+                </p>
+              </div>
+
+              {/* Total Points */}
+              <div
+                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 1000 ? '' : 'filter blur-sm'}`}
+              >
+                <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  Total Points
+                </p>
+              </div>
+
+              {/* Next Reward */}
+              <div
+                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 1000 ? '' : 'filter blur-sm'}`}
+              >
+                <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  Next Reward
+                </p>
+              </div>
+
+              {/* Reward Progress */}
+              <div
+                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 1000 ? '' : 'filter blur-sm'}`}
+              >
+                <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  Next Milestone
+                </p>
+              </div>
+            </div>
+          </div>
+
           {loading ? (
             <RewardsLoader />
           ) : (
