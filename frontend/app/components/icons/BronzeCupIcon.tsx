@@ -10,7 +10,7 @@ interface BronzeCupIconProps {
 const BronzeCupIcon: React.FC<BronzeCupIconProps> = ({
   width = '800px',
   height = '800px',
-  className = '',
+  className = 'text-blue-400',
   style = {},
 }) => {
   return (
