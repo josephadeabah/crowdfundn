@@ -118,7 +118,7 @@ const LeaderboardBackersPage = () => {
         </div>
 
         {/* How-to Section */}
-        <div className="w-full max-w-4xl mt-10 bg-gray-50 border border-gray-200 rounded-md p-6">
+        <div className="w-full max-w-7xl mt-10 bg-gray-50 border border-gray-200 rounded-md p-6">
           <h2 className="text-xl font-semibold text-gray-900">
             How do I get on the leaderboard?
           </h2>
@@ -140,9 +140,8 @@ const LeaderboardBackersPage = () => {
                 Project Progress
               </h3>
               <p className="text-sm">
-                You can track your progress on your project page. This will show
-                your current rank and how much money you've raised. You can also
-                see how many days are left in your campaign.
+                You can track your progress on your account on reward pane. This will show
+                your current rank and how much money you've contributed.
               </p>
             </div>
             <div>
@@ -158,7 +157,7 @@ const LeaderboardBackersPage = () => {
               <p className="text-sm mt-2">
                 You'll also get a shout-out in our weekly newsletter. This goes
                 out to thousands of people who love to discover new projects.
-                It's a great way to get some extra attention for your campaign.
+                It's a great way to show our appreaciation to backers making the world a better place.
               </p>
             </div>
           </div>

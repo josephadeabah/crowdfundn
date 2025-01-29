@@ -130,7 +130,7 @@ const LeaderboardFundraisersPage = () => {
           )}
         </div>
         {/* How-to Section */}
-        <div className="w-full max-w-4xl mt-10 bg-gray-50 border border-gray-200 rounded-md p-6">
+        <div className="w-full max-w-7xl mt-10 bg-gray-50 border border-gray-200 rounded-md p-6">
           <h2 className="text-xl font-semibold text-gray-900">
             How do I get on the leaderboard?
           </h2>
