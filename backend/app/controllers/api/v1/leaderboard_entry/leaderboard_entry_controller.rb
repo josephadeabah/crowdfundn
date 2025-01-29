@@ -14,7 +14,10 @@ module Api
                 username: entry.user.full_name,
                 total_donations: entry.user.donations.sum(:amount),
                 score: entry.points,
-                profile_picture: entry.user.profile.description
+                profile_picture: entry.user.profile.description,
+                category_interest: entry.user.category,
+                country: entry.user.country,
+                bio: entry.user.profile.description
               }
             end
             render json: leaderboard_data, status: :ok
