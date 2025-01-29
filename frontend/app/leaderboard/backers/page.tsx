@@ -20,7 +20,7 @@ const getCupIcon = (score: number) => {
   } else if (score >= 1000) {
     return <SilverCupIcon className="w-6 h-6 text-gray-400" />;
   } else {
-    return <GoldCupIcon className="w-6 h-6 text-orange-500" />;
+    return <BronzeCupIcon className="w-6 h-6 text-orange-500" />;
   }
 };
 
