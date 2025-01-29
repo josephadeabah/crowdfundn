@@ -189,7 +189,7 @@ const RewardsPage: React.FC = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* User Rank */}
-              {userRank && (
+              {userRank ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
                     Rank
@@ -201,25 +201,43 @@ const RewardsPage: React.FC = () => {
                     {userRank.username}
                   </p>
                 </div>
+              ) : (
+                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                    Rank
+                  </p>
+                  <p className="text-lg text-gray-600 dark:text-gray-400">
+                    No rank data available
+                  </p>
+                </div>
               )}
 
               {/* Total Points */}
-              {userPoints && (
+              {userPoints ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
                     Total Points
                   </p>
                   <ProgressRing
-                  value={Math.round(userPoints.total_points)}
-                  size={120}
-                  strokeWidth={10}
-                  color="#22c55e"
-                />
+                    value={Math.round(userPoints.total_points)}
+                    size={90}
+                    strokeWidth={10}
+                    color="#22c55e"
+                  />
+                </div>
+              ) : (
+                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                    Total Points
+                  </p>
+                  <p className="text-lg text-gray-600 dark:text-gray-400">
+                    No points data available
+                  </p>
                 </div>
               )}
 
               {/* Next Reward */}
-              {userReward && (
+              {userReward ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
                     Next Reward
@@ -231,10 +249,19 @@ const RewardsPage: React.FC = () => {
                     {userReward.description}
                   </p>
                 </div>
+              ) : (
+                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                    Next Reward
+                  </p>
+                  <p className="text-lg text-gray-600 dark:text-gray-400">
+                    No next reward available
+                  </p>
+                </div>
               )}
 
               {/* Reward Progress */}
-              {rewards.length > 0 && userPoints && (
+              {rewards.length > 0 && userPoints ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
                     Next Milestone
@@ -254,6 +281,15 @@ const RewardsPage: React.FC = () => {
                         {nextReward.level} - {nextReward.points_required} points
                       </p>
                     ))}
+                </div>
+              ) : (
+                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                    Next Milestone
+                  </p>
+                  <p className="text-lg text-gray-600 dark:text-gray-400">
+                    No milestone data available
+                  </p>
                 </div>
               )}
             </div>
