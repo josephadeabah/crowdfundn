@@ -8,6 +8,8 @@ import RewardCard from '@/app/components/rewardcard/RewardCard';
 import RewardsLoader from '../loaders/RewardsLoader';
 import AlertPopup from '../components/alertpopup/AlertPopup';
 import { truncateTitle } from '../utils/helpers/truncate.title';
+import { usePointRewardContext } from '../context/pointreward/PointRewardContext';
+import ProgressRing from '../components/ring/ProgressRing';
 
 interface FormData {
   title: string;
@@ -33,6 +35,24 @@ const RewardsPage: React.FC = () => {
     error: contextError,
     loading: loadingReward,
   } = useRewardContext();
+
+  const {
+    userRank,
+    rewards,
+    userReward,
+    userPoints,
+    fetchUserRank,
+    fetchRewards,
+    fetchUserReward,
+    fetchUserPoints,
+  } = usePointRewardContext();
+
+  useEffect(() => {
+    fetchUserRank();
+    fetchRewards();
+    fetchUserReward();
+    fetchUserPoints();
+  }, [fetchUserRank, fetchRewards, fetchUserReward, fetchUserPoints]);
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
@@ -161,6 +181,84 @@ const RewardsPage: React.FC = () => {
               <FiPlus className="mr-2" /> Add Reward
             </button>
           </div>
+
+          {/* User Rewards & Rank Summary Section */}
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
+            <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
+              Your Reward Progress
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* User Rank */}
+              {userRank && (
+                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                    Rank
+                  </p>
+                  <p className="text-2xl font-extrabold text-green-600">
+                    {userRank.rank}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {userRank.username}
+                  </p>
+                </div>
+              )}
+
+              {/* Total Points */}
+              {userPoints && (
+                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                    Total Points
+                  </p>
+                  <ProgressRing
+                  value={Math.round(userPoints.total_points)}
+                  size={120}
+                  strokeWidth={10}
+                  color="#22c55e"
+                />
+                </div>
+              )}
+
+              {/* Next Reward */}
+              {userReward && (
+                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                    Next Reward
+                  </p>
+                  <p className="text-xl font-semibold text-orange-500">
+                    {userReward.level}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {userReward.description}
+                  </p>
+                </div>
+              )}
+
+              {/* Reward Progress */}
+              {rewards.length > 0 && userPoints && (
+                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                    Next Milestone
+                  </p>
+                  {rewards
+                    .filter(
+                      (reward) =>
+                        reward.points_required > userPoints.total_points,
+                    )
+                    .sort((a, b) => a.points_required - b.points_required)
+                    .slice(0, 1)
+                    .map((nextReward) => (
+                      <p
+                        key={nextReward.id}
+                        className="text-md text-gray-700 dark:text-gray-300"
+                      >
+                        {nextReward.level} - {nextReward.points_required} points
+                      </p>
+                    ))}
+                </div>
+              )}
+            </div>
+          </div>
+
           {loading ? (
             <RewardsLoader />
           ) : (
