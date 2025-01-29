@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FiPlus } from 'react-icons/fi';
+import { BiMedal } from 'react-icons/bi'; // Medal icon for rewards
+import { FaTrophy, FaStar } from 'react-icons/fa'; // Trophy and Star for reward levels
 import Modal from '../components/modal/Modal';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useRewardContext } from '@/app/context/account/rewards/RewardsContext';
@@ -165,6 +167,21 @@ const RewardsPage: React.FC = () => {
     setRewardToDelete(null);
   };
 
+  const renderRewardIcon = (level: string) => {
+    switch (level) {
+      case 'Bronze':
+        return <FaStar size={24} className="text-[#cd7f32]" />;  // Bronze
+      case 'Silver':
+        return <FaStar size={24} className="text-[#c0c0c0]" />;  // Silver
+      case 'Gold':
+        return <FaTrophy size={24} className="text-[#ffd700]" />;  // Gold
+      case 'Diamond':
+        return <BiMedal size={24} className="text-[#b9f2ff]" />;  // Diamond (light blue)
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       <div className="min-h-screen px-2 py-4">
@@ -295,75 +312,38 @@ const RewardsPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Unlock your reward */}
+          {/* Unlock Your Reward Section */}
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
             <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
-              Unlock Your Hidden Reward  <i className="fas fa-certificate text-gray-800" />
-
+              Unlock Your Hidden Reward
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Bronze Icon */}
+              {/* Bronze Reward */}
               <div
                 className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 100 ? '' : 'filter blur-sm'}`}
               >
-                <div className="text-4xl">
-                  {Number(userPoints?.total_points) >= 100 ? (
-                    <i className="fas fa-certificate text-brown-500" /> // Replace with the bronze icon
-                  ) : (
-                    <i className="fas fa-certificate text-gray-400" />
-                  )}
-                </div>
-                <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                  Bronze
-                </p>
+                {renderRewardIcon('Bronze')}
               </div>
 
-              {/* Silver Icon */}
+              {/* Silver Reward */}
               <div
                 className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 500 ? '' : 'filter blur-sm'}`}
               >
-                <div className="text-4xl">
-                  {Number(userPoints?.total_points) >= 500 ? (
-                    <i className="fas fa-certificate text-gray-500" /> // Replace with the silver icon
-                  ) : (
-                    <i className="fas fa-certificate text-gray-400" />
-                  )}
-                </div>
-                <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                  Silver
-                </p>
+                {renderRewardIcon('Silver')}
               </div>
 
-              {/* Gold Icon */}
+              {/* Gold Reward */}
               <div
                 className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 1000 ? '' : 'filter blur-sm'}`}
               >
-                <div className="text-4xl">
-                  {Number(userPoints?.total_points) >= 1000 ? (
-                    <i className="fas fa-certificate text-yellow-500" /> // Replace with the gold icon
-                  ) : (
-                    <i className="fas fa-certificate text-gray-400" />
-                  )}
-                </div>
-                <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                  Gold
-                </p>
+                {renderRewardIcon('Gold')}
               </div>
 
-              {/* Diamond Icon */}
+              {/* Diamond Reward */}
               <div
                 className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 2000 ? '' : 'filter blur-sm'}`}
               >
-                <div className="text-4xl">
-                  {Number(userPoints?.total_points) >= 2000 ? (
-                    <i className="fas fa-gem text-blue-500" /> // Replace with the diamond icon
-                  ) : (
-                    <i className="fas fa-gem text-gray-400" />
-                  )}
-                </div>
-                <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                  Diamond
-                </p>
+                {renderRewardIcon('Diamond')}
               </div>
             </div>
           </div>
