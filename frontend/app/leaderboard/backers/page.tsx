@@ -1,6 +1,7 @@
 'use client';
 import Avatar from '@/app/components/avatar/Avatar';
 import BronzeCupIcon from '@/app/components/icons/BronzeCupIcon';
+import DiamondCupIcon from '@/app/components/icons/DiamondCupIcon';
 import GoldCupIcon from '@/app/components/icons/GoldCupIcon';
 import SilverCupIcon from '@/app/components/icons/SilverCupIcon';
 import {
@@ -16,11 +17,11 @@ import React, { useEffect } from 'react';
 // Function to determine the cup icon based on score
 const getCupIcon = (score: number) => {
   if (score >= 5000) {
-    return <GoldCupIcon className="w-6 h-6 text-yellow-500" />;
+    return <DiamondCupIcon className="w-6 h-6 text-yellow-500" />;
   } else if (score >= 1000) {
-    return <SilverCupIcon className="w-6 h-6 text-gray-400" />;
+    return <GoldCupIcon className="w-6 h-6 text-gray-400" />;
   } else {
-    return <BronzeCupIcon className="w-6 h-6 text-orange-500" />;
+    return <DiamondCupIcon className="w-6 h-6 text-orange-500" />;
   }
 };
 
