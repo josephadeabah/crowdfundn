@@ -298,7 +298,8 @@ const RewardsPage: React.FC = () => {
           {/* Unlock your reward */}
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
             <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
-              Unlock Your Hidden Reward
+              Unlock Your Hidden Reward  <i className="fas fa-certificate text-gray-800" />
+
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Bronze Icon */}
