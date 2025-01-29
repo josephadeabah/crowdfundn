@@ -27,7 +27,7 @@ const LeaderboardBackersPage = () => {
               Leaderboard
             </h1>
             <p className="text-sm text-gray-600">
-              See who's funding the most interesting projects
+              See our philantropists funding the most interesting projects
             </p>
           </div>
         </div>
