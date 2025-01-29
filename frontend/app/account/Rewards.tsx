@@ -167,10 +167,10 @@ const RewardsPage: React.FC = () => {
 
   const renderRewardIcon = () => {
     return (
-      <div className="relative w-10 h-10 bg-gray-200 rounded-md">
+      <div className="relative w-10 h-10 bg-gray-200">
         {/* Download Icon */}
         <FiDownload
-          className="absolute top-0 right-0 text-gray-500 p-1"
+          className="absolute top-0 right-0 text-gray-700 p-1"
           size={16}
         />
       </div>
@@ -315,28 +315,28 @@ const RewardsPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Bronze Reward */}
               <div
-                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 100 ? '' : 'filter blur-md'}`}
+                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 100 ? '' : 'filter blur-sm'}`}
               >
                 {renderRewardIcon()}
               </div>
 
               {/* Silver Reward */}
               <div
-                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 500 ? '' : 'filter blur-md'}`}
+                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 500 ? '' : 'filter blur-sm'}`}
               >
                 {renderRewardIcon()}
               </div>
 
               {/* Gold Reward */}
               <div
-                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 1000 ? '' : 'filter blur-md'}`}
+                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 1000 ? '' : 'filter blur-sm'}`}
               >
                 {renderRewardIcon()}
               </div>
 
               {/* Diamond Reward */}
               <div
-                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 2000 ? '' : 'filter blur-md'}`}
+                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 2000 ? '' : 'filter blur-sm'}`}
               >
                 {renderRewardIcon()}
               </div>
