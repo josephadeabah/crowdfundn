@@ -206,7 +206,7 @@ const RewardsPage: React.FC = () => {
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
                     Rank
                   </p>
-                  <p className="text-lg text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     No rank data available
                   </p>
                 </div>
@@ -230,7 +230,7 @@ const RewardsPage: React.FC = () => {
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
                     Total Points
                   </p>
-                  <p className="text-lg text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     No points data available
                   </p>
                 </div>
@@ -254,7 +254,7 @@ const RewardsPage: React.FC = () => {
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
                     Next Reward
                   </p>
-                  <p className="text-lg text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     No next reward available
                   </p>
                 </div>
@@ -287,7 +287,7 @@ const RewardsPage: React.FC = () => {
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
                     Next Milestone
                   </p>
-                  <p className="text-lg text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     No milestone data available
                   </p>
                 </div>
