@@ -2,7 +2,7 @@ module Api
     module V1
       module LeaderboardEntry
         class LeaderboardEntryController < ApplicationController
-          before_action :authenticate_request!, only: [:my_rank]
+          before_action :authenticate_request, only: [:my_rank]
   
           # Fetch all leaderboard entries
           def index

@@ -2,7 +2,7 @@ module Api
     module V1
       module BackerRewards
         class BackerRewardsController < ApplicationController
-          before_action :authenticate_request!, only: [:my_reward]
+          before_action :authenticate_request, only: [:my_reward]
   
           # Fetch available rewards (public access)
           def index

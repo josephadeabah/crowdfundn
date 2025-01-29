@@ -2,7 +2,7 @@ module Api
     module V1
       module Points
         class PointsController < ApplicationController
-            before_action :authenticate_request!, only: [:my_points]
+            before_action :authenticate_request, only: [:my_points]
   
           # Fetch user points
           def my_points
