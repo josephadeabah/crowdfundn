@@ -12,6 +12,7 @@ interface TopbackersData {
   name: string;
   amount: string;
   category_interest: string;
+  score: number;
   country: string;
   bio: string;
 }

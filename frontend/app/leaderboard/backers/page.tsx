@@ -10,56 +10,12 @@ import { deslugify } from '@/app/utils/helpers/categories';
 import React, { useEffect, useState } from 'react';
 
 const LeaderboardBackersPage = () => {
-  const {
-    topBackers,
-    mostActiveBackers,
-    loading,
-    error,
-    fetchLeaderboardData,
-  } = useLeaderboardContext(); // Access the context
-
-  const [activeTab, setActiveTab] = useState('all-time');
-  const [selectedCategory, setSelectedCategory] = useState('topBackers');
+  const { topBackers, loading, error, fetchLeaderboardData } =
+    useLeaderboardContext(); // Access the context
 
   useEffect(() => {
     fetchLeaderboardData(); // Fetch leaderboard data on component mount
   }, [fetchLeaderboardData]);
-
-  const handleTabClick = (tab: string) => {
-    setActiveTab(tab);
-  };
-
-  const getFilteredData = (data: any[]) => {
-    switch (activeTab) {
-      case 'this-week':
-        return data.filter((item) => isWithinThisWeek(item.date)); // Mock filtering logic
-      case 'this-month':
-        return data.filter((item) => isWithinThisMonth(item.date)); // Mock filtering logic
-      default:
-        return data;
-    }
-  };
-
-  const isWithinThisWeek = (date: string) => {
-    const now = new Date();
-    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-    const givenDate = new Date(date);
-    return givenDate >= startOfWeek;
-  };
-
-  const isWithinThisMonth = (date: string) => {
-    const now = new Date();
-    const givenDate = new Date(date);
-    return (
-      givenDate.getFullYear() === now.getFullYear() &&
-      givenDate.getMonth() === now.getMonth()
-    );
-  };
-
-  const filteredData =
-    selectedCategory === 'topBackers'
-      ? getFilteredData(topBackers)
-      : getFilteredData(mostActiveBackers);
 
   return (
     <div className="px-4 py-5 flex flex-col items-center flex-grow bg-white min-h-screen">
@@ -72,32 +28,6 @@ const LeaderboardBackersPage = () => {
             <p className="text-sm text-gray-600">
               See who's funding the most interesting projects
             </p>
-          </div>
-        </div>
-        <div className="py-3">
-          <div className="w-full flex justify-between items-center">
-            <div className="flex space-x-4 border-b border-gray-300">
-              {['all-time', 'this-month', 'this-week'].map((tab) => (
-                <button
-                  key={tab}
-                  className={`text-sm font-bold py-2 ${
-                    activeTab === tab
-                      ? 'border-b-2 border-blue-500 text-black'
-                      : 'text-gray-600'
-                  }`}
-                  onClick={() => handleTabClick(tab)}
-                >
-                  {tab.replace('-', ' ').replace(/^\w/, (c) => c.toUpperCase())}
-                </button>
-              ))}
-            </div>
-            <select
-              className="ml-4 p-2 rounded bg-gray-100 border text-gray-700"
-              onChange={(e) => setSelectedCategory(e.target.value)}
-            >
-              <option value="topBackers">Top Backers</option>
-              <option value="mostActiveBackers">Most Active Backers</option>
-            </select>
           </div>
         </div>
         <div className="px-4 py-3">
@@ -124,7 +54,7 @@ const LeaderboardBackersPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredData.map((backer, index) => (
+                {topBackers.map((backer, index) => (
                   <tr key={index} className="border-t border-gray-300">
                     <td className="px-4 py-2 text-gray-600">{index + 1}</td>
                     <td className="px-4 py-2 flex items-center space-x-3">
