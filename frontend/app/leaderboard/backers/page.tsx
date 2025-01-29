@@ -70,7 +70,7 @@ const LeaderboardBackersPage = () => {
               Leaderboard
             </h1>
             <p className="text-sm text-gray-600">
-              The top 100 Backers and their scores
+              See who's funding the most interesting projects
             </p>
           </div>
         </div>

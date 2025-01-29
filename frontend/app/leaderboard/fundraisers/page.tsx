@@ -26,7 +26,7 @@ const LeaderboardFundraisersPage = () => {
               Fundraisers Leaderboard
             </h1>
             <p className="text-sm text-gray-600">
-              The top 100 fundraisers with the highest amount raised
+              See who's raising the most for their project
             </p>
           </div>
         </div>
