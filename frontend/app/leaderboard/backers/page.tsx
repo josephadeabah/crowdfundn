@@ -69,7 +69,7 @@ const LeaderboardBackersPage = () => {
                           <PopoverContent className="w-80 p-4 shadow-lg">
                             <div className="space-y-4">
                               <div className="flex items-center space-x-4">
-                                <Avatar name={backer.name} size="sm" />
+                                <Avatar name={backer.name} size="xl" />
                                 <div>
                                   <h4 className="font-semibold text-lg text-gray-800">
                                     {backer.name}

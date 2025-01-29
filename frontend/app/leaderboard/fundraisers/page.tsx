@@ -69,7 +69,7 @@ const LeaderboardFundraisersPage = () => {
                           <PopoverContent className="w-80 p-4 shadow-lg">
                             <div className="space-y-4">
                               <div className="flex items-center space-x-4">
-                                <Avatar name={fundraiser.name} size="sm" />
+                                <Avatar name={fundraiser.name} size="xl" />
                                 <div>
                                   <h4 className="font-semibold text-lg text-gray-800">
                                     {fundraiser.name}
