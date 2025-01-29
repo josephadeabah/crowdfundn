@@ -7,7 +7,7 @@ import {
 } from '@/app/components/popover/Popover';
 import { useLeaderboardContext } from '@/app/context/leaderboard/LeaderboardContext';
 import { deslugify } from '@/app/utils/helpers/categories';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 const LeaderboardBackersPage = () => {
   const { topBackers, loading, error, fetchLeaderboardData } =
@@ -36,84 +36,88 @@ const LeaderboardBackersPage = () => {
           ) : error ? (
             <p className="text-center text-red-500">{error}</p>
           ) : (
-            <table className="w-full text-left">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="px-4 py-3 text-gray-800 text-sm font-medium">
-                    Rank
-                  </th>
-                  <th className="px-4 py-3 text-gray-800 text-sm font-medium">
-                    User
-                  </th>
-                  <th className="px-4 py-3 text-gray-800 text-sm font-medium">
-                    Backed
-                  </th>
-                  <th className="px-4 py-3 text-gray-800 text-sm font-medium">
-                    Score
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {topBackers.map((backer, index) => (
-                  <tr key={index} className="border-t border-gray-300">
-                    <td className="px-4 py-2 text-gray-600">{index + 1}</td>
-                    <td className="px-4 py-2 flex items-center space-x-3">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <div className="relative cursor-pointer">
-                            <Avatar name={backer.name} size="sm" />
-                          </div>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-80 p-4 shadow-lg">
-                          <div className="space-y-4">
-                            <div className="flex items-center space-x-4">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left min-w-[600px]">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                      Rank
+                    </th>
+                    <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                      User
+                    </th>
+                    <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                      Backed
+                    </th>
+                    <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                      Score
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {topBackers.map((backer, index) => (
+                    <tr key={index} className="border-t border-gray-300">
+                      <td className="px-4 py-2 text-gray-600">{index + 1}</td>
+                      <td className="px-4 py-2 flex items-center space-x-3">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <div className="relative cursor-pointer">
                               <Avatar name={backer.name} size="sm" />
+                            </div>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-80 p-4 shadow-lg">
+                            <div className="space-y-4">
+                              <div className="flex items-center space-x-4">
+                                <Avatar name={backer.name} size="sm" />
+                                <div>
+                                  <h4 className="font-semibold text-lg text-gray-800">
+                                    {backer.name}
+                                  </h4>
+                                  <p className="text-sm text-gray-500">
+                                    {backer.country || 'Unknown'}
+                                  </p>
+                                </div>
+                              </div>
                               <div>
-                                <h4 className="font-semibold text-lg text-gray-800">
-                                  {backer.name}
-                                </h4>
-                                <p className="text-sm text-gray-500">
-                                  {backer.country || 'Unknown'}
+                                <p className="text-sm font-semibold text-gray-700">
+                                  Category Interest
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                  {deslugify(backer.category_interest) || 'N/A'}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-semibold text-gray-700">
+                                  Bio
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                  {backer.bio || 'N/A'}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-semibold text-gray-700">
+                                  Total Donated
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                  {backer.amount || 'N/A'}
                                 </p>
                               </div>
                             </div>
-                            <div>
-                              <p className="text-sm font-semibold text-gray-700">
-                                Category Interest
-                              </p>
-                              <p className="text-sm text-gray-600">
-                                {deslugify(backer.category_interest) || 'N/A'}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm font-semibold text-gray-700">
-                                Bio
-                              </p>
-                              <p className="text-sm text-gray-600">
-                                {backer.bio || 'N/A'}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm font-semibold text-gray-700">
-                                Total Donated
-                              </p>
-                              <p className="text-sm text-gray-600">
-                                {backer.amount || 'N/A'}
-                              </p>
-                            </div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <span className="text-gray-700">{backer.name}</span>
-                    </td>
-                    <td className="px-4 py-2 text-gray-700">{backer.amount}</td>
-                    <td className="px-4 py-2 text-gray-700">
-                      {backer.score || 'N/A'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                          </PopoverContent>
+                        </Popover>
+                        <span className="text-gray-700">{backer.name}</span>
+                      </td>
+                      <td className="px-4 py-2 text-gray-700">
+                        {backer.amount}
+                      </td>
+                      <td className="px-4 py-2 text-gray-700">
+                        {backer.score || 'N/A'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 
@@ -140,8 +144,9 @@ const LeaderboardBackersPage = () => {
                 Project Progress
               </h3>
               <p className="text-sm">
-                You can track your progress on your account on reward pane. This will show
-                your current rank and how much money you've contributed.
+                You can track your progress on your account on reward pane. This
+                will show your current rank and how much money you've
+                contributed.
               </p>
             </div>
             <div>
@@ -157,7 +162,8 @@ const LeaderboardBackersPage = () => {
               <p className="text-sm mt-2">
                 You'll also get a shout-out in our weekly newsletter. This goes
                 out to thousands of people who love to discover new projects.
-                It's a great way to show our appreaciation to backers making the world a better place.
+                It's a great way to show our appreaciation to backers making the
+                world a better place.
               </p>
             </div>
           </div>
