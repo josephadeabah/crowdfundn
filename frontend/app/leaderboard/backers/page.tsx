@@ -5,18 +5,18 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/app/components/popover/Popover';
-import { useLeaderboardContext } from '@/app/context/leaderboard/LeaderboardContext';
+import { usePointRewardContext } from '@/app/context/pointreward/PointRewardContext';
 import TransferLoader from '@/app/loaders/TransferLoader ';
 import { deslugify } from '@/app/utils/helpers/categories';
 import React, { useEffect } from 'react';
 
 const LeaderboardBackersPage = () => {
-  const { topBackers, loading, error, fetchLeaderboardData } =
-    useLeaderboardContext(); // Access the context
+  const { leaderboard, loading, error, fetchLeaderboard } =
+    usePointRewardContext(); // Access the context
 
   useEffect(() => {
-    fetchLeaderboardData(); // Fetch leaderboard data on component mount
-  }, [fetchLeaderboardData]);
+    fetchLeaderboard(); // Fetch leaderboard data on component mount
+  }, [fetchLeaderboard]);
 
   return (
     <div className="px-4 py-5 flex flex-col items-center flex-grow bg-white min-h-screen">
@@ -56,23 +56,23 @@ const LeaderboardBackersPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {topBackers.map((backer, index) => (
+                  {leaderboard.map((backer, index) => (
                     <tr key={index} className="border-t border-gray-300">
                       <td className="px-4 py-2 text-gray-600">{index + 1}</td>
                       <td className="px-4 py-2 flex items-center space-x-3">
                         <Popover>
                           <PopoverTrigger asChild>
                             <div className="relative cursor-pointer">
-                              <Avatar name={backer.name} size="sm" />
+                              <Avatar name={backer.username} size="sm" />
                             </div>
                           </PopoverTrigger>
                           <PopoverContent className="w-80 p-4 shadow-lg">
                             <div className="space-y-4">
                               <div className="flex items-center space-x-4">
-                                <Avatar name={backer.name} size="xl" />
+                                <Avatar name={backer.username} size="xl" />
                                 <div>
                                   <h4 className="font-semibold text-lg text-gray-800">
-                                    {backer.name}
+                                    {backer.username}
                                   </h4>
                                   <p className="text-sm text-gray-500">
                                     {backer.country || 'Unknown'}
@@ -100,16 +100,16 @@ const LeaderboardBackersPage = () => {
                                   Total Donated
                                 </p>
                                 <p className="text-sm text-gray-600">
-                                  {backer.amount || 'N/A'}
+                                  {backer.total_donations || 'N/A'}
                                 </p>
                               </div>
                             </div>
                           </PopoverContent>
                         </Popover>
-                        <span className="text-gray-700">{backer.name}</span>
+                        <span className="text-gray-700">{backer.username}</span>
                       </td>
                       <td className="px-4 py-2 text-gray-700">
-                        {backer.amount}
+                        {backer.total_donations}
                       </td>
                       <td className="px-4 py-2 text-gray-700">
                         {backer.score || 'N/A'}

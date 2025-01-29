@@ -15,6 +15,9 @@ interface LeaderboardEntry {
   total_donations: number;
   score: number;
   profile_picture: string;
+  country: string;
+  category_interest: string;
+  bio: string;
 }
 
 interface UserRankData extends LeaderboardEntry {
