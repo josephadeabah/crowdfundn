@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiPlus } from 'react-icons/fi';
-import { BiMedal } from 'react-icons/bi'; // Medal icon for rewards
-import { FaTrophy, FaStar } from 'react-icons/fa'; // Trophy and Star for reward levels
+import { FiDownload, FiPlus } from 'react-icons/fi';
 import Modal from '../components/modal/Modal';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useRewardContext } from '@/app/context/account/rewards/RewardsContext';
@@ -167,19 +165,16 @@ const RewardsPage: React.FC = () => {
     setRewardToDelete(null);
   };
 
-  const renderRewardIcon = (level: string) => {
-    switch (level) {
-      case 'Bronze':
-        return <FaStar size={24} className="text-[#cd7f32]" />;  // Bronze
-      case 'Silver':
-        return <FaStar size={24} className="text-[#c0c0c0]" />;  // Silver
-      case 'Gold':
-        return <FaTrophy size={24} className="text-[#ffd700]" />;  // Gold
-      case 'Diamond':
-        return <BiMedal size={24} className="text-[#b9f2ff]" />;  // Diamond (light blue)
-      default:
-        return null;
-    }
+  const renderRewardIcon = () => {
+    return (
+      <div className="relative w-10 h-10 bg-gray-200 rounded-md">
+        {/* Download Icon */}
+        <FiDownload
+          className="absolute top-0 right-0 text-gray-500 p-1"
+          size={16}
+        />
+      </div>
+    );
   };
 
   return (
@@ -322,28 +317,28 @@ const RewardsPage: React.FC = () => {
               <div
                 className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 100 ? '' : 'filter blur-md'}`}
               >
-                {renderRewardIcon('Bronze')}
+                {renderRewardIcon()}
               </div>
 
               {/* Silver Reward */}
               <div
                 className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 500 ? '' : 'filter blur-md'}`}
               >
-                {renderRewardIcon('Silver')}
+                {renderRewardIcon()}
               </div>
 
               {/* Gold Reward */}
               <div
                 className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 1000 ? '' : 'filter blur-md'}`}
               >
-                {renderRewardIcon('Gold')}
+                {renderRewardIcon()}
               </div>
 
               {/* Diamond Reward */}
               <div
                 className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 2000 ? '' : 'filter blur-md'}`}
               >
-                {renderRewardIcon('Diamond')}
+                {renderRewardIcon()}
               </div>
             </div>
           </div>
