@@ -27,7 +27,7 @@ const LeaderboardBackersPage = () => {
               Leaderboard
             </h1>
             <p className="text-sm text-gray-600">
-              See our philantropists funding the most interesting projects
+              See our philanthropists funding the most interesting projects
             </p>
           </div>
         </div>
@@ -36,6 +36,10 @@ const LeaderboardBackersPage = () => {
             <TransferLoader />
           ) : error ? (
             <p className="text-center text-red-500">{error}</p>
+          ) : leaderboard.length === 0 ? ( // Check if leaderboard is empty
+            <p className="text-center text-gray-500 py-6">
+              No change makers yet. Be the first philanthropist!
+            </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left min-w-[600px]">
@@ -158,8 +162,8 @@ const LeaderboardBackersPage = () => {
                 If you make the leaderboard, you'll get a special badge on your
                 profile and depending on the points you make, you can unlock a
                 special certificate of honor. You'll also be recognized globally
-                as a philantropist. This is a great way to show our appreciation
-                for the impact you're making in the world.
+                as a philanthropist. This is a great way to show our
+                appreciation for the impact you're making in the world.
               </p>
               <p className="text-sm mt-2">
                 You'll also get a shout-out in our weekly newsletter. This goes
