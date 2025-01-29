@@ -29,6 +29,7 @@ interface RewardData {
   level: string;
   points_required: number;
   description: string;
+  messsage: string;
 }
 
 interface UserRewardData extends RewardData {
