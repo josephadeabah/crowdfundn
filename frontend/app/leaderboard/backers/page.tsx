@@ -1,5 +1,8 @@
 'use client';
 import Avatar from '@/app/components/avatar/Avatar';
+import BronzeCupIcon from '@/app/components/icons/BronzeCupIcon';
+import GoldCupIcon from '@/app/components/icons/GoldCupIcon';
+import SilverCupIcon from '@/app/components/icons/SilverCupIcon';
 import {
   Popover,
   PopoverContent,
@@ -9,6 +12,17 @@ import { usePointRewardContext } from '@/app/context/pointreward/PointRewardCont
 import TransferLoader from '@/app/loaders/TransferLoader ';
 import { deslugify } from '@/app/utils/helpers/categories';
 import React, { useEffect } from 'react';
+
+// Function to determine the cup icon based on score
+const getCupIcon = (score: number) => {
+  if (score >= 5000) {
+    return <GoldCupIcon className="w-6 h-6 text-yellow-500" />;
+  } else if (score >= 1000) {
+    return <SilverCupIcon className="w-6 h-6 text-gray-400" />;
+  } else {
+    return <BronzeCupIcon className="w-6 h-6 text-orange-500" />;
+  }
+};
 
 const LeaderboardBackersPage = () => {
   const { leaderboard, loading, error, fetchLeaderboard } =
@@ -36,7 +50,7 @@ const LeaderboardBackersPage = () => {
             <TransferLoader />
           ) : error ? (
             <p className="text-center text-red-500">{error}</p>
-          ) : leaderboard.length === 0 ? ( // Check if leaderboard is empty
+          ) : leaderboard.length === 0 ? (
             <p className="text-center text-gray-500 py-6">
               No change makers yet. Be the first philanthropist!
             </p>
@@ -56,6 +70,9 @@ const LeaderboardBackersPage = () => {
                     </th>
                     <th className="px-4 py-3 text-gray-800 text-sm font-medium">
                       Score
+                    </th>
+                    <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                      Trophy
                     </th>
                   </tr>
                 </thead>
@@ -117,6 +134,9 @@ const LeaderboardBackersPage = () => {
                       </td>
                       <td className="px-4 py-2 text-gray-700">
                         {backer.score || 'N/A'}
+                      </td>
+                      <td className="px-4 py-2 text-gray-700 flex items-center">
+                        {getCupIcon(backer.score)}
                       </td>
                     </tr>
                   ))}
