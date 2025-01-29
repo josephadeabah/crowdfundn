@@ -298,42 +298,70 @@ const RewardsPage: React.FC = () => {
           {/* Unlock your reward */}
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
             <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
-              Unlock Your Hidden Reward.
+              Unlock Your Hidden Reward
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* User Rank */}
+              {/* Bronze Icon */}
               <div
-                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 1000 ? '' : 'filter blur-sm'}`}
+                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 100 ? '' : 'filter blur-sm'}`}
               >
+                <div className="text-4xl">
+                  {Number(userPoints?.total_points) >= 100 ? (
+                    <i className="fas fa-certificate text-brown-500" /> // Replace with the bronze icon
+                  ) : (
+                    <i className="fas fa-certificate text-gray-400" />
+                  )}
+                </div>
                 <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                  Rank
+                  Bronze
                 </p>
               </div>
 
-              {/* Total Points */}
+              {/* Silver Icon */}
               <div
-                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 1000 ? '' : 'filter blur-sm'}`}
+                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 500 ? '' : 'filter blur-sm'}`}
               >
+                <div className="text-4xl">
+                  {Number(userPoints?.total_points) >= 500 ? (
+                    <i className="fas fa-certificate text-gray-500" /> // Replace with the silver icon
+                  ) : (
+                    <i className="fas fa-certificate text-gray-400" />
+                  )}
+                </div>
                 <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                  Total Points
+                  Silver
                 </p>
               </div>
 
-              {/* Next Reward */}
+              {/* Gold Icon */}
               <div
                 className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 1000 ? '' : 'filter blur-sm'}`}
               >
+                <div className="text-4xl">
+                  {Number(userPoints?.total_points) >= 1000 ? (
+                    <i className="fas fa-certificate text-yellow-500" /> // Replace with the gold icon
+                  ) : (
+                    <i className="fas fa-certificate text-gray-400" />
+                  )}
+                </div>
                 <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                  Next Reward
+                  Gold
                 </p>
               </div>
 
-              {/* Reward Progress */}
+              {/* Diamond Icon */}
               <div
-                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 1000 ? '' : 'filter blur-sm'}`}
+                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 2000 ? '' : 'filter blur-sm'}`}
               >
+                <div className="text-4xl">
+                  {Number(userPoints?.total_points) >= 2000 ? (
+                    <i className="fas fa-gem text-blue-500" /> // Replace with the diamond icon
+                  ) : (
+                    <i className="fas fa-gem text-gray-400" />
+                  )}
+                </div>
                 <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                  Next Milestone
+                  Diamond
                 </p>
               </div>
             </div>
