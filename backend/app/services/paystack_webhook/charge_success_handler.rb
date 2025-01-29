@@ -118,6 +118,10 @@ class PaystackWebhook::ChargeSuccessHandler
       # Send confirmation email to the donor
       DonationConfirmationEmailService.send_confirmation_email(donation)
       FundraiserDonationNotificationService.send_notification_email(donation)
+
+      # ✅ Fixed points & leaderboard updates
+      Point.add_points(donation.user, donation)
+      LeaderboardEntry.update_leaderboard(donation.user, donation.user.total_points)
     else
       # If the transaction status isn't 'success', update the donation and raise an error
       donation.update!(status: transaction_status)

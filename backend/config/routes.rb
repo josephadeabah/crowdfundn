@@ -98,6 +98,29 @@ Rails.application.routes.draw do
         get 'top_fundraisers_stories', to: 'leaderboard#top_fundraisers_stories'
       end
 
+      # Leaderboard Entry Routes
+      namespace :leaderboard_entry do
+        resources :leaderboard_entry, only: [:index] do
+          collection do
+            get :my_rank
+          end
+        end
+      end
+
+      # Points Routes
+      namespace :points do
+        get 'my_points', to: 'points#my_points'
+      end
+
+      # Backer Rewards Routes
+      namespace :backer_rewards do
+        resources :backer_rewards, only: [:index] do
+          collection do
+            get :my_reward
+          end
+        end
+      end
+
       # Add the metrics routes
       namespace :metrics do
         get 'dashboard', to: 'metrics#dashboard'

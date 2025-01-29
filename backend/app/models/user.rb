@@ -6,6 +6,9 @@ class User < ApplicationRecord
   has_many :roles, through: :user_roles
   has_many :subscriptions, dependent: :destroy
   has_many :subscribed_campaigns, through: :subscriptions, source: :campaign
+  has_many :points, dependent: :destroy
+  has_many :leaderboard_entries, dependent: :destroy
+  has_many :backer_rewards, dependent: :destroy
 
   validates :status, inclusion: { in: STATUSES }
   validates :email, presence: true, uniqueness: true
@@ -69,6 +72,10 @@ class User < ApplicationRecord
       Rails.logger.error "Failed to create profile for user #{id}: #{profile.errors.full_messages}"
     end
   end 
+
+  def total_points
+    points.sum(:amount)
+  end
 
   private
 
