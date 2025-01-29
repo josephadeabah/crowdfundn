@@ -157,8 +157,9 @@ const LeaderboardBackersPage = () => {
               <p className="text-sm">
                 If you make the leaderboard, you'll get a special badge on your
                 profile and depending on the points you make, you can unlock a
-                special certificate of honor. You'll also be recognized globally as a philantropist. This is a great way to show our
-                appreciation for the impact you're making in the world.
+                special certificate of honor. You'll also be recognized globally
+                as a philantropist. This is a great way to show our appreciation
+                for the impact you're making in the world.
               </p>
               <p className="text-sm mt-2">
                 You'll also get a shout-out in our weekly newsletter. This goes
