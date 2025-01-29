@@ -25,7 +25,7 @@ module Api
   
           # Fetch the leaderboard position of the authenticated user
           def my_rank
-            entry = current_user.leaderboard_entries.first
+            entry = @current_user.leaderboard_entries.first
             if entry
               render json: {
                 id: entry.id,

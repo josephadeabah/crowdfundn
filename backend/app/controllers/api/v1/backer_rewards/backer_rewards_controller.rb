@@ -20,7 +20,7 @@ module Api
   
           # Fetch user’s assigned reward (requires authentication)
           def my_reward
-            reward = current_user.backer_rewards.order(created_at: :desc).first
+            reward = @current_user.backer_rewards.order(created_at: :desc).first
             if reward
               render json: {
                 id: reward.id,
