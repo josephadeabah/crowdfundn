@@ -320,28 +320,28 @@ const RewardsPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Bronze Reward */}
               <div
-                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 100 ? '' : 'filter blur-sm'}`}
+                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 100 ? '' : 'filter blur-md'}`}
               >
                 {renderRewardIcon('Bronze')}
               </div>
 
               {/* Silver Reward */}
               <div
-                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 500 ? '' : 'filter blur-sm'}`}
+                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 500 ? '' : 'filter blur-md'}`}
               >
                 {renderRewardIcon('Silver')}
               </div>
 
               {/* Gold Reward */}
               <div
-                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 1000 ? '' : 'filter blur-sm'}`}
+                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 1000 ? '' : 'filter blur-md'}`}
               >
                 {renderRewardIcon('Gold')}
               </div>
 
               {/* Diamond Reward */}
               <div
-                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 2000 ? '' : 'filter blur-sm'}`}
+                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 2000 ? '' : 'filter blur-md'}`}
               >
                 {renderRewardIcon('Diamond')}
               </div>
