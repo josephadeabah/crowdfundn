@@ -17,11 +17,13 @@ import React, { useEffect } from 'react';
 // Function to determine the cup icon based on score
 const getCupIcon = (score: number) => {
   if (score >= 5000) {
-    return <DiamondCupIcon className="w-6 h-6 text-yellow-500" />;
+    return <DiamondCupIcon className="w-6 h-6 text-yellow-700" />;
   } else if (score >= 1000) {
-    return <GoldCupIcon className="w-6 h-6 text-gray-400" />;
+    return <GoldCupIcon className="w-6 h-6 text-yellow-400" />;
+  } else if (score >= 500) {
+    return <SilverCupIcon className="w-6 h-6 text-gray-400" />;
   } else {
-    return <DiamondCupIcon className="w-6 h-6 text-orange-500" />;
+    return <BronzeCupIcon className="w-6 h-6 text-orange-500" />;
   }
 };
 
