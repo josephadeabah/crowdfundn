@@ -142,7 +142,7 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/backer_rewards/my_reward`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/backer_rewards/backer_rewards/my_reward`,
         {
           headers: {
             'Content-Type': 'application/json',
