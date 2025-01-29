@@ -6,6 +6,7 @@ import {
   PopoverTrigger,
 } from '@/app/components/popover/Popover';
 import { useLeaderboardContext } from '@/app/context/leaderboard/LeaderboardContext';
+import TransferLoader from '@/app/loaders/TransferLoader ';
 import { deslugify } from '@/app/utils/helpers/categories';
 import React, { useEffect } from 'react';
 
@@ -32,7 +33,7 @@ const LeaderboardFundraisersPage = () => {
         </div>
         <div className="px-4 py-3 overflow-x-auto">
           {loading ? (
-            <p className="text-center text-gray-600">Loading...</p>
+            <TransferLoader />
           ) : error ? (
             <p className="text-center text-red-500">{error}</p>
           ) : (
