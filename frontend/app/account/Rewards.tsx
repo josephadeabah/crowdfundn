@@ -167,7 +167,7 @@ const RewardsPage: React.FC = () => {
 
   const renderRewardIcon = () => {
     return (
-      <div className="relative w-10 h-10 bg-gray-200">
+      <div className="relative w-20 h-20 bg-gray-200">
         {/* Download Icon */}
         <FiDownload
           className="absolute top-0 right-0 text-gray-700 p-1"
@@ -312,7 +312,7 @@ const RewardsPage: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
               Unlock Your Hidden Reward
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center">
               {/* Bronze Reward */}
               <div
                 className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 100 ? '' : 'filter blur-sm'}`}
