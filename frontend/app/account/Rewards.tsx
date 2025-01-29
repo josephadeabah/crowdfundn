@@ -219,7 +219,7 @@ const RewardsPage: React.FC = () => {
                     Rank
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    No rank data available
+                    You have no rank yet
                   </p>
                 </div>
               )}
@@ -267,7 +267,7 @@ const RewardsPage: React.FC = () => {
                     Next Reward
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    No next reward available
+                    No rewards assigned yet
                   </p>
                 </div>
               )}
