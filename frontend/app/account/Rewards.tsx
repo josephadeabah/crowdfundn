@@ -201,7 +201,7 @@ const RewardsPage: React.FC = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* User Rank */}
-              {userRank ? (
+              {userRank && userRank.rank ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
                     Rank
@@ -249,7 +249,7 @@ const RewardsPage: React.FC = () => {
               )}
 
               {/* Next Reward */}
-              {userReward ? (
+              {userReward && userReward.level ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
                     Next Reward
