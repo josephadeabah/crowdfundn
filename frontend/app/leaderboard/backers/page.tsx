@@ -133,7 +133,7 @@ const LeaderboardBackersPage = () => {
                         <span className="text-gray-700">{backer.username}</span>
                       </td>
                       <td className="px-4 py-2 text-gray-700">
-                        {backer.total_donations}
+                       {backer?.currency?.toUpperCase()} {backer?.total_donations}
                       </td>
                       <td className="px-4 py-2 text-gray-700">
                         {backer.score || 'N/A'}
