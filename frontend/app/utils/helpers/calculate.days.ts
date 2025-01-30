@@ -52,4 +52,3 @@ export function getRemainingDaysMessage(
   if (remainingDays === 0) return 'No days left';
   return `${remainingDays} days left`;
 }
-

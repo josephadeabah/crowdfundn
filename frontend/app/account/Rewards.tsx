@@ -11,22 +11,7 @@ import { truncateTitle } from '../utils/helpers/truncate.title';
 import { usePointRewardContext } from '../context/pointreward/PointRewardContext';
 import ProgressRing from '../components/ring/ProgressRing';
 import Link from 'next/link';
-
-const getRankWithSuffix = (rank: number): JSX.Element => {
-  const suffix = (rank: number): string => {
-    if (rank % 10 === 1 && rank !== 11) return 'st';
-    if (rank % 10 === 2 && rank !== 12) return 'nd';
-    if (rank % 10 === 3 && rank !== 13) return 'rd';
-    return 'th';
-  };
-
-  return (
-    <>
-      {rank}
-      <sup>{suffix(rank)}</sup>
-    </>
-  );
-};
+import { getRankWithSuffix } from '../utils/helpers/ranking.suffix';
 
 interface FormData {
   title: string;
@@ -222,7 +207,7 @@ const RewardsPage: React.FC = () => {
 
           {/* User Rewards & Rank Summary Section */}
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
-            <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">
+            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
               Your Performance Progress Overview
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-2">
@@ -388,12 +373,12 @@ const RewardsPage: React.FC = () => {
           {/* Unlock Your Reward Section */}
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300">
+              <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
                 Unlock Your Hidden Certificate of Honor
               </h2>
               <Link
                 href="/leaderboard/backers#leaderboard-info"
-                className="text-base font-medium text-cyan-600 dark:text-blue-400 hover:underline"
+                className="text-lg font-medium text-cyan-600 dark:text-blue-400 hover:underline"
               >
                 Learn More →
               </Link>
