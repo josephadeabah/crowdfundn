@@ -12,6 +12,7 @@ import {
 import { usePointRewardContext } from '@/app/context/pointreward/PointRewardContext';
 import TransferLoader from '@/app/loaders/TransferLoader ';
 import { deslugify } from '@/app/utils/helpers/categories';
+import { getRankWithSuffix } from '@/app/utils/helpers/ranking.suffix';
 import React, { useEffect } from 'react';
 
 // Function to determine the cup icon based on score
@@ -92,9 +93,9 @@ const LeaderboardBackersPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {leaderboard.map((backer, index) => (
+                  {leaderboard.map((backer) => (
                     <tr key={backer.id} className="border-t border-gray-300">
-                      <td className="px-4 py-2 text-gray-600">{index + 1}</td>
+                      <td className="px-4 py-2 text-gray-600">{getRankWithSuffix(backer.rank)}</td>
                       <td className="px-4 py-2 flex items-center space-x-3">
                         <Popover>
                           <PopoverTrigger asChild>

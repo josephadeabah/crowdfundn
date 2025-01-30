@@ -16,6 +16,7 @@ interface LeaderboardEntry {
   score: number;
   profile_picture: string;
   country: string;
+  rank: number;
   category_interest: string;
   currency: string;
   bio: string;

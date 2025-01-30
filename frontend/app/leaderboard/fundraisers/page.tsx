@@ -8,6 +8,7 @@ import {
 import { usePointRewardContext } from '@/app/context/pointreward/PointRewardContext';
 import TransferLoader from '@/app/loaders/TransferLoader ';
 import { deslugify } from '@/app/utils/helpers/categories';
+import { getRankWithSuffix } from '@/app/utils/helpers/ranking.suffix';
 import React, { useEffect } from 'react';
 
 const LeaderboardFundraisersPage = () => {
@@ -61,7 +62,7 @@ const LeaderboardFundraisersPage = () => {
                     <tr key={index} className="border-t border-gray-300">
                       {/* Rank Column */}
                       <td className="px-4 py-2 text-gray-600">
-                        {fundraiser.rank}
+                        {getRankWithSuffix(fundraiser.rank)}
                       </td>
 
                       {/* Fund Raiser Column */}
