@@ -335,7 +335,7 @@ const RewardsPage: React.FC = () => {
                 Unlock Your Hidden Certificate of Honor
               </h2>
               <a
-                href="#leaderboard-info"
+                href="/leaderboard/backers#leaderboard-info"
                 className="text-sm font-medium text-cyan-600 dark:text-blue-400 hover:underline"
               >
                 Learn More →
