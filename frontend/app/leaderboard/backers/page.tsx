@@ -137,7 +137,7 @@ const LeaderboardBackersPage = () => {
                                 </p>
                                 <p className="text-sm text-gray-600">
                                   {backer?.currency?.toUpperCase()}{' '}
-                                  {Math.round(backer?.total_donations) || 'N/A'}
+                                  {backer?.total_donations.toFixed(2) || 'N/A'}
                                 </p>
                               </div>
                             </div>
@@ -147,7 +147,7 @@ const LeaderboardBackersPage = () => {
                       </td>
                       <td className="px-4 py-2 text-gray-700">
                         {backer?.currency?.toUpperCase()}{' '}
-                        {Math.round(backer?.total_donations) || 'N/A'}
+                        {backer?.total_donations.toFixed(2) || 'N/A'}
                       </td>
                       <td className="px-4 py-2 text-gray-700">
                         {backer.score || 'N/A'}
