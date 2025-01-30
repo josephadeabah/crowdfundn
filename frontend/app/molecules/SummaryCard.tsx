@@ -131,7 +131,7 @@ const Leaderboard: React.FC = () => {
         <div className="w-full md:w-1/2">
           {/* Top Backers Section */}
           <div className="mb-3">
-            <h3 className="text-lg font-semibold mb-2">Top Backers</h3>
+            <h3 className="text-lg font-semibold mb-2">Occasional Backers</h3>
             <div className="flex -space-x-3">
               {topBackers?.map((backer, index) => (
                 <Popover key={index}>
@@ -186,7 +186,7 @@ const Leaderboard: React.FC = () => {
 
           {/* Most Active Backers Section */}
           <div className="mb-3">
-            <h3 className="text-lg font-semibold mb-2">Most Active Backers</h3>
+            <h3 className="text-lg font-semibold mb-2">Enthusiastic Backers</h3>
             <div className="flex -space-x-3">
               {mostActiveBackers?.map((backer, index) => (
                 <Popover key={index}>
@@ -243,9 +243,7 @@ const Leaderboard: React.FC = () => {
 
           {/* Top Backers with Most Rewards Section */}
           <div>
-            <h3 className="text-lg font-semibold mb-2">
-              Top Backers with Most Rewards
-            </h3>
+            <h3 className="text-lg font-semibold mb-2">Discerning Backers</h3>
             {topBackersWithRewards && topBackersWithRewards.length > 0 ? (
               topBackersWithRewards.some((backer) => backer.rewards > 0) ? (
                 <div className="flex -space-x-3">
@@ -325,7 +323,7 @@ const Leaderboard: React.FC = () => {
           {/* Top Fundraisers with Best Campaign Graphics Section */}
           <div className="mb-3">
             <h3 className="text-lg font-semibold mb-2">
-              Top Fundraisers with Best Campaign Graphics
+              Daily Active Fundraisers
             </h3>
             <div className="flex -space-x-3">
               {topFundraisersGraphics?.map((fundraiser, index) => (
@@ -386,7 +384,7 @@ const Leaderboard: React.FC = () => {
           {/* Top Fundraisers with Best Stories Section */}
           <div className="mb-3">
             <h3 className="text-lg font-semibold mb-2">
-              Top Fundraisers with Best Presented Stories
+              Occasional Fundraisers
             </h3>
             <div className="flex -space-x-3">
               {topFundraisersStories?.map((fundraiser, index) => (
