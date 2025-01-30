@@ -323,7 +323,7 @@ const Leaderboard: React.FC = () => {
           {/* Top Fundraisers with Best Campaign Graphics Section */}
           <div className="mb-3">
             <h3 className="text-lg font-semibold mb-2">
-              Daily Active Fundraisers
+             Strategic Fundraisers
             </h3>
             <div className="flex -space-x-3">
               {topFundraisersGraphics?.map((fundraiser, index) => (
@@ -384,7 +384,7 @@ const Leaderboard: React.FC = () => {
           {/* Top Fundraisers with Best Stories Section */}
           <div className="mb-3">
             <h3 className="text-lg font-semibold mb-2">
-              Occasional Fundraisers
+             Relentless Fundraisers
             </h3>
             <div className="flex -space-x-3">
               {topFundraisersStories?.map((fundraiser, index) => (
