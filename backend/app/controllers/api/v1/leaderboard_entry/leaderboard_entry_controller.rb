@@ -14,6 +14,7 @@ module Api
                 username: entry.user.full_name,
                 total_donations: entry.user.donations.sum(:amount),
                 score: entry.points,
+                rank: entry.ranking,
                 profile_picture: entry.user.profile.description,
                 category_interest: entry.user.category,
                 currency: entry.user.currency,
