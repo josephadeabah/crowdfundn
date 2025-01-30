@@ -362,10 +362,10 @@ const CampaignsPage = () => {
             <CampaignCardLoader />
           ) : (
             <div>
-              {campaigns && campaigns.length > 0 ? (
+              {campaigns && campaigns?.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 p-3 relative">
                   {campaigns
-                    .filter((campaign) => campaign.permissions.is_public)
+                    .filter((campaign) => campaign?.permissions?.is_public)
                     .map((campaign, index) => {
                       const fundraiserCurrency =
                         campaign?.currency_symbol ||
@@ -373,7 +373,7 @@ const CampaignsPage = () => {
 
                       return (
                         <motion.div
-                          key={campaign.id}
+                          key={campaign?.id}
                           initial="hidden"
                           animate="visible"
                           exit="hidden"
@@ -381,7 +381,7 @@ const CampaignsPage = () => {
                           className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 hover:shadow-xl transition-transform duration-300 cursor-pointer overflow-hidden"
                         >
                           <Link
-                            href={`/campaign/${campaign.id}?${generateRandomString()}`}
+                            href={`/campaign/${campaign?.id}?${generateRandomString()}`}
                           >
                             <div className="relative w-full h-0 pb-[100%]">
                               <Image
@@ -401,10 +401,10 @@ const CampaignsPage = () => {
                                 </div>
                                 <div className="flex justify-between items-center text-xs font-semibold text-gray-300 mb-2">
                                   <span>
-                                    {campaign.total_donors || 0} Backers
+                                    {campaign?.total_donors || 0} Backers
                                   </span>
                                   <span>
-                                    {campaign.remaining_days} days left
+                                    {campaign?.remaining_days} days left
                                   </span>
                                 </div>
                               </div>
@@ -433,17 +433,17 @@ const CampaignsPage = () => {
                                 <p className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
                                   {fundraiserCurrency}
                                   {!isNaN(
-                                    parseFloat(campaign.transferred_amount),
+                                    parseFloat(campaign?.transferred_amount),
                                   )
                                     ? parseFloat(
-                                        campaign.transferred_amount,
+                                        campaign?.transferred_amount,
                                       ).toLocaleString()
                                     : 0}
                                   <span className="text-gray-600 dark:text-gray-100 truncate">
                                     <span className="text-xs p-1">of</span>
                                     {fundraiserCurrency}
                                     {parseFloat(
-                                      campaign.goal_amount,
+                                      campaign?.goal_amount,
                                     ).toLocaleString()}
                                   </span>
                                 </p>
@@ -455,9 +455,9 @@ const CampaignsPage = () => {
                             className="absolute top-2 right-2 p-2 bg-transparent rounded-full shadow-md cursor-pointer hover:bg-gray-100"
                             onClick={(e) => {
                               e.preventDefault(); // Prevent link navigation
-                              campaign.favorited
-                                ? handleUnfavorite(campaign.id.toString())
-                                : handleFavorite(campaign.id.toString());
+                              campaign?.favorited
+                                ? handleUnfavorite(campaign?.id.toString())
+                                : handleFavorite(campaign?.id.toString());
                             }}
                           >
                             {campaign.favorited ? (
@@ -480,13 +480,15 @@ const CampaignsPage = () => {
           )}
         </div>
       </div>
+      <div className='w-full'>
       {pagination.totalPages > 1 && (
         <Pagination
-          currentPage={pagination.currentPage || page}
-          totalPages={pagination.totalPages}
+          currentPage={pagination?.currentPage || page}
+          totalPages={pagination?.totalPages}
           onPageChange={handlePageChange}
         />
       )}
+      </div>
     </div>
   );
 };
