@@ -59,7 +59,10 @@ const LeaderboardFundraisersPage = () => {
                 <tbody>
                   {fundraiserLeaderboard.map((fundraiser, index) => (
                     <tr key={index} className="border-t border-gray-300">
+                      {/* Rank Column */}
                       <td className="px-4 py-2 text-gray-600">{index + 1}</td>
+
+                      {/* Fund Raiser Column */}
                       <td className="px-4 py-2 flex items-center space-x-3">
                         <Popover>
                           <PopoverTrigger asChild>
@@ -109,15 +112,13 @@ const LeaderboardFundraisersPage = () => {
                           </PopoverContent>
                         </Popover>
                         <span className="text-gray-700 truncate max-w-[150px] block">
-                          {fundraiser.rank}
-                        </span>
-                        <span className="text-gray-700 truncate max-w-[150px] block">
                           {fundraiser.username}
                         </span>
-                        <span className="text-gray-700 truncate max-w-[150px] block">
-                          {fundraiser?.currency?.toUpperCase()}{' '}
-                          {Math.round(fundraiser?.total_raised) || 'N/A'}
-                        </span>
+                      </td>
+                      {/* Total Raised Column */}
+                      <td className="px-4 py-2 text-gray-600">
+                        {fundraiser?.currency?.toUpperCase()}{' '}
+                        {Math.round(fundraiser?.total_raised) || 'N/A'}
                       </td>
                     </tr>
                   ))}
