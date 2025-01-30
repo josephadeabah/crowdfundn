@@ -366,7 +366,6 @@ const CampaignsPage = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 p-3 relative">
                   {campaigns
                     .filter((campaign) => campaign?.permissions?.is_public)
-                    .slice(0, 10) // Ensure only 10 campaigns are displayed
                     .map((campaign, index) => {
                       const fundraiserCurrency =
                         campaign?.currency_symbol ||
