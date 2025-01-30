@@ -481,7 +481,7 @@ const CampaignsPage = () => {
         </div>
       </div>
       <div className='w-full'>
-      {pagination.totalPages > 1 && (
+      {pagination?.totalPages > 1 && (
         <Pagination
           currentPage={pagination?.currentPage || page}
           totalPages={pagination?.totalPages}
