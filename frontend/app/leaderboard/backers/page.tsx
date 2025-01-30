@@ -137,7 +137,7 @@ const LeaderboardBackersPage = () => {
                                 </p>
                                 <p className="text-sm text-gray-600">
                                   {backer?.currency?.toUpperCase()}{' '}
-                                  {backer.total_donations || 'N/A'}
+                                  {Math.round(backer?.total_donations) || 'N/A'}
                                 </p>
                               </div>
                             </div>
