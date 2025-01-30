@@ -12,7 +12,7 @@ import { deslugify } from '@/app/utils/helpers/categories';
 import { useUserContext } from '@/app/context/users/UserContext';
 import Pagination from '../pagination/Pagination';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '../toast/Toast';
 
@@ -215,9 +215,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                   }}
                 >
                   {campaign.favorited ? (
-                    <FaBookmark className="text-orange-500" />
+                    <FaHeart className="text-orange-500" />
                   ) : (
-                    <FaRegBookmark className="text-gray-50" />
+                    <FaRegHeart className="text-gray-50" />
                   )}
                 </div>
               </motion.div>

@@ -12,7 +12,7 @@ import { generateRandomString } from '@/app/utils/helpers/generate.random-string
 import { deslugify } from '@/app/utils/helpers/categories';
 import Image from 'next/image';
 import Pagination from '@/app/components/pagination/Pagination';
-import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '@/app/components/toast/Toast';
 
@@ -461,9 +461,9 @@ const CampaignsPage = () => {
                             }}
                           >
                             {campaign.favorited ? (
-                              <FaBookmark className="text-orange-500" />
+                              <FaHeart className="text-orange-500" />
                             ) : (
-                              <FaRegBookmark className="text-gray-50" />
+                              <FaRegHeart className="text-gray-50" />
                             )}
                           </div>
                         </motion.div>
