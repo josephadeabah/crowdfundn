@@ -249,11 +249,11 @@ const RewardsPage: React.FC = () => {
               )}
 
               {userRank && userRank?.total_donations ? (
-                <div className="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-2xl text-center">
-                  <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
                     Amount Donated
                   </p>
-                  <p className="text-3xl font-extrabold text-green-500 mt-2">
+                  <p className="text-2xl font-extrabold text-green-600">
                     {userRank?.currency?.toUpperCase()} {userRank?.total_donations}
                   </p>
                 </div>
