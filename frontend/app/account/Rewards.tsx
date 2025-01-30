@@ -11,7 +11,22 @@ import { truncateTitle } from '../utils/helpers/truncate.title';
 import { usePointRewardContext } from '../context/pointreward/PointRewardContext';
 import ProgressRing from '../components/ring/ProgressRing';
 import Link from 'next/link';
-import { getRankWithSuffix } from '../utils/helpers/calculate.days';
+
+const getRankWithSuffix = (rank: number): JSX.Element => {
+  const suffix = (rank: number): string => {
+    if (rank % 10 === 1 && rank !== 11) return 'st';
+    if (rank % 10 === 2 && rank !== 12) return 'nd';
+    if (rank % 10 === 3 && rank !== 13) return 'rd';
+    return 'th';
+  };
+
+  return (
+    <>
+      {rank}
+      <sup>{suffix(rank)}</sup>
+    </>
+  );
+};
 
 interface FormData {
   title: string;
