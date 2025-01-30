@@ -254,7 +254,8 @@ const RewardsPage: React.FC = () => {
                     Amount Donated
                   </p>
                   <p className="text-lg font-extrabold text-green-600">
-                    {userRank?.currency?.toUpperCase()} {userRank?.total_donations}
+                    {userRank?.currency?.toUpperCase()}{' '}
+                    {userRank?.total_donations}
                   </p>
                 </div>
               ) : (
@@ -329,9 +330,17 @@ const RewardsPage: React.FC = () => {
 
           {/* Unlock Your Reward Section */}
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
-            <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">
-              Unlock Your Hidden Certificate of Honor
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300">
+                Unlock Your Hidden Certificate of Honor
+              </h2>
+              <a
+                href="#leaderboard-info"
+                className="text-sm font-medium text-cyan-600 dark:text-blue-400 hover:underline"
+              >
+                Learn More →
+              </a>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center">
               {/* Bronze Reward */}
               <div

@@ -133,7 +133,8 @@ const LeaderboardBackersPage = () => {
                         <span className="text-gray-700">{backer.username}</span>
                       </td>
                       <td className="px-4 py-2 text-gray-700">
-                       {backer?.currency?.toUpperCase()} {backer?.total_donations}
+                        {backer?.currency?.toUpperCase()}{' '}
+                        {backer?.total_donations}
                       </td>
                       <td className="px-4 py-2 text-gray-700">
                         {backer.score || 'N/A'}
@@ -150,7 +151,10 @@ const LeaderboardBackersPage = () => {
         </div>
 
         {/* How-to Section */}
-        <div className="w-full max-w-7xl mt-10 bg-gray-50 border border-gray-200 rounded-md p-6">
+        <div
+          id="leaderboard-info"
+          className="w-full max-w-7xl mt-10 bg-gray-50 border border-gray-200 rounded-md p-6"
+        >
           <h2 className="text-xl font-semibold text-gray-900">
             How do I get on the leaderboard?
           </h2>
