@@ -199,7 +199,7 @@ const RewardsPage: React.FC = () => {
             <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">
               Your Reward Progress
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
               {/* User Rank */}
               {userRank && userRank.rank ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
@@ -244,6 +244,26 @@ const RewardsPage: React.FC = () => {
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     No points data available
+                  </p>
+                </div>
+              )}
+
+              {userRank && userRank.total_donations ? (
+                <div className="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-2xl text-center">
+                  <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                    Amount Donated
+                  </p>
+                  <p className="text-3xl font-extrabold text-green-500 mt-2">
+                    {userRank.currency.toUpperCase()} {userRank.total_donations}
+                  </p>
+                </div>
+              ) : (
+                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                    Amount Donated
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    You have not made any impact yet.
                   </p>
                 </div>
               )}

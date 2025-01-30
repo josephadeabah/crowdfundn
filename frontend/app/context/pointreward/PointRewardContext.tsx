@@ -17,6 +17,7 @@ interface LeaderboardEntry {
   profile_picture: string;
   country: string;
   category_interest: string;
+  currency: string;
   bio: string;
 }
 
@@ -122,7 +123,7 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/backer_rewards`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/backer_rewards/backer_rewards`,
       );
       const data = await response.json();
 
