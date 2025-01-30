@@ -11,6 +11,7 @@ import { truncateTitle } from '../utils/helpers/truncate.title';
 import { usePointRewardContext } from '../context/pointreward/PointRewardContext';
 import ProgressRing from '../components/ring/ProgressRing';
 import Link from 'next/link';
+import { getRankWithSuffix } from '../utils/helpers/calculate.days';
 
 interface FormData {
   title: string;
@@ -211,13 +212,14 @@ const RewardsPage: React.FC = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-2">
               {/* Backing User Rank */}
+              {/* Backing User Rank */}
               {userRank && userRank.rank ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
                     Backer Rank
                   </p>
                   <p className="text-xl font-extrabold text-green-600">
-                    {userRank.rank}
+                    {getRankWithSuffix(userRank.rank)}
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     {userRank.username}
@@ -245,7 +247,7 @@ const RewardsPage: React.FC = () => {
                     return (
                       <div key={leader.id}>
                         <p className="text-xl font-extrabold text-green-600">
-                          {leader.rank}
+                          {getRankWithSuffix(leader.rank)}
                         </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           {leader.username}
@@ -264,6 +266,7 @@ const RewardsPage: React.FC = () => {
                   </p>
                 </div>
               )}
+
               {/* Total Points */}
               {userPoints ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">

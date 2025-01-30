@@ -52,3 +52,15 @@ export function getRemainingDaysMessage(
   if (remainingDays === 0) return 'No days left';
   return `${remainingDays} days left`;
 }
+
+export const getRankWithSuffix = (rank: number): string => {
+  const suffix = (rank: number): string => {
+    if (rank % 10 === 1 && rank !== 11) return 'st';
+    if (rank % 10 === 2 && rank !== 12) return 'nd';
+    if (rank % 10 === 3 && rank !== 13) return 'rd';
+    return 'th';
+  };
+
+  // Return rank with the correct suffix
+  return `${rank}<sup>${suffix(rank)}</sup>`;
+};
