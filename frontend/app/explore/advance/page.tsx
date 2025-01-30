@@ -376,6 +376,7 @@ const CampaignsPage = () => {
                           key={campaign.id}
                           initial="hidden"
                           animate="visible"
+                          exit="hidden"
                           transition={{ duration: 0.5, delay: index * 0.1 }}
                           className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 hover:shadow-xl transition-transform duration-300 cursor-pointer overflow-hidden"
                         >
