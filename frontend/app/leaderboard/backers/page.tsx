@@ -152,7 +152,7 @@ const LeaderboardBackersPage = () => {
 
         {/* How-to Section */}
         <div
-          id="leaderboard-info"
+          id="/leaderboard/backers#leaderboard-info"
           className="w-full max-w-7xl mt-10 bg-gray-50 border border-gray-200 rounded-md p-6"
         >
           <h2 className="text-xl font-semibold text-gray-900">
