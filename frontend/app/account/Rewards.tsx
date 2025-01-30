@@ -233,8 +233,8 @@ const RewardsPage: React.FC = () => {
                   </p>
                   <ProgressRing
                     value={Math.round(userPoints.total_points)}
-                    size={90}
-                    strokeWidth={10}
+                    size={80}
+                    strokeWidth={7}
                     color="#22c55e"
                   />
                 </div>
