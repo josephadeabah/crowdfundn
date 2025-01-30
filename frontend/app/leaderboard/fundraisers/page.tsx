@@ -105,7 +105,7 @@ const LeaderboardFundraisersPage = () => {
                                   Total Raised
                                 </p>
                                 <p className="text-sm text-gray-600">
-                                  {fundraiser.total_raised || 'N/A'}
+                                {Math.round(fundraiser?.total_raised) || 'N/A'}
                                 </p>
                               </div>
                             </div>
