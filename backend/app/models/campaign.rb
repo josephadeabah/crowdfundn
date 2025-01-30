@@ -141,6 +141,11 @@ class Campaign < ApplicationRecord
     CampaignWebhookService.new(self).send_status_update
   end
 
+  def update_fundraiser_leaderboard
+    total_raised = donations.successful.sum(:amount)  # Adjust the field name as needed
+    FundraiserLeaderboardEntry.update_leaderboard(fundraiser, total_raised)
+  end
+
   private
 
   def set_default_status

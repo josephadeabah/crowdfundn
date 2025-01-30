@@ -23,6 +23,26 @@ module Api
             end
             render json: leaderboard_data, status: :ok
           end
+
+          # fetch all leaderboard entries for fundraisers
+          def fundraisers
+            leaderboard_entries = ::FundraiserLeaderboardEntry.includes(:user).order(total_raised: :desc)
+            leaderboard_data = leaderboard_entries.map do |entry|
+              {
+                id: entry.id,
+                user_id: entry.user.id,
+                username: entry.user.full_name,
+                total_raised: entry.total_raised,
+                rank: entry.ranking,
+                profile_picture: entry.user.profile.description,
+                category_interest: entry.user.category,
+                currency: entry.user.currency,
+                country: entry.user.country,
+                bio: entry.user.profile.description
+              }
+            end
+            render json: leaderboard_data, status: :ok
+          end
   
           # Fetch the leaderboard position of the authenticated user
           def my_rank

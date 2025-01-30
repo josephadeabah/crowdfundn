@@ -105,6 +105,9 @@ Rails.application.routes.draw do
             get :my_rank
           end
         end
+
+        # Add this route to fetch the fundraiser leaderboard
+        get 'fundraisers', to: 'leaderboard_entry#fundraisers'
       end
 
       # Points Routes
