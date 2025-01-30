@@ -9,6 +9,11 @@ class Donation < ApplicationRecord
   # Define the `successful` scope
   scope :successful, -> { where(status: 'successful') }
 
+  # Define the `successful?` method for individual donation check
+  def successful?
+    status == 'successful'
+  end
+
   # Callback to update fundraiser leaderboard when a donation is successful
   after_create :update_campaign_leaderboard, if: :successful?
 
