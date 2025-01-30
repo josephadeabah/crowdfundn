@@ -60,7 +60,9 @@ const LeaderboardFundraisersPage = () => {
                   {fundraiserLeaderboard.map((fundraiser, index) => (
                     <tr key={index} className="border-t border-gray-300">
                       {/* Rank Column */}
-                      <td className="px-4 py-2 text-gray-600">{index + 1}</td>
+                      <td className="px-4 py-2 text-gray-600">
+                        {fundraiser.rank}
+                      </td>
 
                       {/* Fund Raiser Column */}
                       <td className="px-4 py-2 flex items-center space-x-3">

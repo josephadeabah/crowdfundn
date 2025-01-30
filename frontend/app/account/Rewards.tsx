@@ -42,10 +42,12 @@ const RewardsPage: React.FC = () => {
     rewards,
     userReward,
     userPoints,
+    fundraiserLeaderboard,
     fetchUserRank,
     fetchRewards,
     fetchUserReward,
     fetchUserPoints,
+    fetchFundraiserLeaderboard,
   } = usePointRewardContext();
 
   useEffect(() => {
@@ -53,7 +55,14 @@ const RewardsPage: React.FC = () => {
     fetchRewards();
     fetchUserReward();
     fetchUserPoints();
-  }, [fetchUserRank, fetchRewards, fetchUserReward, fetchUserPoints]);
+    fetchFundraiserLeaderboard();
+  }, [
+    fetchUserRank,
+    fetchRewards,
+    fetchUserReward,
+    fetchUserPoints,
+    fetchFundraiserLeaderboard,
+  ]);
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
@@ -198,14 +207,14 @@ const RewardsPage: React.FC = () => {
           {/* User Rewards & Rank Summary Section */}
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
             <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">
-              Your Reward Progress
+              Your Performance Progress Overview
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
-              {/* User Rank */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-2">
+              {/* Backing User Rank */}
               {userRank && userRank.rank ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                    Rank
+                    Backer Ranking
                   </p>
                   <p className="text-2xl font-extrabold text-green-600">
                     {userRank.rank}
@@ -217,7 +226,7 @@ const RewardsPage: React.FC = () => {
               ) : (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                    Rank
+                    Backer Ranking
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     You have no rank yet
@@ -225,6 +234,36 @@ const RewardsPage: React.FC = () => {
                 </div>
               )}
 
+              {/* Fundraiser User Rank */}
+              {fundraiserLeaderboard.length > 0 ? (
+                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                    Fundraiser Ranking
+                  </p>
+                  {/* Loop through the fundraiserLeaderboard array */}
+                  {fundraiserLeaderboard.map((leader) => {
+                    return (
+                      <div key={leader.id}>
+                        <p className="text-2xl font-extrabold text-green-600">
+                          {leader.rank}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {leader.username}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                    Fundraiser Ranking
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    You have no rank yet
+                  </p>
+                </div>
+              )}
               {/* Total Points */}
               {userPoints ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
