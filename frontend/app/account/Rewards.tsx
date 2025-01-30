@@ -256,7 +256,7 @@ const RewardsPage: React.FC = () => {
                   </p>
                   <p className="text-lg font-extrabold text-green-600">
                     {userRank?.currency?.toUpperCase()}{' '}
-                    {userRank?.total_donations.toFixed(2)}
+                    {Number(userRank?.total_donations?.toFixed(2))}
                   </p>
                 </div>
               ) : (
