@@ -13,6 +13,7 @@ import { usePointRewardContext } from '@/app/context/pointreward/PointRewardCont
 import TransferLoader from '@/app/loaders/TransferLoader ';
 import { deslugify } from '@/app/utils/helpers/categories';
 import React, { useEffect } from 'react';
+import { usePathname } from "next/navigation";
 
 // Function to determine the cup icon based on score
 const getCupIcon = (score: number) => {
@@ -28,8 +29,19 @@ const getCupIcon = (score: number) => {
 };
 
 const LeaderboardBackersPage = () => {
+  const pathname = usePathname()
+
   const { leaderboard, loading, error, fetchLeaderboard } =
     usePointRewardContext(); // Access the context
+
+    useEffect(() => {
+      if (pathname) {
+        const target = document.getElementById(pathname.replace("#", ""));
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    }, [pathname]);
 
   useEffect(() => {
     fetchLeaderboard(); // Fetch leaderboard data on component mount
@@ -152,7 +164,7 @@ const LeaderboardBackersPage = () => {
 
         {/* How-to Section */}
         <div
-          id="/leaderboard/backers#leaderboard-info"
+          id="leaderboard-info"
           className="w-full max-w-7xl mt-10 bg-gray-50 border border-gray-200 rounded-md p-6"
         >
           <h2 className="text-xl font-semibold text-gray-900">

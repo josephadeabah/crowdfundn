@@ -10,6 +10,7 @@ import AlertPopup from '../components/alertpopup/AlertPopup';
 import { truncateTitle } from '../utils/helpers/truncate.title';
 import { usePointRewardContext } from '../context/pointreward/PointRewardContext';
 import ProgressRing from '../components/ring/ProgressRing';
+import Link from 'next/link';
 
 interface FormData {
   title: string;
@@ -334,12 +335,12 @@ const RewardsPage: React.FC = () => {
               <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300">
                 Unlock Your Hidden Certificate of Honor
               </h2>
-              <a
-                href="/leaderboard/backers#leaderboard-info"
-                className="text-sm font-medium text-cyan-600 dark:text-blue-400 hover:underline"
-              >
-                Learn More →
-              </a>
+              <Link 
+    href="/leaderboard/backers#leaderboard-info"
+    className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+  >
+    Learn More →
+  </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center">
               {/* Bronze Reward */}
