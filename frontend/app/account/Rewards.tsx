@@ -335,12 +335,12 @@ const RewardsPage: React.FC = () => {
               <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300">
                 Unlock Your Hidden Certificate of Honor
               </h2>
-              <Link 
-    href="/leaderboard/backers#leaderboard-info"
-    className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
-  >
-    Learn More →
-  </Link>
+              <Link
+                href="/leaderboard/backers#leaderboard-info"
+                className="text-base font-medium text-cyan-600 dark:text-blue-400 hover:underline"
+              >
+                Learn More →
+              </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center">
               {/* Bronze Reward */}

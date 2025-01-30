@@ -28,21 +28,20 @@ const getCupIcon = (score: number) => {
 };
 
 const LeaderboardBackersPage = () => {
-
   const { leaderboard, loading, error, fetchLeaderboard } =
     usePointRewardContext(); // Access the context
 
-    useEffect(() => {
-      // Get the fragment (hash) from the URL
-      const hash = window.location.hash;
-      
-      if (hash) {
-        const target = document.getElementById(hash.replace("#", ""));
-        if (target) {
-          target.scrollIntoView({ behavior: "smooth" });
-        }
+  useEffect(() => {
+    // Get the fragment (hash) from the URL
+    const hash = window.location.hash;
+
+    if (hash) {
+      const target = document.getElementById(hash.replace('#', ''));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
       }
-    }, []);
+    }
+  }, []);
 
   useEffect(() => {
     fetchLeaderboard(); // Fetch leaderboard data on component mount
