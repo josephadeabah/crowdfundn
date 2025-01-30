@@ -14,12 +14,12 @@ class Donation < ApplicationRecord
     status == 'successful'
   end
 
-  # Callback to update fundraiser leaderboard when a donation is successful
-  after_create :update_campaign_leaderboard, if: :successful?
+  # Callback to update fundraiser leaderboard when a donation becomes successful
+  after_update :update_campaign_leaderboard, if: :saved_change_to_status?
 
   private
 
   def update_campaign_leaderboard
-    campaign.update_fundraiser_leaderboard
+    campaign.update_fundraiser_leaderboard if successful?
   end
 end
