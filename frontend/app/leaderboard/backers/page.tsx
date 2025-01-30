@@ -13,7 +13,6 @@ import { usePointRewardContext } from '@/app/context/pointreward/PointRewardCont
 import TransferLoader from '@/app/loaders/TransferLoader ';
 import { deslugify } from '@/app/utils/helpers/categories';
 import React, { useEffect } from 'react';
-import { usePathname } from "next/navigation";
 
 // Function to determine the cup icon based on score
 const getCupIcon = (score: number) => {
@@ -29,19 +28,21 @@ const getCupIcon = (score: number) => {
 };
 
 const LeaderboardBackersPage = () => {
-  const pathname = usePathname()
 
   const { leaderboard, loading, error, fetchLeaderboard } =
     usePointRewardContext(); // Access the context
 
     useEffect(() => {
-      if (pathname) {
-        const target = document.getElementById(pathname.replace("#", ""));
+      // Get the fragment (hash) from the URL
+      const hash = window.location.hash;
+      
+      if (hash) {
+        const target = document.getElementById(hash.replace("#", ""));
         if (target) {
           target.scrollIntoView({ behavior: "smooth" });
         }
       }
-    }, [pathname]);
+    }, []);
 
   useEffect(() => {
     fetchLeaderboard(); // Fetch leaderboard data on component mount
