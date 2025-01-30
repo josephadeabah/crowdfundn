@@ -131,7 +131,7 @@ const Leaderboard: React.FC = () => {
         <div className="w-full md:w-1/2">
           {/* Top Backers Section */}
           <div className="mb-3">
-            <h3 className="text-lg font-semibold mb-2">Occasional Backers</h3>
+            <h3 className="text-lg font-semibold mb-2">Loyal Backers</h3>
             <div className="flex -space-x-3">
               {topBackers?.map((backer, index) => (
                 <Popover key={index}>
