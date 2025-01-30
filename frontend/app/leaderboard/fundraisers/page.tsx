@@ -36,6 +36,10 @@ const LeaderboardFundraisersPage = () => {
             <TransferLoader />
           ) : error ? (
             <p className="text-center text-red-500">{error}</p>
+          ) : fundraiserLeaderboard.length === 0 ? (
+            <p className="text-center text-gray-500">
+              No leading fundraiser available.
+            </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[600px] text-left">
