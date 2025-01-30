@@ -106,7 +106,9 @@ const LeaderboardFundraisersPage = () => {
                                 </p>
                                 <p className="text-sm text-gray-600">
                                   {fundraiser?.currency?.toUpperCase()}{' '}
-                                  {Number(fundraiser?.total_raised).toFixed(2) || 'N/A'}
+                                  {Number(
+                                    fundraiser?.total_raised || 0,
+                                  ).toFixed(2) || 'N/A'}
                                 </p>
                               </div>
                             </div>
@@ -119,7 +121,8 @@ const LeaderboardFundraisersPage = () => {
                       {/* Total Raised Column */}
                       <td className="px-4 py-2 text-gray-600">
                         {fundraiser?.currency?.toUpperCase()}{' '}
-                        {Number(fundraiser?.total_raised).toFixed(2) || 'N/A'}
+                        {Number(fundraiser?.total_raised || 0).toFixed(2) ||
+                          'N/A'}
                       </td>
                     </tr>
                   ))}
