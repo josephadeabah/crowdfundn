@@ -214,9 +214,9 @@ const RewardsPage: React.FC = () => {
               {userRank && userRank.rank ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                    Backer Ranking
+                    Backer Rank
                   </p>
-                  <p className="text-base font-extrabold text-green-600">
+                  <p className="text-xl font-extrabold text-green-600">
                     {userRank.rank}
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -226,7 +226,7 @@ const RewardsPage: React.FC = () => {
               ) : (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Backer Ranking
+                    Backer Rank
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     You have no rank yet
@@ -238,7 +238,7 @@ const RewardsPage: React.FC = () => {
               {fundraiserLeaderboard.length > 0 ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Fundraiser Ranking
+                    Fundraiser Rank
                   </p>
                   {/* Loop through the fundraiserLeaderboard array */}
                   {fundraiserLeaderboard.map((leader) => {
@@ -257,7 +257,7 @@ const RewardsPage: React.FC = () => {
               ) : (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Fundraiser Ranking
+                    Fundraiser Rank
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     You have no rank yet
