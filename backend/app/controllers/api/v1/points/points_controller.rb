@@ -6,7 +6,7 @@ module Api
   
           # Fetch user points
           def my_points
-            total_points = @current_user.points.sum(:amount) # Summing the total_points from all associated points
+            total_points = @current_user.total_points # Summing the total_points from all associated points
             render json: { total_points: total_points }, status: :ok
           end          
         end
