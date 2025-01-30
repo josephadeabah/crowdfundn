@@ -227,13 +227,12 @@ const RewardsPage: React.FC = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-2">
               {/* Backing User Rank */}
-              {/* Backing User Rank */}
               {userRank && userRank.rank ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
                     Backer Rank
                   </p>
-                  <p className="text-xl font-extrabold text-green-600">
+                  <p className="text-2xl font-extrabold text-green-600">
                     {getRankWithSuffix(userRank.rank)}
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -261,7 +260,7 @@ const RewardsPage: React.FC = () => {
                   {fundraiserLeaderboard.map((leader) => {
                     return (
                       <div key={leader.id}>
-                        <p className="text-xl font-extrabold text-green-600">
+                        <p className="text-2xl font-extrabold text-green-600">
                           {getRankWithSuffix(leader.rank)}
                         </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
