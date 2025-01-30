@@ -21,6 +21,19 @@ interface LeaderboardEntry {
   bio: string;
 }
 
+interface FundraiserLeaderboardEntry {
+  id: number;
+  user_id: number;
+  username: string;
+  rank: number;
+  total_raised: number;
+  profile_picture: string;
+  country: string;
+  category_interest: string;
+  currency: string;
+  bio: string;
+}
+
 interface UserRankData extends LeaderboardEntry {
   rank: number;
 }
@@ -43,6 +56,7 @@ interface PointsData {
 
 interface PointRewardState {
   leaderboard: LeaderboardEntry[];
+  fundraiserLeaderboard: FundraiserLeaderboardEntry[]; // Added for fundraiser leaderboard
   userRank: UserRankData | null;
   rewards: RewardData[];
   userReward: UserRewardData | null;
@@ -50,6 +64,7 @@ interface PointRewardState {
   loading: boolean;
   error: string | null;
   fetchLeaderboard: () => void;
+  fetchFundraiserLeaderboard: () => void; // Added for fetching fundraiser leaderboard
   fetchUserRank: () => void;
   fetchRewards: () => void;
   fetchUserReward: () => void;
@@ -62,6 +77,9 @@ const PointRewardContext = createContext<PointRewardState | undefined>(
 
 export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [fundraiserLeaderboard, setFundraiserLeaderboard] = useState<
+    FundraiserLeaderboardEntry[]
+  >([]); // State for fundraiser leaderboard
   const [userRank, setUserRank] = useState<UserRankData | null>(null);
   const [rewards, setRewards] = useState<RewardData[]>([]);
   const [userReward, setUserReward] = useState<UserRewardData | null>(null);
@@ -84,6 +102,25 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
       setLeaderboard(data);
     } catch (err: any) {
       setError(err?.message || 'Error fetching leaderboard');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Fetch fundraiser leaderboard entries (public)
+  const fetchFundraiserLeaderboard = useCallback(async (): Promise<void> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/leaderboard_entry/fundraisers`, // New endpoint for fundraiser leaderboard
+      );
+      const data = await response.json();
+
+      setFundraiserLeaderboard(data);
+    } catch (err: any) {
+      setError(err?.message || 'Error fetching fundraiser leaderboard');
     } finally {
       setLoading(false);
     }
@@ -192,6 +229,7 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
   const contextValue = useMemo(
     () => ({
       leaderboard,
+      fundraiserLeaderboard, // Added to context
       userRank,
       rewards,
       userReward,
@@ -199,6 +237,7 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
       loading,
       error,
       fetchLeaderboard,
+      fetchFundraiserLeaderboard, // Added to context
       fetchUserRank,
       fetchRewards,
       fetchUserReward,
@@ -206,6 +245,7 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
     }),
     [
       leaderboard,
+      fundraiserLeaderboard, // Added to dependency array
       userRank,
       rewards,
       userReward,
@@ -213,6 +253,7 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
       loading,
       error,
       fetchLeaderboard,
+      fetchFundraiserLeaderboard, // Added to dependency array
       fetchUserRank,
       fetchRewards,
       fetchUserReward,

@@ -5,18 +5,18 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/app/components/popover/Popover';
-import { useLeaderboardContext } from '@/app/context/leaderboard/LeaderboardContext';
+import { usePointRewardContext } from '@/app/context/pointreward/PointRewardContext';
 import TransferLoader from '@/app/loaders/TransferLoader ';
 import { deslugify } from '@/app/utils/helpers/categories';
 import React, { useEffect } from 'react';
 
 const LeaderboardFundraisersPage = () => {
-  const { topFundraisersStories, loading, error, fetchLeaderboardData } =
-    useLeaderboardContext(); // Access the context
+  const { fundraiserLeaderboard, loading, error, fetchFundraiserLeaderboard } =
+    usePointRewardContext(); // Access the context
 
   useEffect(() => {
-    fetchLeaderboardData(); // Fetch leaderboard data on component mount
-  }, [fetchLeaderboardData]);
+    fetchFundraiserLeaderboard(); // Fetch fundraiser leaderboard data on component mount
+  }, [fetchFundraiserLeaderboard]);
 
   return (
     <div className="px-4 py-5 flex flex-col items-center flex-grow bg-white min-h-screen">
@@ -45,34 +45,31 @@ const LeaderboardFundraisersPage = () => {
                       Rank
                     </th>
                     <th className="px-4 py-3 text-gray-800 text-sm font-medium">
-                      Fundraiser
+                      Fund Raiser
                     </th>
                     <th className="px-4 py-3 text-gray-800 text-sm font-medium">
-                      Campaign
-                    </th>
-                    <th className="px-4 py-3 text-gray-800 text-sm font-medium">
-                      Score
+                      Total Raised
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {topFundraisersStories.map((fundraiser, index) => (
+                  {fundraiserLeaderboard.map((fundraiser, index) => (
                     <tr key={index} className="border-t border-gray-300">
                       <td className="px-4 py-2 text-gray-600">{index + 1}</td>
                       <td className="px-4 py-2 flex items-center space-x-3">
                         <Popover>
                           <PopoverTrigger asChild>
                             <div className="relative cursor-pointer">
-                              <Avatar name={fundraiser.name} size="sm" />
+                              <Avatar name={fundraiser.username} size="sm" />
                             </div>
                           </PopoverTrigger>
                           <PopoverContent className="w-80 p-4 shadow-lg">
                             <div className="space-y-4">
                               <div className="flex items-center space-x-4">
-                                <Avatar name={fundraiser.name} size="xl" />
+                                <Avatar name={fundraiser.username} size="xl" />
                                 <div>
                                   <h4 className="font-semibold text-lg text-gray-800">
-                                    {fundraiser.name}
+                                    {fundraiser.username}
                                   </h4>
                                   <p className="text-sm text-gray-500">
                                     {fundraiser.country || 'Unknown'}
@@ -90,14 +87,6 @@ const LeaderboardFundraisersPage = () => {
                               </div>
                               <div>
                                 <p className="text-sm font-semibold text-gray-700">
-                                  Campaign Name
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                  {fundraiser.campaign || 'N/A'}
-                                </p>
-                              </div>
-                              <div>
-                                <p className="text-sm font-semibold text-gray-700">
                                   Bio
                                 </p>
                                 <p className="text-sm text-gray-600">
@@ -109,21 +98,22 @@ const LeaderboardFundraisersPage = () => {
                                   Total Raised
                                 </p>
                                 <p className="text-sm text-gray-600">
-                                  {fundraiser.amount || 'N/A'}
+                                  {fundraiser.total_raised || 'N/A'}
                                 </p>
                               </div>
                             </div>
                           </PopoverContent>
                         </Popover>
                         <span className="text-gray-700 truncate max-w-[150px] block">
-                          {fundraiser.name}
+                          {fundraiser.rank}
                         </span>
-                      </td>
-                      <td className="px-4 py-2 text-gray-700">
-                        {fundraiser.campaign || 'N/A'}
-                      </td>
-                      <td className="px-4 py-2 text-gray-700">
-                        {fundraiser.score || 'N/A'}
+                        <span className="text-gray-700 truncate max-w-[150px] block">
+                          {fundraiser.username}
+                        </span>
+                        <span className="text-gray-700 truncate max-w-[150px] block">
+                          {fundraiser?.currency?.toUpperCase()}{' '}
+                          {Math.round(fundraiser?.total_raised) || 'N/A'}
+                        </span>
                       </td>
                     </tr>
                   ))}
