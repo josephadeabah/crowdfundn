@@ -216,7 +216,7 @@ const RewardsPage: React.FC = () => {
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
                     Backer Ranking
                   </p>
-                  <p className="text-2xl font-extrabold text-green-600">
+                  <p className="text-base font-extrabold text-green-600">
                     {userRank.rank}
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -225,7 +225,7 @@ const RewardsPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
                     Backer Ranking
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -237,14 +237,14 @@ const RewardsPage: React.FC = () => {
               {/* Fundraiser User Rank */}
               {fundraiserLeaderboard.length > 0 ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
                     Fundraiser Ranking
                   </p>
                   {/* Loop through the fundraiserLeaderboard array */}
                   {fundraiserLeaderboard.map((leader) => {
                     return (
                       <div key={leader.id}>
-                        <p className="text-2xl font-extrabold text-green-600">
+                        <p className="text-xl font-extrabold text-green-600">
                           {leader.rank}
                         </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -256,7 +256,7 @@ const RewardsPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
                     Fundraiser Ranking
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -267,7 +267,7 @@ const RewardsPage: React.FC = () => {
               {/* Total Points */}
               {userPoints ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
                     Total Points
                   </p>
                   <ProgressRing
@@ -279,7 +279,7 @@ const RewardsPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
                     Total Points
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -290,17 +290,17 @@ const RewardsPage: React.FC = () => {
 
               {userRank && userRank?.total_donations ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
                     Amount Donated
                   </p>
-                  <p className="text-lg font-extrabold text-green-600">
+                  <p className="text-xl font-extrabold text-green-600">
                     {userRank?.currency?.toUpperCase()}{' '}
                     {Number(userRank?.total_donations || 0).toFixed(2) || 'N/A'}
                   </p>
                 </div>
               ) : (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
                     Amount Donated
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -312,7 +312,7 @@ const RewardsPage: React.FC = () => {
               {/* Next Reward */}
               {userReward && userReward.level ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
                     Next Reward
                   </p>
                   <p className="text-xl font-semibold text-orange-500">
@@ -324,7 +324,7 @@ const RewardsPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
                     Next Reward
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -336,7 +336,7 @@ const RewardsPage: React.FC = () => {
               {/* Reward Progress */}
               {rewards.length > 0 && userPoints ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
                     Next Milestone
                   </p>
                   {rewards
@@ -349,7 +349,7 @@ const RewardsPage: React.FC = () => {
                     .map((nextReward) => (
                       <p
                         key={nextReward.id}
-                        className="text-md text-gray-700 dark:text-gray-300"
+                        className="text-xl text-gray-700 dark:text-gray-300"
                       >
                         {nextReward.level} - {nextReward.points_required} points
                       </p>
@@ -357,7 +357,7 @@ const RewardsPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
                     Next Milestone
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
