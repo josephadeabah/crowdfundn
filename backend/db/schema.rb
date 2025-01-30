@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_01_28_151306) do
+ActiveRecord::Schema[7.1].define(version: 2025_01_30_085128) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -50,6 +50,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_28_151306) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "backer_rewards", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "campaign_id", null: false
+    t.integer "points_required"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id"], name: "index_backer_rewards_on_campaign_id"
+    t.index ["user_id"], name: "index_backer_rewards_on_user_id"
   end
 
   create_table "campaigns", force: :cascade do |t|
@@ -143,6 +154,26 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_28_151306) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_fundraisers_on_user_id"
+  end
+
+  create_table "leaderboard_entries", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "points"
+    t.integer "ranking"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_leaderboard_entries_on_user_id"
+  end
+
+  create_table "points", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "donation_id", null: false
+    t.integer "amount"
+    t.string "reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["donation_id"], name: "index_points_on_donation_id"
+    t.index ["user_id"], name: "index_points_on_user_id"
   end
 
   create_table "profiles", force: :cascade do |t|
@@ -308,6 +339,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_28_151306) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "backer_rewards", "campaigns"
+  add_foreign_key "backer_rewards", "users"
   add_foreign_key "campaigns", "users", column: "fundraiser_id"
   add_foreign_key "comments", "campaigns"
   add_foreign_key "comments", "users"
@@ -316,6 +349,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_28_151306) do
   add_foreign_key "favorites", "campaigns"
   add_foreign_key "favorites", "users"
   add_foreign_key "fundraisers", "users"
+  add_foreign_key "leaderboard_entries", "users"
+  add_foreign_key "points", "donations"
+  add_foreign_key "points", "users"
   add_foreign_key "profiles", "users"
   add_foreign_key "rewards", "campaigns"
   add_foreign_key "subaccounts", "campaigns"
