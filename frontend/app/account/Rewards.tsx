@@ -217,11 +217,8 @@ const RewardsPage: React.FC = () => {
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
                     Backer Rank
                   </p>
-                  <p className="text-2xl font-extrabold text-green-600">
+                  <p className="text-4xl font-extrabold text-green-600">
                     {getRankWithSuffix(userRank.rank)}
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {userRank.username}
                   </p>
                 </div>
               ) : (
@@ -245,11 +242,8 @@ const RewardsPage: React.FC = () => {
                   {fundraiserLeaderboard.map((leader) => {
                     return (
                       <div key={leader.id}>
-                        <p className="text-2xl font-extrabold text-green-600">
+                        <p className="text-4xl font-extrabold text-green-600">
                           {getRankWithSuffix(leader.rank)}
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {leader.username}
                         </p>
                       </div>
                     );
