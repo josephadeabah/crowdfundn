@@ -236,7 +236,7 @@ const RewardsPage: React.FC = () => {
               {fundraiserLeaderboardRank && fundraiserLeaderboardRank.rank ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                    Backer Rank
+                    Fundraiser Rank
                   </p>
                   <p className="text-4xl font-extrabold text-green-600">
                     {getRankWithSuffix(fundraiserLeaderboardRank.rank)}
