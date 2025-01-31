@@ -103,6 +103,7 @@ Rails.application.routes.draw do
         resources :leaderboard_entry, only: [:index] do
           collection do
             get :my_rank
+            get :fundraiser_rank
           end
         end
 

@@ -2,7 +2,7 @@ module Api
     module V1
       module LeaderboardEntry
         class LeaderboardEntryController < ApplicationController
-          before_action :authenticate_request, only: [:my_rank]
+          before_action :authenticate_request, only: [:my_rank, :fundraiser_rank]
   
           # Fetch all leaderboard entries
           def index
@@ -43,6 +43,27 @@ module Api
               }
             end
             render json: leaderboard_data, status: :ok
+          end
+
+          # Fetch the leaderboard position of the authenticated user
+          def fundraiser_rank
+            entry = @current_user.fundraiser_leaderboard_entries.first
+            if entry
+              render json: {
+                id: entry.id,
+                user_id: entry.user.id,
+                username: entry.user.full_name,
+                total_raised: entry.total_raised,
+                rank: entry.ranking,
+                profile_picture: entry.user.profile.description,
+                category_interest: entry.user.category,
+                currency: entry.user.currency,
+                country: entry.user.country,
+                bio: entry.user.profile.description
+              }, status: :ok
+            else
+              render json: { error: 'User not on fundraiser leaderboard' }, status: :not_found
+            end
           end
   
           # Fetch the leaderboard position of the authenticated user
