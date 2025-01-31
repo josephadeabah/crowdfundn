@@ -8,6 +8,7 @@ class User < ApplicationRecord
   has_many :subscribed_campaigns, through: :subscriptions, source: :campaign
   has_many :points, dependent: :destroy
   has_many :leaderboard_entries, dependent: :destroy
+  has_many :fundraiser_leaderboard_entries, dependent: :destroy
   has_many :backer_rewards, dependent: :destroy
 
   validates :status, inclusion: { in: STATUSES }
