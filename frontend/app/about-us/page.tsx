@@ -35,11 +35,11 @@ const TeamCarousel = () => {
     {
       id: 1,
       name: 'Nqoba Manana',
-      position: 'Co-Founder & Co-CEO, COO',
+      position: 'Co-Founder & CEO',
       description: 'South African Region',
       image: '/Nqoba.JPG',
       fullDescription:
-        'Nqoba Manana is a visionary leader with over 10 years of experience in the baking industry. As COO, Head of Corporate Functions, and Co-CEO, he leads the company’s operational strategy and corporate governance, while sharing executive leadership responsibilities as Co-CEO',
+        'Nqoba Manana is a visionary leader with over 10 years of experience in the baking industry. As CEO, Nqoba leads the company’s executive leadership',
       socialLinks: {
         linkedin:
           'https://www.linkedin.com/in/nqoba-g-manana/?originalSubdomain=sz',
@@ -50,11 +50,11 @@ const TeamCarousel = () => {
     {
       id: 2,
       name: 'Joseph Adeabah',
-      position: 'Co-Founder & Co-CEO, CTO',
+      position: 'Co-Founder & CTO',
       description: 'West African Region',
       image: '/abeansah.png',
       fullDescription:
-        'Joseph Adeabah is an innovative technologist with over 6 years of experience in the tech industry. As CTO and Co-CEO, he leads the company’s technology strategy and product development, while sharing executive leadership responsibilities as Co-CEO.',
+        'Joseph Adeabah is an innovative technologist with over 6 years of experience in the tech industry. As CTO, he leads the company’s technology strategy and product development.',
       socialLinks: {
         linkedin: 'https://www.linkedin.com/in/joseph-835977a5/',
         twitter: 'https://x.com/abe_ansah',
