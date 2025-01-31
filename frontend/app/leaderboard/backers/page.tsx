@@ -95,7 +95,9 @@ const LeaderboardBackersPage = () => {
                 <tbody>
                   {leaderboard.map((backer) => (
                     <tr key={backer.id} className="border-t border-gray-300">
-                      <td className="px-4 py-2 text-gray-600">{getRankWithSuffix(backer.rank)}</td>
+                      <td className="px-4 py-2 text-gray-600">
+                        {getRankWithSuffix(backer.rank)}
+                      </td>
                       <td className="px-4 py-2 flex items-center space-x-3">
                         <Popover>
                           <PopoverTrigger asChild>

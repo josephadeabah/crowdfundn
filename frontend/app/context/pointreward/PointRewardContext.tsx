@@ -22,6 +22,19 @@ interface LeaderboardEntry {
   bio: string;
 }
 
+interface FundraiserLeaderboardRank {
+  id: number;
+  user_id: number;
+  username: string;
+  rank: number;
+  total_raised: number;
+  profile_picture: string;
+  country: string;
+  category_interest: string;
+  currency: string;
+  bio: string;
+}
+
 interface FundraiserLeaderboardEntry {
   id: number;
   user_id: number;
@@ -59,6 +72,7 @@ interface PointRewardState {
   leaderboard: LeaderboardEntry[];
   fundraiserLeaderboard: FundraiserLeaderboardEntry[]; // Added for fundraiser leaderboard
   userRank: UserRankData | null;
+  fundraiserLeaderboardRank: FundraiserLeaderboardRank[];
   rewards: RewardData[];
   userReward: UserRewardData | null;
   userPoints: PointsData | null;
@@ -67,6 +81,7 @@ interface PointRewardState {
   fetchLeaderboard: () => void;
   fetchFundraiserLeaderboard: () => void; // Added for fetching fundraiser leaderboard
   fetchUserRank: () => void;
+  fetchFundraiserRank: () => void;
   fetchRewards: () => void;
   fetchUserReward: () => void;
   fetchUserPoints: () => void;
@@ -80,6 +95,9 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [fundraiserLeaderboard, setFundraiserLeaderboard] = useState<
     FundraiserLeaderboardEntry[]
+  >([]); // State for fundraiser leaderboard
+  const [fundraiserLeaderboardRank, setFundraiserLeaderboardRank] = useState<
+    FundraiserLeaderboardRank[]
   >([]); // State for fundraiser leaderboard
   const [userRank, setUserRank] = useState<UserRankData | null>(null);
   const [rewards, setRewards] = useState<RewardData[]>([]);
@@ -126,6 +144,34 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   }, []);
+
+  // Add this function to the PointRewardContext
+  const fetchFundraiserRank = useCallback(async (): Promise<void> => {
+    if (!token) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/leaderboard_entry/leaderboard_entry/fundraiser_rank`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      const data = await response.json();
+
+      // You can set the fundraiser rank in your state or use the data as needed
+      setFundraiserLeaderboardRank(data); // Assuming it's similar structure to user rank
+    } catch (err: any) {
+      setError(err?.message || 'Error fetching fundraiser rank');
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
 
   // Fetch user leaderboard rank (requires authentication)
   const fetchUserRank = useCallback(async (): Promise<void> => {
@@ -231,6 +277,7 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       leaderboard,
       fundraiserLeaderboard, // Added to context
+      fundraiserLeaderboardRank,
       userRank,
       rewards,
       userReward,
@@ -238,6 +285,7 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
       loading,
       error,
       fetchLeaderboard,
+      fetchFundraiserRank,
       fetchFundraiserLeaderboard, // Added to context
       fetchUserRank,
       fetchRewards,
@@ -248,6 +296,7 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
       leaderboard,
       fundraiserLeaderboard, // Added to dependency array
       userRank,
+      fundraiserLeaderboardRank,
       rewards,
       userReward,
       userPoints,
@@ -256,6 +305,7 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
       fetchLeaderboard,
       fetchFundraiserLeaderboard, // Added to dependency array
       fetchUserRank,
+      fetchFundraiserRank,
       fetchRewards,
       fetchUserReward,
       fetchUserPoints,

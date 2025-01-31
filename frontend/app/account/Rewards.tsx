@@ -43,12 +43,12 @@ const RewardsPage: React.FC = () => {
     rewards,
     userReward,
     userPoints,
-    fundraiserLeaderboard,
+    fundraiserLeaderboardRank,
+    fetchFundraiserRank,
     fetchUserRank,
     fetchRewards,
     fetchUserReward,
     fetchUserPoints,
-    fetchFundraiserLeaderboard,
   } = usePointRewardContext();
 
   useEffect(() => {
@@ -56,13 +56,13 @@ const RewardsPage: React.FC = () => {
     fetchRewards();
     fetchUserReward();
     fetchUserPoints();
-    fetchFundraiserLeaderboard();
+    fetchFundraiserRank();
   }, [
     fetchUserRank,
     fetchRewards,
     fetchUserReward,
     fetchUserPoints,
-    fetchFundraiserLeaderboard,
+    fetchFundraiserRank,
   ]);
 
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -233,13 +233,13 @@ const RewardsPage: React.FC = () => {
               )}
 
               {/* Fundraiser User Rank */}
-              {fundraiserLeaderboard.length > 0 ? (
+              {fundraiserLeaderboardRank.length > 0 ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-base font-bold text-gray-800 dark:text-gray-200">
                     Fundraiser Rank
                   </p>
-                  {/* Loop through the fundraiserLeaderboard array */}
-                  {fundraiserLeaderboard.map((leader) => {
+                  {/* Loop through the fundraiserLeaderboardRank array */}
+                  {fundraiserLeaderboardRank.map((leader) => {
                     return (
                       <div key={leader.id}>
                         <p className="text-4xl font-extrabold text-green-600">
