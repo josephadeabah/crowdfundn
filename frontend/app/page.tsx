@@ -207,11 +207,11 @@ const HomePage = () => {
               initial="hidden"
               animate={controls}
               transition={{ duration: 0.5 }}
-              className="text-4xl font-bold text-center mb-6"
+              className="text-4xl font-bold text-center mb-5"
             >
               Why Choose Us?
             </motion.h2>
-            <div className="text-2xl text-green-600 font-bold text-center mb-4">
+            <div className="text-2xl text-green-600 font-bold text-center mb-6">
               We're Africa's Premier And Most Trusted Reward-based And Gamified
               Crowdfunding Platform
             </div>
