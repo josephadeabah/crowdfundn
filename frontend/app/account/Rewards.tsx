@@ -235,7 +235,7 @@ const RewardsPage: React.FC = () => {
               {/* Fundraiser User Rank */}
               {fundraiserLeaderboardRank && fundraiserLeaderboardRank.rank ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
                     Fundraiser Rank
                   </p>
                   <p className="text-4xl font-extrabold text-green-600">
