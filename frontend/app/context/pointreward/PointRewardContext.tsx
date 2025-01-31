@@ -72,7 +72,7 @@ interface PointRewardState {
   leaderboard: LeaderboardEntry[];
   fundraiserLeaderboard: FundraiserLeaderboardEntry[]; // Added for fundraiser leaderboard
   userRank: UserRankData | null;
-  fundraiserLeaderboardRank: FundraiserLeaderboardRank[];
+  fundraiserLeaderboardRank: FundraiserLeaderboardRank | null;
   rewards: RewardData[];
   userReward: UserRewardData | null;
   userPoints: PointsData | null;
@@ -96,9 +96,8 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
   const [fundraiserLeaderboard, setFundraiserLeaderboard] = useState<
     FundraiserLeaderboardEntry[]
   >([]); // State for fundraiser leaderboard
-  const [fundraiserLeaderboardRank, setFundraiserLeaderboardRank] = useState<
-    FundraiserLeaderboardRank[]
-  >([]); // State for fundraiser leaderboard
+  const [fundraiserLeaderboardRank, setFundraiserLeaderboardRank] =
+    useState<FundraiserLeaderboardRank | null>(null);
   const [userRank, setUserRank] = useState<UserRankData | null>(null);
   const [rewards, setRewards] = useState<RewardData[]>([]);
   const [userReward, setUserReward] = useState<UserRewardData | null>(null);
