@@ -28,6 +28,6 @@ class Profile < ApplicationRecord
 
   # Ensure avatar URL is included in JSON response
   def as_json(options = {})
-    super(options.merge(methods: [:avatar_url]))
-  end
+    super(options.merge(methods: [:avatar_url], include: { user: { only: [:id, :full_name] } }))
+  end  
 end
