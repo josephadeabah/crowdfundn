@@ -8,11 +8,16 @@ module Api
           # PUT /api/v1/members/profiles/:id
           def update
             if @profile.update(profile_params)
-              render json: { message: 'Profile updated successfully', profile: @profile }, status: :ok
+              if params[:profile][:avatar].present?
+                @profile.avatar.attach(params[:profile][:avatar])
+              end
+          
+              render json: { message: 'Profile updated successfully', profile: @profile.as_json }, status: :ok
             else
               render json: { errors: @profile.errors.full_messages }, status: :unprocessable_entity
             end
           end
+          
   
           private
   
@@ -24,8 +29,8 @@ module Api
           end
   
           def profile_params
-            params.require(:profile).permit(:name, :description, :funding_goal, :amount_raised, :status, :end_date, :category, :location)
-          end          
+            params.require(:profile).permit(:name, :description, :funding_goal, :amount_raised, :status, :end_date, :category, :location, :avatar)
+          end                 
         end
       end
     end
