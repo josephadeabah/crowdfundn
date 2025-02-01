@@ -159,7 +159,7 @@ const UserManagement = () => {
     <div className="mx-auto p-4">
       <div className='flex justify-between items-center'>
       <h1 className="text-3xl font-bold mb-6">User Management</h1>
-      <button onClick={() => exportUsersToCSV(users)} className="p-2 bg-green-500 text-white rounded">
+      <button onClick={() => exportUsersToCSV(fetchAllUsers)} className="p-2 bg-green-500 text-white rounded">
   Export CSV
 </button>
       </div>
