@@ -22,8 +22,16 @@ module Api
         end        
 
         def show
-          render json: @current_user.as_json(include: %i[profile roles]), status: :ok
+          user_json = @current_user.as_json(include: { 
+            profile: { except: [:user_id, :status, :category, :currency] }, 
+            roles: {} 
+          })
+          render json: user_json, status: :ok
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: 'User not found' }, status: :not_found
         end
+        
+        
 
         def show_by_id
           render json: @user.as_json(include: %i[profile roles]), status: :ok
