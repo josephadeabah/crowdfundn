@@ -107,10 +107,7 @@ const LeaderboardBackersPage = () => {
                               <Avatar
                                 name={backer.username}
                                 size="sm"
-                                imageUrl={String(
-                                  userAccountData?.profile?.avatar?.record
-                                    ?.avatar,
-                                )}
+                                imageUrl={backer.profile_picture}
                               />
                             </div>
                           </PopoverTrigger>
@@ -120,10 +117,7 @@ const LeaderboardBackersPage = () => {
                                 <Avatar
                                   name={backer.username}
                                   size="xl"
-                                  imageUrl={String(
-                                    userAccountData?.profile?.avatar?.record
-                                      ?.avatar,
-                                  )}
+                                  imageUrl={backer.profile_picture}
                                 />
                                 <div>
                                   <h4 className="font-semibold text-lg text-gray-800">
