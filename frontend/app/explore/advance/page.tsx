@@ -25,7 +25,7 @@ const CampaignsPage = () => {
     favoriteCampaign,
     unfavoriteCampaign,
   } = useCampaignContext();
-  const { userProfile } = useUserContext();
+  const { userAccountData } = useUserContext();
   const { user } = useAuth();
   const controls = useAnimation();
   const [ref, inView] = useInView();
@@ -307,28 +307,28 @@ const CampaignsPage = () => {
             >
               <option value="all">All</option>
               <option value="0-500">
-                {userProfile?.currency.toUpperCase() || 'GHS'}0 -{' '}
-                {userProfile?.currency.toUpperCase() || 'GHS'}500
+                {userAccountData?.currency.toUpperCase() || 'GHS'}0 -{' '}
+                {userAccountData?.currency.toUpperCase() || 'GHS'}500
               </option>
               <option value="500-1000">
-                {userProfile?.currency.toUpperCase() || 'GHS'}500 -{' '}
-                {userProfile?.currency.toUpperCase() || 'GHS'}1,000
+                {userAccountData?.currency.toUpperCase() || 'GHS'}500 -{' '}
+                {userAccountData?.currency.toUpperCase() || 'GHS'}1,000
               </option>
               <option value="1000-5000">
-                {userProfile?.currency.toUpperCase() || 'GHS'}1,000 -{' '}
-                {userProfile?.currency.toUpperCase() || 'GHS'}5,000
+                {userAccountData?.currency.toUpperCase() || 'GHS'}1,000 -{' '}
+                {userAccountData?.currency.toUpperCase() || 'GHS'}5,000
               </option>
               <option value="5000-10000">
-                {userProfile?.currency.toUpperCase() || 'GHS'}5,000 -{' '}
-                {userProfile?.currency.toUpperCase() || 'GHS'}10,000
+                {userAccountData?.currency.toUpperCase() || 'GHS'}5,000 -{' '}
+                {userAccountData?.currency.toUpperCase() || 'GHS'}10,000
               </option>
               <option value="10000-50000">
-                {userProfile?.currency.toUpperCase() || 'GHS'}10,000 -{' '}
-                {userProfile?.currency.toUpperCase() || 'GHS'}50,000
+                {userAccountData?.currency.toUpperCase() || 'GHS'}10,000 -{' '}
+                {userAccountData?.currency.toUpperCase() || 'GHS'}50,000
               </option>
               <option value="50000-100000">
-                {userProfile?.currency.toUpperCase() || 'GHS'}50,000 -{' '}
-                {userProfile?.currency.toUpperCase() || 'GHS'}10,0000
+                {userAccountData?.currency.toUpperCase() || 'GHS'}50,000 -{' '}
+                {userAccountData?.currency.toUpperCase() || 'GHS'}10,0000
               </option>
             </select>
           </div>
