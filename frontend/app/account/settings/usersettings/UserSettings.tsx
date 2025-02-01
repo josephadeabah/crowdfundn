@@ -5,7 +5,7 @@ import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { useUserContext } from '@/app/context/users/UserContext';
 
 const UserSettings = () => {
-  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const [profilePhoto, setProfilePhoto] = useState<string | File | null>(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -27,8 +27,14 @@ const UserSettings = () => {
     if (file) {
       const formData = new FormData();
       formData.append('avatar', file);
+
       setProfilePhoto(URL.createObjectURL(file)); // Update the photo preview
-      updateProfileData(formData); // Send the FormData to update profile
+
+      // Update profile with both photo and description
+      updateProfileData({
+        description: description,
+        avatar: file, // You can append the avatar directly to the update call if it’s not part of the form data.
+      });
     }
   };
 
@@ -58,11 +64,15 @@ const UserSettings = () => {
     });
   };
 
-  // Update profile data
   const handleProfileUpdate = () => {
-    updateProfileData({
-      description: description,
-    });
+    // Create the profile data to update, using the state variables
+    const updatedProfile = {
+      description, // Description from the state
+      avatar: profilePhoto ? profilePhoto : undefined, // If photo exists, send it
+    };
+
+    // Call the updateProfileData function to update the profile
+    updateProfileData(updatedProfile);
   };
 
   // Handle account deletion
@@ -110,17 +120,17 @@ const UserSettings = () => {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1 }}
             >
-              <label
-                htmlFor="photo"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 sm:mt-px sm:pt-2"
-              >
-                Pick Photo
-              </label>
               <div className="mt-1 sm:mt-0 sm:col-span-2">
                 <div className="flex items-center">
                   {profilePhoto ? (
                     <img
-                      src={profilePhoto}
+                      src={
+                        typeof profilePhoto === 'string'
+                          ? profilePhoto
+                          : profilePhoto
+                            ? URL.createObjectURL(profilePhoto)
+                            : ''
+                      }
                       alt="Profile"
                       className="h-24 w-24 rounded-full object-cover"
                     />
