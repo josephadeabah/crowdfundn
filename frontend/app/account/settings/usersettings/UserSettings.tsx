@@ -59,22 +59,21 @@ const UserSettings = () => {
 
   const handleSaveChanges = async () => {
     try {
-      const formDataToSend = new FormData(); // Rename to avoid confusion
-
-      // Append profile fields from state
+      const formDataToSend = new FormData();
+  
+      // Nesting fields inside 'profile'
       formDataToSend.append('profile[name]', formData.name);
       formDataToSend.append('profile[description]', formData.description);
-
-      // Append avatar if a new file is uploaded
+  
       if (profilePhoto instanceof File) {
         formDataToSend.append('profile[avatar]', profilePhoto);
       }
-
+  
       await updateProfileData(formDataToSend);
     } catch (error) {
       console.error('Error saving changes:', error);
     }
-  };
+  };  
 
   const handleDeleteAccount = () => {
     setIsAlertOpen(true);
