@@ -5,6 +5,7 @@ import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { useUserContext } from '@/app/context/users/UserContext';
 import debounce from 'lodash/debounce'; // Import lodash debounce
 import FormField from './FormField'; // Import FormField
+import { UserProfile } from '@/app/types/user_profiles.types';
 
 const UserSettings = () => {
   const [profilePhoto, setProfilePhoto] = useState<string | File | null>(null);
@@ -33,7 +34,7 @@ const UserSettings = () => {
       setProfilePhoto(URL.createObjectURL(file));
 
       try {
-        await updateProfileData(formData);
+        updateProfileData(formData);
       } catch (error) {
         console.error('Error uploading profile photo:', error);
       }
@@ -59,9 +60,8 @@ const UserSettings = () => {
 
   const handleSaveChanges = async () => {
     try {
+      // Prepare form data for profile (including avatar upload)
       const formDataToSend = new FormData();
-
-      // Nesting fields inside 'profile'
       formDataToSend.append('profile[name]', formData.name);
       formDataToSend.append('profile[description]', formData.description);
 
@@ -69,7 +69,19 @@ const UserSettings = () => {
         formDataToSend.append('profile[avatar]', profilePhoto);
       }
 
-      await updateProfileData(formDataToSend);
+      // Update the profile data
+      updateProfileData(formDataToSend);
+
+      // Prepare JSON data for user account information
+      const userDataToUpdate: Partial<UserProfile> = {
+        full_name: formData.name,
+        phone_number: formData.phone,
+        email: formData.email,
+        country: formData.country,
+      };
+
+      // Update the user account data
+      updateUserAccountData(userDataToUpdate);
     } catch (error) {
       console.error('Error saving changes:', error);
     }
