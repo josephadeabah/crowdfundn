@@ -20,7 +20,7 @@ const UserManagement = () => {
     activateUser,
     makeUserAdmin,
     removeRoleFromUser, // Added this function to the context
-    userProfile,
+    userAccountData,
     error,
     loading,
   } = useUserContext();
@@ -247,7 +247,7 @@ const UserManagement = () => {
                   </span>
                 </td>
                 <td className="p-2 flex items-center gap-4 space-x-2">
-                  {userProfile && userProfile.admin && (
+                  {userAccountData && userAccountData.admin && (
                     <button
                       onClick={() => handleToggleAdmin(user.id, !user.admin)}
                       className={`text-sm px-3 py-1 rounded w-24 ${
