@@ -29,27 +29,27 @@ const DonationButton: React.FC<DonationButtonProps> = ({
     useState('paystack');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState('');
-  const { userProfile, fetchUserProfile } = useUserContext();
+  const { userAccountData, fetchUserProfile } = useUserContext();
 
   useEffect(() => {
     // Fetch user profile if not available or if needed
-    if (!userProfile) {
+    if (!userAccountData) {
       fetchUserProfile();
     }
-  }, [userProfile, fetchUserProfile]);
+  }, [userAccountData, fetchUserProfile]);
 
   const [paymentDetails, setPaymentDetails] = useState({
     cardNumber: '12345678901234567',
     expirationDate: '01/22',
     cvv: '123',
     billingAddress: '',
-    country: userProfile?.country || 'Ghana',
-    first_name: userProfile?.full_name || '',
+    country: userAccountData?.country || 'Ghana',
+    first_name: userAccountData?.full_name || '',
     last_name: '',
-    phone: `${userProfile?.phone_code || ''}${userProfile?.phone_number || ''}`,
+    phone: `${userAccountData?.phone_code || ''}${userAccountData?.phone_number || ''}`,
     amount: pledgeAmount,
-    email: userProfile?.email || '',
-    type: userProfile?.payment_method || 'paystack',
+    email: userAccountData?.email || '',
+    type: userAccountData?.payment_method || 'paystack',
   });
 
   const paymentMethods = [
