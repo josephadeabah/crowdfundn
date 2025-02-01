@@ -26,8 +26,8 @@ class Profile < ApplicationRecord
     "#{avatar.blob.key}"
   end
 
-  # Ensure avatar URL is included in JSON response
+  # Override as_json to exclude the association that might cause circular references
   def as_json(options = {})
-    super(options.merge(methods: [:avatar_url], include: { user: { only: [:id, :full_name] } }))
-  end  
+    super(options.merge(include: { user: { except: [:profile] } }))
+  end
 end
