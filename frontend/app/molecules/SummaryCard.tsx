@@ -146,9 +146,7 @@ const Leaderboard: React.FC = () => {
                       <Avatar
                         name={backer.name}
                         size="sm"
-                        imageUrl={String(
-                          userAccountData?.profile?.avatar?.record?.avatar,
-                        )}
+                        imageUrl={backer.profile_picture}
                       />
                     </div>
                   </PopoverTrigger>
@@ -158,9 +156,7 @@ const Leaderboard: React.FC = () => {
                         <Avatar
                           name={backer.name}
                           size="xl"
-                          imageUrl={String(
-                            userAccountData?.profile?.avatar?.record?.avatar,
-                          )}
+                          imageUrl={backer.profile_picture}
                         />
                         <div>
                           <h4 className="font-semibold text-lg">
@@ -213,9 +209,7 @@ const Leaderboard: React.FC = () => {
                       <Avatar
                         name={backer.name}
                         size="sm"
-                        imageUrl={String(
-                          userAccountData?.profile?.avatar?.record?.avatar,
-                        )}
+                        imageUrl={backer.profile_picture}
                       />
                     </div>
                   </PopoverTrigger>
@@ -282,10 +276,7 @@ const Leaderboard: React.FC = () => {
                               <Avatar
                                 name={backer.name}
                                 size="sm"
-                                imageUrl={String(
-                                  userAccountData?.profile?.avatar?.record
-                                    ?.avatar,
-                                )}
+                                imageUrl={backer.profile_picture}
                               />
                             </div>
                           </PopoverTrigger>
@@ -364,9 +355,7 @@ const Leaderboard: React.FC = () => {
                       <Avatar
                         name={fundraiser.name}
                         size="sm"
-                        imageUrl={String(
-                          userAccountData?.profile?.avatar?.record?.avatar,
-                        )}
+                        imageUrl={fundraiser.profile_picture}
                       />
                     </div>
                   </PopoverTrigger>
@@ -431,9 +420,7 @@ const Leaderboard: React.FC = () => {
                       <Avatar
                         name={fundraiser.name}
                         size="sm"
-                        imageUrl={String(
-                          userAccountData?.profile?.avatar?.record?.avatar,
-                        )}
+                        imageUrl={fundraiser.profile_picture}
                       />
                     </div>
                   </PopoverTrigger>

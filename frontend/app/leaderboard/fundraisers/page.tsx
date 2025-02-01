@@ -12,7 +12,6 @@ import { getRankWithSuffix } from '@/app/utils/helpers/ranking.suffix';
 import React, { useEffect } from 'react';
 
 const LeaderboardFundraisersPage = () => {
-
   const { fundraiserLeaderboard, loading, error, fetchFundraiserLeaderboard } =
     usePointRewardContext(); // Access the context
 
