@@ -29,7 +29,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   error,
   onPageChange,
 }) => {
-  const { userProfile } = useUserContext();
+  const { userAccountData } = useUserContext();
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [isLocationLoading, setIsLocationLoading] = useState(true);
   const { pagination, favoriteCampaign, unfavoriteCampaign } =
@@ -75,13 +75,13 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       }
     };
 
-    if (!userProfile?.country) {
+    if (!userAccountData?.country) {
       fetchUserLocation();
     } else {
-      setUserCountry(userProfile.country);
+      setUserCountry(userAccountData.country);
       setIsLocationLoading(false);
     }
-  }, [userProfile]);
+  }, [userAccountData]);
 
   const filteredCampaigns = campaigns?.filter((campaign) => {
     return (
