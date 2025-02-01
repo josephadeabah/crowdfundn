@@ -141,7 +141,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       try {
         const isFormData = updatedProfile instanceof FormData;
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/profiles`, // No user ID needed
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/profiles/${user?.id}`, // No user ID needed
           {
             method: 'PUT',
             headers: isFormData
@@ -172,7 +172,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, user],
   );
 
   // Function to update user profile
