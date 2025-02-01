@@ -7,8 +7,9 @@ module Api
   
           # PUT /api/v1/members/profiles/:id
           def update
-            if params[:profile][:avatar].present?
-              @profile.avatar.attach(params[:profile][:avatar])
+            # Directly access params[:avatar] if profile key is missing
+            if params[:avatar].present?
+              @profile.avatar.attach(params[:avatar])
             end
           
             if @profile.update(profile_params)
@@ -16,7 +17,7 @@ module Api
             else
               render json: { errors: @profile.errors.full_messages }, status: :unprocessable_entity
             end
-          end          
+          end                   
           
   
           private
