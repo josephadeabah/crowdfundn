@@ -141,38 +141,38 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       try {
         const isFormData = updatedProfile instanceof FormData;
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/profiles/${user?.id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/profiles`, // No user ID needed
           {
             method: 'PUT',
             headers: isFormData
-              ? { Authorization: `Bearer ${token}` } // FormData does not need 'Content-Type'
+              ? { Authorization: `Bearer ${token}` } // No 'Content-Type' for FormData
               : {
                   'Content-Type': 'application/json',
                   Authorization: `Bearer ${token}`,
                 },
             body: isFormData
               ? updatedProfile // Send FormData directly
-              : JSON.stringify({ profile: updatedProfile }), // For other updates, use JSON
+              : JSON.stringify({ profile: updatedProfile }), // For JSON updates
           },
         );
 
         if (!response.ok) {
-          const errorResponse = await response.json(); // Attempt to parse error message
+          const errorResponse = await response.json();
           throw new Error(errorResponse.message || 'Failed to update profile');
         }
 
         const data = await response.json();
-        setProfileData(data.profile); // Update the local state with the new profile
+        setProfileData(data.profile); // Update local state
 
         return data.profile;
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
-        console.error('Profile update error:', err); // Log error for debugging
+        console.error('Profile update error:', err);
       } finally {
         setLoading(false);
       }
     },
-    [token, user],
+    [token],
   );
 
   // Function to update user profile
