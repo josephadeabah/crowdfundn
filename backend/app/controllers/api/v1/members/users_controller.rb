@@ -22,10 +22,7 @@ module Api
         end        
 
         def show
-          render json: @current_user.as_json(include: {
-            profile: { only: [:name, :description, :funding_goal, :amount_raised, :avatar_url] },
-            roles: {}
-          }), status: :ok
+          render json: @current_user.as_json(include: %i[profile roles]), status: :ok
         end
 
         def show_by_id
@@ -335,7 +332,18 @@ module Api
             :birth_date,
             :category,
             :target_amount,
-            :national_id
+            :national_id,
+            profile_attributes: %i[
+              name
+              description
+              funding_goal
+              amount_raised
+              end_date
+              category
+              location
+              avatar
+              status
+            ]
           )
         end
 

@@ -34,14 +34,7 @@ class User < ApplicationRecord
   # Scopes
   scope :active, -> { where(status: 'active') }
   scope :blocked, -> { where(status: 'blocked') }
-
-  # This is here to fix Error: Exclude the `profile` association to prevent circular references
-  def as_json(options = {})
-    super(options.merge(
-      except: [:created_at, :updated_at], # Exclude unnecessary fields
-    ))
-  end
-
+  
   def generate_confirmation_token
     self.confirmation_token = UserConfirmationService.generate_confirmation_token(self)
     self.confirmation_sent_at = Time.current

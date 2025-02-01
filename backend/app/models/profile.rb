@@ -25,14 +25,4 @@ class Profile < ApplicationRecord
     "#{Rails.application.credentials.dig(:digitalocean, :bucket)}/" \
     "#{avatar.blob.key}"
   end
-
-  # Override as_json to exclude circular references
-  def as_json(options = {})
-    # Exclude the `user` association to prevent circular references
-    super(options.merge(
-      except: [:user_id, :created_at, :updated_at], # Exclude unnecessary fields
-      methods: [:avatar_url], # Include custom methods
-      include: {} # Exclude all associations to prevent loops
-    ))
-  end
 end
