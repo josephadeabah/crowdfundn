@@ -12,7 +12,6 @@ interface TopbackersData {
   name: string;
   amount: string;
   category_interest: string;
-  profile: string;
   score: number;
   country: string;
   bio: string;
@@ -22,7 +21,6 @@ interface MostActiveBackersData {
   name: string;
   contributions: string;
   category_interest: string;
-  profile_picture: string;
   country: string;
   bio: string;
 }
@@ -31,7 +29,6 @@ interface TopBackersWithRewardsData {
   name: string;
   rewards: number;
   category_interest: string;
-  profile_picture: string;
   country: string;
   bio: string;
 }
@@ -40,7 +37,6 @@ interface TopFundraisersGraphicsData {
   name: string;
   campaign: string;
   category_interest: string;
-  profile_picture: string;
   country: string;
   bio: string;
 }
@@ -52,7 +48,6 @@ interface TopFundraisersStoriesData {
   score: number;
   rank: number;
   category_interest: string;
-  profile_picture: string;
   country: string;
   bio: string;
 }
