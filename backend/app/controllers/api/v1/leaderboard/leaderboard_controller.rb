@@ -65,7 +65,7 @@ module Api
           {
             name: user.full_name,
             amount: "$#{user.total_amount.to_i}",
-            profile_picture: user.profile.avatar.record.avatar,
+            # avatar: user.avatar_url,
             category_interest: user.category,
             country: user.country,
             bio: user.profile.description
@@ -76,7 +76,7 @@ module Api
           {
             name: user.full_name,
             contributions: user.total_contributions,
-            profile_picture: user.profile.avatar.record.avatar,
+            # avatar: user.avatar_url,
             category_interest: user.category,
             country: user.country,
             bio: user.profile.description
@@ -87,7 +87,7 @@ module Api
           {
             name: user.full_name,
             rewards: user.rewards,
-            profile_picture: user.profile.avatar.record.avatar,
+            # avatar: user.avatar_url,
             category_interest: user.category,
             country: user.country,
             bio: user.profile.description
@@ -98,7 +98,7 @@ module Api
           {
             name: user.full_name,
             campaign: user.campaign_name,
-            profile_picture: user.profile.avatar.record.avatar,
+            # avatar: user.avatar_url,
             category_interest: user.category,
             country: user.country,
             bio: user.profile.description
