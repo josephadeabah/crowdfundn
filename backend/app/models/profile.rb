@@ -28,6 +28,9 @@ class Profile < ApplicationRecord
 
   # Override as_json to exclude the association that might cause circular references
   def as_json(options = {})
-    super(options.merge(except: [:user]))
+    super(options.merge(
+      except: [:user_id, :status, :category, :currency],
+      methods: [:avatar_url] # Adds the avatar URL to the JSON response
+    ))
   end
 end

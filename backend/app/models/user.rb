@@ -35,10 +35,6 @@ class User < ApplicationRecord
   scope :active, -> { where(status: 'active') }
   scope :blocked, -> { where(status: 'blocked') }
 
-  # avoid Circular Reference in JSON Serialization with profile
-  def as_json(options = {})
-    super(options.merge(except: [:profile]))
-  end
   
   def generate_confirmation_token
     self.confirmation_token = UserConfirmationService.generate_confirmation_token(self)
