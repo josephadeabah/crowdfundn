@@ -30,7 +30,8 @@ class Profile < ApplicationRecord
   def as_json(options = {})
     super(options.merge(
       except: [:user_id, :status, :category, :currency],
-      methods: [:avatar_url] # Adds the avatar URL to the JSON response
+      methods: [:avatar_url],
+      include: {} # Exclude associations to prevent loops
     ))
   end
 end
