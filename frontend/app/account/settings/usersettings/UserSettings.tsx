@@ -97,7 +97,7 @@ const UserSettings = () => {
         phone: userAccountData.phone_number || '',
         email: userAccountData.email || '',
         country: userAccountData.country || '',
-        description: profileData?.description || '',
+        description: userAccountData?.profile?.description || '',
       });
       setProfilePhoto(profileData?.avatar || null);
     }
