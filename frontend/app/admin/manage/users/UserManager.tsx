@@ -5,6 +5,7 @@ import {
   UserProfileProvider,
   useUserContext,
 } from '@/app/context/users/UserContext';
+import { exportUsersToCSV } from '@/app/utils/helpers/exportCSV';
 import React, { useState, useEffect } from 'react';
 import { FaSearch, FaTrash, FaLock, FaUnlock } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
@@ -156,7 +157,12 @@ const UserManagement = () => {
 
   return (
     <div className="mx-auto p-4">
+      <div className='flex justify-between items-center'>
       <h1 className="text-3xl font-bold mb-6">User Management</h1>
+      <button onClick={() => exportUsersToCSV(users)} className="p-2 bg-green-500 text-white rounded">
+  Export CSV
+</button>
+      </div>
       <div className="mb-4 flex items-center">
         <div className="relative flex-grow">
           <input
