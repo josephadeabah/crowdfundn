@@ -311,7 +311,13 @@ const Navbar = () => {
                   <div className="flex flex-col justify-start gap-1 p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50">
                     <div className="cursor-pointer flex items-center">
                       <Link href="/account">
-                        <Avatar name={user.full_name} size="sm" />
+                        <Avatar
+                          name={user.full_name}
+                          size="sm"
+                          imageUrl={String(
+                            userAccountData?.profile?.avatar?.record?.avatar,
+                          )}
+                        />
                       </Link>
                       <div
                         className="ml-3 flex flex-col"
