@@ -15,7 +15,7 @@ class Profile < ApplicationRecord
   validates :location, presence: true, allow_blank: true
 
   # Avatar validations using active_storage_validations gem
-  validates :avatar, attached: true, content_type: ['image/png', 'image/jpg', 'image/jpeg'], size: { less_than: 5.megabytes }
+  validates :avatar, attached: true, content_type: ['image/png', 'image/jpeg'], size: { less_than: 5.megabytes }
 
   # Method to return avatar URL
   def avatar_url
