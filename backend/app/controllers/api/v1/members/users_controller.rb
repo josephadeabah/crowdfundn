@@ -22,10 +22,10 @@ module Api
         end        
 
         def show
-          Rails.logger.info "Serializing current user: #{@current_user.inspect}"
-          Rails.logger.info "Serializing profile: #{@current_user.profile.inspect}"
-          Rails.logger.info "Serializing roles: #{@current_user.roles.inspect}"
-          render json: @current_user.as_json(include: %i[profile roles]), status: :ok
+          render json: @current_user.as_json(include: {
+            profile: { only: [:name, :description, :funding_goal, :amount_raised, :avatar_url] },
+            roles: {}
+          }), status: :ok
         end
 
         def show_by_id

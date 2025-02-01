@@ -35,7 +35,13 @@ class User < ApplicationRecord
   scope :active, -> { where(status: 'active') }
   scope :blocked, -> { where(status: 'blocked') }
 
-  
+  def as_json(options = {})
+    # Exclude the `profile` association to prevent circular references
+    super(options.merge(
+      except: [:created_at, :updated_at], # Exclude unnecessary fields
+    ))
+  end
+
   def generate_confirmation_token
     self.confirmation_token = UserConfirmationService.generate_confirmation_token(self)
     self.confirmation_sent_at = Time.current
