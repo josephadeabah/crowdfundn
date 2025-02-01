@@ -27,8 +27,8 @@ const UserSettings = () => {
     if (file) {
       const formData = new FormData();
       formData.append('avatar', file);
-      // Send the FormData to update profile
-      updateProfileData(formData); // This will now accept FormData correctly
+      setProfilePhoto(URL.createObjectURL(file)); // Update the photo preview
+      updateProfileData(formData); // Send the FormData to update profile
     }
   };
 
@@ -129,19 +129,12 @@ const UserSettings = () => {
                       <FaUser className="text-gray-400 text-3xl" />
                     </div>
                   )}
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-600 dark:text-white dark:border-gray-500 dark:hover:bg-gray-500"
-                  >
-                    Change
-                  </motion.button>
                   <input
                     type="file"
                     id="photo"
                     name="photo"
                     accept="image/*"
-                    className="sr-only"
+                    className="ml-5 cursor-pointer"
                     onChange={handlePhotoUpload}
                     aria-label="Upload profile photo"
                   />
