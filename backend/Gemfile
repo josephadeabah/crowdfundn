@@ -23,6 +23,8 @@ gem 'clockwork'
 
 gem 'groupdate'
 
+gem 'active_storage_validations'
+
 # Use dotenv for environment variables
 gem 'dotenv-rails', groups: %i[development test production]
 
