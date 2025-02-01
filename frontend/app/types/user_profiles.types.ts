@@ -37,9 +37,12 @@ export interface UserProfile {
 }
 
 export interface UserProfileState {
-  userProfile: UserProfile | null;
+  userAccountData: UserProfile | null;
+  profileData: Profile | null;
   loading: boolean;
   error: string | null;
+  updateUserAccountData: (data: Partial<UserProfile>) => void;
+  updateProfileData: (data: Partial<Profile>) => void;
   fetchUserProfile: () => void;
   hasRole: (role: string) => boolean;
   fetchAllUsers: (

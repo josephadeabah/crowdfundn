@@ -8,7 +8,11 @@ import React, {
   useCallback,
 } from 'react';
 import { useAuth } from '@/app/context/auth/AuthContext';
-import { UserProfile, UserProfileState } from '@/app/types/user_profiles.types';
+import {
+  Profile,
+  UserProfile,
+  UserProfileState,
+} from '@/app/types/user_profiles.types';
 import { Role } from '@/app/types/user.types';
 import Cookies from 'js-cookie'; // Import js-cookie for cookie handling
 
@@ -16,7 +20,10 @@ const UserContext = createContext<UserProfileState | undefined>(undefined);
 
 export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
   const { token } = useAuth();
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [userAccountData, setUserAccountData] = useState<UserProfile | null>(
+    null,
+  );
+  const [profileData, setProfileData] = useState<Profile | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -114,7 +121,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const data: UserProfile = await response.json();
-      setUserProfile(data);
+      setUserAccountData(data);
 
       // Store roles in cookies after fetching user data
       storeRolesInCookies(data.roles);
@@ -124,6 +131,80 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   }, [token, storeRolesInCookies]);
+
+  // Function to update user profile
+  const updateProfileData = useCallback(
+    async (updatedProfile: Partial<Profile>) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/profiles/${profileData?.id}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              profile: updatedProfile,
+            }),
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to update profile');
+        }
+
+        const data = await response.json();
+        setProfileData(data.profile); // Update the local state with the new profile
+
+        return data.profile; // Return the updated profile
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token, profileData?.id],
+  );
+
+  // Function to update user profile
+  const updateUserAccountData = useCallback(
+    async (updatedProfile: Partial<UserProfile>) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/me`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              profile: updatedProfile,
+            }),
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to update profile');
+        }
+
+        const updatedData: UserProfile = await response.json();
+        setUserAccountData(updatedData); // Update local state with new profile data
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
 
   // Function to assign a role to a user
   const assignRoleToUser = useCallback(
@@ -282,10 +363,13 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
 
   const contextValue = React.useMemo(
     () => ({
-      userProfile,
+      userAccountData,
+      profileData,
       loading,
       error,
       fetchUserProfile,
+      updateProfileData,
+      updateUserAccountData,
       hasRole,
       assignRoleToUser,
       removeRoleFromUser,
@@ -296,7 +380,8 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       deleteUser,
     }),
     [
-      userProfile,
+      userAccountData,
+      profileData,
       loading,
       error,
       token,
@@ -307,6 +392,8 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       blockUser,
       activateUser,
       fetchAllUsers,
+      updateProfileData,
+      updateUserAccountData,
       deleteUser,
     ],
   );

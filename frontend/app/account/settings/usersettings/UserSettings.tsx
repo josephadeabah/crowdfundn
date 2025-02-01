@@ -9,22 +9,33 @@ const UserSettings = () => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [language, setLanguage] = useState('');
+  const [language, setLanguage] = useState('English');
   const [country, setCountry] = useState('');
+  const [description, setDescription] = useState('');
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const { userProfile } = useUserContext();
 
+  const {
+    userAccountData,
+    updateUserAccountData,
+    profileData,
+    updateProfileData,
+  } = useUserContext();
+
+  // Handle profile photo upload
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfilePhoto(reader.result as string);
+        // Update profile photo in profile data
+        updateProfileData({ avatar: reader.result as string });
       };
       reader.readAsDataURL(file);
     }
   };
 
+  // Handle phone number formatting
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '');
     const formattedPhone = value.replace(
@@ -34,11 +45,30 @@ const UserSettings = () => {
     setPhone(formattedPhone);
   };
 
+  // Validate email format
   const validateEmail = (email: string) => {
-    const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const re = /^[a-zA-Z0-9._%+-]+@[a-zAA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return re.test(String(email).toLowerCase());
   };
 
+  // Update user account data
+  const handleUserAccountUpdate = () => {
+    updateUserAccountData({
+      full_name: name,
+      phone_number: phone,
+      email: email,
+      country: country,
+    });
+  };
+
+  // Update profile data
+  const handleProfileUpdate = () => {
+    updateProfileData({
+      description: description,
+    });
+  };
+
+  // Handle account deletion
   const handleDeleteAccount = () => {
     setIsAlertOpen(true);
   };
@@ -46,31 +76,37 @@ const UserSettings = () => {
   const confirmDeleteAccount = () => {
     // Implement account deletion logic here
     console.log('Account deleted');
-    setIsAlertOpen(true);
+    setIsAlertOpen(false);
   };
-  useEffect(() => {
-    // Simulate fetching user data
-    setTimeout(() => {
-      setName(userProfile?.full_name || '');
-      setPhone(userProfile?.phone_number || '');
-      setEmail(userProfile?.email || '');
-      setCountry(userProfile?.country || '');
-      setLanguage('English');
-    }, 1000);
-  }, [userProfile]);
 
   const cancelAccountDelete = () => {
     setIsAlertOpen(false); // Close the AlertPopup without action
   };
 
+  // Simulate fetching user data
+  useEffect(() => {
+    if (userAccountData) {
+      setName(userAccountData?.full_name || '');
+      setPhone(userAccountData?.phone_number || '');
+      setEmail(userAccountData?.email || '');
+      setCountry(userAccountData?.country || '');
+    }
+
+    if (profileData) {
+      setDescription(profileData?.description || '');
+      setProfilePhoto(profileData?.avatar || null);
+    }
+  }, [userAccountData, profileData]);
+
   return (
-    <div className=" mx-auto bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-50">
+    <div className="mx-auto bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-50">
       <div className="mx-auto bg-white dark:bg-gray-700">
         <div className="px-4 py-5 sm:p-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 dark:text-white">
             Account Settings
           </h2>
           <div className="space-y-6 sm:space-y-5">
+            {/* Profile Photo */}
             <motion.div
               className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start"
               initial={{ y: 20, opacity: 0 }}
@@ -116,6 +152,7 @@ const UserSettings = () => {
               </div>
             </motion.div>
 
+            {/* Name */}
             <motion.div
               className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"
               initial={{ y: 20, opacity: 0 }}
@@ -141,6 +178,7 @@ const UserSettings = () => {
               </div>
             </motion.div>
 
+            {/* Phone Number */}
             <motion.div
               className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"
               initial={{ y: 20, opacity: 0 }}
@@ -166,8 +204,9 @@ const UserSettings = () => {
               </div>
             </motion.div>
 
+            {/* Email Address */}
             <motion.div
-              className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 dark:border-gray-600 sm:pt-5"
+              className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -196,11 +235,12 @@ const UserSettings = () => {
               </div>
             </motion.div>
 
+            {/* Country */}
             <motion.div
               className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.5 }}
             >
               <label
                 htmlFor="country"
@@ -214,7 +254,6 @@ const UserSettings = () => {
                   name="country"
                   id="country"
                   value={country}
-                  // onChange={handlePhoneChange}
                   className="max-w-lg block w-full shadow-sm focus:ring-gray-500 focus:border-gray-500 sm:max-w-xs sm:text-sm border-gray-300 flex-grow px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                   aria-label="Country"
                   disabled={true}
@@ -222,57 +261,63 @@ const UserSettings = () => {
               </div>
             </motion.div>
 
+            {/* Description */}
             <motion.div
               className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.6 }}
             >
               <label
-                htmlFor="language"
+                htmlFor="description"
                 className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
               >
-                Preferred Language
+                Description
               </label>
               <div className="mt-1 sm:mt-0 sm:col-span-2">
-                <select
-                  id="language"
-                  name="language"
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  className="max-w-lg block focus:ring-gray-500 focus:border-gray-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 flex-grow px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-                  aria-label="Preferred language"
-                >
-                  <option>English</option>
-                  <option>Spanish</option>
-                  <option>French</option>
-                  <option>German</option>
-                  <option>Chinese</option>
-                </select>
+                <textarea
+                  name="description"
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="max-w-lg block w-full shadow-sm focus:ring-gray-500 focus:border-gray-500 sm:max-w-xs sm:text-sm border-gray-300 flex-grow px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                  rows={4}
+                  aria-label="Description"
+                />
               </div>
             </motion.div>
           </div>
         </div>
+
         <div className="px-4 py-3 bg-gray-50 text-right sm:px-6 dark:bg-gray-600">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            onClick={handleDeleteAccount}
-            aria-label="Delete account"
+            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            onClick={handleUserAccountUpdate}
           >
-            Delete Account
+            Save Changes
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="inline-flex justify-center py-2 px-4 ml-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            onClick={handleProfileUpdate}
+          >
+            Save Profile
           </motion.button>
         </div>
       </div>
-      <AlertPopup
+
+      {/* Alert Popup for Account Deletion */}
+        <AlertPopup
         title="Delete Account"
         message="Are you sure you want to delete your account? All of your data will be permanently removed. This action cannot be undone."
         isOpen={isAlertOpen}
         setIsOpen={setIsAlertOpen}
         onConfirm={confirmDeleteAccount}
         onCancel={cancelAccountDelete}
-      />
+        />
     </div>
   );
 };
