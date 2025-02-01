@@ -42,7 +42,7 @@ export interface UserProfileState {
   loading: boolean;
   error: string | null;
   updateUserAccountData: (data: Partial<UserProfile>) => void;
-  updateProfileData: (data: Partial<Profile>) => void;
+  updateProfileData: (data: Partial<Profile> | FormData) => void;
   fetchUserProfile: () => void;
   hasRole: (role: string) => boolean;
   fetchAllUsers: (

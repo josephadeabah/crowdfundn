@@ -25,13 +25,10 @@ const UserSettings = () => {
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePhoto(reader.result as string);
-        // Update profile photo in profile data
-        updateProfileData({ avatar: reader.result as string });
-      };
-      reader.readAsDataURL(file);
+      const formData = new FormData();
+      formData.append('avatar', file);
+      // Send the FormData to update profile
+      updateProfileData(formData); // This will now accept FormData correctly
     }
   };
 
@@ -310,14 +307,14 @@ const UserSettings = () => {
       </div>
 
       {/* Alert Popup for Account Deletion */}
-        <AlertPopup
+      <AlertPopup
         title="Delete Account"
         message="Are you sure you want to delete your account? All of your data will be permanently removed. This action cannot be undone."
         isOpen={isAlertOpen}
         setIsOpen={setIsAlertOpen}
         onConfirm={confirmDeleteAccount}
         onCancel={cancelAccountDelete}
-        />
+      />
     </div>
   );
 };

@@ -134,35 +134,45 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
 
   // Function to update user profile
   const updateProfileData = useCallback(
-    async (updatedProfile: Partial<Profile>) => {
+    async (updatedProfile: Partial<Profile> | FormData) => {
+      if (!profileData?.id) {
+        setError('Profile ID is missing');
+        return;
+      }
+
       setLoading(true);
       setError(null);
 
       try {
+        const isFormData = updatedProfile instanceof FormData;
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/profiles/${profileData?.id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/profiles/${profileData.id}`,
           {
             method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              profile: updatedProfile,
-            }),
+            headers: isFormData
+              ? { Authorization: `Bearer ${token}` } // FormData does not need 'Content-Type'
+              : {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+            body: isFormData
+              ? updatedProfile // Send FormData directly
+              : JSON.stringify({ profile: updatedProfile }), // For other updates, use JSON
           },
         );
 
         if (!response.ok) {
-          throw new Error('Failed to update profile');
+          const errorResponse = await response.json(); // Attempt to parse error message
+          throw new Error(errorResponse.message || 'Failed to update profile');
         }
 
         const data = await response.json();
         setProfileData(data.profile); // Update the local state with the new profile
 
-        return data.profile; // Return the updated profile
+        return data.profile;
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
+        console.error('Profile update error:', err); // Log error for debugging
       } finally {
         setLoading(false);
       }
