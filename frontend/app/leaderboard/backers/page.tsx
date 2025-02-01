@@ -10,7 +10,6 @@ import {
   PopoverTrigger,
 } from '@/app/components/popover/Popover';
 import { usePointRewardContext } from '@/app/context/pointreward/PointRewardContext';
-import { useUserContext } from '@/app/context/users/UserContext';
 import TransferLoader from '@/app/loaders/TransferLoader ';
 import { deslugify } from '@/app/utils/helpers/categories';
 import { getRankWithSuffix } from '@/app/utils/helpers/ranking.suffix';
@@ -32,8 +31,6 @@ const getCupIcon = (score: number) => {
 const LeaderboardBackersPage = () => {
   const { leaderboard, loading, error, fetchLeaderboard } =
     usePointRewardContext(); // Access the context
-  const { userAccountData } = useUserContext();
-
   useEffect(() => {
     // Get the fragment (hash) from the URL
     const hash = window.location.hash;

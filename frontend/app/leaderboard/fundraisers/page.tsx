@@ -6,7 +6,6 @@ import {
   PopoverTrigger,
 } from '@/app/components/popover/Popover';
 import { usePointRewardContext } from '@/app/context/pointreward/PointRewardContext';
-import { useUserContext } from '@/app/context/users/UserContext';
 import TransferLoader from '@/app/loaders/TransferLoader ';
 import { deslugify } from '@/app/utils/helpers/categories';
 import { getRankWithSuffix } from '@/app/utils/helpers/ranking.suffix';
