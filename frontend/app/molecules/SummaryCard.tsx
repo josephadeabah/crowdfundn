@@ -143,7 +143,7 @@ const Leaderboard: React.FC = () => {
                       <Avatar
                         name={backer.name}
                         size="sm"
-                        imageUrl={backer?.profile_picture}
+                        imageUrl={backer?.profile}
                       />
                     </div>
                   </PopoverTrigger>
@@ -153,7 +153,7 @@ const Leaderboard: React.FC = () => {
                         <Avatar
                           name={backer.name}
                           size="xl"
-                          imageUrl={backer?.profile_picture}
+                          imageUrl={backer?.profile}
                         />
                         <div>
                           <h4 className="font-semibold text-lg">
@@ -206,7 +206,7 @@ const Leaderboard: React.FC = () => {
                       <Avatar
                         name={backer.name}
                         size="sm"
-                        imageUrl={backer?.profile_picture}
+                        imageUrl={backer?.profile}
                       />
                     </div>
                   </PopoverTrigger>
@@ -273,7 +273,7 @@ const Leaderboard: React.FC = () => {
                               <Avatar
                                 name={backer.name}
                                 size="sm"
-                                imageUrl={backer?.profile_picture}
+                                imageUrl={backer?.profile}
                               />
                             </div>
                           </PopoverTrigger>
@@ -352,7 +352,7 @@ const Leaderboard: React.FC = () => {
                       <Avatar
                         name={fundraiser.name}
                         size="sm"
-                        imageUrl={fundraiser?.profile_picture}
+                        imageUrl={fundraiser?.profile}
                       />
                     </div>
                   </PopoverTrigger>
@@ -417,7 +417,7 @@ const Leaderboard: React.FC = () => {
                       <Avatar
                         name={fundraiser.name}
                         size="sm"
-                        imageUrl={fundraiser?.profile_picture}
+                        imageUrl={fundraiser?.profile}
                       />
                     </div>
                   </PopoverTrigger>
