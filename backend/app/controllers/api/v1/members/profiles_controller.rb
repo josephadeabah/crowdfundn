@@ -7,17 +7,20 @@ module Api
   
           # PUT /api/v1/members/profiles/:id
           def update
-            # Directly access params[:avatar] if profile key is missing
-            if params[:avatar].present?
-              @profile.avatar.attach(params[:avatar])
+            if params[:profile].present?
+              avatar = params[:profile][:avatar] || params[:avatar]
+            else
+              avatar = params[:avatar] # Handle direct upload case
             end
+          
+            @profile.avatar.attach(avatar) if avatar.present?
           
             if @profile.update(profile_params)
               render json: { message: 'Profile updated successfully', profile: @profile.as_json }, status: :ok
             else
               render json: { errors: @profile.errors.full_messages }, status: :unprocessable_entity
             end
-          end                   
+          end                            
           
   
           private
