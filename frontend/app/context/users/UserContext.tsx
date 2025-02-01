@@ -135,18 +135,13 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
   // Function to update user profile
   const updateProfileData = useCallback(
     async (updatedProfile: Partial<Profile> | FormData) => {
-      if (!profileData?.id) {
-        setError('Profile ID is missing');
-        return;
-      }
-
       setLoading(true);
       setError(null);
 
       try {
         const isFormData = updatedProfile instanceof FormData;
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/profiles/${profileData.id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/profiles/${profileData?.id}`,
           {
             method: 'PUT',
             headers: isFormData
