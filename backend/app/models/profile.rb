@@ -6,7 +6,7 @@ class Profile < ApplicationRecord
 
   # Validations
   validates :name, presence: true
-  validates :description, presence: true
+  validates :description, presence: true, allow_blank: true
   validates :funding_goal, numericality: { greater_than: 0 }, presence: true
   validates :amount_raised, numericality: { greater_than_or_equal_to: 0 }
   validates :status, inclusion: { in: %w[active inactive], message: '%<value>s is not a valid status' }

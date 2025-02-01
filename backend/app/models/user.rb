@@ -35,8 +35,8 @@ class User < ApplicationRecord
   scope :active, -> { where(status: 'active') }
   scope :blocked, -> { where(status: 'blocked') }
 
+  # This is here to fix Error: Exclude the `profile` association to prevent circular references
   def as_json(options = {})
-    # Exclude the `profile` association to prevent circular references
     super(options.merge(
       except: [:created_at, :updated_at], # Exclude unnecessary fields
     ))
