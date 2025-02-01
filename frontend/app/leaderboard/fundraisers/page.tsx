@@ -70,13 +70,21 @@ const LeaderboardFundraisersPage = () => {
                         <Popover>
                           <PopoverTrigger asChild>
                             <div className="relative cursor-pointer">
-                              <Avatar name={fundraiser.username} size="sm" />
+                              <Avatar
+                                name={fundraiser.username}
+                                size="sm"
+                                imageUrl={String(fundraiser?.profile_picture)}
+                              />
                             </div>
                           </PopoverTrigger>
                           <PopoverContent className="w-80 p-4 shadow-lg">
                             <div className="space-y-4">
                               <div className="flex items-center space-x-4">
-                                <Avatar name={fundraiser.username} size="xl" />
+                                <Avatar
+                                  name={fundraiser.username}
+                                  size="xl"
+                                  imageUrl={String(fundraiser?.profile_picture)}
+                                />
                                 <div>
                                   <h4 className="font-semibold text-lg text-gray-800">
                                     {fundraiser.username}

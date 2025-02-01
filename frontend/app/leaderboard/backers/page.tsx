@@ -102,13 +102,21 @@ const LeaderboardBackersPage = () => {
                         <Popover>
                           <PopoverTrigger asChild>
                             <div className="relative cursor-pointer">
-                              <Avatar name={backer.username} size="sm" />
+                              <Avatar
+                                name={backer.username}
+                                size="sm"
+                                imageUrl={String(backer?.profile_picture)}
+                              />
                             </div>
                           </PopoverTrigger>
                           <PopoverContent className="w-80 p-4 shadow-lg">
                             <div className="space-y-4">
                               <div className="flex items-center space-x-4">
-                                <Avatar name={backer.username} size="xl" />
+                                <Avatar
+                                  name={backer.username}
+                                  size="xl"
+                                  imageUrl={String(backer?.profile_picture)}
+                                />
                                 <div>
                                   <h4 className="font-semibold text-lg text-gray-800">
                                     {backer.username}

@@ -237,7 +237,13 @@ const Navbar = () => {
                 {user && (
                   <li className="flex items-center gap-3">
                     <Link href="/account">
-                      <Avatar name={user.full_name} size="sm" />
+                      <Avatar
+                        name={user.full_name}
+                        size="sm"
+                        imageUrl={String(
+                          userAccountData?.profile?.avatar?.record?.avatar,
+                        )}
+                      />
                     </Link>
                     <div className="ml-3 flex flex-col">
                       <span className="font-semibold">{user.full_name}</span>
@@ -292,7 +298,13 @@ const Navbar = () => {
               <Popover>
                 <PopoverTrigger asChild>
                   <div className="cursor-pointer">
-                    <Avatar name={user.full_name} size="sm" />
+                    <Avatar
+                      name={user.full_name}
+                      size="sm"
+                      imageUrl={String(
+                        userAccountData?.profile?.avatar?.record?.avatar,
+                      )}
+                    />
                   </div>
                 </PopoverTrigger>
                 <PopoverContent side="bottom" align="end" sideOffset={10}>

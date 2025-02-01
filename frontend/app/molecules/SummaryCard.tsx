@@ -140,13 +140,21 @@ const Leaderboard: React.FC = () => {
                       className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
                       style={{ zIndex: topBackers.length - index }}
                     >
-                      <Avatar name={backer.name} size="sm" />
+                      <Avatar
+                        name={backer.name}
+                        size="sm"
+                        imageUrl={backer?.profile_picture}
+                      />
                     </div>
                   </PopoverTrigger>
                   <PopoverContent className="w-96">
                     <div className="space-y-4 p-4">
                       <div className="flex items-center space-x-4">
-                        <Avatar name={backer.name} size="xl" />
+                        <Avatar
+                          name={backer.name}
+                          size="xl"
+                          imageUrl={backer?.profile_picture}
+                        />
                         <div>
                           <h4 className="font-semibold text-lg">
                             {backer.name}
@@ -195,7 +203,11 @@ const Leaderboard: React.FC = () => {
                       className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
                       style={{ zIndex: mostActiveBackers.length - index }}
                     >
-                      <Avatar name={backer.name} size="sm" />
+                      <Avatar
+                        name={backer.name}
+                        size="sm"
+                        imageUrl={backer?.profile_picture}
+                      />
                     </div>
                   </PopoverTrigger>
                   <PopoverContent className="w-96">
@@ -258,7 +270,11 @@ const Leaderboard: React.FC = () => {
                                 zIndex: topBackersWithRewards.length - index,
                               }}
                             >
-                              <Avatar name={backer.name} size="sm" />
+                              <Avatar
+                                name={backer.name}
+                                size="sm"
+                                imageUrl={backer?.profile_picture}
+                              />
                             </div>
                           </PopoverTrigger>
                           <PopoverContent className="w-96">
@@ -333,7 +349,11 @@ const Leaderboard: React.FC = () => {
                       className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
                       style={{ zIndex: topFundraisersGraphics.length - index }}
                     >
-                      <Avatar name={fundraiser.name} size="sm" />
+                      <Avatar
+                        name={fundraiser.name}
+                        size="sm"
+                        imageUrl={fundraiser?.profile_picture}
+                      />
                     </div>
                   </PopoverTrigger>
                   <PopoverContent className="w-96">
@@ -394,7 +414,11 @@ const Leaderboard: React.FC = () => {
                       className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
                       style={{ zIndex: topFundraisersStories.length - index }}
                     >
-                      <Avatar name={fundraiser.name} size="sm" />
+                      <Avatar
+                        name={fundraiser.name}
+                        size="sm"
+                        imageUrl={fundraiser?.profile_picture}
+                      />
                     </div>
                   </PopoverTrigger>
                   <PopoverContent className="w-96">
