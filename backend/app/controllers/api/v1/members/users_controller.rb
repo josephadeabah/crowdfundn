@@ -22,6 +22,9 @@ module Api
         end        
 
         def show
+          Rails.logger.info "Serializing current user: #{@current_user.inspect}"
+          Rails.logger.info "Serializing profile: #{@current_user.profile.inspect}"
+          Rails.logger.info "Serializing roles: #{@current_user.roles.inspect}"
           render json: @current_user.as_json(include: %i[profile roles]), status: :ok
         end
 
