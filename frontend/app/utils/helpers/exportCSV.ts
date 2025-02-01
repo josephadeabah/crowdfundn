@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 export const exportUsersToCSV = async (fetchAllUsers: Function) => {
   try {
     const { users } = await fetchAllUsers(1, 60); // Fetch all users (adjust limit if needed)
-    
+
     if (!users || users.length === 0) {
       toast.info('No users to export');
       return;
