@@ -19,7 +19,7 @@ import Cookies from 'js-cookie'; // Import js-cookie for cookie handling
 const UserContext = createContext<UserProfileState | undefined>(undefined);
 
 export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [userAccountData, setUserAccountData] = useState<UserProfile | null>(
     null,
   );
@@ -141,7 +141,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       try {
         const isFormData = updatedProfile instanceof FormData;
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/profiles/${profileData?.id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/profiles/${user?.id}`,
           {
             method: 'PUT',
             headers: isFormData
@@ -172,7 +172,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token, profileData?.id],
+    [token, user],
   );
 
   // Function to update user profile
