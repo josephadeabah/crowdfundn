@@ -109,7 +109,7 @@ const UserSettings = () => {
         country: userAccountData.country || '',
         description: userAccountData?.profile?.description || '',
       });
-      setProfilePhoto(profileData?.avatar?.record?.avatar || null);
+      setProfilePhoto(userAccountData?.profile?.avatar?.record?.avatar || null);
     }
   }, [userAccountData, profileData]);
 
