@@ -1,4 +1,7 @@
-import { useMetricsContext } from '@/app/context/admin/metrics/MetricsContext';
+import {
+  Metrics,
+  useMetricsContext,
+} from '@/app/context/admin/metrics/MetricsContext';
 import moment from 'moment';
 import React, { useEffect } from 'react';
 import { FaInfoCircle } from 'react-icons/fa';
@@ -10,6 +13,97 @@ const GeneralDashboard = () => {
   useEffect(() => {
     fetchMetrics();
   }, [fetchMetrics]);
+
+  const convertToCSV = (metrics: Metrics | null): string => {
+    if (!metrics) return '';
+
+    const csvRows = [];
+
+    // Add headers
+    csvRows.push('Category,Key,Value');
+
+    // Users
+    csvRows.push(`Users,Total,${metrics.users.total}`);
+    csvRows.push(`Users,New Last Week,${metrics.users.new_last_week}`);
+    csvRows.push(`Users,Active,${metrics.users.active}`);
+    csvRows.push(
+      `Users,Email Confirmation Rate,${metrics.users.email_confirmation_rate}`,
+    );
+
+    // Campaigns
+    csvRows.push(`Campaigns,Total,${metrics.campaigns.total}`);
+    csvRows.push(`Campaigns,Active,${metrics.campaigns.active}`);
+    csvRows.push(
+      `Campaigns,Average Goal Amount,${metrics.campaigns.average_goal_amount}`,
+    );
+    csvRows.push(
+      `Campaigns,Average Current Amount,${metrics.campaigns.average_current_amount}`,
+    );
+    csvRows.push(
+      `Campaigns,Performance Percentage,${metrics.campaigns.performance_percentage}`,
+    );
+    csvRows.push(
+      `Campaigns,Average Donors Per Campaign,${metrics.campaigns.average_donors_per_campaign}`,
+    );
+
+    // Donations
+    csvRows.push(`Donations,Total Amount,${metrics.donations.total_amount}`);
+    csvRows.push(
+      `Donations,Average Donation,${metrics.donations.average_donation}`,
+    );
+    csvRows.push(`Donations,Repeat Donors,${metrics.donations.repeat_donors}`);
+
+    // Subscriptions
+    csvRows.push(`Subscriptions,Active,${metrics.subscriptions.active}`);
+    csvRows.push(`Subscriptions,MRR,${metrics.subscriptions.mrr}`);
+    csvRows.push(
+      `Subscriptions,Churn Rate,${metrics.subscriptions.churn_rate}`,
+    );
+
+    // Geography
+    Object.entries(metrics.geography.users_by_country).forEach(
+      ([country, count]) => {
+        csvRows.push(`Geography,Users by Country - ${country},${count}`);
+      },
+    );
+
+    metrics.geography.top_countries_by_donations.forEach(
+      ([country, donation]) => {
+        csvRows.push(
+          `Geography,Top Countries by Donations - ${country},${donation}`,
+        );
+      },
+    );
+
+    // Engagement
+    csvRows.push(
+      `Engagement,Average Logins,${metrics.engagement.average_logins}`,
+    );
+    csvRows.push(
+      `Engagement,Time to First Action,${metrics.engagement.time_to_first_action}`,
+    );
+
+    // Subaccounts
+    csvRows.push(`Subaccounts,Total,${metrics.subaccounts.total}`);
+    csvRows.push(
+      `Subaccounts,Success Rate,${metrics.subaccounts.success_rate}`,
+    );
+
+    return csvRows.join('\n');
+  };
+
+  const handleExportCSV = () => {
+    const csvData = convertToCSV(metrics);
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dashboard_metrics.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -62,8 +156,16 @@ const GeneralDashboard = () => {
 
   return (
     <div className="mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-left">General Dashboard</h1>
-
+      {/* Add the Export CSV button */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold mb-6">General Dashboard</h1>
+        <button
+          onClick={handleExportCSV}
+          className="p-2 bg-green-500 text-white rounded"
+        >
+          Export CSV
+        </button>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {cardData.map((card, index) => (
           <div

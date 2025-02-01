@@ -14,7 +14,7 @@ interface MetricsState {
   fetchMetrics: () => Promise<void>;
 }
 
-interface Metrics {
+export interface Metrics {
   users: {
     total: number;
     new_last_week: number;
