@@ -10,6 +10,7 @@ import {
   PopoverTrigger,
 } from '@/app/components/popover/Popover';
 import { usePointRewardContext } from '@/app/context/pointreward/PointRewardContext';
+import { useUserContext } from '@/app/context/users/UserContext';
 import TransferLoader from '@/app/loaders/TransferLoader ';
 import { deslugify } from '@/app/utils/helpers/categories';
 import { getRankWithSuffix } from '@/app/utils/helpers/ranking.suffix';
@@ -31,6 +32,7 @@ const getCupIcon = (score: number) => {
 const LeaderboardBackersPage = () => {
   const { leaderboard, loading, error, fetchLeaderboard } =
     usePointRewardContext(); // Access the context
+  const { userAccountData } = useUserContext();
 
   useEffect(() => {
     // Get the fragment (hash) from the URL
@@ -105,7 +107,10 @@ const LeaderboardBackersPage = () => {
                               <Avatar
                                 name={backer.username}
                                 size="sm"
-                                imageUrl={String(backer?.profile_picture)}
+                                imageUrl={String(
+                                  userAccountData?.profile?.avatar?.record
+                                    ?.avatar,
+                                )}
                               />
                             </div>
                           </PopoverTrigger>
@@ -115,7 +120,10 @@ const LeaderboardBackersPage = () => {
                                 <Avatar
                                   name={backer.username}
                                   size="xl"
-                                  imageUrl={String(backer?.profile_picture)}
+                                  imageUrl={String(
+                                    userAccountData?.profile?.avatar?.record
+                                      ?.avatar,
+                                  )}
                                 />
                                 <div>
                                   <h4 className="font-semibold text-lg text-gray-800">
