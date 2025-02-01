@@ -278,7 +278,13 @@ const SingleCampaignPage: React.FC = () => {
                 <div className="text-xs italic text-gray-500 dark:text-gray-400">
                   Fundraiser:
                 </div>
-                <Avatar name={String(fundraiserName)} size="md" />
+                <Avatar
+                  name={String(fundraiserName)}
+                  size="md"
+                  imageUrl={String(
+                    currentCampaign?.fundraiser?.profile?.avatar,
+                  )}
+                />
                 <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
                   {fundraiserName}
                 </h3>

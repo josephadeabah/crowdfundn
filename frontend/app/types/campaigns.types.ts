@@ -125,6 +125,7 @@ export interface FundraiserProfileType {
   name: string;
   description: string;
   status?: string;
+  avatar?: string;
   created_at: string;
   updated_at: string;
 }
