@@ -25,7 +25,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activePopover, setActivePopover] = useState<string | null>(null);
   const { user, token, logout } = useAuth();
-  const { userProfile } = useUserContext();
+  const { userAccountData } = useUserContext();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
@@ -309,9 +309,9 @@ const Navbar = () => {
                         <span className="text-gray-600">{user.email}</span>
                       </div>
                     </div>
-                    {userProfile &&
-                      (userProfile?.admin === true ||
-                        userProfile?.roles.some(
+                    {userAccountData &&
+                      (userAccountData?.admin === true ||
+                        userAccountData?.roles.some(
                           (role) =>
                             role.name === 'Admin' || role.name === 'Manager',
                         )) && (
