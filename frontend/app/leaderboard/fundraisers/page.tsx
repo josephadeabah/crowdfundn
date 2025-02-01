@@ -13,7 +13,6 @@ import { getRankWithSuffix } from '@/app/utils/helpers/ranking.suffix';
 import React, { useEffect } from 'react';
 
 const LeaderboardFundraisersPage = () => {
-  const { userAccountData } = useUserContext();
 
   const { fundraiserLeaderboard, loading, error, fetchFundraiserLeaderboard } =
     usePointRewardContext(); // Access the context
@@ -76,10 +75,7 @@ const LeaderboardFundraisersPage = () => {
                               <Avatar
                                 name={fundraiser.username}
                                 size="sm"
-                                imageUrl={String(
-                                  userAccountData?.profile?.avatar?.record
-                                    ?.avatar,
-                                )}
+                                imageUrl={fundraiser.profile_picture}
                               />
                             </div>
                           </PopoverTrigger>
@@ -89,10 +85,7 @@ const LeaderboardFundraisersPage = () => {
                                 <Avatar
                                   name={fundraiser.username}
                                   size="xl"
-                                  imageUrl={String(
-                                    userAccountData?.profile?.avatar?.record
-                                      ?.avatar,
-                                  )}
+                                  imageUrl={fundraiser.profile_picture}
                                 />
                                 <div>
                                   <h4 className="font-semibold text-lg text-gray-800">
