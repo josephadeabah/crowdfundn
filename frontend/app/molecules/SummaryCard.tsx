@@ -283,7 +283,11 @@ const Leaderboard: React.FC = () => {
                           <PopoverContent className="w-96">
                             <div className="space-y-4 p-4">
                               <div className="flex items-center space-x-4">
-                                <Avatar name={backer.name} size="xl" imageUrl={backer.profile_picture} />
+                                <Avatar
+                                  name={backer.name}
+                                  size="xl"
+                                  imageUrl={backer.profile_picture}
+                                />
                                 <div>
                                   <h4 className="font-semibold text-lg">
                                     {backer.name}
@@ -362,7 +366,11 @@ const Leaderboard: React.FC = () => {
                   <PopoverContent className="w-96">
                     <div className="space-y-4 p-4">
                       <div className="flex items-center space-x-4">
-                        <Avatar name={fundraiser.name} size="xl" />
+                        <Avatar
+                          name={fundraiser.name}
+                          size="xl"
+                          imageUrl={fundraiser.profile_picture}
+                        />
                         <div>
                           <h4 className="font-semibold text-lg">
                             {fundraiser.name}
@@ -427,7 +435,11 @@ const Leaderboard: React.FC = () => {
                   <PopoverContent className="w-96">
                     <div className="space-y-4 p-4">
                       <div className="flex items-center space-x-4">
-                        <Avatar name={fundraiser.name} size="xl" />
+                        <Avatar
+                          name={fundraiser.name}
+                          size="xl"
+                          imageUrl={fundraiser.profile_picture}
+                        />
                         <div>
                           <h4 className="font-semibold text-lg">
                             {fundraiser.name}
