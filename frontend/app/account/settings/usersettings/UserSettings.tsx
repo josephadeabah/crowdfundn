@@ -60,20 +60,20 @@ const UserSettings = () => {
   const handleSaveChanges = async () => {
     try {
       const formDataToSend = new FormData();
-  
+
       // Nesting fields inside 'profile'
       formDataToSend.append('profile[name]', formData.name);
       formDataToSend.append('profile[description]', formData.description);
-  
+
       if (profilePhoto instanceof File) {
         formDataToSend.append('profile[avatar]', profilePhoto);
       }
-  
+
       await updateProfileData(formDataToSend);
     } catch (error) {
       console.error('Error saving changes:', error);
     }
-  };  
+  };
 
   const handleDeleteAccount = () => {
     setIsAlertOpen(true);
@@ -97,7 +97,7 @@ const UserSettings = () => {
         country: userAccountData.country || '',
         description: userAccountData?.profile?.description || '',
       });
-      setProfilePhoto(profileData?.avatar || null);
+      setProfilePhoto(profileData?.avatar?.record?.avatar || null);
     }
   }, [userAccountData, profileData]);
 
