@@ -15,7 +15,7 @@ module Api
                 total_donations: entry.user.donations.sum(:amount),
                 score: entry.points,
                 rank: entry.ranking,
-                profile_picture: entry.user.profile.description,
+                profile_picture: entry.user.profile.avatar_url, # Changed to avatar_url
                 category_interest: entry.user.category,
                 currency: entry.user.currency,
                 country: entry.user.country,
@@ -35,7 +35,7 @@ module Api
                 username: entry.user.full_name,
                 total_raised: entry.total_raised,
                 rank: entry.ranking,
-                profile_picture: entry.user.profile.description,
+                profile_picture: entry.user.profile.avatar_url, # Changed to avatar_url
                 category_interest: entry.user.category,
                 currency: entry.user.currency,
                 country: entry.user.country,
@@ -55,7 +55,7 @@ module Api
                 username: entry.user.full_name,
                 total_raised: entry.total_raised,
                 rank: entry.ranking,
-                profile_picture: entry.user.profile.description,
+                profile_picture: entry.user.profile.avatar_url, # Changed to avatar_url
                 category_interest: entry.user.category,
                 currency: entry.user.currency,
                 country: entry.user.country,
@@ -78,8 +78,8 @@ module Api
                 currency: entry.user.currency,
                 score: entry.points,
                 rank: entry.ranking,
-                profile_picture: entry.user.profile.description
-              }, status: :ok
+                profile_picture: entry.user.profile.avatar_url, # Changed to avatar_url
+                }, status: :ok
             else
               render json: { error: 'User not on leaderboard' }, status: :not_found
             end
