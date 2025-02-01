@@ -27,7 +27,7 @@ class Profile < ApplicationRecord
   end
 
   # Override as_json to exclude the association that might cause circular references
-  # def as_json(options = {})
-  #   super(options.merge(include: { user: { except: [:profile] } }))
-  # end
+  def as_json(options = {})
+    super(options.merge(except: [:user]))
+  end
 end
