@@ -2,7 +2,7 @@ class Profile < ApplicationRecord
   belongs_to :user # Each profile belongs to a user
   has_one_attached :avatar
 
-  validates :avatar, content_type: %w[image/png image/jpg image/jpeg] 
+  validates :avatar, content_type: %w[image/png image/jpeg] 
 
   # Validations
   validates :name, presence: true, allow_blank: true
