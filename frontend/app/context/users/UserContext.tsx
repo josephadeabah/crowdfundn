@@ -191,7 +191,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
               Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
-              profile: updatedProfile,
+              user: updatedProfile,
             }),
           },
         );
