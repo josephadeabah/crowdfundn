@@ -332,18 +332,7 @@ module Api
             :birth_date,
             :category,
             :target_amount,
-            :national_id,
-            profile_attributes: %i[
-              name
-              description
-              funding_goal
-              amount_raised
-              end_date
-              category
-              location
-              avatar
-              status
-            ]
+            :national_id
           )
         end
 
