@@ -13,7 +13,7 @@ import RichTextEditor from '@/app/components/richtext/Richtext';
 import { categories } from '@/app/utils/helpers/categories';
 
 const CreateCampaign = () => {
-  const { userProfile } = useUserContext();
+  const { userAccountData } = useUserContext();
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -81,14 +81,14 @@ const CreateCampaign = () => {
 
   useEffect(() => {
     // Set the initial profile values after fetching
-    setCategory(userProfile?.category || '');
-    setLocation(userProfile?.country || '');
-    setGoalAmount(userProfile?.target_amount || '');
-    setCurrency(userProfile?.currency || '');
-    setCurrencySymbol(userProfile?.currency_symbol || '');
+    setCategory(userAccountData?.category || '');
+    setLocation(userAccountData?.country || '');
+    setGoalAmount(userAccountData?.target_amount || '');
+    setCurrency(userAccountData?.currency || '');
+    setCurrencySymbol(userAccountData?.currency_symbol || '');
     setCurrentAmount('0');
     // Disable further fetching
-  }, [userProfile]);
+  }, [userAccountData]);
 
   const handleSubmit = async () => {
     if (validateForm()) {
