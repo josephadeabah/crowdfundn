@@ -320,7 +320,7 @@ const Navbar = () => {
                           size="sm"
                           imageUrl={String(
                             userAccountData?.profile?.avatar?.record?.avatar,
-                          )}
+                          ) || 'avatar-default1.png'}
                         />
                       </Link>
                       <div
