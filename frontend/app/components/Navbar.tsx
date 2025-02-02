@@ -318,9 +318,11 @@ const Navbar = () => {
                         <Avatar
                           name={user.full_name}
                           size="sm"
-                          imageUrl={String(
-                            userAccountData?.profile?.avatar?.record?.avatar,
-                          ) || '/avatar-default1.png'}
+                          imageUrl={
+                            String(
+                              userAccountData?.profile?.avatar?.record?.avatar,
+                            ) || '/avatar-default1.png'
+                          }
                         />
                       </Link>
                       <div
