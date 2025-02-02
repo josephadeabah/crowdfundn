@@ -240,9 +240,11 @@ const Navbar = () => {
                       <Avatar
                         name={user.full_name}
                         size="sm"
-                        imageUrl={String(
-                          userAccountData?.profile?.avatar?.record?.avatar,
-                        )}
+                        imageUrl={
+                          String(
+                            userAccountData?.profile?.avatar?.record?.avatar,
+                          ) || 'avatar-default1.png'
+                        }
                       />
                     </Link>
                     <div className="ml-3 flex flex-col">
@@ -301,9 +303,11 @@ const Navbar = () => {
                     <Avatar
                       name={user.full_name}
                       size="sm"
-                      imageUrl={String(
-                        userAccountData?.profile?.avatar?.record?.avatar,
-                      )}
+                      imageUrl={
+                        String(
+                          userAccountData?.profile?.avatar?.record?.avatar,
+                        ) || 'avatar-default1.png'
+                      }
                     />
                   </div>
                 </PopoverTrigger>
