@@ -243,7 +243,7 @@ const Navbar = () => {
                         imageUrl={
                           String(
                             userAccountData?.profile?.avatar?.record?.avatar,
-                          ) || '/avatar-default1.png'
+                          ) || '/bantuhive.svg'
                         }
                       />
                     </Link>
@@ -306,7 +306,7 @@ const Navbar = () => {
                       imageUrl={
                         String(
                           userAccountData?.profile?.avatar?.record?.avatar,
-                        ) || '/avatar-default1.png'
+                        ) || '/bantuhive.svg'
                       }
                     />
                   </div>
@@ -320,7 +320,7 @@ const Navbar = () => {
                           size="sm"
                           imageUrl={String(
                             userAccountData?.profile?.avatar?.record?.avatar,
-                          ) || '/avatar-default1.png'}
+                          ) || '/bantuhive.svg'}
                         />
                       </Link>
                       <div
