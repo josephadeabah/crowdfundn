@@ -90,6 +90,9 @@ const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
     xl: 'w-20 h-20 text-lg',
   };
 
+  // Set your default image URL here
+  const defaultImageUrl = '/avatar-default.png';
+
   return (
     <div
       className={`relative rounded-full overflow-hidden ${sizeClasses[size]} transition-transform duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400`}
@@ -97,9 +100,9 @@ const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
       role="img"
       aria-label={`Avatar for ${name || 'User'}`}
     >
-      {imageUrl ? (
+      {imageUrl || defaultImageUrl ? (
         <img
-          src={imageUrl}
+          src={imageUrl || defaultImageUrl} // Use the default image if imageUrl is null or undefined
           alt={`${name}'s avatar`}
           className="w-full h-full object-cover"
           loading="lazy"
