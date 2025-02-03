@@ -7,7 +7,7 @@ interface AvatarProps {
   size?: 'sm' | 'md' | 'lg' | 'xl'; // Define allowed size values
 }
 
-const Avatar: React.FC<AvatarProps> = ({ name='User', imageUrl='/avatar-default1.png', size = 'md' }) => {
+const Avatar: React.FC<AvatarProps> = ({ name='User', imageUrl, size = 'md' }) => {
   const [initials, setInitials] = useState<string>('');
   const [bgColor, setBgColor] = useState<string>('');
 
@@ -97,22 +97,21 @@ const Avatar: React.FC<AvatarProps> = ({ name='User', imageUrl='/avatar-default1
       role="img"
       aria-label={`Avatar for ${name || 'User'}`}
     >
-      {imageUrl && name.trim() !== "" ? (
+      {imageUrl ? (
         <img
-          src={imageUrl}
+          src={imageUrl || '/avatar-default1.png'}
           alt={`${name}'s avatar`}
           className="w-full h-full object-cover"
           loading="lazy"
-          onError={(e) => {
-            console.error(`Image failed to load: ${imageUrl}`);
-            (e.target as HTMLImageElement).style.display = "none";
-          }}
         />
       ) : initials ? (
         <div
           className="w-full h-full flex items-center justify-center font-semibold text-white"
           style={{
-            background: `linear-gradient(135deg, ${bgColor}, ${adjustColor(bgColor, -20)})`,
+            background: `linear-gradient(135deg, ${bgColor}, ${adjustColor(
+              bgColor,
+              -20,
+            )})`,
           }}
         >
           {initials}
