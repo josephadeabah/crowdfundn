@@ -259,7 +259,7 @@ const RewardsPage: React.FC = () => {
               {userPoints ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Progress (%)
+                    Points
                   </p>
                   <ProgressRing
                     value={Math.round(userPoints.total_points)}
