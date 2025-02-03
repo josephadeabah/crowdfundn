@@ -312,14 +312,16 @@ const RewardsPage: React.FC = () => {
                   <div className="font-semibold flex items-center justify-center">
                     <FaInfoCircle
                       data-tooltip-id="tooltip-average-logins"
-                      data-tooltip-content="Bantu Hive Credit"
+                      data-tooltip-content="Bantu Hive Credit. This coins will be converted to real money and add to your withdrawal when you start new campaign. BHC100 equals GHS₵10"
                       className="text-gray-400 text-sm cursor-pointer mr-2"
                     />
                     <Tooltip
                       id="tooltip-average-logins"
                       className="max-w-xs text-gray-600 dark:text-gray-400 text-sm p-2 rounded z-10"
                     />
-                     <p className="text-sm font-semibold text-gray-400">{userReward.description}</p>
+                    <p className="text-sm font-semibold text-gray-400">
+                      {userReward.description}
+                    </p>
                   </div>
                 </div>
               ) : (
