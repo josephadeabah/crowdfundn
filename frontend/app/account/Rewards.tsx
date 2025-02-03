@@ -314,7 +314,7 @@ const RewardsPage: React.FC = () => {
               ) : (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Next Reward
+                     Reward
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     No rewards assigned yet
@@ -323,15 +323,19 @@ const RewardsPage: React.FC = () => {
               )}
 
               {/* Reward Progress */}
-              {userReward &&
-              userPoints &&
-              userReward.points_required > userPoints.total_points ? (
+              {userReward && userPoints && userReward.points_required ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-base font-bold text-gray-800 dark:text-gray-200">
                     Next Milestone
                   </p>
                   <p className="text-xl text-gray-700 dark:text-gray-300">
-                    {userReward.level} - {userReward.points_required} points
+                    {userPoints.total_points < userReward.points_required ? (
+                      <>
+                        {userReward.level} - {userReward.points_required} points
+                      </>
+                    ) : (
+                      'You have reached the highest milestone!'
+                    )}
                   </p>
                 </div>
               ) : (
