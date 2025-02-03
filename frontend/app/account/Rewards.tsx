@@ -12,6 +12,8 @@ import { usePointRewardContext } from '../context/pointreward/PointRewardContext
 import ProgressRing from '../components/ring/ProgressRing';
 import Link from 'next/link';
 import { getRankWithSuffix } from '../utils/helpers/ranking.suffix';
+import { FaInfoCircle } from 'react-icons/fa';
+import { Tooltip } from 'react-tooltip';
 
 interface FormData {
   title: string;
@@ -307,9 +309,18 @@ const RewardsPage: React.FC = () => {
                   <p className="text-xl font-semibold text-orange-500">
                     {userReward.level}
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <div className="font-semibold flex items-center justify-start">
+                    <FaInfoCircle
+                      data-tooltip-id="tooltip-average-logins"
+                      data-tooltip-content="Bantu Hive Coins"
+                      className="text-gray-400 text-sm cursor-pointer mr-2"
+                    />
+                    <Tooltip
+                      id="tooltip-average-logins"
+                      className="max-w-xs text-gray-600 dark:text-gray-400 text-sm p-2 rounded z-10"
+                    />
                     {userReward.description}
-                  </p>
+                  </div>
                 </div>
               ) : (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
