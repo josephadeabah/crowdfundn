@@ -7,7 +7,7 @@ interface AvatarProps {
   size?: 'sm' | 'md' | 'lg' | 'xl'; // Define allowed size values
 }
 
-const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
+const Avatar: React.FC<AvatarProps> = ({ name='User', imageUrl, size = 'md' }) => {
   const [initials, setInitials] = useState<string>('');
   const [bgColor, setBgColor] = useState<string>('');
 
