@@ -210,7 +210,7 @@ const RewardsPage: React.FC = () => {
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
               Your Performance Progress Overview
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2">
               {/* Backing User Rank */}
               {userRank && userRank.rank ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
@@ -318,33 +318,6 @@ const RewardsPage: React.FC = () => {
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     No rewards assigned yet
-                  </p>
-                </div>
-              )}
-
-              {/* Reward Progress */}
-              {userReward && userPoints && userReward.points_required ? (
-                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Next Milestone
-                  </p>
-                  <p className="text-xl text-gray-700 dark:text-gray-300">
-                    {userPoints.total_points < userReward.points_required ? (
-                      <>
-                        {userReward.level} - {userReward.points_required} points
-                      </>
-                    ) : (
-                      'You have reached the highest milestone!'
-                    )}
-                  </p>
-                </div>
-              ) : (
-                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Next Milestone
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    No milestone data available
                   </p>
                 </div>
               )}
