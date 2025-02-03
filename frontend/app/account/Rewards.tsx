@@ -302,7 +302,7 @@ const RewardsPage: React.FC = () => {
               {userReward && userReward.level ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                     Reward
+                     Level
                   </p>
                   <p className="text-xl font-semibold text-orange-500">
                     {userReward.level}
@@ -314,7 +314,7 @@ const RewardsPage: React.FC = () => {
               ) : (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                     Reward
+                     Level
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     No rewards assigned yet
