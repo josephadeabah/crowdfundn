@@ -370,9 +370,20 @@ const RewardsPage: React.FC = () => {
           {/* Unlock Your Reward Section */}
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
-                 Your Certificate of Honor
-              </h2>
+              <div className="font-semibold flex items-center justify-center">
+                <FaInfoCircle
+                  data-tooltip-id="tooltip-certificate-reveal"
+                  data-tooltip-content="This is a special certificate of Honor prepared and given to you by BantuHive for the great impact you're making in the world"
+                  className="text-gray-400 text-sm cursor-pointer mr-2"
+                />
+                <Tooltip
+                  id="tooltip-certificate-reveal"
+                  className="max-w-xs text-gray-600 dark:text-gray-400 text-sm p-2 rounded z-10"
+                />
+                <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                  Your Certificate of Honor
+                </h2>
+              </div>
               <Link
                 href="/leaderboard/backers#leaderboard-info"
                 className="text-lg font-medium text-cyan-600 dark:text-blue-400 hover:underline"
