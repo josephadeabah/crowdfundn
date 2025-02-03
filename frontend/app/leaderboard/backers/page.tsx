@@ -16,12 +16,12 @@ import { getRankWithSuffix } from '@/app/utils/helpers/ranking.suffix';
 import React, { useEffect } from 'react';
 
 // Function to determine the cup icon based on score
-const getCupIcon = (score: number) => {
-  if (score >= 5000) {
+const getCupIcon = (level: string) => {
+  if (level === 'Diamond') {
     return <DiamondCupIcon className="w-6 h-6 text-yellow-700" />;
-  } else if (score >= 1000) {
+  } else if (level === 'Gold') {
     return <GoldCupIcon className="w-6 h-6 text-yellow-400" />;
-  } else if (score >= 500) {
+  } else if (level === 'Silver') {
     return <SilverCupIcon className="w-6 h-6 text-gray-400" />;
   } else {
     return <BronzeCupIcon className="w-6 h-6 text-orange-500" />;
@@ -166,7 +166,7 @@ const LeaderboardBackersPage = () => {
                         {backer.score || 'N/A'}
                       </td>
                       <td className="px-4 py-2 text-gray-700 flex items-center">
-                        {getCupIcon(backer.score)}
+                        {getCupIcon(backer.level)}
                       </td>
                     </tr>
                   ))}

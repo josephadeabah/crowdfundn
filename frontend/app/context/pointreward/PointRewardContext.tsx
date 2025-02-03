@@ -14,6 +14,7 @@ interface LeaderboardEntry {
   username: string;
   total_donations: number;
   score: number;
+  level: string;
   profile_picture: string;
   country: string;
   rank: number;
