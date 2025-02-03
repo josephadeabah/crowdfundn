@@ -20,7 +20,7 @@ class Profile < ApplicationRecord
     if avatar.attached?
       "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{avatar.blob.key}"
     else
-      "/avatar-default1.png"
+      "https://www.svgrepo.com/show/422421/account-avatar-multimedia.svg"
     end
   end
   
