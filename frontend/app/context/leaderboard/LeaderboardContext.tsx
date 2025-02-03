@@ -11,6 +11,7 @@ import { useAuth } from '../auth/AuthContext';
 interface TopbackersData {
   name: string;
   amount: string;
+  currency: string;
   category_interest: string;
   profile_picture: string;
   score: number;
