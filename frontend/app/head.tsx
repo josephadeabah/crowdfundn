@@ -54,7 +54,7 @@ export default function Head() {
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'Organization',
-            name: 'Bantu Hive',
+            name: 'BantuHive - Fundraising Made Easy For Africa and Diaspora',
             url: 'https://bantuhive.com',
             logo: 'https://bantuhive.com/bantuhive.ico',
             description:
