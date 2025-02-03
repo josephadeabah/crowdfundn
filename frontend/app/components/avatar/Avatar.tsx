@@ -97,7 +97,7 @@ const Avatar: React.FC<AvatarProps> = ({ name='User', imageUrl, size = 'md' }) =
       role="img"
       aria-label={`Avatar for ${name || 'User'}`}
     >
-      {imageUrl && imageUrl.trim() !== "" ? (
+      {imageUrl && name.trim() !== "" ? (
         <img
           src={imageUrl}
           alt={`${name}'s avatar`}
