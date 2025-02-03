@@ -309,7 +309,7 @@ const RewardsPage: React.FC = () => {
                   <p className="text-xl font-semibold text-orange-500">
                     {userReward.level}
                   </p>
-                  <div className="font-semibold flex items-center justify-start">
+                  <div className="font-semibold flex items-center justify-center">
                     <FaInfoCircle
                       data-tooltip-id="tooltip-average-logins"
                       data-tooltip-content="Bantu Hive Credit"
