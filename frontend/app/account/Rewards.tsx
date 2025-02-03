@@ -190,6 +190,39 @@ const RewardsPage: React.FC = () => {
     );
   };
 
+  const getBackerCertWithLevel = (level?: string) => {
+    const levels = ["Bronze", "Silver", "Gold", "Diamond"];
+  
+    const handleDownloadCertificate = (rewardLevel: string) => {
+      // You can implement a function to handle downloading the certificate.
+      // For example, you could trigger a file download or open a modal.
+      console.log(`Downloading ${rewardLevel} certificate...`);
+    };
+  
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center">
+        {levels.map((rewardLevel) => (
+          <div
+            key={rewardLevel}
+            className={`p-4 rounded-lg text-center ${level === rewardLevel ? '' : 'filter blur-sm'}`}
+          >
+            {renderRewardIcon()}
+            
+            {level === rewardLevel && (
+              <button
+                onClick={() => handleDownloadCertificate(rewardLevel)}
+                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg"
+              >
+                Download {rewardLevel} Certificate
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };  
+  
+
   return (
     <>
       <div className="min-h-screen px-2 py-4">
@@ -350,35 +383,7 @@ const RewardsPage: React.FC = () => {
                 Learn More →
               </Link>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center">
-              {/* Bronze Reward */}
-              <div
-                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 100 ? '' : 'filter blur-sm'}`}
-              >
-                {renderRewardIcon()}
-              </div>
-
-              {/* Silver Reward */}
-              <div
-                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 500 ? '' : 'filter blur-sm'}`}
-              >
-                {renderRewardIcon()}
-              </div>
-
-              {/* Gold Reward */}
-              <div
-                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 1000 ? '' : 'filter blur-sm'}`}
-              >
-                {renderRewardIcon()}
-              </div>
-
-              {/* Diamond Reward */}
-              <div
-                className={`p-4 rounded-lg text-center ${Number(userPoints?.total_points) >= 2000 ? '' : 'filter blur-sm'}`}
-              >
-                {renderRewardIcon()}
-              </div>
-            </div>
+            {getBackerCertWithLevel(userReward?.level)}
           </div>
 
           {loading ? (
