@@ -8,6 +8,9 @@ module Api
           def index
             leaderboard = ::LeaderboardEntry.includes(:user).order(points: :desc).limit(10)
             leaderboard_data = leaderboard.map do |entry|
+              user_points = entry.user.total_points
+              level = BackerReward::LEVELS.select { |_, range| range.include?(user_points) }.keys.last.to_s.capitalize
+          
               {
                 id: entry.id,
                 user_id: entry.user.id,
@@ -19,11 +22,12 @@ module Api
                 category_interest: entry.user.category,
                 currency: entry.user.currency,
                 country: entry.user.country,
-                bio: entry.user.profile.description
+                bio: entry.user.profile.description,
+                level: level # Add the level
               }
             end
             render json: leaderboard_data, status: :ok
-          end
+          end          
 
           # fetch all leaderboard entries for fundraisers
           def fundraisers
