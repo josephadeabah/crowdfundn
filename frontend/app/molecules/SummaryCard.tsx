@@ -181,7 +181,7 @@ const Leaderboard: React.FC = () => {
                       </div>
                       <div>
                         <p className="text-sm font-semibold">Total Donated</p>
-                        <p className="text-sm text-gray-700">{backer.amount}</p>
+                        <p className="text-sm text-gray-700">{userAccountData?.currency}{backer.amount}</p>
                       </div>
                     </div>
                   </PopoverContent>
