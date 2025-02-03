@@ -65,6 +65,7 @@ module Api
           {
             name: user.full_name,
             amount: user.total_amount.to_i,
+            currency: user.currency.upcase,
             profile_picture: user.profile.avatar_url, # Changed to avatar_url
             category_interest: user.category,
             country: user.country,
