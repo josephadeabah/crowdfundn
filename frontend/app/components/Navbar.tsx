@@ -318,11 +318,7 @@ const Navbar = () => {
                         <Avatar
                           name={user.full_name}
                           size="sm"
-                          imageUrl={
-                            String(
-                              userAccountData?.profile?.avatar?.record?.avatar,
-                            )
-                          }
+                          imageUrl={userAccountData?.profile?.avatar?.record?.avatar as string}
                         />
                       </Link>
                       <div
