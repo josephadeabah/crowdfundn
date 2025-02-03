@@ -20,19 +20,19 @@ module Api
   
           # Fetch user’s assigned reward (requires authentication)
           def my_reward
-            reward = @current_user.backer_rewards.order(created_at: :desc).first
+            reward = @current_user.backer_rewards.order(points_required: :desc, created_at: :desc).first
             if reward
               render json: {
                 id: reward.id,
                 level: reward.level,                
                 points_required: reward.points_required,  
                 description: reward.description,     
-                status: "Claimed"                    
+                status: "Claimed"
               }, status: :ok
             else
               render json: { message: 'No rewards assigned yet' }, status: :ok
             end
-          end
+          end          
         end
       end
     end

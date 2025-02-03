@@ -14,23 +14,21 @@ class BackerReward < ApplicationRecord
   def self.assign_reward(user)
     user_points = user.total_points
 
-    # Determine the correct level based on user points
-    reward_level = LEVELS.find { |_, range| range.include?(user_points) }&.first
+    # Find the highest reward level the user qualifies for
+    reward_level = LEVELS.select { |_, range| range.include?(user_points) }.keys.last
     return unless reward_level
 
-    # Check if user already has a reward at this level
+    # Check if the user already has the highest reward they qualify for
     existing_reward = user.backer_rewards.find_by(level: reward_level.to_s.capitalize)
     return if existing_reward
 
-    # Create and assign the new reward with points_required set to user's current points
-    reward = BackerReward.create!(
-      user: user,
-      campaign: user.campaigns.first, # Assuming we associate it with the first campaign
+    # Create and assign the reward with points_required set to user's current points
+    reward = user.backer_rewards.create!(
+      campaign: user.campaigns.first,  # Assuming we associate it with the first campaign
       level: reward_level.to_s.capitalize,
       points_required: user_points,
       description: "You have reached #{reward_level.to_s.capitalize} level with #{user_points} points!"
     )
-
     user.backer_rewards << reward
   end
 end
