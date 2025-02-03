@@ -137,7 +137,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
               window.innerWidth >= 1024
                 ? 10 // Large screens (5x2)
                 : window.innerWidth >= 768
-                  ? 12 // Tablet screens (3x4)
+                  ? 10 // Tablet screens (3x4)
                   : 12, // Mobile screens (2x6)
             )
             .map((campaign, index) => {

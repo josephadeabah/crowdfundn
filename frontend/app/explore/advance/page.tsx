@@ -362,10 +362,18 @@ const CampaignsPage = () => {
             <CampaignCardLoader />
           ) : (
             <div>
-              {campaigns && campaigns?.length > 0 ? (
+              {campaigns && campaigns.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 p-3 relative">
                   {campaigns
                     .filter((campaign) => campaign?.permissions?.is_public)
+                    .slice(
+                      0,
+                      window.innerWidth >= 1024
+                        ? 10 // Large screens (5x2)
+                        : window.innerWidth >= 768
+                          ? 10 // Tablet screens (3x4)
+                          : 12, // Mobile screens (2x6)
+                    )
                     .map((campaign, index) => {
                       const fundraiserCurrency =
                         campaign?.currency_symbol ||
