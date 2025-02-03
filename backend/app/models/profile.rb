@@ -17,10 +17,13 @@ class Profile < ApplicationRecord
 
   # Method to return avatar URL like the campaign's media_url
   def avatar_url
-    return unless avatar.attached?
-
-    "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{avatar.blob.key}"
+    if avatar.attached?
+      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{avatar.blob.key}"
+    else
+      "/avatar-default1.png"
+    end
   end
+  
 
   def avatar_filename
     avatar.attached? ? avatar.filename.to_s : nil
