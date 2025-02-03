@@ -99,7 +99,7 @@ const Avatar: React.FC<AvatarProps> = ({ name='User', imageUrl, size = 'md' }) =
     >
       {imageUrl ? (
         <img
-          src={imageUrl === "" ? '/avatar-default1.png' : imageUrl}
+          src={imageUrl === null ? '/avatar-default1.png' : imageUrl}
           alt={`${name}'s avatar`}
           className="w-full h-full object-cover"
           loading="lazy"
