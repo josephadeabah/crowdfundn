@@ -64,7 +64,7 @@ module Api
         def serialize_backer(user)
           {
             name: user.full_name,
-            amount: "$#{user.total_amount.to_i}",
+            amount: user.total_amount.to_i,
             profile_picture: user.profile.avatar_url, # Changed to avatar_url
             category_interest: user.category,
             country: user.country,
