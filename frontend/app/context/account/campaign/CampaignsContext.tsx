@@ -190,6 +190,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       sortBy: string = 'created_at',
       sortOrder: string = 'desc',
       page: number = 1,
+      pageSize: number = 10,
       dateRange = 'all_time',
       goalRange = 'all',
       location = 'all',
@@ -211,6 +212,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           sortBy,
           sortOrder,
           page: page.toString(),
+          pageSize: pageSize.toString(),
         });
 
         // Add the new parameters to the query string if they're provided
