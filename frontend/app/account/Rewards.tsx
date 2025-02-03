@@ -189,6 +189,13 @@ const RewardsPage: React.FC = () => {
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center">
+        {levels.length === 0 && (
+          <div className="col-span-full text-center p-4 bg-gray-100 rounded-lg">
+            Your special certificate of honor will be available here to download
+            or share once you reach a reward level.
+          </div>
+        )}
+
         {levels.map((rewardLevel) => (
           <div
             key={rewardLevel}
@@ -361,7 +368,7 @@ const RewardsPage: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
-                Unlock Your Hidden Certificate of Honor
+                Unlock Your Certificate of Honor
               </h2>
               <Link
                 href="/leaderboard/backers#leaderboard-info"
