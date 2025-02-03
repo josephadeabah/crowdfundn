@@ -178,27 +178,15 @@ const RewardsPage: React.FC = () => {
     setRewardToDelete(null);
   };
 
-  const renderRewardIcon = () => {
-    return (
-      <div className="relative w-20 h-20 bg-gray-200">
-        {/* Download Icon */}
-        <FiDownload
-          className="absolute top-0 right-0 text-gray-700 p-1"
-          size={16}
-        />
-      </div>
-    );
-  };
-
   const getBackerCertWithLevel = (level?: string) => {
-    const levels = ["Bronze", "Silver", "Gold", "Diamond"];
-  
+    const levels = ['Bronze', 'Silver', 'Gold', 'Diamond'];
+
     const handleDownloadCertificate = (rewardLevel: string) => {
       // You can implement a function to handle downloading the certificate.
       // For example, you could trigger a file download or open a modal.
       console.log(`Downloading ${rewardLevel} certificate...`);
     };
-  
+
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center">
         {levels.map((rewardLevel) => (
@@ -206,22 +194,21 @@ const RewardsPage: React.FC = () => {
             key={rewardLevel}
             className={`p-4 rounded-lg text-center ${level === rewardLevel ? '' : 'filter blur-sm'}`}
           >
-            {renderRewardIcon()}
-            
             {level === rewardLevel && (
-              <button
-                onClick={() => handleDownloadCertificate(rewardLevel)}
-                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg"
-              >
-                Download {rewardLevel} Certificate
-              </button>
+              <div className="relative w-20 h-20 bg-gray-200">
+                {/* Download Icon */}
+                <FiDownload
+                  className="absolute top-0 right-0 text-gray-700 p-1"
+                  size={16}
+                  onClick={() => handleDownloadCertificate(rewardLevel)}
+                />
+              </div>
             )}
           </div>
         ))}
       </div>
     );
-  };  
-  
+  };
 
   return (
     <>
@@ -304,7 +291,7 @@ const RewardsPage: React.FC = () => {
               ) : (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                  Percentage Progress
+                    Percentage Progress
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     No progress data available
