@@ -8,7 +8,7 @@ class Point < ApplicationRecord
   def self.add_points(user, donation)
     return unless user
   
-    percentage_points = (donation.net_amount * 10).to_i
+    percentage_points = (donation.net_amount * 3).to_i
     Point.create!(user: user, donation: donation, amount: percentage_points, reason: "Donation")
   
     # ✅ Update leaderboard rankings
