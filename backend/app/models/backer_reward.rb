@@ -18,17 +18,15 @@ class BackerReward < ApplicationRecord
     reward_level = LEVELS.select { |_, range| range.include?(user_points) }.keys.last
     return unless reward_level
 
-    # Check if the user already has the highest reward they qualify for
-    existing_reward = user.backer_rewards.find_by(level: reward_level.to_s.capitalize)
-    return if existing_reward
+    # Remove any existing active reward the user may have
+    user.backer_rewards.destroy_all
 
     # Create and assign the reward with points_required set to user's current points
-    reward = user.backer_rewards.create!(
+    user.backer_rewards.create!(
       campaign: user.campaigns.first,  # Assuming we associate it with the first campaign
       level: reward_level.to_s.capitalize,
       points_required: user_points,
       description: "You have reached #{reward_level.to_s.capitalize} level with #{user_points} points!"
     )
-    user.backer_rewards << reward
   end
 end
