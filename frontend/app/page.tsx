@@ -36,7 +36,7 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, itemsPerPage);
+    fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, String(itemsPerPage));
   }, [fetchAllCampaigns, sortCriteria, pageNumber, itemsPerPage]);
 
   React.useEffect(() => {
