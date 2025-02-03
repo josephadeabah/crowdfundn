@@ -97,21 +97,22 @@ const Avatar: React.FC<AvatarProps> = ({ name='User', imageUrl, size = 'md' }) =
       role="img"
       aria-label={`Avatar for ${name || 'User'}`}
     >
-      {imageUrl ? (
+      {imageUrl && imageUrl.trim() !== "" ? (
         <img
           src={imageUrl}
           alt={`${name}'s avatar`}
           className="w-full h-full object-cover"
           loading="lazy"
+          onError={(e) => {
+            console.error(`Image failed to load: ${imageUrl}`);
+            (e.target as HTMLImageElement).style.display = "none";
+          }}
         />
       ) : initials ? (
         <div
           className="w-full h-full flex items-center justify-center font-semibold text-white"
           style={{
-            background: `linear-gradient(135deg, ${bgColor}, ${adjustColor(
-              bgColor,
-              -20,
-            )})`,
+            background: `linear-gradient(135deg, ${bgColor}, ${adjustColor(bgColor, -20)})`,
           }}
         >
           {initials}
