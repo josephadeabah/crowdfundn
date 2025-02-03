@@ -88,7 +88,6 @@ export interface CampaignState {
     sortBy: string,
     sortOrder: string,
     page: number,
-    pageSize: number,
     dateRange?: string,
     goalRange?: string,
     location?: string,
