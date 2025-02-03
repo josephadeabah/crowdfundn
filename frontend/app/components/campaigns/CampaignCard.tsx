@@ -138,7 +138,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 ? 10 // Large screens (5x2)
                 : window.innerWidth >= 768
                   ? 10 // Tablet screens (3x4)
-                  : 12, // Mobile screens (2x6)
+                  : 10, // Mobile screens (2x6)
             )
             .map((campaign, index) => {
               const fundraiserCurrency =
