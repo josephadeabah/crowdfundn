@@ -312,14 +312,14 @@ const RewardsPage: React.FC = () => {
                   <div className="font-semibold flex items-center justify-start">
                     <FaInfoCircle
                       data-tooltip-id="tooltip-average-logins"
-                      data-tooltip-content="Bantu Hive Coins"
+                      data-tooltip-content="Bantu Hive Credit"
                       className="text-gray-400 text-sm cursor-pointer mr-2"
                     />
                     <Tooltip
                       id="tooltip-average-logins"
                       className="max-w-xs text-gray-600 dark:text-gray-400 text-sm p-2 rounded z-10"
                     />
-                    {userReward.description}
+                     <p className="text-sm font-semibold text-gray-400">{userReward.description}</p>
                   </div>
                 </div>
               ) : (
