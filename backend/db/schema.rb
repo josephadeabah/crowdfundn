@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_01_30_085128) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_03_192406) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -59,6 +59,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_30_085128) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "level"
     t.index ["campaign_id"], name: "index_backer_rewards_on_campaign_id"
     t.index ["user_id"], name: "index_backer_rewards_on_user_id"
   end
@@ -145,6 +146,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_30_085128) do
     t.datetime "updated_at", null: false
     t.index ["campaign_id"], name: "index_favorites_on_campaign_id"
     t.index ["user_id"], name: "index_favorites_on_user_id"
+  end
+
+  create_table "fundraiser_leaderboard_entries", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.decimal "total_raised"
+    t.integer "ranking"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_fundraiser_leaderboard_entries_on_user_id"
   end
 
   create_table "fundraisers", force: :cascade do |t|
@@ -348,6 +358,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_30_085128) do
   add_foreign_key "donations", "users"
   add_foreign_key "favorites", "campaigns"
   add_foreign_key "favorites", "users"
+  add_foreign_key "fundraiser_leaderboard_entries", "users"
   add_foreign_key "fundraisers", "users"
   add_foreign_key "leaderboard_entries", "users"
   add_foreign_key "points", "donations"
