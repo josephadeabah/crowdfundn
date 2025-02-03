@@ -20,7 +20,12 @@ module Api
 
         # Fetch user’s assigned reward (requires authentication)
         def my_reward
+          # Use the assign_reward method to ensure user's reward is up-to-date
+          BackerReward.assign_reward(@current_user)
+
+          # After assigning the reward, fetch the most recent reward for the user
           reward = @current_user.backer_rewards.order(points_required: :desc, created_at: :desc).first
+          
           if reward
             render json: {
               id: reward.id,
@@ -32,7 +37,7 @@ module Api
           else
             render json: { message: 'No rewards assigned yet' }, status: :ok
           end
-        end          
+        end
       end
     end
   end
