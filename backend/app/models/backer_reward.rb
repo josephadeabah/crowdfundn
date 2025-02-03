@@ -2,7 +2,6 @@ class BackerReward < ApplicationRecord
   belongs_to :user
   belongs_to :campaign
 
-  validates :points_required, numericality: { greater_than_or_equal_to: 0 }
   validates :description, presence: true
 
   LEVELS = {
@@ -12,16 +11,26 @@ class BackerReward < ApplicationRecord
     diamond: 1000..Float::INFINITY
   }.freeze
 
-  def level
-    LEVELS.each do |name, range|
-      return name.to_s.capitalize if range.include?(points_required)
-    end
-    "Unknown"
-  end
-
   def self.assign_reward(user)
     user_points = user.total_points
-    reward = BackerReward.where('points_required <= ?', user_points).order(points_required: :desc).first
-    user.backer_rewards << reward if reward
+
+    # Determine the correct level based on user points
+    reward_level = LEVELS.find { |_, range| range.include?(user_points) }&.first
+    return unless reward_level
+
+    # Check if user already has a reward at this level
+    existing_reward = user.backer_rewards.find_by(level: reward_level.to_s.capitalize)
+    return if existing_reward
+
+    # Create and assign the new reward with points_required set to user's current points
+    reward = BackerReward.create!(
+      user: user,
+      campaign: user.campaigns.first, # Assuming we associate it with the first campaign
+      level: reward_level.to_s.capitalize,
+      points_required: user_points,
+      description: "You have reached #{reward_level.to_s.capitalize} level with #{user_points} points!"
+    )
+
+    user.backer_rewards << reward
   end
 end
