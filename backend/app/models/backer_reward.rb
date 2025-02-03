@@ -26,7 +26,7 @@ class BackerReward < ApplicationRecord
       campaign: user.campaigns.first,  # Assuming we associate it with the first campaign
       level: reward_level.to_s.capitalize,
       points_required: user_points,
-      description: "Bantu Hive Credit: #{user_points * 10} coins!"
+      description: "BHC: #{user_points * 10} coins"
     )
   end
 end
