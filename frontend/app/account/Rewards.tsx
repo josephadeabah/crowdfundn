@@ -323,26 +323,16 @@ const RewardsPage: React.FC = () => {
               )}
 
               {/* Reward Progress */}
-              {rewards.length > 0 && userPoints ? (
+              {userReward &&
+              userPoints &&
+              userReward.points_required > userPoints.total_points ? (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                   <p className="text-base font-bold text-gray-800 dark:text-gray-200">
                     Next Milestone
                   </p>
-                  {rewards
-                    .filter(
-                      (reward) =>
-                        reward.points_required > userPoints.total_points,
-                    )
-                    .sort((a, b) => a.points_required - b.points_required)
-                    .slice(0, 1)
-                    .map((nextReward) => (
-                      <p
-                        key={nextReward.id}
-                        className="text-xl text-gray-700 dark:text-gray-300"
-                      >
-                        {nextReward.level} - {nextReward.points_required} points
-                      </p>
-                    ))}
+                  <p className="text-xl text-gray-700 dark:text-gray-300">
+                    {userReward.level} - {userReward.points_required} points
+                  </p>
                 </div>
               ) : (
                 <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
