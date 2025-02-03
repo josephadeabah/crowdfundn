@@ -187,15 +187,18 @@ const RewardsPage: React.FC = () => {
       console.log(`Downloading ${rewardLevel} certificate...`);
     };
 
+    if (!level) {
+      // If level is null or undefined, show the message to the user
+      return (
+        <div className="text-center p-4 bg-gray-100 rounded-lg col-span-full">
+          Your special certificate of honor will be available here to download
+          or share once you reach a reward level.
+        </div>
+      );
+    }
+
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center">
-        {levels.length === 0 && (
-          <div className="col-span-full text-center p-4 bg-gray-100 rounded-lg">
-            Your special certificate of honor will be available here to download
-            or share once you reach a reward level.
-          </div>
-        )}
-
         {levels.map((rewardLevel) => (
           <div
             key={rewardLevel}
