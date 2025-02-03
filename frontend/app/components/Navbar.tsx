@@ -243,7 +243,7 @@ const Navbar = () => {
                         imageUrl={
                           String(
                             userAccountData?.profile?.avatar?.record?.avatar,
-                          ) || '/avatar-default1.png'
+                          )
                         }
                       />
                     </Link>
@@ -306,7 +306,7 @@ const Navbar = () => {
                       imageUrl={
                         String(
                           userAccountData?.profile?.avatar?.record?.avatar,
-                        ) || '/avatar-default1.png'
+                        )
                       }
                     />
                   </div>
@@ -321,7 +321,7 @@ const Navbar = () => {
                           imageUrl={
                             String(
                               userAccountData?.profile?.avatar?.record?.avatar,
-                            ) || '/avatar-default1.png'
+                            )
                           }
                         />
                       </Link>
