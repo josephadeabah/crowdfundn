@@ -1,5 +1,5 @@
 class CampaignShare < ApplicationRecord
-  belongs_to :user
+  belongs_to :user, optional: true # Allows anonymous shares
   belongs_to :campaign
 
   after_create :award_share_points
