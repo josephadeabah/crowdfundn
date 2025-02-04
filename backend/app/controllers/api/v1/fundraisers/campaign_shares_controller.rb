@@ -17,13 +17,17 @@ module Api
               # Anonymous user share
               CampaignShare.create!(campaign: @campaign, user_id: nil) # Ensure user_id is nil for anonymous shares
             end
-          
+            
             # Return updated share count & points (if applicable)
-            render json: {
+            response = {
               message: "Campaign shared successfully!",
               total_shares: @campaign.total_shares, # Counts all shares for this campaign
-              user_points: @current_user.total_points # Only send points for authenticated users
-            }, status: :ok
+            }
+            
+            # Only include user_points if there's a logged-in user
+            response[:user_points] = @current_user.total_points if @current_user.present?
+            
+            render json: response, status: :ok
           rescue ActiveRecord::RecordInvalid => e
             render json: { error: e.message }, status: :unprocessable_entity
           end          
