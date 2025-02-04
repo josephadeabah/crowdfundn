@@ -1,101 +1,139 @@
+"use client";
+
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { FaPlus } from 'react-icons/fa';
 import Modal from '../components/modal/Modal';
 
-const items = [
-  {
-    id: 1,
-    title: 'Screen 1',
-    description: 'This is a short description of screen 1.',
-    image: '/BHOverviewScreenshotDocument.png',
-    details: 'This is a detailed description of screen 1 with more information.',
-  },
-  {
-    id: 2,
-    title: 'Screen 2',
-    description: 'This is a short description of screen 2.',
-    image: '/BHRewardScreenshotDocument.png',
-    details: 'This is a detailed description of screen 2 with more information.',
-  },
-  {
-    id: 3,
-    title: 'Screen 3',
-    description: 'This is a short description of screen 3.',
-    image: '/BHTransfersScreenshotDocument.png',
-    details: 'This is a detailed description of screen 3 with more information.',
-  },
-  {
-    id: 4,
-    title: 'Screen 4',
-    description: 'This is a short description of screen 4.',
-    image: '/BHCampaignsScreenshotDocument.png',
-    details: 'This is a detailed description of screen 4 with more information.',
-  },
-  {
-    id: 5,
-    title: 'Screen 5',
-    description: 'This is a short description of screen 5.',
-    image: '/BHBackerLeaderboardScreenshotDocument.png',
-    details: 'This is a detailed description of screen 5 with more information.',
-  },
-];
+interface ImageItem {
+  id: number;
+  src: string;
+  title: string;
+  description: string;
+  detailedDescription: string;
+}
 
 const BHScreenKnowHow: React.FC = () => {
-  const [selectedItem, setSelectedItem] = useState<typeof items[0] | null>(null);
+  const [selectedItem, setSelectedItem] = useState<ImageItem | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const imageItems: ImageItem[] = [
+    {
+      id: 1,
+      src: '/BHOverviewScreenshotDocument.png',
+      title: 'Title 1',
+      description: 'Description 1',
+      detailedDescription: 'Detailed Description 1',
+    },
+    {
+      id: 2,
+      src: '/BHRewardScreenshotDocument.png',
+      title: 'Title 2',
+      description: 'Description 2',
+      detailedDescription: 'Detailed Description 2',
+    },
+    {
+      id: 3,
+      src: '/BHTransfersScreenshotDocument.png',
+      title: 'Title 3',
+      description: 'Description 3',
+      detailedDescription: 'Detailed Description 3',
+    },
+    {
+      id: 4,
+      src: '/BHCampaignsScreenshotDocument.png',
+      title: 'Title 4',
+      description: 'Description 4',
+      detailedDescription: 'Detailed Description 4',
+    },
+    {
+      id: 5,
+      src: '/BHBackerLeaderboardScreenshotDocument.png',
+      title: 'Title 5',
+      description: 'Description 5',
+      detailedDescription: 'Detailed Description 5',
+    },
+  ];
+
+  const handlePlusClick = (item: ImageItem) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
+  };
 
   return (
     <div className="p-6">
-      <div className="grid grid-cols-3 gap-4 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3">
-        {items.slice(0, 3).map((item) => (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {imageItems.slice(0, 3).map((item) => (
           <div
             key={item.id}
-            className="relative p-4 bg-green-100 rounded-lg shadow-lg overflow-hidden"
+            className="relative bg-green-50 p-4 rounded-lg shadow-md"
           >
-            <Image src={item.image} alt={item.title} width={400} height={250} className="rounded-lg" />
-            <h3 className="mt-2 text-lg font-semibold truncate">{item.title}</h3>
-            <p className="text-sm text-gray-600 truncate">{item.description}</p>
+            <img
+              src={item.src}
+              alt={item.title}
+              className="w-full h-48 object-cover rounded-md"
+            />
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold truncate">{item.title}</h3>
+              <p className="text-sm text-gray-600 truncate">{item.description}</p>
+            </div>
             <button
-              className="absolute bottom-4 right-4 p-3 bg-green-500 text-white rounded-full shadow-md hover:bg-green-600 transition"
-              onClick={() => setSelectedItem(item)}
+              className="absolute bottom-4 right-4 bg-green-500 text-white p-2 rounded-full shadow-lg hover:bg-green-600 transition-colors duration-200"
+              onClick={() => handlePlusClick(item)}
             >
-              <FaPlus size={16} />
+              <FaPlus className="w-6 h-6" />
             </button>
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
-        {items.slice(3, 5).map((item) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        {imageItems.slice(3, 5).map((item) => (
           <div
             key={item.id}
-            className="relative p-4 bg-green-100 rounded-lg shadow-lg overflow-hidden col-span-2"
+            className="relative bg-green-50 p-4 rounded-lg shadow-md"
           >
-            <Image src={item.image} alt={item.title} width={800} height={250} className="rounded-lg" />
-            <h3 className="mt-2 text-lg font-semibold truncate">{item.title}</h3>
-            <p className="text-sm text-gray-600 truncate">{item.description}</p>
+            <img
+              src={item.src}
+              alt={item.title}
+              className="w-full h-48 object-cover rounded-md"
+            />
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold truncate">{item.title}</h3>
+              <p className="text-sm text-gray-600 truncate">{item.description}</p>
+            </div>
             <button
-              className="absolute bottom-4 right-4 p-3 bg-green-500 text-white rounded-full shadow-md hover:bg-green-600 transition"
-              onClick={() => setSelectedItem(item)}
+              className="absolute bottom-4 right-4 bg-green-500 text-white p-2 rounded-full shadow-lg hover:bg-green-600 transition-colors duration-200"
+              onClick={() => handlePlusClick(item)}
             >
-              <FaPlus size={16} />
+              <FaPlus className="w-6 h-6" />
             </button>
           </div>
         ))}
       </div>
-      {selectedItem && (
-        <Modal isOpen={!!selectedItem} onClose={() => setSelectedItem(null)} size="large">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
-            <div>
-              <h2 className="text-2xl font-semibold">{selectedItem.title}</h2>
-              <p className="mt-2 text-gray-600">{selectedItem.details}</p>
+
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal} size="large">
+        {selectedItem && (
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="flex-1">
+              <h2 className="text-2xl font-bold">{selectedItem.title}</h2>
+              <p className="mt-4 text-gray-700">{selectedItem.detailedDescription}</p>
             </div>
-            <div>
-              <Image src={selectedItem.image} alt={selectedItem.title} width={600} height={400} className="rounded-lg" />
+            <div className="flex-1">
+              <img
+                src={selectedItem.src}
+                alt={selectedItem.title}
+                className="w-full h-64 object-cover rounded-md"
+              />
             </div>
           </div>
-        </Modal>
-      )}
+        )}
+      </Modal>
     </div>
   );
 };
