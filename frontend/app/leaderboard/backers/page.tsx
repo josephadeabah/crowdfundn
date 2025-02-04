@@ -16,7 +16,7 @@ import { getRankWithSuffix } from '@/app/utils/helpers/ranking.suffix';
 import React, { useEffect } from 'react';
 
 // Function to determine the cup icon based on score
-const getCupIcon = (level: string) => {
+export const getCupIcon = (level: string) => {
   if (level === 'Diamond') {
     return <DiamondCupIcon className="w-8 h-8 text-yellow-700" />;
   } else if (level === 'Gold') {

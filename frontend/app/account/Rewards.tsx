@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { getRankWithSuffix } from '../utils/helpers/ranking.suffix';
 import { FaInfoCircle } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
+import { getCupIcon } from '../leaderboard/backers/page';
 
 interface FormData {
   title: string;
@@ -335,6 +336,9 @@ const RewardsPage: React.FC = () => {
                   </p>
                   <p className="text-xl font-semibold text-orange-500">
                     {userReward.level}
+                  </p>
+                  <p className="w-full">
+                    {getCupIcon(userReward.level)}
                   </p>
                   <div className="font-semibold flex items-center justify-center">
                     <FaInfoCircle
