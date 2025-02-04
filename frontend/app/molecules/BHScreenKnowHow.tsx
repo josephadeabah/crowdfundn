@@ -117,7 +117,7 @@ const BHScreenKnowHow: React.FC = () => {
         ))}
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal} size="large">
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal} size="xxxlarge">
         {selectedItem && (
           <div className="flex flex-col md:flex-row gap-6">
             <div className="flex-1">
