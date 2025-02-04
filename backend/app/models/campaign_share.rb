@@ -10,15 +10,12 @@ class CampaignShare < ApplicationRecord
 
   def award_share_points
     return unless user.present?
-  
+
+    # Award points for sharing
     points = 0.25
-    user.points.create!(
-      amount: points,
-      reason: "Shared Campaign #{campaign.title}",
-      campaign_share: self  # Link to the share action
-    )
-  
+    user.points.create!(amount: points, reason: "Shared Campaign #{campaign.title}")
+
     # ✅ Update leaderboard rankings
     LeaderboardEntry.update_leaderboard(user, user.total_points)
-  end  
+  end
 end
