@@ -270,8 +270,7 @@ const SingleCampaignPage: React.FC = () => {
                     className="flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
                   >
                     <FaShare className="mr-2" />{' '}
-                    {campaignShares?.total_shares ||
-                      currentCampaign?.total_shares}{' '}
+                    {campaignShares?.total_shares}{' '}
                     Shares
                   </Button>
                   <button
