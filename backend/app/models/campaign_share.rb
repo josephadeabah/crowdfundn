@@ -10,7 +10,10 @@ class CampaignShare < ApplicationRecord
   private
 
   def award_share_points
-    points = 0.01 # Customize points per share
-    user.points.create!(amount: points, reason: "Shared Campaign #{campaign.title}")
+    # Only award points if the user is present (authenticated user)
+    if user.present?
+      points = 0.1 # Customize points per share
+      user.points.create!(amount: points, reason: "Shared Campaign #{campaign.title}")
+    end
   end
 end
