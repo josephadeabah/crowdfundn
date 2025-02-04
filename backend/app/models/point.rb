@@ -1,6 +1,7 @@
 class Point < ApplicationRecord
   belongs_to :user
   belongs_to :donation, optional: true
+  belongs_to :campaign_share, optional: true
 
   validates :amount, numericality: { greater_than: 0 }
   validates :reason, presence: true

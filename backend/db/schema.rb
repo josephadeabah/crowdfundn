@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_02_04_043255) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_04_111726) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -191,6 +191,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_04_043255) do
     t.string "reason"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "campaign_share_id"
+    t.index ["campaign_share_id"], name: "index_points_on_campaign_share_id"
     t.index ["donation_id"], name: "index_points_on_donation_id"
     t.index ["user_id"], name: "index_points_on_user_id"
   end
@@ -372,6 +374,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_04_043255) do
   add_foreign_key "fundraiser_leaderboard_entries", "users"
   add_foreign_key "fundraisers", "users"
   add_foreign_key "leaderboard_entries", "users"
+  add_foreign_key "points", "campaign_shares"
   add_foreign_key "points", "donations"
   add_foreign_key "points", "users"
   add_foreign_key "profiles", "users"
