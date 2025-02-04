@@ -12,6 +12,7 @@ import { useAuth } from './context/auth/AuthContext';
 import CampaignCard from './components/campaigns/CampaignCard';
 import { useCampaignContext } from './context/account/campaign/CampaignsContext';
 import SummaryCardComponent from './molecules/SummaryCard';
+import BHScreenKnowHow from './molecules/BHScreenKnowHow';
 
 const HomePage = () => {
   const wordRef = React.useRef<HTMLDivElement | null>(null);
@@ -279,8 +280,7 @@ const HomePage = () => {
       </div>
 
       <div id="brands" className="mt-20">
-        <DownloadApp />
-        {/* <BrandsLogoSlider /> */}
+        <BHScreenKnowHow />
       </div>
 
       <div className="mb-8 text-gray-700 dark:bg-gray-950 dark:text-gray-50">
