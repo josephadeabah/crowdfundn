@@ -368,7 +368,7 @@ const RewardsPage: React.FC = () => {
           </div>
 
           {/* Unlock Your Reward Section */}
-          <div className="bg-white dark:bg-gray-800 h-fit p-4 rounded-lg shadow mb-6">
+          <div className="bg-white dark:bg-gray-800 h-auto p-4 rounded-lg shadow mb-6">
             <div className="flex items-center justify-between">
               <div className="font-semibold flex items-center justify-center">
                 <FaInfoCircle
