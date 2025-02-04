@@ -6,12 +6,18 @@ class Point < ApplicationRecord
   validates :reason, presence: true
 
   def self.add_points(user, donation)
-    return unless user
+    return unless user && donation.net_amount > 0
   
     percentage_points = (donation.net_amount * 3).to_i
-    Point.create!(user: user, donation: donation, amount: percentage_points, reason: "Donation")
   
-    # ✅ Update leaderboard rankings
-    LeaderboardEntry.update_leaderboard(user, user.total_points)
-  end
+    # Ensure points are greater than 0 before creating the record
+    if percentage_points > 0
+      Point.create!(user: user, donation: donation, amount: percentage_points, reason: "Donation")
+  
+      # ✅ Update leaderboard rankings
+      LeaderboardEntry.update_leaderboard(user, user.total_points)
+    else
+      Rails.logger.error "Attempted to add invalid points (zero or negative) for user #{user.id}, donation #{donation.id}. Points: #{percentage_points}"
+    end
+  end  
 end
