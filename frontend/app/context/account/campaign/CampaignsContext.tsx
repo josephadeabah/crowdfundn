@@ -556,14 +556,19 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       try {
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json',
+        };
+        // Include the token in the headers only if it is available
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/campaign_shares`,
           {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
+            headers: headers,
           },
         );
 
