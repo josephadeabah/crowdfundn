@@ -185,6 +185,7 @@ export interface SingleCampaignResponseDataType {
   updated_at: string;
   media: string;
   media_filename: string;
+  total_shares: string;
   description: CampaignDescription;
   permissions: CampaignPermissions;
   promotions: CampaignPromotions;
