@@ -182,13 +182,10 @@ const RewardsPage: React.FC = () => {
     const levels = ['Bronze', 'Silver', 'Gold', 'Diamond'];
 
     const handleDownloadCertificate = (rewardLevel: string) => {
-      // You can implement a function to handle downloading the certificate.
-      // For example, you could trigger a file download or open a modal.
       console.log(`Downloading ${rewardLevel} certificate...`);
     };
 
     if (!level) {
-      // If level is null or undefined, show the message to the user
       return (
         <div className="text-center p-4 bg-gray-100 rounded-lg col-span-full">
           Your special certificate of honor will be available here to download
@@ -198,24 +195,24 @@ const RewardsPage: React.FC = () => {
     }
 
     return (
-      <div className="w-auto h-auto">
-        {levels.map((rewardLevel) => (
-          <div
-            key={rewardLevel}
-            className={`p-4 rounded-lg text-center ${level === rewardLevel ? '' : 'filter blur-sm'}`}
-          >
-            {level === rewardLevel && (
-              <div className="relative w-96 h-8 bg-gray-200">
-                {/* Download Icon */}
-                <FiDownload
-                  className="absolute top-0 right-0 text-gray-700 p-1"
-                  size={16}
-                  onClick={() => handleDownloadCertificate(rewardLevel)}
-                />
-              </div>
-            )}
+      <div className="flex justify-center items-center">
+        {levels.includes(level) ? (
+          <div className="p-4 rounded-lg text-center">
+            <div className="relative w-96 h-8 bg-gray-200 flex items-center justify-center">
+              <span className="text-lg font-semibold">{level} Certificate</span>
+              <FiDownload
+                className="absolute top-1 right-2 text-gray-700 cursor-pointer"
+                size={20}
+                onClick={() => handleDownloadCertificate(level)}
+              />
+            </div>
           </div>
-        ))}
+        ) : (
+          <div className="text-center p-4 bg-gray-200 rounded-lg col-span-full">
+            Your special certificate of honor will be available here to download
+            or share once you reach a reward level.
+          </div>
+        )}
       </div>
     );
   };
