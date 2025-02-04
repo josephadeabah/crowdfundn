@@ -88,7 +88,7 @@ const SingleCampaignPage: React.FC = () => {
             })
             .catch((error) => {
               // Handle error - display error message from API
-              alert(error.message);
+              alert(error.error);
             });
         })
         .catch((error) => {
