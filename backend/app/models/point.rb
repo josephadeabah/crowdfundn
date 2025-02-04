@@ -17,7 +17,7 @@ class Point < ApplicationRecord
       # ✅ Update leaderboard rankings
       LeaderboardEntry.update_leaderboard(user, user.total_points)
     else
-      Rails.logger.error "Attempted to add invalid points (zero or negative) for user #{user.id}, donation #{donation.id}. Points: #{percentage_points}"
+      Rails.logger.info "Attempted to add invalid points (zero or negative) for user #{user.id}, donation #{donation.id}. Points: #{percentage_points}"
     end
   end  
 end
