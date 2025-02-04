@@ -8,7 +8,11 @@ module Api
           def create
             if @current_user
               # Authenticated user share
-              @current_user.campaign_shares.create!(campaign: @campaign)
+              campaign_share = @current_user.campaign_shares.create(campaign: @campaign)
+              if campaign_share.errors.any?
+                render json: { error: campaign_share.errors.full_messages.join(", ") }, status: :unprocessable_entity
+                return
+              end
             else
               # Anonymous user share
               CampaignShare.create!(campaign: @campaign, user_id: nil) # Ensure user_id is nil for anonymous shares
