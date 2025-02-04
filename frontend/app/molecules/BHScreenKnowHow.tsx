@@ -72,7 +72,7 @@ const BHScreenKnowHow: React.FC = () => {
         {imageItems.slice(0, 3).map((item) => (
           <div
             key={item.id}
-            className="relative bg-green-50 p-4 rounded-lg shadow-md"
+            className="relative bg-green-50 p-4 rounded-lg"
           >
             <img
               src={item.src}
@@ -96,7 +96,7 @@ const BHScreenKnowHow: React.FC = () => {
         {imageItems.slice(3, 5).map((item) => (
           <div
             key={item.id}
-            className="relative bg-green-50 p-4 rounded-lg shadow-md"
+            className="relative bg-green-50 p-4 rounded-lg"
           >
             <img
               src={item.src}
