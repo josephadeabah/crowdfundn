@@ -76,7 +76,11 @@ class User < ApplicationRecord
   end 
 
   def total_points
-    points.sum(:amount)
+    points.sum(:amount) + campaign_share_count
+  end
+
+  def campaign_share_count
+    self.campaign_shares.count
   end
 
   private
