@@ -337,7 +337,9 @@ const RewardsPage: React.FC = () => {
                   <p className="text-xl font-semibold text-orange-500">
                     {userReward.level}
                   </p>
-                  <p className="w-full">{getCupIcon(userReward.level)}</p>
+                  <p className="w-full flex justify-center items-center">
+                    {getCupIcon(userReward.level)}
+                  </p>
                   <div className="font-semibold flex items-center justify-center">
                     <FaInfoCircle
                       data-tooltip-id="tooltip-average-logins"
