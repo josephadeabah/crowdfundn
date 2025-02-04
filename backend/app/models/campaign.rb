@@ -10,6 +10,8 @@ class Campaign < ApplicationRecord
   has_many :subscribers, through: :subscriptions, source: :user
   has_many :favorites, dependent: :destroy
   has_many :favorited_by_users, through: :favorites, source: :user
+  has_many :campaign_shares, dependent: :destroy
+
   has_rich_text :description
 
   validates :title, :description, :goal_amount, :start_date, :end_date, :currency, presence: true
@@ -73,6 +75,7 @@ class Campaign < ApplicationRecord
       media: media_url,
       media_filename: media_filename,
       description: description.as_json,
+      total_shares: total_shares,
       permissions: {
         accept_donations: accept_donations,
         leave_words_of_support: leave_words_of_support,
@@ -144,6 +147,10 @@ class Campaign < ApplicationRecord
   def update_fundraiser_leaderboard
     total_raised = donations.successful.sum(:amount)  # Adjust the field name as needed
     FundraiserLeaderboardEntry.update_leaderboard(fundraiser, total_raised)
+  end
+
+  def total_shares
+    campaign_shares.count
   end
 
   private

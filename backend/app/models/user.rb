@@ -10,6 +10,7 @@ class User < ApplicationRecord
   has_many :leaderboard_entries, dependent: :destroy
   has_many :fundraiser_leaderboard_entries, dependent: :destroy
   has_many :backer_rewards, dependent: :destroy
+  has_many :campaign_shares, dependent: :destroy
 
   validates :status, inclusion: { in: STATUSES }
   validates :email, presence: true, uniqueness: true

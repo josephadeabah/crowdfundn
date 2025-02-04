@@ -69,6 +69,7 @@ Rails.application.routes.draw do
 
         resources :donations, only: [:index]
         resources :campaigns do
+          resources :campaign_shares, only: [:create]
           collection do
             get :favorites
           end
