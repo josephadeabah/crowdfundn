@@ -198,7 +198,7 @@ const RewardsPage: React.FC = () => {
     }
 
     return (
-      <div className="grid grid-cols-1 justify-items-center">
+      <div className="w-full h-full justify-items-center">
         {levels.map((rewardLevel) => (
           <div
             key={rewardLevel}
