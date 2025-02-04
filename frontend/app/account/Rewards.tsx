@@ -205,7 +205,7 @@ const RewardsPage: React.FC = () => {
             className={`p-4 rounded-lg text-center ${level === rewardLevel ? '' : 'filter blur-sm'}`}
           >
             {level === rewardLevel && (
-              <div className="relative w-72 h-5 bg-gray-200">
+              <div className="relative w-96 h-8 bg-gray-200">
                 {/* Download Icon */}
                 <FiDownload
                   className="absolute top-0 right-0 text-gray-700 p-1"
