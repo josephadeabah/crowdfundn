@@ -1,6 +1,5 @@
 class BackerReward < ApplicationRecord
   belongs_to :user
-  belongs_to :campaign
 
   validates :description, presence: true
 
@@ -23,7 +22,6 @@ class BackerReward < ApplicationRecord
 
     # Create and assign the reward with points_required set to user's current points
     user.backer_rewards.create!(
-      campaign: user.campaigns.first,  # Assuming we associate it with the first campaign
       level: reward_level.to_s.capitalize,
       points_required: user_points,
       description: "BHC: #{user_points * 10} coins"
