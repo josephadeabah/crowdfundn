@@ -1,9 +1,5 @@
 'use client';
 import Avatar from '@/app/components/avatar/Avatar';
-import BronzeCupIcon from '@/app/components/icons/BronzeCupIcon';
-import DiamondCupIcon from '@/app/components/icons/DiamondCupIcon';
-import GoldCupIcon from '@/app/components/icons/GoldCupIcon';
-import SilverCupIcon from '@/app/components/icons/SilverCupIcon';
 import {
   Popover,
   PopoverContent,
@@ -12,21 +8,9 @@ import {
 import { usePointRewardContext } from '@/app/context/pointreward/PointRewardContext';
 import TransferLoader from '@/app/loaders/TransferLoader ';
 import { deslugify } from '@/app/utils/helpers/categories';
+import { getCupIcon } from '@/app/utils/helpers/get.level.trophy';
 import { getRankWithSuffix } from '@/app/utils/helpers/ranking.suffix';
 import React, { useEffect } from 'react';
-
-// Function to determine the cup icon based on score
-export const getCupIcon = (level: string) => {
-  if (level === 'Diamond') {
-    return <DiamondCupIcon className="w-8 h-8 text-yellow-700" />;
-  } else if (level === 'Gold') {
-    return <GoldCupIcon className="w-8 h-8 text-yellow-400" />;
-  } else if (level === 'Silver') {
-    return <SilverCupIcon className="w-8 h-8 text-gray-400" />;
-  } else {
-    return <BronzeCupIcon className="w-8 h-8 text-orange-500" />;
-  }
-};
 
 const LeaderboardBackersPage = () => {
   const { leaderboard, loading, error, fetchLeaderboard } =
