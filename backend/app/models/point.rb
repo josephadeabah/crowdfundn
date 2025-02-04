@@ -1,6 +1,6 @@
 class Point < ApplicationRecord
   belongs_to :user
-  belongs_to :donation
+  belongs_to :donation, optional: true
 
   validates :amount, numericality: { greater_than: 0 }
   validates :reason, presence: true
