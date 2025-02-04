@@ -373,7 +373,7 @@ const RewardsPage: React.FC = () => {
               <div className="font-semibold flex items-center justify-center">
                 <FaInfoCircle
                   data-tooltip-id="tooltip-certificate-reveal"
-                  data-tooltip-content="This is a special certificate of Honor prepared and given to you by BantuHive for the great impact you're making in the world. The highest Level reward comes with $2000 which will be given to you by Bantu Hive."
+                  data-tooltip-content="This is a special certificate of Honor prepared and given to you by BantuHive for the great impact you're making in the world. The highest Level reward comes with $2000 and other perks which will be given to you by Bantu Hive."
                   className="text-gray-400 text-sm cursor-pointer mr-2"
                 />
                 <Tooltip
