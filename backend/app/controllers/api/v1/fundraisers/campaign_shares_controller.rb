@@ -2,7 +2,7 @@ module Api
     module V1
       module Fundraisers
         class CampaignSharesController < ApplicationController
-          before_action :authenticate_request # Skip authentication for anonymous shares
+          before_action :authenticate_request
           before_action :set_campaign, only: [:create]
   
           def create
