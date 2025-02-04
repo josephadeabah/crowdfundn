@@ -87,9 +87,11 @@ const BHScreenKnowHow: React.FC = () => {
             />
             <div className="mt-4">
               <h3 className="text-lg font-semibold truncate">{item.title}</h3>
-              <p className="text-sm text-gray-600 truncate">
-                {item.description}
-              </p>
+              <div className="w-full max-w-md">
+                <p className="text-sm text-gray-600 truncate">
+                  {item.description}
+                </p>
+              </div>
             </div>
             <button
               className="absolute bottom-4 right-4 bg-orange-300 text-white p-2 rounded-full hover:bg-orange-400 transition-colors duration-200"
