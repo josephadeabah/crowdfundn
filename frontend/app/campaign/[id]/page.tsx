@@ -29,7 +29,13 @@ const SingleCampaignPage: React.FC = () => {
   const tabsRef = useRef<HTMLDivElement>(null);
 
   const { id } = useParams() as { id: string };
-  const { currentCampaign, fetchCampaignById, loading } = useCampaignContext();
+  const {
+    currentCampaign,
+    campaignShares,
+    fetchCampaignById,
+    shareCampaign,
+    loading,
+  } = useCampaignContext();
   const { donations, fetchPublicDonations } = useDonationsContext();
 
   useEffect(() => {
@@ -74,6 +80,7 @@ const SingleCampaignPage: React.FC = () => {
           text: `Check out my fundraising details for "${campaignTitle}": ${campaignDescription}`,
           url: currentUrl,
         });
+        shareCampaign(currentCampaign?.id as unknown as string);
       } else {
         await navigator.clipboard.writeText(currentUrl);
         setCopyButtonText('Copied');
@@ -261,7 +268,8 @@ const SingleCampaignPage: React.FC = () => {
                     onClick={handleShare}
                     className="flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
                   >
-                    <FaShare className="mr-2" /> Share
+                    <FaShare className="mr-2" /> {campaignShares?.total_shares}{' '}
+                    Shares
                   </Button>
                   <button
                     onClick={handleCopy}

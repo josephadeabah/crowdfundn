@@ -50,6 +50,7 @@ export interface CampaignResponseDataType {
   media: string;
   media_filename: string;
   favorited: boolean;
+  total_shares: string;
   permissions: {
     accept_donations: boolean;
     leave_words_of_support: boolean;
@@ -71,9 +72,15 @@ export interface CampaignResponseDataType {
   fundraiser: FundraiserDetailsType;
 }
 
+export interface CampaignShareType {
+  total_shares: number;
+  user_points: number;
+}
+
 export interface CampaignState {
   campaigns: CampaignResponseDataType[];
   currentCampaign: SingleCampaignResponseDataType | null;
+  campaignShares: CampaignShareType | null;
   statistics: CampaignStatisticsDataType | null;
   pagination: {
     currentPage: number;
@@ -108,6 +115,7 @@ export interface CampaignState {
   favoriteCampaign: (campaignId: string) => Promise<void>;
   unfavoriteCampaign: (campaignId: string) => Promise<void>;
   fetchFavoritedCampaigns: () => Promise<void>;
+  shareCampaign: (campaignId?: string) => Promise<void>;
 }
 
 export interface CampaignDescription {

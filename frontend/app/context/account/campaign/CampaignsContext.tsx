@@ -2,7 +2,8 @@ import {
   CampaignResponseDataType,
   CampaignState,
   SingleCampaignResponseDataType,
-  CampaignStatisticsDataType, // Add the type for statistics data
+  CampaignStatisticsDataType,
+  CampaignShareType, // Add the type for statistics data
 } from '@/app/types/campaigns.types';
 import React, {
   createContext,
@@ -26,6 +27,8 @@ const nextFetch = async (
 
 export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const [campaigns, setCampaigns] = useState<CampaignResponseDataType[]>([]);
+  const [campaignShares, setCampaignShares] =
+    useState<CampaignShareType | null>(null); // Or a more complex structure if needed
   const [currentCampaign, setCurrentCampaign] =
     useState<SingleCampaignResponseDataType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -548,6 +551,40 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [token]);
 
+  const shareCampaign = useCallback(
+    async (campaignId?: string) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/campaign_shares`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          handleApiError(
+            "Couldn't record the campaign share. Please try again.",
+          );
+          return;
+        }
+        // Update the campaign share count or state if needed
+        const updatedShares = await response.json();
+        setCampaignShares(updatedShares);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error sharing campaign');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
+
   const contextValue = useMemo(
     () => ({
       campaigns,
@@ -556,6 +593,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       error,
       statistics,
       pagination,
+      campaignShares,
       addCampaign,
       fetchCampaigns,
       fetchCampaignStatistics,
@@ -564,6 +602,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       deleteCampaign,
       editCampaign,
       cancelCampaign,
+      shareCampaign,
       updateCampaignSettings,
       favoriteCampaign, // Add favoriteCampaign to context
       unfavoriteCampaign, // Add unfavoriteCampaign to context
@@ -576,6 +615,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       error,
       statistics,
       pagination,
+      campaignShares,
       addCampaign,
       fetchCampaigns,
       fetchCampaignStatistics,
@@ -584,6 +624,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       deleteCampaign,
       editCampaign,
       cancelCampaign,
+      shareCampaign,
       updateCampaignSettings,
       favoriteCampaign, // Include favoriteCampaign in memoization
       unfavoriteCampaign, // Include unfavoriteCampaign in memoization
