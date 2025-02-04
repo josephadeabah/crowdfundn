@@ -195,9 +195,9 @@ const RewardsPage: React.FC = () => {
     }
 
     return (
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center w-full">
         {levels.includes(level) ? (
-          <div className="p-2 rounded-lg text-center">
+          <div className="p-2 rounded-lg text-center w-full">
             <div className="relative w-full px-4 h-8 bg-gray-200 flex items-center justify-center">
               <span className="text-lg font-semibold">{level} Certificate</span>
               <FiDownload
@@ -208,7 +208,7 @@ const RewardsPage: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="text-center p-4 bg-gray-200 rounded-lg col-span-full">
+          <div className="text-center p-4 bg-gray-200 rounded-lg w-full">
             Your special certificate of honor will be available here to download
             or share once you reach a reward level.
           </div>

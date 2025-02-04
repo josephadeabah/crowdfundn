@@ -284,8 +284,8 @@ const SingleCampaignPage: React.FC = () => {
                     onClick={handleShare}
                     className="flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
                   >
-                    <FaShare className="mr-2" /> {currentCampaign?.total_shares || 0}{' '}
-                    Shares
+                    <FaShare className="mr-2" />{' '}
+                    {currentCampaign?.total_shares || 0} Shares
                   </Button>
                   <button
                     onClick={handleCopy}
