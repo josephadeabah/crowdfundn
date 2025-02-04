@@ -65,7 +65,7 @@ const SingleCampaignPage: React.FC = () => {
     return text;
   };
 
-  const handleShare = async () => {
+  const handleShare = () => {
     const currentUrl = window.location.href;
     const campaignTitle = currentCampaign?.title || 'Fundraising Campaign';
     const rawDescription = currentCampaign?.description?.body
@@ -73,22 +73,30 @@ const SingleCampaignPage: React.FC = () => {
       : '';
     const campaignDescription = truncateText(rawDescription, 100); // Limit to 100 characters
 
-    try {
-      if (navigator.share) {
-        await navigator.share({
+    if (navigator.share) {
+      return navigator
+        .share({
           title: `Fundraising Details - ${campaignTitle}`,
           text: `Check out my fundraising details for "${campaignTitle}": ${campaignDescription}`,
           url: currentUrl,
+        })
+        .then(() => {
+          // Once share is successful, trigger shareCampaign
+          return shareCampaign(String(currentCampaign?.id));
+        })
+        .catch((error) => {
+          setError('Error sharing fundraising details');
         });
-        // Once share is successful, trigger shareCampaign
-        await shareCampaign(String(currentCampaign?.id));
-      } else {
-        await navigator.clipboard.writeText(currentUrl);
-        setCopyButtonText('Copied');
-        setTimeout(() => setCopyButtonText('Copy'), 2000);
-      }
-    } catch (error) {
-      setError('Error sharing fundraising details');
+    } else {
+      return navigator.clipboard
+        .writeText(currentUrl)
+        .then(() => {
+          setCopyButtonText('Copied');
+          setTimeout(() => setCopyButtonText('Copy'), 2000);
+        })
+        .catch(() => {
+          setError('Error copying the link');
+        });
     }
   };
 
