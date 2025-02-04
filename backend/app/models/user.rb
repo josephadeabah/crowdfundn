@@ -80,7 +80,7 @@ class User < ApplicationRecord
   end
 
   def campaign_share_count
-    self.campaign_shares.count
+    self.campaign_shares.count - 0.85
   end
 
   private
