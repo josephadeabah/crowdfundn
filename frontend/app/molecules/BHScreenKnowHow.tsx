@@ -34,7 +34,7 @@ const BHScreenKnowHow: React.FC = () => {
       description:
         'Earn points, badges, and exclusive rewards for supporting campaigns.',
       detailedDescription:
-        'Bantu Hive’s gamified crowdfunding model allows you to earn exciting rewards for your contributions. Every donation, share, and engagement on the platform helps you accumulate points, unlock badges, and climb the leaderboard. Support others and get rewarded for your generosity!',
+        'Bantu Hive’s gamified crowdfunding model allows you to earn exciting rewards for your contributions. Every donation, share, and engagement on the platform helps you accumulate points, unlock badges and an honorary certifications, and climb the leaderboard. Support others and get rewarded for your generosity!',
     },
     {
       id: 3,
