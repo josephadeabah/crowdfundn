@@ -4,18 +4,14 @@ class CampaignShare < ApplicationRecord
 
   validates :user_id, uniqueness: { scope: :campaign_id, message: "You can only share a campaign once." }, if: -> { user.present? }
 
-  # after_create :award_share_points
+  after_create :award_share_points
 
-  # private
+  private
 
-  # def award_share_points
-  #   return unless user.present?
+  def award_share_points
+    return unless user.present?
 
-  #   # Award points for sharing
-  #   points = 0.25
-  #   user.points.create!(amount: points, reason: "Shared Campaign #{campaign.title}")
-
-  #   # ✅ Update leaderboard rankings
-  #   LeaderboardEntry.update_leaderboard(user, user.total_points)
-  # end
+    # ✅ Update leaderboard rankings
+    LeaderboardEntry.update_leaderboard(user, user.total_points)
+  end
 end
