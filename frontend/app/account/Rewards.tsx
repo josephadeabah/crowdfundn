@@ -197,7 +197,7 @@ const RewardsPage: React.FC = () => {
     return (
       <div className="flex justify-center items-center">
         {levels.includes(level) ? (
-          <div className="p-4 rounded-lg text-center">
+          <div className="p-2 rounded-lg text-center">
             <div className="relative w-96 h-8 bg-gray-200 flex items-center justify-center">
               <span className="text-lg font-semibold">{level} Certificate</span>
               <FiDownload
