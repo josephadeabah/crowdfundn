@@ -84,7 +84,7 @@ const BHScreenKnowHow: React.FC = () => {
               <p className="text-sm text-gray-600 truncate">{item.description}</p>
             </div>
             <button
-              className="absolute bottom-4 right-4 bg-orange-500 text-white p-2 rounded-full hover:bg-orange-600 transition-colors duration-200"
+              className="absolute bottom-4 right-4 bg-orange-300 text-white p-2 rounded-full hover:bg-orange-400 transition-colors duration-200"
               onClick={() => handlePlusClick(item)}
             >
               <FaPlus className="w-6 h-6" />
@@ -108,7 +108,7 @@ const BHScreenKnowHow: React.FC = () => {
               <p className="text-sm text-gray-600 truncate">{item.description}</p>
             </div>
             <button
-              className="absolute bottom-4 right-4 bg-orange-500 text-white p-2 rounded-full hover:bg-orange-600 transition-colors duration-200"
+              className="absolute bottom-4 right-4 bg-orange-300 text-white p-2 rounded-full hover:bg-orange-400 transition-colors duration-200"
               onClick={() => handlePlusClick(item)}
             >
               <FaPlus className="w-6 h-6" />
