@@ -72,7 +72,7 @@ const BHScreenKnowHow: React.FC = () => {
         {imageItems.slice(0, 3).map((item) => (
           <div
             key={item.id}
-            className="relative bg-green-200 p-4 rounded-lg"
+            className="relative bg-cyan-300 p-4 rounded-lg"
           >
             <img
               src={item.src}
@@ -84,7 +84,7 @@ const BHScreenKnowHow: React.FC = () => {
               <p className="text-sm text-gray-600 truncate">{item.description}</p>
             </div>
             <button
-              className="absolute bottom-4 right-4 bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition-colors duration-200"
+              className="absolute bottom-4 right-4 bg-cyan-500 text-white p-2 rounded-full hover:bg-cyan-500 transition-colors duration-200"
               onClick={() => handlePlusClick(item)}
             >
               <FaPlus className="w-6 h-6" />
@@ -96,7 +96,7 @@ const BHScreenKnowHow: React.FC = () => {
         {imageItems.slice(3, 5).map((item) => (
           <div
             key={item.id}
-            className="relative bg-green-200 p-4 rounded-lg"
+            className="relative bg-cyan-300 p-4 rounded-lg"
           >
             <img
               src={item.src}
@@ -108,7 +108,7 @@ const BHScreenKnowHow: React.FC = () => {
               <p className="text-sm text-gray-600 truncate">{item.description}</p>
             </div>
             <button
-              className="absolute bottom-4 right-4 bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition-colors duration-200"
+              className="absolute bottom-4 right-4 bg-cyan-500 text-white p-2 rounded-full hover:bg-cyan-500 transition-colors duration-200"
               onClick={() => handlePlusClick(item)}
             >
               <FaPlus className="w-6 h-6" />
