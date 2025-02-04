@@ -11,9 +11,9 @@ module Api
               @current_user.campaign_shares.create!(campaign: @campaign)
             else
               # Anonymous user share
-              CampaignShare.create!(campaign: @campaign) # No user association
+              CampaignShare.create!(campaign: @campaign, user_id: nil) # Ensure user_id is nil for anonymous shares
             end
-  
+          
             # Return updated share count & points (if applicable)
             render json: {
               message: "Campaign shared successfully!",
@@ -22,7 +22,7 @@ module Api
             }, status: :ok
           rescue ActiveRecord::RecordInvalid => e
             render json: { error: e.message }, status: :unprocessable_entity
-          end
+          end          
   
           private
   
