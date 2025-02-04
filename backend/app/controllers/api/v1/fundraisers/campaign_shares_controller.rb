@@ -6,6 +6,8 @@ module Api
           before_action :set_campaign, only: [:create]
   
           def create
+            campaign_share = nil
+          
             if @current_user
               # Authenticated user share
               campaign_share = @current_user.campaign_shares.create(campaign: @campaign)
@@ -15,22 +17,25 @@ module Api
               end
             else
               # Anonymous user share
-              CampaignShare.create!(campaign: @campaign, user_id: nil) # Ensure user_id is nil for anonymous shares
+              campaign_share = CampaignShare.create!(campaign: @campaign, user_id: nil) # Ensure user_id is nil for anonymous shares
             end
-            
-            # Return updated share count & points (if applicable)
+          
+            # Prepare response data
             response = {
               message: "Campaign shared successfully!",
               total_shares: @campaign.total_shares, # Counts all shares for this campaign
             }
-            
-            # Only include user_points if there's a logged-in user
-            response[:user_points] = @current_user.total_points if @current_user.present?
-            
+          
+            # Only include user_points if the share was created by a logged-in user
+            if campaign_share.user.present?
+              points_awarded = 0.25 # Make sure this matches the value in `award_share_points`
+              response[:user_points] = points_awarded
+            end
+          
             render json: response, status: :ok
           rescue ActiveRecord::RecordInvalid => e
             render json: { error: e.message }, status: :unprocessable_entity
-          end          
+          end                  
   
           private
   
