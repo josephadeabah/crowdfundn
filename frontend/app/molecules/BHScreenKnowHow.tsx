@@ -87,7 +87,7 @@ const BHScreenKnowHow: React.FC = () => {
             />
             <div className="mt-4">
               <h3 className="text-lg font-semibold truncate">{item.title}</h3>
-              <div className="w-full max-w-md">
+              <div className="w-full max-w-xs">
                 <p className="text-sm text-gray-600 truncate">
                   {item.description}
                 </p>
