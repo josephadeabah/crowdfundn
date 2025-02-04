@@ -18,13 +18,13 @@ import React, { useEffect } from 'react';
 // Function to determine the cup icon based on score
 const getCupIcon = (level: string) => {
   if (level === 'Diamond') {
-    return <DiamondCupIcon className="w-6 h-6 text-yellow-700" />;
+    return <DiamondCupIcon className="w-8 h-8 text-yellow-700" />;
   } else if (level === 'Gold') {
-    return <GoldCupIcon className="w-6 h-6 text-yellow-400" />;
+    return <GoldCupIcon className="w-8 h-8 text-yellow-400" />;
   } else if (level === 'Silver') {
-    return <SilverCupIcon className="w-6 h-6 text-gray-400" />;
+    return <SilverCupIcon className="w-8 h-8 text-gray-400" />;
   } else {
-    return <BronzeCupIcon className="w-6 h-6 text-orange-500" />;
+    return <BronzeCupIcon className="w-8 h-8 text-orange-500" />;
   }
 };
 
