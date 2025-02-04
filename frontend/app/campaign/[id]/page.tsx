@@ -79,17 +79,19 @@ const SingleCampaignPage: React.FC = () => {
           title: `Fundraising Details - ${campaignTitle}`,
           text: `Check out my fundraising details for "${campaignTitle}": ${campaignDescription}`,
           url: currentUrl,
-        }).then(() => {
+        })
+        .then(() => {
           // Call the backend to record the share
           shareCampaign(String(currentCampaign?.id))
-            .then(response => {
+            .then((response) => {
               // Handle success (e.g., update UI with new share count)
             })
-            .catch(error => {
+            .catch((error) => {
               // Handle error - display error message from API
               alert(error.message);
             });
-        }).catch((error) => {
+        })
+        .catch((error) => {
           setError('Error sharing fundraising details');
         });
     } else {
