@@ -118,7 +118,7 @@ class PaystackService
         subaccounts: [
           {
             subaccount: "ACCT_duqh5t1jfezuyyb",
-            share: 6, # Subaccount gets 6%
+            share: 6000, # Subaccount gets 6%
           },
         ],
       }
