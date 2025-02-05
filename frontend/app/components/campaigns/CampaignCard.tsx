@@ -119,7 +119,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   if (error) return <ErrorPage />;
 
   return (
-<div className="w-full max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+<div className="w-full max-w-7xl mx-auto md:py-4">
   <ToastComponent
     isOpen={toast.isOpen}
     onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
@@ -130,9 +130,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   {filteredCampaigns.length === 0 ? (
     <EmptyPage />
   ) : (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 px-4 sm:px-6 lg:px-8">
       {filteredCampaigns
-        .slice(0, 8) // Display only 6 items
+        .slice(0, 7) // Display only 7 images
         .map((campaign, index) => {
           const fundraiserCurrency =
             campaign?.currency_symbol || campaign?.currency?.toUpperCase();
@@ -143,18 +143,18 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
               initial="hidden"
               animate="visible"
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 hover:shadow-2xl transition-transform duration-300 cursor-pointer overflow-hidden rounded-lg"
+              className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 hover:shadow-2xl transition-transform duration-300 cursor-pointer overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700"
             >
               <Link
                 href={`/campaign/${campaign.id}?${generateRandomString()}`}
               >
-                <div className="relative w-full h-0 pb-[100%]">
+                <div className="relative w-full h-48 overflow-hidden">
                   <Image
                     src={campaign?.media || '/bantuhive.svg'}
                     alt="media thumbnail"
                     layout="fill"
                     objectFit="cover"
-                    className="absolute top-0 left-0 w-full h-full"
+                    className="absolute top-0 left-0 w-full h-full transform group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
                     <h3 className="text-lg font-bold text-white truncate mb-1">
@@ -169,7 +169,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800">
+                <div className="p-4 bg-gray-50 dark:bg-gray-800">
                   <div className="w-full text-xs">
                     <Progress
                       firstProgress={
@@ -184,7 +184,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       }%`}
                     />
                   </div>
-                  <div className="w-full text-xs text-gray-600 dark:text-gray-300 flex flex-col">
+                  <div className="w-full text-xs text-gray-600 dark:text-gray-300 flex flex-col mt-2">
                     <h3 className="text-lg font-bold text-gray-700 dark:text-gray-100 truncate mb-1">
                       {campaign?.title}
                     </h3>
