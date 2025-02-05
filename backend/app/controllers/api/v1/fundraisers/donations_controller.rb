@@ -125,38 +125,43 @@ module Api
           paystack_service = PaystackService.new
 
             # **Step 1: Create Transaction Split**
-          split_response = paystack_service.create_split(
-            name: "Bantu Hive Operations Split",
-            type: "percentage",
-            currency: campaign.currency.upcase, # Use campaign's currency
-            bearer_type: "account",  # ✅ Main account will bear Paystack fees
-            subaccounts: [
-              {
-                subaccount: "ACCT_muaiopo7byymwjz", 
-                share: 6,
-                bearer_type: "subaccount" # ✅ Main account will bear Paystack fees
-              },
-              {
-                subaccount: subaccount_code,
-                share: 0,
-                bearer_type: "subaccount" # This subaccount would still bear its own fees (optional)
-              }
-            ]
-          )
+          # split_response = paystack_service.create_split(
+          #   name: "Bantu Hive Operations Split",
+          #   type: "percentage",
+          #   currency: campaign.currency.upcase, # Use campaign's currency
+          #   subaccounts: [
+          #     { subaccount: "ACCT_muaiopo7byymwjz", share: 7 }, # 94% to main account (Bantu Hive)
+          #     { subaccount: subaccount_code, share: 93 } # 6% to fundraiser
+          #   ]
+          # )
 
-          Rails.logger.info "SPLIT RESPONSE: #{split_response.inspect}"
+          # Rails.logger.info "SPLIT RESPONSE: #{split_response.inspect}"
 
-          if split_response["status"] != true
-            return render json: { error: "Failed to create transaction split", details: split_response }, status: :unprocessable_entity
-          end
+          # if split_response["status"] != true
+          #   return render json: { error: "Failed to create transaction split", details: split_response }, status: :unprocessable_entity
+          # end
 
           response = paystack_service.initialize_transaction(
             email: donation.email,
             amount: donation.amount,
             plan: donation.plan,
             metadata: metadata,
-            split_code: split_response["data"]["split_code"]
+            split: {
+              type: "percentage",  # Specify flat type
+              bearer_type: "account",
+              subaccounts: [
+                {
+                  subaccount: "ACCT_muaiopo7byymwjz",
+                  share: 6  # 6% to main account
+                },
+                {
+                  subaccount: subaccount_code,
+                  share: 0  # Flat fee of 4000 to the fundraiser
+                }
+              ]
+            }
           )
+          
         
           if response[:status] == true
             donation.transaction_reference = response[:data][:reference]
