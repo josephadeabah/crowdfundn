@@ -55,13 +55,13 @@ class PaystackWebhook::ChargeSuccessHandler
       # integration_fee = response.dig(:data, :fees_split, :integration).to_f / 100.0
 
       # Step 1: Calculate the net amount (93% of the gross amount)
-      net_amount = gross_amount
+      net_amount = gross_amount * 0.93
 
       # Step 2: Calculate the platform fee (7% of the gross amount)
-      platform_fee = 0
+      platform_fee = gross_amount * 0.07
 
       # Step 3: Adjust the platform fee after Paystack's 1.95% deduction
-      paystack_fee = 0
+      paystack_fee = platform_fee * 0.0195
 
       # Step 4: Subtract Paystack's fee from the platform fee
       adjusted_platform_fee = platform_fee - paystack_fee
