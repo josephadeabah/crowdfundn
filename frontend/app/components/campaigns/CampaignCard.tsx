@@ -177,7 +177,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                   </div>
                 </div>
               </div>
-              <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800">
+              <div className="px-4 py-3 h-full bg-gray-50 dark:bg-gray-800">
                 <div className="w-full text-xs">
                   <Progress
                     firstProgress={
