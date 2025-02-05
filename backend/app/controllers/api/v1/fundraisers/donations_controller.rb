@@ -130,8 +130,8 @@ module Api
             type: "percentage",
             currency: campaign.currency.upcase, # Use campaign's currency
             subaccounts: [
-              { subaccount: "ACCT_duqh5t1jfezuyyb", share: 6 }, # 6% for Bantu Hive
-              { subaccount: subaccount_code, share: 0 }, # 6% for Bantu Hive
+              { subaccount: "ACCT_duqh5t1jfezuyyb", share: 7 }, # 94% to main account (Bantu Hive)
+              { subaccount: subaccount_code, share: 93 } # 6% to fundraiser
             ]
           )
 
