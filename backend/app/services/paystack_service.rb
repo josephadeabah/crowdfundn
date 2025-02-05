@@ -110,7 +110,18 @@ class PaystackService
       plan: plan,
       reference: SecureRandom.uuid,
       metadata: metadata, # Add metadata to the transaction
-      subaccount: subaccount  # Add the subaccount_code here
+      subaccount: subaccount,  # Add the subaccount_code here
+      split: {
+        type: "percentage",
+        bearer_type: "subaccount",
+        bearer_subaccount: "ACCT_duqh5t1jfezuyyb",
+        subaccounts: [
+          {
+            subaccount: "ACCT_duqh5t1jfezuyyb",
+            share: 6, # Subaccount gets 6%
+          },
+        ],
+      }
     }.compact.to_json
 
     response = make_post_request(uri, body)
