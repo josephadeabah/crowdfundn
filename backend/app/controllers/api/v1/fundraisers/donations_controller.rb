@@ -130,8 +130,8 @@ module Api
             type: "percentage",
             currency: campaign.currency.upcase, # Use campaign's currency
             subaccounts: [
-              { subaccount: "ACCT_duqh5t1jfezuyyb", share: 7 }, # 94% to main account (Bantu Hive)
-              { subaccount: subaccount_code, share: 93 } # 6% to fundraiser
+              { subaccount: "ACCT_muaiopo7byymwjz", share: 7 }, # 94% to main account (Bantu Hive)
+              { subaccount: subaccount_code, share: 0 } # 6% to fundraiser
             ]
           )
 
@@ -141,15 +141,12 @@ module Api
             return render json: { error: "Failed to create transaction split", details: split_response }, status: :unprocessable_entity
           end
 
-          split_code = split_response["data"]["split_code"]
-
-
           response = paystack_service.initialize_transaction(
             email: donation.email,
             amount: donation.amount,
             plan: donation.plan,
             metadata: metadata,
-            subaccount: subaccount_code
+            split_code: split_response["data"]["split_code"]
           )
         
           if response[:status] == true
