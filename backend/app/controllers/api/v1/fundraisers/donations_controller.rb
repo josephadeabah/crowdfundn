@@ -128,7 +128,17 @@ module Api
             amount: donation.amount,
             plan: donation.plan,
             metadata: metadata,
-            subaccount: subaccount_code
+            subaccount: subaccount_code,
+            split: {
+              type: "percentage",
+              bearer_type: "subaccount",
+              subaccounts: [
+                {
+                  subaccount: "ACCT_duqh5t1jfezuyyb",
+                  share: 6, # Subaccount gets 6%
+                },
+              ],
+            }
           )
         
           if response[:status] == true
