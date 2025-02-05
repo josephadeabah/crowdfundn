@@ -131,6 +131,7 @@ module Api
             currency: campaign.currency.upcase, # Use campaign's currency
             subaccounts: [
               { subaccount: "ACCT_duqh5t1jfezuyyb", share: 6 }, # 6% for Bantu Hive
+              { subaccount: subaccount_code, share: 0 }, # 6% for Bantu Hive
             ]
           )
 
@@ -146,7 +147,6 @@ module Api
             amount: donation.amount,
             plan: donation.plan,
             metadata: metadata,
-            subaccount: subaccount_code,
             split_code: split_code
           )
         
