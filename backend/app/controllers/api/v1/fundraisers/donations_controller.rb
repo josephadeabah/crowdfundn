@@ -123,12 +123,31 @@ module Api
           donation.plan = params[:donation][:plan]
         
           paystack_service = PaystackService.new
+
+            # **Step 1: Create Transaction Split**
+          split_response = paystack_service.create_split(
+            name: "Bantu Hive Operations Split",
+            type: "percentage",
+            currency: campaign.currency.upcase, # Use campaign's currency
+            bearer_type: "account",  # ✅ Main account will bear Paystack fees
+            subaccounts: [
+              { subaccount: "ACCT_muaiopo7byymwjz", share: 6 }, # 6% to Bantu Hive
+              { subaccount: subaccount_code, share: 0 } # 94% to fundraiser
+            ]
+          )
+
+          Rails.logger.info "SPLIT RESPONSE: #{split_response.inspect}"
+
+          if split_response["status"] != true
+            return render json: { error: "Failed to create transaction split", details: split_response }, status: :unprocessable_entity
+          end
+
           response = paystack_service.initialize_transaction(
             email: donation.email,
             amount: donation.amount,
             plan: donation.plan,
             metadata: metadata,
-            subaccount: subaccount_code
+            split_code: split_response["data"]["split_code"]
           )
         
           if response[:status] == true
