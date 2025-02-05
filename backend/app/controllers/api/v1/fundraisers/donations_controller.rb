@@ -131,8 +131,16 @@ module Api
             currency: campaign.currency.upcase, # Use campaign's currency
             bearer_type: "account",  # ✅ Main account will bear Paystack fees
             subaccounts: [
-              { subaccount: "ACCT_muaiopo7byymwjz", share: 6 }, # 6% to Bantu Hive
-              { subaccount: subaccount_code, share: 0 } # 94% to fundraiser
+              {
+                subaccount: "ACCT_muaiopo7byymwjz", 
+                share: 6,
+                bearer_type: "subaccount" # ✅ Main account will bear Paystack fees
+              },
+              {
+                subaccount: subaccount_code,
+                share: 0,
+                bearer_type: "subaccount" # This subaccount would still bear its own fees (optional)
+              }
             ]
           )
 
