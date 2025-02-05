@@ -130,9 +130,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   {filteredCampaigns.length === 0 ? (
     <EmptyPage />
   ) : (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
       {filteredCampaigns
-        .slice(0, 6) // Display only 6 items
+        .slice(0, 8) // Display only 6 items
         .map((campaign, index) => {
           const fundraiserCurrency =
             campaign?.currency_symbol || campaign?.currency?.toUpperCase();
