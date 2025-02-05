@@ -25,7 +25,7 @@ const BHScreenKnowHow: React.FC = () => {
       title: 'Dashboard Overview',
       description: 'Monitor your campaigns, track progress, and stay informed.',
       detailedDescription:
-        'Get a comprehensive view of your crowdfunding activities with the Bantu Hive dashboard. Easily monitor your campaign’s progress, see donation trends, track your earned rewards, and stay updated on key platform metrics. The dashboard provides a centralized place to manage all your fundraising efforts efficiently.',
+        'Get a comprehensive view of your crowdfunding activities with the Bantu Hive dashboard. Easily monitor your campaign’s progress, see donation trends, track your earned withdrawals, and stay updated on key platform metrics. The dashboard provides a centralized place to manage all your fundraising efforts efficiently.',
     },
     {
       id: 2,
