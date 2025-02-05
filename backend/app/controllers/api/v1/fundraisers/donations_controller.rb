@@ -135,6 +135,8 @@ module Api
             ]
           )
 
+          Rails.logger.info "SPLIT RESPONSE: #{split_response.inspect}"
+
           if split_response["status"] != true
             return render json: { error: "Failed to create transaction split", details: split_response }, status: :unprocessable_entity
           end
