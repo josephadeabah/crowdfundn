@@ -135,7 +135,7 @@ module Api
               subaccounts: [
                 {
                   subaccount: "ACCT_muaiopo7byymwjz",
-                  share: 6  # 6% to main account
+                  share: 5  # 6% to main account
                 },
                 {
                   subaccount: subaccount_code,
