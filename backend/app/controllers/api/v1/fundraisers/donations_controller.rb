@@ -149,7 +149,7 @@ module Api
             amount: donation.amount,
             plan: donation.plan,
             metadata: metadata,
-            split_code: split_code
+            subaccount: subaccount_code
           )
         
           if response[:status] == true
