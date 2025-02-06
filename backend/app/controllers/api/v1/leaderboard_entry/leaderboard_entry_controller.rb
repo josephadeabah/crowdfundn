@@ -9,7 +9,7 @@ module Api
             leaderboard = ::LeaderboardEntry.includes(:user).order(points: :desc).limit(10)
             leaderboard_data = leaderboard.map do |entry|
               user_points = entry.user.total_points
-              level = BackerReward::LEVELS.select { |_, range| range.include?(user_points) }.keys.last.to_s.capitalize
+              level = BackerReward::LEVELS.find { |_, range| range.include?(user_points) }&.first
           
               {
                 id: entry.id,
@@ -23,7 +23,7 @@ module Api
                 currency: entry.user.currency,
                 country: entry.user.country,
                 bio: entry.user.profile.description,
-                level: level # Add the level
+                level: level.to_s.capitalize # Add the level
               }
             end
             render json: leaderboard_data, status: :ok
