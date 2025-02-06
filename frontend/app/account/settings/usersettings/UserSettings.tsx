@@ -118,17 +118,17 @@ const UserSettings = () => {
     <div className="mx-auto bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-50">
       <div className="mx-auto bg-white dark:bg-gray-700">
         <div className="px-4 py-5 sm:p-6">
-          <div className="font-semibold flex items-center">
+          <div className="font-semibold flex items-center gap-2">
             <FaInfoCircle
               data-tooltip-id="tooltip-user-account-setting"
-              data-tooltip-content="It may take sometime for your changes to reflect throughout the system when you make update to your account."
-              className="text-gray-400 text-sm cursor-pointer mr-2"
+              data-tooltip-content="It may take some time for your changes to reflect throughout the system when you update your account."
+              className="text-gray-400 text-lg cursor-pointer"
             />
             <Tooltip
               id="tooltip-user-account-setting"
               className="max-w-xs text-gray-600 dark:text-gray-400 text-sm p-2 rounded z-10"
             />
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 dark:text-white">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
               Account Settings
             </h2>
           </div>
