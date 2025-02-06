@@ -109,7 +109,7 @@ const LeaderboardBackersPage = () => {
                                       {backer.username}
                                     </h4>
                                     <span>
-                                      {getVerifiedBadge(backer.level)}
+                                      {getVerifiedBadge(backer.level, 20)}
                                     </span>
                                   </div>
                                   <p className="text-sm text-gray-500">
@@ -151,7 +151,7 @@ const LeaderboardBackersPage = () => {
                           <span className="text-gray-700">
                             {backer.username}
                           </span>
-                          <span>{getVerifiedBadge(backer.level, 20)}</span>
+                          <span>{getVerifiedBadge(backer.level, 18)}</span>
                         </div>
                       </td>
                       <td className="px-4 py-2 text-gray-700">
