@@ -145,7 +145,6 @@ module Api
             }
           )
           
-        
           if response[:status] == true
             donation.transaction_reference = response[:data][:reference]
             donation.subscription_code = donation.plan if donation.plan.present?
