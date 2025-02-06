@@ -4,21 +4,23 @@ class BackerReward < ApplicationRecord
   validates :description, presence: true
 
   LEVELS = {
-    bronze: 100..499,  # Changed to start from 100
-    silver: 500..999,  # Changed to start from 500
-    gold: 1000..1999,  # Adjusted range to follow the pattern
-    diamond: 2000..Float::INFINITY # Diamond starts from 2000
+    bronze: 100..499,
+    silver: 500..999,
+    gold: 1000..1999,
+    diamond: 2000..Float::INFINITY
   }.freeze
 
   def self.assign_reward(user)
     user_points = user.total_points
 
-    # Find the highest reward level the user qualifies for
-    reward_level = LEVELS.select { |_, range| range.include?(user_points) }.keys.last
-    return unless reward_level
+    # Find the highest reward level the user qualifies for, or nil if not in range
+    reward_level = LEVELS.find { |_, range| range.include?(user_points) }&.first
 
     # Remove any existing active reward the user may have
     user.backer_rewards.destroy_all
+
+    # If no reward level is found, do not create a reward
+    return unless reward_level
 
     # Create and assign the reward with points_required set to user's current points
     user.backer_rewards.create!(
