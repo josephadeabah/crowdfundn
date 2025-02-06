@@ -139,7 +139,7 @@ module Api
                 },
                 {
                   subaccount: subaccount_code,
-                  share: 0  # 0% to the fundraiser. They'll receive theirs on transfer
+                  share: 0  # 95% to the fundraiser. This will bear the paystack fees
                 }
               ]
             }
