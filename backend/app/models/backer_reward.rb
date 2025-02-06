@@ -4,10 +4,10 @@ class BackerReward < ApplicationRecord
   validates :description, presence: true
 
   LEVELS = {
-    bronze: 0..99,
-    silver: 100..499,
-    gold: 500..999,
-    diamond: 1000..Float::INFINITY
+    bronze: 100..499,  # Changed to start from 100
+    silver: 500..999,  # Changed to start from 500
+    gold: 1000..1999,  # Adjusted range to follow the pattern
+    diamond: 2000..Float::INFINITY # Diamond starts from 2000
   }.freeze
 
   def self.assign_reward(user)
