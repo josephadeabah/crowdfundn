@@ -62,6 +62,8 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     setPage(newPage);
   };
 
+  // Commenting out the location fetching logic
+  /*
   useEffect(() => {
     const fetchUserLocation = async () => {
       try {
@@ -82,13 +84,22 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       setIsLocationLoading(false);
     }
   }, [userAccountData]);
+  */
 
+  // Commenting out the filteredCampaigns logic
+  /*
   const filteredCampaigns = campaigns?.filter((campaign) => {
     return (
       campaign.location.toLowerCase() === userCountry?.toLowerCase() &&
       campaign.status !== 'completed' &&
       campaign.permissions.is_public
     );
+  });
+  */
+
+  // Temporarily display all campaigns
+  const displayedCampaigns = campaigns?.filter((campaign) => {
+    return campaign.status !== 'completed' && campaign.permissions.is_public;
   });
 
   const handleFavorite = async (campaignId: string) => {
@@ -127,11 +138,11 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         description={toast.description}
         type={toast.type}
       />
-      {filteredCampaigns.length === 0 ? (
+      {displayedCampaigns.length === 0 ? (
         <EmptyPage />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {filteredCampaigns.slice(0, 9).map((campaign, index) => {
+          {displayedCampaigns.slice(0, 9).map((campaign, index) => {
             const fundraiserCurrency =
               campaign?.currency_symbol || campaign?.currency?.toUpperCase();
 
@@ -195,7 +206,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       />
                     </div>
                     <div className="w-full text-xs text-gray-600 dark:text-gray-300 flex flex-col">
-                      <h3 className={`text-lg font-bold text-gray-700 dark:text-gray-100 mb-1 ${index === 0 ? '' : 'truncate'}`}>
+                      <h3
+                        className={`text-lg font-bold text-gray-700 dark:text-gray-100 mb-1 ${index === 0 ? '' : 'truncate'}`}
+                      >
                         {campaign?.title}
                       </h3>
                       <p className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
