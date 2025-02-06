@@ -160,9 +160,12 @@ const Leaderboard: React.FC = () => {
                           imageUrl={backer.profile_picture}
                         />
                         <div>
-                          <h4 className="font-semibold text-lg">
-                            {backer.name}
-                          </h4>
+                          <div className="flex items-center gap-1">
+                            <h4 className="font-semibold text-lg text-gray-800">
+                              {backer.name}
+                            </h4>
+                            <span>{getVerifiedBadge(backer.level, 20)}</span>
+                          </div>
                           <p className="text-sm text-gray-500">
                             {backer.country}
                           </p>

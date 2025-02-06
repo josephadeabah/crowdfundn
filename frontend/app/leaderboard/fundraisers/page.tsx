@@ -8,6 +8,7 @@ import {
 import { usePointRewardContext } from '@/app/context/pointreward/PointRewardContext';
 import TransferLoader from '@/app/loaders/TransferLoader ';
 import { deslugify } from '@/app/utils/helpers/categories';
+import { getVerifiedBadge } from '@/app/utils/helpers/get.level.trophy';
 import { getRankWithSuffix } from '@/app/utils/helpers/ranking.suffix';
 import React, { useEffect } from 'react';
 
@@ -86,9 +87,14 @@ const LeaderboardFundraisersPage = () => {
                                   imageUrl={fundraiser.profile_picture}
                                 />
                                 <div>
-                                  <h4 className="font-semibold text-lg text-gray-800">
-                                    {fundraiser.username}
-                                  </h4>
+                                  <div className="flex items-center gap-1">
+                                    <h4 className="font-semibold text-lg text-gray-800">
+                                      {fundraiser.username}
+                                    </h4>
+                                    <span>
+                                      {getVerifiedBadge(fundraiser.level, 20)}
+                                    </span>
+                                  </div>
                                   <p className="text-sm text-gray-500">
                                     {fundraiser.country || 'Unknown'}
                                   </p>

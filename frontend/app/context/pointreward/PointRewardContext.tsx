@@ -47,6 +47,7 @@ interface FundraiserLeaderboardEntry {
   category_interest: string;
   currency: string;
   bio: string;
+  level: string;
 }
 
 interface UserRankData extends LeaderboardEntry {
