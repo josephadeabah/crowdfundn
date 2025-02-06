@@ -118,21 +118,20 @@ const UserSettings = () => {
     <div className="mx-auto bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-50">
       <div className="mx-auto bg-white dark:bg-gray-700">
         <div className="px-4 py-5 sm:p-6">
-        <div className="font-semibold flex items-center justify-center">
-                    <FaInfoCircle
-                      data-tooltip-id="tooltip-user-account-setting"
-                      data-tooltip-content="It may take sometime for your changes to reflect throughout the system when you make update to your account."
-                      className="text-gray-400 text-sm cursor-pointer mr-2"
-                    />
-                    <Tooltip
-                      id="tooltip-user-account-setting"
-                      className="max-w-xs text-gray-600 dark:text-gray-400 text-sm p-2 rounded z-10"
-                    />
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6 dark:text-white">
-            Account Settings
-          </h2>
-                  </div>
-          
+          <div className="font-semibold flex items-center">
+            <FaInfoCircle
+              data-tooltip-id="tooltip-user-account-setting"
+              data-tooltip-content="It may take sometime for your changes to reflect throughout the system when you make update to your account."
+              className="text-gray-400 text-sm cursor-pointer mr-2"
+            />
+            <Tooltip
+              id="tooltip-user-account-setting"
+              className="max-w-xs text-gray-600 dark:text-gray-400 text-sm p-2 rounded z-10"
+            />
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 dark:text-white">
+              Account Settings
+            </h2>
+          </div>
           <div className="space-y-6 sm:space-y-5">
             {/* Profile Photo */}
             <motion.div
