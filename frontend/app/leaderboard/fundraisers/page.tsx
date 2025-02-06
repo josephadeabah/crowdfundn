@@ -6,7 +6,7 @@ import {
   PopoverTrigger,
 } from '@/app/components/popover/Popover';
 import { usePointRewardContext } from '@/app/context/pointreward/PointRewardContext';
-import TransferLoader from '@/app/loaders/TransferLoader ';
+import FundraiserLeaderboardLoader from '@/app/loaders/FundraiserLeaderboardLoader';
 import { deslugify } from '@/app/utils/helpers/categories';
 import { getVerifiedBadge } from '@/app/utils/helpers/get.level.trophy';
 import { getRankWithSuffix } from '@/app/utils/helpers/ranking.suffix';
@@ -35,7 +35,7 @@ const LeaderboardFundraisersPage = () => {
         </div>
         <div className="px-4 py-3 overflow-x-auto">
           {loading ? (
-            <TransferLoader />
+            <FundraiserLeaderboardLoader />
           ) : error ? (
             <p className="text-center text-red-500">{error}</p>
           ) : fundraiserLeaderboard.length === 0 ? (

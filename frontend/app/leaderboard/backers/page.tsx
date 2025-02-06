@@ -6,7 +6,7 @@ import {
   PopoverTrigger,
 } from '@/app/components/popover/Popover';
 import { usePointRewardContext } from '@/app/context/pointreward/PointRewardContext';
-import TransferLoader from '@/app/loaders/TransferLoader ';
+import BackerLeaderboardLoader from '@/app/loaders/BackerLeaderboardLoader';
 import { deslugify } from '@/app/utils/helpers/categories';
 import {
   getCupIcon,
@@ -49,7 +49,7 @@ const LeaderboardBackersPage = () => {
         </div>
         <div className="px-4 py-3">
           {loading ? (
-            <TransferLoader />
+            <BackerLeaderboardLoader />
           ) : error ? (
             <p className="text-center text-red-500">{error}</p>
           ) : leaderboard.length === 0 ? (
