@@ -14,6 +14,11 @@ export const getCupIcon = (level: string): JSX.Element => {
   } else if (level === 'Bronze') {
     return <BronzeCupIcon className="w-8 h-8" />;
   } else {
-    return <span className="w-8 h-8">😞 You can do better!</span>; // Sad emoji as a fallback
+    return (
+      <span className="flex items-center justify-center gap-1 text-gray-500 text-sm sm:text-base">
+        <span className="text-lg sm:text-xl">😞</span> 
+        <span className="hidden sm:inline">You can do better!</span>
+      </span>
+    );
   }
 };
