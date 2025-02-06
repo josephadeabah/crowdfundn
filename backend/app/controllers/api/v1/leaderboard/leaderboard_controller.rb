@@ -5,9 +5,7 @@ module Api
         
         def top_backers
           top_backers = User.joins(:donations)
-                            .select(
-                              'users.*, SUM(donations.amount) as total_amount'
-                            )
+                            .select('users.*, SUM(donations.amount) as total_amount')
                             .group('users.id')
                             .order('total_amount DESC')
                             .limit(7)
@@ -17,9 +15,7 @@ module Api
   
         def most_active_backers
           most_active_backers = User.joins(:donations)
-                                    .select(
-                                      'users.*, COUNT(donations.id) as total_contributions'
-                                    )
+                                    .select('users.*, COUNT(donations.id) as total_contributions')
                                     .group('users.id')
                                     .order('total_contributions DESC')
                                     .limit(6)
@@ -29,9 +25,7 @@ module Api
   
         def top_backers_with_rewards
           top_backers_with_rewards = User.joins(:donations)
-                                         .select(
-                                           'users.*, COUNT(donations.reward_id) as rewards'
-                                         )
+                                         .select('users.*, COUNT(donations.reward_id) as rewards')
                                          .group('users.id')
                                          .order('rewards DESC')
                                          .limit(5)
@@ -69,7 +63,8 @@ module Api
             profile_picture: user.profile.avatar_url, # Changed to avatar_url
             category_interest: user.category,
             country: user.country,
-            bio: user.profile.description
+            bio: user.profile.description,
+            level: calculate_level(user.total_points) # Add level to the backer
           }
         end
   
@@ -80,7 +75,8 @@ module Api
             profile_picture: user.profile.avatar_url, # Changed to avatar_url
             category_interest: user.category,
             country: user.country,
-            bio: user.profile.description
+            bio: user.profile.description,
+            level: calculate_level(user.total_points) # Add level to active backer
           }
         end
   
@@ -91,7 +87,8 @@ module Api
             profile_picture: user.profile.avatar_url, # Changed to avatar_url
             category_interest: user.category,
             country: user.country,
-            bio: user.profile.description
+            bio: user.profile.description,
+            level: calculate_level(user.total_points) # Add level to backer with rewards
           }
         end
   
@@ -102,8 +99,15 @@ module Api
             profile_picture: user.profile.avatar_url, # Changed to avatar_url
             category_interest: user.category,
             country: user.country,
-            bio: user.profile.description
+            bio: user.profile.description,
+            level: calculate_level(user.total_points) # Add level to fundraiser
           }
+        end
+  
+        # Helper method to calculate the level based on points, donations, or rewards
+        def calculate_level(points)
+          level = BackerReward::LEVELS.find { |_, range| range.include?(points) }&.first
+          level.to_s.capitalize if level
         end
       end
     end
