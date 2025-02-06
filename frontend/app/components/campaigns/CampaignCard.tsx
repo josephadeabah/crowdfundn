@@ -195,7 +195,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       />
                     </div>
                     <div className="w-full text-xs text-gray-600 dark:text-gray-300 flex flex-col">
-                      <h3 className="text-lg font-bold text-gray-700 dark:text-gray-100 truncate mb-1">
+                      <h3 className={`text-lg font-bold text-gray-700 dark:text-gray-100 mb-1 ${index === 0 ? '' : 'truncate'}`}>
                         {campaign?.title}
                       </h3>
                       <p className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
