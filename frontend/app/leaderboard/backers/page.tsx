@@ -147,7 +147,12 @@ const LeaderboardBackersPage = () => {
                             </div>
                           </PopoverContent>
                         </Popover>
-                        <span className="text-gray-700">{backer.username}</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-gray-700">
+                            {backer.username}
+                          </span>
+                          <span>{getVerifiedBadge(backer.level)}</span>
+                        </div>
                       </td>
                       <td className="px-4 py-2 text-gray-700">
                         {backer?.currency?.toUpperCase()}{' '}
