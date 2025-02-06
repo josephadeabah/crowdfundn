@@ -8,7 +8,10 @@ import {
 import { usePointRewardContext } from '@/app/context/pointreward/PointRewardContext';
 import TransferLoader from '@/app/loaders/TransferLoader ';
 import { deslugify } from '@/app/utils/helpers/categories';
-import { getCupIcon } from '@/app/utils/helpers/get.level.trophy';
+import {
+  getCupIcon,
+  getVerifiedBadge,
+} from '@/app/utils/helpers/get.level.trophy';
 import { getRankWithSuffix } from '@/app/utils/helpers/ranking.suffix';
 import React, { useEffect } from 'react';
 
@@ -101,9 +104,14 @@ const LeaderboardBackersPage = () => {
                                   imageUrl={backer.profile_picture}
                                 />
                                 <div>
-                                  <h4 className="font-semibold text-lg text-gray-800">
-                                    {backer.username}
-                                  </h4>
+                                  <div className="flex items-center gap-1">
+                                    <h4 className="font-semibold text-lg text-gray-800">
+                                      {backer.username}
+                                    </h4>
+                                    <span>
+                                      {getVerifiedBadge(backer.level)}
+                                    </span>
+                                  </div>
                                   <p className="text-sm text-gray-500">
                                     {backer.country || 'Unknown'}
                                   </p>
