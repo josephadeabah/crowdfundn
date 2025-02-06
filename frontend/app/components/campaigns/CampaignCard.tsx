@@ -126,7 +126,8 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     await unfavoriteCampaign(campaignId);
   };
 
-  if (loading || isLocationLoading) return <CampaignCardLoader />;
+  // if (loading || isLocationLoading) return <CampaignCardLoader />;
+  if (loading) return <CampaignCardLoader />;
   if (error) return <ErrorPage />;
 
   return (
