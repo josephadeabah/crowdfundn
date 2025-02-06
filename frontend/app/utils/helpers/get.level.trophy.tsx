@@ -24,7 +24,10 @@ export const getCupIcon = (level: string): JSX.Element => {
   }
 };
 
-export const getVerifiedBadge = (level: string, iconSize?: number): JSX.Element | null => {
+export const getVerifiedBadge = (
+  level: string,
+  iconSize?: number,
+): JSX.Element | null => {
   if (level === 'Diamond') {
     return <VerifiedBadgeIcon color="#00FF00" size={iconSize} />; // Green for Diamond
   } else if (level === 'Gold') {

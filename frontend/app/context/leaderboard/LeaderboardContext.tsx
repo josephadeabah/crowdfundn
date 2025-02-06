@@ -17,6 +17,7 @@ interface TopbackersData {
   score: number;
   country: string;
   bio: string;
+  level: string;
 }
 
 interface MostActiveBackersData {
@@ -26,6 +27,7 @@ interface MostActiveBackersData {
   profile_picture: string;
   country: string;
   bio: string;
+  level: string;
 }
 
 interface TopBackersWithRewardsData {
@@ -35,6 +37,7 @@ interface TopBackersWithRewardsData {
   profile_picture: string;
   country: string;
   bio: string;
+  level: string;
 }
 
 interface TopFundraisersGraphicsData {
@@ -44,6 +47,7 @@ interface TopFundraisersGraphicsData {
   profile_picture: string;
   country: string;
   bio: string;
+  level: string;
 }
 
 interface TopFundraisersStoriesData {
@@ -56,6 +60,7 @@ interface TopFundraisersStoriesData {
   profile_picture: string;
   country: string;
   bio: string;
+  level: string;
 }
 
 interface LeaderboardState {

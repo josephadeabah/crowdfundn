@@ -22,6 +22,7 @@ import { useLeaderboardContext } from '../context/leaderboard/LeaderboardContext
 import { deslugify } from '../utils/helpers/categories';
 import LeaderboardSkeletonLoader from '../loaders/LeaderboardSkeletonLoader';
 import { useUserContext } from '../context/users/UserContext';
+import { getVerifiedBadge } from '../utils/helpers/get.level.trophy';
 
 // SummaryCard Component
 const SummaryCard: React.FC = () => {
@@ -225,9 +226,12 @@ const Leaderboard: React.FC = () => {
                           imageUrl={backer.profile_picture}
                         />
                         <div>
-                          <h4 className="font-semibold text-lg">
-                            {backer.name}
-                          </h4>
+                          <div className="flex items-center gap-1">
+                            <h4 className="font-semibold text-lg text-gray-800">
+                              {backer.name}
+                            </h4>
+                            <span>{getVerifiedBadge(backer.level, 20)}</span>
+                          </div>
                           <p className="text-sm text-gray-500">
                             {backer.country}
                           </p>
@@ -296,9 +300,14 @@ const Leaderboard: React.FC = () => {
                                   imageUrl={backer.profile_picture}
                                 />
                                 <div>
-                                  <h4 className="font-semibold text-lg">
-                                    {backer.name}
-                                  </h4>
+                                  <div className="flex items-center gap-1">
+                                    <h4 className="font-semibold text-lg text-gray-800">
+                                      {backer.name}
+                                    </h4>
+                                    <span>
+                                      {getVerifiedBadge(backer.level, 20)}
+                                    </span>
+                                  </div>
                                   <p className="text-sm text-gray-500">
                                     {backer.country}
                                   </p>
@@ -379,9 +388,14 @@ const Leaderboard: React.FC = () => {
                           imageUrl={fundraiser.profile_picture}
                         />
                         <div>
-                          <h4 className="font-semibold text-lg">
-                            {fundraiser.name}
-                          </h4>
+                          <div className="flex items-center gap-1">
+                            <h4 className="font-semibold text-lg text-gray-800">
+                              {fundraiser.name}
+                            </h4>
+                            <span>
+                              {getVerifiedBadge(fundraiser.level, 20)}
+                            </span>
+                          </div>
                           <p className="text-sm text-gray-500">
                             {fundraiser.country}
                           </p>
@@ -448,9 +462,14 @@ const Leaderboard: React.FC = () => {
                           imageUrl={fundraiser.profile_picture}
                         />
                         <div>
-                          <h4 className="font-semibold text-lg">
-                            {fundraiser.name}
-                          </h4>
+                          <div className="flex items-center gap-1">
+                            <h4 className="font-semibold text-lg text-gray-800">
+                              {fundraiser.name}
+                            </h4>
+                            <span>
+                              {getVerifiedBadge(fundraiser.level, 20)}
+                            </span>
+                          </div>
                           <p className="text-sm text-gray-500">
                             {fundraiser.country}
                           </p>
