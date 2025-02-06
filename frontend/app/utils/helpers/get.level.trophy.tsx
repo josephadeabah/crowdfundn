@@ -26,13 +26,13 @@ export const getCupIcon = (level: string): JSX.Element => {
 
 export const getVerifiedBadge = (level: string): JSX.Element | null => {
   if (level === 'Diamond') {
-    return <VerifiedBadgeIcon className="w-6 h-6 text-blue-500" />;
+    return <VerifiedBadgeIcon color="#00FF00" size={32} />; // Green for Diamond
   } else if (level === 'Gold') {
-    return <VerifiedBadgeIcon className="w-6 h-6 text-yellow-500" />;
+    return <VerifiedBadgeIcon color="#FFD700" size={32} />; // Gold for Gold
   } else if (level === 'Silver') {
-    return <VerifiedBadgeIcon className="w-6 h-6 text-gray-500" />;
+    return <VerifiedBadgeIcon color="#C0C0C0" size={32} />; // Silver for Silver
   } else if (level === 'Bronze') {
-    return <VerifiedBadgeIcon className="w-6 h-6 text-orange-500" />;
+    return <VerifiedBadgeIcon color="#CD7F32" size={32} />; // Bronze for Bronze
   } else {
     return null; // Don't show anything if no level is provided
   }
