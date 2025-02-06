@@ -130,16 +130,16 @@ module Api
             plan: donation.plan,
             metadata: metadata,
             split: {
-              type: "percentage",  # Specify flat type
+              type: "percentage", 
               bearer_type: "account",
               subaccounts: [
                 {
                   subaccount: "ACCT_muaiopo7byymwjz",
-                  share: 5  # 6% to main account
+                  share: 5  # 5% to our company account
                 },
                 {
                   subaccount: subaccount_code,
-                  share: 0  # Flat fee of 4000 to the fundraiser
+                  share: 0  # 0% to the fundraiser. They'll receive theirs on transfer
                 }
               ]
             }
