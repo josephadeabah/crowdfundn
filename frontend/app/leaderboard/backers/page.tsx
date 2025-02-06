@@ -149,7 +149,7 @@ const LeaderboardBackersPage = () => {
                       <td className="px-4 py-2 text-gray-700">
                         {backer.score || 'N/A'}
                       </td>
-                      <td className="px-4 py-2 text-gray-700 flex items-center">
+                      <td className="px-4 py-2 text-gray-700 flex items-center gap-2">
                         {getCupIcon(backer.level)}
                       </td>
                     </tr>
