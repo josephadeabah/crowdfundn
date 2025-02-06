@@ -167,7 +167,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       className="absolute top-0 left-0 w-full h-full"
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                      <h3 className={`text-lg font-bold text-white mb-1 ${index === 0 ? '' : 'truncate'}`}>
+                      <h3 className="text-lg font-bold text-white truncate mb-1">
                         {campaign?.title}
                       </h3>
                       <div className="text-sm text-orange-400 truncate mb-1">
