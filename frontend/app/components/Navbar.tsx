@@ -188,6 +188,11 @@ const Navbar = () => {
                 {!user && (
                   <>
                     <li>
+                      <Link href="/cofund" className="block">
+                        Co-Fund
+                      </Link>
+                    </li>
+                    <li>
                       <Link href="/auth/register" className="block">
                         Start Project
                       </Link>
@@ -270,6 +275,18 @@ const Navbar = () => {
           <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
             {!user ? (
               <>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="py-1 px-4 bg-white dark:bg-gray-900 dark:text-gray-50 rounded-full focus-visible:outline-none focus:ring-0 hover:outline-none hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300"
+                >
+                  <Link
+                    href="/cofund"
+                    className="text-gray-700 text-sm dark:text-gray-50"
+                  >
+                    Co-Fund
+                  </Link>
+                </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
