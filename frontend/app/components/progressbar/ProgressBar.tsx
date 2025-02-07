@@ -3,26 +3,21 @@ import { Tooltip } from 'react-tooltip';
 
 interface ProgressBarProps {
   firstProgress: number;
-  secondProgress?: number;
-  thirdProgress?: number;
   firstTooltipContent: string;
-  secondTooltipContent?: string;
-  thirdTooltipContent?: string;
-  className?: string; // New prop for custom height and styles
+  className?: string;
 }
 
 const Progress: React.FC<ProgressBarProps> = ({
   firstProgress,
-  secondProgress,
-  thirdProgress,
   firstTooltipContent,
-  secondTooltipContent,
-  thirdTooltipContent,
-  className = 'h-2', // Default className for height
+  className = 'h-2',
 }) => {
+  const baseProgress = Math.min(firstProgress, 100);
+  const overflowProgress = firstProgress > 100 ? firstProgress - 100 : 0;
+
   return (
     <div className="w-full">
-      {/* Progress labels */}
+      {/* Progress label */}
       <div className="text-md flex items-center justify-between font-bold">
         <span
           className="text-green-600"
@@ -31,50 +26,34 @@ const Progress: React.FC<ProgressBarProps> = ({
         >
           {`${Math.round(firstProgress)}%`}
         </span>
-        <span
-          className="text-yellow-500"
-          data-tooltip-id="manager-tooltip"
-          data-tooltip-content={secondTooltipContent}
-        >
-          {secondProgress && `${Math.round(Number(secondProgress))}%`}
-        </span>
-        <span
-          className="text-green-600"
-          data-tooltip-id="employee-tooltip"
-          data-tooltip-content={thirdTooltipContent}
-        >
-          {thirdProgress && `${Math.round(Number(thirdProgress))}%`}
-        </span>
       </div>
 
       {/* Combined Progress bar */}
       <div
-        className={`flex ${className} w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700`}
+        className={`relative ${className} w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700`}
       >
+        {/* Base progress (Green) */}
         <div
           className="h-full bg-green-600"
-          style={{ width: `${firstProgress}%` }}
+          style={{ width: `${baseProgress}%` }}
           data-tooltip-id="performance-tooltip"
           data-tooltip-content={firstTooltipContent}
         ></div>
-        <div
-          className="h-full bg-yellow-100"
-          style={{ width: `${secondProgress}%` }}
-          data-tooltip-id="manager-tooltip"
-          data-tooltip-content={secondTooltipContent}
-        ></div>
-        <div
-          className="h-full bg-green-400"
-          style={{ width: `${thirdProgress}%` }}
-          data-tooltip-id="employee-tooltip"
-          data-tooltip-content={thirdTooltipContent}
-        ></div>
+
+        {/* Overflow progress (Yellow) */}
+        {overflowProgress > 0 && (
+          <div
+            className="absolute top-0 left-0 h-full bg-yellow-500 opacity-80"
+            style={{ width: `${overflowProgress}%` }}
+            data-tooltip-id="overflow-tooltip"
+            data-tooltip-content={`Overflow: ${Math.round(overflowProgress)}%`}
+          ></div>
+        )}
       </div>
 
       {/* Tooltip instances */}
       <Tooltip id="performance-tooltip" />
-      <Tooltip id="manager-tooltip" />
-      <Tooltip id="employee-tooltip" />
+      <Tooltip id="overflow-tooltip" />
     </div>
   );
 };
