@@ -17,7 +17,8 @@ const CoFundPage: React.FC = () => {
         <div className="mt-8 space-y-8">
           <div className="p-6 bg-white shadow rounded-lg">
             <h3 className="text-xl font-semibold text-red-600">
-              Problem - [By the demands of some of our users]
+              Problem –{' '}
+              <span className="font-normal text-gray-800">Raised by some of our users</span>
             </h3>
             <p className="mt-2 text-gray-700">
               Africans in the diaspora and home are excluded from high-value
