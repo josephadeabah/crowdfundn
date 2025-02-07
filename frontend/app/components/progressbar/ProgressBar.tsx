@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tooltip } from 'react-tooltip';
 
 interface ProgressBarProps {
@@ -8,7 +8,7 @@ interface ProgressBarProps {
   firstTooltipContent: string;
   secondTooltipContent?: string;
   thirdTooltipContent?: string;
-  className?: string; // New prop for custom height and styles
+  className?: string;
 }
 
 const Progress: React.FC<ProgressBarProps> = ({
@@ -18,39 +18,28 @@ const Progress: React.FC<ProgressBarProps> = ({
   firstTooltipContent,
   secondTooltipContent,
   thirdTooltipContent,
-  className = 'h-2', // Default className for height
+  className = 'h-2',
 }) => {
-  const [progress, setProgress] = useState(firstProgress);
-  const [color, setColor] = useState('bg-green-600');
+  const [showOverlay, setShowOverlay] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prevProgress) => {
-        if (prevProgress >= 100) {
-          setColor((prevColor) => 
-            prevColor === 'bg-green-600' ? 'bg-blue-600' : 
-            prevColor === 'bg-blue-600' ? 'bg-red-600' : 
-            'bg-green-600'
-          );
-          return 0;
-        }
-        return prevProgress + 1;
-      });
-    }, 50); // Adjust the interval for smoother or faster progression
-
-    return () => clearInterval(interval);
-  }, []);
+    if (firstProgress >= 100) {
+      setShowOverlay(true);
+    } else {
+      setShowOverlay(false);
+    }
+  }, [firstProgress]);
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
       {/* Progress labels */}
-      <div className="text-md flex items-center justify-between font-bold">
+      <div className="text-base flex items-center justify-between font-bold">
         <span
           className="text-green-600"
           data-tooltip-id="performance-tooltip"
           data-tooltip-content={firstTooltipContent}
         >
-          {`${Math.round(progress)}%`}
+          {`${Math.round(firstProgress)}%`}
         </span>
         <span
           className="text-yellow-500"
@@ -70,32 +59,47 @@ const Progress: React.FC<ProgressBarProps> = ({
 
       {/* Combined Progress bar */}
       <div
-        className={`flex ${className} w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700`}
+        className={`relative flex ${className} w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700`}
       >
         <div
-          className={`h-full ${color}`}
-          style={{ width: `${progress}%` }}
+          className="h-full bg-green-600 transition-all duration-300"
+          style={{ width: `${firstProgress}%` }}
           data-tooltip-id="performance-tooltip"
           data-tooltip-content={firstTooltipContent}
         ></div>
         <div
-          className="h-full bg-yellow-100"
+          className="h-full bg-yellow-100 transition-all duration-300"
           style={{ width: `${secondProgress}%` }}
           data-tooltip-id="manager-tooltip"
           data-tooltip-content={secondTooltipContent}
         ></div>
         <div
-          className="h-full bg-green-400"
+          className="h-full bg-green-400 transition-all duration-300"
           style={{ width: `${thirdProgress}%` }}
           data-tooltip-id="employee-tooltip"
           data-tooltip-content={thirdTooltipContent}
         ></div>
+
+        {/* Overlay that animates when firstProgress is 100% */}
+        {showOverlay && (
+          <div className="absolute top-0 left-0 h-full w-full animate-[progress-glow_2s_linear_infinite] rounded-full"></div>
+        )}
       </div>
 
       {/* Tooltip instances */}
       <Tooltip id="performance-tooltip" />
       <Tooltip id="manager-tooltip" />
       <Tooltip id="employee-tooltip" />
+
+      {/* Custom CSS for color cycling animation */}
+      <style>
+        {`
+          @keyframes progress-glow {
+            0% { background-color: rgba(255, 0, 0, 0.3); width: 1%; }
+            100% { background-color: rgba(0, 255, 0, 0.3); width: 100%; }
+          }
+        `}
+      </style>
     </div>
   );
 };
