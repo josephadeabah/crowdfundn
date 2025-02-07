@@ -4,34 +4,41 @@ import { Tooltip } from 'react-tooltip';
 interface ProgressBarProps {
   firstProgress: number;
   firstTooltipContent: string;
-  className?: string;
   overflowColors?: string[];
+  className?: string;
 }
 
 const Progress: React.FC<ProgressBarProps> = ({
   firstProgress,
   firstTooltipContent,
-  className = 'h-2',
   overflowColors = ['#FACC15', '#FF8800', '#DC2626'], // Yellow, Orange, Red
+  className = 'h-2',
 }) => {
-  let remainingValue = firstProgress;
-  const progressSegments: { color: string; progress: number; tooltipId: string }[] = [];
+  const baseProgress = Math.min(firstProgress, 100);
+  let remainingValue = firstProgress > 100 ? firstProgress - 100 : 0;
 
-  // Base progress (Max 100%)
-  const baseProgress = Math.min(remainingValue, 100);
-  progressSegments.push({ color: 'green', progress: baseProgress, tooltipId: 'base-progress-tooltip' });
-  remainingValue -= baseProgress;
-
-  // Overflow layers
+  const overflowSegments: {
+    color: string;
+    progress: number;
+    tooltipId: string;
+  }[] = [];
   let overflowIndex = 0;
+
   while (remainingValue > 0) {
     const overflowProgress = Math.min(remainingValue, 100);
     const overflowColor = overflowColors[overflowIndex] || '#000000';
     const tooltipId = `overflow-tooltip-${overflowIndex}`;
-    progressSegments.push({ color: overflowColor, progress: overflowProgress, tooltipId });
+
+    overflowSegments.push({
+      color: overflowColor,
+      progress: overflowProgress,
+      tooltipId,
+    });
     remainingValue -= overflowProgress;
     overflowIndex++;
   }
+
+  const displayProgress = firstProgress > 100 ? 100 : firstProgress; // Cap displayed value at 100%
 
   return (
     <div className="w-full">
@@ -39,32 +46,44 @@ const Progress: React.FC<ProgressBarProps> = ({
       <div className="text-md flex items-center justify-between font-bold">
         <span
           className="text-green-600"
-          data-tooltip-id="performance-tooltip"
+          data-tooltip-id="progress-tooltip"
           data-tooltip-content={firstTooltipContent}
         >
-          {`${Math.min(firstProgress, 100)}%`}
+          {`${Math.round(displayProgress)}%`}
         </span>
       </div>
 
       {/* Combined Progress bar */}
-      <div className={`relative ${className} w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700`}>
-        {progressSegments.map((segment, index) => (
+      <div
+        className={`relative ${className} w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700`}
+      >
+        {/* Base progress (Green) */}
+        <div
+          className="h-full bg-green-600"
+          style={{ width: `${baseProgress}%` }}
+          data-tooltip-id="progress-tooltip"
+          data-tooltip-content={firstTooltipContent}
+        ></div>
+
+        {/* Overflow progress segments */}
+        {overflowSegments.map((segment, index) => (
           <div
             key={index}
-            className="h-full inline-block"
+            className="absolute top-0 left-0 h-full opacity-80"
             style={{
               width: `${segment.progress}%`,
               backgroundColor: segment.color,
+              left: `${baseProgress}%`,
             }}
             data-tooltip-id={segment.tooltipId}
-            data-tooltip-content={index === 0 ? `${segment.progress}%` : `Overflow ${index}: ${segment.progress}%`}
-          />
+            data-tooltip-content={`Overflow ${index + 1}: ${segment.progress}%`}
+          ></div>
         ))}
       </div>
 
       {/* Tooltips */}
-      <Tooltip id="performance-tooltip" />
-      {progressSegments.map((segment) => (
+      <Tooltip id="progress-tooltip" />
+      {overflowSegments.map((segment) => (
         <Tooltip key={segment.tooltipId} id={segment.tooltipId} />
       ))}
     </div>
