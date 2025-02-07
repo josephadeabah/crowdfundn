@@ -28,7 +28,7 @@ const CoFundPage: React.FC = () => {
           <div className="p-6 bg-white shadow rounded-lg">
             <h3 className="text-xl font-semibold text-green-600">Solution</h3>
             <p className="mt-2 text-gray-700">
-              We're integrating this as part of Bantu Hive's Crowdfunding model
+              We'll soon roll this out as part of Bantu Hive's Crowdfunding model
               to connects diaspora and home investors with vetted, scalable SME
               business opportunities in Africa through co-investment syndicates,
               blockchain-based investment tracking, and structured wealth
