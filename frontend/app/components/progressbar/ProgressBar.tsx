@@ -16,7 +16,11 @@ const Progress: React.FC<ProgressBarProps> = ({
   const baseProgress = Math.min(firstProgress, 100);
   let remainingValue = firstProgress > 100 ? firstProgress - 100 : 0;
 
-  const overflowSegments: { color: string; progress: number; tooltipId: string }[] = [];
+  const overflowSegments: {
+    color: string;
+    progress: number;
+    tooltipId: string;
+  }[] = [];
   let overflowIndex = 1;
 
   while (remainingValue > 0) {
