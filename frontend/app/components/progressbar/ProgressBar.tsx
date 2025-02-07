@@ -5,7 +5,7 @@ interface ProgressBarProps {
   firstProgress: number;
   firstTooltipContent: string;
   className?: string;
-  overflowColors?: string[]; // Colors for overflow layers
+  overflowColors?: string[];
 }
 
 const Progress: React.FC<ProgressBarProps> = ({
@@ -14,20 +14,33 @@ const Progress: React.FC<ProgressBarProps> = ({
   className = 'h-2',
   overflowColors = ['#FACC15', '#FF8800', '#DC2626'], // Yellow, Orange, Red
 }) => {
-  let remainingValue: number = firstProgress;
-  const progressSegments: { color: string; progress: number }[] = [];
+  let remainingValue = firstProgress;
+  const progressSegments: {
+    color: string;
+    progress: number;
+    tooltipId: string;
+  }[] = [];
 
   // Base progress (Max 100%)
-  const baseProgress: number = Math.min(remainingValue, 100);
-  progressSegments.push({ color: 'green', progress: baseProgress });
+  const baseProgress = Math.min(remainingValue, 100);
+  progressSegments.push({
+    color: 'green',
+    progress: baseProgress,
+    tooltipId: 'base-progress-tooltip',
+  });
   remainingValue -= baseProgress;
 
   // Overflow layers
   let overflowIndex = 0;
   while (remainingValue > 0) {
-    const overflowProgress: number = Math.min(remainingValue, 100);
-    const overflowColor: string = overflowColors[overflowIndex] || '#000000'; // Default to black if no more colors
-    progressSegments.push({ color: overflowColor, progress: overflowProgress });
+    const overflowProgress = Math.min(remainingValue, 100);
+    const overflowColor = overflowColors[overflowIndex] || '#000000';
+    const tooltipId = `overflow-tooltip-${overflowIndex}`;
+    progressSegments.push({
+      color: overflowColor,
+      progress: overflowProgress,
+      tooltipId,
+    });
     remainingValue -= overflowProgress;
     overflowIndex++;
   }
@@ -46,26 +59,39 @@ const Progress: React.FC<ProgressBarProps> = ({
       </div>
 
       {/* Combined Progress bar */}
-      <div className={`relative ${className} w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700`}>
-        {progressSegments.reduce<JSX.Element[]>((prevElements, segment, index) => {
-          const prevWidth = prevElements.reduce((sum, el) => sum + (el.props.style?.width ? parseFloat(el.props.style.width) : 0), 0);
-          const width = `${segment.progress}%`;
+      <div
+        className={`relative ${className} w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700`}
+      >
+        {progressSegments.map((segment, index) => {
+          const prevWidth = progressSegments
+            .slice(0, index)
+            .reduce((sum, seg) => sum + seg.progress, 0);
 
-          return [
-            ...prevElements,
+          return (
             <div
               key={index}
               className="absolute top-0 left-0 h-full opacity-80"
-              style={{ width, backgroundColor: segment.color, left: `${prevWidth}%` }}
-              data-tooltip-id={`progress-tooltip-${index}`}
+              style={{
+                width: `${segment.progress}%`,
+                backgroundColor: segment.color,
+                left: `${prevWidth}%`,
+              }}
+              data-tooltip-id={segment.tooltipId}
               data-tooltip-content={
-                index === 0 ? `${segment.progress}%` : `Overflow ${index}: ${segment.progress}%`
+                index === 0
+                  ? `${segment.progress}%`
+                  : `Overflow ${index}: ${segment.progress}%`
               }
-            ></div>,
-            <Tooltip key={`tooltip-${index}`} id={`progress-tooltip-${index}`} />,
-          ];
-        }, [])}
+            />
+          );
+        })}
       </div>
+
+      {/* Tooltips */}
+      <Tooltip id="performance-tooltip" />
+      {progressSegments.map((segment) => (
+        <Tooltip key={segment.tooltipId} id={segment.tooltipId} />
+      ))}
     </div>
   );
 };
