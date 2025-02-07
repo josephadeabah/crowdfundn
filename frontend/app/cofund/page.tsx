@@ -29,7 +29,7 @@ const CoFundPage: React.FC = () => {
             <h3 className="text-xl font-semibold text-green-600">Solution</h3>
             <p className="mt-2 text-gray-700">
               We're integrating this as part of Bantu Hive's Crowdfunding model to
-              connects diaspora and home investors with vetted, business
+              connects diaspora and home investors with vetted, scalable SME business
               opportunities in Africa through co-investment syndicates,
               blockchain-based investment tracking, and structured wealth
               creation vehicles to ensure transparency, risk mitigation, and
