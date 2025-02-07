@@ -43,7 +43,7 @@ const Progress: React.FC<ProgressBarProps> = ({
         {/* Overflow progress (Yellow) */}
         {overflowProgress > 0 && (
           <div
-            className="absolute top-0 left-0 h-full bg-yellow-500 opacity-80"
+            className="absolute top-0 left-0 h-full bg-orange-400 opacity-80"
             style={{ width: `${overflowProgress}%` }}
             data-tooltip-id="overflow-tooltip"
             data-tooltip-content={`Overflow: ${overflowProgress}%`}
