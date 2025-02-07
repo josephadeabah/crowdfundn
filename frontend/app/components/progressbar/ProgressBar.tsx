@@ -14,6 +14,7 @@ const Progress: React.FC<ProgressBarProps> = ({
 }) => {
   const baseProgress = Math.min(firstProgress, 100);
   const overflowProgress = firstProgress > 100 ? firstProgress - 100 : 0;
+  const displayProgress = firstProgress > 100 ? 100 : firstProgress; // Cap displayed value at 100%
 
   return (
     <div className="w-full">
@@ -24,7 +25,7 @@ const Progress: React.FC<ProgressBarProps> = ({
           data-tooltip-id="performance-tooltip"
           data-tooltip-content={firstTooltipContent}
         >
-          {`${Math.round(firstProgress)}%`}
+          {`${Math.round(displayProgress)}%`}
         </span>
       </div>
 
