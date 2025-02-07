@@ -23,7 +23,7 @@ const Progress: React.FC<ProgressBarProps> = ({
   const [showOverlay, setShowOverlay] = useState(false);
 
   useEffect(() => {
-    if (firstProgress >= 100) {
+    if (firstProgress >= 80) {
       setShowOverlay(true);
     } else {
       setShowOverlay(false);
@@ -96,7 +96,7 @@ const Progress: React.FC<ProgressBarProps> = ({
         {`
           @keyframes progress-glow {
             0% { background-color: rgba(255, 0, 0, 0.3); width: 1%; }
-            100% { background-color: rgba(0, 255, 0, 0.3); width: 100%; }
+            80% { background-color: rgba(0, 255, 0, 0.3); width: 80%; }
           }
         `}
       </style>
