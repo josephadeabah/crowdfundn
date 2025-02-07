@@ -53,7 +53,7 @@ const CoFundPage: React.FC = () => {
             <div className="p-6 border rounded-lg shadow">
               <h3 className="text-xl font-medium">2. Co-Invest</h3>
               <p className="mt-2 text-gray-600">
-                Join other investors in funding a promising business.
+                Join other individual investors in funding a promising business.
               </p>
             </div>
             <div className="p-6 border rounded-lg shadow">
