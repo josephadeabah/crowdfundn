@@ -255,10 +255,10 @@ const SingleCampaignPage: React.FC = () => {
               <div className="flex justify-center sm:justify-end">
                 <ProgressRing
                   value={Math.round(
-                        (Number(currentCampaign?.transferred_amount || 0) /
-                          Number(currentCampaign?.goal_amount || 1)) *
-                          100,
-                      )}
+                    (Number(currentCampaign?.transferred_amount || 0) /
+                      Number(currentCampaign?.goal_amount || 1)) *
+                      100,
+                  )}
                   size={120}
                   strokeWidth={10}
                   color="#22c55e"
