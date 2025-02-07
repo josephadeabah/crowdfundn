@@ -290,10 +290,7 @@ const RewardsPage: React.FC = () => {
                     Percentage Progress
                   </p>
                   <ProgressRing
-                    value={Math.min(
-                      100,
-                      Math.max(0, Math.round(userPoints.total_points)),
-                    )}
+                    value={Math.round(userPoints.total_points)}
                     size={80}
                     strokeWidth={7}
                     color="#22c55e"
