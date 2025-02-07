@@ -33,7 +33,7 @@ const Progress: React.FC<ProgressBarProps> = ({
   return (
     <div className="w-full relative">
       {/* Progress labels */}
-      <div className="text-md flex items-center justify-between font-bold">
+      <div className="text-base flex items-center justify-between font-bold">
         <span
           className="text-green-600"
           data-tooltip-id="performance-tooltip"
