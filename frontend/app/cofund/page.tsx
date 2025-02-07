@@ -40,7 +40,7 @@ const CoFundPage: React.FC = () => {
       </section>
 
       {/* Why Join Section */}
-      <section className="bg-gray-100 py-16 px-6 shadow rounded-lg">
+      <section className="bg-gray-100 py-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-semibold">
             Why Should You Care About Co-fund?
