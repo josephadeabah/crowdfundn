@@ -1,27 +1,32 @@
 import React from 'react';
-import Slider from 'react-slick'; // Import react-slick
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from '../components/carousel/Carousel';
+import Autoplay from 'embla-carousel-autoplay';
 import { Card, CardContent } from '../components/card/Card';
 import Image from 'next/image';
 import data from '../../data.json';
 import { handleContextMenu } from '../utils/helpers/base64.image';
 
-const CarouselPlugin = () => {
-  const settings = {
-    dots: true, // Show dots for navigation
-    infinite: true, // Infinite scrolling
-    speed: 500, // Speed of slide transition
-    slidesToShow: 1, // Number of slides to show at once
-    slidesToScroll: 1, // Number of slides to scroll at once
-    autoplay: true, // Enable autoplay
-    autoplaySpeed: 4000, // Autoplay delay in ms
-    pauseOnHover: true, // Pause autoplay when hovering
-  };
+export function CarouselPlugin() {
+  const plugin = React.useRef(
+    Autoplay({ delay: 4000, stopOnInteraction: true }),
+  );
 
   return (
-    <div className="w-full max-w-screen-xl mx-auto px-4">
-      <Slider {...settings}>
+    <Carousel
+      plugins={[plugin.current]}
+      className="w-full max-w-screen-xl dark:bg-gray-950"
+      onMouseEnter={plugin.current.stop}
+      onMouseLeave={plugin.current.reset}
+    >
+      <CarouselContent>
         {data.recommendedFundraisers.map((fundraiser) => (
-          <div key={fundraiser.id}>
+          <CarouselItem key={fundraiser.id}>
             <Card className="w-full rounded-none shadow-none border-0">
               <CardContent className="w-full p-0 flex aspect-square items-center justify-center h-full">
                 <Image
@@ -30,8 +35,9 @@ const CarouselPlugin = () => {
                   sizes="100vw"
                   style={{
                     width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
+                    height: '100%', // Set height to 100% to fill the container
+                    objectFit: 'contain', // This ensures the image maintains its aspect ratio
+                    // borderRadius: '100%'
                   }}
                   width={500}
                   height={300}
@@ -39,11 +45,11 @@ const CarouselPlugin = () => {
                 />
               </CardContent>
             </Card>
-          </div>
+          </CarouselItem>
         ))}
-      </Slider>
-    </div>
+      </CarouselContent>
+      <CarouselPrevious className="left-4 text-white" />
+      <CarouselNext className="right-4 text-white" />
+    </Carousel>
   );
-};
-
-export default CarouselPlugin;
+}

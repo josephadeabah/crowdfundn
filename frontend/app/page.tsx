@@ -4,6 +4,7 @@ import { FiUsers, FiBarChart, FiAward } from 'react-icons/fi';
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 
+import { CarouselPlugin } from './molecules/CarouselPlugin';
 import DownloadApp from './molecules/DownloadApp';
 import ChatbotComponent from './chatbot/ChatbotComponent';
 import { FaHandHoldingUsd } from 'react-icons/fa';
@@ -12,7 +13,6 @@ import CampaignCard from './components/campaigns/CampaignCard';
 import { useCampaignContext } from './context/account/campaign/CampaignsContext';
 import SummaryCardComponent from './molecules/SummaryCard';
 import BHScreenKnowHow from './molecules/BHScreenKnowHow';
-import CarouselPlugin from './molecules/CarouselPlugin';
 
 const HomePage = () => {
   const wordRef = React.useRef<HTMLDivElement | null>(null);
