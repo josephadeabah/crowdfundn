@@ -489,7 +489,7 @@ const CampaignsPage = () => {
       <div className="w-full">
         {pagination?.totalPages > 1 && (
           <Pagination
-            currentPage={pagination?.currentPage || page}
+            currentPage={pagination?.currentPage}
             totalPages={pagination?.totalPages}
             onPageChange={handlePageChange}
           />
