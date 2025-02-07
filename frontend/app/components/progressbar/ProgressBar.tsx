@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Tooltip } from 'react-tooltip';
 
 interface ProgressBarProps {
@@ -20,27 +20,6 @@ const Progress: React.FC<ProgressBarProps> = ({
   thirdTooltipContent,
   className = 'h-2', // Default className for height
 }) => {
-  const [progress, setProgress] = useState(firstProgress);
-  const [color, setColor] = useState('bg-green-600');
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prevProgress) => {
-        if (prevProgress >= 100) {
-          setColor((prevColor) => 
-            prevColor === 'bg-green-600' ? 'bg-blue-600' : 
-            prevColor === 'bg-blue-600' ? 'bg-red-600' : 
-            'bg-green-600'
-          );
-          return 0;
-        }
-        return prevProgress + 1;
-      });
-    }, 50); // Adjust the interval for smoother or faster progression
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div className="w-full">
       {/* Progress labels */}
@@ -50,7 +29,7 @@ const Progress: React.FC<ProgressBarProps> = ({
           data-tooltip-id="performance-tooltip"
           data-tooltip-content={firstTooltipContent}
         >
-          {`${Math.round(progress)}%`}
+          {`${Math.round(firstProgress)}%`}
         </span>
         <span
           className="text-yellow-500"
@@ -73,8 +52,8 @@ const Progress: React.FC<ProgressBarProps> = ({
         className={`flex ${className} w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700`}
       >
         <div
-          className={`h-full ${color}`}
-          style={{ width: `${progress}%` }}
+          className="h-full bg-green-600"
+          style={{ width: `${firstProgress}%` }}
           data-tooltip-id="performance-tooltip"
           data-tooltip-content={firstTooltipContent}
         ></div>
