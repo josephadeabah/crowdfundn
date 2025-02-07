@@ -14,15 +14,15 @@ import { handleContextMenu } from '../utils/helpers/base64.image';
 
 export function CarouselPlugin() {
   const plugin = React.useRef(
-    Autoplay({ delay: 4000 }),
+    Autoplay({ delay: 4000, stopOnInteraction: false }),
   );
 
   return (
     <Carousel
       plugins={[plugin.current]}
       className="w-full max-w-screen-xl dark:bg-gray-950"
-      onMouseEnter={plugin.current.stop}
-      onMouseLeave={plugin.current.reset}
+      onMouseEnter={() => plugin.current.stop()}
+      onMouseLeave={() => plugin.current.play()}
     >
       <CarouselContent>
         {data.recommendedFundraisers.map((fundraiser) => (
