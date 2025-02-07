@@ -14,7 +14,7 @@ import { handleContextMenu } from '../utils/helpers/base64.image';
 
 export function CarouselPlugin() {
   const plugin = React.useRef(
-    Autoplay({ delay: 4000, stopOnInteraction: true }),
+    Autoplay({ delay: 4000 }),
   );
 
   return (
