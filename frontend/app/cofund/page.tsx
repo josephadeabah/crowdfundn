@@ -28,14 +28,27 @@ const CoFundPage: React.FC = () => {
           <div className="p-6 bg-white shadow rounded-lg">
             <h3 className="text-xl font-semibold text-green-600">Solution</h3>
             <p className="mt-2 text-gray-700">
-              We're integrating this as part of Bantu Hive's Crowdfunding model to
-              connects diaspora and home investors with vetted, scalable SME business
-              opportunities in Africa through co-investment syndicates,
+              We're integrating this as part of Bantu Hive's Crowdfunding model
+              to connects diaspora and home investors with vetted, scalable SME
+              business opportunities in Africa through co-investment syndicates,
               blockchain-based investment tracking, and structured wealth
               creation vehicles to ensure transparency, risk mitigation, and
               long-term financial growth.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Why Join Section */}
+      <section className="bg-gray-100 py-16 px-6 shadow rounded-lg">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-semibold">
+            Why Should You Care About Co-fund?
+          </h2>
+          <p className="mt-4 text-lg text-gray-700">
+            Empower businesses, diversify your investments, and grow your wealth
+            while making an impact.
+          </p>
         </div>
       </section>
 
