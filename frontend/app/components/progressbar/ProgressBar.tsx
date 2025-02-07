@@ -56,7 +56,7 @@ const Progress: React.FC<ProgressBarProps> = ({
           className="h-full bg-green-600"
           style={{ width: `${baseProgress}%` }}
           data-tooltip-id="performance-tooltip"
-          data-tooltip-content={firstTooltipContent}
+          data-tooltip-content={baseProgress as unknown as string}
         ></div>
 
         {/* Overflow progress sections */}
