@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tooltip } from 'react-tooltip';
 
 interface ProgressBarProps {
@@ -8,7 +8,7 @@ interface ProgressBarProps {
   firstTooltipContent: string;
   secondTooltipContent?: string;
   thirdTooltipContent?: string;
-  className?: string;
+  className?: string; // New prop for custom height and styles
 }
 
 const Progress: React.FC<ProgressBarProps> = ({
@@ -18,28 +18,39 @@ const Progress: React.FC<ProgressBarProps> = ({
   firstTooltipContent,
   secondTooltipContent,
   thirdTooltipContent,
-  className = 'h-2',
+  className = 'h-2', // Default className for height
 }) => {
-  const [cycleProgress, setCycleProgress] = useState(0);
+  const [progress, setProgress] = useState(firstProgress);
+  const [color, setColor] = useState('bg-green-600');
 
   useEffect(() => {
-    if (firstProgress >= 100) {
-      setCycleProgress(1); // Start new progress cycle
-    } else if (firstProgress > 0) {
-      setCycleProgress(firstProgress); // Keep cycle in sync
-    }
-  }, [firstProgress]);
+    const interval = setInterval(() => {
+      setProgress((prevProgress) => {
+        if (prevProgress >= 100) {
+          setColor((prevColor) => 
+            prevColor === 'bg-green-600' ? 'bg-blue-600' : 
+            prevColor === 'bg-blue-600' ? 'bg-red-600' : 
+            'bg-green-600'
+          );
+          return 0;
+        }
+        return prevProgress + 1;
+      });
+    }, 50); // Adjust the interval for smoother or faster progression
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="w-full relative">
+    <div className="w-full">
       {/* Progress labels */}
-      <div className="text-base flex items-center justify-between font-bold">
+      <div className="text-md flex items-center justify-between font-bold">
         <span
           className="text-green-600"
           data-tooltip-id="performance-tooltip"
           data-tooltip-content={firstTooltipContent}
         >
-          {`${Math.round(firstProgress)}%`}
+          {`${Math.round(progress)}%`}
         </span>
         <span
           className="text-yellow-500"
@@ -59,33 +70,22 @@ const Progress: React.FC<ProgressBarProps> = ({
 
       {/* Combined Progress bar */}
       <div
-        className={`relative flex ${className} w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700`}
+        className={`flex ${className} w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700`}
       >
-        {/* First progress (Main) */}
         <div
-          className="h-full bg-green-600 transition-all duration-300"
-          style={{ width: `${firstProgress}%` }}
+          className={`h-full ${color}`}
+          style={{ width: `${progress}%` }}
           data-tooltip-id="performance-tooltip"
           data-tooltip-content={firstTooltipContent}
         ></div>
-
-        {/* Second progress (Overlay) - Only appears after 100% */}
-        {firstProgress >= 100 && (
-          <div
-            className="absolute top-0 left-0 h-full bg-cyan-500 transition-all duration-300 rounded-full"
-            style={{ width: `${cycleProgress}%` }}
-          ></div>
-        )}
-
-        {/* Second & Third progress */}
         <div
-          className="h-full bg-yellow-100 transition-all duration-300"
+          className="h-full bg-yellow-100"
           style={{ width: `${secondProgress}%` }}
           data-tooltip-id="manager-tooltip"
           data-tooltip-content={secondTooltipContent}
         ></div>
         <div
-          className="h-full bg-green-400 transition-all duration-300"
+          className="h-full bg-green-400"
           style={{ width: `${thirdProgress}%` }}
           data-tooltip-id="employee-tooltip"
           data-tooltip-content={thirdTooltipContent}
