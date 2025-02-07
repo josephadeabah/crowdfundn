@@ -20,13 +20,13 @@ const Progress: React.FC<ProgressBarProps> = ({
   thirdTooltipContent,
   className = 'h-2',
 }) => {
-  const [showOverlay, setShowOverlay] = useState(false);
+  const [cycleProgress, setCycleProgress] = useState(0);
 
   useEffect(() => {
     if (firstProgress >= 100) {
-      setShowOverlay(true);
-    } else {
-      setShowOverlay(false);
+      setCycleProgress(1); // Start new progress cycle
+    } else if (firstProgress > 0) {
+      setCycleProgress(firstProgress); // Keep cycle in sync
     }
   }, [firstProgress]);
 
@@ -61,12 +61,23 @@ const Progress: React.FC<ProgressBarProps> = ({
       <div
         className={`relative flex ${className} w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700`}
       >
+        {/* First progress (Main) */}
         <div
           className="h-full bg-green-600 transition-all duration-300"
           style={{ width: `${firstProgress}%` }}
           data-tooltip-id="performance-tooltip"
           data-tooltip-content={firstTooltipContent}
         ></div>
+
+        {/* Second progress (Overlay) - Only appears after 100% */}
+        {firstProgress >= 100 && (
+          <div
+            className="absolute top-0 left-0 h-full bg-cyan-500 transition-all duration-300 rounded-full"
+            style={{ width: `${cycleProgress}%` }}
+          ></div>
+        )}
+
+        {/* Second & Third progress */}
         <div
           className="h-full bg-yellow-100 transition-all duration-300"
           style={{ width: `${secondProgress}%` }}
@@ -79,27 +90,12 @@ const Progress: React.FC<ProgressBarProps> = ({
           data-tooltip-id="employee-tooltip"
           data-tooltip-content={thirdTooltipContent}
         ></div>
-
-        {/* Overlay that animates when firstProgress is 100% */}
-        {showOverlay && (
-          <div className="absolute top-0 left-0 h-full w-full animate-[progress-glow_2s_linear_infinite] rounded-full"></div>
-        )}
       </div>
 
       {/* Tooltip instances */}
       <Tooltip id="performance-tooltip" />
       <Tooltip id="manager-tooltip" />
       <Tooltip id="employee-tooltip" />
-
-      {/* Custom CSS for color cycling animation */}
-      <style>
-        {`
-          @keyframes progress-glow {
-            0% { background-color: rgba(255, 0, 0, 0.3); width: 1%; }
-            100% { background-color: rgba(0, 255, 0, 0.3); width: 100%; }
-          }
-        `}
-      </style>
     </div>
   );
 };
