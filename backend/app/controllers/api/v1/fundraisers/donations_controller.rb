@@ -128,6 +128,7 @@ module Api
             email: donation.email,
             amount: donation.amount,
             plan: donation.plan,
+            callback_url: redirect_url,
             metadata: metadata,
             split: {
               type: "percentage", 
