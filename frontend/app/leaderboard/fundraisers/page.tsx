@@ -131,7 +131,7 @@ const LeaderboardFundraisersPage = () => {
                             </div>
                           </PopoverContent>
                         </Popover>
-                        <span className="text-gray-700 truncate max-w-[150px] block">
+                        <span className="text-gray-700 block">
                           {fundraiser.username}
                         </span>
                       </td>
