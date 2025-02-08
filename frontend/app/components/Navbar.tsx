@@ -256,8 +256,8 @@ const Navbar = () => {
                       <span className="text-gray-600">{user.email}</span>
                     </div>
                     {/* <div className="flex items-center gap-3 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 px-0 py-2 rounded transition">
-                        <Link href="/account">
-                          <div>Go to Account</div>
+                        <Link href="/cofund">
+                          <div>Co-Fund</div>
                         </Link>
                       </div> */}
                     <div
@@ -362,6 +362,11 @@ const Navbar = () => {
                     <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
                       <Link href="/account">
                         <div>Go to Account</div>
+                      </Link>
+                    </div>
+                    <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
+                      <Link href="/cofund">
+                        <div>Co-Fund</div>
                       </Link>
                     </div>
                     {/* <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
