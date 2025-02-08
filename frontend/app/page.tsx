@@ -42,6 +42,7 @@ const HomePage = () => {
 
   React.useEffect(() => {
     const words = [
+      "We're Africa's Premier Reward-based & Gamified Crowdfunding Platform",
       'Online Crowdfunding, Personal fundraising, Grant funding',
       'Fundraise for charity, medical bills, disaster relief, education, and more',
       'Fundraise for community projects, social causes and make a difference',
