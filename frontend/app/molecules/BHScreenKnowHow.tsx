@@ -76,7 +76,7 @@ const BHScreenKnowHow: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-4 rounded-lg">
+    <div className="w-full max-w-7xl mx-auto p-2 rounded-lg">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {imageItems.slice(0, 3).map((item) => (
           <div key={item.id} className="relative bg-green-50 p-2 rounded-lg">
