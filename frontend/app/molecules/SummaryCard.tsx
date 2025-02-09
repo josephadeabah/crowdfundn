@@ -522,7 +522,8 @@ const Leaderboard: React.FC = () => {
               <hr className="border-t-1 border-gray-100" />
             </p>
             <h3 className="text-sm font-semibold mb-4 text-cyan-500">
-              Get Featured, Win Rewards and Unlock badges and Special Honorary Certificates
+              Climb the Ranks, Get Featured, Win Rewards, Unlock badges and
+              Special Honorary Certificates
             </h3>
             <div className="flex flex-wrap gap-3">
               {certificates.map((certificate, index) => (

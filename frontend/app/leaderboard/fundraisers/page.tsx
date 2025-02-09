@@ -172,8 +172,8 @@ const LeaderboardFundraisersPage = () => {
                 Project Progress
               </h3>
               <p className="text-sm">
-                You can track your progress on your reward dashboard. This will show
-                your current rank and how much money you've raised.
+                You can track your progress on your reward dashboard. This will
+                show your current rank and how much money you've raised.
               </p>
             </div>
             <div>
@@ -181,9 +181,9 @@ const LeaderboardFundraisersPage = () => {
                 What happens if I make the leaderboard?
               </h3>
               <p className="text-sm">
-                If you make the leaderboard, you'll unlock a special badge on your
-                project. This is a great way to show potential backers that your
-                project is popular.
+                If you make the leaderboard, you'll unlock a special badge on
+                your project. This is a great way to show potential backers that
+                your project is popular.
               </p>
               <p className="text-sm mt-2">
                 You'll also get a shout-out in our weekly newsletter. This goes
