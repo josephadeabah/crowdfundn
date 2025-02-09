@@ -361,7 +361,7 @@ const RewardsPage: React.FC = () => {
                     Level
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    No rewards assigned yet
+                    You have no rewards yet
                   </p>
                 </div>
               )}
@@ -374,7 +374,7 @@ const RewardsPage: React.FC = () => {
               <div className="font-semibold flex items-center justify-center">
                 <FaInfoCircle
                   data-tooltip-id="tooltip-certificate-reveal"
-                  data-tooltip-content="This is a special certificate of Honor prepared and given to you by BantuHive for the great impact you're making in the world. The highest Level reward (Diamond) comes with $1000 and other perks which will be given to you by BantuHive. Actively sharing campaigns (90%) and making donations (10%) count towards this reward."
+                  data-tooltip-content="This is a special certificate of Honor prepared and given to you by Bantu Hive for the great impact you're making in the world. The highest Level reward (Diamond) comes with $1000 and other perks which will be given to you by Bantu Hive. Actively sharing campaigns (10%) and making donations (90%) count towards this reward."
                   className="text-gray-400 text-sm cursor-pointer mr-2"
                 />
                 <Tooltip
