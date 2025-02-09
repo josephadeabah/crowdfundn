@@ -104,7 +104,7 @@ const BHScreenKnowHow: React.FC = () => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         {imageItems.slice(3, 5).map((item) => (
-          <div key={item.id} className="relative bg-green-100 p-2 rounded-lg">
+          <div key={item.id} className="relative bg-gray-50 p-2 rounded-lg">
             <img
               src={item.src}
               alt={item.title}
