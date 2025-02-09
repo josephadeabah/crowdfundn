@@ -13,6 +13,7 @@ import CampaignCard from './components/campaigns/CampaignCard';
 import { useCampaignContext } from './context/account/campaign/CampaignsContext';
 import SummaryCardComponent from './molecules/SummaryCard';
 import BHScreenKnowHow from './molecules/BHScreenKnowHow';
+import IllustrateImageComponent from './molecules/IllustrateImageComponent';
 
 const HomePage = () => {
   const wordRef = React.useRef<HTMLDivElement | null>(null);
@@ -198,6 +199,7 @@ const HomePage = () => {
           </motion.div>
         </div>
         <SummaryCardComponent />
+        <IllustrateImageComponent images={["/Team-spirit-bro.png", "/Cheer up-bro.png", "/Group-bro.png"]} />
 
         <div
           ref={ref}
