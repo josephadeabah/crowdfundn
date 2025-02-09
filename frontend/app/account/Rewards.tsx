@@ -361,7 +361,7 @@ const RewardsPage: React.FC = () => {
                     Level
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    You have no rewards yet
+                    You haven't won rewards yet
                   </p>
                 </div>
               )}
