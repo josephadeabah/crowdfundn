@@ -202,7 +202,7 @@ const HomePage = () => {
         <IllustrateImageComponent
           images={[
             '/Cheer up-bro.png',
-            '/heart-svgrepo-com.png',
+            '/heart-with-a-little-bow-svgrepo-com.png',
             '/Team-spirit-bro.png',
           ]}
         />

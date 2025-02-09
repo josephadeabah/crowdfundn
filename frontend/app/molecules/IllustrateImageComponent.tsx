@@ -1,24 +1,20 @@
-import React from 'react';
+import React from "react";
 
 interface IllustrateImageComponentProps {
   images: string[];
 }
 
-const IllustrateImageComponent: React.FC<IllustrateImageComponentProps> = ({
-  images,
-}) => {
+const IllustrateImageComponent: React.FC<IllustrateImageComponentProps> = ({ images }) => {
   return (
-    <div className="w-full py-6">
-      <div className="max-w-7xl mx-auto flex flex-wrap justify-center items-center gap-10">
+    <div className="w-full py-10">
+      <div className="max-w-7xl mx-auto flex flex-wrap justify-center lg:justify-between items-center gap-6">
         {images.map((src, index) => (
           <img
             key={index}
             src={src}
             alt={`Illustration ${index + 1}`}
             className={`object-cover ${
-              index === 1
-                ? 'max-w-[100px] w-auto transition-all self-center'
-                : 'max-w-sm w-full'
+              index === 1 ? "max-w-[100px] w-auto transition-all self-center" : "max-w-sm w-full"
             }`}
           />
         ))}
