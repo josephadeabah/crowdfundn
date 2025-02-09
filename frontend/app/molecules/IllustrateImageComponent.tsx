@@ -1,7 +1,7 @@
 import React from "react";
 
 interface IllustrateImageComponentProps {
-  images: string[]; // Array of image URLs
+  images: string[];
 }
 
 const IllustrateImageComponent: React.FC<IllustrateImageComponentProps> = ({ images }) => {
@@ -9,7 +9,14 @@ const IllustrateImageComponent: React.FC<IllustrateImageComponentProps> = ({ ima
     <div className="w-full py-10">
       <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-6">
         {images.map((src, index) => (
-          <img key={index} src={src} alt={`Illustration ${index + 1}`} className="max-w-sm w-full object-cover" />
+          <img
+            key={index}
+            src={src}
+            alt={`Illustration ${index + 1}`}
+            className={`object-cover ${
+              index === 1 ? "max-w-[50px] w-auto" : "max-w-sm w-full"
+            }`}
+          />
         ))}
       </div>
     </div>
