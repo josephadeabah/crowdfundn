@@ -100,7 +100,7 @@ class PaystackService
   end
 
   # 3. Initialize Transaction with Split Code
-  def initialize_transaction(email:, amount:, plan: nil, metadata: {}, split:, callback_url:)
+  def initialize_transaction(email:, amount:, plan: nil, metadata: {}, subaccount:, callback_url:)
     return { status: 'error', message: 'Email address is required' } if email.blank?
 
     uri = URI("#{PAYSTACK_BASE_URL}/transaction/initialize")
@@ -110,7 +110,7 @@ class PaystackService
       plan: plan,
       reference: SecureRandom.uuid,
       metadata: metadata, # Add metadata to the transaction
-      split: split,  # Add the subaccount_code here
+      subaccount: subaccount,  # Add the subaccount_code here
       callback_url: callback_url 
     }.compact.to_json
 

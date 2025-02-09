@@ -130,16 +130,7 @@ module Api
             plan: donation.plan,
             callback_url: redirect_url,
             metadata: metadata,
-            split: {
-              type: "percentage", 
-              bearer_type: "account",
-              subaccounts: [
-                {
-                  subaccount: subaccount_code,
-                  share: 0  # 95% to the fundraiser. This will bear the paystack fees
-                }
-              ]
-            }
+            subaccount: subaccount_code,
           )
           
           if response[:status] == true
