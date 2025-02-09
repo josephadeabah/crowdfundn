@@ -207,7 +207,7 @@ const Leaderboard: React.FC = () => {
           {/* Most Active Backers Section */}
           <div className="mb-3">
             <p className="mb-2">
-              <hr className="border-t-2 border-black" />
+              <hr className="border-t-2 border-gray-300" />
             </p>
             <div className="flex -space-x-3">
               {mostActiveBackers?.map((backer, index) => (
@@ -277,7 +277,7 @@ const Leaderboard: React.FC = () => {
           {/* Top Backers with Most Rewards Section */}
           <div>
             <p className="mb-2">
-              <hr className="border-t-2 border-gray-500" />
+              <hr className="border-t-2 border-gray-300" />
             </p>
             {topBackersWithRewards && topBackersWithRewards.length > 0 ? (
               topBackersWithRewards.some((backer) => backer.rewards > 0) ? (
@@ -445,7 +445,7 @@ const Leaderboard: React.FC = () => {
           {/* Top Fundraisers with Best Stories Section */}
           <div className="mb-3">
             <p className="mb-2">
-              <hr className="border-t-2 border-gray-500" />
+              <hr className="border-t-2 border-gray-300" />
             </p>
             <div className="flex -space-x-3">
               {topFundraisersStories?.map((fundraiser, index) => (
@@ -517,7 +517,10 @@ const Leaderboard: React.FC = () => {
           </div>
 
           {/* Get Featured and Win Certificates Section */}
-          <div>
+          <div className="mb-3">
+            <p className="mb-2">
+              <hr className="border-t-2 border-gray-300" />
+            </p>
             <h3 className="text-sm font-semibold mb-4 text-cyan-500">
               Get Featured, Win Rewards and Unlock Special Certificates
             </h3>
