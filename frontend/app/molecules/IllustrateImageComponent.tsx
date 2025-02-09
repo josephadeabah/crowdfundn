@@ -7,14 +7,14 @@ interface IllustrateImageComponentProps {
 const IllustrateImageComponent: React.FC<IllustrateImageComponentProps> = ({ images }) => {
   return (
     <div className="w-full py-10">
-      <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-6">
+      <div className="max-w-7xl mx-auto flex flex-wrap justify-center items-center gap-6">
         {images.map((src, index) => (
           <img
             key={index}
             src={src}
             alt={`Illustration ${index + 1}`}
             className={`object-cover ${
-              index === 1 ? "max-w-[50px] w-auto" : "max-w-sm w-full"
+              index === 1 ? "max-w-[100px] w-auto self-start" : "max-w-sm w-full"
             }`}
           />
         ))}
