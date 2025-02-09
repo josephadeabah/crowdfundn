@@ -38,7 +38,7 @@ const BHScreenKnowHow: React.FC = () => {
     },
     {
       id: 3,
-      src: '/undraw_mobile-payments_0u42.png',
+      src: '/undraw_transfer-money_h9s3.png',
       title: 'Make Withdrawals of Your Money Raised',
       description:
         'Easily access the funds you’ve raised through a secure transfer process.',
