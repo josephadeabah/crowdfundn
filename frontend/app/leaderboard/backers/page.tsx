@@ -199,7 +199,7 @@ const LeaderboardBackersPage = () => {
                 Project Progress
               </h3>
               <p className="text-sm">
-                You can track your progress on your account on reward pane. This
+                You can track your progress on your account on reward dashboard. This
                 will show your current rank and how much money you've
                 contributed.
               </p>
@@ -209,7 +209,7 @@ const LeaderboardBackersPage = () => {
                 What happens if I make the leaderboard?
               </h3>
               <p className="text-sm">
-                If you make the leaderboard, you'll get a special badge on your
+                If you make the leaderboard, you'll unlock a special badge on your
                 profile and depending on the points you make, you can unlock a
                 special certificate of honor. You'll also be recognized globally
                 as a philanthropist. This is a great way to show our
