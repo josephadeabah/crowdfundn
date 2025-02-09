@@ -199,7 +199,7 @@ const HomePage = () => {
           </motion.div>
         </div>
         <SummaryCardComponent />
-        <IllustrateImageComponent images={["/Cheer up-bro.png", "/Team-spirit-bro.png", "/Group-bro.png"]} />
+        <IllustrateImageComponent images={["/Cheer up-bro.png", "/Team-spirit-bro.png"]} />
 
         <div
           ref={ref}
