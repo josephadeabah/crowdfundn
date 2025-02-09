@@ -29,7 +29,7 @@ const BHScreenKnowHow: React.FC = () => {
     },
     {
       id: 2,
-      src: '/undraw_winners_fre4.png',
+      src: '/undraw_gifts_0twc.png',
       title: 'Give and Receive Rewards',
       description:
         'Earn points, badges, and exclusive rewards for supporting campaigns.',
