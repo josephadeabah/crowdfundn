@@ -135,7 +135,9 @@ const Leaderboard: React.FC = () => {
         <div className="w-full md:w-1/2">
           {/* Top Backers Section */}
           <div className="mb-3">
-            <h3 className="text-lg font-semibold mb-2">Loyal Backers</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              Community Active Backers
+            </h3>
             <div className="flex -space-x-3">
               {topBackers?.map((backer, index) => (
                 <Popover key={index}>
@@ -204,7 +206,9 @@ const Leaderboard: React.FC = () => {
 
           {/* Most Active Backers Section */}
           <div className="mb-3">
-            <h3 className="text-lg font-semibold mb-2">Enthusiastic Backers</h3>
+            <p className="mb-2">
+              <hr className="border-t-2 border-black" />
+            </p>
             <div className="flex -space-x-3">
               {mostActiveBackers?.map((backer, index) => (
                 <Popover key={index}>
@@ -272,7 +276,9 @@ const Leaderboard: React.FC = () => {
 
           {/* Top Backers with Most Rewards Section */}
           <div>
-            <h3 className="text-lg font-semibold mb-2">Discerning Backers</h3>
+            <p className="mb-2">
+              <hr className="border-t-2 border-gray-500" />
+            </p>
             {topBackersWithRewards && topBackersWithRewards.length > 0 ? (
               topBackersWithRewards.some((backer) => backer.rewards > 0) ? (
                 <div className="flex -space-x-3">
@@ -365,7 +371,7 @@ const Leaderboard: React.FC = () => {
           {/* Top Fundraisers with Best Campaign Graphics Section */}
           <div className="mb-3">
             <h3 className="text-lg font-semibold mb-2">
-              Strategic Fundraisers
+              Community Active Fundraisers
             </h3>
             <div className="flex -space-x-3">
               {topFundraisersGraphics?.map((fundraiser, index) => (
@@ -438,9 +444,9 @@ const Leaderboard: React.FC = () => {
 
           {/* Top Fundraisers with Best Stories Section */}
           <div className="mb-3">
-            <h3 className="text-lg font-semibold mb-2">
-              Relentless Fundraisers
-            </h3>
+            <p className="mb-2">
+              <hr className="border-t-2 border-gray-500" />
+            </p>
             <div className="flex -space-x-3">
               {topFundraisersStories?.map((fundraiser, index) => (
                 <Popover key={fundraiser.name}>
