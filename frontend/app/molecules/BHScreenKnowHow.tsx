@@ -29,7 +29,7 @@ const BHScreenKnowHow: React.FC = () => {
     },
     {
       id: 2,
-      src: '/BHRewardScreenshotDocument.png',
+      src: '/undraw_winners_fre4.png',
       title: 'Give and Receive Rewards',
       description:
         'Earn points, badges, and exclusive rewards for supporting campaigns.',
@@ -38,7 +38,7 @@ const BHScreenKnowHow: React.FC = () => {
     },
     {
       id: 3,
-      src: '/BHTransfersScreenshotDocument.png',
+      src: '/undraw_mobile-payments_0u42.png',
       title: 'Make Withdrawals of Your Money Raised',
       description:
         'Easily access the funds you’ve raised through a secure transfer process.',
@@ -47,7 +47,7 @@ const BHScreenKnowHow: React.FC = () => {
     },
     {
       id: 4,
-      src: '/BHCampaignsScreenshotDocument.png',
+      src: '/undraw_task-list_qe3p.png',
       title: 'Manage Your Created Campaigns',
       description:
         'Edit, update, and track your fundraising campaigns in one place.',
@@ -56,7 +56,7 @@ const BHScreenKnowHow: React.FC = () => {
     },
     {
       id: 5,
-      src: '/BHBackerLeaderboardScreenshotDocument.png',
+      src: '/undraw_grades_hqyk.png',
       title: 'See Who’s Leading the Backing and Fundraising Game',
       description:
         'Compete and engage with the top supporters in the community.',
