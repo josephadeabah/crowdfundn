@@ -18,7 +18,7 @@ class PlatformFeeService
           Donation.where(processed: false).update_all(processed: true)
           Rails.logger.info "Successfully transferred #{total_platform_fee.round} to company recipient."
         else
-          Rails.logger.error "Transfer failed: #{response[:message]}"
+          Rails.logger.info "Transfer failed: #{response[:message]}"
         end
       else
         Rails.logger.info "Total platform fee (#{total_platform_fee.round}) is less than 60, transfer will not happen."
