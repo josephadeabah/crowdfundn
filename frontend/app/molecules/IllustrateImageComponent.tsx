@@ -14,7 +14,7 @@ const IllustrateImageComponent: React.FC<IllustrateImageComponentProps> = ({ ima
             src={src}
             alt={`Illustration ${index + 1}`}
             className={`object-cover ${
-              index === 1 ? "max-w-[100px] w-auto transition-all self-start" : "max-w-sm w-full"
+              index === 1 ? "max-w-[100px] w-auto transition-all self-center" : "max-w-sm w-full"
             }`}
           />
         ))}
