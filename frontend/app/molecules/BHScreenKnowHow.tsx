@@ -21,7 +21,7 @@ const BHScreenKnowHow: React.FC = () => {
   const imageItems: ImageItem[] = [
     {
       id: 1,
-      src: '/BHOverviewScreenshotDocument.png',
+      src: '/undraw_real-time-analytics_xu2g.png',
       title: 'Dashboard Overview',
       description: 'Monitor your campaigns, track progress, and stay informed.',
       detailedDescription:
