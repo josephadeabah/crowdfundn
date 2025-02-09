@@ -14,3 +14,8 @@ every(8.hours, 'send_webhook') do
     campaign.send_status_update_webhook
   end
 end
+
+every(1.day, 'transfer_platform_fees', at: '12:00') do
+  Rails.logger.info "Triggering 'transfer_platform_fees' job at #{Time.current}"
+  PlatformFeeService.transfer_platform_fees
+end

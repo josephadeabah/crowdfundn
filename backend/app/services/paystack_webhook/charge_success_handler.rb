@@ -102,7 +102,8 @@ class PaystackWebhook::ChargeSuccessHandler
             email: subaccount_contact,
             phone: subaccount_phone
           }
-        } # Replacing the existing metadata entirely
+        }, # Replacing the existing metadata entirely
+        processed: false # New donations will have `processed` set to `false`
       )
 
       # Update the related campaign

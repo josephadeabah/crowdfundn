@@ -135,10 +135,6 @@ module Api
               bearer_type: "account",
               subaccounts: [
                 {
-                  subaccount: "ACCT_muaiopo7byymwjz",
-                  share: 5  # 5% to our company account
-                },
-                {
                   subaccount: subaccount_code,
                   share: 0  # 95% to the fundraiser. This will bear the paystack fees
                 }
