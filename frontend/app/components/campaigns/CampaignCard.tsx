@@ -143,7 +143,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         <EmptyPage />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {displayedCampaigns.slice(0, 9).map((campaign, index) => {
+          {displayedCampaigns.slice(0, 5).map((campaign, index) => {
             const fundraiserCurrency =
               campaign?.currency_symbol || campaign?.currency?.toUpperCase();
 
@@ -165,7 +165,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className={`group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 hover:shadow-2xl transition-transform duration-300 cursor-pointer overflow-hidden rounded-lg ${
                   index === 0 ? 'col-span-2 row-span-2' : ''
-                }`}
+                } ${index === 4 || index === 5 || index === 6 ? 'col-span-1' : ''}`}
               >
                 <Link
                   href={`/campaign/${campaign.id}?${generateRandomString()}`}
