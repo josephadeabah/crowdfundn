@@ -47,7 +47,7 @@ const BHScreenKnowHow: React.FC = () => {
     },
     {
       id: 4,
-      src: '/undraw_task-list_qe3p.png',
+      src: '/undraw_content-creator_vuqg.png',
       title: 'Manage Your Created Campaigns',
       description:
         'Edit, update, and track your fundraising campaigns in one place.',
