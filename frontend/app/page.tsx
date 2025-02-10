@@ -201,9 +201,9 @@ const HomePage = () => {
         <SummaryCardComponent />
         <IllustrateImageComponent
           images={[
-            '/Cheer up-bro.png',
+            '/Cheer-up-bro.svg',
             '/heart-with-a-little-bow-svgrepo-com.png',
-            '/Team-spirit-bro.png',
+            '/Team-spirit-bro.svg',
           ]}
         />
 
