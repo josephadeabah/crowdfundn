@@ -21,7 +21,7 @@ const BHScreenKnowHow: React.FC = () => {
   const imageItems: ImageItem[] = [
     {
       id: 1,
-      src: '/undraw_dashboard_p93p.png',
+      src: '/undraw_dashboard_p93p.svg',
       title: 'Dashboard Overview',
       description: 'Monitor your campaigns, track progress, and stay informed.',
       detailedDescription:
@@ -29,7 +29,7 @@ const BHScreenKnowHow: React.FC = () => {
     },
     {
       id: 2,
-      src: '/undraw_gifts_0twc.png',
+      src: '/undraw_gifts_0twc.svg',
       title: 'Give and Receive Rewards',
       description:
         'Earn points, badges, and exclusive rewards for supporting campaigns.',
@@ -38,7 +38,7 @@ const BHScreenKnowHow: React.FC = () => {
     },
     {
       id: 3,
-      src: '/undraw_transfer-money_h9s3.png',
+      src: '/undraw_transfer-money_h9s3.svg',
       title: 'Make Withdrawals of Your Money Raised',
       description:
         'Easily access the funds you’ve raised through a secure transfer process.',
@@ -47,7 +47,7 @@ const BHScreenKnowHow: React.FC = () => {
     },
     {
       id: 4,
-      src: '/undraw_content-creator_vuqg.png',
+      src: '/undraw_content-creator_vuqg.svg',
       title: 'Manage Your Created Campaigns',
       description:
         'Edit, update, and track your fundraising campaigns in one place.',
@@ -56,7 +56,7 @@ const BHScreenKnowHow: React.FC = () => {
     },
     {
       id: 5,
-      src: '/undraw_grades_hqyk.png',
+      src: '/undraw_grades_hqyk.svg',
       title: 'See Who’s Leading the Backing and Fundraising Game',
       description:
         'Compete and engage with the top supporters in the community.',
