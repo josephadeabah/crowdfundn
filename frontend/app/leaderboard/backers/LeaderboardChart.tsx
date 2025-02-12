@@ -46,22 +46,14 @@ const CustomizedDollarDot = (props: {
 
   return (
     <svg
-    x={cx - 8} // Center the dot horizontally
-    y={cy - 8} // Center the dot vertically
-    width={16} // Reduced size of the SVG
-    height={16} // Reduced size of the SVG
+    x={cx - 10}
+    y={cy - 10}
+    width={20}
+    height={20}
+    fill="#16C47F" // Green color for dollar sign
     viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={2}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="feather feather-dollar-sign"
-    {...props}
   >
-    <line x1={12} y1={1} x2={12} y2={23} />
-    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
   </svg>
   );
 };
