@@ -46,15 +46,15 @@ const CustomizedDollarDot = (props: {
 
   return (
     <svg
-      x={cx - 10}
-      y={cy - 10}
-      width={20}
-      height={20}
-      fill="#FFB200" // Green color for dollar sign
-      viewBox="0 0 24 24"
-    >
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-    </svg>
+    x={cx - 10}
+    y={cy - 10}
+    width={20}
+    height={20}
+    fill="#FFB200" // Green color for dollar sign
+    viewBox="0 0 24 24"
+  >
+    <path d="M12 1C6.48 1 2 5.48 2 11C2 16.52 6.48 21 12 21C17.52 21 22 16.52 22 11C22 5.48 17.52 1 12 1ZM13 14H11V9H13V14ZM13 7H11V5H13V7ZM12 3C6.48 3 3 6.48 3 11C3 15.52 6.48 19 12 19C17.52 19 21 15.52 21 11C21 6.48 17.52 3 12 3Z" />
+  </svg>
   );
 };
 
@@ -67,7 +67,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         <p className="font-semibold">{label}</p>
         <p className="text-sm text-gray-600">Score: {payload[0].value}</p>
         <p className="text-sm text-gray-600">
-          Total Donations: {userAccountData?.currency?.toUpperCase()}
+          Total Donations: {userAccountData?.profile?.currency?.toUpperCase()}
           {payload[1].value}
         </p>
       </div>
@@ -111,7 +111,7 @@ const LeaderboardChart = ({ leaderboard }: any) => {
           <Line
             type="monotone"
             dataKey="totalDonations"
-            stroke="#82ca9d"
+            stroke="#FFB200"
             dot={
               <CustomizedDollarDot
                 cx={0}

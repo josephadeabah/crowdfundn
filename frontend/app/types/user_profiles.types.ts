@@ -10,6 +10,7 @@ export interface Profile {
   end_date: string;
   category: string;
   location: string;
+  currency: string;
   avatar: { record: { avatar: string | File | null } };
   status: string;
   created_at: string;
