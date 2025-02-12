@@ -223,7 +223,7 @@ const SingleCampaignPage: React.FC = () => {
 
             {/* Tab Content */}
             {selectedTab === 'details' && (
-              <div className="max-w-xl bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
+              <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
                 {/* Campaign Title */}
                 <h1 className="text-4xl font-bold mb-4">
                   {currentCampaign?.title}
