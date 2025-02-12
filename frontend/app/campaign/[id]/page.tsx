@@ -319,7 +319,7 @@ const SingleCampaignPage: React.FC = () => {
         <div className="lg:w-1/3">
           <div className="sticky top-8">
             {/* Content for the second column */}
-            <div className="bg-white p-4 rounded-lg">
+            <div className="bg-white rounded-lg">
               <h2 className="text-xl font-semibold mb-4">
                 Support This Project
               </h2>
@@ -341,10 +341,10 @@ const SingleCampaignPage: React.FC = () => {
                 <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
                   Campaign Progress
                 </h3>
-                <div className="flex flex-col gap-2 sm:flex-row sm:justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow p-3 mb-8 space-y-6 sm:space-y-0 sm:space-x-6">
+                <div className="flex flex-col gap-2 sm:flex-row sm:justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow mb-8 space-y-6 sm:space-y-0 sm:space-x-6">
                   {/* Progress Info */}
                   <div className="text-center sm:text-left">
-                  <div className="w-full flex lg:flex-col sm:justify-between gap-3 items-center text-xl py-2">
+                    <div className="w-full flex lg:flex-col sm:justify-between gap-3 items-center text-xl py-2">
                       <div className="font-medium text-sm">
                         {fundraiserCurrency}
                         {parseFloat(
@@ -356,10 +356,10 @@ const SingleCampaignPage: React.FC = () => {
                           <span>of</span>
                         </div>{' '}
                         <div className="font-medium text-sm">
-                        {fundraiserCurrency}
-                        {parseFloat(
-                          currentCampaign?.goal_amount || '0.0',
-                        ).toLocaleString()}
+                          {fundraiserCurrency}
+                          {parseFloat(
+                            currentCampaign?.goal_amount || '0.0',
+                          ).toLocaleString()}
                         </div>
                         <div className="text-xs text-gray-500">
                           <span>Goal</span>
