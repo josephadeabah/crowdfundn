@@ -224,17 +224,19 @@ const RewardsPage: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
-              Rewards
+              Rewards & Gifts
             </h1>
             <button
               onClick={() => setShowModal(true)}
               className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               aria-label="Add new reward"
             >
-              <FiPlus className="mr-2" /> Add Reward
+              <FiPlus className="mr-2" /> Add Gift
             </button>
           </div>
-
+          <p className="text-gray-500 text-sm mb-4">
+            Give and Receive Rewards and Gifts
+          </p>
           {/* User Rewards & Rank Summary Section */}
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
@@ -401,10 +403,7 @@ const RewardsPage: React.FC = () => {
             <>
               {campaigns.every((campaign) => campaign.rewards.length === 0) ? (
                 <p className="text-gray-500 text-sm">
-                  You have not created any rewards yet!. Use this page to create
-                  items that you can give to your backers who donate the amount
-                  you specify in your items. The reward could be in cash,
-                  material or kind.
+                  The Gifts You create will appear here!
                 </p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -430,8 +429,12 @@ const RewardsPage: React.FC = () => {
           >
             <div className="overflow-y-auto max-h-[60vh] p-2">
               <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
-                Add New Reward
+                Add New Gift
               </h2>
+              <p className="text-gray-500 text-sm">
+                You haven't created any gifts yet! Create low-priced items or
+                gifts to reward backers who donate as specified.
+              </p>
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label
@@ -556,7 +559,7 @@ const RewardsPage: React.FC = () => {
                   className={`w-full px-4 py-2 rounded-lg transition-colors ${loadingReward ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} text-white`}
                   disabled={loadingReward}
                 >
-                  {loadingReward ? 'Adding...' : 'Add Reward'}
+                  {loadingReward ? 'Adding...' : 'Add Gift'}
                 </button>
               </form>
             </div>
@@ -565,7 +568,7 @@ const RewardsPage: React.FC = () => {
       </div>
       <AlertPopup
         title="Confirm Deletion"
-        message="Are you sure you want to delete this reward? This action cannot be undone."
+        message="Are you sure you want to delete this gift? This action cannot be undone."
         isOpen={showDeletePopup}
         setIsOpen={setShowDeletePopup}
         onConfirm={confirmDelete}
