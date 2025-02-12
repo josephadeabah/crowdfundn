@@ -71,7 +71,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
           <span className="mr-2">
             {userAccountData?.profile?.currency?.toUpperCase() || 'GHS'}
           </span>
-          {payload[1].value}
+          {payload[1]?.value?.toFixed(2)}
         </p>
       </div>
     );
