@@ -137,12 +137,12 @@ const SingleCampaignPage: React.FC = () => {
   if (loading) return <SingleCampaignLoader />;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-2 py-8 mb-12">
+    <div className="max-w-7xl mx-auto px-2 py-8 mb-12">
       <div className="flex flex-col lg:flex-row gap-8 mb-10">
         {/* First Column (Bigger Width) */}
         <div className="lg:w-2/3">
           {/* Content for the first column */}
-          <div className="bg-white p-6 rounded-lg">
+          <div className="bg-white p-2 rounded-lg">
             <h1 className="text-4xl font-bold mb-4">
               {currentCampaign?.title}
             </h1>
