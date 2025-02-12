@@ -113,7 +113,7 @@ const LeaderboardChart = ({ leaderboard }: any) => {
           <Line
             type="monotone"
             dataKey="score"
-            stroke="#8884d8"
+            stroke="#16C47F"
             dot={<CustomizedDot cx={0} cy={0} payload={{ score: 0 }} />}
           />
           <Line
