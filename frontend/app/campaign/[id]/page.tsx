@@ -142,16 +142,10 @@ const SingleCampaignPage: React.FC = () => {
         {/* First Column (Bigger Width) */}
         <div className="lg:w-2/3">
           {/* Content for the first column */}
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="bg-white p-6 rounded-lg">
             <h1 className="text-4xl font-bold mb-4">
               {currentCampaign?.title}
             </h1>
-            <p className="text-gray-700 mb-4">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
-            </p>
             {/* Add more content here */}
             <div className="relative w-full aspect-video rounded-md overflow-hidden h-full mb-4">
               <Image
@@ -224,21 +218,6 @@ const SingleCampaignPage: React.FC = () => {
             {/* Tab Content */}
             {selectedTab === 'details' && (
               <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
-                {/* Campaign Title */}
-                <h1 className="text-4xl font-bold mb-4">
-                  {currentCampaign?.title}
-                </h1>
-                {/* Campaign Image */}
-                <div className="relative w-full aspect-video rounded-md overflow-hidden h-full mb-4">
-                  <Image
-                    src={currentCampaign?.media || '/bantuhive.svg'}
-                    alt="fundraising thumbnail"
-                    loading="eager"
-                    layout="fill"
-                    objectFit="cover"
-                  />
-                </div>
-
                 {/* Campaign Description */}
                 <div
                   className="prose dark:prose-dark max-w-none"
