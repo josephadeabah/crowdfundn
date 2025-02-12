@@ -372,53 +372,50 @@ const SingleCampaignPage: React.FC = () => {
               <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
                       Campaign Progress
                     </h3>
-                <div className="flex flex-col sm:flex-row sm:justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8 space-y-6 sm:space-y-0 sm:space-x-6">
-                  {/* Progress Info */}
-                  <div className="text-center sm:text-left">
-               
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                      <strong>{currentCampaign?.total_donors || 0}</strong>{' '}
-                      Backers
-                    </p>
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                      <strong>{currentCampaign?.remaining_days || 0}</strong>{' '}
-                      days left
-                    </p>
-                    <div className="w-full flex justify-between gap-3 items-center text-xl py-2">
-                      <div className="font-medium">
-                        {fundraiserCurrency}
-                        {parseFloat(
-                          currentCampaign?.transferred_amount || '0.0',
-                        ).toLocaleString()}
-                      </div>
-                      <div className="flex justify-between gap-3 items-center text-gray-600 dark:text-gray-400">
-                        <div className="text-sm text-gray-500">
-                          <span>of</span>
-                        </div>{' '}
-                        {fundraiserCurrency}
-                        {parseFloat(
-                          currentCampaign?.goal_amount || '0.0',
-                        ).toLocaleString()}
-                        <div className="text-sm text-gray-500">
-                          <span>Goal</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Progress Ring */}
-                  <div className="flex justify-center sm:justify-end">
-                    <ProgressRing
-                      value={Math.round(
-                        (Number(currentCampaign?.transferred_amount || 0) /
-                          Number(currentCampaign?.goal_amount || 1)) *
-                          100,
-                      )}
-                      size={120}
-                      strokeWidth={10}
-                      color="#22c55e"
-                    />
-                  </div>
-                </div>
+                    <div className="flex flex-col sm:flex-row sm:justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8 space-y-6 sm:space-y-0 sm:space-x-6">
+  {/* Progress Info */}
+  <div className="text-center sm:text-left">
+    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+      <strong>{currentCampaign?.total_donors || 0}</strong>{' '}
+      Backers
+    </p>
+    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+      <strong>{currentCampaign?.remaining_days || 0}</strong>{' '}
+      days left
+    </p>
+    <div className="w-full flex justify-between gap-3 items-center text-xl py-2">
+      <div className="font-medium">
+        {fundraiserCurrency}
+        {parseFloat(currentCampaign?.transferred_amount || '0.0').toLocaleString()}
+      </div>
+      <div className="flex justify-between gap-3 items-center text-gray-600 dark:text-gray-400">
+        <div className="text-sm text-gray-500">
+          <span>of</span>
+        </div>{' '}
+        {fundraiserCurrency}
+        {parseFloat(currentCampaign?.goal_amount || '0.0').toLocaleString()}
+        <div className="text-sm text-gray-500">
+          <span>Goal</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Progress Ring */}
+  <div className="flex justify-center sm:justify-end w-full sm:w-auto">
+    <ProgressRing
+      value={Math.round(
+        (Number(currentCampaign?.transferred_amount || 0) /
+          Number(currentCampaign?.goal_amount || 1)) *
+          100
+      )}
+      size={80}  // Using relative size
+      strokeWidth={10}
+      color="#22c55e"
+    />
+  </div>
+</div>
+
               </div>
             </div>
           </div>
