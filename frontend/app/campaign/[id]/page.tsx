@@ -344,17 +344,17 @@ const SingleCampaignPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8 space-y-6 sm:space-y-0 sm:space-x-6">
                   {/* Progress Info */}
                   <div className="text-center sm:text-left">
-                    <div className="w-full flex justify-between gap-3 items-center text-xl py-2">
+                    <div className="w-full flex flex-col lg:flex-row justify-between gap-3 items-center text-xl py-2">
                       <div className="font-medium">
                         {fundraiserCurrency}
                         {parseFloat(
                           currentCampaign?.transferred_amount || '0.0',
                         ).toLocaleString()}
                       </div>
-                      <div className="flex justify-between gap-3 items-center text-gray-600 dark:text-gray-400">
+                      <div className="flex flex-col lg:flex-row justify-between gap-3 items-center text-gray-600 dark:text-gray-400">
                         <div className="text-sm text-gray-500">
                           <span>of</span>
-                        </div>{' '}
+                        </div>
                         {fundraiserCurrency}
                         {parseFloat(
                           currentCampaign?.goal_amount || '0.0',
