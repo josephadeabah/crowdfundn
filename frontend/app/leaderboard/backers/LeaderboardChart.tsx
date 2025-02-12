@@ -1,4 +1,5 @@
 'use client';
+import { useUserContext } from '@/app/context/users/UserContext';
 import {
   LineChart,
   Line,
@@ -60,13 +61,14 @@ const CustomizedDollarDot = (props: {
 
 // Custom Tooltip
 const CustomTooltip = ({ active, payload, label }: any) => {
+    const { userAccountData } = useUserContext();
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
         <p className="font-semibold">{label}</p>
         <p className="text-sm text-gray-600">Score: {payload[0].value}</p>
         <p className="text-sm text-gray-600">
-          Total Donations: ${payload[1].value}
+          Total Donations: {userAccountData?.currency?.toUpperCase()}{payload[1].value}
         </p>
       </div>
     );
