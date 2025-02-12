@@ -346,21 +346,37 @@ const SingleCampaignPage: React.FC = () => {
                   <div className="text-center sm:text-left">
                     <div className="w-full flex flex-col lg:flex-row justify-between gap-3 items-center text-xl py-2">
                       <div className="font-medium">
-                        {fundraiserCurrency}
-                        {parseFloat(
-                          currentCampaign?.transferred_amount || '0.0',
-                        ).toLocaleString()}
+                        <div className="lg:hidden">
+                          {fundraiserCurrency}
+                          {parseFloat(
+                            currentCampaign?.transferred_amount || '0.0',
+                          ).toLocaleString()}
+                        </div>
+                        <div className="hidden lg:block">
+                          <span className="font-bold">Raised:</span>{' '}
+                          {fundraiserCurrency}
+                          {parseFloat(
+                            currentCampaign?.transferred_amount || '0.0',
+                          ).toLocaleString()}
+                        </div>
                       </div>
+
                       <div className="flex flex-col lg:flex-row justify-between gap-3 items-center text-gray-600 dark:text-gray-400">
                         <div className="text-sm text-gray-500">
                           <span>of</span>
                         </div>
-                        {fundraiserCurrency}
-                        {parseFloat(
-                          currentCampaign?.goal_amount || '0.0',
-                        ).toLocaleString()}
-                        <div className="text-sm text-gray-500">
-                          <span>Goal</span>
+                        <div className="lg:hidden">
+                          {fundraiserCurrency}
+                          {parseFloat(
+                            currentCampaign?.goal_amount || '0.0',
+                          ).toLocaleString()}
+                        </div>
+                        <div className="hidden lg:block">
+                          <span className="font-bold">Goal:</span>{' '}
+                          {fundraiserCurrency}
+                          {parseFloat(
+                            currentCampaign?.goal_amount || '0.0',
+                          ).toLocaleString()}
                         </div>
                       </div>
                     </div>
