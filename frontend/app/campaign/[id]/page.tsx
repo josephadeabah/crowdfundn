@@ -217,7 +217,7 @@ const SingleCampaignPage: React.FC = () => {
 
             {/* Tab Content */}
             {selectedTab === 'details' && (
-              <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
+              <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
                 {/* Campaign Description */}
                 <div
                   className="prose dark:prose-dark max-w-none"
@@ -274,7 +274,7 @@ const SingleCampaignPage: React.FC = () => {
               </div>
             )}
             {selectedTab === 'donate' && (
-              <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
+              <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
                 <RewardSelection
                   rewards={currentCampaign?.rewards || []}
                   selectedTier={selectedTier}
@@ -288,7 +288,7 @@ const SingleCampaignPage: React.FC = () => {
             )}
 
             {selectedTab === 'updates' && (
-              <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
+              <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
                 <FundraiserUpdates
                   updates={currentCampaign?.updates || []}
                   fundraiserName={fundraiserName}
@@ -297,13 +297,13 @@ const SingleCampaignPage: React.FC = () => {
             )}
 
             {selectedTab === 'comments' && (
-              <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
+              <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
                 <CommentsSection campaignId={String(currentCampaign?.id)} />
               </div>
             )}
 
             {selectedTab === 'backers' && (
-              <div className="bg-white dark:bg-gray-800 mx-auto px-6 py-6">
+              <div className="bg-white dark:bg-gray-800 mx-auto px-2 py-6">
                 <h3 className="text-2xl font-bold mb-6">Backers</h3>
                 <DonationList
                   donations={donations}
