@@ -90,7 +90,7 @@ const LeaderboardChart = ({ leaderboard }: any) => {
 
   return (
     <div className="w-full h-[400px] mt-8">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" margin-top="32px">
         <LineChart
           data={chartData}
           margin={{
