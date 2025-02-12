@@ -33,6 +33,29 @@ const CustomizedDot = (props: {
   );
 };
 
+// Customized dot for total donations with dollar sign
+const CustomizedDollarDot = (props: {
+  cx: number;
+  cy: number;
+  payload: { totalDonations: number };
+}) => {
+  const { cx, cy, payload } = props;
+  return (
+    <svg x={cx - 10} y={cy - 10} width={20} height={20} viewBox="0 0 1024 1024">
+      <text
+        x="50%"
+        y="50%"
+        alignmentBaseline="middle"
+        textAnchor="middle"
+        fontSize="16"
+        fill="green"
+      >
+        ${payload.totalDonations}
+      </text>
+    </svg>
+  );
+};
+
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
@@ -40,7 +63,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         <p className="font-semibold">{label}</p>
         <p className="text-sm text-gray-600">Score: {payload[0].value}</p>
         <p className="text-sm text-gray-600">
-          Total Donations: {payload[1].value}
+          Total Donations: ${payload[1].value}
         </p>
       </div>
     );
@@ -80,7 +103,18 @@ const LeaderboardChart = ({ leaderboard }: any) => {
             stroke="#8884d8"
             dot={<CustomizedDot cx={0} cy={0} payload={{ score: 0 }} />}
           />
-          <Line type="monotone" dataKey="totalDonations" stroke="#82ca9d" />
+          <Line
+            type="monotone"
+            dataKey="totalDonations"
+            stroke="#82ca9d"
+            dot={
+              <CustomizedDollarDot
+                cx={0}
+                cy={0}
+                payload={{ totalDonations: 0 }}
+              />
+            }
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>
