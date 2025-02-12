@@ -1,3 +1,4 @@
+'use client';
 import {
   LineChart,
   Line,
@@ -9,6 +10,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
+// Customized Dot for Score (Green/Red based on score)
 const CustomizedDot = (props: {
   cx: number;
   cy: number;
@@ -33,29 +35,30 @@ const CustomizedDot = (props: {
   );
 };
 
-// Customized dot for total donations with dollar sign
+// Customized Dollar Sign SVG for Total Donations
 const CustomizedDollarDot = (props: {
   cx: number;
   cy: number;
   payload: { totalDonations: number };
 }) => {
-  const { cx, cy, payload } = props;
+  const { cx, cy } = props;
+
   return (
-    <svg x={cx - 10} y={cy - 10} width={20} height={20} viewBox="0 0 1024 1024">
-      <text
-        x="50%"
-        y="50%"
-        alignmentBaseline="middle"
-        textAnchor="middle"
-        fontSize="16"
-        fill="green"
-      >
-        ${payload.totalDonations}
-      </text>
+    <svg
+      x={cx - 10}
+      y={cy - 10}
+      width={20}
+      height={20}
+      fill="#82ca9d" // Green color for dollar sign
+      viewBox="0 0 24 24"
+    >
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
     </svg>
   );
 };
 
+// Custom Tooltip
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
