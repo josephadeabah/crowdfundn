@@ -222,8 +222,8 @@ const RewardsPage: React.FC = () => {
     <>
       <div className="min-h-screen px-2 py-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">
               Rewards & Gifts
             </h1>
             <button
@@ -234,9 +234,9 @@ const RewardsPage: React.FC = () => {
               <FiPlus className="mr-2" /> Add Gift
             </button>
           </div>
-          <p className="text-gray-500 text-sm">
+          <div className="text-gray-500 text-sm mb-4">
             Give and Receive Rewards and Gifts
-          </p>
+          </div>
           {/* User Rewards & Rank Summary Section */}
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
