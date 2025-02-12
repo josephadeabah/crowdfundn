@@ -46,15 +46,23 @@ const CustomizedDollarDot = (props: {
 
   return (
     <svg
-    x={cx - 10}
-    y={cy - 10}
-    width={20}
-    height={20}
-    fill="#FFB200" // Green color for dollar sign
-    viewBox="0 0 24 24"
-  >
-    <path d="M12 1C6.48 1 2 5.48 2 11C2 16.52 6.48 21 12 21C17.52 21 22 16.52 22 11C22 5.48 17.52 1 12 1ZM13 14H11V9H13V14ZM13 7H11V5H13V7ZM12 3C6.48 3 3 6.48 3 11C3 15.52 6.48 19 12 19C17.52 19 21 15.52 21 11C21 6.48 17.52 3 12 3Z" />
-  </svg>
+      x={cx - 12}
+      y={cy - 12}
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="#FFB200"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="feather feather-dollar-sign"
+      {...props}
+    >
+      <line x1={12} y1={1} x2={12} y2={23} />
+      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+    </svg>
   );
 };
 
