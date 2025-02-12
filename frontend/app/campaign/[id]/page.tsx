@@ -319,7 +319,7 @@ const SingleCampaignPage: React.FC = () => {
         <div className="lg:w-1/3">
           <div className="sticky top-8">
             {/* Content for the second column */}
-            <div className="bg-white rounded-lg">
+            <div className="bg-white p-4 rounded-lg">
               <h2 className="text-xl font-semibold mb-4">
                 Support This Project
               </h2>
