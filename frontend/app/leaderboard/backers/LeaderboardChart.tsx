@@ -68,7 +68,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         <p className="text-sm text-gray-600">Score: {payload[0].value}</p>
         <p className="text-sm text-gray-600">
           Total Donations:{' '}
-          <span className="mr-2">
+          <span className="mr-1">
             {userAccountData?.profile?.currency?.toUpperCase() || 'GHS'}
           </span>
           {payload[1]?.value?.toFixed(2)}
