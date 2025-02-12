@@ -341,7 +341,7 @@ const SingleCampaignPage: React.FC = () => {
                 <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
                   Campaign Progress
                 </h3>
-                <div className="flex flex-col gap-2 sm:flex-row sm:justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8 space-y-6 sm:space-y-0 sm:space-x-6">
+                <div className="flex flex-col gap-2 sm:flex-row sm:justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow p-3 mb-8 space-y-6 sm:space-y-0 sm:space-x-6">
                   {/* Progress Info */}
                   <div className="text-center sm:text-left">
                   <div className="w-full flex lg:flex-col sm:justify-between gap-3 items-center text-xl py-2">
