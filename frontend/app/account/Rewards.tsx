@@ -432,8 +432,8 @@ const RewardsPage: React.FC = () => {
                 Add New Gift
               </h2>
               <p className="text-gray-500 text-sm">
-                Create low-priced items or
-                gifts to reward backers who donate as specified.
+                Create low-priced items or gifts to reward backers who donate as
+                specified.
               </p>
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">

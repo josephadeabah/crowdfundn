@@ -138,93 +138,21 @@ const SingleCampaignPage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mb-12">
-  <div className="flex flex-col lg:flex-row gap-8">
-    {/* First Column (Bigger Width) */}
-    <div className="lg:w-2/3">
-      {/* Content for the first column */}
-      <div className="bg-white p-6 rounded-lg shadow-md">
-      <h1 className="text-4xl font-bold mb-4">{currentCampaign?.title}</h1>
-        <p className="text-gray-700 mb-4">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        </p>
-        {/* Add more content here */}
-        <div className="relative w-full aspect-video rounded-md overflow-hidden h-full mb-4">
-              <Image
-                src={currentCampaign?.media || '/bantuhive.svg'}
-                alt="fundraising thumbnail"
-                loading="eager"
-                layout="fill"
-                objectFit="cover"
-              />
-          </div>
-        <div className="h-96 bg-gray-200 mb-4"></div>
-        <div className="relative">
-          <div className="flex items-center mb-6">
-            <button
-              onClick={() => scrollTabs('left')}
-              className="absolute left-0 z-10 bg-white dark:text-gray-100 shadow-md p-2 rounded-full md:hidden"
-            >
-              <FaChevronLeft />
-            </button>
-            <div
-              ref={tabsRef}
-              className="max-w-7xl mx-auto flex space-x-4 overflow-x-auto scrollbar-hide whitespace-nowrap"
-            >
-              {['details', 'donate', 'updates', 'comments', 'backers'].map(
-                (tab) => {
-                  let count = 0; // Default to 0 for tabs that don't require counts
-                  if (tab === 'updates') {
-                    count = currentCampaign?.updates?.length || 0;
-                  } else if (tab === 'comments') {
-                    count = currentCampaign?.comments?.length || 0;
-                  } else if (tab === 'backers') {
-                    count = currentCampaign?.total_donors || 0;
-                  }
-
-                  // Disable "donate" tab if donations are not allowed
-                  const isDonateTabDisabled =
-                    tab === 'donate' &&
-                    !currentCampaign?.permissions?.accept_donations;
-
-                  return (
-                    <button
-                      key={tab}
-                      className={`px-4 py-2 font-semibold ${selectedTab === tab ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-600'} ${isDonateTabDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      onClick={() => {
-                        if (!isDonateTabDisabled) {
-                          setSelectedTab(tab as any);
-                        }
-                      }}
-                      disabled={isDonateTabDisabled} // Disable the button if the "donate" tab is disabled
-                    >
-                      {tab.charAt(0).toUpperCase() + tab.slice(1)}{' '}
-                      {count > 0 && (
-                        <span className="text-sm text-gray-500 dark:text-gray-400">
-                          ({count})
-                        </span>
-                      )}
-                    </button>
-                  );
-                },
-              )}
-            </div>
-            <button
-              onClick={() => scrollTabs('right')}
-              className="absolute right-0 z-10 bg-white shadow-md p-2 rounded-full md:hidden"
-            >
-              <FaChevronRight />
-            </button>
-          </div>
-        </div>
-
-        {/* Tab Content */}
-        {selectedTab === 'details' && (
-          <div className="max-w-xl bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
-            {/* Campaign Title */}
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* First Column (Bigger Width) */}
+        <div className="lg:w-2/3">
+          {/* Content for the first column */}
+          <div className="bg-white p-6 rounded-lg shadow-md">
             <h1 className="text-4xl font-bold mb-4">
               {currentCampaign?.title}
             </h1>
-            {/* Campaign Image */}
+            <p className="text-gray-700 mb-4">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+              enim ad minim veniam, quis nostrud exercitation ullamco laboris
+              nisi ut aliquip ex ea commodo consequat.
+            </p>
+            {/* Add more content here */}
             <div className="relative w-full aspect-video rounded-md overflow-hidden h-full mb-4">
               <Image
                 src={currentCampaign?.media || '/bantuhive.svg'}
@@ -234,200 +162,272 @@ const SingleCampaignPage: React.FC = () => {
                 objectFit="cover"
               />
             </div>
-            {/* Progress Ring */}
-            <div className="flex flex-col sm:flex-row sm:justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8 space-y-6 sm:space-y-0 sm:space-x-6">
-              {/* Progress Info */}
-              <div className="text-center sm:text-left">
-                <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
-                  Campaign Progress
-                </h3>
-                <div className="w-full flex justify-between gap-3 items-center text-xl py-2">
-                  <div className="font-medium">
-                    {fundraiserCurrency}
-                    {parseFloat(
-                      currentCampaign?.transferred_amount || '0.0',
-                    ).toLocaleString()}
-                  </div>
-                  <div className="flex justify-between gap-3 items-center text-gray-600 dark:text-gray-400">
-                    <div className="text-sm text-gray-500">
-                      <span>of</span>
-                    </div>{' '}
-                    {fundraiserCurrency}
-                    {parseFloat(
-                      currentCampaign?.goal_amount || '0.0',
-                    ).toLocaleString()}
-                    <div className="text-sm text-gray-500">
-                      <span>Goal</span>
-                    </div>
-                  </div>
-                </div>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  <strong>{currentCampaign?.total_donors || 0}</strong> Backers
-                </p>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  <strong>{currentCampaign?.remaining_days || 0}</strong> days
-                  left
-                </p>
-              </div>
-              {/* Progress Ring */}
-              <div className="flex justify-center sm:justify-end">
-                <ProgressRing
-                  value={Math.round(
-                    (Number(currentCampaign?.transferred_amount || 0) /
-                      Number(currentCampaign?.goal_amount || 1)) *
-                      100,
+            <div className="relative">
+              <div className="flex items-center mb-6">
+                <button
+                  onClick={() => scrollTabs('left')}
+                  className="absolute left-0 z-10 bg-white dark:text-gray-100 shadow-md p-2 rounded-full md:hidden"
+                >
+                  <FaChevronLeft />
+                </button>
+                <div
+                  ref={tabsRef}
+                  className="max-w-7xl mx-auto flex space-x-4 overflow-x-auto scrollbar-hide whitespace-nowrap"
+                >
+                  {['details', 'donate', 'updates', 'comments', 'backers'].map(
+                    (tab) => {
+                      let count = 0; // Default to 0 for tabs that don't require counts
+                      if (tab === 'updates') {
+                        count = currentCampaign?.updates?.length || 0;
+                      } else if (tab === 'comments') {
+                        count = currentCampaign?.comments?.length || 0;
+                      } else if (tab === 'backers') {
+                        count = currentCampaign?.total_donors || 0;
+                      }
+
+                      // Disable "donate" tab if donations are not allowed
+                      const isDonateTabDisabled =
+                        tab === 'donate' &&
+                        !currentCampaign?.permissions?.accept_donations;
+
+                      return (
+                        <button
+                          key={tab}
+                          className={`px-4 py-2 font-semibold ${selectedTab === tab ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-600'} ${isDonateTabDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          onClick={() => {
+                            if (!isDonateTabDisabled) {
+                              setSelectedTab(tab as any);
+                            }
+                          }}
+                          disabled={isDonateTabDisabled} // Disable the button if the "donate" tab is disabled
+                        >
+                          {tab.charAt(0).toUpperCase() + tab.slice(1)}{' '}
+                          {count > 0 && (
+                            <span className="text-sm text-gray-500 dark:text-gray-400">
+                              ({count})
+                            </span>
+                          )}
+                        </button>
+                      );
+                    },
                   )}
-                  size={120}
-                  strokeWidth={10}
-                  color="#22c55e"
-                />
+                </div>
+                <button
+                  onClick={() => scrollTabs('right')}
+                  className="absolute right-0 z-10 bg-white shadow-md p-2 rounded-full md:hidden"
+                >
+                  <FaChevronRight />
+                </button>
               </div>
             </div>
-            {/* Campaign Description */}
-            <div
-              className="prose dark:prose-dark max-w-none"
-              dangerouslySetInnerHTML={{
-                __html: currentCampaign?.description?.body || '',
-              }}
-            />
-            {/* Combined Share and Fundraiser Info Container */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
-              {/* Share Section */}
-              <div className="border-b pb-4 mb-4">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-3">
-                  Share this fundraiser
-                </h2>
-                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-                  <Button
-                    onClick={handleShare}
-                    className="flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
-                  >
-                    <FaShare className="mr-2" />{' '}
-                    {currentCampaign?.total_shares || 0} Shares
-                  </Button>
-                  <button
-                    onClick={handleCopy}
-                    className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-                  >
-                    {copyButtonText}
-                  </button>
-                </div>
-                {error && <p className="text-red-500 mt-2">{error}</p>}
-              </div>
 
-              {/* Fundraiser Info Section */}
-              <div className="flex items-center space-x-4 mb-4">
-                <div className="text-xs italic text-gray-500 dark:text-gray-400">
-                  Fundraiser:
+            {/* Tab Content */}
+            {selectedTab === 'details' && (
+              <div className="max-w-xl bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
+                {/* Campaign Title */}
+                <h1 className="text-4xl font-bold mb-4">
+                  {currentCampaign?.title}
+                </h1>
+                {/* Campaign Image */}
+                <div className="relative w-full aspect-video rounded-md overflow-hidden h-full mb-4">
+                  <Image
+                    src={currentCampaign?.media || '/bantuhive.svg'}
+                    alt="fundraising thumbnail"
+                    loading="eager"
+                    layout="fill"
+                    objectFit="cover"
+                  />
                 </div>
-                <Avatar
-                  name={fundraiserName as string}
-                  size="md"
-                  imageUrl={currentCampaign?.fundraiser?.profile?.avatar}
+
+                {/* Campaign Description */}
+                <div
+                  className="prose dark:prose-dark max-w-none"
+                  dangerouslySetInnerHTML={{
+                    __html: currentCampaign?.description?.body || '',
+                  }}
                 />
-                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                  {fundraiserName}
-                </h3>
-              </div>
+                {/* Combined Share and Fundraiser Info Container */}
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
+                  {/* Share Section */}
+                  <div className="border-b pb-4 mb-4">
+                    <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-3">
+                      Share this fundraiser
+                    </h2>
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                      <Button
+                        onClick={handleShare}
+                        className="flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+                      >
+                        <FaShare className="mr-2" />{' '}
+                        {currentCampaign?.total_shares || 0} Shares
+                      </Button>
+                      <button
+                        onClick={handleCopy}
+                        className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                      >
+                        {copyButtonText}
+                      </button>
+                    </div>
+                    {error && <p className="text-red-500 mt-2">{error}</p>}
+                  </div>
 
-              {/* Fundraiser Description */}
-              <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                {currentCampaign?.fundraiser?.profile?.description ||
-                  'No description provided.'}
+                  {/* Fundraiser Info Section */}
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="text-xs italic text-gray-500 dark:text-gray-400">
+                      Fundraiser:
+                    </div>
+                    <Avatar
+                      name={fundraiserName as string}
+                      size="md"
+                      imageUrl={currentCampaign?.fundraiser?.profile?.avatar}
+                    />
+                    <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+                      {fundraiserName}
+                    </h3>
+                  </div>
+
+                  {/* Fundraiser Description */}
+                  <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    {currentCampaign?.fundraiser?.profile?.description ||
+                      'No description provided.'}
+                  </div>
+                </div>
+              </div>
+            )}
+            {selectedTab === 'donate' && (
+              <div className="max-w-xl bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
+                <RewardSelection
+                  rewards={currentCampaign?.rewards || []}
+                  selectedTier={selectedTier}
+                  onTierSelect={handleTierSelect}
+                  pledgeAmount={pledgeAmount}
+                  setPledgeAmount={setPledgeAmount}
+                  billingFrequency={billingFrequency}
+                  setBillingFrequency={setBillingFrequency}
+                />
+                <DonationButton
+                  selectedTier={selectedTier}
+                  pledgeAmount={pledgeAmount}
+                  billingFrequency={billingFrequency}
+                  fundraiserDetails={{
+                    id: String(currentCampaign?.fundraiser_id),
+                    campaignId: String(currentCampaign?.id),
+                    campaignTitle: currentCampaign?.title,
+                  }}
+                />
+              </div>
+            )}
+
+            {selectedTab === 'updates' && (
+              <div className="max-w-xl bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
+                <FundraiserUpdates
+                  updates={currentCampaign?.updates || []}
+                  fundraiserName={fundraiserName}
+                />
+              </div>
+            )}
+
+            {selectedTab === 'comments' && (
+              <div className="max-w-xl bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
+                <CommentsSection campaignId={String(currentCampaign?.id)} />
+              </div>
+            )}
+
+            {selectedTab === 'backers' && (
+              <div className="max-w-xl bg-white dark:bg-gray-800 mx-auto px-6 py-6">
+                <h3 className="text-2xl font-bold mb-6">Backers</h3>
+                <DonationList
+                  donations={donations}
+                  fundraiserCurrency={fundraiserCurrency}
+                  campaignId={String(currentCampaign?.id)}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Second Column (Smaller Width and Sticky) */}
+        <div className="lg:w-1/3">
+          <div className="sticky top-8">
+            {/* Content for the second column */}
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h2 className="text-xl font-semibold mb-4">
+                Support This Project
+              </h2>
+              <p className="text-gray-700 mb-4">
+                Help us reach our goal by contributing to this project.
+              </p>
+              <DonationButton
+                selectedTier={selectedTier}
+                pledgeAmount={pledgeAmount}
+                billingFrequency={billingFrequency}
+                fundraiserDetails={{
+                  id: String(currentCampaign?.fundraiser_id),
+                  campaignId: String(currentCampaign?.id),
+                  campaignTitle: currentCampaign?.title,
+                }}
+              />
+              {/* Add more content here */}
+              <div className="mt-6">
+                <h3 className="text-lg font-medium mb-2">Project Details</h3>
+                <div className="flex flex-col sm:flex-row sm:justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8 space-y-6 sm:space-y-0 sm:space-x-6">
+                  {/* Progress Info */}
+                  <div className="text-center sm:text-left">
+                    <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
+                      Campaign Progress
+                    </h3>
+                    <div className="w-full flex justify-between gap-3 items-center text-xl py-2">
+                      <div className="font-medium">
+                        {fundraiserCurrency}
+                        {parseFloat(
+                          currentCampaign?.transferred_amount || '0.0',
+                        ).toLocaleString()}
+                      </div>
+                      <div className="flex justify-between gap-3 items-center text-gray-600 dark:text-gray-400">
+                        <div className="text-sm text-gray-500">
+                          <span>of</span>
+                        </div>{' '}
+                        {fundraiserCurrency}
+                        {parseFloat(
+                          currentCampaign?.goal_amount || '0.0',
+                        ).toLocaleString()}
+                        <div className="text-sm text-gray-500">
+                          <span>Goal</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                      <strong>{currentCampaign?.total_donors || 0}</strong>{' '}
+                      Backers
+                    </p>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                      <strong>{currentCampaign?.remaining_days || 0}</strong>{' '}
+                      days left
+                    </p>
+                  </div>
+                  {/* Progress Ring */}
+                  <div className="flex justify-center sm:justify-end">
+                    <ProgressRing
+                      value={Math.round(
+                        (Number(currentCampaign?.transferred_amount || 0) /
+                          Number(currentCampaign?.goal_amount || 1)) *
+                          100,
+                      )}
+                      size={120}
+                      strokeWidth={10}
+                      color="#22c55e"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        )}
-        {selectedTab === 'donate' && (
-          <div className="max-w-xl bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
-            <RewardSelection
-              rewards={currentCampaign?.rewards || []}
-              selectedTier={selectedTier}
-              onTierSelect={handleTierSelect}
-              pledgeAmount={pledgeAmount}
-              setPledgeAmount={setPledgeAmount}
-              billingFrequency={billingFrequency}
-              setBillingFrequency={setBillingFrequency}
-            />
-            <DonationButton
-              selectedTier={selectedTier}
-              pledgeAmount={pledgeAmount}
-              billingFrequency={billingFrequency}
-              fundraiserDetails={{
-                id: String(currentCampaign?.fundraiser_id),
-                campaignId: String(currentCampaign?.id),
-                campaignTitle: currentCampaign?.title,
-              }}
-            />
-          </div>
-        )}
-
-        {selectedTab === 'updates' && (
-          <div className="max-w-xl bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
-            <FundraiserUpdates
-              updates={currentCampaign?.updates || []}
-              fundraiserName={fundraiserName}
-            />
-          </div>
-        )}
-
-        {selectedTab === 'comments' && (
-          <div className="max-w-xl bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-6 py-6">
-            <CommentsSection campaignId={String(currentCampaign?.id)} />
-          </div>
-        )}
-
-        {selectedTab === 'backers' && (
-          <div className="max-w-xl bg-white dark:bg-gray-800 mx-auto px-6 py-6">
-            <h3 className="text-2xl font-bold mb-6">Backers</h3>
-            <DonationList
-              donations={donations}
-              fundraiserCurrency={fundraiserCurrency}
-              campaignId={String(currentCampaign?.id)}
-            />
-          </div>
-        )}
+        </div>
       </div>
       <SuggestedCampaignsComponent
         currentCategory={currentCampaign?.category}
       />
-
     </div>
-
-    {/* Second Column (Smaller Width and Sticky) */}
-    <div className="lg:w-1/3">
-      <div className="sticky top-8">
-        {/* Content for the second column */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Support This Project</h2>
-          <p className="text-gray-700 mb-4">
-            Help us reach our goal by contributing to this project.
-          </p>
-          <DonationButton
-              selectedTier={selectedTier}
-              pledgeAmount={pledgeAmount}
-              billingFrequency={billingFrequency}
-              fundraiserDetails={{
-                id: String(currentCampaign?.fundraiser_id),
-                campaignId: String(currentCampaign?.id),
-                campaignTitle: currentCampaign?.title,
-              }}
-            />
-          {/* Add more content here */}
-          <div className="mt-6">
-            <h3 className="text-lg font-medium mb-2">Project Details</h3>
-            <ul className="text-gray-700">
-              <li className="mb-2">Goal: $10,000</li>
-              <li className="mb-2">Raised: $5,000</li>
-              <li className="mb-2">Backers: 200</li>
-              <li className="mb-2">Days Left: 30</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
   );
 };
 
