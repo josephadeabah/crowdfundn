@@ -284,16 +284,6 @@ const SingleCampaignPage: React.FC = () => {
                   billingFrequency={billingFrequency}
                   setBillingFrequency={setBillingFrequency}
                 />
-                <DonationButton
-                  selectedTier={selectedTier}
-                  pledgeAmount={pledgeAmount}
-                  billingFrequency={billingFrequency}
-                  fundraiserDetails={{
-                    id: String(currentCampaign?.fundraiser_id),
-                    campaignId: String(currentCampaign?.id),
-                    campaignTitle: currentCampaign?.title,
-                  }}
-                />
               </div>
             )}
 
