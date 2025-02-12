@@ -382,7 +382,7 @@ const SingleCampaignPage: React.FC = () => {
                           Number(currentCampaign?.goal_amount || 1)) *
                           100,
                       )}
-                      size={100} // Using relative size
+                      size={150} // Using relative size
                       strokeWidth={10}
                       color="#22c55e"
                     />
