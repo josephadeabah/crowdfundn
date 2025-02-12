@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { useAuth } from '../auth/AuthContext';
 
-interface LeaderboardEntry {
+export interface LeaderboardEntry {
   id: number;
   user_id: number;
   username: string;
@@ -50,7 +50,7 @@ interface FundraiserLeaderboardEntry {
   level: string;
 }
 
-interface UserRankData extends LeaderboardEntry {
+export interface UserRankData extends LeaderboardEntry {
   rank: number;
 }
 
