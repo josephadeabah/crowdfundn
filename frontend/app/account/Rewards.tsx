@@ -234,7 +234,7 @@ const RewardsPage: React.FC = () => {
               <FiPlus className="mr-2" /> Add Gift
             </button>
           </div>
-          <p className="text-gray-500 text-sm mb-4">
+          <p className="text-gray-500 text-sm">
             Give and Receive Rewards and Gifts
           </p>
           {/* User Rewards & Rank Summary Section */}
@@ -432,7 +432,7 @@ const RewardsPage: React.FC = () => {
                 Add New Gift
               </h2>
               <p className="text-gray-500 text-sm">
-                You haven't created any gifts yet! Create low-priced items or
+                Create low-priced items or
                 gifts to reward backers who donate as specified.
               </p>
               <form onSubmit={handleSubmit}>
