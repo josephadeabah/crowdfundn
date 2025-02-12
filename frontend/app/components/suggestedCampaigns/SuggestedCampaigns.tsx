@@ -100,7 +100,7 @@ const SuggestedCampaignsComponent = ({
     );
 
   return (
-    <div className="w-full max-w-7xl mx-auto bg-white md:p-4 mb-8 rounded-lg shadow">
+    <div className="w-full max-w-7xl mx-auto bg-white md:p-4 mb-8 rounded-lg">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
@@ -108,7 +108,7 @@ const SuggestedCampaignsComponent = ({
         description={toast.description}
         type={toast.type}
       />
-      <h2 className="text-xl font-bold text-gray-800 mb-4">
+      <h2 className="text-xl font-bold text-gray-800 mb-4 p-2">
         You May Also Support
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 px-4">
