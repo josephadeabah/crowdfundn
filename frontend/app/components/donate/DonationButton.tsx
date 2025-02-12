@@ -133,83 +133,85 @@ const DonationButton: React.FC<DonationButtonProps> = ({
       <Modal
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
-        size="large"
+        size="xlarge"
         closeOnBackdropClick={true}
       >
-        <h2 className="text-2xl font-bold mb-1">Select Payment Type</h2>
-        <div className="text-orange-500 text-xs">
-          We currently support payment with PayStack. If your preferred payment
-          method is disabled, kindly wait for future availability.
-          <p className="text-gray-600">
-            You'll receive one email from us and one from Paystack after
-            payment.
-          </p>
-        </div>
-        <hr className="my-4" />
-        <form onSubmit={handlePaymentSubmit}>
-          <div className="space-y-4 mb-6">
-            {paymentMethods.map((method) => (
-              <label
-                key={method.id}
-                className={`flex items-center p-3 border rounded-lg text-sm cursor-pointer transition-all duration-200 ${
-                  selectedPaymentMethod === method.id
-                    ? 'border-green bg-green-100'
-                    : 'border-green-200 hover:border-green-800'
-                } ${method.id !== 'paystack' ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value={method.id}
-                  checked={selectedPaymentMethod === method.id}
-                  onChange={() => {
-                    if (method.id === 'paystack') {
-                      handlePaymentMethodSelect(method.id);
-                    }
-                  }}
-                  className="sr-only"
-                  disabled={method.id !== 'paystack'}
-                />
-                <span className="flex items-center">
-                  {method.icon}
-                  <span className="ml-3">{method.name}</span>
-                </span>
-                <span
-                  className={`ml-auto w-5 h-5 border-2 rounded-full ${
-                    selectedPaymentMethod === method.id
-                      ? 'border-green-600 bg-green-600'
-                      : 'border-green-300'
-                  }`}
-                ></span>
-              </label>
-            ))}
-          </div>
-          {error && (
-            <p className="text-red-500 mb-4" role="alert">
-              {error}
+        <div className="overflow-y-auto max-h-[60vh] p-2 bg-white dark:bg-neutral-800">
+          <h2 className="text-2xl font-bold mb-1">Select Payment Type</h2>
+          <div className="text-orange-500 text-xs">
+            We currently support payment with PayStack. If your preferred
+            payment method is disabled, kindly wait for future availability.
+            <p className="text-gray-600">
+              You'll receive one email from us and one from Paystack after
+              payment.
             </p>
-          )}
-          <div className="flex justify-end space-x-3">
-            <Button
-              type="button"
-              size="lg"
-              variant="default"
-              onClick={() => setIsPaymentModalOpen(false)}
-              className="px-4 py-2 text-gray-600 bg-gray-200 rounded-full hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className="px-4 py-2 text-gray-800 dark:text-gray-50 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex items-center"
-              disabled={isProcessing}
-              size="lg"
-              variant="default"
-            >
-              {isProcessing ? 'Processing...' : 'Proceed to Payment'}
-            </Button>
           </div>
-        </form>
+          <hr className="my-4" />
+          <form onSubmit={handlePaymentSubmit}>
+            <div className="space-y-4 mb-6">
+              {paymentMethods.map((method) => (
+                <label
+                  key={method.id}
+                  className={`flex items-center p-3 border rounded-lg text-sm cursor-pointer transition-all duration-200 ${
+                    selectedPaymentMethod === method.id
+                      ? 'border-green bg-green-100'
+                      : 'border-green-200 hover:border-green-800'
+                  } ${method.id !== 'paystack' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value={method.id}
+                    checked={selectedPaymentMethod === method.id}
+                    onChange={() => {
+                      if (method.id === 'paystack') {
+                        handlePaymentMethodSelect(method.id);
+                      }
+                    }}
+                    className="sr-only"
+                    disabled={method.id !== 'paystack'}
+                  />
+                  <span className="flex items-center">
+                    {method.icon}
+                    <span className="ml-3">{method.name}</span>
+                  </span>
+                  <span
+                    className={`ml-auto w-5 h-5 border-2 rounded-full ${
+                      selectedPaymentMethod === method.id
+                        ? 'border-green-600 bg-green-600'
+                        : 'border-green-300'
+                    }`}
+                  ></span>
+                </label>
+              ))}
+            </div>
+            {error && (
+              <p className="text-red-500 mb-4" role="alert">
+                {error}
+              </p>
+            )}
+            <div className="flex justify-end space-x-3">
+              <Button
+                type="button"
+                size="lg"
+                variant="default"
+                onClick={() => setIsPaymentModalOpen(false)}
+                className="px-4 py-2 text-gray-600 bg-gray-200 rounded-full hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="px-4 py-2 text-gray-800 dark:text-gray-50 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex items-center"
+                disabled={isProcessing}
+                size="lg"
+                variant="default"
+              >
+                {isProcessing ? 'Processing...' : 'Proceed to Payment'}
+              </Button>
+            </div>
+          </form>
+        </div>
       </Modal>
 
       {/* Processing Payment Modal */}
