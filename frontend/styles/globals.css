@@ -191,3 +191,11 @@ img[src*='#markdown-transferspage'] {
   height: 400px;
   object-fit: contain;
 }
+
+.prose iframe,
+.prose video {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9; /* Maintain a 16:9 aspect ratio for videos */
+  border-radius: 0.5rem; /* Optional: Add rounded corners */
+}
