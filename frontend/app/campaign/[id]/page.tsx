@@ -143,12 +143,20 @@ const SingleCampaignPage: React.FC = () => {
     <div className="lg:w-2/3">
       {/* Content for the first column */}
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-4">Crowdfunding Project Title</h1>
+      <h1 className="text-4xl font-bold mb-4">{currentCampaign?.title}</h1>
         <p className="text-gray-700 mb-4">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
         </p>
         {/* Add more content here */}
-        <div className="h-96 bg-gray-200 mb-4"></div>
+        <div className="relative w-full aspect-video rounded-md overflow-hidden h-full mb-4">
+              <Image
+                src={currentCampaign?.media || '/bantuhive.svg'}
+                alt="fundraising thumbnail"
+                loading="eager"
+                layout="fill"
+                objectFit="cover"
+              />
+          </div>
         <div className="h-96 bg-gray-200 mb-4"></div>
         <div className="h-96 bg-gray-200 mb-4"></div>
       </div>
@@ -163,9 +171,16 @@ const SingleCampaignPage: React.FC = () => {
           <p className="text-gray-700 mb-4">
             Help us reach our goal by contributing to this project.
           </p>
-          <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">
-            Donate Now
-          </button>
+          <DonationButton
+              selectedTier={selectedTier}
+              pledgeAmount={pledgeAmount}
+              billingFrequency={billingFrequency}
+              fundraiserDetails={{
+                id: String(currentCampaign?.fundraiser_id),
+                campaignId: String(currentCampaign?.id),
+                campaignTitle: currentCampaign?.title,
+              }}
+            />
           {/* Add more content here */}
           <div className="mt-6">
             <h3 className="text-lg font-medium mb-2">Project Details</h3>
