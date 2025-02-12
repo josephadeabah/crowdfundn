@@ -369,13 +369,21 @@ const SingleCampaignPage: React.FC = () => {
               />
               {/* Add more content here */}
               <div className="mt-6">
-                <h3 className="text-lg font-medium mb-2">Project Details</h3>
+              <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
+                      Campaign Progress
+                    </h3>
                 <div className="flex flex-col sm:flex-row sm:justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8 space-y-6 sm:space-y-0 sm:space-x-6">
                   {/* Progress Info */}
                   <div className="text-center sm:text-left">
-                    <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
-                      Campaign Progress
-                    </h3>
+               
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                      <strong>{currentCampaign?.total_donors || 0}</strong>{' '}
+                      Backers
+                    </p>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                      <strong>{currentCampaign?.remaining_days || 0}</strong>{' '}
+                      days left
+                    </p>
                     <div className="w-full flex justify-between gap-3 items-center text-xl py-2">
                       <div className="font-medium">
                         {fundraiserCurrency}
@@ -396,14 +404,6 @@ const SingleCampaignPage: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                      <strong>{currentCampaign?.total_donors || 0}</strong>{' '}
-                      Backers
-                    </p>
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                      <strong>{currentCampaign?.remaining_days || 0}</strong>{' '}
-                      days left
-                    </p>
                   </div>
                   {/* Progress Ring */}
                   <div className="flex justify-center sm:justify-end">
