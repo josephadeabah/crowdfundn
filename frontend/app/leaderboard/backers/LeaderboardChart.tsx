@@ -50,10 +50,9 @@ const CustomizedDollarDot = (props: {
       y={cy - 10}
       width={20}
       height={20}
-      fill="#82ca9d" // Green color for dollar sign
+      fill="#FFB200" // Green color for dollar sign
       viewBox="0 0 24 24"
     >
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
     </svg>
   );
@@ -61,14 +60,15 @@ const CustomizedDollarDot = (props: {
 
 // Custom Tooltip
 const CustomTooltip = ({ active, payload, label }: any) => {
-    const { userAccountData } = useUserContext();
+  const { userAccountData } = useUserContext();
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
         <p className="font-semibold">{label}</p>
         <p className="text-sm text-gray-600">Score: {payload[0].value}</p>
         <p className="text-sm text-gray-600">
-          Total Donations: {userAccountData?.currency?.toUpperCase()}{payload[1].value}
+          Total Donations: {userAccountData?.currency?.toUpperCase()}
+          {payload[1].value}
         </p>
       </div>
     );
