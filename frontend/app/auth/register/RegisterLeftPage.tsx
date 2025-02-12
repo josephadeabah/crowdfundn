@@ -32,7 +32,7 @@ export default function RegisterLeftPage() {
           </div>
           <div>
             <h4 className="mb-2 text-2xl font-bold text-orange-400  lg:text-3xl">
-              5M+
+              1M+
             </h4>
             <p className="text-base font-medium text-gray-950 dark:text-gray-50">
               Money Raised
@@ -40,7 +40,7 @@ export default function RegisterLeftPage() {
           </div>
           <div>
             <h4 className="mb-2 text-2xl font-bold text-orange-400  lg:text-3xl">
-              3K+
+              1K+
             </h4>
             <p className="text-base font-medium text-gray-950 dark:text-gray-50">
               Happy Donors
