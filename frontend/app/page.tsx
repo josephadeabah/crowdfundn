@@ -153,48 +153,50 @@ const HomePage = () => {
             className="w-full relative text-center"
           >
             <div className="flex-grow flex flex-col justify-center items-center text-gray-800  dark:text-gray-50 dark:bg-gray-800 mx-auto w-full pt-1">
-              <div className="w-full flex flex-col sm:flex-row gap-2">
-                <div className="p-4 sm:w-1/2">
-                  <h1 className="text-4xl md:text-7xl">
-                    <div
-                      className="anim-words flex justify-center items-center w-full p-0 md:p-0"
-                      style={{ height: '250px' }}
-                    >
-                      <h1
-                        className="word text-center text-2xl text-gray-700 dark:text-gray-50 md:text-4xl lg:text-5xl font-bold"
-                        ref={wordRef}
-                      >
-                        .
-                      </h1>
-                    </div>
-                  </h1>
-                  <div className="w-full flex flex-row justify-center items-center gap-4 lg:justify-start *:w-full *:px-5 *:py-3 *:text-base *:font-medium *:text-center *:transition *:duration-[250ms] *:ease-in-out lg:*:w-auto">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="bg-green-700 text-white sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-green-500 hover:scale-105 transition-transform duration-300 whitespace-nowrap"
-                    >
-                      <a
-                        href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
-                      >
-                        Fundraise Now for Free
-                      </a>
-                    </motion.button>
+            <div className="w-full flex flex-col sm:flex-row gap-2 background-animation relative">
+  {/* Semi-transparent overlay */}
+  <div className="absolute inset-0 bg-white/50 z-1"></div>
 
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300"
-                    >
-                      <a href="/how-it-works">How It Works</a>
-                    </motion.button>
-                  </div>
-                </div>
+  {/* Content */}
+  <div className="p-4 sm:w-1/2 relative z-2">
+    <h1 className="text-4xl md:text-7xl">
+      <div
+        className="anim-words flex justify-center items-center w-full p-0 md:p-0"
+        style={{ height: '250px' }}
+      >
+        <h1
+          className="word text-center text-2xl text-gray-700 dark:text-gray-50 md:text-4xl lg:text-5xl font-bold"
+          ref={wordRef}
+        >
+          .
+        </h1>
+      </div>
+    </h1>
+    <div className="w-full flex flex-row justify-center items-center gap-4 lg:justify-start *:w-full *:px-5 *:py-3 *:text-base *:font-medium *:text-center *:transition *:duration-[250ms] *:ease-in-out lg:*:w-auto">
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="bg-green-700 text-white sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-green-500 hover:scale-105 transition-transform duration-300 whitespace-nowrap"
+      >
+        <a href={`${user ? '/account/dashboard/create' : '/auth/register'}`}>
+          Fundraise Now for Free
+        </a>
+      </motion.button>
 
-                <div className="sm:w-1/2">
-                  <CarouselPlugin />
-                </div>
-              </div>
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300"
+      >
+        <a href="/how-it-works">How It Works</a>
+      </motion.button>
+    </div>
+  </div>
+
+  <div className="sm:w-1/2 relative z-2">
+    <CarouselPlugin />
+  </div>
+</div>
             </div>
           </motion.div>
         </div>

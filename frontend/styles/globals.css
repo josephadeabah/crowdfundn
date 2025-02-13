@@ -199,3 +199,11 @@ img[src*='#markdown-transferspage'] {
   aspect-ratio: 16 / 9; /* Maintain a 16:9 aspect ratio for videos */
   /* border-radius: 0.5rem;  Optional: Add rounded corners */
 }
+
+.background-animation {
+  background-image: url('path/to/Animation-global.gif');
+  background-size: cover; /* Ensures the image covers the entire container */
+  background-position: center; /* Centers the background image */
+  background-repeat: no-repeat; /* Prevents the image from repeating */
+  background-attachment: fixed; /* Optional: Makes the background fixed while scrolling */
+}
