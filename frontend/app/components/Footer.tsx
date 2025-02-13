@@ -62,7 +62,7 @@ const Footer = () => {
         </div>
 
         {/* Mission & Vision Section */}
-        <div className="mt-12 text-center border-t border-gray-700 pt-8">
+        <div className="mt-12 text-center border-t border-orange-500 pt-8">
           <h3 className="text-xl font-bold">Our Vision</h3>
           <p className="text-sm mt-2 max-w-2xl mx-auto">
             To be Africa's leading crowdfunding platform, connecting people with opportunities to create lasting impact.
