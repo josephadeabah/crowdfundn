@@ -29,9 +29,9 @@ const VerifiedBadgeIcon: React.FC<VerifiedBadgeIconProps> = ({
           <stop offset="1" stopColor={color} />
         </linearGradient>
         <linearGradient id="b" gradientUnits="userSpaceOnUse" x1="192.5" y1=".03" x2="192.52" y2="357.09">
-          <stop offset="0" stopColor="#FDA113" />
-          <stop offset=".541" stopColor="#FF9500" />
-          <stop offset="1" stopColor="#F88D04" />
+          <stop offset="0" stopColor={color} />
+          <stop offset=".541" stopColor={color} />
+          <stop offset="1" stopColor={color} />
         </linearGradient>
       </defs>
       {/* Paths using gradients */}
