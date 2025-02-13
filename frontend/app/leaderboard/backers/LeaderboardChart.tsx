@@ -50,10 +50,15 @@ const CustomizedDollarDot = (props: {
       y={cy - 10}
       width={20}
       height={20}
-      fill="#FFB26F" // Green color for dollar sign
+      fill="#FFB26F" // Orange color for dollar sign
       viewBox="0 0 24 24"
+      fontFamily="Arial, sans-serif" // Set font family
+      fontSize="16" // Set font size
+      fontWeight="bold" // Make the dollar sign bold
     >
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+      <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle">
+        $
+      </text>
     </svg>
   );
 };
