@@ -53,7 +53,7 @@ const CustomizedDollarDot = (props: {
       fill="#FFB26F" // Orange color for dollar sign
       viewBox="0 0 24 24"
       fontFamily="Arial, sans-serif" // Set font family
-      fontSize="16" // Set font size
+      fontSize="20" // Set font size
       fontWeight="bold" // Make the dollar sign bold
     >
       <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle">
