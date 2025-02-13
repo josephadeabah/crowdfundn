@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <div className="bg-gray-50 dark:text-gray-50 text-gray-800 dark:bg-gray-950 mt-auto w-full">
       <div className="mx-auto px-3 md:px-0 py-12 max-w-screen-xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
           <div className="col-span-1 md:col-span-2">
             <img
               src="/bantuhive.svg"
@@ -63,7 +63,25 @@ const Footer = () => {
               ))}
             </ul>
           </div>
+
+          {/* Mission and Vision Column */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Mission & Vision</h3>
+            <div className="text-sm mb-4">
+              <div className="font-semibold">Mission:</div>
+              <p>
+                To empower people, organizations, and communities across Africa by connecting them with the financial support they need to transform their ideas and aspirations into impactful realities.
+              </p>
+            </div>
+            <div className="text-sm">
+              <div className="font-semibold">Vision:</div>
+              <p>
+                To be Africa's leading platform for crowdfunding, driving collective growth and transforming communities through collaboration and support.
+              </p>
+            </div>
+          </div>
         </div>
+        
         <div className="mt-12 pt-8 border-t border-gray-400 flex flex-col md:flex-row justify-between items-center">
           <div className="flex space-x-6 mb-4 md:mb-0">
             <a
@@ -116,18 +134,6 @@ const Footer = () => {
                 {item}
               </a>
             ))}
-          </div>
-
-          {/* Mission and Vision */}
-          <div className="mt-4 md:mt-0 text-center md:text-right">
-            <div className="text-sm font-semibold mb-2">Mission:</div>
-            <p className="text-sm mb-4">
-              To empower people, organizations, and communities across Africa by connecting them with the financial support they need to transform their ideas and aspirations into impactful realities.
-            </p>
-            <div className="text-sm font-semibold mb-2">Vision:</div>
-            <p className="text-sm">
-              To be Africa's leading platform for crowdfunding, driving collective growth and transforming communities through collaboration and support.
-            </p>
           </div>
 
           <p className="text-sm text-center md:text-right">
