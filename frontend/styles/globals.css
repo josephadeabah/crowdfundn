@@ -201,7 +201,7 @@ img[src*='#markdown-transferspage'] {
 }
 
 .background-animation {
-  background-image: url('path/to/Animation-global.gif');
+  background-image: url('/Animation-global.gif');
   background-size: cover; /* Ensures the image covers the entire container */
   background-position: center; /* Centers the background image */
   background-repeat: no-repeat; /* Prevents the image from repeating */
