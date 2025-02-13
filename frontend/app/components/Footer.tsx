@@ -4,59 +4,55 @@ import { FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <div className="bg-gray-50 dark:text-gray-50 text-gray-800 dark:bg-gray-950 mt-auto w-full">
-      <div className="mx-auto px-3 md:px-0 py-12 max-w-screen-xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          <div className="col-span-1 md:col-span-2">
-            <img
-              src="/bantuhive.svg"
-              alt="Bantuhive Logo"
-              className="w-30 h-auto mb-4"
-            />
+    <footer className="relative bg-gray-900 text-gray-200 py-16">
+      {/* Background Image */}
+      <div className="absolute inset-0 bg-no-repeat bg-cover opacity-10" style={{ backgroundImage: "url('/Team-spirit-bro.svg')" }}></div>
+
+      <div className="relative container mx-auto px-6 md:px-12 lg:px-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Logo & Mission */}
+          <div>
+            <img src="/bantuhive.svg" alt="BantuHive Logo" className="w-40 h-auto mb-4" />
+            <p className="text-sm">
+              Empowering entrepreneurs through crowdfunding, fostering economic growth across Africa and beyond.
+            </p>
           </div>
+
+          {/* Product Links */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Product</h3>
             <ul className="space-y-2">
-              {['How It Works', 'Pricing'].map((item) => (
+              {["How It Works", "Pricing"].map((item) => (
                 <li key={item}>
-                  <a
-                    href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="hover:text-orange-300 transition duration-300"
-                  >
+                  <a href={`/${item.toLowerCase().replace(/\s+/g, '-')}`} className="hover:text-orange-400 transition duration-300">
                     {item}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
+
+          {/* Company Info */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Company</h3>
             <ul className="space-y-2">
-              {['About Us', 'Careers'].map((item) => (
+              {["About Us", "Careers"].map((item) => (
                 <li key={item}>
-                  <a
-                    href={
-                      item === 'About Us'
-                        ? '/about-us'
-                        : `/${item.toLowerCase().replace(' ', '-')}`
-                    }
-                    className="hover:text-orange-300 transition duration-300"
-                  >
+                  <a href={`/${item.toLowerCase().replace(' ', '-')}`} className="hover:text-orange-400 transition duration-300">
                     {item}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
+
+          {/* Support */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Support</h3>
             <ul className="space-y-2">
-              {['Help Center', 'FAQs'].map((item) => (
+              {["Help Center", "FAQs"].map((item) => (
                 <li key={item}>
-                  <a
-                    href={`/${item.toLowerCase().replace(' ', '-')}`}
-                    className="hover:text-orange-300 transition duration-300"
-                  >
+                  <a href={`/${item.toLowerCase().replace(' ', '-')}`} className="hover:text-orange-400 transition duration-300">
                     {item}
                   </a>
                 </li>
@@ -64,71 +60,42 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-        <div className="mt-12 pt-8 border-t border-gray-400 flex flex-col md:flex-row justify-between items-center">
+
+        {/* Mission & Vision Section */}
+        <div className="mt-12 text-center border-t border-gray-700 pt-8">
+          <h3 className="text-xl font-bold">Our Vision</h3>
+          <p className="text-sm mt-2 max-w-2xl mx-auto">
+            To be Africa's leading crowdfunding platform, connecting visionaries with opportunities to create lasting impact.
+          </p>
+        </div>
+
+        {/* Social Media & Policies */}
+        <div className="mt-12 flex flex-col md:flex-row justify-between items-center text-sm">
           <div className="flex space-x-6 mb-4 md:mb-0">
-            <a
-              href="https://web.facebook.com/profile.php?id=61568192851056"
-              className="text-2xl hover:text-orange-300 transition duration-300"
-              aria-label="Facebook"
-            >
+            <a href="https://web.facebook.com/profile.php?id=61568192851056" className="text-2xl hover:text-orange-400 transition duration-300" aria-label="Facebook">
               <FaFacebook />
             </a>
-            <a
-              href="https://www.instagram.com/bantuhive_fund/"
-              className="text-2xl hover:text-orange-300 transition duration-300"
-              aria-label="Instagram"
-            >
+            <a href="https://www.instagram.com/bantuhive_fund/" className="text-2xl hover:text-orange-400 transition duration-300" aria-label="Instagram">
               <FaInstagram />
             </a>
-            <a
-              href="https://www.linkedin.com/company/bantu-hive/posts/?feedView=all"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-2xl hover:text-orange-300 transition duration-300"
-              aria-label="LinkedIn"
-            >
+            <a href="https://www.linkedin.com/company/bantu-hive/posts/?feedView=all" className="text-2xl hover:text-orange-400 transition duration-300" aria-label="LinkedIn">
               <FaLinkedin />
-            </a>
-            <a
-              href="#"
-              className="text-2xl hover:text-orange-300 transition duration-300"
-              aria-label="Twitter"
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 256 256"
-                className="fill-gray-600 dark:fill-white"
-              >
-                <path d="m218.12 209.56-61-95.8 59.72-65.69a12 12 0 0 0-17.76-16.14l-55.27 60.84-37.69-59.21A12 12 0 0 0 96 28H48a12 12 0 0 0-10.12 18.44l61 95.8-59.76 65.69a12 12 0 1 0 17.76 16.14l55.31-60.84 37.69 59.21A12 12 0 0 0 160 228h48a12 12 0 0 0 10.12-18.44ZM166.59 204 69.86 52h19.55l96.73 152Z" />
-              </svg>
             </a>
           </div>
 
-          {/* Links for Cookies, Privacy, and Terms */}
-          <div className="flex space-x-4 mb-4 md:mb-0">
-            {['Cookies', 'Privacy', 'Terms'].map((item) => (
-              <a
-                key={item}
-                href={`/${item.toLowerCase()}`}
-                className="text-sm hover:text-orange-300 transition duration-300"
-              >
+          <div className="flex space-x-4">
+            {["Cookies", "Privacy", "Terms"].map((item) => (
+              <a key={item} href={`/${item.toLowerCase()}`} className="hover:text-orange-400 transition duration-300">
                 {item}
               </a>
             ))}
           </div>
-
-          <p className="text-sm text-center md:text-right">
-            &copy; {new Date().getFullYear()} BantuHive Ltd. All rights
-            reserved.
-          </p>
-          {/* Company Registration Number */}
-          <p className="text-sm text-center md:text-right mt-2">
-            Company Registration Number: <strong>CS185241124</strong>
-          </p>
         </div>
+
+        {/* Copyright */}
+        <p className="text-center text-xs mt-8">&copy; {new Date().getFullYear()} BantuHive Ltd. All rights reserved.</p>
       </div>
-    </div>
+    </footer>
   );
 };
 
