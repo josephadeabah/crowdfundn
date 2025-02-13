@@ -14,7 +14,7 @@ const Footer = () => {
           <div>
             <img src="/bantuhive.svg" alt="BantuHive Logo" className="w-40 h-auto mb-4" />
             <p className="text-sm">
-              Empowering entrepreneurs through crowdfunding, fostering economic growth across Africa and beyond.
+              Empowering people through crowdfunding, fostering economic growth across Africa and beyond.
             </p>
           </div>
 
