@@ -9,7 +9,7 @@ const Footer = () => {
       {/* Background Image */}
       <div className="absolute inset-0 bg-no-repeat bg-contain opacity-10" style={{ backgroundImage: "url('/undraw_fall-is-coming_tjgw.svg')" }}></div>
 
-      <div className="relative max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+      <div className="relative max-w-7xl mx-auto px-6 md:px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo & Mission */}
           <div>
