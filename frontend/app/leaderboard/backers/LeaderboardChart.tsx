@@ -57,7 +57,7 @@ const CustomizedDollarDot = (props: {
       fontWeight="bold" // Make the dollar sign bold
     >
       <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle">
-        $
+       ₵
       </text>
     </svg>
   );
