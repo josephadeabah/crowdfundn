@@ -20,7 +20,7 @@ const CustomizedDot = (props: {
   const { cx, cy, payload } = props;
 
   // Determine dot color based on score
-  const fillColor = payload.score < 100 ? 'red' : 'green';
+  const fillColor = payload.score < 100 ? '#F87A53' : '#16C47F';
 
   return (
     <svg
@@ -89,12 +89,12 @@ const LeaderboardChart = ({ leaderboard }: any) => {
   }));
 
   return (
-    <div className="w-full h-[400px] mt-8">
-      <ResponsiveContainer width="100%" height="100%" margin-top="32px">
+    <div className="w-full h-[500px] mt-8">
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={chartData}
           margin={{
-            top: 5,
+            top: 20,
             right: 30,
             left: 20,
             bottom: 5,
