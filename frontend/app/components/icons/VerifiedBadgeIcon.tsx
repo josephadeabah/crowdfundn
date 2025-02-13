@@ -6,7 +6,7 @@ interface VerifiedBadgeIconProps {
 }
 
 const VerifiedBadgeIcon: React.FC<VerifiedBadgeIconProps> = ({
-  color = '#FDB71A', // Default color is the first gradient color
+  color = '#000000', // Default color is the first gradient color
   size = 24, // Default size is 24px
 }) => {
   return (
