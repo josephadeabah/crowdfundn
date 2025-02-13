@@ -1,6 +1,8 @@
-import * as React from "react";
-const BantuHiveLogoIcon = (props: JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>) => (
-    <svg
+import * as React from 'react';
+const BantuHiveLogoIcon = (
+  props: JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>,
+) => (
+  <svg
     id="Layer_1"
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -12,7 +14,7 @@ const BantuHiveLogoIcon = (props: JSX.IntrinsicAttributes & React.SVGProps<SVGSV
     {...props}
   >
     <style type="text/css">
-      {"\n\t.st0{fill:#FFFFFF;}\n\t.st1{fill:#FFB400;}\n"}
+      {'\n\t.st0{fill:#FFFFFF;}\n\t.st1{fill:#FFB400;}\n'}
     </style>
     <g>
       <path
