@@ -118,6 +118,18 @@ const Footer = () => {
             ))}
           </div>
 
+          {/* Mission and Vision */}
+          <div className="mt-4 md:mt-0 text-center md:text-right">
+            <div className="text-sm font-semibold mb-2">Mission:</div>
+            <p className="text-sm mb-4">
+              To empower people, organizations, and communities across Africa by connecting them with the financial support they need to transform their ideas and aspirations into impactful realities.
+            </p>
+            <div className="text-sm font-semibold mb-2">Vision:</div>
+            <p className="text-sm">
+              To be Africa's leading platform for crowdfunding, driving collective growth and transforming communities through collaboration and support.
+            </p>
+          </div>
+
           <p className="text-sm text-center md:text-right">
             &copy; {new Date().getFullYear()} BantuHive Ltd. All rights
             reserved.
