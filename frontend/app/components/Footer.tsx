@@ -13,7 +13,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo & Mission */}
           <div>
-            <BantuHiveLogoIcon className="w-40 h-auto mb-4 text-white" />
+            <BantuHiveLogoIcon className="w-40 h-auto mb-4" />
             <p className="text-sm">
               Empowering people through crowdfunding, fostering economic growth across Africa and beyond.
             </p>
