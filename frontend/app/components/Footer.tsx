@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa';
+import BantuHiveLogoIcon from './icons/BantuHiveLogoIcon';
 
 const Footer = () => {
   return (
@@ -12,7 +13,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo & Mission */}
           <div>
-            <img src="/bantuhive.svg" alt="BantuHive Logo" className="w-40 h-auto mb-4 text-white" />
+            <BantuHiveLogoIcon className="w-40 h-auto mb-4 text-white" />
             <p className="text-sm">
               Empowering people through crowdfunding, fostering economic growth across Africa and beyond.
             </p>
