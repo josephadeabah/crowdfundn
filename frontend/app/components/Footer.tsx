@@ -4,9 +4,9 @@ import { FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <footer className="relative bg-green-200 text-gray-600 py-16">
+    <footer className="relative bg-green-50 text-gray-600 py-16">
       {/* Background Image */}
-      <div className="absolute inset-0 bg-no-repeat bg-cover opacity-10" style={{ backgroundImage: "url('/Team-spirit-bro.svg')" }}></div>
+      <div className="absolute inset-0 bg-no-repeat bg-cover opacity-10" style={{ backgroundImage: "url('/undraw_a-day-off_uk4x.svg')" }}></div>
 
       <div className="relative container mx-auto px-6 md:px-12 lg:px-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
