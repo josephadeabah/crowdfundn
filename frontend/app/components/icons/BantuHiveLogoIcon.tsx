@@ -12,7 +12,7 @@ const BantuHiveLogoIcon = (props: JSX.IntrinsicAttributes & React.SVGProps<SVGSV
     {...props}
   >
     <style type="text/css">
-      {"\n\t.st0{fill:#145A32;}\n\t.st1{fill:#FFB400;}\n"}
+      {"\n\t.st0{fill:#FFFFFF;}\n\t.st1{fill:#FFFFFF;}\n"}
     </style>
     <g>
       <path
