@@ -5,93 +5,67 @@ import { FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa';
 const Footer = () => {
   return (
     <div className="bg-gray-50 dark:text-gray-50 text-gray-800 dark:bg-gray-950 mt-auto w-full">
-      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-screen-xl">
-        {/* Main Footer Content */}
-        <div className="flex flex-col lg:flex-row justify-between space-y-8 lg:space-y-0">
-          {/* Logo and Mission/Vision */}
-          <div className="space-y-6 max-w-sm">
+      <div className="mx-auto px-3 md:px-0 py-12 max-w-screen-xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+          <div className="col-span-1 md:col-span-2">
             <img
               src="/bantuhive.svg"
               alt="Bantuhive Logo"
-              className="w-30 h-auto"
+              className="w-30 h-auto mb-4"
             />
-            <div className="text-sm space-y-4">
-              <div>
-                <div className="font-semibold">Mission:</div>
-                <p>
-                  To empower people, organizations, and communities across Africa by connecting them with the financial support they need to transform their ideas and aspirations into impactful realities.
-                </p>
-              </div>
-              <div>
-                <div className="font-semibold">Vision:</div>
-                <p>
-                  To be Africa's leading platform for crowdfunding, driving collective growth and transforming communities through collaboration and support.
-                </p>
-              </div>
-            </div>
           </div>
-
-          {/* Quick Links */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Product</h3>
-              <ul className="space-y-2">
-                {['How It Works', 'Pricing'].map((item) => (
-                  <li key={item}>
-                    <a
-                      href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
-                      className="hover:text-orange-300 transition duration-300"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Company</h3>
-              <ul className="space-y-2">
-                {['About Us', 'Careers'].map((item) => (
-                  <li key={item}>
-                    <a
-                      href={
-                        item === 'About Us'
-                          ? '/about-us'
-                          : `/${item.toLowerCase().replace(' ', '-')}`
-                      }
-                      className="hover:text-orange-300 transition duration-300"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Support</h3>
-              <ul className="space-y-2">
-                {['Help Center', 'FAQs'].map((item) => (
-                  <li key={item}>
-                    <a
-                      href={`/${item.toLowerCase().replace(' ', '-')}`}
-                      className="hover:text-orange-300 transition duration-300"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Product</h3>
+            <ul className="space-y-2">
+              {['How It Works', 'Pricing'].map((item) => (
+                <li key={item}>
+                  <a
+                    href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
+                    className="hover:text-orange-300 transition duration-300"
+                  >
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Company</h3>
+            <ul className="space-y-2">
+              {['About Us', 'Careers'].map((item) => (
+                <li key={item}>
+                  <a
+                    href={
+                      item === 'About Us'
+                        ? '/about-us'
+                        : `/${item.toLowerCase().replace(' ', '-')}`
+                    }
+                    className="hover:text-orange-300 transition duration-300"
+                  >
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Support</h3>
+            <ul className="space-y-2">
+              {['Help Center', 'FAQs'].map((item) => (
+                <li key={item}>
+                  <a
+                    href={`/${item.toLowerCase().replace(' ', '-')}`}
+                    className="hover:text-orange-300 transition duration-300"
+                  >
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-
-        {/* Divider */}
-        <div className="mt-12 pt-8 border-t border-gray-400"></div>
-
-        {/* Bottom Section */}
-        <div className="mt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          {/* Social Media Links */}
-          <div className="flex space-x-6">
+        <div className="mt-12 pt-8 border-t border-gray-400 flex flex-col md:flex-row justify-between items-center">
+          <div className="flex space-x-6 mb-4 md:mb-0">
             <a
               href="https://web.facebook.com/profile.php?id=61568192851056"
               className="text-2xl hover:text-orange-300 transition duration-300"
@@ -115,10 +89,24 @@ const Footer = () => {
             >
               <FaLinkedin />
             </a>
+            <a
+              href="#"
+              className="text-2xl hover:text-orange-300 transition duration-300"
+              aria-label="Twitter"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 256 256"
+                className="fill-gray-600 dark:fill-white"
+              >
+                <path d="m218.12 209.56-61-95.8 59.72-65.69a12 12 0 0 0-17.76-16.14l-55.27 60.84-37.69-59.21A12 12 0 0 0 96 28H48a12 12 0 0 0-10.12 18.44l61 95.8-59.76 65.69a12 12 0 1 0 17.76 16.14l55.31-60.84 37.69 59.21A12 12 0 0 0 160 228h48a12 12 0 0 0 10.12-18.44ZM166.59 204 69.86 52h19.55l96.73 152Z" />
+              </svg>
+            </a>
           </div>
 
-          {/* Legal Links */}
-          <div className="flex space-x-4">
+          {/* Links for Cookies, Privacy, and Terms */}
+          <div className="flex space-x-4 mb-4 md:mb-0">
             {['Cookies', 'Privacy', 'Terms'].map((item) => (
               <a
                 key={item}
@@ -130,11 +118,14 @@ const Footer = () => {
             ))}
           </div>
 
-          {/* Copyright and Registration */}
-          <div className="text-sm text-center md:text-right space-y-1">
-            <p>&copy; {new Date().getFullYear()} BantuHive Ltd. All rights reserved.</p>
-            <p>Company Registration Number: <strong>CS185241124</strong></p>
-          </div>
+          <p className="text-sm text-center md:text-right">
+            &copy; {new Date().getFullYear()} BantuHive Ltd. All rights
+            reserved.
+          </p>
+          {/* Company Registration Number */}
+          <p className="text-sm text-center md:text-right mt-2">
+            Company Registration Number: <strong>CS185241124</strong>
+          </p>
         </div>
       </div>
     </div>
