@@ -49,7 +49,7 @@ const LeaderboardBackersPage = () => {
             </p>
           </div>
         </div>
-        <div className="px-4 py-3">
+        <div className="px-4 py-3 mb-8">
           {loading ? (
             <BackerLeaderboardLoader />
           ) : error ? (
