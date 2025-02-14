@@ -10,7 +10,7 @@ const CampaignCardLoader = () => {
         .map((_, index) => (
           <div
             key={index}
-            className="bg-white flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+            className="bg-gray-200 flex flex-col h-full dark:bg-gray-800 dark:text-gray-50 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
           >
             <div className="flex flex-col h-full">
               <Skeleton height={128} className="mb-2 w-full" />{' '}
