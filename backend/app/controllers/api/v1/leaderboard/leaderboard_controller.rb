@@ -8,7 +8,7 @@ module Api
                             .select('users.*, SUM(donations.amount) as total_amount')
                             .group('users.id')
                             .order('total_amount DESC')
-                            .limit(7)
+                            .limit(10)
   
           render json: top_backers.map { |user| serialize_backer(user) }
         end
@@ -18,7 +18,7 @@ module Api
                                     .select('users.*, COUNT(donations.id) as total_contributions')
                                     .group('users.id')
                                     .order('total_contributions DESC')
-                                    .limit(6)
+                                    .limit(10)
   
           render json: most_active_backers.map { |user| serialize_active_backer(user) }
         end
@@ -28,7 +28,7 @@ module Api
                                          .select('users.*, COUNT(backer_rewards.id) as rewards')
                                          .group('users.id')
                                          .order('rewards DESC')
-                                         .limit(5)
+                                         .limit(10)
   
           render json: top_backers_with_rewards.map { |user| serialize_backer_with_rewards(user) }
         end
@@ -38,7 +38,7 @@ module Api
                                          .select('users.*, campaigns.title as campaign_name')
                                          .group('users.id, campaigns.id')
                                          .order('campaigns.created_at DESC')
-                                         .limit(5)
+                                         .limit(10)
   
           render json: top_fundraisers_graphics.map { |user| serialize_fundraiser(user) }
         end
@@ -48,7 +48,7 @@ module Api
                                         .select('users.*, campaigns.title as campaign_name')
                                         .group('users.id, campaigns.id')
                                         .order('campaigns.created_at DESC')
-                                        .limit(6)
+                                        .limit(10)
   
           render json: top_fundraisers_stories.map { |user| serialize_fundraiser(user) }
         end
