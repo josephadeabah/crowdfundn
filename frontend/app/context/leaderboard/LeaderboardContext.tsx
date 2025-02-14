@@ -40,16 +40,6 @@ interface TopBackersWithRewardsData {
   level: string;
 }
 
-interface TopFundraisersGraphicsData {
-  name: string;
-  campaign: string;
-  category_interest: string;
-  profile_picture: string;
-  country: string;
-  bio: string;
-  level: string;
-}
-
 interface TopFundraisersStoriesData {
   name: string;
   campaign: string;
@@ -67,7 +57,6 @@ interface LeaderboardState {
   topBackers: TopbackersData[];
   mostActiveBackers: MostActiveBackersData[];
   topBackersWithRewards: TopBackersWithRewardsData[];
-  topFundraisersGraphics: TopFundraisersGraphicsData[];
   topFundraisersStories: TopFundraisersStoriesData[];
   loading: boolean;
   error: string | null;
@@ -85,9 +74,6 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
   >([]);
   const [topBackersWithRewards, setTopBackersWithRewards] = useState<
     TopBackersWithRewardsData[]
-  >([]);
-  const [topFundraisersGraphics, setTopFundraisersGraphics] = useState<
-    TopFundraisersGraphicsData[]
   >([]);
   const [topFundraisersStories, setTopFundraisersStories] = useState<
     TopFundraisersStoriesData[]
@@ -131,7 +117,6 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
       setTopBackers(topBackersData);
       setMostActiveBackers(mostActiveBackersData);
       setTopBackersWithRewards(topBackersWithRewardsData);
-      setTopFundraisersGraphics(topFundraisersGraphicsData);
       setTopFundraisersStories(topFundraisersStoriesData);
     } catch (err: any) {
       setError(err || 'Error fetching leaderboard data');
@@ -145,7 +130,6 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
       topBackers,
       mostActiveBackers,
       topBackersWithRewards,
-      topFundraisersGraphics,
       topFundraisersStories,
       loading,
       error,
@@ -155,7 +139,6 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
       topBackers,
       mostActiveBackers,
       topBackersWithRewards,
-      topFundraisersGraphics,
       topFundraisersStories,
       loading,
       error,

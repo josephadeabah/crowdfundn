@@ -55,7 +55,6 @@ const Leaderboard: React.FC = () => {
     topBackers,
     mostActiveBackers,
     topBackersWithRewards,
-    topFundraisersGraphics,
     topFundraisersStories,
     loading,
     error,
@@ -368,80 +367,6 @@ const Leaderboard: React.FC = () => {
 
         {/* Right Column - Top Fundraisers with Best Campaign Graphics, Top Fundraisers with Best Stories, Certificates */}
         <div className="w-full md:w-1/2">
-          {/* Top Fundraisers with Best Campaign Graphics Section */}
-          <div className="mb-3">
-            <h3 className="text-lg font-semibold mb-2">
-              Community Active Fundraisers
-            </h3>
-            <div className="flex -space-x-3">
-              {topFundraisersGraphics?.map((fundraiser, index) => (
-                <Popover key={index}>
-                  <PopoverTrigger asChild>
-                    <div
-                      className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
-                      style={{ zIndex: topFundraisersGraphics.length - index }}
-                    >
-                      <Avatar
-                        name={fundraiser.name}
-                        size="sm"
-                        imageUrl={fundraiser.profile_picture}
-                      />
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-96">
-                    <div className="space-y-4 p-4">
-                      <div className="flex items-center space-x-4">
-                        <Avatar
-                          name={fundraiser.name}
-                          size="xl"
-                          imageUrl={fundraiser.profile_picture}
-                        />
-                        <div>
-                          <div className="flex items-center gap-1">
-                            <h4 className="font-semibold text-lg text-gray-800">
-                              {fundraiser.name}
-                            </h4>
-                            <span>
-                              {getVerifiedBadge(fundraiser.level, 20)}
-                            </span>
-                          </div>
-                          <p className="text-sm text-gray-500">
-                            {fundraiser.country}
-                          </p>
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold">
-                          Category Interest
-                        </p>
-                        <p className="text-sm text-gray-700">
-                          {deslugify(fundraiser.category_interest)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold">Bio</p>
-                        <p className="text-sm text-gray-700">
-                          {fundraiser.bio}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold">Campaign</p>
-                        <p className="text-sm text-gray-700">
-                          {fundraiser.campaign}
-                        </p>
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              ))}
-              {topFundraisersGraphics?.length > 5 && (
-                <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
-                  +{topFundraisersGraphics?.length - 5}
-                </div>
-              )}
-            </div>
-          </div>
-
           {/* Top Fundraisers with Best Stories Section */}
           <div className="mb-3">
             <p className="mb-2">
