@@ -372,9 +372,6 @@ const Leaderboard: React.FC = () => {
             <h3 className="text-lg font-semibold mb-2">
               Community Active Fundraisers
             </h3>
-            <p className="mb-2">
-              <hr className="border-t-1 border-gray-100" />
-            </p>
             <div className="flex -space-x-3">
               {topFundraisersStories?.map((fundraiser, index) => (
                 <Popover key={fundraiser.name}>
