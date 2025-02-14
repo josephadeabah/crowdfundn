@@ -15,7 +15,7 @@ const CampaignCardLoader = () => {
             <div className="flex flex-col h-full">
               <Skeleton height={128} className="mb-2 w-full" />{' '}
               {/* Image placeholder */}
-              <div className="">
+              <div className="px-1">
                 <Skeleton height={20} width={135} className="mb-2" />{' '}
                 {/* Title placeholder */}
                 <Skeleton height={10} width={100} className="mb-2" />{' '}
