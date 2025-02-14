@@ -31,7 +31,7 @@ module Api
 
           # fetch all leaderboard entries for fundraisers
           def fundraisers
-            leaderboard_entries = ::FundraiserLeaderboardEntry.includes(:user).order(total_raised: :desc)
+            leaderboard_entries = ::FundraiserLeaderboardEntry.includes(:user).order(total_raised: :desc).limit(10)
             leaderboard_data = leaderboard_entries.map do |entry|
               user_points = entry.user.total_points
               level = BackerReward::LEVELS.find { |_, range| range.include?(user_points) }&.first
