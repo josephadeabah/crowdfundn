@@ -65,18 +65,17 @@ const CustomizedDollarDot = (props: {
 
 // Custom Tooltip
 const CustomTooltip = ({ active, payload, label }: any) => {
-  const { userAccountData } = useUserContext();
   if (active && payload && payload.length) {
+    const data = payload[0]?.payload; // Access the full data object
+
     return (
       <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
         <p className="font-semibold">{label}</p>
-        <p className="text-sm text-gray-600">Score: {payload[0].value}</p>
+        <p className="text-sm text-gray-600">Score: {data.score}</p>
         <p className="text-sm text-gray-600">
           Total Donations:{' '}
-          <span className="mr-1">
-            {userAccountData?.profile?.currency?.toUpperCase() || 'GHS'}
-          </span>
-          {payload[1]?.value?.toFixed(2)}
+          <span className="mr-1">{data.currency?.toUpperCase()}</span>
+          {data.totalDonations.toFixed(2)}
         </p>
       </div>
     );
@@ -91,6 +90,7 @@ const LeaderboardChart = ({ leaderboard }: any) => {
     name: backer.username, // Use backer's name as the X-axis label
     score: backer.score, // Use score as one data line
     totalDonations: Number(backer.total_donations || 0), // Use total donations as another data line
+    currency: backer.currency,
   }));
 
   return (
@@ -108,7 +108,7 @@ const LeaderboardChart = ({ leaderboard }: any) => {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
           <YAxis />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<CustomTooltip payload={leaderboard} />} />
           <Legend />
           <Line
             type="monotone"
