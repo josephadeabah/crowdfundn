@@ -33,16 +33,6 @@ module Api
           render json: top_backers_with_rewards.map { |user| serialize_backer_with_rewards(user) }
         end
   
-        def top_fundraisers_graphics
-          top_fundraisers_graphics = User.joins(:campaigns)
-                                         .select('users.*, campaigns.title as campaign_name')
-                                         .group('users.id, campaigns.id')
-                                         .order('campaigns.created_at DESC')
-                                         .limit(10)
-  
-          render json: top_fundraisers_graphics.map { |user| serialize_fundraiser(user) }
-        end
-  
         def top_fundraisers_stories
           top_fundraisers_stories = User.joins(:campaigns)
                                         .select('users.*, campaigns.title as campaign_name')

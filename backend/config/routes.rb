@@ -95,7 +95,6 @@ Rails.application.routes.draw do
         get 'top_backers', to: 'leaderboard#top_backers'
         get 'most_active_backers', to: 'leaderboard#most_active_backers'
         get 'top_backers_with_rewards', to: 'leaderboard#top_backers_with_rewards'
-        get 'top_fundraisers_graphics', to: 'leaderboard#top_fundraisers_graphics'
         get 'top_fundraisers_stories', to: 'leaderboard#top_fundraisers_stories'
       end
 
