@@ -7,7 +7,7 @@ module Api
           top_backers = User.joins(:donations)
                             .select('users.*, SUM(donations.amount) as total_amount')
                             .group('users.id')
-                            .order('total_amount DESC')
+                            .order('donations.created_at DESC')
                             .limit(7)
   
           render json: top_backers.map { |user| serialize_backer(user) }
@@ -17,7 +17,7 @@ module Api
           most_active_backers = User.joins(:donations)
                                     .select('users.*, COUNT(donations.id) as total_contributions')
                                     .group('users.id')
-                                    .order('total_contributions DESC')
+                                    .order('donations.created_at DESC')
                                     .limit(6)
   
           render json: most_active_backers.map { |user| serialize_active_backer(user) }
