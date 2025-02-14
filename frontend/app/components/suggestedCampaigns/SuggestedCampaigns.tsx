@@ -87,7 +87,7 @@ const SuggestedCampaignsComponent = ({
 
   if (loading)
     return (
-      <div className="w-full max-w-7xl mx-auto mb-8">
+      <div className="w-full max-w-7xl mx-auto mb-8 p-4">
         <CampaignCardLoader />
       </div>
     );

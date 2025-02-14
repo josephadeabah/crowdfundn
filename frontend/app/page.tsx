@@ -277,7 +277,7 @@ const HomePage = () => {
           <h2 className="text-4xl font-bold mb-8 mt-4 text-center">
             Fundraising Now
           </h2>
-          <div className="w-full bg-white px-2 py-3">
+          <div className="w-full bg-white p-4">
             <CampaignCard
               campaigns={campaigns}
               loading={loading}
