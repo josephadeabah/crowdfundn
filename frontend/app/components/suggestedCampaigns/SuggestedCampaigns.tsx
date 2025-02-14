@@ -87,7 +87,7 @@ const SuggestedCampaignsComponent = ({
 
   if (loading)
     return (
-      <div className="w-full max-w-7xl mx-auto mb-8 p-4">
+      <div className="w-full max-w-7xl mx-auto mb-8 p-2">
         <CampaignCardLoader />
       </div>
     );
@@ -146,7 +146,7 @@ const SuggestedCampaignsComponent = ({
                         {deslugify(campaign?.category)}
                       </div>
                       <div className="flex justify-between items-center text-xs font-semibold text-gray-300 mb-2">
-                        <span>{campaign.total_donors || 0} Backers</span>
+                        <span>{campaign?.total_donors || 0} Backers</span>
                         <span>{campaign.remaining_days} days left</span>
                       </div>
                     </div>
