@@ -369,6 +369,9 @@ const Leaderboard: React.FC = () => {
         <div className="w-full md:w-1/2">
           {/* Top Fundraisers with Best Stories Section */}
           <div className="mb-3">
+            <h3 className="text-lg font-semibold mb-2">
+              Community Active Fundraisers
+            </h3>
             <p className="mb-2">
               <hr className="border-t-1 border-gray-100" />
             </p>
