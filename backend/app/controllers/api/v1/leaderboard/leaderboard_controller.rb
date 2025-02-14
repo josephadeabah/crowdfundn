@@ -24,8 +24,8 @@ module Api
         end
   
         def top_backers_with_rewards
-          top_backers_with_rewards = User.joins(:donations)
-                                         .select('users.*, COUNT(donations.reward_id) as rewards')
+          top_backers_with_rewards = User.joins(:backer_rewards)
+                                         .select('users.*, COUNT(backer_rewards.id) as rewards')
                                          .group('users.id')
                                          .order('rewards DESC')
                                          .limit(5)
