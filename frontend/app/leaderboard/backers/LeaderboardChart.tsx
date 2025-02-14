@@ -108,7 +108,7 @@ const LeaderboardChart = ({ leaderboard }: any) => {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
           <YAxis />
-          <Tooltip content={<CustomTooltip payload={leaderboard} />} />
+          <Tooltip content={<CustomTooltip />} />
           <Legend />
           <Line
             type="monotone"
