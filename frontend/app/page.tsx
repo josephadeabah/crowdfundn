@@ -221,8 +221,8 @@ const HomePage = () => {
             >
               Why Choose Us?
             </motion.h2>
-            <div className="text-2xl text-gray-300 font-bold text-center mb-7">
-              We're Africa's Premier And Most Trusted Reward-based And Gamified
+            <div className="text-2xl text-gray-500 font-bold text-center mb-7">
+              We're Africa's Premier And Trusted Reward-based And Gamified
               Crowdfunding Platform
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
