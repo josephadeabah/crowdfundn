@@ -187,11 +187,11 @@ const Navbar = () => {
               <ul className="flex flex-col items-start p-4 space-y-4">
                 {!user && (
                   <>
-                    <li>
+                    {/* <li>
                       <Link href="/cofund" className="block">
                         Co-Fund
                       </Link>
-                    </li>
+                    </li> */}
                     <li>
                       <Link href="/auth/register" className="block">
                         Start Project
@@ -280,12 +280,12 @@ const Navbar = () => {
                   whileTap={{ scale: 0.95 }}
                   className="py-1 px-4 bg-white dark:bg-gray-900 dark:text-gray-50 rounded-full focus-visible:outline-none focus:ring-0 hover:outline-none hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300"
                 >
-                  <Link
+                  {/* <Link
                     href="/cofund"
                     className="text-gray-700 text-sm dark:text-gray-50"
                   >
                     Co-Fund
-                  </Link>
+                  </Link> */}
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -364,11 +364,11 @@ const Navbar = () => {
                         <div>Go to Account</div>
                       </Link>
                     </div>
-                    <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
+                    {/* <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
                       <Link href="/cofund">
                         <div>Co-Fund</div>
                       </Link>
-                    </div>
+                    </div> */}
                     {/* <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
                         <div>Change Theme</div>
                         <DarkModeBtn />
