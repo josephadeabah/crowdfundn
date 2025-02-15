@@ -74,8 +74,8 @@ export default function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/auth/login', req.nextUrl));
   }
 
-  // Redirect authenticated users to /account if trying to access /auth routes (except '/')
-  if (isPublicRoute && token && path !== '/') {
+  // Redirect authenticated users away from /auth routes (except '/')
+  if ((path.startsWith('/auth/login') || path.startsWith('/auth/register')) && token) {
     return NextResponse.redirect(new URL('/account', req.nextUrl));
   }
 
