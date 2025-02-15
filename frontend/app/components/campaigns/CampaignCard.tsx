@@ -242,7 +242,8 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 <div
                   className="absolute top-2 right-2 p-2 bg-white dark:bg-gray-700 rounded-full shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300"
                   onClick={(e) => {
-                    e.preventDefault();
+                    e.stopPropagation(); // Prevents triggering the parent Link navigation
+                    e.preventDefault(); // Ensures no unintended behavior
                     campaign.favorited
                       ? handleUnfavorite(campaign.id.toString())
                       : handleFavorite(campaign.id.toString());
