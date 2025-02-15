@@ -27,7 +27,17 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Product</h3>
             <ul className="space-y-2">
-              {['How It Works', 'Pricing'].map((item) => (
+              {[
+                'How It Works',
+                'Pricing',
+                'Team Fundraising',
+                'Corporate Fundraising',
+                'Event Fundraising',
+                'Charity Fundraising',
+                'Success Stories',
+                'Mobile App',
+                'Integrations',
+              ].map((item) => (
                 <li key={item}>
                   <a
                     href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
@@ -44,10 +54,19 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Company</h3>
             <ul className="space-y-2">
-              {['About Us', 'Careers'].map((item) => (
+              {[
+                'About Us',
+                'Careers',
+                'CSR',
+                'Press',
+                'Blog',
+                'Partners',
+                'Investors',
+                'Contact Us',
+              ].map((item) => (
                 <li key={item}>
                   <a
-                    href={`/${item.toLowerCase().replace(' ', '-')}`}
+                    href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
                     className="hover:text-orange-400 transition duration-300"
                   >
                     {item}
@@ -61,10 +80,15 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Support</h3>
             <ul className="space-y-2">
-              {['Help Center', 'FAQs'].map((item) => (
+              {[
+                'Help Center',
+                'FAQs',
+                'Community Forum',
+                'Contact Support',
+              ].map((item) => (
                 <li key={item}>
                   <a
-                    href={`/${item.toLowerCase().replace(' ', '-')}`}
+                    href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
                     className="hover:text-orange-400 transition duration-300"
                   >
                     {item}
