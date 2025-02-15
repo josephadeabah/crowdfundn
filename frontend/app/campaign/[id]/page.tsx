@@ -346,7 +346,6 @@ const SingleCampaignPage: React.FC = () => {
                   <div className="text-center sm:text-left">
                     <div className="w-full flex lg:flex-col sm:justify-between gap-3 items-center text-xl py-2">
                       <div className="font-medium text-sm">
-                        {fundraiserCurrency}
                         <span
                         className={`${
                           parseFloat(
