@@ -56,13 +56,13 @@ const Footer = () => {
             <ul className="space-y-2">
               {[
                 'About Us',
+                'Accessibility',
+                'Blog',
                 'Careers',
                 'CSR',
                 'Press',
-                'Blog',
                 'Partners',
                 'Investors',
-                'Accessibility'
               ].map((item) => (
                 <li key={item}>
                   <a
