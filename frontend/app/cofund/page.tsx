@@ -19,7 +19,7 @@ const CoFundPage: React.FC = () => {
             <h3 className="text-xl font-semibold text-red-600">
               Problem –{' '}
               <span className="text-base font-semibold text-gray-800">
-                Raised by some of our users
+                User Demand
               </span>
             </h3>
             <p className="mt-2 text-gray-700">
