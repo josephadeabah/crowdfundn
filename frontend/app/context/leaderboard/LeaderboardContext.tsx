@@ -90,7 +90,6 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
         'top_backers',
         'most_active_backers',
         'top_backers_with_rewards',
-        'top_fundraisers_graphics',
         'top_fundraisers_stories',
       ];
 
@@ -110,7 +109,6 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
         topBackersData,
         mostActiveBackersData,
         topBackersWithRewardsData,
-        topFundraisersGraphicsData,
         topFundraisersStoriesData,
       ] = await Promise.all(dataPromises);
 
