@@ -347,9 +347,23 @@ const SingleCampaignPage: React.FC = () => {
                     <div className="w-full flex lg:flex-col sm:justify-between gap-3 items-center text-xl py-2">
                       <div className="font-medium text-sm">
                         {fundraiserCurrency}
+                        <span
+                        className={`${
+                          parseFloat(
+                            currentCampaign?.transferred_amount?.toString() || '0',
+                          ) >=
+                          parseFloat(currentCampaign?.goal_amount?.toString() || '0')
+                            ? 'text-green-600'
+                            : 'text-orange-500'
+                        }`}
+                      >
+                        <span className="text-gray-900 dark:text-gray-100 mr-1">
+                          {fundraiserCurrency}
+                        </span>
                         {parseFloat(
-                          currentCampaign?.transferred_amount || '0.0',
+                          currentCampaign?.transferred_amount?.toString() || '0',
                         ).toLocaleString()}
+                      </span>{' '}
                       </div>
                       <div className="flex justify-between gap-3 items-center text-gray-600 dark:text-gray-400">
                         <div className="text-xs text-gray-500">
