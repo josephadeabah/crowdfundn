@@ -11,3 +11,4 @@ Host: https://bantuhive.com
 
 # Sitemaps
 Sitemap: https://bantuhive.com/sitemap.xml
+Sitemap: https://bantuhive.com/sitemap-0.xml

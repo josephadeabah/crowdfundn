@@ -44,7 +44,12 @@ const dynamicRoutePatterns = [
   /^\/campaign\/[^/]+$/, // Matches /campaign/[id]
 ];
 
-const allRoutes = [...protectedRoutes, ...adminRoutes, ...publicRoutes];
+const allRoutesSet = new Set([
+  ...protectedRoutes,
+  ...adminRoutes,
+  ...publicRoutes,
+]);
+const ADMIN_ROLES: Roles[] = ['Admin', 'Manager', 'Moderator'];
 
 const parseCookies = (cookieHeader: string | undefined): ParsedCookies => {
   const cookies: Record<string, string> = {};
@@ -54,14 +59,22 @@ const parseCookies = (cookieHeader: string | undefined): ParsedCookies => {
       cookies[name] = decodeURIComponent(value);
     });
   }
+
+  let roles: Roles[] = [];
+  try {
+    roles = cookies['roles'] ? (JSON.parse(cookies['roles']) as Roles[]) : [];
+  } catch (error) {
+    console.error('Failed to parse roles cookie:', error);
+  }
+
   return {
     token: cookies['token'] || null,
-    roles: cookies['roles'] ? (JSON.parse(cookies['roles']) as Roles[]) : [],
+    roles,
   };
 };
 
 export default function middleware(req: NextRequest) {
-  const path = req.nextUrl.pathname;
+  const path = req.nextUrl.pathname.replace(/\/+$/, ''); // Normalize path
   const isProtectedRoute = protectedRoutes.includes(path);
   const isAdminRoute = adminRoutes.includes(path);
   const isPublicRoute = publicRoutes.includes(path);
@@ -75,22 +88,26 @@ export default function middleware(req: NextRequest) {
   }
 
   // Redirect authenticated users away from /auth routes (except '/')
-  if ((path.startsWith('/auth/login') || path.startsWith('/auth/register')) && token) {
+  if (
+    (path.startsWith('/auth/login') || path.startsWith('/auth/register')) &&
+    token
+  ) {
     return NextResponse.redirect(new URL('/account', req.nextUrl));
   }
 
   // Restrict /admin routes to specific roles (Admin, Manager, Moderator)
   if (isAdminRoute) {
-    const hasAccessRole = roles.some((role) =>
-      ['Admin', 'Manager', 'Moderator'].includes(role),
-    );
+    const hasAccessRole = roles.some((role) => ADMIN_ROLES.includes(role));
     if (!hasAccessRole) {
+      console.log(
+        `Unauthorized access attempt to ${path} by user with roles: ${roles}`,
+      );
       return NextResponse.redirect(new URL('/', req.nextUrl));
     }
   }
 
   // Allow access if it's a known static route
-  if (allRoutes.includes(path)) {
+  if (allRoutesSet.has(path)) {
     return NextResponse.next();
   }
 
