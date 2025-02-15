@@ -7,14 +7,20 @@ interface ParsedCookies {
   roles: Roles[];
 }
 
-// Specify protected, admin, and public routes
+// Define known static routes
 const protectedRoutes = ['/account', '/account/dashboard/create'];
 const adminRoutes = ['/admin', '/admin/manage'];
 const publicRoutes = ['/auth/login', '/auth/register', '/'];
 
+// Define patterns for dynamic routes (to allow them)
+const dynamicRoutePatterns = [
+  /^\/blog\/[^/]+$/, // Matches /blog/[slug]
+  /^\/account\/[^/]+$/, // Matches /account/[id]
+  /^\/campaign\/[^/]+$/, // Matches /projects/[id]
+];
+
 const allRoutes = [...protectedRoutes, ...adminRoutes, ...publicRoutes];
 
-// Helper function to parse cookies from the request header
 const parseCookies = (cookieHeader: string | undefined): ParsedCookies => {
   const cookies: Record<string, string> = {};
   if (cookieHeader) {
@@ -58,12 +64,18 @@ export default function middleware(req: NextRequest) {
     }
   }
 
-  // Redirect to `/not-found` if the route is unknown (not in the predefined routes)
-  if (!allRoutes.includes(path)) {
-    return NextResponse.rewrite(new URL('/not-found', req.nextUrl));
+  // Allow access if it's a known static route
+  if (allRoutes.includes(path)) {
+    return NextResponse.next();
   }
 
-  return NextResponse.next();
+  // Allow access if it matches a dynamic route pattern
+  if (dynamicRoutePatterns.some((pattern) => pattern.test(path))) {
+    return NextResponse.next();
+  }
+
+  // Redirect unknown routes to `/not-found`
+  return NextResponse.rewrite(new URL('/not-found', req.nextUrl));
 }
 
 // Routes Middleware should not run on
