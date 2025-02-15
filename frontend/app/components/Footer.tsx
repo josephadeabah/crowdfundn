@@ -62,7 +62,7 @@ const Footer = () => {
                 'Blog',
                 'Partners',
                 'Investors',
-                'Contact',
+                'Accessibility'
               ].map((item) => (
                 <li key={item}>
                   <a
