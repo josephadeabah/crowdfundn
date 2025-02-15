@@ -12,6 +12,8 @@ const protectedRoutes = ['/account', '/account/dashboard/create'];
 const adminRoutes = ['/admin', '/admin/manage'];
 const publicRoutes = ['/auth/login', '/auth/register', '/'];
 
+const allRoutes = [...protectedRoutes, ...adminRoutes, ...publicRoutes];
+
 // Helper function to parse cookies from the request header
 const parseCookies = (cookieHeader: string | undefined): ParsedCookies => {
   const cookies: Record<string, string> = {};
@@ -56,7 +58,11 @@ export default function middleware(req: NextRequest) {
     }
   }
 
-  // Allow access to other routes if authenticated or if they are public
+  // Redirect to `/not-found` if the route is unknown (not in the predefined routes)
+  if (!allRoutes.includes(path)) {
+    return NextResponse.rewrite(new URL('/not-found', req.nextUrl));
+  }
+
   return NextResponse.next();
 }
 
