@@ -7,45 +7,12 @@ interface ParsedCookies {
   roles: Roles[];
 }
 
-// Define known static routes
+// Specify protected, admin, and public routes
 const protectedRoutes = ['/account', '/account/dashboard/create'];
 const adminRoutes = ['/admin', '/admin/manage'];
-const publicRoutes = [
-  '/auth/login',
-  '/auth/register',
-  '/',
-  '/about-us',
-  '/how-it-works',
-  '/corporate-fundraising',
-  '/charity-fundraising',
-  '/team-fundraising',
-  '/event-fundraising',
-  '/mobile-app',
-  '/integrations',
-  '/success-stories',
-  'pricing',
-  '/csr',
-  '/blog',
-  '/press',
-  '/partners',
-  '/investors',
-  '/supported-countries',
-  '/careers',
-  '/accessibility',
-  '/faqs',
-  '/help-center',
-  '/community-forum',
-];
+const publicRoutes = ['/auth/login', '/auth/register', '/'];
 
-// Define patterns for dynamic routes (to allow them)
-const dynamicRoutePatterns = [
-  /^\/blog\/[^/]+$/, // Matches /blog/[slug]
-  /^\/account\/[^/]+$/, // Matches /account/[id]
-  /^\/campaign\/[^/]+$/, // Matches /campaign/[id]
-];
-
-const allRoutes = [...protectedRoutes, ...adminRoutes, ...publicRoutes];
-
+// Helper function to parse cookies from the request header
 const parseCookies = (cookieHeader: string | undefined): ParsedCookies => {
   const cookies: Record<string, string> = {};
   if (cookieHeader) {
@@ -74,8 +41,8 @@ export default function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/auth/login', req.nextUrl));
   }
 
-  // Redirect authenticated users away from /auth routes (except '/')
-  if ((path.startsWith('/auth/login') || path.startsWith('/auth/register')) && token) {
+  // Redirect authenticated users to /account if trying to access /auth routes (except '/')
+  if (isPublicRoute && token && path !== '/') {
     return NextResponse.redirect(new URL('/account', req.nextUrl));
   }
 
@@ -89,18 +56,8 @@ export default function middleware(req: NextRequest) {
     }
   }
 
-  // Allow access if it's a known static route
-  if (allRoutes.includes(path)) {
-    return NextResponse.next();
-  }
-
-  // Allow access if it matches a dynamic route pattern
-  if (dynamicRoutePatterns.some((pattern) => pattern.test(path))) {
-    return NextResponse.next();
-  }
-
-  // Redirect unknown routes to `/not-found`
-  return NextResponse.rewrite(new URL('/not-found', req.nextUrl));
+  // Allow access to other routes if authenticated or if they are public
+  return NextResponse.next();
 }
 
 // Routes Middleware should not run on
