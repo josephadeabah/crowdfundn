@@ -131,7 +131,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   if (error) return <ErrorPage />;
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-3 bg-white rounded-lg">
+    <div className="w-full max-w-7xl mx-auto p-2 bg-white rounded-lg">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
