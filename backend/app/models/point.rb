@@ -8,7 +8,7 @@ class Point < ApplicationRecord
   def self.add_points(user, donation)
     return unless user && donation.net_amount > 0
   
-    percentage_points = (donation.net_amount * 3).to_i
+    percentage_points = (donation.net_amount * 1.5).to_i
   
     # Ensure points are greater than 0 before creating the record
     if percentage_points > 0
