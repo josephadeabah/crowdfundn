@@ -63,6 +63,7 @@ const Footer = () => {
                 'Press',
                 'Partners',
                 'Investors',
+                'Supported Countries'
               ].map((item) => (
                 <li key={item}>
                   <a
