@@ -437,14 +437,28 @@ const CampaignsPage = () => {
                                   {campaign?.title}
                                 </h3>
                                 <p className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
-                                  {fundraiserCurrency}
-                                  {!isNaN(
-                                    parseFloat(campaign?.transferred_amount),
-                                  )
-                                    ? parseFloat(
-                                        campaign?.transferred_amount,
-                                      ).toLocaleString()
-                                    : 0}
+                                  <span
+                                    className={`${
+                                      parseFloat(
+                                        campaign?.transferred_amount?.toString() ||
+                                          '0',
+                                      ) >=
+                                      parseFloat(
+                                        campaign?.goal_amount?.toString() ||
+                                          '0',
+                                      )
+                                        ? 'text-green-600'
+                                        : 'text-orange-500'
+                                    }`}
+                                  >
+                                    <span className="text-gray-600 dark:text-gray-100 mr-1">
+                                      {fundraiserCurrency}
+                                    </span>
+                                    {parseFloat(
+                                      campaign?.transferred_amount?.toString() ||
+                                        '0',
+                                    ).toLocaleString()}
+                                  </span>{' '}
                                   <span className="text-gray-600 dark:text-gray-100 truncate">
                                     <span className="text-xs p-1">of</span>
                                     {fundraiserCurrency}

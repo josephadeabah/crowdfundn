@@ -213,23 +213,23 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                         {campaign?.title}
                       </h3>
                       <p className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
-                      <span
-                        className={`${
-                          parseFloat(
+                        <span
+                          className={`${
+                            parseFloat(
+                              campaign?.transferred_amount?.toString() || '0',
+                            ) >=
+                            parseFloat(campaign?.goal_amount?.toString() || '0')
+                              ? 'text-green-600'
+                              : 'text-orange-500'
+                          }`}
+                        >
+                          <span className="text-gray-600 dark:text-gray-100 mr-1">
+                            {fundraiserCurrency}
+                          </span>
+                          {parseFloat(
                             campaign?.transferred_amount?.toString() || '0',
-                          ) >=
-                          parseFloat(campaign?.goal_amount?.toString() || '0')
-                            ? 'text-green-600'
-                            : 'text-orange-500'
-                        }`}
-                      >
-                        <span className="text-gray-900 dark:text-gray-100 mr-1">
-                          {fundraiserCurrency}
-                        </span>
-                        {parseFloat(
-                          campaign?.transferred_amount?.toString() || '0',
-                        ).toLocaleString()}
-                      </span>{' '}
+                          ).toLocaleString()}
+                        </span>{' '}
                         <span className="text-gray-600 dark:text-gray-100 truncate">
                           <span className="text-xs p-1">of</span>
                           {fundraiserCurrency}
