@@ -10,13 +10,38 @@ interface ParsedCookies {
 // Define known static routes
 const protectedRoutes = ['/account', '/account/dashboard/create'];
 const adminRoutes = ['/admin', '/admin/manage'];
-const publicRoutes = ['/auth/login', '/auth/register', '/'];
+const publicRoutes = [
+  '/auth/login',
+  '/auth/register',
+  '/',
+  '/about-us',
+  '/how-it-works',
+  '/corporate-fundraising',
+  '/charity-fundraising',
+  '/team-fundraising',
+  '/event-fundraising',
+  '/mobile-app',
+  '/integrations',
+  '/success-stories',
+  'pricing',
+  '/csr',
+  '/blog',
+  '/press',
+  '/partners',
+  '/investors',
+  '/supported-countries',
+  '/careers',
+  '/accessibility',
+  '/faqs',
+  '/help-center',
+  '/community-forum',
+];
 
 // Define patterns for dynamic routes (to allow them)
 const dynamicRoutePatterns = [
   /^\/blog\/[^/]+$/, // Matches /blog/[slug]
   /^\/account\/[^/]+$/, // Matches /account/[id]
-  /^\/campaign\/[^/]+$/, // Matches /projects/[id]
+  /^\/campaign\/[^/]+$/, // Matches /campaign/[id]
 ];
 
 const allRoutes = [...protectedRoutes, ...adminRoutes, ...publicRoutes];
