@@ -102,7 +102,7 @@ export default function Dashboard() {
         Dashboard Overview
       </h2>
       <p className="text-gray-500 dark:text-neutral-400 mb-4">
-        View insights, manage your activities, and track performance all in one
+        View insights and track performance all in one
         place.
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
