@@ -237,47 +237,54 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
         {/* Metrics Grid */}
         <Card className="p-6 bg-white dark:bg-neutral-800 rounded-lg border-none shadow w-full">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-            {[
-              {
-                label: 'Rewards Claimed',
-                value: statistics?.total_rewards_claimed,
-                color: 'text-purple-500 dark:text-purple-400',
-              },
-              {
-                label: 'Overall Campaign Shares',
-                value: statistics?.total_campaign_shares,
-                color: 'text-blue-500 dark:text-blue-400',
-              },
-              {
-                label: 'Overall Comments',
-                value: statistics?.total_comments,
-                color: 'text-green-500 dark:text-green-400',
-              },
-              {
-                label: 'Overall Updates',
-                value: statistics?.total_updates,
-                color: 'text-yellow-500 dark:text-yellow-400',
-              },
-              {
-                label: 'Number of Times Favorited',
-                value: statistics?.total_favorites,
-                color: 'text-red-500 dark:text-red-400',
-              },
-            ].map((stat, index) => (
-              <div
-                key={index}
-                className="p-4 bg-gray-50 dark:bg-neutral-700 rounded-lg shadow-sm"
-              >
-                <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-                  {stat.label}
-                </h3>
-                <p className={`text-2xl font-bold ${stat.color}`}>
-                  {stat.value}
-                </p>
-              </div>
-            ))}
-          </div>
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold text-gray-700 dark:text-gray-300">
+              Statistics Overview
+            </CardTitle>
+          </CardHeader>
+          <CardDescription>
+            <div className="flex flex-wrap justify-between gap-4">
+              {[
+                {
+                  label: 'Rewards Claimed',
+                  value: statistics?.total_rewards_claimed,
+                  color: 'text-purple-500 dark:text-purple-400',
+                },
+                {
+                  label: 'Total Shares Across Campaigns',
+                  value: statistics?.total_campaign_shares,
+                  color: 'text-blue-500 dark:text-blue-400',
+                },
+                {
+                  label: 'Total Comments Across Campaigns',
+                  value: statistics?.total_comments,
+                  color: 'text-green-500 dark:text-green-400',
+                },
+                {
+                  label: 'Total Updates Across Campaigns',
+                  value: statistics?.total_updates,
+                  color: 'text-yellow-500 dark:text-yellow-400',
+                },
+                {
+                  label: 'Total Favorites Across Campaigns',
+                  value: statistics?.total_favorites,
+                  color: 'text-red-500 dark:text-red-400',
+                },
+              ].map((item, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col items-start p-4 bg-gray-100 dark:bg-neutral-700 rounded-lg w-full sm:w-auto"
+                >
+                  <span className="text-lg font-semibold text-gray-600 dark:text-gray-300">
+                    {item.label}
+                  </span>
+                  <span className={`text-2xl font-bold ${item.color}`}>
+                    {item.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardDescription>
         </Card>
 
         {/* Campaigns by Category Chart */}
