@@ -27,7 +27,7 @@ import {
   Cell,
 } from 'recharts';
 import { deslugify } from '../utils/helpers/categories';
-import { CampaignStatisticsDataType } from '../types/campaigns.types';
+import moment from 'moment'; // Import moment
 
 export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
@@ -53,7 +53,7 @@ export default function Dashboard() {
   const donationsOverTimeData = Object.entries(
     statistics?.donations_over_time || {},
   ).map(([date, amount]) => ({
-    date,
+    date: moment(date).format('MMM D'), // Format date using moment
     amount: parseFloat(amount as string),
   }));
 
