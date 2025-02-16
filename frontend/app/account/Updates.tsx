@@ -118,7 +118,7 @@ const CampaignUpdates: React.FC = () => {
         </button>
       </div>
       <div className="text-gray-500 dark:text-neutral-400 mb-4">
-          Keep your supporters updated on the progress of your campaign
+        Keep your supporters updated on the progress of your campaign
       </div>
       {/* Modal */}
       <AnimatePresence>

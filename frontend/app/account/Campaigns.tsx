@@ -131,8 +131,9 @@ const Campaigns: React.FC = () => {
                 </div>
               </div>
               <div className="mt-4 flex justify-between items-center">
-                <Button
-                  className={`px-4 py-2 rounded-full 
+                <div className="flex gap-3 items-center">
+                  <Button
+                    className={`px-4 py-2 rounded-full 
     ${
       campaign.status === 'active'
         ? 'text-green-500'
@@ -142,18 +143,30 @@ const Campaigns: React.FC = () => {
             ? 'text-orange-300'
             : ''
     }`}
-                  variant="ghost"
-                  size="default"
-                >
-                  {campaign.status === 'active'
-                    ? 'Active'
-                    : campaign.status === 'completed'
-                      ? 'Completed'
-                      : campaign.status === 'canceled'
-                        ? 'Canceled'
-                        : 'Unknown'}
-                </Button>
-
+                    variant="ghost"
+                    size="default"
+                  >
+                    {campaign.status === 'active'
+                      ? 'Active'
+                      : campaign.status === 'completed'
+                        ? 'Completed'
+                        : campaign.status === 'canceled'
+                          ? 'Canceled'
+                          : 'Unknown'}
+                  </Button>
+                  <Button
+                    className={`px-4 py-2 rounded-full 
+      ${
+        campaign.permissions.is_public
+          ? 'bg-green-100 text-green-600'
+          : 'bg-gray-100 text-gray-500'
+      }`}
+                    variant="ghost"
+                    size="default"
+                  >
+                    {campaign.permissions.is_public ? 'Public' : 'Private'}
+                  </Button>
+                </div>
                 <div className="flex gap-2 items-center">
                   <Button
                     className="px-4 py-2 text-gray-500 rounded-full"
