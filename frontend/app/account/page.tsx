@@ -180,7 +180,7 @@ const ProfileTabs = () => {
           <div
             role="tabpanel"
             id={`vertical-tab-${activeTab}`}
-            className="h-full"
+            className="min-h-screen"
           >
             {tabs.find((tab) => tab.label === activeTab)?.component}
           </div>
