@@ -325,7 +325,7 @@ export default function Dashboard() {
         </Card>
       </div>
       {/* Donations Over Time Chart */}
-      <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none">
+      <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none my-4">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
             Donations Over Time
@@ -361,7 +361,7 @@ export default function Dashboard() {
         </ResponsiveContainer>
       </Card>
       {/* Campaign Performance Chart */}
-      <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none">
+      <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none my-4">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
             Campaign Performance
