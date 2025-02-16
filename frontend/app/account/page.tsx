@@ -184,7 +184,9 @@ const ProfileTabs = () => {
           >
             {tabs.find((tab) => tab.label === activeTab)?.component}
           </div>
-          <div className="w-full bg-white p-8 mb-8">Bantu Hive</div>
+          <footer className="bg-white w-full text-center py-4 text-gray-600 dark:text-gray-400">
+            © 2025 Bantu Hive Ltd
+          </footer>
         </div>
 
         {/* Onboarding Modal */}
