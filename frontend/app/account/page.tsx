@@ -184,9 +184,6 @@ const ProfileTabs = () => {
           >
             {tabs.find((tab) => tab.label === activeTab)?.component}
           </div>
-          <footer className="bg-white w-full text-center py-4 text-gray-600 dark:text-gray-400">
-            © 2025 Bantu Hive Ltd
-          </footer>
         </div>
 
         {/* Onboarding Modal */}
@@ -198,6 +195,9 @@ const ProfileTabs = () => {
             tabs={tabs}
           />
         )}
+      </div>
+      <div className="bg-white w-full text-center py-12 text-gray-600 dark:text-gray-400">
+            © 2025 Bantu Hive Ltd
       </div>
     </div>
   );
