@@ -327,14 +327,14 @@ export default function Dashboard() {
             Donations Over Time
           </CardTitle>
         </CardHeader>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={320}>
           <LineChart
             data={donationsOverTimeData}
             margin={{
-              top: 5,
-              right: 5,
-              left: 5,
-              bottom: 5,
+              top: 30, // Increase from 5 to 30
+              right: 10,
+              left: 10,
+              bottom: 10,
             }}
           >
             <XAxis dataKey="date" />
@@ -363,8 +363,16 @@ export default function Dashboard() {
             Campaign Performance
           </CardTitle>
         </CardHeader>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={campaignPerformanceData}>
+        <ResponsiveContainer width="100%" height={320}>
+          <BarChart
+            data={campaignPerformanceData}
+            margin={{
+              top: 30, // Increase from 5 to 30
+              right: 10,
+              left: 10,
+              bottom: 10,
+            }}
+          >
             <XAxis dataKey="name" />
             <YAxis tickFormatter={(value) => `${value}%`} />
             <Tooltip content={<CustomTooltip />} />

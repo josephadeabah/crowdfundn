@@ -38,7 +38,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <Providers>
             <Navbar />
             <main className="flex-grow w-full">
-              {children} 
+              {children}
               <Analytics />
             </main>
             <Footer />
