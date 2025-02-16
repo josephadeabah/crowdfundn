@@ -2,7 +2,7 @@ class CampaignStatisticsService
   def self.calculate_for_user(user)
     total_donated = user.campaigns.joins(:donations).where(donations: { status: 'successful' }).sum('donations.amount')
     total_goal = user.campaigns.sum(:goal_amount)
-    total_performance = total_goal.zero? ? 0 : (transferred_amount / total_goal.to_f * 100).round(2)
+    total_performance = total_goal.zero? ? 0 : (total_donated / total_goal.to_f * 100).round(2)
     {
       total_donations_received: total_donated,
       total_fundraising_goal: user.campaigns.sum(:goal_amount),
