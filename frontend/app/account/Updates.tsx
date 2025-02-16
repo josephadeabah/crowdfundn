@@ -96,7 +96,7 @@ const CampaignUpdates: React.FC = () => {
   if (error) return <ErrorPage />;
 
   return (
-    <div className="max-w-7xl mx-auto px-2 py-8">
+    <div className="max-w-7xl mx-auto px-2 py-4">
       <AlertPopup
         title="Confirm Deletion"
         message="Are you sure you want to delete this update? This action cannot be undone."
@@ -106,9 +106,9 @@ const CampaignUpdates: React.FC = () => {
         onCancel={() => setUpdateToDelete(null)}
       />
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-50">
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
           Updates
-        </h1>
+        </h2>
         <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
