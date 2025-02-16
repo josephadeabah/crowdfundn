@@ -184,8 +184,7 @@ export default function Dashboard() {
               Campaign Performance
             </CardTitle>
             <CardDescription className="text-green-500 dark:text-green-400">
-              {statistics?.campaign_performance[0]?.performance_percentage}% of
-              goal achieved
+              {statistics?.total_performance_percentage}% of goal achieved
             </CardDescription>
           </CardHeader>
         </Card>
@@ -225,8 +224,16 @@ export default function Dashboard() {
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={donationsOverTimeData}>
               <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
+              <YAxis
+                tickFormatter={(value) =>
+                  `${user?.currency?.toUpperCase()} ${value}`
+                }
+              />
+              <Tooltip
+                formatter={(value) =>
+                  `${user?.currency?.toUpperCase()} ${value}`
+                }
+              />
               <Legend />
               <Line
                 type="monotone"
@@ -264,7 +271,9 @@ export default function Dashboard() {
                   />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip
+                formatter={(value, name) => `${value} Campaigns in ${name}`}
+              />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
@@ -280,8 +289,8 @@ export default function Dashboard() {
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={campaignPerformanceData}>
               <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
+              <YAxis tickFormatter={(value) => `${value}%`} />
+              <Tooltip formatter={(value) => `${value}%`} />
               <Legend />
               <Bar dataKey="performance" fill="#82ca9d" />
             </BarChart>
