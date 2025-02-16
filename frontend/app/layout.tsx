@@ -37,8 +37,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <GlobalContextProvider>
           <Providers>
             <Navbar />
-            <main className="flex-grow w-full">
-              {children} <Analytics />
+            <main className="flex-grow w-full min-h-screen">
+              {children} 
+              <Analytics />
             </main>
             <Footer />
           </Providers>
