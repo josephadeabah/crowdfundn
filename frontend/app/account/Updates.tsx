@@ -109,9 +109,6 @@ const CampaignUpdates: React.FC = () => {
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
           Updates
         </h2>
-        <p className="text-gray-500 dark:text-neutral-400 mb-4">
-          Keep your supporters updated on the progress of your campaign
-        </p>
         <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
@@ -120,7 +117,9 @@ const CampaignUpdates: React.FC = () => {
           Add Update
         </button>
       </div>
-
+      <p className="text-gray-500 dark:text-neutral-400 mb-4">
+          Keep your supporters updated on the progress of your campaign
+      </p>
       {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
