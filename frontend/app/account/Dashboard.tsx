@@ -65,15 +65,7 @@ export default function Dashboard() {
   }));
 
   // Format campaign performance for Recharts
-  const campaignPerformanceData = statistics?.campaign_performance?.map(
-    (campaign) => ({
-      name: campaign.title,
-      performance: parseFloat(campaign.performance_percentage),
-    }),
-  );
-
-  // Format top campaigns for Recharts
-  const topCampaignsData = statistics?.top_campaigns?.map((campaign) => ({
+  const campaignPerformanceData = statistics?.campaign_performance?.map((campaign) => ({
     name: campaign.title,
     performance: parseFloat(campaign.performance_percentage),
     totalDays: campaign.total_days,
@@ -312,43 +304,24 @@ export default function Dashboard() {
             </PieChart>
           </ResponsiveContainer>
         </Card>
-
-        {/* Campaign Performance Chart */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Campaign Performance
-            </CardTitle>
-          </CardHeader>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={campaignPerformanceData}>
-              <XAxis dataKey="name" />
-              <YAxis tickFormatter={(value) => `${value}%`} />
-              <Tooltip formatter={(value) => `${value}%`} />
-              <Legend />
-              <Bar dataKey="performance" fill="#82ca9d" />
-            </BarChart>
-          </ResponsiveContainer>
-        </Card>
-
-        {/* Top Campaigns Chart */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Top Campaigns
-            </CardTitle>
-          </CardHeader>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={topCampaignsData}>
-              <XAxis dataKey="name" />
-              <YAxis tickFormatter={(value) => `${value}%`} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar dataKey="performance" fill={barColors[0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </Card>
       </div>
+      {/* Campaign Performance Chart */}
+      <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+            Campaign Performance
+          </CardTitle>
+        </CardHeader>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={campaignPerformanceData}>
+            <XAxis dataKey="name" />
+            <YAxis tickFormatter={(value) => `${value}%`} />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <Bar dataKey="performance" fill={barColors[0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </Card>
     </div>
   );
 }
