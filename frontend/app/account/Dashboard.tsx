@@ -199,7 +199,7 @@ export default function Dashboard() {
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Campaign Performance
+              Performance Across Campaigns
             </CardTitle>
             <CardDescription className="text-green-500 dark:text-green-400">
               {statistics?.total_performance_percentage}% of goal achieved
