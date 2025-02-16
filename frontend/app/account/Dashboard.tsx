@@ -65,12 +65,14 @@ export default function Dashboard() {
   }));
 
   // Format campaign performance for Recharts
-  const campaignPerformanceData = statistics?.campaign_performance?.map((campaign) => ({
-    name: campaign.title,
-    performance: parseFloat(campaign.performance_percentage),
-    totalDays: campaign.total_days,
-    remainingDays: campaign.remaining_days,
-  }));
+  const campaignPerformanceData = statistics?.campaign_performance?.map(
+    (campaign) => ({
+      name: campaign.title,
+      performance: parseFloat(campaign.performance_percentage),
+      totalDays: campaign.total_days,
+      remainingDays: campaign.remaining_days,
+    }),
+  );
 
   // Colors for pie chart
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
@@ -232,44 +234,68 @@ export default function Dashboard() {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
-        {/* Donations Over Time Chart */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Donations Over Time
-            </CardTitle>
-          </CardHeader>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart
-              data={donationsOverTimeData}
-              margin={{
-                top: 5,
-                right: 5,
-                left: 5,
-                bottom: 5,
-              }}
-            >
-              <XAxis dataKey="date" />
-              <YAxis
-                tickFormatter={(value) =>
-                  `${user?.currency?.toUpperCase()} ${value}`
-                }
-              />
-              <Tooltip
-                formatter={(value) =>
-                  `${user?.currency?.toUpperCase()} ${value}`
-                }
-              />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="amount"
-                stroke="#8884d8"
-                activeDot={{ r: 8 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </Card>
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Total Rewards Claimed Card */}
+          <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+                Rewards Claimed
+              </CardTitle>
+              <CardDescription className="text-purple-500 dark:text-purple-400">
+                {statistics?.total_rewards_claimed}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          {/* Total Campaign Shares Card */}
+          <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+                Overall Campaign Shares
+              </CardTitle>
+              <CardDescription className="text-blue-500 dark:text-blue-400">
+                {statistics?.total_campaign_shares}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          {/* Total Comments Card */}
+          <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+                Overall Comments
+              </CardTitle>
+              <CardDescription className="text-green-500 dark:text-green-400">
+                {statistics?.total_comments}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          {/* Total Updates Card */}
+          <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+                Overall Updates
+              </CardTitle>
+              <CardDescription className="text-yellow-500 dark:text-yellow-400">
+                {statistics?.total_updates}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          {/* Total Favorites Card */}
+          <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+                Favorites
+              </CardTitle>
+              <CardDescription className="text-red-500 dark:text-red-400">
+                {statistics?.total_favorites}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
 
         {/* Campaigns by Category Chart */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
@@ -305,6 +331,42 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </Card>
       </div>
+      {/* Donations Over Time Chart */}
+      <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+            Donations Over Time
+          </CardTitle>
+        </CardHeader>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart
+            data={donationsOverTimeData}
+            margin={{
+              top: 5,
+              right: 5,
+              left: 5,
+              bottom: 5,
+            }}
+          >
+            <XAxis dataKey="date" />
+            <YAxis
+              tickFormatter={(value) =>
+                `${user?.currency?.toUpperCase()} ${value}`
+              }
+            />
+            <Tooltip
+              formatter={(value) => `${user?.currency?.toUpperCase()} ${value}`}
+            />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="amount"
+              stroke="#8884d8"
+              activeDot={{ r: 8 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </Card>
       {/* Campaign Performance Chart */}
       <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
         <CardHeader>

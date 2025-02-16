@@ -216,4 +216,9 @@ export interface CampaignStatisticsDataType {
   campaigns_by_category: Record<string, number>; // Adjust based on the structure of your categories
   top_campaigns: CampaignPerformance[];
   average_donation_amount: number;
+  total_comments: number;
+  total_updates: number;
+  total_campaign_shares: number;
+  total_rewards_claimed: number;
+  total_favorites: number;
 }
