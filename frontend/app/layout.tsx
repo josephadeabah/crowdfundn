@@ -8,6 +8,7 @@ import { ReactNode } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { GlobalContextProvider } from './context/GlobalContextProvider';
 import Head from './head';
+import { usePathname } from 'next/navigation';
 
 const roboto = Roboto({
   weight: ['400', '500', '700'],
@@ -28,6 +29,8 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
+  const pathname = usePathname();
+  const isDashboard = pathname.startsWith("/account");
   return (
     <html lang="en" className="h-full scroll-smooth light">
       <Head />
@@ -41,7 +44,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               {children}
               <Analytics />
             </main>
-            <Footer />
+            {!isDashboard && <Footer />}
           </Providers>
         </GlobalContextProvider>
       </body>
