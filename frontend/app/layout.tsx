@@ -42,8 +42,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
             </main>
           </Providers>
         </GlobalContextProvider>
-        <Footer />
       </body>
+      <Footer />
     </html>
   );
 }
