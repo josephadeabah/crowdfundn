@@ -72,8 +72,34 @@ export default function Dashboard() {
     }),
   );
 
+  // Format top campaigns for Recharts
+  const topCampaignsData = statistics?.top_campaigns?.map((campaign) => ({
+    name: campaign.title,
+    performance: parseFloat(campaign.performance_percentage),
+    totalDays: campaign.total_days,
+    remainingDays: campaign.remaining_days,
+  }));
+
   // Colors for pie chart
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
+  // Colors for the bars
+  const barColors = ['#8884d8', '#82ca9d', '#ffc658'];
+
+  // Custom Tooltip for Top Campaigns Chart
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white dark:bg-neutral-800 p-3 rounded-lg shadow-md border border-gray-200 dark:border-neutral-700">
+          <p className="font-semibold">{label}</p>
+          <p>Performance: {payload[0].value}%</p>
+          <p>Total Days: {payload[0].payload.totalDays}</p>
+          <p>Remaining Days: {payload[0].payload.remainingDays}</p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="space-y-6 p-4">
@@ -293,6 +319,24 @@ export default function Dashboard() {
               <Tooltip formatter={(value) => `${value}%`} />
               <Legend />
               <Bar dataKey="performance" fill="#82ca9d" />
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+
+        {/* Top Campaigns Chart */}
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+              Top Campaigns
+            </CardTitle>
+          </CardHeader>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={topCampaignsData}>
+              <XAxis dataKey="name" />
+              <YAxis tickFormatter={(value) => `${value}%`} />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+              <Bar dataKey="performance" fill={barColors[0]} />
             </BarChart>
           </ResponsiveContainer>
         </Card>
