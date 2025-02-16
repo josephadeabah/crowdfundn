@@ -97,7 +97,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-4">
       <h2 className="text-2xl font-semibold text-gray-700 dark:text-red-300">
         Dashboard Overview
       </h2>
