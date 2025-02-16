@@ -27,6 +27,7 @@ import {
   Cell,
 } from 'recharts';
 import { deslugify } from '../utils/helpers/categories';
+import { CampaignStatisticsDataType } from '../types/campaigns.types';
 
 export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
@@ -235,67 +236,49 @@ export default function Dashboard() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
         {/* Metrics Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Total Rewards Claimed Card */}
-          <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-                Rewards Claimed
-              </CardTitle>
-              <CardDescription className="text-purple-500 dark:text-purple-400">
-                {statistics?.total_rewards_claimed}
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          {/* Total Campaign Shares Card */}
-          <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-                Overall Campaign Shares
-              </CardTitle>
-              <CardDescription className="text-blue-500 dark:text-blue-400">
-                {statistics?.total_campaign_shares}
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          {/* Total Comments Card */}
-          <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-                Overall Comments
-              </CardTitle>
-              <CardDescription className="text-green-500 dark:text-green-400">
-                {statistics?.total_comments}
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          {/* Total Updates Card */}
-          <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-                Overall Updates
-              </CardTitle>
-              <CardDescription className="text-yellow-500 dark:text-yellow-400">
-                {statistics?.total_updates}
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          {/* Total Favorites Card */}
-          <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-                Favorites
-              </CardTitle>
-              <CardDescription className="text-red-500 dark:text-red-400">
-                {statistics?.total_favorites}
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
+        <Card className="p-6 bg-white dark:bg-neutral-800 rounded-lg border-none shadow w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+            {[
+              {
+                label: 'Rewards Claimed',
+                value: statistics?.total_rewards_claimed,
+                color: 'text-purple-500 dark:text-purple-400',
+              },
+              {
+                label: 'Overall Campaign Shares',
+                value: statistics?.total_campaign_shares,
+                color: 'text-blue-500 dark:text-blue-400',
+              },
+              {
+                label: 'Overall Comments',
+                value: statistics?.total_comments,
+                color: 'text-green-500 dark:text-green-400',
+              },
+              {
+                label: 'Overall Updates',
+                value: statistics?.total_updates,
+                color: 'text-yellow-500 dark:text-yellow-400',
+              },
+              {
+                label: 'Number of Times Favorited',
+                value: statistics?.total_favorites,
+                color: 'text-red-500 dark:text-red-400',
+              },
+            ].map((stat, index) => (
+              <div
+                key={index}
+                className="p-4 bg-gray-50 dark:bg-neutral-700 rounded-lg shadow-sm"
+              >
+                <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+                  {stat.label}
+                </h3>
+                <p className={`text-2xl font-bold ${stat.color}`}>
+                  {stat.value}
+                </p>
+              </div>
+            ))}
+          </div>
+        </Card>
 
         {/* Campaigns by Category Chart */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
