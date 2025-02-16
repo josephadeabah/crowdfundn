@@ -239,14 +239,14 @@ export default function Dashboard() {
         <Card className="p-6 bg-white dark:bg-neutral-800 rounded-lg border-none shadow w-full">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-gray-700 dark:text-gray-300">
-              Statistics Overview
+              Campaign Overview
             </CardTitle>
           </CardHeader>
           <CardDescription>
-            <div className="flex flex-wrap justify-between gap-4">
+            <div className="flex flex-col gap-2">
               {[
                 {
-                  label: 'Rewards Claimed',
+                  label: 'Total Rewards Claimed',
                   value: statistics?.total_rewards_claimed,
                   color: 'text-purple-500 dark:text-purple-400',
                 },
@@ -266,14 +266,14 @@ export default function Dashboard() {
                   color: 'text-yellow-500 dark:text-yellow-400',
                 },
                 {
-                  label: 'Total Favorites Across Campaigns',
+                  label: 'Number of Times People Bookmarked Your Campaigns',
                   value: statistics?.total_favorites,
                   color: 'text-red-500 dark:text-red-400',
                 },
               ].map((item, index) => (
                 <div
                   key={index}
-                  className="flex flex-col items-start p-4 bg-gray-100 dark:bg-neutral-700 rounded-lg w-full sm:w-auto"
+                  className="p-4 bg-gray-100 dark:bg-neutral-700 rounded-lg w-full flex justify-between items-center"
                 >
                   <span className="text-lg font-semibold text-gray-600 dark:text-gray-300">
                     {item.label}
@@ -286,7 +286,6 @@ export default function Dashboard() {
             </div>
           </CardDescription>
         </Card>
-
         {/* Campaigns by Category Chart */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
           <CardHeader>
