@@ -248,7 +248,15 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={donationsOverTimeData}>
+            <LineChart
+              data={donationsOverTimeData}
+              margin={{
+                top: 5,
+                right: 5,
+                left: 5,
+                bottom: 5,
+              }}
+            >
               <XAxis dataKey="date" />
               <YAxis
                 tickFormatter={(value) =>
