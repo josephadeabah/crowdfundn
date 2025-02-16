@@ -137,7 +137,7 @@ class Campaign < ApplicationRecord
   def performance_percentage
     return 0 if goal_amount.zero?
 
-    (current_amount / goal_amount.to_f * 100).round(2)
+    (transferred_amount / goal_amount.to_f * 100).round(2)
   end
 
   def send_status_update_webhook
