@@ -154,12 +154,12 @@ const Campaigns: React.FC = () => {
                           ? 'Canceled'
                           : 'Unknown'}
                   </Button>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
                     <span
                       className={`w-3 h-3 rounded-full 
         ${campaign.permissions.is_public ? 'bg-green-500' : 'bg-gray-500'}`}
                     ></span>
-                    <span>
+                    <span className="text-gray-500 font-semibold text-base">
                       {campaign.permissions.is_public ? 'Public' : 'Private'}
                     </span>
                   </div>
