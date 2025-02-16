@@ -180,7 +180,7 @@ const ProfileTabs = () => {
           <div
             role="tabpanel"
             id={`vertical-tab-${activeTab}`}
-            className="h-full py-20"
+            className="h-full"
           >
             {tabs.find((tab) => tab.label === activeTab)?.component}
           </div>
