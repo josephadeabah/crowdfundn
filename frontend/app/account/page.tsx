@@ -176,7 +176,7 @@ const ProfileTabs = () => {
         </div>
 
         {/* Tab Content */}
-        <div className="flex-1 bg-gradient-to-tr from-green-50 to-orange-50 dark:from-green-900 dark:to-orange-900 dark:bg-gray-900 px-4 py-4 overflow-auto h-full mb-8 md:h-screen [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
+        <div className="flex-1 flex flex-col bg-gradient-to-tr from-green-50 to-orange-50 dark:from-green-900 dark:to-orange-900 dark:bg-gray-900 px-4 py-4 overflow-auto h-full mb-8 md:h-screen [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
           <div
             role="tabpanel"
             id={`vertical-tab-${activeTab}`}
@@ -184,7 +184,7 @@ const ProfileTabs = () => {
           >
             {tabs.find((tab) => tab.label === activeTab)?.component}
           </div>
-          <div className="flex-grow bg-white w-full text-center py-12 text-gray-600 dark:text-gray-400">
+          <div className=" bg-white w-full text-center py-6 text-gray-600 dark:text-gray-400">
             © 2025 Bantu Hive Ltd
       </div>
         </div>
