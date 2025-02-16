@@ -157,9 +157,9 @@ const CreateCampaign = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed flex items-center gap-2 bottom-4 right-4 bg-orange-500 text-white p-2 z-50 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 hover:bg-orange-400"
+        className="fixed flex items-center gap-2 bottom-4 right-4 bg-green-600 text-white p-2 z-50 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 hover:bg-orange-400"
       >
-        Create Your Story
+        Create New Campaign
         <FaEdit />
       </button>
 
