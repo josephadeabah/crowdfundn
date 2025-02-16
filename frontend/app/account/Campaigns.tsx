@@ -159,7 +159,7 @@ const Campaigns: React.FC = () => {
                       className={`w-3 h-3 rounded-full 
         ${campaign.permissions.is_public ? 'bg-green-500' : 'bg-gray-500'}`}
                     ></span>
-                    <span className="text-gray-500 font-semibold text-base">
+                    <span className="text-gray-500 font-semibold text-sm">
                       {campaign.permissions.is_public ? 'Public' : 'Private'}
                     </span>
                   </div>
