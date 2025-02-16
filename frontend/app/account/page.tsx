@@ -175,7 +175,7 @@ const ProfileTabs = () => {
       </div>
 
       {/* Tab Content */}
-      <div className="flex-1 bg-gradient-to-tr from-green-50 to-orange-50 dark:from-green-900 dark:to-orange-900 dark:bg-gray-900 px-4 py-4 mb-20 h-full overflow-y-auto">
+      <div className="flex-1 bg-gradient-to-tr from-green-50 to-orange-50 dark:from-green-900 dark:to-orange-900 dark:bg-gray-900 px-4 py-4 mb-20 h-full overflow-y-auto  [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
         <div
           role="tabpanel"
           id={`vertical-tab-${activeTab}`}
