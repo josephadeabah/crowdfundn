@@ -98,9 +98,9 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-semibold text-gray-700 dark:text-red-300">
+      <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">
         Dashboard Overview
-      </h2>
+      </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Add Campaign Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 flex flex-col items-center justify-center">

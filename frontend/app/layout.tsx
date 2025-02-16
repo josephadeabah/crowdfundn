@@ -30,7 +30,7 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   const pathname = usePathname();
-  const isDashboard = pathname.startsWith("/account");
+  const isDashboard = pathname.startsWith('/account');
   return (
     <html lang="en" className="h-full scroll-smooth light">
       <Head />
