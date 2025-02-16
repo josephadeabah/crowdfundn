@@ -40,9 +40,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <main className="flex-grow w-full">
               {children} <Analytics />
             </main>
-            <Footer />
           </Providers>
         </GlobalContextProvider>
+        <Footer />
       </body>
     </html>
   );
