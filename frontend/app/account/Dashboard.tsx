@@ -101,6 +101,10 @@ export default function Dashboard() {
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
         Dashboard Overview
       </h2>
+      <p className="text-gray-500 dark:text-neutral-400 mb-4">
+        View insights, manage your activities, and track performance all in one
+        place.
+      </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Add Campaign Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 flex flex-col items-center justify-center">

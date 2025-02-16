@@ -47,9 +47,9 @@ const Favorites = () => {
         Favorites
       </h2>
       <p className="text-gray-500 dark:text-neutral-400 mb-4">
-       Keep track of your saved campaigns and monitor their performance.
+        Keep track of your saved campaigns and monitor their performance.
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {/* Check if any campaigns are favorited */}
         {favoritedCampaigns.length === 0 ? (
           <div className="col-span-full text-center p-4 text-gray-500">
