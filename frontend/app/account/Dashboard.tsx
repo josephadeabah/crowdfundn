@@ -12,6 +12,20 @@ import { useAuth } from '../context/auth/AuthContext';
 import MainDashboardLoader from '../loaders/MainDashboardLoader';
 import ErrorPage from '../components/errorpage/ErrorPage';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
 
 export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
@@ -33,7 +47,33 @@ export default function Dashboard() {
     return <ErrorPage />;
   }
 
-  // If statistics data is available, display it
+  // Format donations over time for Recharts
+  const donationsOverTimeData = Object.entries(
+    statistics?.donations_over_time || {},
+  ).map(([date, amount]) => ({
+    date,
+    amount: parseFloat(amount as string),
+  }));
+
+  // Format campaigns by category for Recharts
+  const campaignsByCategoryData = Object.entries(
+    statistics?.campaigns_by_category || {},
+  ).map(([category, count]) => ({
+    name: category,
+    value: count,
+  }));
+
+  // Format campaign performance for Recharts
+  const campaignPerformanceData = statistics?.campaign_performance?.map(
+    (campaign) => ({
+      name: campaign.title,
+      performance: parseFloat(campaign.performance_percentage),
+    }),
+  );
+
+  // Colors for pie chart
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
   return (
     <div className="space-y-6 p-4">
       <h2 className="text-2xl font-semibold text-gray-700 dark:text-red-300">
@@ -158,17 +198,93 @@ export default function Dashboard() {
             </CardTitle>
 
             <CardDescription className="text-zinc-500 dark:text-neutral-400">
-              You must widthdraw your funds in chunks as you fundraise. Learn
+              You must withdraw your funds in chunks as you fundraise. Learn
               more{' '}
               <a
                 href="/articles/how-to-withdraw-funds"
                 target="_blank"
                 className="no-underline text-blue-400"
               >
-                about widthdrawals
+                about withdrawals
               </a>
             </CardDescription>
           </CardHeader>
+        </Card>
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+        {/* Donations Over Time Chart */}
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+              Donations Over Time
+            </CardTitle>
+          </CardHeader>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={donationsOverTimeData}>
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="amount"
+                stroke="#8884d8"
+                activeDot={{ r: 8 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </Card>
+
+        {/* Campaigns by Category Chart */}
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+              Campaigns by Category
+            </CardTitle>
+          </CardHeader>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={campaignsByCategoryData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                fill="#8884d8"
+                label
+              >
+                {campaignsByCategoryData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </Card>
+
+        {/* Campaign Performance Chart */}
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+              Campaign Performance
+            </CardTitle>
+          </CardHeader>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={campaignPerformanceData}>
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="performance" fill="#82ca9d" />
+            </BarChart>
+          </ResponsiveContainer>
         </Card>
       </div>
     </div>
