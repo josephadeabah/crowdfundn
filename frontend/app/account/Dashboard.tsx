@@ -26,6 +26,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import { deslugify } from '../utils/helpers/categories';
 
 export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
@@ -59,7 +60,7 @@ export default function Dashboard() {
   const campaignsByCategoryData = Object.entries(
     statistics?.campaigns_by_category || {},
   ).map(([category, count]) => ({
-    name: category,
+    name: deslugify(category),
     value: count,
   }));
 
