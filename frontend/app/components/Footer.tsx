@@ -5,7 +5,7 @@ import BantuHiveLogoIcon from './icons/BantuHiveLogoIcon';
 
 const Footer = () => {
   return (
-    <div className="relative bg-gradient-to-r from-green-500 to-green-800 hover:from-green-800 hover:to-green-700 text-gray-50 py-16">
+    <footer className="relative bg-gradient-to-r from-green-500 to-green-800 hover:from-green-800 hover:to-green-700 text-gray-50 py-16">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-no-repeat bg-contain opacity-10"
@@ -153,7 +153,7 @@ const Footer = () => {
           &copy; {new Date().getFullYear()} BantuHive Ltd. All rights reserved.
         </p>
       </div>
-    </div>
+    </footer>
   );
 };
 
