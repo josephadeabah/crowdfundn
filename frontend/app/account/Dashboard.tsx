@@ -266,7 +266,7 @@ export default function Dashboard() {
                   color: 'text-yellow-500 dark:text-yellow-400',
                 },
                 {
-                  label: 'Number of Times People Bookmarked Your Campaigns',
+                  label: 'Total Bookmarks Across Campaigns',
                   value: statistics?.total_favorites,
                   color: 'text-red-500 dark:text-red-400',
                 },
