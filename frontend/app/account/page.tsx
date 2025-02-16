@@ -184,6 +184,7 @@ const ProfileTabs = () => {
           >
             {tabs.find((tab) => tab.label === activeTab)?.component}
           </div>
+          <div className="p-8">Bantu Hive</div>
         </div>
 
         {/* Onboarding Modal */}
