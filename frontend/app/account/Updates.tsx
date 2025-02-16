@@ -105,7 +105,7 @@ const CampaignUpdates: React.FC = () => {
         onConfirm={confirmDelete}
         onCancel={() => setUpdateToDelete(null)}
       />
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
           Updates
         </h2>
@@ -117,9 +117,9 @@ const CampaignUpdates: React.FC = () => {
           Add Update
         </button>
       </div>
-      <p className="text-gray-500 dark:text-neutral-400 mb-4">
+      <div className="text-gray-500 dark:text-neutral-400 mb-4">
           Keep your supporters updated on the progress of your campaign
-      </p>
+      </div>
       {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
