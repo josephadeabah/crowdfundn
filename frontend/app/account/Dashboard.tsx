@@ -236,7 +236,7 @@ export default function Dashboard() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
         {/* Metrics Grid */}
-        <Card className="p-6 bg-white dark:bg-neutral-800 rounded-lg border-none shadow w-full">
+        <Card className="p-6 bg-white dark:bg-neutral-800 rounded-lg border-none w-full">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-gray-700 dark:text-gray-300">
               Campaign Overview
@@ -287,7 +287,7 @@ export default function Dashboard() {
           </CardDescription>
         </Card>
         {/* Campaigns by Category Chart */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Campaigns by Category
@@ -321,7 +321,7 @@ export default function Dashboard() {
         </Card>
       </div>
       {/* Donations Over Time Chart */}
-      <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
+      <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
             Donations Over Time
@@ -357,7 +357,7 @@ export default function Dashboard() {
         </ResponsiveContainer>
       </Card>
       {/* Campaign Performance Chart */}
-      <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow">
+      <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
             Campaign Performance
