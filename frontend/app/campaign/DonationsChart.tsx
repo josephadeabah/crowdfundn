@@ -33,7 +33,7 @@ const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
 
   return (
     <div className="bg-white p-4 rounded-lg mt-6 shadow">
-      <h2 className="text-xl font-semibold mb-4">Donations Over Time</h2>
+      <h2 className="text-xl font-semibold mb-4">Donations Over Current Month</h2>
       <ResponsiveContainer width="100%" height={320}>
         <LineChart
           data={donationData}
