@@ -177,7 +177,11 @@ module Api
 
         # GET /api/v1/fundraisers/campaigns/statistics
         def statistics
-          stats = CampaignStatisticsService.calculate_for_user(@current_user)
+          user = @current_user
+          month = params[:month]&.to_i || Time.zone.now.month
+          year = params[:year]&.to_i || Time.zone.now.year
+        
+          stats = CampaignStatisticsService.calculate_for_user(user, month, year)
           render json: stats, status: :ok
         end
 

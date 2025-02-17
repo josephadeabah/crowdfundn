@@ -1,8 +1,10 @@
 class CampaignStatisticsService
-  def self.calculate_for_user(user)
+  # Update the method signature to accept month and year
+  def self.calculate_for_user(user, month = Time.zone.now.month, year = Time.zone.now.year)
     total_donated = user.campaigns.joins(:donations).where(donations: { status: 'successful' }).sum('donations.amount')
     total_goal = user.campaigns.sum(:goal_amount)
     total_performance = total_goal.zero? ? 0 : (total_donated / total_goal.to_f * 100).round(2)
+
     {
       total_donations_received: total_donated,
       total_fundraising_goal: user.campaigns.sum(:goal_amount),
@@ -19,7 +21,7 @@ class CampaignStatisticsService
       total_comments: total_comments_for_user(user),
       total_updates: total_updates_for_user(user),
       total_favorites: total_favorites_for_user(user),
-      donations_over_time: donations_over_time_for_user(user), # Defaults to :day
+      donations_over_time: donations_over_time_for_user(user, month, year), # Pass month and year
       total_performance_percentage: total_performance
     }
   end
