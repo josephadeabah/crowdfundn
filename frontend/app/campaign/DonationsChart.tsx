@@ -32,15 +32,15 @@ const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
   );
 
   return (
-    <div className="bg-white p-4 rounded-lg mt-6 shadow">
+    <div className="bg-white rounded-lg mt-6">
       <h2 className="text-xl font-semibold mb-4">Donations Over Current Month</h2>
       <ResponsiveContainer width="100%" height={320}>
         <LineChart
           data={donationData}
           margin={{
             top: 20, // Increase from 5 to 30
-            right: 2,
-            left: 2,
+            right: 0,
+            left: 0,
             bottom: 10,
           }}
         >
