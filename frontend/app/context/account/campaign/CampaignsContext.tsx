@@ -157,36 +157,42 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [token]);
 
-  const fetchCampaignStatistics = useCallback(async (): Promise<void> => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await nextFetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/statistics`,
-        {
+  const fetchCampaignStatistics = useCallback(
+    async (month?: number, year?: number): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Construct the URL with optional month and year query parameters
+        let url = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/statistics`;
+        if (month !== undefined && year !== undefined) {
+          url += `?month=${month}&year=${year}`;
+        }
+
+        const response = await nextFetch(url, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-        },
-      );
+        });
 
-      if (!response.ok) {
-        handleApiError("Couldn't fetch statistics. Please try again.");
-        return;
+        if (!response.ok) {
+          handleApiError("Couldn't fetch statistics. Please try again.");
+          return;
+        }
+
+        const stats = await response.json();
+        setStatistics(stats); // Store statistics in state
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error fetching statistics',
+        );
+      } finally {
+        setLoading(false);
       }
-
-      const stats = await response.json();
-      setStatistics(stats); // Store statistics in state
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Error fetching statistics',
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
+    },
+    [token],
+  );
 
   const fetchAllCampaigns = useCallback(
     async (

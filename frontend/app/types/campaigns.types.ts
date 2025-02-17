@@ -107,7 +107,7 @@ export interface CampaignState {
     campaign: FormData,
   ) => Promise<SingleCampaignResponseDataType>;
   fetchCampaignById: (id: string) => Promise<SingleCampaignResponseDataType>;
-  fetchCampaignStatistics: () => Promise<void>;
+  fetchCampaignStatistics: (month?: number, year?: number) => Promise<void>;
   updateCampaignSettings: (
     campaignId: string,
     settings: Record<string, any>,

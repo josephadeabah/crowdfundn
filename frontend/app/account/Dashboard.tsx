@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Card,
   CardHeader,
@@ -29,15 +29,50 @@ import {
 import { deslugify } from '../utils/helpers/categories';
 import moment from 'moment'; // Import moment
 
+// Helper function to generate month options
+const getMonthOptions = () => {
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  return months.map((month, index) => ({
+    value: index + 1, // Months are 1-indexed (January = 1)
+    label: month,
+  }));
+};
+
+// Helper function to generate year options
+const getYearOptions = () => {
+  const currentYear = new Date().getFullYear();
+  return Array.from({ length: 5 }, (_, i) => ({
+    value: currentYear - i,
+    label: `${currentYear - i}`,
+  }));
+};
+
 export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
     useCampaignContext();
+  // State for selected month and year
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Default to current month
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Default to current year
   const { user } = useAuth();
 
   // Fetch statistics data when the component mounts
+  // Fetch statistics data when the component mounts or month/year changes
   useEffect(() => {
-    fetchCampaignStatistics();
-  }, [fetchCampaignStatistics]);
+    fetchCampaignStatistics(selectedMonth, selectedYear); // Pass month and year to fetch function
+  }, [fetchCampaignStatistics, selectedMonth, selectedYear]);
 
   // Display a loading state if data is still being fetched
   if (loading) {
@@ -329,6 +364,31 @@ export default function Dashboard() {
           <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
             Donations Over Time
           </CardTitle>
+          {/* Dropdown for Month and Year */}
+          <div className="mt-2 flex gap-2">
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+              className="p-2 border border-gray-300 rounded-md dark:bg-neutral-700 dark:text-white"
+            >
+              {getMonthOptions().map((month) => (
+                <option key={month.value} value={month.value}>
+                  {month.label}
+                </option>
+              ))}
+            </select>
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+              className="p-2 border border-gray-300 rounded-md dark:bg-neutral-700 dark:text-white"
+            >
+              {getYearOptions().map((year) => (
+                <option key={year.value} value={year.value}>
+                  {year.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </CardHeader>
         <ResponsiveContainer width="100%" height={320}>
           <LineChart
