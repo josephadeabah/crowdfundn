@@ -1,4 +1,5 @@
 // components/charts/DashboardCharts.tsx
+"use client";
 import React, { useState } from 'react';
 
 import {
