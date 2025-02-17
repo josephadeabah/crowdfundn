@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { SingleCampaignResponseDataType } from '../types/campaigns.types';
+import moment from 'moment';
 
 type DonationsChartProps = {
   currentCampaign: SingleCampaignResponseDataType | null;
@@ -25,7 +26,7 @@ const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
   // Transform donations_over_time directly
   const donationData = Object.entries(currentCampaign.donations_over_time).map(
     ([date, amount]) => ({
-      date: new Date(date).toLocaleDateString(), // Format date for better readability
+      date: moment(date).format('MMM D'), // Format date for better readability
       amount: parseFloat(amount as string), // Ensure amount is a number
     }),
   );
@@ -37,9 +38,9 @@ const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
         <LineChart
           data={donationData}
           margin={{
-            top: 30, // Increase from 5 to 30
-            right: 10,
-            left: 10,
+            top: 20, // Increase from 5 to 30
+            right: 2,
+            left: 2,
             bottom: 10,
           }}
         >
@@ -51,8 +52,15 @@ const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
             textAnchor="end"
             height={50}
           />
-          <YAxis tick={{ fontSize: 12 }} />
-          <Tooltip />
+          <YAxis
+            tick={{ fontSize: 12 }}
+            tickFormatter={(value) =>
+              `${currentCampaign?.currency?.toUpperCase()} ${value}`
+            }
+          />
+          <Tooltip
+            formatter={(value) => `${currentCampaign?.currency?.toUpperCase()} ${value}`}
+          />
           <Line
             type="monotone"
             dataKey="amount"
