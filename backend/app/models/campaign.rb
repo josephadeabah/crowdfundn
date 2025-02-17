@@ -76,6 +76,7 @@ class Campaign < ApplicationRecord
       media_filename: media_filename,
       description: description.as_json,
       total_shares: total_shares,
+      donations_over_time: donations_over_time,
       permissions: {
         accept_donations: accept_donations,
         leave_words_of_support: leave_words_of_support,
@@ -151,6 +152,25 @@ class Campaign < ApplicationRecord
 
   def total_shares
     campaign_shares.count
+  end
+
+  def donations_over_time
+    start_of_campaign = start_date.beginning_of_day
+    end_of_campaign = [end_date.end_of_day, Time.zone.now].min # Avoid future dates
+
+    # Fetch successful donations and group them by day
+    donations = self.donations
+                    .where(status: 'successful', created_at: start_of_campaign..end_of_campaign)
+                    .group_by_day(:created_at, format: '%Y-%m-%d')
+                    .sum(:amount)
+
+    # Ensure all days in the campaign duration are included
+    (start_of_campaign.to_date..end_of_campaign.to_date).each do |date|
+      formatted_date = date.strftime('%Y-%m-%d')
+      donations[formatted_date] ||= 0
+    end
+
+    donations.sort.to_h
   end
 
   private
