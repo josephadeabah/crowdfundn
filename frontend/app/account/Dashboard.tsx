@@ -312,10 +312,10 @@ export default function Dashboard() {
                   key={index}
                   className="p-4 bg-gray-100 dark:bg-neutral-700 rounded-lg w-full flex justify-between items-center"
                 >
-                  <span className="text-lg font-semibold text-gray-600 dark:text-gray-300">
+                  <span className="text-base font-semibold text-gray-600 dark:text-gray-300">
                     {item.label}
                   </span>
-                  <span className={`text-2xl font-bold ${item.color}`}>
+                  <span className={`text-base font-bold ${item.color}`}>
                     {item.value}
                   </span>
                 </div>
