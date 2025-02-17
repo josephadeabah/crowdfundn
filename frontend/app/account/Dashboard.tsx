@@ -25,6 +25,7 @@ import {
   PieChart,
   Pie,
   Cell,
+  CartesianGrid,
 } from 'recharts';
 import { deslugify } from '../utils/helpers/categories';
 import moment from 'moment'; // Import moment
@@ -398,8 +399,16 @@ export default function Dashboard() {
               bottom: 10,
             }}
           >
-            <XAxis dataKey="date" />
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="date"
+              tick={{ fontSize: 12 }}
+              angle={-45}
+              textAnchor="end"
+              height={50}
+            />
             <YAxis
+              tick={{ fontSize: 12 }}
               tickFormatter={(value) =>
                 `${user?.currency?.toUpperCase()} ${value}`
               }
@@ -411,8 +420,8 @@ export default function Dashboard() {
             <Line
               type="monotone"
               dataKey="amount"
-              stroke="#8884d8"
-              activeDot={{ r: 8 }}
+              stroke="#22c55e"
+              strokeWidth={2}
             />
           </LineChart>
         </ResponsiveContainer>
