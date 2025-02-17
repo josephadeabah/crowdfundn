@@ -86,7 +86,7 @@ const LeaderboardBackersPage = () => {
                       <td className="px-4 py-2 text-gray-600">
                         {getRankWithSuffix(backer.rank)}
                       </td>
-                      <td className="px-4 py-2 flex items-center space-x-3">
+                      <td className="px-4 py-2 flex items-center">
                         <Popover>
                           <PopoverTrigger asChild>
                             <div className="relative cursor-pointer">
