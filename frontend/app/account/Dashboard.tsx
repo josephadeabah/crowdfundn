@@ -67,8 +67,6 @@ export default function Dashboard() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Default to current month
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Default to current year
   const { user } = useAuth();
-
-  // Fetch statistics data when the component mounts
   // Fetch statistics data when the component mounts or month/year changes
   useEffect(() => {
     fetchCampaignStatistics(selectedMonth, selectedYear); // Pass month and year to fetch function
