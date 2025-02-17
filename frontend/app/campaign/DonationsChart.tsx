@@ -53,7 +53,7 @@ const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
             height={50}
           />
           <YAxis
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 9 }}
             tickFormatter={(value) =>
               `${currentCampaign?.currency?.toUpperCase()} ${value}`
             }
