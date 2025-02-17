@@ -15,6 +15,16 @@ import { useDonationsContext } from '@/app/context/account/donations/DonationsCo
 import ProgressRing from '@/app/components/ring/ProgressRing';
 import DonationList from '@/app/components/backerlist/DonationList';
 import SuggestedCampaignsComponent from '@/app/components/suggestedCampaigns/SuggestedCampaigns';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
+import DonationsChart from '../DonationsChart';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<
@@ -408,6 +418,7 @@ const SingleCampaignPage: React.FC = () => {
                   </div>
                 </div>
               </div>
+              <DonationsChart currentCampaign={currentCampaign} />
             </div>
           </div>
         </div>

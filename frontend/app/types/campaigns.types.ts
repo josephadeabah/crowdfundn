@@ -178,6 +178,7 @@ export interface SingleCampaignResponseDataType {
   currency_code: string | null;
   currency_symbol: string | null;
   status: string | null;
+  donations_over_time: {};
   remaining_days: string;
   total_donors: number;
   fundraiser_id: number;
