@@ -96,23 +96,21 @@ class CampaignStatisticsService
     user.campaigns.joins(:favorites).count
   end
 
-  def self.donations_over_time_for_user(user)
-    start_of_month = Time.zone.now.beginning_of_month
-    end_of_month = Time.zone.now.end_of_month
+  def self.donations_over_time_for_user(user, month = Time.zone.now.month, year = Time.zone.now.year)
+    start_date = Date.new(year, month, 1).beginning_of_month
+    end_date = Date.new(year, month, 1).end_of_month
   
-    # Fetch donations for the current month
     donations = user.campaigns.joins(:donations)
-                    .where(donations: { status: 'successful', created_at: start_of_month..end_of_month })
+                    .where(donations: { status: 'successful', created_at: start_date..end_date })
                     .group_by_day('donations.created_at', format: '%Y-%m-%d')
                     .sum('donations.amount')
   
-    # Ensure all days of the month are included
-    (start_of_month.to_date..end_of_month.to_date).each do |date|
+    # Ensure all days in the range are included
+    (start_date.to_date..end_date.to_date).each do |date|
       formatted_date = date.strftime('%Y-%m-%d')
       donations[formatted_date] ||= 0
     end
   
-    # Sort by date
     donations.sort.to_h
   end
 end
