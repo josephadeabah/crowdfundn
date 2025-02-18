@@ -1,5 +1,7 @@
+// components/charts/DashboardCharts.tsx
 'use client';
-import React, { useState, useEffect } from 'react'; // Add useEffect
+import React, { useEffect, useState } from 'react';
+
 import {
   BarChart,
   Bar,
@@ -53,8 +55,8 @@ const getYearOptions = () => {
 };
 
 interface DashboardChartsProps {
-  statistics: CampaignStatisticsDataType | null;
-  user: LoginUserType | null;
+  statistics: CampaignStatisticsDataType | null; // Replace `any` with the correct type for your statistics
+  user: LoginUserType | null; // Replace `any` with the correct type for your user
   fetchCampaignStatistics: (month: number, year: number) => void;
 }
 
@@ -64,27 +66,10 @@ export default function DashboardCharts({
   fetchCampaignStatistics,
 }: DashboardChartsProps) {
   // State for selected month and year
-  const [selectedMonth, setSelectedMonth] = useState(() => {
-    // Retrieve the selected month from localStorage, or default to the current month
-    const storedMonth = localStorage.getItem('selectedMonth');
-    return storedMonth ? parseInt(storedMonth) : new Date().getMonth() + 1;
-  });
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Default to current month
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Default to current year
 
-  const [selectedYear, setSelectedYear] = useState(() => {
-    // Retrieve the selected year from localStorage, or default to the current year
-    const storedYear = localStorage.getItem('selectedYear');
-    return storedYear ? parseInt(storedYear) : new Date().getFullYear();
-  });
-
-  // Update localStorage when selectedMonth or selectedYear changes
-  useEffect(() => {
-    localStorage.setItem('selectedMonth', selectedMonth.toString());
-  }, [selectedMonth]);
-
-  useEffect(() => {
-    localStorage.setItem('selectedYear', selectedYear.toString());
-  }, [selectedYear]);
-
+  useEffect(()=>{},[selectedMonth, selectedYear])
   // Handle month and year selection
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const month = parseInt(e.target.value);
