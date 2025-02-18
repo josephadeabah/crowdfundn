@@ -82,7 +82,7 @@ const LeaderboardBackersPage = () => {
                 </thead>
                 <tbody>
                   {leaderboard.map((backer) => (
-                    <tr key={backer.id} className="border-t border-gray-300">
+                    <tr key={backer.id} className="">
                       <td className="px-4 py-2 text-gray-600">
                         {getRankWithSuffix(backer.rank)}
                       </td>
