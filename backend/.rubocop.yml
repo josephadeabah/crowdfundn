@@ -1,6 +1,28 @@
-AllCops:
-  TargetRubyVersion: 3.4  # Adjust to your Ruby version
-  SuggestExtensions: false
+require:
+  - rubocop-rails
+  - rubocop-performance
 
-Style/StringLiterals:
-  EnforcedStyle: single_quotes
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.6 # Update to your Ruby version
+  Exclude:
+    - 'db/**/*'
+    - 'bin/*'
+    - 'vendor/**/*'
+    - 'node_modules/**/*'
+    - 'config/**/*'
+    - 'spec/**/*' # Exclude specs if not using RSpec
+
+Rails:
+  Enabled: true
+
+Metrics/BlockLength:
+  Exclude:
+    - 'config/routes.rb'
+    - 'spec/**/*' # Exclude specs if not using RSpec
+
+Style/Documentation:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 120

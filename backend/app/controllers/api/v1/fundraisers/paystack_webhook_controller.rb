@@ -20,7 +20,7 @@ module Api
               render json: { error: 'Unexpected error occurred' }, status: :internal_server_error
             end
           else
-            Rails.logger.error "Invalid webhook signature"
+            Rails.logger.error 'Invalid webhook signature'
             render json: { error: 'Invalid signature' }, status: :forbidden
           end
         end
@@ -29,7 +29,7 @@ module Api
 
         def handle_event(event)
           event_id = event[:data][:id]
-          
+
           # Check if the event has already been processed (deduplication)
           if EventProcessed.exists?(event_id: event_id)
             Rails.logger.info "Event already processed: #{event_id}"

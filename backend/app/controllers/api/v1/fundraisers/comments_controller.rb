@@ -1,5 +1,5 @@
 class Api::V1::Fundraisers::CommentsController < ApplicationController
-  before_action :authenticate_request, except: [:index, :show]
+  before_action :authenticate_request, except: %i[index show]
   before_action :set_comment, only: %i[show update destroy]
   before_action :set_campaign, only: %i[index create]
 
@@ -23,23 +23,23 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
       end
 
       @comment = @campaign.comments.build(comment_params.merge({
-        user: @current_user,
-        full_name: @current_user.full_name,
-        email: @current_user.email
-      }))
+                                                                 user: @current_user,
+                                                                 full_name: @current_user.full_name,
+                                                                 email: @current_user.email
+                                                               }))
     else
-    # Anonymous user flow
-    # Check if the anonymous token is valid
-    token = request.headers['X-Anonymous-Token']
-    anonymous_token = Donation.find_by(metadata: { anonymous_token: token })&.metadata&.dig('anonymous_token')
+      # Anonymous user flow
+      # Check if the anonymous token is valid
+      token = request.headers['X-Anonymous-Token']
+      anonymous_token = Donation.find_by(metadata: { anonymous_token: token })&.metadata&.dig('anonymous_token')
 
       unless anonymous_user_has_successfully_donated?(@campaign, anonymous_token)
         return render json: { error: 'You must make a successful donation to comment.' }, status: :unauthorized
       end
 
-    @comment = @campaign.comments.build(comment_params.merge({
-      anonymous_token: anonymous_token
-    }))
+      @comment = @campaign.comments.build(comment_params.merge({
+                                                                 anonymous_token: anonymous_token
+                                                               }))
     end
 
     if @comment.save

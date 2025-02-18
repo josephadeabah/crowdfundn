@@ -49,14 +49,14 @@ gem 'stimulus-rails'
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem 'jbuilder'
 
-gem 'delayed_job_active_record'
-gem 'delayed_job'
 gem 'daemons'
+gem 'delayed_job'
+gem 'delayed_job_active_record'
 
+gem 'actionmailer', require: 'action_mailer'
+gem 'mail'
 gem 'sidekiq'
 gem 'sidekiq-cron'
-gem 'mail'
-gem 'actionmailer', require: 'action_mailer'
 
 gem 'foreman'
 
@@ -108,4 +108,11 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem 'capybara'
   gem 'selenium-webdriver'
+end
+
+group :development, :test do
+  gem 'rubocop', require: false
+  gem 'rubocop-performance', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec', require: false # Only if you're using RSpec
 end

@@ -2,75 +2,73 @@ module Api
   module V1
     module Fundraisers
       class CampaignsController < ApplicationController
-        before_action :authenticate_request, only: %i[index create update destroy my_campaigns statistics favorite unfavorite favorites]  # Ensure user is authenticated
+        before_action :authenticate_request, only: %i[index create update destroy my_campaigns statistics favorite unfavorite favorites] # Ensure user is authenticated
         before_action :set_campaign, only: %i[show update destroy webhook_status_update favorite unfavorite]
-        before_action :authorize_campaign_user!, only: %i[update destroy]  # Ensure user authorization for these actions
+        before_action :authorize_campaign_user!, only: %i[update destroy] # Ensure user authorization for these actions
 
         def index
           page = params[:page] || 1
           page_size = params[:pageSize] || 10
-          
+
           sort_by = params[:sortBy] || 'created_at'
           sort_order = params[:sortOrder] || 'desc'
-        
+
           # Ensure sorting is safe
           valid_sort_columns = %w[created_at title goal_amount location]
-          sort_by = valid_sort_columns.include?(sort_by) ? sort_by : 'created_at'
+          sort_by = 'created_at' unless valid_sort_columns.include?(sort_by)
 
           # Initialize campaigns collection
           @campaigns = Campaign.active
 
           # Filters
           if params[:dateRange] && params[:dateRange] != 'all_time'
-            case params[:dateRange]
-            when 'today'
-              start_date = Time.zone.now.beginning_of_day # Start of the current day
-            when 'last_7_days'
-              start_date = 7.days.ago
-            when 'last_30_days'
-              start_date = 30.days.ago
-            when 'last_60_days'
-              start_date = 60.days.ago
-            when 'last_90_days'
-              start_date = 90.days.ago
-            when 'this_month'
-              start_date = Time.zone.now.beginning_of_month # Start of the current month
-            when 'last_month'
-              start_date = 1.month.ago.beginning_of_month # Start of the last month
-            when 'this_year'
-              start_date = Time.zone.now.beginning_of_year # Start of the current year
-            when 'last_year'
-              start_date = 1.year.ago.beginning_of_year # Start of the previous year
-            else
-              # If no valid date range is provided, you can decide to handle it as an error or fallback
-              start_date = nil
-            end
+            start_date = case params[:dateRange]
+                         when 'today'
+                           Time.zone.now.beginning_of_day # Start of the current day
+                         when 'last_7_days'
+                           7.days.ago
+                         when 'last_30_days'
+                           30.days.ago
+                         when 'last_60_days'
+                           60.days.ago
+                         when 'last_90_days'
+                           90.days.ago
+                         when 'this_month'
+                           Time.zone.now.beginning_of_month # Start of the current month
+                         when 'last_month'
+                           1.month.ago.beginning_of_month # Start of the last month
+                         when 'this_year'
+                           Time.zone.now.beginning_of_year # Start of the current year
+                         when 'last_year'
+                           1.year.ago.beginning_of_year # Start of the previous year
+                         else
+                           # If no valid date range is provided, you can decide to handle it as an error or fallback
+                           nil
+                         end
             # Only apply the filter if start_date is defined
             @campaigns = @campaigns.where('created_at >= ?', start_date) if start_date
           end
-        
+
           if params[:goalRange] && params[:goalRange] != 'all'
             min_goal, max_goal = params[:goalRange].split('-').map(&:to_i)
             @campaigns = @campaigns.where(goal_amount: min_goal..max_goal)
           end
-        
-          if params[:location] && params[:location] != 'all'
-            @campaigns = @campaigns.where(location: params[:location])
-          end
-        
+
+          @campaigns = @campaigns.where(location: params[:location]) if params[:location] && params[:location] != 'all'
+
           if params[:title].present?
             @campaigns = @campaigns.where('lower(title) LIKE ?', "%#{params[:title].downcase}%")
           end
-        
+
           # Sorting and pagination
           @campaigns = @campaigns.order(sort_by => sort_order).page(page).per(page_size)
-          
+
           # Prepare campaigns data
           campaigns_data = @campaigns.map do |campaign|
-            campaign.as_json(user: @current_user, include: %i[rewards updates comments fundraiser: :profile])
+            campaign.as_json(user: @current_user, include: %i[rewards updates comments fundraiser: profile])
                     .merge(media: campaign.media_url, total_donors: campaign.total_donors)
           end
-        
+
           # Render response
           render json: {
             campaigns: campaigns_data,
@@ -82,7 +80,7 @@ module Api
 
         def show
           # Include total_donors for the single campaign
-          render json: @campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
+          render json: @campaign.as_json(include: %i[rewards updates comments fundraiser: profile])
                                 .merge(media: @campaign.media_url, total_donors: @campaign.total_donors),
                  status: :ok
         end
@@ -90,14 +88,14 @@ module Api
         def my_campaigns
           page = params[:page] || 1
           page_size = params[:pageSize] || 12
-          
+
           # Retrieve user's campaigns with pagination and order by most recent
           @campaigns = @current_user.campaigns.order(created_at: :desc).page(page).per(page_size)
-          
+
           # Include total_donors for each campaign
           campaigns_data = @campaigns.map do |campaign|
-            campaign.as_json(include: %i[rewards updates comments fundraiser: :profile])
-                   .merge(media: campaign.media_url, total_donors: campaign.total_donors)
+            campaign.as_json(include: %i[rewards updates comments fundraiser: profile])
+                    .merge(media: campaign.media_url, total_donors: campaign.total_donors)
           end
 
           render json: {
@@ -111,16 +109,16 @@ module Api
         def group_by_category
           page = params[:page] || 1
           page_size = params[:page_size] || 12
-        
+
           # Group only active campaigns by category
           grouped_campaigns = Campaign.active.order(created_at: :desc).group_by do |campaign|
             campaign.category.downcase.gsub(/\s+/, '-')
           end
-        
+
           grouped_paginated_campaigns = grouped_campaigns.transform_values do |campaigns|
             Kaminari.paginate_array(campaigns).page(page).per(page_size)
           end
-        
+
           response_data = grouped_paginated_campaigns.each_with_object({}) do |(category, campaigns), result|
             result[category] = {
               campaigns: campaigns,
@@ -129,7 +127,7 @@ module Api
               total_count: campaigns.total_count
             }
           end
-        
+
           render json: {
             grouped_campaigns: response_data
           }, status: :ok
@@ -157,14 +155,15 @@ module Api
         def update
           # Find the campaign by ID
           @campaign = Campaign.find(params[:id])
-        
+
           if @campaign.update(campaign_params)
             # Update media if a new file is provided
             if params[:media].present?
               @campaign.media.attach(params[:media])
               set_media_content_disposition(@campaign.media)
             end
-            render json: @campaign.as_json(include: %i[rewards updates comments]).merge(media: @campaign.media), status: :ok
+            render json: @campaign.as_json(include: %i[rewards updates comments]).merge(media: @campaign.media),
+                   status: :ok
           else
             render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity
           end
@@ -180,42 +179,42 @@ module Api
           user = @current_user
           month = params[:month]&.to_i || Time.zone.now.month
           year = params[:year]&.to_i || Time.zone.now.year
-        
+
           stats = CampaignStatisticsService.calculate_for_user(user, month, year)
           render json: stats, status: :ok
         end
 
-      # POST /api/v1/fundraisers/campaigns/:id/favorite
-      def favorite
-        if @current_user.favorites.create(campaign: @campaign)
-          render json: { message: 'Campaign favorited successfully' }, status: :ok
-        else
-          render json: { error: 'Unable to favorite campaign' }, status: :unprocessable_entity
+        # POST /api/v1/fundraisers/campaigns/:id/favorite
+        def favorite
+          if @current_user.favorites.create(campaign: @campaign)
+            render json: { message: 'Campaign favorited successfully' }, status: :ok
+          else
+            render json: { error: 'Unable to favorite campaign' }, status: :unprocessable_entity
+          end
         end
-      end
-      
-      def unfavorite
-        favorite = @current_user.favorites.find_by(campaign: @campaign)
-        if favorite&.destroy
-          render json: { message: 'Campaign unfavorited successfully' }, status: :ok
-        else
-          render json: { error: 'Unable to unfavorite campaign' }, status: :unprocessable_entity
-        end
-      end
 
-      # In your CampaignsController
-      def favorites
-        @campaigns = @current_user.favorited_campaigns.includes(:rewards, :updates, :comments, fundraiser: :profile)
-        campaigns_data = @campaigns.map do |campaign|
-          campaign.as_json(user: @current_user, include: %i[rewards updates comments fundraiser: :profile])
-                  .merge(media: campaign.media_url, total_donors: campaign.total_donors)
+        def unfavorite
+          favorite = @current_user.favorites.find_by(campaign: @campaign)
+          if favorite&.destroy
+            render json: { message: 'Campaign unfavorited successfully' }, status: :ok
+          else
+            render json: { error: 'Unable to unfavorite campaign' }, status: :unprocessable_entity
+          end
         end
-      
-        render json: {
-          campaigns: campaigns_data
-        }, status: :ok
-      end
-        
+
+        # In your CampaignsController
+        def favorites
+          @campaigns = @current_user.favorited_campaigns.includes(:rewards, :updates, :comments, fundraiser: :profile)
+          campaigns_data = @campaigns.map do |campaign|
+            campaign.as_json(user: @current_user, include: %i[rewards updates comments fundraiser: profile])
+                    .merge(media: campaign.media_url, total_donors: campaign.total_donors)
+          end
+
+          render json: {
+            campaigns: campaigns_data
+          }, status: :ok
+        end
+
         # New Webhook Action
         def webhook_status_update
           # Check if this is a self-triggered request
@@ -232,7 +231,7 @@ module Api
           end
           # Find the campaign by ID
           @campaign = Campaign.find_by(id: data['campaign_id'])
-          
+
           if @campaign
             # Update the campaign's status
             @campaign.update(status: data['status'])
@@ -274,7 +273,7 @@ module Api
         end
 
         def authorize_campaign_user!
-          authorize_user!(@campaign)  # Call the authorization method
+          authorize_user!(@campaign) # Call the authorization method
         end
 
         def campaign_params
