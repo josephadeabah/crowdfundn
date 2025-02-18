@@ -1,5 +1,5 @@
 // components/charts/DashboardCharts.tsx
-"use client";
+'use client';
 import React, { useState } from 'react';
 
 import {
@@ -68,6 +68,19 @@ export default function DashboardCharts({
   // State for selected month and year
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Default to current month
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Default to current year
+
+  // Handle month and year selection
+  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const month = parseInt(e.target.value);
+    setSelectedMonth(month);
+    fetchCampaignStatistics(month, selectedYear);
+  };
+
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const year = parseInt(e.target.value);
+    setSelectedYear(year);
+    fetchCampaignStatistics(selectedMonth, year);
+  };
 
   // Format donations over time for Recharts
   const donationsOverTimeData = Object.entries(
@@ -162,10 +175,7 @@ export default function DashboardCharts({
           <div className="mt-2 flex gap-2">
             <select
               value={selectedMonth}
-              onChange={(e) => {
-                setSelectedMonth(parseInt(e.target.value));
-                fetchCampaignStatistics(parseInt(e.target.value), selectedYear);
-              }}
+              onChange={handleMonthChange}
               className="p-2 border border-gray-300 rounded-md dark:bg-neutral-700 dark:text-white"
             >
               {getMonthOptions().map((month) => (
@@ -176,13 +186,7 @@ export default function DashboardCharts({
             </select>
             <select
               value={selectedYear}
-              onChange={(e) => {
-                setSelectedYear(parseInt(e.target.value));
-                fetchCampaignStatistics(
-                  selectedMonth,
-                  parseInt(e.target.value),
-                );
-              }}
+              onChange={handleYearChange}
               className="p-2 border border-gray-300 rounded-md dark:bg-neutral-700 dark:text-white"
             >
               {getYearOptions().map((year) => (
