@@ -1,4 +1,3 @@
-// components/charts/DashboardCharts.tsx
 'use client';
 import React, { useEffect, useState } from 'react';
 
@@ -65,20 +64,32 @@ export default function DashboardCharts({
   user,
   fetchCampaignStatistics,
 }: DashboardChartsProps) {
-  // State for selected month and year
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Default to current month
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Default to current year
+  // Initialize selected month and year from sessionStorage, or default to current month/year
+  const storedMonth = sessionStorage.getItem('selectedMonth');
+  const storedYear = sessionStorage.getItem('selectedYear');
+  const [selectedMonth, setSelectedMonth] = useState(
+    storedMonth ? parseInt(storedMonth) : new Date().getMonth() + 1,
+  );
+  const [selectedYear, setSelectedYear] = useState(
+    storedYear ? parseInt(storedYear) : new Date().getFullYear(),
+  );
 
-  // Handle month and year selection
+  // Handle month change
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedMonth(parseInt(e.target.value));
-    fetchCampaignStatistics(parseInt(e.target.value), selectedYear);
+    const month = parseInt(e.target.value);
+    setSelectedMonth(month);
+    sessionStorage.setItem('selectedMonth', month.toString()); // Store selected month in sessionStorage
+    fetchCampaignStatistics(month, selectedYear);
   };
 
+  // Handle year change
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedYear(parseInt(e.target.value));
-    fetchCampaignStatistics(selectedMonth, parseInt(e.target.value));
+    const year = parseInt(e.target.value);
+    setSelectedYear(year);
+    sessionStorage.setItem('selectedYear', year.toString()); // Store selected year in sessionStorage
+    fetchCampaignStatistics(selectedMonth, year);
   };
+
   // Format donations over time for Recharts
   const donationsOverTimeData = Object.entries(
     statistics?.donations_over_time || {},
@@ -177,7 +188,7 @@ export default function DashboardCharts({
             >
               {getMonthOptions().map((month) => (
                 <option key={month.value} value={month.value}>
-                  {month.value}
+                  {month.label}
                 </option>
               ))}
             </select>
