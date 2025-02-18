@@ -177,7 +177,7 @@ export default function DashboardCharts({
             >
               {getMonthOptions().map((month) => (
                 <option key={month.value} value={month.value}>
-                  {month.label}
+                  {month.value}
                 </option>
               ))}
             </select>
