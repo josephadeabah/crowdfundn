@@ -83,10 +83,10 @@ const LeaderboardBackersPage = () => {
                 <tbody>
                   {leaderboard.map((backer) => (
                     <tr key={backer.id} className="border-t border-gray-300">
-                      <td className="px-4 py-3 text-gray-600">
+                      <td className="px-4 py-2 text-gray-600">
                         {getRankWithSuffix(backer.rank)}
                       </td>
-                      <td className="px-4 py-3 flex items-center space-x-3">
+                      <td className="px-4 py-2 flex items-center space-x-3">
                         <Popover>
                           <PopoverTrigger asChild>
                             <div className="relative cursor-pointer">
@@ -156,15 +156,15 @@ const LeaderboardBackersPage = () => {
                           <span>{getVerifiedBadge(backer.level, 16)}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-gray-700">
+                      <td className="px-4 py-2 text-gray-700">
                         {backer?.currency?.toUpperCase()}{' '}
                         {Number(backer?.total_donations || 0).toFixed(2) ||
                           'N/A'}
                       </td>
-                      <td className="px-4 py-3 text-gray-700">
+                      <td className="px-4 py-2 text-gray-700">
                         {backer.score || 'N/A'}
                       </td>
-                      <td className="px-4 py-3 text-gray-700 flex items-center gap-2">
+                      <td className="px-4 py-2 text-gray-700 flex items-center gap-2">
                         {getCupIcon(backer.level)}
                       </td>
                     </tr>
