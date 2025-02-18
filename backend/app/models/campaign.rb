@@ -37,6 +37,7 @@ class Campaign < ApplicationRecord
   # Attachments for images or videos
   has_one_attached :media # Use `has_many_attached` if there are multiple files
 
+  before_update :set_is_public_to_false, if: :completed?
   after_initialize :set_default_status, if: :new_record?
   after_update :send_status_update_webhook, if: :status_changed?
     # Automatically call `update_status_based_on_date` after update
@@ -125,7 +126,7 @@ class Campaign < ApplicationRecord
 
   def update_status_based_on_date
     return if canceled? # Skip if already canceled
-    update!(status: :completed, is_public: false)
+    update!(status: :completed)
   end  
 
   # Calculate the total number of unique donors (authenticated + anonymous)
@@ -177,5 +178,9 @@ class Campaign < ApplicationRecord
 
   def set_default_status
     self.status ||= :active
+  end
+
+  def set_is_public_to_false
+    self.is_public = false if completed?
   end
 end
