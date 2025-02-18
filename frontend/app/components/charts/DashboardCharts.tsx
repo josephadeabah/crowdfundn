@@ -71,17 +71,14 @@ export default function DashboardCharts({
 
   // Handle month and year selection
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const month = parseInt(e.target.value);
-    setSelectedMonth(month);
-    fetchCampaignStatistics(month, selectedYear);
+    setSelectedMonth(parseInt(e.target.value));
+    fetchCampaignStatistics(parseInt(e.target.value), selectedYear);
   };
 
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const year = parseInt(e.target.value);
-    setSelectedYear(year);
-    fetchCampaignStatistics(selectedMonth, year);
+    setSelectedYear(parseInt(e.target.value));
+    fetchCampaignStatistics(selectedMonth, parseInt(e.target.value));
   };
-  useEffect(()=>{},[selectedMonth, selectedYear]);
   // Format donations over time for Recharts
   const donationsOverTimeData = Object.entries(
     statistics?.donations_over_time || {},
