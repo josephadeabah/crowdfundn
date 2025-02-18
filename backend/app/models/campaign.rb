@@ -126,7 +126,7 @@ class Campaign < ApplicationRecord
   def update_status_based_on_date
     return if canceled? # Skip if already canceled
 
-    update_columns(status: :completed, is_public: false)
+    update!(status: :completed, is_public: false)
   end  
 
   # Calculate the total number of unique donors (authenticated + anonymous)
