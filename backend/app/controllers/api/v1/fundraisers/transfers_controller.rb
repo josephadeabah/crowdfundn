@@ -25,7 +25,7 @@ module Api
               render json: { error: 'Invalid JSON payload' }, status: :unprocessable_entity
             end
           else
-            Rails.logger.error "Invalid Paystack signature"
+            Rails.logger.error 'Invalid Paystack signature'
             render json: { error: 'Invalid signature' }, status: :forbidden
           end
         end
@@ -39,23 +39,23 @@ module Api
             render json: response, status: :ok
           else
             error_message = response[:message]
-            meta_info = response.dig(:body, :meta, :nextStep) || "Please double-check the details and try again."
-            render json: { 
-              error: "Account resolution failed: #{error_message}. #{meta_info}" 
+            meta_info = response.dig(:body, :meta, :nextStep) || 'Please double-check the details and try again.'
+            render json: {
+              error: "Account resolution failed: #{error_message}. #{meta_info}"
             }, status: :unprocessable_entity
           end
         rescue StandardError => e
           Rails.logger.error "Failed to resolve account details: #{e.message}"
-          render json: { 
-            error: "An unexpected error occurred while resolving the account details. Please try again later or contact support."
+          render json: {
+            error: 'An unexpected error occurred while resolving the account details. Please try again later or contact support.'
           }, status: :unprocessable_entity
-        end        
+        end
 
         # Fetch list of supported countries
         def get_supported_countries
           response = @paystack_service.get_supported_countries
           render json: response, status: :ok
-        rescue => e
+        rescue StandardError => e
           render json: { error: e.message }, status: :unprocessable_entity
         end
 
@@ -63,35 +63,35 @@ module Api
         def get_bank_list
           response = @paystack_service.get_bank_list(**filter_bank_params.to_h.symbolize_keys)
           render json: response, status: :ok
-        rescue => e
+        rescue StandardError => e
           render json: { error: e.message }, status: :unprocessable_entity
-        end             
+        end
 
         # Create a transfer recipient
         def create_transfer_recipient
           @fundraiser = User.find(params[:fundraiser_id])
           campaign = Campaign.find(params[:campaign_id])
-        
+
           # Fetch the full subaccount based on subaccount_id in the user's table
           subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
-        
+
           unless subaccount
-            render json: { error: "No subaccount found for the fundraiser" }, status: :unprocessable_entity
+            render json: { error: 'No subaccount found for the fundraiser' }, status: :unprocessable_entity
             return
           end
-        
+
           metadata = subaccount.metadata
           custom_fields = metadata['custom_fields']
-        
+
           # Extract the appropriate field based on the type (ghipss or mobile_money)
-          bank_code_value = custom_fields.find { |field| field['type'] == 'ghipss' }&.dig('value') || 
+          bank_code_value = custom_fields.find { |field| field['type'] == 'ghipss' }&.dig('value') ||
                             custom_fields.find { |field| field['type'] == 'mobile_money' }&.dig('value')
-        
+
           if bank_code_value.blank?
-            render json: { error: "No valid bank code or mobile money details provided" }, status: :unprocessable_entity
+            render json: { error: 'No valid bank code or mobile money details provided' }, status: :unprocessable_entity
             return
           end
-        
+
           # If no recipient_code exists, proceed to create one
           if subaccount.recipient_code.blank?
             # recipient_type = subaccount.subaccount_type
@@ -101,61 +101,63 @@ module Api
               account_number: subaccount.account_number,
               bank_code: bank_code_value,
               currency: campaign.currency.upcase,
-              description: "Transfer recipient for campaign payouts",
-              metadata: { user_id: @fundraiser.id, campaign_id: campaign.id, email: @fundraiser.email, user_name: @fundraiser.full_name }
+              description: 'Transfer recipient for campaign payouts',
+              metadata: { user_id: @fundraiser.id, campaign_id: campaign.id, email: @fundraiser.email,
+                          user_name: @fundraiser.full_name }
             )
-        
+
             if response[:status] == true
               subaccount.update!(recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id)
-              render json: { message: "Recipient created successfully.", recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id }, status: :ok
+              render json: { message: 'Recipient created successfully.', recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id },
+                     status: :ok
             else
-              render json: { error: "Provide valid data" }, status: :unprocessable_entity
+              render json: { error: 'Provide valid data' }, status: :unprocessable_entity
             end
           else
             # If recipient_code already exists, return it
-            render json: { recipient_code: subaccount.recipient_code, message: "Recipient code already exists." }, status: :ok
+            render json: { recipient_code: subaccount.recipient_code, message: 'Recipient code already exists.' },
+                   status: :ok
           end
         rescue ActiveRecord::RecordInvalid => e
           render json: { error: "Failed to save recipient code: #{e.message}" }, status: :internal_server_error
-        rescue => e
+        rescue StandardError => e
           Rails.logger.error "Error creating transfer recipient: #{e.message}"
           render json: { error: e.message }, status: :unprocessable_entity
-        end        
-        
-        # Update a transfer recipient
-      def update_transfer_recipient
-        recipient_code = params[:recipient_code]
-        update_params = transfer_recipient_params
-
-        # Call the Paystack service to update the recipient
-        response = @paystack_service.update_transfer_recipient(recipient_code, **update_params.symbolize_keys)
-
-        if response[:status]
-          # Update the local database with the new recipient details if needed
-          subaccount = Subaccount.find_by(recipient_code: recipient_code)
-          if subaccount
-            subaccount.update!(
-              business_name: update_params[:name],
-            )
-          end
-
-          render json: {
-            message: "Transfer recipient updated successfully",
-            data: response[:data]
-          }, status: :ok
-        else
-          render json: {
-            error: response[:message] || "Failed to update transfer recipient"
-          }, status: :unprocessable_entity
         end
-      rescue ActiveRecord::RecordNotFound => e
-        render json: { error: e.message }, status: :not_found
-      rescue => e
-        Rails.logger.error "Error updating transfer recipient: #{e.message}"
-        render json: { error: e.message }, status: :unprocessable_entity
-      end
 
-        
+        # Update a transfer recipient
+        def update_transfer_recipient
+          recipient_code = params[:recipient_code]
+          update_params = transfer_recipient_params
+
+          # Call the Paystack service to update the recipient
+          response = @paystack_service.update_transfer_recipient(recipient_code, **update_params.symbolize_keys)
+
+          if response[:status]
+            # Update the local database with the new recipient details if needed
+            subaccount = Subaccount.find_by(recipient_code: recipient_code)
+            if subaccount
+              subaccount.update!(
+                business_name: update_params[:name]
+              )
+            end
+
+            render json: {
+              message: 'Transfer recipient updated successfully',
+              data: response[:data]
+            }, status: :ok
+          else
+            render json: {
+              error: response[:message] || 'Failed to update transfer recipient'
+            }, status: :unprocessable_entity
+          end
+        rescue ActiveRecord::RecordNotFound => e
+          render json: { error: e.message }, status: :not_found
+        rescue StandardError => e
+          Rails.logger.error "Error updating transfer recipient: #{e.message}"
+          render json: { error: e.message }, status: :unprocessable_entity
+        end
+
         # Fetch customer balance from your database or system
         def get_customer_balance(customer_id)
           # Fetch customer record and return balance
@@ -175,7 +177,6 @@ module Api
           end
         end
 
-
         # Reset the customer's balance to zero after a successful transfer
         def reset_customer_balance(customer_id)
           update_customer_balance(customer_id, 0)
@@ -186,7 +187,7 @@ module Api
           customer_balance = get_customer_balance(campaign_id)
 
           if customer_balance.nil? || customer_balance <= 0
-            render json: { error: "Insufficient funds for transfer." }, status: :unprocessable_entity
+            render json: { error: 'Insufficient funds for transfer.' }, status: :unprocessable_entity
             return
           end
 
@@ -207,19 +208,24 @@ module Api
               amount: customer_balance
             )
 
-            update_customer_balance(campaign_id, 0)  # Reset current_amount
+            update_customer_balance(campaign_id, 0) # Reset current_amount
 
             render json: {
               transfer_code: transfer_data[:transfer_code],
               reference: transfer_data[:reference],
-              message: "Transfer initiated successfully."
+              message: 'Transfer initiated successfully.'
             }, status: :ok
           else
-             # Parse the body to get the specific message about insufficient balance
-            body = JSON.parse(transfer_response[:body]) rescue {}
-            specific_message = body["message"] || "An error occurred"
+            # Parse the body to get the specific message about insufficient balance
+            body = begin
+              JSON.parse(transfer_response[:body])
+            rescue StandardError
+              {}
+            end
+            specific_message = body['message'] || 'An error occurred'
             Rails.logger.info "Transfer failed: #{specific_message}"
-            render json: { error: "Sorry, this is an issue on our side. Please wait for a while." }, status: :unprocessable_entity
+            render json: { error: 'Sorry, this is an issue on our side. Please wait for a while.' },
+                   status: :unprocessable_entity
           end
         rescue StandardError => e
           Rails.logger.error "Error processing transfer: #{e.message}"
@@ -228,35 +234,37 @@ module Api
 
         # Initialize a transfer
         def initialize_transfer
-          raise "Campaign ID is missing" unless params[:campaign_id]
-        
+          raise 'Campaign ID is missing' unless params[:campaign_id]
+
           @campaign = Campaign.find(params[:campaign_id])
           @fundraiser = @campaign.fundraiser
           subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
           subaccount.reload if subaccount.present?
           recipient_code = params[:recipient_code]
-        
-          raise "You do not have a account number added." unless subaccount
-          raise "Recipient code not found for this fundraiser" unless recipient_code.present?
-        
+
+          raise 'You do not have a account number added.' unless subaccount
+          raise 'Recipient code not found for this fundraiser' unless recipient_code.present?
+
           total_donations = @campaign.current_amount
-          raise "You have no funds available for payout." if total_donations <= 0.0
-        
+          raise 'You have no funds available for payout.' if total_donations <= 0.0
+
           balance_response = @paystack_service.check_balance
-        
+
           unless balance_response[:status]
-            render json: { error: "Unable to perform transaction at this time. Please try again later." }, status: :unprocessable_entity
+            render json: { error: 'Unable to perform transaction at this time. Please try again later.' },
+                   status: :unprocessable_entity
             return
           end
-        
+
           currency = @campaign.currency.upcase
           available_balance = balance_response[:data].find { |b| b[:currency] == currency }&.dig(:balance).to_f
-        
+
           if available_balance < total_donations
-            render json: { error: "Insufficient balance on our side. Kindly try again later." }, status: :unprocessable_entity
+            render json: { error: 'Insufficient balance on our side. Kindly try again later.' },
+                   status: :unprocessable_entity
             return
           end
-        
+
           process_transfer(@campaign.id, subaccount, recipient_code, @campaign.title, currency)
         rescue ActiveRecord::RecordNotFound => e
           render json: { error: e.message }, status: :not_found
@@ -264,7 +272,6 @@ module Api
           Rails.logger.error "Error initializing transfer: #{e.message}"
           render json: { error: e.message }, status: :unprocessable_entity
         end
-                     
 
         # Bulk create transfer recipients
         def bulk_create_transfer_recipients
@@ -272,7 +279,7 @@ module Api
             recipients: params[:recipients]
           )
           render json: response, status: :ok
-        rescue => e
+        rescue StandardError => e
           render json: { error: e.message }, status: :unprocessable_entity
         end
 
@@ -283,7 +290,7 @@ module Api
             per_page: params[:per_page] || 50
           )
           render json: response, status: :ok
-        rescue => e
+        rescue StandardError => e
           render json: { error: e.message }, status: :unprocessable_entity
         end
 
@@ -291,7 +298,7 @@ module Api
         def fetch_transfer_recipient
           response = @paystack_service.fetch_transfer_recipient(params[:recipient_code])
           render json: response, status: :ok
-        rescue => e
+        rescue StandardError => e
           render json: { error: e.message }, status: :not_found
         end
 
@@ -302,7 +309,7 @@ module Api
             otp: params[:otp]
           )
           render json: response, status: :ok
-        rescue => e
+        rescue StandardError => e
           render json: { error: e.message }, status: :unprocessable_entity
         end
 
@@ -312,84 +319,109 @@ module Api
             transfers: params[:transfers]
           )
           render json: response, status: :ok
-        rescue => e
+        rescue StandardError => e
           render json: { error: e.message }, status: :unprocessable_entity
         end
 
         # Fetch settlements details for user
         def fetch_settlement_status
-
           @fundraiser = User.find(params[:fundraiser_id])
-        
-          raise ActiveRecord::RecordNotFound, "Fundraiser not found" unless @fundraiser
-          
+
+          raise ActiveRecord::RecordNotFound, 'Fundraiser not found' unless @fundraiser
+
           subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
-          raise ActiveRecord::RecordNotFound, "Subaccount not found for this fundraiser" unless subaccount
-        
+          raise ActiveRecord::RecordNotFound, 'Subaccount not found for this fundraiser' unless subaccount
+
           response = @paystack_service.fetch_settlements(
             subaccount: subaccount.subaccount_code
           )
-        
+
           if response[:status]
             render json: {
-              status: "success",
+              status: 'success',
               data: response[:data],
-              message: "Settlement details retrieved successfully"
+              message: 'Settlement details retrieved successfully'
             }, status: :ok
           else
             render json: {
-              status: "error",
+              status: 'error',
               message: response[:message]
             }, status: :unprocessable_entity
           end
         rescue ActiveRecord::RecordNotFound => e
           render json: { error: e.message }, status: :not_found
-        rescue => e
+        rescue StandardError => e
           Rails.logger.error "Error fetching settlement status: #{e.message}"
           render json: { error: e.message }, status: :unprocessable_entity
-        end        
+        end
 
-       # Fetch transfers for the logged-in user
-      def fetch_user_transfers
-        @fundraiser = @current_user
-      
-        # Define pagination parameters
-        page = params[:page] || 1
-        page_size = params[:pageSize] || 8
-      
-        # Query the database for transfers belonging to the current user with pagination and order by created_at
-        @transfers = @fundraiser.transfers.includes(:campaign).order(created_at: :desc).page(page).per(page_size)
-      
-        # Check if transfers are present
-        if @transfers.any?
-          render json: {
-            transfers: @transfers.as_json(include: :campaign),
-            current_page: @transfers.current_page,
-            total_pages: @transfers.total_pages,
-            total_count: @transfers.total_count
-          }, status: :ok
-        else
-          render json: { error: "No transfers found for this user" }, status: :not_found
-        end        
-      end
+        # Fetch transfers for the logged-in user
+        def fetch_user_transfers
+          @fundraiser = @current_user
 
-       # Fetch transfers from Paystack for the logged-in user
-      def fetch_transfers_from_paystack
-        @fundraiser = @current_user
-        subaccounts = Subaccount.where(subaccount_code: @fundraiser.subaccount_id)
-        
-        # Fetch transfers for each subaccount
-        subaccounts.each do |subaccount|
-          response = @paystack_service.fetch_transfer(subaccount.transfer_code)
-          
-          # Check if response is successful
-          if response[:status] && response[:data].present?
-            # If data is an array (multiple transfers)
-            if response[:data].is_a?(Array)
-              response[:data].each do |transfer_data|
+          # Define pagination parameters
+          page = params[:page] || 1
+          page_size = params[:pageSize] || 8
+
+          # Query the database for transfers belonging to the current user with pagination and order by created_at
+          @transfers = @fundraiser.transfers.includes(:campaign).order(created_at: :desc).page(page).per(page_size)
+
+          # Check if transfers are present
+          if @transfers.any?
+            render json: {
+              transfers: @transfers.as_json(include: :campaign),
+              current_page: @transfers.current_page,
+              total_pages: @transfers.total_pages,
+              total_count: @transfers.total_count
+            }, status: :ok
+          else
+            render json: { error: 'No transfers found for this user' }, status: :not_found
+          end
+        end
+
+        # Fetch transfers from Paystack for the logged-in user
+        def fetch_transfers_from_paystack
+          @fundraiser = @current_user
+          subaccounts = Subaccount.where(subaccount_code: @fundraiser.subaccount_id)
+
+          # Fetch transfers for each subaccount
+          subaccounts.each do |subaccount|
+            response = @paystack_service.fetch_transfer(subaccount.transfer_code)
+
+            # Check if response is successful
+            if response[:status] && response[:data].present?
+              # If data is an array (multiple transfers)
+              if response[:data].is_a?(Array)
+                response[:data].each do |transfer_data|
+                  # Find or initialize the transfer record
+                  transfer_record = Transfer.find_by(transfer_code: transfer_data[:transfer_code])
+
+                  # Only create a new record if it doesn't exist
+                  next if transfer_record
+
+                  Transfer.create(
+                    transfer_code: transfer_data[:transfer_code],
+                    user_id: subaccount.user_id,            # Associate with the logged-in user
+                    campaign_id: subaccount.campaign_id,    # Associate with the campaign
+                    bank_name: transfer_data[:recipient][:details][:bank_name],
+                    account_number: transfer_data[:recipient][:details][:account_number],
+                    amount: transfer_data[:amount] / 100.0, # Convert amount to naira
+                    currency: transfer_data[:currency],
+                    status: transfer_data[:status],
+                    reason: transfer_data[:reason],
+                    recipient_code: transfer_data[:recipient][:recipient_code],
+                    reference: transfer_data[:reference],
+                    created_at: transfer_data[:createdAt]
+                  )
+                  Rails.logger.info "Transfer with code #{transfer_data[:transfer_code]} created successfully"
+                end
+              # If data is a single transfer object (hash)
+              elsif response[:data].is_a?(Hash)
+                transfer_data = response[:data]
+
                 # Find or initialize the transfer record
                 transfer_record = Transfer.find_by(transfer_code: transfer_data[:transfer_code])
-                
+
                 # Only create a new record if it doesn't exist
                 unless transfer_record
                   Transfer.create(
@@ -408,53 +440,27 @@ module Api
                   )
                   Rails.logger.info "Transfer with code #{transfer_data[:transfer_code]} created successfully"
                 end
-              end
-            # If data is a single transfer object (hash)
-            elsif response[:data].is_a?(Hash)
-              transfer_data = response[:data]
-              
-              # Find or initialize the transfer record
-              transfer_record = Transfer.find_by(transfer_code: transfer_data[:transfer_code])
-              
-              # Only create a new record if it doesn't exist
-              unless transfer_record
-                Transfer.create(
-                  transfer_code: transfer_data[:transfer_code],
-                  user_id: subaccount.user_id,            # Associate with the logged-in user
-                  campaign_id: subaccount.campaign_id,    # Associate with the campaign
-                  bank_name: transfer_data[:recipient][:details][:bank_name],
-                  account_number: transfer_data[:recipient][:details][:account_number],
-                  amount: transfer_data[:amount] / 100.0, # Convert amount to naira
-                  currency: transfer_data[:currency],
-                  status: transfer_data[:status],
-                  reason: transfer_data[:reason],
-                  recipient_code: transfer_data[:recipient][:recipient_code],
-                  reference: transfer_data[:reference],
-                  created_at: transfer_data[:createdAt]
-                )
-                Rails.logger.info "Transfer with code #{transfer_data[:transfer_code]} created successfully"
+              else
+                Rails.logger.error "Expected an array or hash but got: #{response[:data].inspect}"
+                render json: { error: 'Unexpected response format' }, status: :unprocessable_entity
+                return
               end
             else
-              Rails.logger.error "Expected an array or hash but got: #{response[:data].inspect}"
-              render json: { error: "Unexpected response format" }, status: :unprocessable_entity
+              Rails.logger.error "No transfers found or an error occurred. Response: #{response.inspect}"
+              render json: { error: 'No transfers found or an error occurred' }, status: :unprocessable_entity
               return
             end
-          else
-            Rails.logger.error "No transfers found or an error occurred. Response: #{response.inspect}"
-            render json: { error: "No transfers found or an error occurred" }, status: :unprocessable_entity
-            return
           end
+
+          render json: { message: 'Transfers fetched and saved successfully' }, status: :ok
         end
-        
-        render json: { message: "Transfers fetched and saved successfully" }, status: :ok
-      end
-                           
-      
+
+
         private
 
         def filter_bank_params
           params.permit(:country, :use_cursor, :per_page, :next, :previous).except(:format)
-        end                  
+        end
 
         def process_transfer_approval(transfer_details)
           # Add your logic to decide whether to approve or reject the transfer.
@@ -471,7 +477,7 @@ module Api
 
         def transfer_recipient_params
           params.require(:transfer_recipient).permit(
-            :type, :name, :account_number, :bank_code, :currency, 
+            :type, :name, :account_number, :bank_code, :currency,
             :authorization_code, :description, :metadata
           )
         end

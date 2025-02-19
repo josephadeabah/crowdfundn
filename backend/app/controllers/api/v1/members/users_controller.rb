@@ -19,7 +19,7 @@ module Api
               total_count: @users.total_count
             }
           }, status: :ok
-        end        
+        end
 
         def show
           render json: @current_user.as_json(include: %i[profile roles]), status: :ok
@@ -31,8 +31,8 @@ module Api
 
         def create_subaccount
           user = User.find(params[:user_id])
-          raise "User not found" unless user
-        
+          raise 'User not found' unless user
+
           # Prepare metadata
           metadata = params[:subaccount][:metadata]
           if metadata && metadata[:custom_fields]
@@ -42,7 +42,7 @@ module Api
           else
             metadata = { custom_fields: [] }
           end
-        
+
           ActiveRecord::Base.transaction do
             # Check if the user already has a subaccount
             # if user.subaccount
@@ -54,11 +54,11 @@ module Api
             #       raise StandardError, "Failed to delete recipient on Paystack: #{delete_response[:message]}"
             #     end
             #   end
-        
+
             #   # Delete recipient code locally
             #   user.subaccount.update!(recipient_code: nil)
             # end
-        
+
             # Create a new subaccount via Paystack
             response = PaystackService.new.create_subaccount(
               business_name: params[:subaccount][:business_name],
@@ -72,36 +72,36 @@ module Api
               primary_contact_phone: user.phone_number,
               metadata: metadata
             )
-        
-            if response[:status] == true
-              # Create and associate a new subaccount with the user
-              subaccount = Subaccount.create!(
-                business_name: response[:data][:business_name],
-                bank_code: response[:data][:bank_code],
-                account_number: response[:data][:account_number],
-                subaccount_code: response[:data][:subaccount_code],
-                subaccount_type: metadata[:custom_fields].first[:type],
-                percentage_charge: response[:data][:percentage_charge],
-                description: response[:data][:description],
-                settlement_bank: response[:data][:settlement_bank],
-                metadata: metadata,
-                user_id: user.id
-              )
-            else
-              raise StandardError, response[:message]
-            end
-        
+
+            raise StandardError, response[:message] unless response[:status] == true
+
+            # Create and associate a new subaccount with the user
+            subaccount = Subaccount.create!(
+              business_name: response[:data][:business_name],
+              bank_code: response[:data][:bank_code],
+              account_number: response[:data][:account_number],
+              subaccount_code: response[:data][:subaccount_code],
+              subaccount_type: metadata[:custom_fields].first[:type],
+              percentage_charge: response[:data][:percentage_charge],
+              description: response[:data][:description],
+              settlement_bank: response[:data][:settlement_bank],
+              metadata: metadata,
+              user_id: user.id
+            )
+
+
+
+
             # Update user's subaccount_id
             user.update_columns(subaccount_id: subaccount.subaccount_code)
           end
-        
+
           render json: { success: true, subaccount_code: user.subaccount_id }, status: :ok
-        rescue => e
+        rescue StandardError => e
           Rails.logger.error "Error during account creation: #{e.message}"
           render json: { success: false, error: e.message }, status: :unprocessable_entity
         end
-                              
-        
+
         # GET /api/v1/members/users/:user_id/subaccount
         def show_subaccount
           if @user.subaccount_id
@@ -109,26 +109,25 @@ module Api
             if subaccount
               render json: subaccount, status: :ok
             else
-              render json: { error: "Subaccount not found" }, status: :not_found
+              render json: { error: 'Subaccount not found' }, status: :not_found
             end
           else
-            render json: { error: "User has no associated subaccount" }, status: :not_found
-          end          
+            render json: { error: 'User has no associated subaccount' }, status: :not_found
+          end
         end
-        
-        
+
         def update_subaccount
           user = User.find(params[:user_id])
-          raise "User not found" unless user
-        
+          raise 'User not found' unless user
+
           subaccount = Subaccount.find_by(subaccount_code: params[:subaccount_code])
           if subaccount.nil?
-            render json: { success: false, error: "Subaccount not found" }, status: :not_found
+            render json: { success: false, error: 'Subaccount not found' }, status: :not_found
             return
           end
-        
+
           metadata = params[:metadata] || {}
-        
+
           # Check if recipient_code exists. If it does, delete and create a new one.
           if subaccount.recipient_code.present?
             # Attempt to delete the recipient code on Paystack
@@ -136,11 +135,11 @@ module Api
             unless delete_response[:status]
               raise StandardError, "Failed to delete recipient on Paystack: #{delete_response[:message]}"
             end
-        
+
             # Delete recipient code locally
             subaccount.update!(recipient_code: nil)
           end
-        
+
           # Proceed to update the subaccount
           response = PaystackService.new.update_subaccount(
             subaccount_code: subaccount.subaccount_code,
@@ -155,7 +154,7 @@ module Api
             primary_contact_phone: user.phone_number,
             metadata: metadata
           )
-                
+
           if response[:status] == true
             subaccount.update!(
               business_name: response[:data][:business_name],
@@ -168,7 +167,7 @@ module Api
               metadata: metadata,
               user_id: user.id
             )
-        
+
             # If the recipient_code was deleted, create a new one
             if response[:status] == true && subaccount.recipient_code.blank?
               create_response = PaystackService.new.create_transfer_recipient(
@@ -180,39 +179,41 @@ module Api
                 description: "Recipient for #{params[:business_name]}",
                 metadata: metadata
               )
-        
+
               Rails.logger.info "Response from Paystack: #{create_response.inspect}"
-        
+
               if create_response[:status] == true
                 subaccount.update!(recipient_code: create_response[:data][:recipient_code])
               else
-                render json: { error: "Failed to create recipient: #{create_response[:message]}" }, status: :unprocessable_entity
+                render json: { error: "Failed to create recipient: #{create_response[:message]}" },
+                       status: :unprocessable_entity
                 return
               end
             end
-        
+
             render json: { success: true, subaccount: subaccount }, status: :ok
           else
             render json: { success: false, error: response[:message] }, status: :unprocessable_entity
           end
-        rescue => e
+        rescue StandardError => e
           Rails.logger.error "Error updating subaccount: #{e.message}"
-          render json: { success: false, error: "An error occurred while updating the subaccount" }, status: :unprocessable_entity
-        end                 
-        
+          render json: { success: false, error: 'An error occurred while updating the subaccount' },
+                 status: :unprocessable_entity
+        end
+
         def block_user
           if @user.nil?
             render json: { error: 'User not found' }, status: :not_found
             return
           end
-        
+
           if @user.update(status: 'blocked')
             render json: { message: "User #{@user.id} has been blocked." }, status: :ok
           else
             render json: { error: @user.errors.full_messages }, status: :unprocessable_entity
           end
-        end        
-        
+        end
+
         def activate_user
           if @user.update(status: 'active')
             render json: { message: "User #{@user.id} has been activated." }, status: :ok
@@ -220,22 +221,21 @@ module Api
             render json: { error: @user.errors.full_messages }, status: :unprocessable_entity
           end
         end
-        
 
         # PUT /api/v1/members/users/:id/make_admin
         def make_admin
           admin_status = params[:admin] == true
-        
+
           # Use default values if currency_symbol and phone_code are not provided
-          currency_symbol = params[:currency_symbol] || 'GHS'  # Default to 'GHS'
-          phone_code = params[:phone_code] || '+233'             # Default to '+233'
-        
+          currency_symbol = params[:currency_symbol] || 'GHS' # Default to 'GHS'
+          phone_code = params[:phone_code] || '+233' # Default to '+233'
+
           if @user.update(admin: admin_status, currency_symbol: currency_symbol, phone_code: phone_code)
             render json: @user.as_json(include: :profile), status: :ok
           else
             render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
           end
-        end        
+        end
 
         def make_admin_role
           admin_role = Role.find_by(name: 'Admin')
@@ -260,7 +260,7 @@ module Api
 
         def remove_role
           return render json: { error: 'User not found' }, status: :not_found if @user.nil?
-        
+
           role = Role.find_by(name: params[:role_name])
           if role.present?
             if @user.roles.include?(role)
@@ -272,8 +272,7 @@ module Api
           else
             render json: { error: 'Role not found' }, status: :unprocessable_entity
           end
-        end        
-        
+        end
 
         def update
           if @current_user.update(user_params)
@@ -292,17 +291,17 @@ module Api
           end
         end
 
-      # DELETE /api/v1/members/users/:id
-      def destroy
-        if @user.destroy
-          render json: { message: "User #{@user.id} has been successfully deleted." }, status: :ok
-        else
-          render json: { error: "Failed to delete the user." }, status: :unprocessable_entity
+        # DELETE /api/v1/members/users/:id
+        def destroy
+          if @user.destroy
+            render json: { message: "User #{@user.id} has been successfully deleted." }, status: :ok
+          else
+            render json: { error: 'Failed to delete the user.' }, status: :unprocessable_entity
+          end
         end
-      end
 
         private
-        
+
         def record_not_found
           render json: { error: 'User not found' }, status: :not_found
         end

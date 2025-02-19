@@ -28,10 +28,10 @@ class CampaignStatisticsService
 
   def self.unique_backers_count(user)
     user.campaigns.joins(:donations)
-                 .where(donations: { status: 'successful' })
-                 .distinct.count('donations.user_id') + user.campaigns.joins(:donations)
-                                                          .where(donations: { status: 'successful', user_id: nil })
-                                                          .count
+        .where(donations: { status: 'successful' })
+        .distinct.count('donations.user_id') + user.campaigns.joins(:donations)
+                                                   .where(donations: { status: 'successful', user_id: nil })
+                                                   .count
   end
 
   def self.calculate_campaign_performance_for_user(user)
@@ -49,9 +49,9 @@ class CampaignStatisticsService
   def self.new_donations_count_for_user(user)
     start_of_week = Time.zone.now.beginning_of_week
     user.campaigns.joins(:donations)
-                 .where('donations.created_at >= ?', start_of_week)
-                 .group(:campaign_id)
-                 .count
+        .where('donations.created_at >= ?', start_of_week)
+        .group(:campaign_id)
+        .count
   end
 
   def self.campaigns_by_category_for_user(user)
@@ -72,8 +72,8 @@ class CampaignStatisticsService
 
   def self.average_donation_amount_for_user(user)
     user.campaigns.joins(:donations)
-                 .where(donations: { status: 'successful' })
-                 .average(:amount)&.to_f || 0.0
+        .where(donations: { status: 'successful' })
+        .average(:amount)&.to_f || 0.0
   end
 
   # New Metrics
@@ -101,18 +101,18 @@ class CampaignStatisticsService
   def self.donations_over_time_for_user(user, month = Time.zone.now.month, year = Time.zone.now.year)
     start_date = Date.new(year, month, 1).beginning_of_month
     end_date = Date.new(year, month, 1).end_of_month
-  
+
     donations = user.campaigns.joins(:donations)
                     .where(donations: { status: 'successful', created_at: start_date..end_date })
                     .group_by_day('donations.created_at', format: '%Y-%m-%d')
                     .sum('donations.amount')
-  
+
     # Ensure all days in the range are included
     (start_date.to_date..end_date.to_date).each do |date|
       formatted_date = date.strftime('%Y-%m-%d')
       donations[formatted_date] ||= 0
     end
-  
+
     donations.sort.to_h
   end
 end

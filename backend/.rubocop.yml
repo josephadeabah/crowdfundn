@@ -4,7 +4,8 @@ require:
 
 AllCops:
   NewCops: enable
-  TargetRubyVersion: 3.6 # Update to your Ruby version
+  TargetRubyVersion: 3.4 # Update to your Ruby version
+  # SuggestExtensions: false
   Exclude:
     - 'db/**/*'
     - 'bin/*'

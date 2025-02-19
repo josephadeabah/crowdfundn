@@ -16,7 +16,8 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
   validates :currency_symbol, presence: true
   validates :phone_code, presence: true
-  validates :full_name, :phone_number, :country, :payment_method, :currency, :birth_date, :category, :target_amount, :national_id, presence: true
+  validates :full_name, :phone_number, :country, :payment_method, :currency, :birth_date, :category, :target_amount,
+            :national_id, presence: true
   has_one :profile, dependent: :destroy
   has_many :campaigns, foreign_key: 'fundraiser_id', dependent: :destroy
   has_many :donations
@@ -27,26 +28,26 @@ class User < ApplicationRecord
   has_many :favorited_campaigns, through: :favorites, source: :campaign
   accepts_nested_attributes_for :profile
 
+  after_initialize :set_default_status, if: :new_record?
   after_create :generate_confirmation_token
   after_create :send_confirmation_email
   after_create :assign_default_role
   after_create :create_default_profile
-  after_initialize :set_default_status, if: :new_record?
   # Scopes
   scope :active, -> { where(status: 'active') }
   scope :blocked, -> { where(status: 'blocked') }
-  
+
   def generate_confirmation_token
     self.confirmation_token = UserConfirmationService.generate_confirmation_token(self)
     self.confirmation_sent_at = Time.current
     self.email_confirmed = false
   end
-  
+
   def send_confirmation_email
     UserConfirmationService.send_confirmation_email(self)
   rescue StandardError => e
     Rails.logger.error "Failed to send confirmation email to user #{id}: #{e.message}"
-  end 
+  end
 
   def assign_default_role
     roles << Role.find_by(name: 'User') unless has_role?('User')
@@ -70,17 +71,17 @@ class User < ApplicationRecord
       amount_raised: 0,
       status: 'active'
     )
-    unless profile.save
-      Rails.logger.error "Failed to create profile for user #{id}: #{profile.errors.full_messages}"
-    end
-  end 
+    return if profile.save
+
+    Rails.logger.error "Failed to create profile for user #{id}: #{profile.errors.full_messages}"
+  end
 
   def total_points
     points.sum(:amount) + campaign_share_count
   end
 
   def campaign_share_count
-    self.campaign_shares.count - 0.75
+    campaign_shares.count - 0.75
   end
 
   private

@@ -1,5 +1,5 @@
 class Campaign < ApplicationRecord
-  belongs_to :fundraiser, class_name: 'User', foreign_key: 'fundraiser_id'
+  belongs_to :fundraiser, class_name: 'User'
   has_many :rewards, dependent: :destroy
   has_many :updates, dependent: :destroy
   has_many :comments, dependent: :destroy
@@ -18,7 +18,7 @@ class Campaign < ApplicationRecord
   validates :goal_amount, numericality: { greater_than: 0 }
   validates :current_amount, numericality: { greater_than_or_equal_to: 0 }
 
-  enum status: { active: 0, completed: 1, canceled: 2 }
+  enum :status, { active: 0, completed: 1, canceled: 2 }
 
   # Permissions settings
   attribute :accept_donations, :boolean, default: true
@@ -39,13 +39,14 @@ class Campaign < ApplicationRecord
 
   after_initialize :set_default_status, if: :new_record?
   after_update :send_status_update_webhook, if: :status_changed?
-    # Automatically call `update_status_based_on_date` after update
+  # Automatically call `update_status_based_on_date` after update
   after_update :update_status_based_on_date, if: -> { remaining_days.zero? && active? }
 
   # New cancel method
   def cancel
     update!(status: :canceled)
-  end  
+  end
+
   # Method to update the transferred_amount based on successful donations and previous transferred_amount
   def update_transferred_amount(new_donated_amount)
     # Accumulate the new donated amount with the existing transferred amount
@@ -110,24 +111,22 @@ class Campaign < ApplicationRecord
 
   def total_days
     return 0 unless start_date && end_date
-  
+
     (end_date.to_date - start_date.to_date).to_i.clamp(0, Float::INFINITY)
   end
-  
 
   def remaining_days
     return 0 if canceled?
     return 0 unless end_date
-  
+
     (end_date.to_date - Date.current).to_i.clamp(0, Float::INFINITY)
   end
-  
 
   def update_status_based_on_date
     return if canceled? # Skip if already canceled
 
     update!(status: :completed, is_public: false)
-  end  
+  end
 
   # Calculate the total number of unique donors (authenticated + anonymous)
   def total_donors
@@ -147,7 +146,7 @@ class Campaign < ApplicationRecord
   end
 
   def update_fundraiser_leaderboard
-    total_raised = donations.successful.sum(:amount)  # Adjust the field name as needed
+    total_raised = donations.successful.sum(:amount) # Adjust the field name as needed
     FundraiserLeaderboardEntry.update_leaderboard(fundraiser, total_raised)
   end
 

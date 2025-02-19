@@ -5,7 +5,7 @@ class PaystackWebhook::SubscriptionChargeFailedHandler
 
   def call
     subscription_code = @data[:subscription_code]
-    Rails.logger.debug "Processing subscription charge failed: #{subscription_code}"
+    Rails.logger.debug { "Processing subscription charge failed: #{subscription_code}" }
 
     # Check if the event has already been processed (deduplication)
     if EventProcessed.exists?(event_id: subscription_code)
@@ -27,13 +27,13 @@ class PaystackWebhook::SubscriptionChargeFailedHandler
 
   def handle_subscription_failure(subscription_code)
     subscription = Subscription.find_by(subscription_code: subscription_code)
-    
+
     if subscription
       Rails.logger.info "Updating subscription status to 'failed' for code: #{subscription_code}"
       subscription.update!(status: 'failed')
     else
       Rails.logger.error "Subscription not found for code: #{subscription_code}"
-      raise "Subscription not found"
+      raise 'Subscription not found'
     end
   end
 end

@@ -5,9 +5,9 @@ class PaystackWebhook::SubscriptionDisabledHandler
 
   def call
     subscription_code = @data[:subscription_code]
-    event_id = @data[:event_id]  # Assuming the event ID is passed in the payload
+    event_id = @data[:event_id] # Assuming the event ID is passed in the payload
 
-    Rails.logger.debug "Processing subscription disabled: #{subscription_code}"
+    Rails.logger.debug { "Processing subscription disabled: #{subscription_code}" }
 
     # Check if the event has already been processed (optional deduplication)
     if EventProcessed.exists?(event_id: event_id)
@@ -27,7 +27,7 @@ class PaystackWebhook::SubscriptionDisabledHandler
         subscription.update!(status: 'inactive')
       else
         Rails.logger.error "Subscription not found: #{subscription_code}"
-        raise "Subscription not found"
+        raise 'Subscription not found'
       end
     else
       Rails.logger.error "Failed to disable subscription: #{response[:message]}"

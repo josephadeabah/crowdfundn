@@ -6,7 +6,7 @@ module PaystackWebhook
     end
 
     def call
-      transfer_reference = @data[:reference]  # Use reference, not transfer_code
+      transfer_reference = @data[:reference] # Use reference, not transfer_code
 
       # Check if the event has already been processed (deduplication)
       if EventProcessed.exists?(event_id: transfer_reference)
@@ -25,8 +25,8 @@ module PaystackWebhook
 
           transfer.assign_attributes(
             status: @data[:status],
-            reversed_at: Time.current,  # Set reversal timestamp
-            completed_at: Time.current,  # Indicating that it was reversed
+            reversed_at: Time.current, # Set reversal timestamp
+            completed_at: Time.current, # Indicating that it was reversed
             recipient_code: @data.dig(:recipient, :recipient_code),
             amount: (@data[:amount]).to_f / 100, # Convert amount to cedis
             transfer_code: @data[:transfer_code],

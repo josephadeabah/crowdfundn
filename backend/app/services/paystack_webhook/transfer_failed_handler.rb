@@ -6,7 +6,7 @@ module PaystackWebhook
     end
 
     def call
-      transfer_reference = @data[:reference]  # Use reference, not transfer_code
+      transfer_reference = @data[:reference] # Use reference, not transfer_code
 
       # Check if the event has already been processed (deduplication)
       if EventProcessed.exists?(event_id: transfer_reference)

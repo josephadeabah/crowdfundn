@@ -2,7 +2,7 @@ class Profile < ApplicationRecord
   belongs_to :user # Each profile belongs to a user
   has_one_attached :avatar
 
-  validates :avatar, content_type: %w[image/png image/jpeg] 
+  validates :avatar, content_type: %w[image/png image/jpeg]
 
   # Validations
   validates :name, presence: true, allow_blank: true
@@ -19,14 +19,16 @@ class Profile < ApplicationRecord
   def avatar_url
     return unless avatar.attached?
 
-    "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{avatar.blob.key}"
+    "#{Rails.application.credentials.dig(:digitalocean,
+                                         :endpoint)}/#{Rails.application.credentials.dig(:digitalocean,
+                                                                                         :bucket)}/#{avatar.blob.key}"
   end
 
   def avatar_filename
     avatar.attached? ? avatar.filename.to_s : nil
   end
 
-  def as_json(options = {})
+  def as_json(_options = {})
     super(only: %i[id name description funding_goal amount_raised status end_date category location]).merge(
       avatar: avatar_url,
       avatar_filename: avatar_filename

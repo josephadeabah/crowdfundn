@@ -7,18 +7,19 @@ class PaystackService
   PAYSTACK_BASE_URL = Rails.application.config.paystack[:base_url]
 
   CURRENCY_UNIT_MULTIPLIERS = {
-    "NGN" => 100,  # Naira (100 Kobo)
-    "USD" => 100,  # US Dollar (100 Cents)
-    "EUR" => 100,  # Euro (100 Cents)
-    "GBP" => 100,  # British Pound (100 Pence)
-    "KES" => 100,  # Kenyan Shilling (100 Cents)
-    "GHS" => 100,  # Ghanaian Cedi (100 Pesewa)
+    'NGN' => 100,  # Naira (100 Kobo)
+    'USD' => 100,  # US Dollar (100 Cents)
+    'EUR' => 100,  # Euro (100 Cents)
+    'GBP' => 100,  # British Pound (100 Pence)
+    'KES' => 100,  # Kenyan Shilling (100 Cents)
+    'GHS' => 100 # Ghanaian Cedi (100 Pesewa)
     # Add more currencies here as necessary
   }
 
   def initialize
     @secret_key = Rails.application.config.paystack[:private_key]
-    raise "PAYSTACK_PRIVATE_KEY is not set in the environment variables." if @secret_key.nil?
+    raise 'PAYSTACK_PRIVATE_KEY is not set in the environment variables.' if @secret_key.nil?
+
     @http = Net::HTTP.new(URI(PAYSTACK_BASE_URL).host, URI(PAYSTACK_BASE_URL).port)
     @http.use_ssl = true
   end
@@ -33,7 +34,7 @@ class PaystackService
   def verify_paystack_signature(payload, signature)
     # Ensure the secret key and signature are available
     if @secret_key.nil? || signature.nil? || payload.blank?
-      Rails.logger.error("Missing secret key, signature, or payload.")
+      Rails.logger.error('Missing secret key, signature, or payload.')
       return false
     end
 
@@ -44,44 +45,20 @@ class PaystackService
     Rack::Utils.secure_compare(expected_signature, signature)
   end
 
-    # Create a subaccount
-    def create_subaccount(
-      business_name: nil, 
-      settlement_bank: nil, 
-      account_number: nil, 
-      bank_code: nil, 
-      percentage_charge: nil, 
-      description: nil, 
-      primary_contact_email: nil, 
-      primary_contact_name: nil, 
-      primary_contact_phone: nil, 
-      metadata: nil
-    )
-      uri = URI("#{PAYSTACK_BASE_URL}/subaccount")
-      body = {
-        business_name: business_name,
-        settlement_bank: settlement_bank,
-        account_number: account_number,
-        bank_code: bank_code,
-        percentage_charge: percentage_charge,
-        description: description,
-        primary_contact_email: primary_contact_email,
-        primary_contact_name: primary_contact_name,
-        primary_contact_phone: primary_contact_phone,
-        metadata: metadata
-      }.compact.to_json # Remove nil values
-  
-      response = make_post_request(uri, body)
-      parse_response(response)
-    end
-
-      # Update a subaccount
-  def update_subaccount(subaccount_code:, business_name: nil, settlement_bank: nil, account_number: nil, 
-                        bank_code: nil, percentage_charge: nil, description: nil, 
-                        primary_contact_email: nil, primary_contact_name: nil, 
-                        primary_contact_phone: nil, metadata: nil)
-    uri = URI("#{PAYSTACK_BASE_URL}/subaccount/#{subaccount_code}")
-    
+  # Create a subaccount
+  def create_subaccount(
+    business_name: nil,
+    settlement_bank: nil,
+    account_number: nil,
+    bank_code: nil,
+    percentage_charge: nil,
+    description: nil,
+    primary_contact_email: nil,
+    primary_contact_name: nil,
+    primary_contact_phone: nil,
+    metadata: nil
+  )
+    uri = URI("#{PAYSTACK_BASE_URL}/subaccount")
     body = {
       business_name: business_name,
       settlement_bank: settlement_bank,
@@ -93,14 +70,38 @@ class PaystackService
       primary_contact_name: primary_contact_name,
       primary_contact_phone: primary_contact_phone,
       metadata: metadata
-    }.compact.to_json  # Remove nil values
-    
+    }.compact.to_json # Remove nil values
+
+    response = make_post_request(uri, body)
+    parse_response(response)
+  end
+
+  # Update a subaccount
+  def update_subaccount(subaccount_code:, business_name: nil, settlement_bank: nil, account_number: nil,
+                        bank_code: nil, percentage_charge: nil, description: nil,
+                        primary_contact_email: nil, primary_contact_name: nil,
+                        primary_contact_phone: nil, metadata: nil)
+    uri = URI("#{PAYSTACK_BASE_URL}/subaccount/#{subaccount_code}")
+
+    body = {
+      business_name: business_name,
+      settlement_bank: settlement_bank,
+      account_number: account_number,
+      bank_code: bank_code,
+      percentage_charge: percentage_charge,
+      description: description,
+      primary_contact_email: primary_contact_email,
+      primary_contact_name: primary_contact_name,
+      primary_contact_phone: primary_contact_phone,
+      metadata: metadata
+    }.compact.to_json # Remove nil values
+
     response = make_put_request(uri, body)
     parse_response(response)
   end
 
   # 3. Initialize Transaction with Split Code
-  def initialize_transaction(email:, amount:, plan: nil, metadata: {}, subaccount:, callback_url:)
+  def initialize_transaction(email:, amount:, subaccount:, callback_url:, plan: nil, metadata: {})
     return { status: 'error', message: 'Email address is required' } if email.blank?
 
     uri = URI("#{PAYSTACK_BASE_URL}/transaction/initialize")
@@ -110,14 +111,14 @@ class PaystackService
       plan: plan,
       reference: SecureRandom.uuid,
       metadata: metadata, # Add metadata to the transaction
-      subaccount: subaccount,  # Add the subaccount_code here
-      callback_url: callback_url 
+      subaccount: subaccount, # Add the subaccount_code here
+      callback_url: callback_url
     }.compact.to_json
 
     response = make_post_request(uri, body)
     parse_response(response)
   end
-  
+
   def verify_transaction(reference)
     uri = URI("#{PAYSTACK_BASE_URL}/transaction/verify/#{reference}")
     response = make_get_request(uri)
@@ -126,35 +127,35 @@ class PaystackService
 
   def create_subscription_plan(name:, interval:, amount:)
     return { status: 'error', message: 'Amount is required and must be a number' } if amount.nil? || amount <= 0
-  
+
     uri = URI("#{PAYSTACK_BASE_URL}/plan")
     body = {
       name: name,
       interval: interval,
       amount: (amount * 100).to_i # Convert to kobo
     }.to_json
-  
+
     response = make_post_request(uri, body)
     parse_response(response)
   end
-  
+
   def cancel_subscription(subscription_code:, email_token:)
     uri = URI("#{PAYSTACK_BASE_URL}/subscription/disable")
     body = {
       code: subscription_code,
       token: email_token
     }.to_json
-  
+
     response = make_post_request(uri, body)
     parse_response(response)
   end
-  
+
   def fetch_subscription(subscription_code)
     uri = URI("#{PAYSTACK_BASE_URL}/subscription/#{subscription_code}")
     response = make_get_request(uri)
     parse_response(response)
   end
-  
+
   # Fetch list of supported countries
   def get_supported_countries
     url = URI("#{PAYSTACK_BASE_URL}/country")
@@ -162,18 +163,18 @@ class PaystackService
     parse_response(response)
   end
 
-    # Fetch list of banks with pagination and filters
+  # Fetch list of banks with pagination and filters
   def get_bank_list(
-    country: nil, 
-    use_cursor: false, 
-    per_page: 50, 
-    next_cursor: nil, 
-    previous_cursor: nil, 
-    pay_with_bank_transfer: nil, 
-    pay_with_bank: nil, 
-    enabled_for_verification: nil, 
-    gateway: nil, 
-    type: nil, 
+    country: nil,
+    use_cursor: false,
+    per_page: 50,
+    next_cursor: nil,
+    previous_cursor: nil,
+    pay_with_bank_transfer: nil,
+    pay_with_bank: nil,
+    enabled_for_verification: nil,
+    gateway: nil,
+    type: nil,
     currency: nil
   )
     # Build query parameters
@@ -208,9 +209,8 @@ class PaystackService
     parse_response(response)
   end
 
-
-   # Create a single transfer recipient
-  def create_transfer_recipient(type:, name:, account_number:, bank_code:, currency:, description: nil, metadata:)
+  # Create a single transfer recipient
+  def create_transfer_recipient(type:, name:, account_number:, bank_code:, currency:, metadata:, description: nil)
     uri = URI("#{PAYSTACK_BASE_URL}/transferrecipient")
     body = {
       type: type,
@@ -246,7 +246,6 @@ class PaystackService
     parse_response(response)
   end
 
-
   # Bulk create transfer recipients
   def bulk_create_transfer_recipients(recipients:)
     uri = URI("#{PAYSTACK_BASE_URL}/transferrecipient/bulk")
@@ -275,7 +274,7 @@ class PaystackService
     response = make_get_request(uri)
     parse_response(response)
   end
-  
+
   def sufficient_balance?(amount)
     balance_response = check_balance
     if balance_response[:status]
@@ -293,53 +292,52 @@ class PaystackService
     raise "Unsupported currency: #{currency}" if multiplier.nil?
 
     # Convert the amount to the smallest unit (e.g., cents or kobo)
-    amount_in_smallest_unit = (amount.to_f * multiplier).to_i
-    amount_in_smallest_unit
+    (amount.to_f * multiplier).to_i
   end
-  
+
   # Initiate a transfer
   def initiate_transfer(amount:, recipient:, reason:, currency:)
-
     amount_in_smallest_unit = convert_to_smallest_unit(amount: amount, currency: currency)
     # Generate a unique transfer reference (UUID)
     transfer_reference = SecureRandom.uuid
 
     uri = URI("#{PAYSTACK_BASE_URL}/transfer")
     body = {
-      source: "balance",
+      source: 'balance',
       amount: amount_in_smallest_unit,
       recipient: recipient,
       reason: reason,
       currency: currency,
-      reference: transfer_reference  # Add the generated reference to the body
+      reference: transfer_reference # Add the generated reference to the body
     }.compact.to_json
 
     response = make_post_request(uri, body)
     parse_response(response)
   end
-  
+
   # Handle OTP confirmation using finalize_transfer
   def handle_otp_confirmation(transfer_code)
     loop do
-      puts "Enter the OTP sent to your email or phone:"
+      puts 'Enter the OTP sent to your email or phone:'
       otp = gets.chomp
-  
+
       result = finalize_transfer(transfer_code: transfer_code, otp: otp)
-  
-      if result["status"]
+
+      if result['status']
         puts "Transfer confirmed successfully: #{result['message']}"
-        return result["data"]
+        return result['data']
       else
         puts "Failed to confirm transfer: #{result['message']}"
-        if result['message'].include?('invalid OTP')
-          puts "The OTP is invalid. Please try again."
-        else
-          break # Exit loop for other errors
-        end
+        break unless result['message'].include?('invalid OTP')
+
+        puts 'The OTP is invalid. Please try again.'
+
+        # Exit loop for other errors
+
       end
     end
     nil
-  end  
+  end
 
   # Finalize a transfer
   def finalize_transfer(transfer_code:, otp:)
@@ -353,17 +351,17 @@ class PaystackService
     parse_response(response)
   end
 
-   # Initiate a bulk transfer
-   def initiate_bulk_transfer(transfers:)
+  # Initiate a bulk transfer
+  def initiate_bulk_transfer(transfers:)
     uri = URI("#{PAYSTACK_BASE_URL}/transfer/bulk")
     body = {
-      source: "balance",
+      source: 'balance',
       transfers: transfers
     }.to_json
 
     response = make_post_request(uri, body)
     parse_response(response)
-   end
+  end
 
   # Fetch transfer details
   def fetch_transfer(transfer_code)
@@ -385,8 +383,8 @@ class PaystackService
     query_params = {
       perPage: per_page,
       page: page,
-      subaccount: subaccount,
-    }.compact  # Remove nil values
+      subaccount: subaccount
+    }.compact # Remove nil values
 
     # Build the URI with query parameters
     uri = URI("#{PAYSTACK_BASE_URL}/settlement")
@@ -412,7 +410,7 @@ class PaystackService
 
   # Make PUT request
   def make_put_request(uri, body)
-    request = Net::HTTP::Put.new(uri, headers)  # Use PUT method
+    request = Net::HTTP::Put.new(uri, headers) # Use PUT method
     request.body = body
     @http.request(request)
   end
@@ -431,5 +429,5 @@ class PaystackService
     end
   rescue JSON::ParserError
     { status: false, message: 'Invalid JSON response from Paystack' }
-  end  
+  end
 end

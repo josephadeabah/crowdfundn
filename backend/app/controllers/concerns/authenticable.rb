@@ -1,18 +1,18 @@
 module Authenticable
   def authenticate_request
     header = request.headers['Authorization']
-    if header.present?
-      token = header.split(' ').last
-      begin
-        decoded = decode_token(token)
-        @current_user = User.find(decoded[:user_id]) if decoded[:user_id]
-      rescue ActiveRecord::RecordNotFound
-        render json: { error: 'User not found' }, status: :not_found
-        return
-      rescue JWT::DecodeError
-        render json: { error: 'Invalid token' }, status: :unauthorized
-        return
-      end
+    return unless header.present?
+
+    token = header.split(' ').last
+    begin
+      decoded = decode_token(token)
+      @current_user = User.find(decoded[:user_id]) if decoded[:user_id]
+    rescue ActiveRecord::RecordNotFound
+      render json: { error: 'User not found' }, status: :not_found
+      nil
+    rescue JWT::DecodeError
+      render json: { error: 'Invalid token' }, status: :unauthorized
+      nil
     end
   end
 
@@ -39,9 +39,9 @@ module Authenticable
   private
 
   def authorize_user!(resource)
-    unless resource.fundraiser_id == @current_user.id
-      render json: { error: 'You are not authorized to perform this action' }, status: :forbidden
-    end
+    return if resource.fundraiser_id == @current_user.id
+
+    render json: { error: 'You are not authorized to perform this action' }, status: :forbidden
   end
 
   def decode_token(token)

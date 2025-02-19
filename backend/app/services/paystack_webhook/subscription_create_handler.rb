@@ -5,7 +5,7 @@ class PaystackWebhook::SubscriptionCreateHandler
 
   def call
     subscription_code = @data[:subscription_code]
-    Rails.logger.debug "Processing subscription creation: subscription #{subscription_code}"
+    Rails.logger.debug { "Processing subscription creation: subscription #{subscription_code}" }
 
     # Check if the event has already been processed (optional deduplication)
     if EventProcessed.exists?(event_id: @data[:event_id])
@@ -41,10 +41,10 @@ class PaystackWebhook::SubscriptionCreateHandler
     if subscription_status == 'active'
       # Initialize or find the subscription by its subscription_code
       subscription = Subscription.find_or_initialize_by(subscription_code: subscription_code)
-      
+
       # Verify the subscription before updating
       response = PaystackService.new.verify_subscription(subscription_code)
-      raise "Subscription verification failed" unless response[:status] == true
+      raise 'Subscription verification failed' unless response[:status] == true
 
       # Proceed to update the subscription record
       subscription.update!(
@@ -55,7 +55,7 @@ class PaystackWebhook::SubscriptionCreateHandler
         email: email,
         subscriber_name: subscriber_name,
         interval: plan[:interval],
-        amount: (@data[:amount] / 100).to_i,  # Convert to proper currency unit (assuming cedis)
+        amount: (@data[:amount] / 100).to_i, # Convert to proper currency unit (assuming cedis)
         next_payment_date: @data[:next_payment_date],
         status: @data[:status],
         card_type: authorization[:card_type],
