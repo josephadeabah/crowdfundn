@@ -179,4 +179,11 @@ class Campaign < ApplicationRecord
   def set_default_status
     self.status ||= :active
   end
+
+  def cleanup_points
+    # Delete points associated with donations of this campaign
+    donations.each do |donation|
+      donation.points.destroy_all if donation.points.any?
+    end
+  end
 end
