@@ -1,5 +1,5 @@
 class Campaign < ApplicationRecord
-  belongs_to :fundraiser, class_name: 'User'
+  belongs_to :fundraiser, class_name: 'User', foreign_key: 'fundraiser_id'
   has_many :rewards, dependent: :destroy
   has_many :updates, dependent: :destroy
   has_many :comments, dependent: :destroy
