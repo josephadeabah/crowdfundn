@@ -116,3 +116,9 @@ group :development, :test do
   gem 'rubocop-rails', require: false
   gem 'rubocop-rspec', require: false # Only if you're using RSpec
 end
+
+  # Use for Ruby code Intellisense
+group :development do
+  gem 'solargraph'
+  gem 'rbs'
+end

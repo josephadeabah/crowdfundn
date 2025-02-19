@@ -9,6 +9,13 @@
 /bantuhive-api.yaml
 /app.yaml
 
+# RBS collections
+.gem_rbs_collection/
+sig/rbs_collection/
+
+# Solargraph cache
+.solargraph.cache
+
 # Ignore all environment files (except templates).
 /.env*
 !/.env*.erb
