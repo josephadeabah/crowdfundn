@@ -1,5 +1,5 @@
 class Campaign < ApplicationRecord
-  belongs_to :fundraiser, class_name: 'User', foreign_key: 'fundraiser_id'
+  belongs_to :fundraiser, class_name: 'User',
   has_many :rewards, dependent: :destroy
   has_many :updates, dependent: :destroy
   has_many :comments, dependent: :destroy
@@ -18,7 +18,7 @@ class Campaign < ApplicationRecord
   validates :goal_amount, numericality: { greater_than: 0 }
   validates :current_amount, numericality: { greater_than_or_equal_to: 0 }
 
-  enum status: { active: 0, completed: 1, canceled: 2 }
+  enum :status, { active: 0, completed: 1, canceled: 2 }
 
   # Permissions settings
   attribute :accept_donations, :boolean, default: true
@@ -37,6 +37,7 @@ class Campaign < ApplicationRecord
   # Attachments for images or videos
   has_one_attached :media # Use `has_many_attached` if there are multiple files
 
+  before_destroy :cleanup_points
   after_initialize :set_default_status, if: :new_record?
   after_update :send_status_update_webhook, if: :status_changed?
   # Automatically call `update_status_based_on_date` after update
@@ -125,7 +126,7 @@ class Campaign < ApplicationRecord
   def update_status_based_on_date
     return if canceled? # Skip if already canceled
 
-    update!(status: :completed)
+    update!(status: :completed, is_public: false)
   end
 
   # Calculate the total number of unique donors (authenticated + anonymous)

@@ -2,6 +2,7 @@ class Donation < ApplicationRecord
   belongs_to :campaign
   belongs_to :user, optional: true
   belongs_to :reward, optional: true
+  has_many :points, dependent: :destroy
 
   validates :transaction_reference, presence: true
   validates :email, presence: true # Email is required
