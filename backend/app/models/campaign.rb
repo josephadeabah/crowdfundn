@@ -1,5 +1,5 @@
 class Campaign < ApplicationRecord
-  belongs_to :fundraiser, class_name: 'User',
+  belongs_to :fundraiser, class_name: 'User', foreign_key: 'fundraiser_id'
   has_many :rewards, dependent: :destroy
   has_many :updates, dependent: :destroy
   has_many :comments, dependent: :destroy
@@ -18,7 +18,7 @@ class Campaign < ApplicationRecord
   validates :goal_amount, numericality: { greater_than: 0 }
   validates :current_amount, numericality: { greater_than_or_equal_to: 0 }
 
-  enum :status, { active: 0, completed: 1, canceled: 2 }
+  enum status: { active: 0, completed: 1, canceled: 2 }
 
   # Permissions settings
   attribute :accept_donations, :boolean, default: true
