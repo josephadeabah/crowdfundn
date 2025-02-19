@@ -18,7 +18,7 @@ class Campaign < ApplicationRecord
   validates :goal_amount, numericality: { greater_than: 0 }
   validates :current_amount, numericality: { greater_than_or_equal_to: 0 }
 
-  enum :status, { active: 0, completed: 1, canceled: 2 }
+  enum status: { active: 0, completed: 1, canceled: 2 }
 
   # Permissions settings
   attribute :accept_donations, :boolean, default: true
