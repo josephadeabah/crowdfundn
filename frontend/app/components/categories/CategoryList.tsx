@@ -7,6 +7,7 @@ import { categories } from '@/app/utils/helpers/categories';
 import { useCategoryContext } from '@/app/context/categories/CategoryContext';
 import Pagination from '@/app/components/categories/PaginateCategory';
 import CategoryBadgeLoader from '@/app/loaders/CategoryBadgeLoader';
+import Progress from '../progressbar/ProgressBar';
 
 const CategoryList: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -137,16 +138,18 @@ const CategoryList: React.FC = () => {
                             </span>
                           </div>
                           <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
-                            <div
-                              className="bg-orange-400 h-2.5 rounded-full"
-                              style={{
-                                width: `${
-                                  (parseFloat(campaign.transferred_amount) /
-                                    parseFloat(campaign.goal_amount)) *
-                                  100
-                                }%`,
-                              }}
-                            ></div>
+                            <Progress
+                              firstProgress={
+                                (Number(campaign?.transferred_amount) /
+                                  Number(campaign?.goal_amount)) *
+                                100
+                              }
+                              firstTooltipContent={`Progress: ${
+                                (Number(campaign?.transferred_amount) /
+                                  Number(campaign?.goal_amount)) *
+                                100
+                              }%`}
+                            />
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="font-medium">
