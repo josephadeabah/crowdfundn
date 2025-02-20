@@ -170,9 +170,14 @@ module Api
         end
 
         def destroy
-          @campaign.destroy
-          head :no_content
-        end
+          # Ensure the campaign belongs to the current user
+          if @campaign.fundraiser == @current_user
+            @campaign.destroy
+            head :no_content
+          else
+            render json: { error: 'You are not authorized to delete this campaign' }, status: :forbidden
+          end
+        end        
 
         # GET /api/v1/fundraisers/campaigns/statistics
         def statistics
