@@ -128,7 +128,7 @@ const SingleCampaignPage: React.FC = () => {
     }
   };
 
-  const scrollTabs = (direction: 'left' | 'right'): void => {
+  const scrollTabs = (direction: 'left' | 'right') => {
     if (tabsRef.current) {
       tabsRef.current.scrollBy({
         left: direction === 'left' ? -200 : 200,
@@ -157,16 +157,18 @@ const SingleCampaignPage: React.FC = () => {
               {currentCampaign?.title}
             </h1>
             {/* Add more content here */}
-            <div className="relative w-full aspect-video rounded-md overflow-hidden h-full mb-4">
+            <div className="h-[500px]"> {/* Parent with defined height */}
+            <div className="relative w-full h-full rounded-md overflow-hidden mb-4">
               <Image
                 src={currentCampaign?.media || '/bantuhive.svg'}
                 alt="fundraising thumbnail"
                 loading="eager"
-                width={500}
-                height={500}
-                className="rounded-md object-cover w-full h-full"
+                layout="fill"
+                objectFit="cover"
+                className="h-full"
               />
             </div>
+          </div>
             <div className="relative">
               <div className="flex items-center mb-6">
                 <button
