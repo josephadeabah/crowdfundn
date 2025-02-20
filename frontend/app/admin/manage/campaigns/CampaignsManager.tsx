@@ -152,12 +152,13 @@ const CampaignManager = () => {
     const campaign = campaigns.find((c) => c.id === id);
     if (!campaign) return;
 
-    const newIsPublic = !campaign.isBlocked;
+    const newIsPublic = campaign.isBlocked; // If it's blocked, send is_public: true to unblock
+
     try {
       await updateCampaignSettings(id, { is_public: newIsPublic });
       setCampaigns(
         campaigns.map((c) =>
-          c.id === id ? { ...c, isBlocked: !newIsPublic } : c,
+          c.id === id ? { ...c, isBlocked: !c.isBlocked } : c,
         ),
       );
     } catch (error) {
