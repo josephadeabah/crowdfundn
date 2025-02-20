@@ -128,7 +128,7 @@ const SingleCampaignPage: React.FC = () => {
     }
   };
 
-  const scrollTabs = (direction: 'left' | 'right') => {
+  const scrollTabs = (direction: 'left' | 'right'): void => {
     if (tabsRef.current) {
       tabsRef.current.scrollBy({
         left: direction === 'left' ? -200 : 200,
@@ -163,7 +163,7 @@ const SingleCampaignPage: React.FC = () => {
                 alt="fundraising thumbnail"
                 loading="eager"
                 width={500}
-                height={384}
+                height={500}
                 className="rounded-md object-cover w-full h-full"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
