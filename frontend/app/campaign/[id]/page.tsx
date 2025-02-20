@@ -157,8 +157,8 @@ const SingleCampaignPage: React.FC = () => {
               {currentCampaign?.title}
             </h1>
             {/* Add more content here */}
-            <div className="h-full"> {/* Parent with defined height */}
-            <div className="relative w-full h-full rounded-md mb-4">
+            <div className="h-[800px]"> {/* Parent with defined height */}
+            <div className="relative w-full h-full rounded-md overflow-hidden mb-4">
               <Image
                 src={currentCampaign?.media || '/bantuhive.svg'}
                 alt="fundraising thumbnail"
