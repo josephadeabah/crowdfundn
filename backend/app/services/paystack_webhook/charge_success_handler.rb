@@ -121,8 +121,12 @@ class PaystackWebhook::ChargeSuccessHandler
       FundraiserDonationNotificationService.send_notification_email(donation)
 
       # ✅ Fixed points & leaderboard updates
-      Point.add_points(donation.user, donation)
-      LeaderboardEntry.update_leaderboard(donation.user, donation.user.total_points)
+      if donation.user.present?
+        Point.add_points(donation.user, donation)
+        LeaderboardEntry.update_leaderboard(donation.user, donation.user.total_points)
+      else
+        Rails.logger.info "Skipping points & leaderboard update for anonymous donation: #{donation.id}"
+      end
     else
       # If the transaction status isn't 'success', update the donation and raise an error
       donation.update!(status: transaction_status)
