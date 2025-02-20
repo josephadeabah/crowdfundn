@@ -340,79 +340,82 @@ const CampaignManager = () => {
           <tbody>
             {filteredCampaigns.map((campaign) => (
               <AnimatePresence key={campaign.id} mode="popLayout">
-                <motion.tr
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  transition={{ duration: 0.3 }}
-                  className="border-b"
-                >
-                  <td className="px-4 py-2">{campaign.title}</td>
-                  <td className="px-4 py-2">
-                    {new Date(campaign.startDate).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-2">
-                    {new Date(campaign.endDate).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-2">{campaign.organizer}</td>
-                  <td className="px-4 py-2">
-                    ${campaign.goal.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-2">
-                    ${campaign.currentAmount.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-2">{campaign.participants}</td>
-                  <td className="px-4 py-2">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        campaign.status === 'active'
-                          ? 'bg-green-200 text-green-800'
-                          : campaign.status === 'pending'
-                            ? 'bg-yellow-200 text-yellow-800'
-                            : 'bg-red-200 text-red-800'
-                      }`}
-                    >
-                      {campaign.status.charAt(0).toUpperCase() +
-                        campaign.status.slice(1)}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 text-center">
-                    <div className="flex justify-center space-x-2">
-                      <button
-                        onClick={() => handleView(campaign)}
-                        className="text-gray-600 hover:text-gray-900 p-1"
-                        title="View"
+                {/* Wrap motion.tr inside a Fragment */}
+                <>
+                  <motion.tr
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                    className="border-b"
+                  >
+                    <td className="px-4 py-2">{campaign.title}</td>
+                    <td className="px-4 py-2">
+                      {new Date(campaign.startDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-2">
+                      {new Date(campaign.endDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-2">{campaign.organizer}</td>
+                    <td className="px-4 py-2">
+                      ${campaign.goal.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-2">
+                      ${campaign.currentAmount.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-2">{campaign.participants}</td>
+                    <td className="px-4 py-2">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          campaign.status === 'active'
+                            ? 'bg-green-200 text-green-800'
+                            : campaign.status === 'pending'
+                              ? 'bg-yellow-200 text-yellow-800'
+                              : 'bg-red-200 text-red-800'
+                        }`}
                       >
-                        <FaEye />
-                      </button>
-                      <button
-                        onClick={() => handleEdit(campaign)}
-                        className="text-green-600 hover:text-green-900 p-1"
-                        title="Edit"
-                      >
-                        <FaEdit />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(campaign.id)}
-                        className="text-red-600 hover:text-red-900 p-1"
-                        title="Delete"
-                      >
-                        <FaTrash />
-                      </button>
-                      <button
-                        onClick={() => handleBlock(campaign.id)}
-                        className={`${
-                          campaign.isBlocked
-                            ? 'text-red-600 hover:text-red-900'
-                            : 'text-yellow-600 hover:text-yellow-900'
-                        } p-1`}
-                        title={campaign.isBlocked ? 'Unblock' : 'Block'}
-                      >
-                        {campaign.isBlocked ? <FaUnlock /> : <FaLock />}
-                      </button>
-                    </div>
-                  </td>
-                </motion.tr>
+                        {campaign.status.charAt(0).toUpperCase() +
+                          campaign.status.slice(1)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2 text-center">
+                      <div className="flex justify-center space-x-2">
+                        <button
+                          onClick={() => handleView(campaign)}
+                          className="text-gray-600 hover:text-gray-900 p-1"
+                          title="View"
+                        >
+                          <FaEye />
+                        </button>
+                        <button
+                          onClick={() => handleEdit(campaign)}
+                          className="text-green-600 hover:text-green-900 p-1"
+                          title="Edit"
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(campaign.id)}
+                          className="text-red-600 hover:text-red-900 p-1"
+                          title="Delete"
+                        >
+                          <FaTrash />
+                        </button>
+                        <button
+                          onClick={() => handleBlock(campaign.id)}
+                          className={`${
+                            campaign.isBlocked
+                              ? 'text-red-600 hover:text-red-900'
+                              : 'text-yellow-600 hover:text-yellow-900'
+                          } p-1`}
+                          title={campaign.isBlocked ? 'Unblock' : 'Block'}
+                        >
+                          {campaign.isBlocked ? <FaUnlock /> : <FaLock />}
+                        </button>
+                      </div>
+                    </td>
+                  </motion.tr>
+                </>
               </AnimatePresence>
             ))}
           </tbody>
