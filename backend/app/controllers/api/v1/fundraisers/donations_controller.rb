@@ -68,30 +68,32 @@ module Api
         def create
           campaign = Campaign.find_by(id: params[:campaign_id])
           unless campaign
-            return render json: { error: 'The campaign you are trying to donate to no longer exists.' }, status: :not_found
+            return render json: { error: 'The campaign you are trying to donate to no longer exists.' },
+                          status: :not_found
           end
-        
+
           subaccount = Subaccount.find_by(user_id: campaign.fundraiser_id)
-        
+
           if subaccount.nil? || subaccount.subaccount_code.blank?
-            return render json: { error: 'Fundraiser does not meet requirements for raising funds.' }, status: :unprocessable_entity
+            return render json: { error: 'Fundraiser does not meet requirements for raising funds.' },
+                          status: :unprocessable_entity
           end
-        
-          # Log incoming parameters
-          Rails.logger.info("Donation parameters: #{params[:donation]}")
-        
-          # Donation creation
+
+          subaccount_code = subaccount.subaccount_code
+
+          # Create a new donation
           donation = Donation.new(donation_params)
           donation.campaign_id = campaign.id
           donation.status = 'pending'
-        
+
           if @current_user
             donation.user_id = @current_user.id
           else
+            # Generate a new anonymous_token if not provided
             anonymous_token = SecureRandom.uuid
-            donation.metadata[:anonymous_token] = anonymous_token
+            donation.metadata[:anonymous_token] = anonymous_token # Add token to metadata
           end
-        
+
           donation.metadata[:campaign] = {
             id: campaign.id,
             title: campaign.title,
@@ -103,42 +105,40 @@ module Api
             fundraiser_id: campaign.fundraiser_id,
             fundraiser_name: campaign.fundraiser.full_name
           }
-        
+
           redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign.id, host: 'bantuhive.com')
           donation.email = params[:donation][:email]
           donation.amount = params[:donation][:amount]
           donation.full_name = params[:donation][:full_name]
           donation.phone = params[:donation][:phone]
-        
+
           metadata = {
             user_id: donation.user_id,
             campaign_id: donation.campaign_id,
-            anonymous_token: donation.metadata[:anonymous_token],
+            anonymous_token: donation.metadata[:anonymous_token], # Anonymous identifier
             donor_name: donation.full_name,
             redirect_url: redirect_url,
             campaign_metadata: donation.metadata[:campaign],
             phone: donation.phone
           }
-        
+
           donation.plan = params[:donation][:plan]
-        
-          # Paystack initialization
+
           paystack_service = PaystackService.new
+
           response = paystack_service.initialize_transaction(
             email: donation.email,
             amount: donation.amount,
             plan: donation.plan,
             callback_url: redirect_url,
             metadata: metadata,
-            subaccount: subaccount.subaccount_code
+            subaccount: subaccount_code
           )
-        
-          Rails.logger.info("Paystack response: #{response}")
-        
+
           if response[:status] == true
             donation.transaction_reference = response[:data][:reference]
             donation.subscription_code = donation.plan if donation.plan.present?
-        
+
             if donation.save
               render json: {
                 authorization_url: response[:data][:authorization_url],
@@ -147,14 +147,14 @@ module Api
                 total_donors: campaign.total_donors
               }, status: :created
             else
-              # Log donation errors
-              Rails.logger.error("Donation save failed: #{donation.errors.full_messages}")
-              render json: { error: 'Donation creation failed: ' + donation.errors.full_messages.join(', ') }, status: :unprocessable_entity
+              render json: { error: 'Donation creation failed: ' + donation.errors.full_messages.join(', ') },
+                     status: :unprocessable_entity
             end
           else
-            render json: { error: 'Payment initialization failed: ' + response[:message] }, status: :unprocessable_entity
+            render json: { error: 'Payment initialization failed: ' + response[:message] },
+                   status: :unprocessable_entity
           end
-        end        
+        end
 
         private
 
