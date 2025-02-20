@@ -245,20 +245,18 @@ export default function Transfers() {
             {parseFloat(transfer.amount.toString()).toLocaleString()}
           </td>
           <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-            {moment(transfer.created_at).format(
-              'MMM DD, YYYY, hh:mm:ss A',
-            )}
+            {moment(transfer.created_at).format('MMM DD, YYYY, hh:mm:ss A')}
           </td>
           <td className="px-4 py-2 whitespace-nowrap">
-            <span
-              className={`inline-block px-2 py-1 rounded ${
-                transfer.status === 'success'
-                  ? 'bg-green-100 text-green-800' // Light green background for "paid"
-                  : 'bg-gray-100 text-gray-800' // Default background for other statuses
-              }`}
-            >
-              {transfer.status}
-            </span>
+            {transfer.status === 'success' ? (
+              <span className="px-2 py-1 text-gray-400 bg-green-300 rounded-full">
+                PAID
+              </span>
+            ) : (
+              <span className="text-gray-500 dark:text-gray-400">
+                {transfer.status}
+              </span>
+            )}
           </td>
           <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
             {transfer.reference}
@@ -277,6 +275,7 @@ export default function Transfers() {
     )}
   </tbody>
 </table>
+
         </div>
         {/* Pagination Component */}
         <div className="w-full max-w-3xl mx-auto py-12">
