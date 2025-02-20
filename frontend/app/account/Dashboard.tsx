@@ -15,6 +15,7 @@ import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { deslugify } from '../utils/helpers/categories';
 import moment from 'moment'; // Import moment
 import DashboardCharts from '../components/charts/DashboardCharts';
+import { FiPlusCircle } from 'react-icons/fi';
 
 export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
@@ -52,7 +53,7 @@ export default function Dashboard() {
             className="text-lg font-semibold text-gray-600 dark:text-gray-400 cursor-pointer"
           >
             <div className="mt-4 flex flex-col items-center">
-              <HiOutlinePlus className="text-4xl text-green-500 dark:text-green-300 mb-2" />
+              <FiPlusCircle className="text-4xl text-green-500 dark:text-green-300 mb-2" />
               Add Campaign
             </div>
           </Link>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiPlus } from 'react-icons/fi';
+import { FiPlus, FiPlusCircle } from 'react-icons/fi';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
@@ -9,7 +9,7 @@ const CampaignsLoader = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800">Campaigns</h1>
         <button className="flex items-center px-4 py-2 bg-gray-300 text-white rounded-lg">
-          <FiPlus className="mr-2" />
+          <FiPlusCircle className="mr-2" />
           Add Campaign
         </button>
       </div>
