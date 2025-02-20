@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   FaSort,
   FaSortUp,
@@ -47,7 +47,7 @@ const CampaignManager = () => {
   } = useCampaignContext(); // Use the context
 
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [sortColumn, setSortColumn] = useState('startDate');
+  const [sortColumn, setSortColumn] = useState<keyof Campaign>('startDate');
   const [sortDirection, setSortDirection] = useState('asc');
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(
     null,
@@ -94,19 +94,21 @@ const CampaignManager = () => {
   // Map context campaigns to the local Campaign interface
   useEffect(() => {
     if (contextCampaigns) {
-      const mappedCampaigns = contextCampaigns.map((campaign) => ({
-        id: campaign.id.toString(),
-        title: campaign.title,
-        startDate: new Date(campaign.start_date),
-        endDate: new Date(campaign.end_date),
-        organizer: campaign.fundraiser?.profile?.name || 'Unknown',
-        status: campaign.status || 'active',
-        media: campaign.media || 'No image',
-        goal: parseFloat(campaign.goal_amount),
-        currentAmount: parseFloat(campaign.transferred_amount),
-        participants: campaign.total_donors,
-        isBlocked: !campaign.permissions.is_public, // Assuming is_public determines blocking
-      }));
+      const mappedCampaigns = useMemo(() => {
+        return contextCampaigns.map((campaign) => ({
+          id: campaign.id.toString(),
+          title: campaign.title,
+          startDate: new Date(campaign.start_date),
+          endDate: new Date(campaign.end_date),
+          organizer: campaign.fundraiser?.profile?.name || 'Unknown',
+          status: campaign.status || 'active',
+          media: campaign.media || 'No image',
+          goal: parseFloat(campaign.goal_amount),
+          currentAmount: parseFloat(campaign.transferred_amount),
+          participants: campaign.total_donors,
+          isBlocked: !campaign.permissions.is_public,
+        }));
+      }, [contextCampaigns]);
       setCampaigns(mappedCampaigns);
     }
   }, [contextCampaigns]);
@@ -119,18 +121,20 @@ const CampaignManager = () => {
     if (column === sortColumn) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
-      setSortColumn(column);
+      setSortColumn(column as keyof Campaign);
       setSortDirection('asc');
     }
   };
 
-  const sortedCampaigns = [...campaigns].sort((a, b) => {
-    if (a[sortColumn as keyof Campaign] < b[sortColumn as keyof Campaign])
-      return sortDirection === 'asc' ? -1 : 1;
-    if (a[sortColumn as keyof Campaign] > b[sortColumn as keyof Campaign])
-      return sortDirection === 'asc' ? 1 : -1;
-    return 0;
-  });
+  const sortedCampaigns = useMemo(() => {
+    return [...campaigns].sort((a, b) => {
+      if ((a as any)[sortColumn] < (b as any)[sortColumn])
+        return sortDirection === 'asc' ? -1 : 1;
+      if ((a as any)[sortColumn] > (b as any)[sortColumn])
+        return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [campaigns, sortColumn, sortDirection]);
 
   const handleView = (campaign: Campaign) => {
     setSelectedCampaign(campaign);
