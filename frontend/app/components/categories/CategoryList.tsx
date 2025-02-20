@@ -126,17 +126,6 @@ const CategoryList: React.FC = () => {
                           {campaign.message}
                         </p>
                         <div className="space-y-2">
-                          <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                            <span>Progress</span>
-                            <span>
-                              {Math.round(
-                                (parseFloat(campaign.transferred_amount) /
-                                  parseFloat(campaign.goal_amount)) *
-                                  100,
-                              )}
-                              %
-                            </span>
-                          </div>
                           <div className="w-full text-base">
                             <Progress
                               firstProgress={
