@@ -15,7 +15,7 @@ import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { CampaignResponseDataType } from '../types/campaigns.types';
 import { generateRandomString } from '../utils/helpers/generate.random-string';
 import ErrorPage from '../components/errorpage/ErrorPage';
-import { FiPlus } from 'react-icons/fi';
+import { FiPlus, FiPlusCircle } from 'react-icons/fi';
 
 const Campaigns: React.FC = () => {
   const {
@@ -103,7 +103,7 @@ const Campaigns: React.FC = () => {
           onClick={() => router.push('/account/dashboard/create')}
           className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg"
         >
-          <FiPlus className="mr-2" />
+          <FiPlusCircle className="mr-2" />
           Add Campaign
         </button>
       </div>
