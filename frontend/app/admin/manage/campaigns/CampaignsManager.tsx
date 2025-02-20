@@ -338,10 +338,9 @@ const CampaignManager = () => {
             </tr>
           </thead>
           <tbody>
-            <AnimatePresence>
-              {filteredCampaigns.map((campaign) => (
+            {filteredCampaigns.map((campaign) => (
+              <AnimatePresence key={campaign.id} mode="popLayout">
                 <motion.tr
-                  key={campaign.id}
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
@@ -402,7 +401,11 @@ const CampaignManager = () => {
                       </button>
                       <button
                         onClick={() => handleBlock(campaign.id)}
-                        className={`${campaign.isBlocked ? 'text-red-600 hover:text-red-900' : 'text-yellow-600 hover:text-yellow-900'} p-1`}
+                        className={`${
+                          campaign.isBlocked
+                            ? 'text-red-600 hover:text-red-900'
+                            : 'text-yellow-600 hover:text-yellow-900'
+                        } p-1`}
                         title={campaign.isBlocked ? 'Unblock' : 'Block'}
                       >
                         {campaign.isBlocked ? <FaUnlock /> : <FaLock />}
@@ -410,8 +413,8 @@ const CampaignManager = () => {
                     </div>
                   </td>
                 </motion.tr>
-              ))}
-            </AnimatePresence>
+              </AnimatePresence>
+            ))}
           </tbody>
         </table>
       </div>
