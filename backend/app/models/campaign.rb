@@ -37,7 +37,6 @@ class Campaign < ApplicationRecord
   # Attachments for images or videos
   has_one_attached :media # Use `has_many_attached` if there are multiple files
 
-  # before_destroy :cleanup_points
   after_initialize :set_default_status, if: :new_record?
   after_update :send_status_update_webhook, if: :status_changed?
   # Automatically call `update_status_based_on_date` after update
@@ -179,11 +178,4 @@ class Campaign < ApplicationRecord
   def set_default_status
     self.status ||= :active
   end
-
-  # def cleanup_points
-  #   # Delete points associated with donations of this campaign
-  #   donations.each do |donation|
-  #     donation.points.destroy_all if donation.points.any?
-  #   end
-  # end
 end
