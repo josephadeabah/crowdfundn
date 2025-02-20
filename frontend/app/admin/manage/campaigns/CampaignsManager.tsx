@@ -39,6 +39,8 @@ const CampaignManager = () => {
     error: contextError,
     fetchAllCampaigns,
     pagination,
+    deleteCampaign,
+    updateCampaignSettings,
   } = useCampaignContext(); // Use the context
 
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -137,16 +139,30 @@ const CampaignManager = () => {
     setEditMode(false);
   };
 
-  const handleDelete = (id: string) => {
-    setCampaigns(campaigns.filter((c) => c.id !== id));
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteCampaign(id);
+      setCampaigns(campaigns.filter((c) => c.id !== id));
+    } catch (error) {
+      console.error('Error deleting campaign:', error);
+    }
   };
 
-  const handleBlock = (id: string) => {
-    setCampaigns(
-      campaigns.map((c) =>
-        c.id === id ? { ...c, isBlocked: !c.isBlocked } : c,
-      ),
-    );
+  const handleBlock = async (id: string) => {
+    const campaign = campaigns.find((c) => c.id === id);
+    if (!campaign) return;
+
+    const newIsPublic = !campaign.isBlocked;
+    try {
+      await updateCampaignSettings(id, { is_public: newIsPublic });
+      setCampaigns(
+        campaigns.map((c) =>
+          c.id === id ? { ...c, isBlocked: !newIsPublic } : c,
+        ),
+      );
+    } catch (error) {
+      console.error('Error updating campaign settings:', error);
+    }
   };
 
   const handleUpdateCampaign = (updatedCampaign: Campaign) => {
