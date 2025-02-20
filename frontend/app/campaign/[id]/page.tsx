@@ -164,7 +164,7 @@ const SingleCampaignPage: React.FC = () => {
                 loading="eager"
                 width={500}
                 height={500}
-                className="rounded-md object-contain w-full h-full"
+                className="rounded-md object-cover w-full h-full"
               />
             </div>
             <div className="relative">
