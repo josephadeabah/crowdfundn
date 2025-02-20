@@ -1,10 +1,21 @@
 import React from 'react';
+import { FiPlus } from 'react-icons/fi';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
 const CampaignsLoader = () => {
   return (
-    <div>
+    <div className="max-w-7xl mx-auto px-2 py-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">Campaigns</h1>
+        <button className="flex items-center px-4 py-2 bg-gray-300 text-white rounded-lg">
+          <FiPlus className="mr-2" />
+          Add Campaign
+        </button>
+      </div>
+      <p className="text-gray-500 dark:text-neutral-400 mb-4">
+        Manage your active and past campaigns.
+      </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {Array(6)
           .fill(null)

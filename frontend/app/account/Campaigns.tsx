@@ -15,6 +15,7 @@ import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { CampaignResponseDataType } from '../types/campaigns.types';
 import { generateRandomString } from '../utils/helpers/generate.random-string';
 import ErrorPage from '../components/errorpage/ErrorPage';
+import { FiPlus } from 'react-icons/fi';
 
 const Campaigns: React.FC = () => {
   const {
@@ -94,9 +95,18 @@ const Campaigns: React.FC = () => {
 
   return (
     <div className="px-2 py-4">
-      <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
-        Campaigns
-      </h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
+          Campaigns
+        </h2>
+        <button
+          onClick={() => router.push('/account/dashboard/create')}
+          className="flex items-center px-4 py-2 bg-gray-300 text-white rounded-lg"
+        >
+          <FiPlus className="mr-2" />
+          Add Campaign
+        </button>
+      </div>
       <p className="text-gray-500 dark:text-neutral-400 mb-4">
         Manage your active and past campaigns.
       </p>
