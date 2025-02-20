@@ -157,7 +157,7 @@ const SingleCampaignPage: React.FC = () => {
               {currentCampaign?.title}
             </h1>
             {/* Add more content here */}
-            <div className="h-[800px]">
+            <div className="h-[600px]">
               {' '}
               {/* Parent with defined height */}
               <div className="relative w-full h-full rounded-md overflow-hidden mb-4">
