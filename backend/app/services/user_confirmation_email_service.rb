@@ -1,10 +1,9 @@
-# app/services/user_confirmation_email_service.rb
 class UserConfirmationEmailService
   def self.send_confirmation_email(user, host)
     token = user.confirmation_token.presence || 'invalid-token-please-enter-your-email-to-resend'
     confirmation_url = "#{host}/auth/confirm_email/#{token}"
     email = user.email
-    full_name = user.full_name
+    full_name = user.full_name.presence || "Anonymous"  # Default to 'Anonymous' if name is missing
 
     send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
       to: [
@@ -30,7 +29,7 @@ class UserConfirmationEmailService
           <br>
           <p>Warm Regards,</p>
           <p><strong>Bantuhive Team</strong></p>
-                    <!-- Footer -->
+          <!-- Footer -->
         <div style="background-color: orange; padding: 20px; margin-top: 20px; color: black; text-align: center;">
           <p style="margin: 0; font-size: 14px; font-weight: bold;">Follow Us</p>
           <p style="margin: 5px 0;">
@@ -42,9 +41,9 @@ class UserConfirmationEmailService
           <hr style="border: none; height: 1px; background-color: black; margin: 10px 0;">
           <p style="font-size: 12px; margin: 0;">
             IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana. <br>
-          <a href="https://bantuhive.com" style="color: black;">© 2024 BantuHive Ltd</a>
+            <a href="https://bantuhive.com" style="color: black;">© 2024 BantuHive Ltd</a>
           </p>
-        </div>
+          </div>
         </body>
         </html>
       HTML
