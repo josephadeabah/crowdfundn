@@ -18,6 +18,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Modal from '@/app/components/modal/Modal';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
+import Pagination from '@/app/components/pagination/Pagination';
 
 const CampaignManager = () => {
   interface Campaign {
@@ -106,6 +107,10 @@ const CampaignManager = () => {
       setCampaigns(mappedCampaigns);
     }
   }, [contextCampaigns]);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
 
   const handleSort = (column: string) => {
     if (column === sortColumn) {
@@ -559,6 +564,14 @@ const CampaignManager = () => {
             </div>
           </div>
         </Modal>
+      )}
+      {/* Pagination Component */}
+      {pagination?.totalPages > 1 && (
+        <Pagination
+          currentPage={pagination?.currentPage}
+          totalPages={pagination?.totalPages}
+          onPageChange={handlePageChange}
+        />
       )}
     </div>
   );
