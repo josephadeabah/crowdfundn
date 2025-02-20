@@ -249,7 +249,7 @@ export default function Transfers() {
           </td>
           <td className="px-4 py-2 whitespace-nowrap">
             {transfer.status === 'success' ? (
-              <span className="text-base p-1 text-gray-500 bg-lime-400 rounded-full">
+              <span className="text-sm text-gray-600 bg-lime-300 rounded-full">
                 PAID
               </span>
             ) : (
