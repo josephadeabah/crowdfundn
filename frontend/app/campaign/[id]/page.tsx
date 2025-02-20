@@ -157,18 +157,22 @@ const SingleCampaignPage: React.FC = () => {
               {currentCampaign?.title}
             </h1>
             {/* Add more content here */}
-            <div className="h-[800px]"> {/* Parent with defined height */}
-            <div className="relative w-full h-full rounded-md overflow-hidden mb-4">
-              <Image
-                src={currentCampaign?.media || '/bantuhive.svg'}
-                alt="fundraising thumbnail"
-                loading="eager"
-                layout="fill"
-                objectFit="cover"
-                className="h-full"
-              />
+            <div className="h-[800px]">
+              {' '}
+              {/* Parent with defined height */}
+              <div className="relative w-full h-full rounded-md overflow-hidden mb-4">
+                <Image
+                  src={currentCampaign?.media || '/bantuhive.svg'}
+                  alt="fundraising thumbnail"
+                  loading="eager"
+                  layout="fill"
+                  objectFit="cover"
+                  className="h-full"
+                  quality={100} // Ensures maximum image quality
+                  priority // Ensures the image is prioritized for loading
+                />
+              </div>
             </div>
-          </div>
             <div className="relative">
               <div className="flex items-center mb-6">
                 <button
