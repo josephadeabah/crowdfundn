@@ -30,7 +30,8 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   const pathname = usePathname();
-  const isDashboard = pathname.startsWith('/account');
+  const hideFooter =
+    pathname.startsWith('/account') || pathname.startsWith('/admin');
   return (
     <html lang="en" className="h-full scroll-smooth light">
       <Head />
@@ -44,7 +45,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               {children}
               <Analytics />
             </main>
-            {!isDashboard && <Footer />}
+            {!hideFooter && <Footer />}
           </Providers>
         </GlobalContextProvider>
       </body>
