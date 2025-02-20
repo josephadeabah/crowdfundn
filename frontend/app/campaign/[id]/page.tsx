@@ -162,8 +162,10 @@ const SingleCampaignPage: React.FC = () => {
                 src={currentCampaign?.media || '/bantuhive.svg'}
                 alt="fundraising thumbnail"
                 loading="eager"
-                layout="fill"
-                objectFit="cover"
+                width={500}
+                height={384}
+                className="rounded-md object-cover w-full h-full"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             </div>
             <div className="relative">
