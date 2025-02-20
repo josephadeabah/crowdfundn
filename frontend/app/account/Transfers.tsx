@@ -199,76 +199,84 @@ export default function Transfers() {
           Transaction History
         </h3>
         <div className="overflow-x-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
-          <table className="min-w-full bg-white dark:bg-neutral-800 rounded-lg">
-            <thead className="bg-gray-50 dark:bg-neutral-700">
-              <tr>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  Amount
-                </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  Date
-                </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  Status
-                </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  Reference
-                </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  Account Number
-                </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  Settlement Bank
-                </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  Reason
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <TransferLoader /> // Loader only for the body (without header)
-              ) : transfers?.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="px-4 py-2 text-center text-gray-800 dark:text-white"
-                  >
-                    You have no transfer history.
-                  </td>
-                </tr>
-              ) : (
-                transfers?.map((transfer) => (
-                  <tr key={transfer.id}>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.currency}{' '}
-                      {parseFloat(transfer.amount.toString()).toLocaleString()}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {moment(transfer.created_at).format(
-                        'MMM DD, YYYY, hh:mm:ss A',
-                      )}
-                    </td>
-                    <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
-                      {transfer.status}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.reference}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.account_number || 'N/A'}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.bank_name || 'N/A'}
-                    </td>
-                    <td className="px-4 py-2 truncate text-gray-800 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis">
-                      {transfer.reason}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+        <table className="min-w-full bg-white dark:bg-neutral-800 rounded-lg">
+  <thead className="bg-gray-50 dark:bg-neutral-700">
+    <tr>
+      <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+        Amount
+      </th>
+      <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+        Date
+      </th>
+      <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+        Status
+      </th>
+      <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+        Reference
+      </th>
+      <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+        Account Number
+      </th>
+      <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+        Settlement Bank
+      </th>
+      <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+        Reason
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {loading ? (
+      <TransferLoader /> // Loader only for the body (without header)
+    ) : transfers?.length === 0 ? (
+      <tr>
+        <td
+          colSpan={7}
+          className="px-4 py-2 text-center text-gray-800 dark:text-white"
+        >
+          You have no transfer history.
+        </td>
+      </tr>
+    ) : (
+      transfers?.map((transfer) => (
+        <tr key={transfer.id}>
+          <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+            {transfer.currency}{' '}
+            {parseFloat(transfer.amount.toString()).toLocaleString()}
+          </td>
+          <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+            {moment(transfer.created_at).format(
+              'MMM DD, YYYY, hh:mm:ss A',
+            )}
+          </td>
+          <td className="px-4 py-2 whitespace-nowrap">
+            <span
+              className={`inline-block px-2 py-1 rounded ${
+                transfer.status === 'success'
+                  ? 'bg-green-100 text-green-800' // Light green background for "paid"
+                  : 'bg-gray-100 text-gray-800' // Default background for other statuses
+              }`}
+            >
+              {transfer.status}
+            </span>
+          </td>
+          <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+            {transfer.reference}
+          </td>
+          <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+            {transfer.account_number || 'N/A'}
+          </td>
+          <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+            {transfer.bank_name || 'N/A'}
+          </td>
+          <td className="px-4 py-2 truncate text-gray-800 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis">
+            {transfer.reason}
+          </td>
+        </tr>
+      ))
+    )}
+  </tbody>
+</table>
         </div>
         {/* Pagination Component */}
         <div className="w-full max-w-3xl mx-auto py-12">
