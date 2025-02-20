@@ -137,7 +137,7 @@ const CategoryList: React.FC = () => {
                               %
                             </span>
                           </div>
-                          <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+                          <div className="w-full text-base">
                             <Progress
                               firstProgress={
                                 (Number(campaign?.transferred_amount) /
