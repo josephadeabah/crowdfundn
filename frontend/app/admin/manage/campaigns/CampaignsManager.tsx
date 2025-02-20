@@ -14,6 +14,7 @@ import {
   FaUnlock,
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Modal from '@/app/components/modal/Modal';
@@ -28,6 +29,7 @@ const CampaignManager = () => {
     endDate: Date;
     organizer: string;
     status: string;
+    media: string;
     goal: number;
     currentAmount: number;
     participants: number;
@@ -99,6 +101,7 @@ const CampaignManager = () => {
         endDate: new Date(campaign.end_date),
         organizer: campaign.fundraiser?.profile?.name || 'Unknown',
         status: campaign.status || 'active',
+        media: campaign.media || 'No image',
         goal: parseFloat(campaign.goal_amount),
         currentAmount: parseFloat(campaign.transferred_amount),
         participants: campaign.total_donors,
@@ -529,6 +532,14 @@ const CampaignManager = () => {
                   <p>
                     <strong>Title:</strong> {selectedCampaign.title}
                   </p>
+                  <Image
+                    src={selectedCampaign.media}
+                    alt={selectedCampaign.title}
+                    width={500}
+                    height={384}
+                    className="rounded-lg object-cover w-full h-full"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
                   <p>
                     <strong>Start Date:</strong>{' '}
                     {new Date(selectedCampaign.startDate).toLocaleDateString()}
