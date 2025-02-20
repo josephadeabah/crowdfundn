@@ -119,12 +119,9 @@ const CategoryList: React.FC = () => {
                         />
                       </div>
                       <div className="w-full md:w-2/3">
-                        <h4 className="text-lg font-semibold mb-2">
+                        <h4 className="text-lg font-semibold">
                           {campaign.title}
                         </h4>
-                        <p className="text-gray-600 dark:text-gray-300 mb-4">
-                          {campaign.message}
-                        </p>
                         <div className="space-y-2">
                           <div className="w-full text-base">
                             <Progress
