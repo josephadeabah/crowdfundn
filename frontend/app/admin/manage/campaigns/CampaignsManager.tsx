@@ -32,6 +32,7 @@ const CampaignManager = () => {
     media: string;
     goal: number;
     currentAmount: number;
+    currency: string;
     participants: number;
     isBlocked: boolean;
   }
@@ -104,6 +105,7 @@ const CampaignManager = () => {
         media: campaign.media || 'No image',
         goal: parseFloat(campaign.goal_amount),
         currentAmount: parseFloat(campaign.transferred_amount),
+        currency: campaign.currency,
         participants: campaign.total_donors,
         isBlocked: !campaign.permissions.is_public, // Assuming is_public determines blocking
       }));
@@ -352,10 +354,12 @@ const CampaignManager = () => {
                   </td>
                   <td className="px-4 py-2">{campaign.organizer}</td>
                   <td className="px-4 py-2">
-                    ${campaign.goal.toLocaleString()}
+                    {campaign.currency.toUpperCase()}
+                    {campaign.goal.toLocaleString()}
                   </td>
                   <td className="px-4 py-2">
-                    ${campaign.currentAmount.toLocaleString()}
+                    {campaign.currency.toUpperCase()}
+                    {campaign.currentAmount.toLocaleString()}
                   </td>
                   <td className="px-4 py-2">{campaign.participants}</td>
                   <td className="px-4 py-2">
@@ -555,11 +559,13 @@ const CampaignManager = () => {
                     <strong>Organizer:</strong> {selectedCampaign.organizer}
                   </p>
                   <p>
-                    <strong>Goal:</strong> $
+                    <strong>Goal:</strong>{' '}
+                    {selectedCampaign.currency.toUpperCase()}
                     {selectedCampaign.goal.toLocaleString()}
                   </p>
                   <p>
-                    <strong>Current Amount:</strong> $
+                    <strong>Current Amount:</strong>{' '}
+                    {selectedCampaign.currency.toUpperCase()}
                     {selectedCampaign.currentAmount.toLocaleString()}
                   </p>
                   <p>
