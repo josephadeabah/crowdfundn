@@ -101,7 +101,7 @@ const Campaigns: React.FC = () => {
         </h2>
         <button
           onClick={() => router.push('/account/dashboard/create')}
-          className="flex items-center px-4 py-2 bg-gray-300 text-white rounded-lg"
+          className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg"
         >
           <FiPlus className="mr-2" />
           Add Campaign
