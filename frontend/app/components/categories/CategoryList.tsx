@@ -3,7 +3,7 @@ import Modal from '@/app/components/modal/Modal';
 import { Badge } from '../badge/Badge';
 import { useRouter } from 'next/navigation';
 import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
-import { categories } from '@/app/utils/helpers/categories';
+import { categories, categoriesWithIcons } from '@/app/utils/helpers/categories';
 import { useCategoryContext } from '@/app/context/categories/CategoryContext';
 import Pagination from '@/app/components/categories/PaginateCategory';
 import CategoryBadgeLoader from '@/app/loaders/CategoryBadgeLoader';
@@ -63,10 +63,10 @@ const CategoryList: React.FC = () => {
     <div className="w-full px-2 py-4 bg-gradient-to-br from-gray-50 to-neutral-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2">
-          {loading ? (
+        {loading ? (
             <CategoryBadgeLoader />
           ) : (
-            categories.map((category) => {
+            categoriesWithIcons.map((category) => {
               const campaignCount =
                 campaignsGroupedByCategory[category.value]?.campaigns.length ||
                 0;
@@ -81,7 +81,12 @@ const CategoryList: React.FC = () => {
                   onClick={() => handleCategoryClick(category.value)}
                   variant="default"
                 >
-                  {category.label} {campaignCount > 0 && `(${campaignCount})`}
+                  <div className="flex items-center gap-2">
+                    {category.icon}
+                    <span>
+                      {category.label} {campaignCount > 0 && `(${campaignCount})`}
+                    </span>
+                  </div>
                 </Badge>
               );
             })
