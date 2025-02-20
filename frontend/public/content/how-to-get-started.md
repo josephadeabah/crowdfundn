@@ -101,7 +101,7 @@ To ensure your campaign looks its best and attracts potential backers, please fo
 
 2. **Format:**
 
-   - Acceptable formats include **JPEG**, **PNG**, and **GIF**.
+   - Acceptable formats include **JPEG**, **PNG**, and **WEBP**.
 
 3. **Clarity:**
 
