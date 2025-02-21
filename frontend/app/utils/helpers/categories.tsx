@@ -54,7 +54,7 @@ export type Category = {
 const slugify = (label: string): string => {
   return label
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/[^a-z0-9' ]+/g, '-') // Allow apostrophes and replace other non-alphanumeric characters
     .replace(/(^-|-$)+/g, ''); // Remove leading or trailing hyphens
 };
 
@@ -475,7 +475,7 @@ export const categoriesWithIcons: Category[] = [
   },
   {
     label: "Women's Empowerment",
-    value: slugify("Women’s Empowerment"),
+    value: slugify("Women's Empowerment"),
     icon: <FaFemale className="w-4 h-4 text-pink-700" />,
   },
   {
