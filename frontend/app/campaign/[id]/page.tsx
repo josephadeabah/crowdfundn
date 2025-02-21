@@ -234,7 +234,6 @@ const SingleCampaignPage: React.FC = () => {
                 </button>
               </div>
             </div>
-
             {/* Tab Content */}
             {selectedTab === 'details' && (
               <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
@@ -306,7 +305,6 @@ const SingleCampaignPage: React.FC = () => {
                 />
               </div>
             )}
-
             {selectedTab === 'updates' && (
               <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
                 <FundraiserUpdates
@@ -315,13 +313,11 @@ const SingleCampaignPage: React.FC = () => {
                 />
               </div>
             )}
-
             {selectedTab === 'comments' && (
               <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
                 <CommentsSection campaignId={String(currentCampaign?.id)} />
               </div>
             )}
-
             {selectedTab === 'backers' && (
               <div className="bg-white dark:bg-gray-800 mx-auto px-2 py-6">
                 <h3 className="text-2xl font-bold mb-6">Backers</h3>
@@ -332,23 +328,29 @@ const SingleCampaignPage: React.FC = () => {
                 />
               </div>
             )}
-          </div>
-          <hr className="border-t-2 border-gray-300 my-2" /> {/* Top line */}
-          <div className="w-full px-1">
-            Created{' '}
-            {currentCampaign?.start_date
-              ? moment(currentCampaign.start_date).format('D MMMM YYYY')
-              : 'Unknown Date'}
-            <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
-            <Link href="/explore/category">
-              <span className="text-lime-500 font-semibold underline ml-1">
-                {currentCampaign?.category
-                  ? deslugify(currentCampaign.category)
-                  : 'Unknown Category'}
+            <hr className="border-t-1 border-gray-300 my-2" /> {/* Top line */}
+            <div className="w-full px-1 flex items-center">
+              {' '}
+              {/* Flexbox container */}
+              <span>Created</span>
+              <span className="ml-2">
+                {currentCampaign?.start_date
+                  ? moment(currentCampaign.start_date).format('D MMMM YYYY')
+                  : 'Unknown Date'}
               </span>
-            </Link>
+              {/* Small dot */}
+              <div className="w-1 h-1 bg-gray-500 rounded-full mx-2" />{' '}
+              <Link href="/explore/category">
+                <span className="text-lime-500 font-semibold underline ml-1">
+                  {currentCampaign?.category
+                    ? deslugify(currentCampaign.category)
+                    : 'Unknown Category'}
+                </span>
+              </Link>
+            </div>
+            <hr className="border-t-1 border-gray-300 my-2" />{' '}
+            {/* Bottom line */}
           </div>
-          <hr className="border-t-2 border-gray-300 my-2" /> {/* Bottom line */}
         </div>
 
         {/* Second Column (Smaller Width and Sticky) */}
