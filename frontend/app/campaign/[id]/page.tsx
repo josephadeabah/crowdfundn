@@ -333,6 +333,22 @@ const SingleCampaignPage: React.FC = () => {
               </div>
             )}
           </div>
+          <hr className="border-t-2 border-gray-300 my-2" /> {/* Top line */}
+          <div className="w-full px-1">
+            Created{' '}
+            {currentCampaign?.start_date
+              ? moment(currentCampaign.start_date).format('D MMMM YYYY')
+              : 'Unknown Date'}
+            <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+            <Link href="/explore/category">
+              <span className="text-lime-500 font-semibold underline ml-1">
+                {currentCampaign?.category
+                  ? deslugify(currentCampaign.category)
+                  : 'Unknown Category'}
+              </span>
+            </Link>
+          </div>
+          <hr className="border-t-2 border-gray-300 my-2" /> {/* Bottom line */}
         </div>
 
         {/* Second Column (Smaller Width and Sticky) */}
@@ -426,20 +442,6 @@ const SingleCampaignPage: React.FC = () => {
                       color="#22c55e"
                     />
                   </div>
-                </div>
-                <div className="w-full px-1">
-                  Created{' '}
-                  {currentCampaign?.start_date
-                    ? moment(currentCampaign.start_date).format('D MMMM YYYY')
-                    : 'Unknown Date'}
-                  <div className="w-4 h-4 bg-gray-500 rounded-full"></div>
-                  <Link href="/explore/category">
-                    <span className="text-lime-500 font-semibold underline ml-1">
-                      {currentCampaign?.category
-                        ? deslugify(currentCampaign.category)
-                        : 'Unknown Category'}
-                    </span>
-                  </Link>
                 </div>
               </div>
               <DonationsChart currentCampaign={currentCampaign} />
