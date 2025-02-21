@@ -352,7 +352,7 @@ const SingleCampaignPage: React.FC = () => {
             {/* Report Fundraiser section */}
             <div className="flex items-center justify-between mt-4">
               <Link href="/report-fundraiser">
-                <a className="flex items-center px-4 py-2 text-gray-600 bg-white rounded-lg shadow-sm hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300 ease-in-out">
+                <a className="flex items-center px-4 py-2 text-gray-600 bg-white rounded-lg hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300 ease-in-out">
                   <FaFlag className="mr-1" />
                   Report a Fundraiser
                 </a>
