@@ -328,7 +328,7 @@ const SingleCampaignPage: React.FC = () => {
                 />
               </div>
             )}
-            <hr className="border-t-1 border-gray-300 my-2" /> {/* Top line */}
+            <hr className="border-t-1 my-2" /> {/* Top line */}
             <div className="w-full px-1 flex items-center">
               {' '}
               {/* Flexbox container */}
