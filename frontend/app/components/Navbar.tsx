@@ -106,10 +106,10 @@ const Navbar = () => {
     <header
       className={`bg-green-50 dark:bg-gray-950 sticky top-0 z-50 transition-transform duration-300 ease-in-out ${
         isVisible ? 'translate-y-0' : '-translate-y-full'
-      } ${isScrolling ? 'shadow-md' : ''}`} // Add shadow conditionally
+      } ${isScrolling ? 'shadow-lg' : ''}`} // Add shadow conditionally
       style={{
         boxShadow: isScrolling
-          ? 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;'
+          ? 'rgba(149, 157, 165, 0.2) 0px 8px 24px'
           : 'none',
       }}
     >
