@@ -54,7 +54,7 @@ export type Category = {
 const slugify = (label: string): string => {
   return label
     .toLowerCase()
-    .replace(/[^a-z0-9' ]+/g, '-') // Allow apostrophes and replace other non-alphanumeric characters
+    .replace(/[^a-z0-9]+/g, '-') // Allow apostrophes and replace other non-alphanumeric characters
     .replace(/(^-|-$)+/g, ''); // Remove leading or trailing hyphens
 };
 
@@ -128,7 +128,7 @@ const categoryLabels = [
   'Veterans Support',
   'Water and Sanitation',
   'Wildlife Conservation',
-  "Women's Empowerment",
+  "Women’s Empowerment",
   'Youth Development',
 ];
 
