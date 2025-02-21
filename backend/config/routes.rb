@@ -77,6 +77,7 @@ Rails.application.routes.draw do
             patch 'cancel', to: 'campaigns#cancel_campaign'
             post :favorite
             delete :unfavorite
+            post 'contact', to: 'campaigns#contact_fundraiser'
           end
           post 'webhook_status_update', on: :collection  # Defines a route for webhook status update
           get 'my_campaigns', on: :collection

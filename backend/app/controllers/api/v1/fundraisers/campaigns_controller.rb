@@ -257,6 +257,33 @@ module Api
           end
         end
 
+         # POST /api/v1/fundraisers/campaigns/:id/contact
+         def contact_fundraiser
+          campaign = Campaign.find(params[:id])
+          fundraiser_email = campaign.fundraiser.email
+          fundraiser_name = campaign.fundraiser.full_name
+
+          # Extract user details from the request
+          user_name = params[:full_name]
+          user_email = params[:email]
+          message = params[:message]
+
+          # Send the email using the FundraiserContactEmailService
+          FundraiserContactEmailService.send_contact_email(
+            fundraiser_email,
+            fundraiser_name,
+            user_name,
+            user_email,
+            message
+          )
+
+          render json: { message: 'Your message has been sent to the fundraiser.' }, status: :ok
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: 'Campaign not found' }, status: :not_found
+        rescue => e
+          render json: { error: e.message }, status: :unprocessable_entity
+        end
+
 
         private
 
