@@ -475,7 +475,7 @@ export const categoriesWithIcons: Category[] = [
   },
   {
     label: "Women's Empowerment",
-    value: slugify("Women's Empowerment"),
+    value: slugify("Women’s Empowerment"),
     icon: <FaFemale className="w-4 h-4 text-pink-700" />,
   },
   {
