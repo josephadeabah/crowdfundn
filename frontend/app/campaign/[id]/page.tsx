@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import DonationButton from '@/app/components/donate/DonationButton';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useParams } from 'next/navigation';
-import { FaShare, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaShare, FaChevronLeft, FaChevronRight, FaFlag } from 'react-icons/fa';
 import { Button } from '@/app/components/button/Button';
 import SingleCampaignLoader from '@/app/loaders/SingleCampaignLoader';
 import Avatar from '@/app/components/avatar/Avatar';
@@ -341,7 +341,7 @@ const SingleCampaignPage: React.FC = () => {
               {/* Small dot */}
               <div className="w-1 h-1 bg-gray-500 rounded-full mx-2" />{' '}
               <Link href="/explore/category">
-                <span className="text-lime-500 font-semibold underline ml-1">
+                <span className="text-gray-500 font-semibold underline ml-1">
                   {currentCampaign?.category
                     ? deslugify(currentCampaign.category)
                     : 'Unknown Category'}
@@ -349,7 +349,15 @@ const SingleCampaignPage: React.FC = () => {
               </Link>
             </div>
             <hr className="border-t-1 border-gray-300 my-2" />{' '}
-            {/* Bottom line */}
+            {/* Report Fundraiser section */}
+            <div className="flex items-center justify-between mt-4">
+              <Link href="/report-fundraiser">
+                <a className="flex items-center px-4 py-2 text-white bg-gray-600 rounded-lg shadow-md hover:bg-gray-200 hover:text-gray-600 transition-colors duration-300 ease-in-out">
+                  <FaFlag className="mr-1" />
+                  Report a Fundraiser
+                </a>
+              </Link>
+            </div>
           </div>
         </div>
 
