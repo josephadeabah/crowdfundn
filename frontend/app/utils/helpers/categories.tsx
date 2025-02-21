@@ -54,7 +54,7 @@ export type Category = {
 const slugify = (label: string): string => {
   return label
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-') // Allow apostrophes and replace other non-alphanumeric characters
+    .replace(/[^a-z0-9']+/g, '-') // Allow apostrophes and replace other non-alphanumeric characters with hyphens
     .replace(/(^-|-$)+/g, ''); // Remove leading or trailing hyphens
 };
 
@@ -496,5 +496,6 @@ export const deslugify = (slug: string): string => {
   return slug
     .split('-') // Split the slug by hyphens
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
-    .join(' '); // Join the words with spaces
+    .join(' ') // Join the words with spaces
+    .replace(/ S /g, "’s "); // Replace " S " with "’s " to handle apostrophes correctly
 };
