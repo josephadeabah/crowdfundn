@@ -30,15 +30,15 @@ class FundraiserContactEmailService
             <p><strong>To:</strong> #{fundraiser_name}</p>
             <p><strong>From:</strong> #{user_email}</p>
             <br>
-            <p><strong>Sent from:</strong> Bantu Hive</p>
+            <p><strong>Sent from:</strong> Bantu Hive Ltd.</p>
             <br>
-            <p><strong>PLEASE NOTE:</strong> The message below is NOT from Bantu Hive, but rather an individual who visited and contacted you through your campaign. We strongly discourage you from clicking links or sharing your personal information without first verifying the sender's identity. Bantu Hive will never ask for your email address, password, or payment information in this manner. Do not respond if you are being offered a wire transfer or asked for a refund outside of Bantu Hive. Please forward all suspicious messages to <a href="mailto:abuse@bantuhive.com">abuse@bantuhive.com</a>.</p>
+            <p><strong>PLEASE NOTE:</strong> The message below is NOT from Bantu Hive, but rather an individual who visited and contacted you through your campaign. We strongly discourage you from clicking links or sharing your personal information without first verifying the sender's identity. Bantu Hive will never ask for your email address, password, or payment information in this manner. Do not respond if you are being offered a wire transfer or asked for a refund outside of Bantu Hive. Please forward all suspicious messages to <a href="mailto:help@bantuhive.com">help@bantuhive.com</a>.</p>
             <br>
             <p><strong>** MESSAGE **</strong></p>
             <p>#{message}</p>
             <p><strong>** END OF MESSAGE **</strong></p>
             <br>
-            <p>Is this message abusive? Please forward all suspicious messages to <a href="mailto:abuse@bantuhive.com">abuse@bantuhive.com</a>.</p>
+            <p>Is this message abusive? Please forward all suspicious messages to <a href="mailto:help@bantuhive.com">help@bantuhive.com</a>.</p>
             <br>
             <hr>
             <p>You are receiving this email because you have a Bantu Hive account.</p>
