@@ -28,6 +28,8 @@ import DonationsChart from '../DonationsChart';
 import { deslugify } from '@/app/utils/helpers/categories';
 import Link from 'next/link';
 import moment from 'moment';
+import ContactFundraiserForm from '@/app/components/contactfundraiserform/ContactFundraiserForm';
+import Modal from '@/app/components/modal/Modal';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<
@@ -38,6 +40,7 @@ const SingleCampaignPage: React.FC = () => {
   const [billingFrequency, setBillingFrequency] = useState<string>('once');
   const [copyButtonText, setCopyButtonText] = useState<string>('Copy');
   const [error, setError] = useState<string | null>(null);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const tabsRef = useRef<HTMLDivElement>(null);
 
@@ -151,6 +154,14 @@ const SingleCampaignPage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-2 py-8 mb-12">
+      <Modal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+        size="medium"
+        closeOnBackdropClick={false}
+      >
+        <ContactFundraiserForm campaignId={id} />
+      </Modal>
       <div className="flex flex-col lg:flex-row gap-8 mb-10">
         {/* First Column (Bigger Width) */}
         <div className="lg:w-2/3">
@@ -282,6 +293,13 @@ const SingleCampaignPage: React.FC = () => {
                     <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
                       {fundraiserName}
                     </h3>
+                    {/* Contact Button */}
+                    <button
+                      onClick={() => setIsContactModalOpen(true)}
+                      className="ml-4 px-4 py-2 bg-white border text-white rounded-md hover:bg-green-600 transition"
+                    >
+                      Contact
+                    </button>
                   </div>
 
                   {/* Fundraiser Description */}
