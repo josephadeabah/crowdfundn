@@ -78,7 +78,7 @@ const ContactFundraiserForm = ({ campaignId }: ContactFundraiserFormProps) => {
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
           required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+          className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
           disabled={!!user?.full_name} // Disable the input if the user is logged in
         />
       </div>
@@ -91,7 +91,7 @@ const ContactFundraiserForm = ({ campaignId }: ContactFundraiserFormProps) => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+          className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
         />
       </div>
       <div>
@@ -102,7 +102,7 @@ const ContactFundraiserForm = ({ campaignId }: ContactFundraiserFormProps) => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+          className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
           rows={4}
         />
       </div>

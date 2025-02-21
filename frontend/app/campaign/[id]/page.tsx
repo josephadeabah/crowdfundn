@@ -296,7 +296,7 @@ const SingleCampaignPage: React.FC = () => {
                     {/* Contact Button */}
                     <button
                       onClick={() => setIsContactModalOpen(true)}
-                      className="ml-4 px-4 py-2 bg-white border text-white rounded-md hover:bg-green-600 transition"
+                      className="ml-4 px-4 py-2 bg-white border border-gray-400 text-gray-600 rounded-md hover:bg-gray-100 transition"
                     >
                       Contact
                     </button>
