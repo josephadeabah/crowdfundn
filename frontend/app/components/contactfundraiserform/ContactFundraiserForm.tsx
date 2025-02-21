@@ -31,7 +31,7 @@ const ContactFundraiserForm = ({ campaignId }: ContactFundraiserFormProps) => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/fundraisers/campaigns/${campaignId}/contact`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/contact`,
         {
           method: 'POST',
           headers: {
