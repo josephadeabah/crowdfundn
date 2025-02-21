@@ -70,6 +70,7 @@ const ContactFundraiserForm = ({ campaignId }: ContactFundraiserFormProps) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
+        <h2 className="text-lg font-semibold py-1">Contact Fundraiser</h2>
         <label className="block text-sm font-medium text-gray-700">
           Full Name:
         </label>
