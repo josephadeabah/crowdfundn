@@ -27,6 +27,7 @@ import {
 import DonationsChart from '../DonationsChart';
 import { deslugify } from '@/app/utils/helpers/categories';
 import Link from 'next/link';
+import moment from 'moment';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<
@@ -427,10 +428,16 @@ const SingleCampaignPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="w-full px-1">
-                  Created {currentCampaign?.start_date} <div className="w-4 h-4 bg-gray-500 rounded-full"></div> 
+                  Created{' '}
+                  {currentCampaign?.start_date
+                    ? moment(currentCampaign.start_date).format('D MMMM YYYY')
+                    : 'Unknown Date'}
+                  <div className="w-4 h-4 bg-gray-500 rounded-full"></div>
                   <Link href="/explore/category">
                     <span className="text-lime-500 font-semibold underline ml-1">
-                    {currentCampaign?.category ? deslugify(currentCampaign.category) : 'Unknown Category'}
+                      {currentCampaign?.category
+                        ? deslugify(currentCampaign.category)
+                        : 'Unknown Category'}
                     </span>
                   </Link>
                 </div>
