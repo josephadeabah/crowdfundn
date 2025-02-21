@@ -334,8 +334,8 @@ const SingleCampaignPage: React.FC = () => {
               {/* Flexbox container */}
               <span>Created</span>
               <span className="ml-2">
-                {currentCampaign?.start_date
-                  ? moment(currentCampaign.start_date).format('D MMMM YYYY')
+                {currentCampaign?.created_at
+                  ? moment(currentCampaign.created_at).format('D MMMM YYYY')
                   : 'Unknown Date'}
               </span>
               {/* Small dot */}
