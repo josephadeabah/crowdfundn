@@ -26,6 +26,7 @@ import {
 } from 'recharts';
 import DonationsChart from '../DonationsChart';
 import { deslugify } from '@/app/utils/helpers/categories';
+import Link from 'next/link';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<
@@ -425,7 +426,14 @@ const SingleCampaignPage: React.FC = () => {
                     />
                   </div>
                 </div>
-                <div className='w-full p-2'>Created in: <span className='text-lime-500 font-semibold'>{deslugify(currentCampaign?.category as string)}</span></div>
+                <div className="w-full p-2">
+                  Created in:
+                  <Link href="/explore/category">
+                    <span className="text-lime-500 font-semibold underline">
+                    {currentCampaign?.category ? deslugify(currentCampaign.category) : 'Unknown Category'}
+                    </span>
+                  </Link>
+                </div>
               </div>
               <DonationsChart currentCampaign={currentCampaign} />
             </div>
