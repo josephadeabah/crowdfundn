@@ -128,7 +128,7 @@ const categoryLabels = [
   'Veterans Support',
   'Water and Sanitation',
   'Wildlife Conservation',
-  "Women’s Empowerment",
+  'Women’s Empowerment',
   'Youth Development',
 ];
 
@@ -475,7 +475,7 @@ export const categoriesWithIcons: Category[] = [
   },
   {
     label: "Women's Empowerment",
-    value: slugify("Women’s Empowerment"),
+    value: slugify('Women’s Empowerment'),
     icon: <FaFemale className="w-4 h-4 text-pink-700" />,
   },
   {
@@ -497,5 +497,5 @@ export const deslugify = (slug: string): string => {
     .split('-') // Split the slug by hyphens
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
     .join(' ') // Join the words with spaces
-    .replace(/ S /g, "’s "); // Replace " S " with "’s " to handle apostrophes correctly
+    .replace(/ S /g, '’s '); // Replace " S " with "’s " to handle apostrophes correctly
 };

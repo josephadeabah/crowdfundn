@@ -28,7 +28,6 @@ const Navbar = () => {
   const { userAccountData } = useUserContext();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [isScrolling, setIsScrolling] = useState(false); // New state for scrolling
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -40,19 +39,8 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      // Show/hide navbar logic
-      setIsVisible(currentScrollY <= lastScrollY || currentScrollY <= 100);
-
-      // Box-shadow logic
-      if (currentScrollY > 100) {
-        setIsScrolling(true);
-      } else {
-        setIsScrolling(false);
-      }
-
-      setLastScrollY(currentScrollY);
+      setIsVisible(window.scrollY <= lastScrollY || window.scrollY <= 100);
+      setLastScrollY(window.scrollY);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -104,14 +92,7 @@ const Navbar = () => {
 
   return (
     <header
-      className={`bg-green-50 dark:bg-gray-950 sticky top-0 z-50 transition-transform duration-300 ease-in-out ${
-        isVisible ? 'translate-y-0' : '-translate-y-full'
-      } ${isScrolling ? 'shadow-lg' : ''}`} // Add shadow conditionally
-      style={{
-        boxShadow: isScrolling
-          ? 'rgba(149, 157, 165, 0.2) 0px 8px 24px'
-          : 'none',
-      }}
+      className={`bg-green-50 dark:bg-gray-950 sticky top-0 z-50 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
     >
       <nav className="w-full max-w-screen-xl mx-auto text-gray-800 dark:bg-gray-950 dark:text-gray-50">
         <div className="relative flex items-center justify-between">
@@ -206,6 +187,11 @@ const Navbar = () => {
               <ul className="flex flex-col items-start p-4 space-y-4">
                 {!user && (
                   <>
+                    {/* <li>
+                      <Link href="/cofund" className="block">
+                        Co-Fund
+                      </Link>
+                    </li> */}
                     <li>
                       <Link href="/auth/register" className="block">
                         Start Project
@@ -252,6 +238,7 @@ const Navbar = () => {
                     </Popover>
                   </li>
                 ))}
+                {/* <DarkModeBtn /> */}
                 {user && (
                   <li className="flex items-center gap-3">
                     <Link href="/account">
@@ -268,6 +255,11 @@ const Navbar = () => {
                       <span className="font-semibold">{user.full_name}</span>
                       <span className="text-gray-600">{user.email}</span>
                     </div>
+                    {/* <div className="flex items-center gap-3 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 px-0 py-2 rounded transition">
+                        <Link href="/cofund">
+                          <div>Co-Fund</div>
+                        </Link>
+                      </div> */}
                     <div
                       className="hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
                       onClick={logout}
@@ -283,6 +275,18 @@ const Navbar = () => {
           <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
             {!user ? (
               <>
+                {/* <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="py-1 px-4 bg-white dark:bg-gray-900 dark:text-gray-50 rounded-full focus-visible:outline-none focus:ring-0 hover:outline-none hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300"
+                >
+                  <Link
+                    href="/cofund"
+                    className="text-gray-700 text-sm dark:text-gray-50"
+                  >
+                    Co-Fund
+                  </Link>
+                </motion.button> */}
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -360,6 +364,15 @@ const Navbar = () => {
                         <div>Go to Account</div>
                       </Link>
                     </div>
+                    {/* <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
+                      <Link href="/cofund">
+                        <div>Co-Fund</div>
+                      </Link>
+                    </div> */}
+                    {/* <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
+                        <div>Change Theme</div>
+                        <DarkModeBtn />
+                      </div> */}
                     <div
                       className="hover:bg-gray-200 border border-gray-50 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
                       onClick={logout}
