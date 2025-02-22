@@ -1,4 +1,3 @@
-# app/controllers/api/v1/articles/articles_controller.rb
 module Api
   module V1
     module Articles
@@ -68,7 +67,11 @@ module Api
         private
 
         def set_article
-          @article = Article.find_by!(slug: params[:slug])
+          @article = if params[:slug].present?
+                      Article.find_by!(slug: params[:slug])
+                    else
+                      Article.find_by!(id: params[:id])
+                    end
         end
 
         def article_params
