@@ -132,8 +132,12 @@ Rails.application.routes.draw do
       end
 
       namespace :articles do
-        resources :articles, only: %i[index show create update destroy]
+        resources :articles, only: %i[index create]
+        get 'articles/:slug_or_id', to: 'articles#show', constraints: { slug_or_id: /[^\/]+/ }
+        put 'articles/:slug_or_id', to: 'articles#update', constraints: { slug_or_id: /[^\/]+/ }
+        delete 'articles/:slug_or_id', to: 'articles#destroy', constraints: { slug_or_id: /[^\/]+/ }
       end
+    end
 
     end
   end

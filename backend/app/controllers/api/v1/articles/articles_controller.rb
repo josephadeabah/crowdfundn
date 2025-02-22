@@ -71,13 +71,13 @@ module Api
 
         def set_article
           # Find article by slug or ID
-          @article = if params[:slug].present?
-                      Article.find_by!(slug: params[:slug])
-                    elsif params[:id].present?
-                      Article.find_by!(id: params[:id])
+          @article = if params[:slug_or_id].match?(/\A\d+\z/)
+                      Article.find_by!(id: params[:slug_or_id])
                     else
-                      raise ActiveRecord::RecordNotFound, 'Article not found'
+                      Article.find_by!(slug: params[:slug_or_id])
                     end
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: 'Article not found' }, status: :not_found
         end
 
         def article_params
