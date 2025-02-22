@@ -1,4 +1,3 @@
-//@/app/components/blogs/BlogPosts.tsx
 'use client';
 
 import React, { useEffect } from 'react';
@@ -20,9 +19,10 @@ const BlogPosts: React.FC = () => {
       <h2 className="text-3xl font-bold text-center mb-8">Latest Blog Posts</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {articles.map((article) => (
-          <div
+          <Link
             key={article.id}
-            className="bg-white rounded-lg shadow-md overflow-hidden"
+            href={`/blog/${article.slug}`} // Make the whole card clickable
+            className="block bg-white rounded-lg shadow overflow-hidden transition-transform transform hover:scale-50"
           >
             {article.featured_image && (
               <div className="relative w-full h-48">
@@ -39,17 +39,11 @@ const BlogPosts: React.FC = () => {
               <h3 className="text-xl font-semibold mb-2">{article.title}</h3>
               <p className="text-gray-700">{article.meta_description}</p>
               <p className="text-gray-500 text-sm mt-4">
-                Published on:{' '}
+                Published on{' '}
                 {moment(article.published_at).format('MMMM Do, YYYY')}
               </p>
-              <Link
-                href={`/blog/${article.slug}`} // Use slug instead of id
-                className="text-amber-600 mt-4 inline-block"
-              >
-                View More →
-              </Link>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
