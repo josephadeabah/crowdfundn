@@ -41,7 +41,6 @@ class Article < ApplicationRecord
     super(options).merge(
       featured_image: featured_image_url,
       featured_image_filename: featured_image_filename,
-      description: description.as_json
     )
   end
 
