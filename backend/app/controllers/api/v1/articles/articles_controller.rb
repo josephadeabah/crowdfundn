@@ -58,10 +58,10 @@ module Api
 
         # DELETE /api/v1/articles/articles/:slug
         def destroy
-          article = Article.find(params[:id])
+          @article = Article.find(params[:id])
           authorize_user!(@article) # Ensure the user is the author
           
-          if article.destroy
+          if @article.destroy
             render json: { message: 'Article deleted successfully' }
           else
             render json: { error: 'Failed to delete article' }, status: :unprocessable_entity
