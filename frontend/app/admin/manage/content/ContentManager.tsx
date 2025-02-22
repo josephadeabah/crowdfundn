@@ -10,6 +10,7 @@ import {
 import { FaSearch, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import { useArticlesContext } from '@/app/context/admin/articles/ArticlesContext';
 import RichTextEditor from '@/app/components/richtext/Richtext';
+import Modal from '@/app/components/modal/Modal';
 
 interface Section {
   id: string;
@@ -241,6 +242,13 @@ const ContentManagerAdminPage = () => {
     }
   };
 
+  const handleCloseModal = () => {
+    setIsCreatingContent(false);
+    setEditingSection(null);
+    setEditingContent(null);
+    setImagePreview(null);
+  };
+
   return (
     <div className="min-h-screen p-2">
       <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">
@@ -332,9 +340,14 @@ const ContentManagerAdminPage = () => {
           )}
         </Droppable>
       </DragDropContext>
-      {(editingSection || isCreatingContent) && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg w-3/4 max-w-3xl">
+      <Modal
+        isOpen={!!editingSection || isCreatingContent}
+        onClose={handleCloseModal}
+        size="xxxlarge"
+        closeOnBackdropClick={false}
+      >
+        <div className="overflow-y-auto p-2">
+          <div className="space-y-4">
             <h3 className="text-xl font-semibold mb-4">
               {isCreatingContent ? 'Create New Article' : 'Edit Content'}
             </h3>
@@ -370,12 +383,7 @@ const ContentManagerAdminPage = () => {
             </div>
             <div className="mt-4 flex justify-end space-x-2">
               <button
-                onClick={() => {
-                  setIsCreatingContent(false);
-                  setEditingSection(null);
-                  setEditingContent(null);
-                  setImagePreview(null);
-                }}
+                onClick={handleCloseModal}
                 className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
               >
                 Cancel
@@ -389,7 +397,7 @@ const ContentManagerAdminPage = () => {
             </div>
           </div>
         </div>
-      )}
+      </Modal>
     </div>
   );
 };
