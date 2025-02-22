@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { useArticlesContext } from '@/app/context/admin/articles/ArticlesContext';
 import moment from 'moment';
 
 const BlogPostView: React.FC = () => {
-  const router = useRouter();
-  const { slug } = router.query; // Get article slug from URL
+  const pathname = usePathname();
+  const slug = pathname.split('/').pop(); // Extract the slug from the URL
   const { currentArticle, fetchArticleById, loading, error } =
     useArticlesContext();
 
