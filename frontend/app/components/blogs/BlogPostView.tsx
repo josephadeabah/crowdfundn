@@ -24,7 +24,7 @@ const BlogPostView: React.FC = () => {
   if (!currentArticle) return <p className="text-center">Article not found</p>;
 
   return (
-    <div className="flex flex-col items-center py-12">
+    <div className="flex flex-col items-center py-12 bg-white">
       {/* Title & Featured Image (max-w-7xl) */}
       <div className="max-w-7xl w-full px-2 py-8">
         <h1 className="text-6xl font-bold text-center mb-6">
