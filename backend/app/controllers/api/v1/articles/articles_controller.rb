@@ -30,6 +30,11 @@ module Api
           @article = Article.new(article_params)
           @article.author = @current_user # Use the authenticated user
 
+          if params[:featured_image].present?
+            @article.featured_image.attach(params[:featured_image])
+            set_featured_image_content_disposition(@article.featured_image)
+          end
+
           if @article.save
             render json: @article, status: :created
           else
@@ -42,6 +47,10 @@ module Api
           authorize_user!(@article) # Ensure the user is authorized to update the article
 
           if @article.update(article_params)
+            if params[:featured_image].present?
+              @article.featured_image.attach(params[:featured_image])
+              set_featured_image_content_disposition(@article.featured_image)
+            end
             render json: @article
           else
             render json: { errors: @article.errors.full_messages }, status: :unprocessable_entity
@@ -66,6 +75,16 @@ module Api
           params.require(:article).permit(
             :title, :slug, :description, :status, :meta_description, :published_at, :featured_image
           )
+        end
+
+        def set_featured_image_content_disposition(featured_image)
+          s3 = Aws::S3::Resource.new
+          object = s3.bucket(Rails.application.credentials.dig(:digitalocean, :bucket)).object(featured_image.key)
+          object.copy_from(object.bucket.name + '/' + object.key, {
+                             metadata_directive: 'REPLACE',
+                             content_disposition: 'inline',
+                             acl: 'public-read'
+                           })
         end
       end
     end
