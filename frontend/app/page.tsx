@@ -14,6 +14,7 @@ import { useCampaignContext } from './context/account/campaign/CampaignsContext'
 import SummaryCardComponent from './molecules/SummaryCard';
 import BHScreenKnowHow from './molecules/BHScreenKnowHow';
 import IllustrateImageComponent from './molecules/IllustrateImageComponent';
+import BlogPosts from './components/blogs/BlogPosts';
 
 const HomePage = () => {
   const wordRef = React.useRef<HTMLDivElement | null>(null);
@@ -291,6 +292,7 @@ const HomePage = () => {
       <div id="brands" className="mt-20">
         <BHScreenKnowHow />
       </div>
+      <BlogPosts />
 
       <div className="mb-8 text-gray-700 dark:bg-gray-950 dark:text-gray-50">
         <ChatbotComponent />

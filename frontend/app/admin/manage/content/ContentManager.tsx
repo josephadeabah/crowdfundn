@@ -161,10 +161,7 @@ const ContentManagerAdminPage = () => {
     if (editingSection === 'blog' && editingContent) {
       const formData = new FormData();
       formData.append('article[title]', editingContent.title);
-      formData.append(
-        'article[description]',
-        editingContent.description.body,
-      );
+      formData.append('article[description]', editingContent.description.body);
       formData.append(
         'article[meta_description]',
         editingContent.meta_description,
