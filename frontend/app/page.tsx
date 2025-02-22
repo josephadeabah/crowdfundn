@@ -292,7 +292,9 @@ const HomePage = () => {
       <div id="brands" className="mt-20">
         <BHScreenKnowHow />
       </div>
-      <BlogPosts />
+      <div className="w-full bg-white p-4">
+        <BlogPosts />
+      </div>
 
       <div className="mb-8 text-gray-700 dark:bg-gray-950 dark:text-gray-50">
         <ChatbotComponent />

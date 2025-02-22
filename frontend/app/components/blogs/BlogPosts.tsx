@@ -19,7 +19,9 @@ const BlogPosts: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-2 py-8">
-      <h2 className="text-3xl font-bold text-center mb-8">Resources For Fundraising on Bantu Hive</h2>
+      <h2 className="text-3xl font-bold text-center mb-8">
+        Resources For Fundraising on Bantu Hive
+      </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {articles.slice(0, 3).map(
           (
@@ -28,7 +30,7 @@ const BlogPosts: React.FC = () => {
             <Link
               key={article.id}
               href={`/blog/${article.slug}`} // Make the whole card clickable
-              className="block bg-white rounded-lg overflow-hidden"
+              className="block bg-gray-50 hover:bg-gray-100 rounded-lg overflow-hidden"
             >
               {article.featured_image && (
                 <div className="relative w-full h-48">
