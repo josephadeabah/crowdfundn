@@ -279,7 +279,7 @@ const ContentManagerAdminPage = () => {
           <input
             type="text"
             placeholder="Search sections..."
-            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
             value={searchTerm}
             onChange={handleSearch}
           />
@@ -324,12 +324,6 @@ const ContentManagerAdminPage = () => {
                                 <p className="text-gray-600 font-semibold">
                                   {item.title}
                                 </p>
-                                {/* <div
-                                  className="prose dark:prose-dark max-w-none"
-                                  dangerouslySetInnerHTML={{
-                                    __html: item.description.body || '',
-                                  }}
-                                /> */}
                                 <p className="text-gray-400 text-xs">
                                   {item.meta_description}
                                 </p>
@@ -452,7 +446,7 @@ const ContentManagerAdminPage = () => {
               </button>
               <button
                 onClick={handleSaveContent}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
               >
                 Save Changes
               </button>
