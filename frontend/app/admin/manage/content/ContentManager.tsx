@@ -131,9 +131,11 @@ const ContentManagerAdminPage = () => {
       formData.append('published_at', new Date().toISOString()); // Update this with the actual published date
 
       // Add featured image if available
-      if (imagePreview) {
-        const file = await fetch(imagePreview).then((res) => res.blob());
-        formData.append('featured_image', file, 'featured_image.jpg');
+      const fileInput = document.querySelector(
+        'input[type="file"]',
+      ) as HTMLInputElement;
+      if (fileInput?.files?.[0]) {
+        formData.append('featured_image', fileInput.files[0]);
       }
 
       if (isCreatingContent) {
@@ -171,7 +173,7 @@ const ContentManagerAdminPage = () => {
                 ? {
                     ...c,
                     text: editingContent.text,
-                    image: imagePreview || c.image,
+                    image: updatedArticle.featured_image || c.image, // Use the updated image URL
                   }
                 : c,
             );
@@ -236,7 +238,7 @@ const ContentManagerAdminPage = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        setImagePreview(reader.result as string); // For preview purposes only
       };
       reader.readAsDataURL(file);
     }
