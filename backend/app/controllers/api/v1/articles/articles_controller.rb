@@ -65,18 +65,7 @@ module Api
         def article_params
           params.require(:article).permit(
             :title, :slug, :description, :status, :meta_description, :published_at, :featured_image
-          ).tap do |whitelisted|
-            if params[:article][:featured_image].present?
-              whitelisted[:featured_image] = decode_base64(params[:article][:featured_image])
-            end
-          end
-        end
-
-        def decode_base64(base64_data)
-          if base64_data.present?
-            decoded_data = Base64.decode64(base64_data)
-            StringIO.new(decoded_data)
-          end
+          )
         end
       end
     end
