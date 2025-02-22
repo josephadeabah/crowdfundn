@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   DragDropContext,
   Droppable,
@@ -8,16 +8,23 @@ import {
   DropResult,
 } from 'react-beautiful-dnd';
 import { FaSearch, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
-import dynamic from 'next/dynamic';
-const RichTextEditor = dynamic(() => import('@mantine/rte'), { ssr: false });
+import { useArticlesContext } from '@/app/context/admin/articles/ArticlesContext';
+import RichTextEditor from '@/app/components/richtext/Richtext';
 
 interface Section {
   id: string;
   title: string;
-  content: { id: number; text: string }[];
+  content: { id: number; text: string; image?: string }[];
 }
 
 const ContentManagerAdminPage = () => {
+  const {
+    articles,
+    fetchArticles,
+    createArticle,
+    updateArticle,
+    deleteArticle,
+  } = useArticlesContext(); // Use the context
   const [sections, setSections] = useState<Section[]>([
     { id: 'faqs', title: 'FAQs', content: [] },
     { id: 'cta', title: 'Calls-to-Action', content: [] },
@@ -34,7 +41,30 @@ const ContentManagerAdminPage = () => {
   const [editingContent, setEditingContent] = useState<{
     id: number;
     text: string;
+    image?: string;
   } | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  // Fetch articles on component mount
+  useEffect(() => {
+    fetchArticles();
+  }, [fetchArticles]);
+
+  // Map articles to the "Blog" section
+  useEffect(() => {
+    if (articles.length > 0) {
+      const blogSectionIndex = sections.findIndex((s) => s.id === 'blog');
+      if (blogSectionIndex !== -1) {
+        const updatedSections = [...sections];
+        updatedSections[blogSectionIndex].content = articles.map((article) => ({
+          id: article.id,
+          text: article.title,
+          image: article.featured_image, // Add image URL to content
+        }));
+        setSections(updatedSections);
+      }
+    }
+  }, [articles]);
 
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -54,20 +84,58 @@ const ContentManagerAdminPage = () => {
     section.title.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const handleAddContent = (sectionId: string) => {
-    const updatedSections = sections.map((section) => {
-      if (section.id === sectionId) {
-        return {
-          ...section,
-          content: [
-            ...section.content,
-            { id: Date.now(), text: 'New Content' },
-          ],
-        };
+  const handleAddContent = async (sectionId: string) => {
+    if (sectionId === 'blog') {
+      // Create a new article using FormData
+      const formData = new FormData();
+      formData.append('title', 'New Article');
+      formData.append('description', 'This is a new article.');
+      formData.append('status', 'draft');
+      formData.append(
+        'meta_description',
+        'A brief description of the article.',
+      );
+      formData.append('published_at', new Date().toISOString());
+
+      // Add featured image if available
+      if (imagePreview) {
+        const file = await fetch(imagePreview).then((res) => res.blob());
+        formData.append('featured_image', file, 'featured_image.jpg');
       }
-      return section;
-    });
-    setSections(updatedSections);
+
+      const createdArticle = await createArticle(formData);
+      if (createdArticle) {
+        const blogSectionIndex = sections.findIndex((s) => s.id === 'blog');
+        if (blogSectionIndex !== -1) {
+          const updatedSections = [...sections];
+          updatedSections[blogSectionIndex].content = [
+            ...updatedSections[blogSectionIndex].content,
+            {
+              id: createdArticle.id,
+              text: createdArticle.title,
+              image: createdArticle.featured_image, // Add image URL
+            },
+          ];
+          setSections(updatedSections);
+          setImagePreview(null); // Reset image preview
+        }
+      }
+    } else {
+      // Handle other sections
+      const updatedSections = sections.map((section) => {
+        if (section.id === sectionId) {
+          return {
+            ...section,
+            content: [
+              ...section.content,
+              { id: Date.now(), text: 'New Content' },
+            ],
+          };
+        }
+        return section;
+      });
+      setSections(updatedSections);
+    }
   };
 
   const handleEditContent = (sectionId: string, contentId: number) => {
@@ -76,39 +144,107 @@ const ContentManagerAdminPage = () => {
     setEditingSection(sectionId);
     if (content) {
       setEditingContent(content);
+      setImagePreview(content.image || null); // Set image preview
     }
   };
 
-  const handleSaveContent = () => {
-    const updatedSections = sections.map((section) => {
-      if (section.id === editingSection) {
-        return {
-          ...section,
-          content: section.content.map((c) =>
-            c.id === editingContent?.id
-              ? { ...c, text: editingContent.text }
-              : c,
-          ),
-        };
+  const handleSaveContent = async () => {
+    if (editingSection === 'blog' && editingContent) {
+      // Update the article using FormData
+      const formData = new FormData();
+      formData.append('title', editingContent.text);
+      formData.append('description', editingContent.text); // Update this with the actual description
+      formData.append('status', 'published'); // Update this with the actual status
+      formData.append('meta_description', 'Updated description'); // Update this with the actual meta description
+      formData.append('published_at', new Date().toISOString()); // Update this with the actual published date
+
+      // Add featured image if available
+      if (imagePreview) {
+        const file = await fetch(imagePreview).then((res) => res.blob());
+        formData.append('featured_image', file, 'featured_image.jpg');
       }
-      return section;
-    });
-    setSections(updatedSections);
+
+      const updatedArticle = await updateArticle(
+        editingContent.id.toString(),
+        formData,
+      );
+      if (updatedArticle) {
+        const blogSectionIndex = sections.findIndex((s) => s.id === 'blog');
+        if (blogSectionIndex !== -1) {
+          const updatedSections = [...sections];
+          updatedSections[blogSectionIndex].content = updatedSections[
+            blogSectionIndex
+          ].content.map((c) =>
+            c.id === editingContent.id
+              ? {
+                  ...c,
+                  text: editingContent.text,
+                  image: imagePreview || c.image,
+                }
+              : c,
+          );
+          setSections(updatedSections);
+        }
+      }
+    } else {
+      // Handle other sections
+      const updatedSections = sections.map((section) => {
+        if (section.id === editingSection) {
+          return {
+            ...section,
+            content: section.content.map((c) =>
+              c.id === editingContent?.id
+                ? { ...c, text: editingContent.text }
+                : c,
+            ),
+          };
+        }
+        return section;
+      });
+      setSections(updatedSections);
+    }
+
     setEditingSection(null);
     setEditingContent(null);
+    setImagePreview(null); // Reset image preview
   };
 
-  const handleDeleteContent = (sectionId: string, contentId: number) => {
-    const updatedSections = sections.map((section) => {
-      if (section.id === sectionId) {
-        return {
-          ...section,
-          content: section.content.filter((c) => c.id !== contentId),
-        };
+  const handleDeleteContent = async (sectionId: string, contentId: number) => {
+    if (sectionId === 'blog') {
+      // Delete the article
+      await deleteArticle(contentId.toString());
+      const blogSectionIndex = sections.findIndex((s) => s.id === 'blog');
+      if (blogSectionIndex !== -1) {
+        const updatedSections = [...sections];
+        updatedSections[blogSectionIndex].content = updatedSections[
+          blogSectionIndex
+        ].content.filter((c) => c.id !== contentId);
+        setSections(updatedSections);
       }
-      return section;
-    });
-    setSections(updatedSections);
+    } else {
+      // Handle other sections
+      const updatedSections = sections.map((section) => {
+        if (section.id === sectionId) {
+          return {
+            ...section,
+            content: section.content.filter((c) => c.id !== contentId),
+          };
+        }
+        return section;
+      });
+      setSections(updatedSections);
+    }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -154,7 +290,16 @@ const ContentManagerAdminPage = () => {
                             key={item.id}
                             className="flex items-center justify-between bg-gray-50 p-3 rounded"
                           >
-                            <p className="text-gray-600">{item.text}</p>
+                            <div className="flex items-center space-x-4">
+                              {item.image && (
+                                <img
+                                  src={item.image}
+                                  alt="Featured"
+                                  className="w-16 h-16 object-cover rounded"
+                                />
+                              )}
+                              <p className="text-gray-600">{item.text}</p>
+                            </div>
                             <div className="space-x-2">
                               <button
                                 onClick={() =>
@@ -212,11 +357,27 @@ const ContentManagerAdminPage = () => {
                 ['image', 'video'],
               ]}
             />
+            <div className="mt-4">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="mb-4"
+              />
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-32 h-32 object-cover rounded"
+                />
+              )}
+            </div>
             <div className="mt-4 flex justify-end space-x-2">
               <button
                 onClick={() => {
                   setEditingSection(null);
                   setEditingContent(null);
+                  setImagePreview(null);
                 }}
                 className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
               >

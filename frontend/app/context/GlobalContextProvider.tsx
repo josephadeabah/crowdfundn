@@ -13,6 +13,7 @@ import { CampaignCommentsProvider } from './account/comments/CommentsContext';
 import { MetricsProvider } from './admin/metrics/MetricsContext';
 import { LeaderboardProvider } from './leaderboard/LeaderboardContext';
 import { PointRewardProvider } from './pointreward/PointRewardContext';
+import { ArticlesProvider } from './admin/articles/ArticlesContext';
 
 export const GlobalContextProvider = ({
   children,
@@ -30,9 +31,13 @@ export const GlobalContextProvider = ({
                   <CampaignCommentsProvider>
                     <CategoryProvider>
                       <MetricsProvider>
-                        <LeaderboardProvider>
-                          <PointRewardProvider>{children}</PointRewardProvider>
-                        </LeaderboardProvider>
+                        <ArticlesProvider>
+                          <LeaderboardProvider>
+                            <PointRewardProvider>
+                              {children}
+                            </PointRewardProvider>
+                          </LeaderboardProvider>
+                        </ArticlesProvider>
                       </MetricsProvider>
                     </CategoryProvider>
                   </CampaignCommentsProvider>
