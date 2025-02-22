@@ -7,14 +7,13 @@ import {
   Draggable,
   DropResult,
 } from 'react-beautiful-dnd';
-import { FaSearch, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaSearch, FaPlus, FaEdit, FaTrash, FaSpinner } from 'react-icons/fa'; // Import FaSpinner
 import { useArticlesContext } from '@/app/context/admin/articles/ArticlesContext';
 import RichTextEditor from '@/app/components/richtext/Richtext';
 import Modal from '@/app/components/modal/Modal';
 import { ArticleResponseDataType } from '@/app/types/articles.types';
 
 // Define the structure for displaying content
-
 interface Section {
   id: string;
   title: string;
@@ -24,6 +23,8 @@ interface Section {
 const ContentManagerAdminPage = () => {
   const {
     articles,
+    loading, // Use the existing loading state from the context
+    error,
     fetchArticles,
     createArticle,
     updateArticle,
@@ -177,57 +178,63 @@ const ContentManagerAdminPage = () => {
         formData.append('article[featured_image]', fileInput.files[0]);
       }
 
-      if (isCreatingContent) {
-        const createdArticle = await createArticle(formData);
-        if (createdArticle) {
-          const blogSectionIndex = sections.findIndex((s) => s.id === 'blog');
-          if (blogSectionIndex !== -1) {
-            const updatedSections = [...sections];
-            updatedSections[blogSectionIndex].content = [
-              ...updatedSections[blogSectionIndex].content,
-              {
-                id: createdArticle.id,
-                title: createdArticle.title,
-                description: createdArticle.description,
-                meta_description: createdArticle.meta_description,
-                featured_image: createdArticle.featured_image,
-              },
-            ];
-            setSections(updatedSections);
+      try {
+        if (isCreatingContent) {
+          const createdArticle = await createArticle(formData);
+          if (createdArticle) {
+            const blogSectionIndex = sections.findIndex((s) => s.id === 'blog');
+            if (blogSectionIndex !== -1) {
+              const updatedSections = [...sections];
+              updatedSections[blogSectionIndex].content = [
+                ...updatedSections[blogSectionIndex].content,
+                {
+                  id: createdArticle.id,
+                  title: createdArticle.title,
+                  description: createdArticle.description,
+                  meta_description: createdArticle.meta_description,
+                  featured_image: createdArticle.featured_image,
+                },
+              ];
+              setSections(updatedSections);
+            }
+          }
+        } else {
+          const updatedArticle = await updateArticle(
+            editingContent.id.toString(),
+            formData,
+          );
+          if (updatedArticle) {
+            const blogSectionIndex = sections.findIndex((s) => s.id === 'blog');
+            if (blogSectionIndex !== -1) {
+              const updatedSections = [...sections];
+              updatedSections[blogSectionIndex].content = updatedSections[
+                blogSectionIndex
+              ].content.map((c) =>
+                c.id === editingContent.id
+                  ? {
+                      ...c,
+                      title: editingContent.title,
+                      description: editingContent.description,
+                      meta_description: editingContent.meta_description,
+                      featured_image:
+                        updatedArticle.featured_image || c.featured_image,
+                    }
+                  : c,
+              );
+              setSections(updatedSections);
+            }
           }
         }
-      } else {
-        const updatedArticle = await updateArticle(
-          editingContent.id.toString(),
-          formData,
-        );
-        if (updatedArticle) {
-          const blogSectionIndex = sections.findIndex((s) => s.id === 'blog');
-          if (blogSectionIndex !== -1) {
-            const updatedSections = [...sections];
-            updatedSections[blogSectionIndex].content = updatedSections[
-              blogSectionIndex
-            ].content.map((c) =>
-              c.id === editingContent.id
-                ? {
-                    ...c,
-                    title: editingContent.title,
-                    description: editingContent.description,
-                    meta_description: editingContent.meta_description,
-                    featured_image:
-                      updatedArticle.featured_image || c.featured_image,
-                  }
-                : c,
-            );
-            setSections(updatedSections);
-          }
-        }
+      } catch (error) {
+        console.error('Error saving content:', error);
+        // Optionally, show an error message to the user
+      } finally {
+        // Reset states after saving
+        setIsCreatingContent(false);
+        setEditingSection(null);
+        setEditingContent(null);
+        setImagePreview(null);
       }
-      // Reset states after saving
-      setIsCreatingContent(false);
-      setEditingSection(null);
-      setEditingContent(null);
-      setImagePreview(null);
     }
   };
 
@@ -443,9 +450,16 @@ const ContentManagerAdminPage = () => {
               </button>
               <button
                 onClick={handleSaveContent}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                disabled={loading} // Disable button while saving
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
               >
-                Save Changes
+                {loading ? (
+                  <>
+                    <FaSpinner className="animate-spin mr-2" /> Saving...
+                  </>
+                ) : (
+                  'Save Changes'
+                )}
               </button>
             </div>
           </div>
