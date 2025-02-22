@@ -5,14 +5,17 @@ import Image from 'next/image';
 import { useArticlesContext } from '@/app/context/admin/articles/ArticlesContext';
 import moment from 'moment';
 import Link from 'next/link';
+import BlogPostLoader from '@/app/loaders/BlogPostLoader';
 
 const BlogPosts: React.FC = () => {
-  const { articles, fetchArticles } = useArticlesContext();
+  const { articles, fetchArticles, loading, error } = useArticlesContext();
 
-  // Fetch articles on component mount
   useEffect(() => {
     fetchArticles();
   }, [fetchArticles]);
+
+  if (loading) return <BlogPostLoader />;
+  if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
     <div className="max-w-7xl mx-auto px-2 py-8">

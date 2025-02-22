@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { useArticlesContext } from '@/app/context/admin/articles/ArticlesContext';
 import moment from 'moment';
+import BlogPostViewLoader from '@/app/loaders/BlogPostViewLoader';
 
 const BlogPostView: React.FC = () => {
   const pathname = usePathname();
@@ -18,7 +19,7 @@ const BlogPostView: React.FC = () => {
     }
   }, [slug, fetchArticleById]);
 
-  if (loading) return <p className="text-center">Loading...</p>;
+  if (loading) return <BlogPostViewLoader />;
   if (error) return <p className="text-center text-red-500">{error}</p>;
   if (!currentArticle) return <p className="text-center">Article not found</p>;
 
