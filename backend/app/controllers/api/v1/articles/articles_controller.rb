@@ -59,7 +59,7 @@ module Api
         # DELETE /api/v1/articles/articles/:slug
         def destroy
           article = Article.find(params[:id])
-          authorize_user!(article) # Ensure the user is the author
+          authorize_user!(@article) # Ensure the user is the author
           
           if article.destroy
             render json: { message: 'Article deleted successfully' }
