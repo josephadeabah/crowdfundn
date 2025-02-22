@@ -19,7 +19,7 @@ const BlogPosts: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-2 py-8">
-      <h2 className="text-3xl font-bold text-center mb-8">Latest Blog Posts</h2>
+      <h2 className="text-3xl font-bold text-center mb-8">Resources For Fundraising on Bantu Hive</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {articles.slice(0, 3).map(
           (
