@@ -1,19 +1,27 @@
 export interface ArticleResponseDataType {
   id: number;
   title: string;
-  slug: string;
-  description: string;
-  status: string;
+  slug?: string;
+  description: {
+    id: number;
+    name: string;
+    body: string;
+    record_type: string;
+    record_id: number;
+    created_at: string;
+    updated_at: string;
+  };
+  status?: string;
   meta_description: string;
-  published_at: string;
+  published_at?: string;
   featured_image: string;
-  featured_image_filename: string;
-  author: {
+  featured_image_filename?: string;
+  author?: {
     id: number;
     name: string;
   };
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface ArticleState {

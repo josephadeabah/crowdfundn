@@ -11,11 +11,14 @@ import { FaSearch, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import { useArticlesContext } from '@/app/context/admin/articles/ArticlesContext';
 import RichTextEditor from '@/app/components/richtext/Richtext';
 import Modal from '@/app/components/modal/Modal';
+import { ArticleResponseDataType } from '@/app/types/articles.types';
+
+// Define the structure for displaying content
 
 interface Section {
   id: string;
   title: string;
-  content: { id: number; text: string; image?: string }[];
+  content: ArticleResponseDataType[];
 }
 
 const ContentManagerAdminPage = () => {
@@ -26,6 +29,8 @@ const ContentManagerAdminPage = () => {
     updateArticle,
     deleteArticle,
   } = useArticlesContext(); // Use the context
+
+  // State for displaying content
   const [sections, setSections] = useState<Section[]>([
     { id: 'faqs', title: 'FAQs', content: [] },
     { id: 'cta', title: 'Calls-to-Action', content: [] },
@@ -37,15 +42,13 @@ const ContentManagerAdminPage = () => {
     { id: 'footer', title: 'Footer', content: [] },
   ]);
 
-  const [searchTerm, setSearchTerm] = useState('');
+  // State for editing content
+  const [editingContent, setEditingContent] =
+    useState<ArticleResponseDataType | null>(null);
   const [editingSection, setEditingSection] = useState<string | null>(null);
-  const [editingContent, setEditingContent] = useState<{
-    id: number;
-    text: string;
-    image?: string;
-  } | null>(null);
+  const [isCreatingContent, setIsCreatingContent] = useState<boolean>(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isCreatingContent, setIsCreatingContent] = useState<boolean>(false); // Track if creating new content
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Fetch articles on component mount
   useEffect(() => {
@@ -60,14 +63,17 @@ const ContentManagerAdminPage = () => {
         const updatedSections = [...sections];
         updatedSections[blogSectionIndex].content = articles.map((article) => ({
           id: article.id,
-          text: article.title,
-          image: article.featured_image, // Add image URL to content
+          title: article.title,
+          description: article.description,
+          meta_description: article.meta_description,
+          featured_image: article.featured_image,
         }));
         setSections(updatedSections);
       }
     }
   }, [articles]);
 
+  // Handle drag-and-drop reordering
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
@@ -78,6 +84,7 @@ const ContentManagerAdminPage = () => {
     setSections(newSections);
   };
 
+  // Handle search
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
@@ -86,12 +93,26 @@ const ContentManagerAdminPage = () => {
     section.title.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
+  // Handle adding new content
   const handleAddContent = (sectionId: string) => {
     if (sectionId === 'blog') {
-      // Open the Rich Text Editor for creating a new article
       setIsCreatingContent(true);
       setEditingSection(sectionId);
-      setEditingContent({ id: Date.now(), text: '', image: undefined }); // Initialize new content
+      setEditingContent({
+        id: Date.now(),
+        title: '',
+        description: {
+          id: 0,
+          name: '',
+          body: '',
+          record_type: 'Article',
+          record_id: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        meta_description: '',
+        featured_image: '',
+      });
     } else {
       // Handle other sections
       const updatedSections = sections.map((section) => {
@@ -100,7 +121,21 @@ const ContentManagerAdminPage = () => {
             ...section,
             content: [
               ...section.content,
-              { id: Date.now(), text: 'New Content' },
+              {
+                id: Date.now(),
+                title: 'New Content',
+                description: {
+                  id: 0,
+                  name: '',
+                  body: '',
+                  record_type: 'Article',
+                  record_id: 0,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                },
+                meta_description: '',
+                featured_image: '',
+              },
             ],
           };
         }
@@ -110,23 +145,31 @@ const ContentManagerAdminPage = () => {
     }
   };
 
+  // Handle editing content
   const handleEditContent = (sectionId: string, contentId: number) => {
     const section = sections.find((s) => s.id === sectionId);
     const content = section?.content.find((c) => c.id === contentId);
-    setEditingSection(sectionId);
     if (content) {
+      setEditingSection(sectionId);
       setEditingContent(content);
-      setImagePreview(content.image || null); // Set image preview
+      setImagePreview(content.featured_image || null);
     }
   };
 
+  // Handle saving content
   const handleSaveContent = async () => {
     if (editingSection === 'blog' && editingContent) {
       const formData = new FormData();
-      formData.append('article[title]', editingContent.text);
-      formData.append('article[description]', editingContent.text);
+      formData.append('article[title]', editingContent.title);
+      formData.append(
+        'article[description]',
+        editingContent.description.body,
+      );
+      formData.append(
+        'article[meta_description]',
+        editingContent.meta_description,
+      );
       formData.append('article[status]', 'published');
-      formData.append('article[meta_description]', 'Updated description');
       formData.append('article[published_at]', new Date().toISOString());
 
       // Add featured image if available
@@ -147,8 +190,10 @@ const ContentManagerAdminPage = () => {
               ...updatedSections[blogSectionIndex].content,
               {
                 id: createdArticle.id,
-                text: createdArticle.title,
-                image: createdArticle.featured_image, // Add image URL
+                title: createdArticle.title,
+                description: createdArticle.description,
+                meta_description: createdArticle.meta_description,
+                featured_image: createdArticle.featured_image,
               },
             ];
             setSections(updatedSections);
@@ -169,8 +214,11 @@ const ContentManagerAdminPage = () => {
               c.id === editingContent.id
                 ? {
                     ...c,
-                    text: editingContent.text,
-                    image: updatedArticle.featured_image || c.image, // Use the updated image URL
+                    title: editingContent.title,
+                    description: editingContent.description,
+                    meta_description: editingContent.meta_description,
+                    featured_image:
+                      updatedArticle.featured_image || c.featured_image,
                   }
                 : c,
             );
@@ -183,28 +231,12 @@ const ContentManagerAdminPage = () => {
       setEditingSection(null);
       setEditingContent(null);
       setImagePreview(null);
-    } else {
-      // Handle other sections
-      const updatedSections = sections.map((section) => {
-        if (section.id === editingSection) {
-          return {
-            ...section,
-            content: section.content.map((c) =>
-              c.id === editingContent?.id
-                ? { ...c, text: editingContent.text }
-                : c,
-            ),
-          };
-        }
-        return section;
-      });
-      setSections(updatedSections);
     }
   };
 
+  // Handle deleting content
   const handleDeleteContent = async (sectionId: string, contentId: number) => {
     if (sectionId === 'blog') {
-      // Delete the article
       await deleteArticle(contentId.toString());
       const blogSectionIndex = sections.findIndex((s) => s.id === 'blog');
       if (blogSectionIndex !== -1) {
@@ -214,32 +246,22 @@ const ContentManagerAdminPage = () => {
         ].content.filter((c) => c.id !== contentId);
         setSections(updatedSections);
       }
-    } else {
-      // Handle other sections
-      const updatedSections = sections.map((section) => {
-        if (section.id === sectionId) {
-          return {
-            ...section,
-            content: section.content.filter((c) => c.id !== contentId),
-          };
-        }
-        return section;
-      });
-      setSections(updatedSections);
     }
   };
 
+  // Handle image upload
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string); // For preview purposes only
+        setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
   };
 
+  // Handle closing the modal
   const handleCloseModal = () => {
     setIsCreatingContent(false);
     setEditingSection(null);
@@ -291,14 +313,27 @@ const ContentManagerAdminPage = () => {
                             className="flex items-center justify-between bg-gray-50 p-3 rounded"
                           >
                             <div className="flex items-center space-x-4">
-                              {item.image && (
+                              {item.featured_image && (
                                 <img
-                                  src={item.image}
+                                  src={item.featured_image}
                                   alt="Featured"
                                   className="w-16 h-16 object-cover rounded"
                                 />
                               )}
-                              <p className="text-gray-600">{item.text}</p>
+                              <div>
+                                <p className="text-gray-600 font-semibold">
+                                  {item.title}
+                                </p>
+                                <div
+                                  className="prose dark:prose-dark max-w-none"
+                                  dangerouslySetInnerHTML={{
+                                    __html: item.description.body || '',
+                                  }}
+                                />
+                                <p className="text-gray-400 text-xs">
+                                  {item.meta_description}
+                                </p>
+                              </div>
                             </div>
                             <div className="space-x-2">
                               <button
@@ -349,21 +384,50 @@ const ContentManagerAdminPage = () => {
             <h3 className="text-xl font-semibold mb-4">
               {isCreatingContent ? 'Create New Article' : 'Edit Content'}
             </h3>
-            <RichTextEditor
-              value={editingContent ? editingContent.text : ''}
-              onChange={(value) =>
-                setEditingContent((prev) =>
-                  prev ? { ...prev, text: value } : null,
-                )
-              }
-              controls={[
-                ['bold', 'italic', 'underline', 'link'],
-                ['unorderedList', 'orderedList'],
-                ['h1', 'h2', 'h3'],
-                ['alignLeft', 'alignCenter', 'alignRight'],
-                ['image', 'video'],
-              ]}
-            />
+            <div className="space-y-4">
+              <input
+                type="text"
+                placeholder="Title"
+                value={editingContent ? editingContent.title : ''}
+                onChange={(e) =>
+                  setEditingContent((prev) =>
+                    prev ? { ...prev, title: e.target.value } : null,
+                  )
+                }
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+              <RichTextEditor
+                value={editingContent ? editingContent.description.body : ''}
+                onChange={(value) =>
+                  setEditingContent((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          description: { ...prev.description, body: value },
+                        }
+                      : null,
+                  )
+                }
+                controls={[
+                  ['bold', 'italic', 'underline', 'link'],
+                  ['unorderedList', 'orderedList'],
+                  ['h1', 'h2', 'h3'],
+                  ['alignLeft', 'alignCenter', 'alignRight'],
+                  ['image', 'video'],
+                ]}
+              />
+              <input
+                type="text"
+                placeholder="Meta Description"
+                value={editingContent ? editingContent.meta_description : ''}
+                onChange={(e) =>
+                  setEditingContent((prev) =>
+                    prev ? { ...prev, meta_description: e.target.value } : null,
+                  )
+                }
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
             <div className="mt-4">
               <input
                 type="file"
