@@ -8,15 +8,15 @@ import moment from 'moment';
 
 const BlogPostView: React.FC = () => {
   const router = useRouter();
-  const { id } = router.query; // Get article ID from URL
+  const { slug } = router.query; // Get article slug from URL
   const { currentArticle, fetchArticleById, loading, error } =
     useArticlesContext();
 
   useEffect(() => {
-    if (id) {
-      fetchArticleById(id as string);
+    if (slug) {
+      fetchArticleById(slug as string);
     }
-  }, [id, fetchArticleById]);
+  }, [slug, fetchArticleById]);
 
   if (loading) return <p className="text-center">Loading...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;

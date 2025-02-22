@@ -44,7 +44,7 @@ const BlogPosts: React.FC = () => {
                 {moment(article.published_at).format('MMMM Do, YYYY')}
               </p>
               <Link
-                href={`/articles/${article.id}`}
+                href={`/articles/${article.slug}`} // Use slug instead of id
                 className="text-amber-600 mt-4 inline-block"
               >
                 View More →
