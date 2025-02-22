@@ -122,13 +122,12 @@ const ContentManagerAdminPage = () => {
 
   const handleSaveContent = async () => {
     if (editingSection === 'blog' && editingContent) {
-      // Create or update the article using FormData
       const formData = new FormData();
       formData.append('article[title]', editingContent.text);
-      formData.append('article[description]', editingContent.text); // Update this with the actual description
-      formData.append('article[status]', 'published'); // Update this with the actual status
-      formData.append('article[meta_description]', 'Updated description'); // Update this with the actual meta description
-      formData.append('article[published_at]', new Date().toISOString()); // Update this with the actual published date
+      formData.append('article[description]', editingContent.text);
+      formData.append('article[status]', 'published');
+      formData.append('article[meta_description]', 'Updated description');
+      formData.append('article[published_at]', new Date().toISOString());
 
       // Add featured image if available
       const fileInput = document.querySelector(
@@ -139,7 +138,6 @@ const ContentManagerAdminPage = () => {
       }
 
       if (isCreatingContent) {
-        // Create a new article
         const createdArticle = await createArticle(formData);
         if (createdArticle) {
           const blogSectionIndex = sections.findIndex((s) => s.id === 'blog');
@@ -157,7 +155,6 @@ const ContentManagerAdminPage = () => {
           }
         }
       } else {
-        // Update an existing article
         const updatedArticle = await updateArticle(
           editingContent.id.toString(),
           formData,
@@ -181,7 +178,6 @@ const ContentManagerAdminPage = () => {
           }
         }
       }
-
       // Reset states after saving
       setIsCreatingContent(false);
       setEditingSection(null);
