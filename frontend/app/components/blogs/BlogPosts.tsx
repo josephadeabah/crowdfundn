@@ -1,8 +1,12 @@
+//@/app/components/blogs/BlogPosts.tsx
+
 'use client';
+
 import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { useArticlesContext } from '@/app/context/admin/articles/ArticlesContext';
 import moment from 'moment';
+import Link from 'next/link';
 
 const BlogPosts: React.FC = () => {
   const { articles, fetchArticles } = useArticlesContext();
@@ -39,6 +43,12 @@ const BlogPosts: React.FC = () => {
                 Published on:{' '}
                 {moment(article.published_at).format('MMMM Do, YYYY')}
               </p>
+              <Link
+                href={`/articles/${article.id}`}
+                className="text-amber-600 mt-4 inline-block"
+              >
+                View More →
+              </Link>
             </div>
           </div>
         ))}
