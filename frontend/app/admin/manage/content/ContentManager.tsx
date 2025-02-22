@@ -124,18 +124,18 @@ const ContentManagerAdminPage = () => {
     if (editingSection === 'blog' && editingContent) {
       // Create or update the article using FormData
       const formData = new FormData();
-      formData.append('title', editingContent.text);
-      formData.append('description', editingContent.text); // Update this with the actual description
-      formData.append('status', 'published'); // Update this with the actual status
-      formData.append('meta_description', 'Updated description'); // Update this with the actual meta description
-      formData.append('published_at', new Date().toISOString()); // Update this with the actual published date
+      formData.append('article[title]', editingContent.text);
+      formData.append('article[description]', editingContent.text); // Update this with the actual description
+      formData.append('article[status]', 'published'); // Update this with the actual status
+      formData.append('article[meta_description]', 'Updated description'); // Update this with the actual meta description
+      formData.append('article[published_at]', new Date().toISOString()); // Update this with the actual published date
 
       // Add featured image if available
       const fileInput = document.querySelector(
         'input[type="file"]',
       ) as HTMLInputElement;
       if (fileInput?.files?.[0]) {
-        formData.append('featured_image', fileInput.files[0]);
+        formData.append('article[featured_image]', fileInput.files[0]);
       }
 
       if (isCreatingContent) {
