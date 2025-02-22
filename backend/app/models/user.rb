@@ -23,6 +23,7 @@ class User < ApplicationRecord
   has_many :donations
   has_many :transfers, dependent: :destroy
   has_many :archived_campaigns
+  has_many :articles, foreign_key: 'fundraiser_id', dependent: :destroy
   has_one :subaccount, dependent: :destroy
   has_many :favorites, dependent: :destroy
   has_many :favorited_campaigns, through: :favorites, source: :campaign
