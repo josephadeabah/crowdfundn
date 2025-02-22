@@ -44,6 +44,7 @@ const ContentManagerAdminPage = () => {
     image?: string;
   } | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isCreatingContent, setIsCreatingContent] = useState<boolean>(false); // Track if creating new content
 
   // Fetch articles on component mount
   useEffect(() => {
@@ -84,42 +85,12 @@ const ContentManagerAdminPage = () => {
     section.title.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const handleAddContent = async (sectionId: string) => {
+  const handleAddContent = (sectionId: string) => {
     if (sectionId === 'blog') {
-      // Create a new article using FormData
-      const formData = new FormData();
-      formData.append('title', 'New Article');
-      formData.append('description', 'This is a new article.');
-      formData.append('status', 'draft');
-      formData.append(
-        'meta_description',
-        'A brief description of the article.',
-      );
-      formData.append('published_at', new Date().toISOString());
-
-      // Add featured image if available
-      if (imagePreview) {
-        const file = await fetch(imagePreview).then((res) => res.blob());
-        formData.append('featured_image', file, 'featured_image.jpg');
-      }
-
-      const createdArticle = await createArticle(formData);
-      if (createdArticle) {
-        const blogSectionIndex = sections.findIndex((s) => s.id === 'blog');
-        if (blogSectionIndex !== -1) {
-          const updatedSections = [...sections];
-          updatedSections[blogSectionIndex].content = [
-            ...updatedSections[blogSectionIndex].content,
-            {
-              id: createdArticle.id,
-              text: createdArticle.title,
-              image: createdArticle.featured_image, // Add image URL
-            },
-          ];
-          setSections(updatedSections);
-          setImagePreview(null); // Reset image preview
-        }
-      }
+      // Open the Rich Text Editor for creating a new article
+      setIsCreatingContent(true);
+      setEditingSection(sectionId);
+      setEditingContent({ id: Date.now(), text: '', image: undefined }); // Initialize new content
     } else {
       // Handle other sections
       const updatedSections = sections.map((section) => {
@@ -150,7 +121,7 @@ const ContentManagerAdminPage = () => {
 
   const handleSaveContent = async () => {
     if (editingSection === 'blog' && editingContent) {
-      // Update the article using FormData
+      // Create or update the article using FormData
       const formData = new FormData();
       formData.append('title', editingContent.text);
       formData.append('description', editingContent.text); // Update this with the actual description
@@ -164,28 +135,55 @@ const ContentManagerAdminPage = () => {
         formData.append('featured_image', file, 'featured_image.jpg');
       }
 
-      const updatedArticle = await updateArticle(
-        editingContent.id.toString(),
-        formData,
-      );
-      if (updatedArticle) {
-        const blogSectionIndex = sections.findIndex((s) => s.id === 'blog');
-        if (blogSectionIndex !== -1) {
-          const updatedSections = [...sections];
-          updatedSections[blogSectionIndex].content = updatedSections[
-            blogSectionIndex
-          ].content.map((c) =>
-            c.id === editingContent.id
-              ? {
-                  ...c,
-                  text: editingContent.text,
-                  image: imagePreview || c.image,
-                }
-              : c,
-          );
-          setSections(updatedSections);
+      if (isCreatingContent) {
+        // Create a new article
+        const createdArticle = await createArticle(formData);
+        if (createdArticle) {
+          const blogSectionIndex = sections.findIndex((s) => s.id === 'blog');
+          if (blogSectionIndex !== -1) {
+            const updatedSections = [...sections];
+            updatedSections[blogSectionIndex].content = [
+              ...updatedSections[blogSectionIndex].content,
+              {
+                id: createdArticle.id,
+                text: createdArticle.title,
+                image: createdArticle.featured_image, // Add image URL
+              },
+            ];
+            setSections(updatedSections);
+          }
+        }
+      } else {
+        // Update an existing article
+        const updatedArticle = await updateArticle(
+          editingContent.id.toString(),
+          formData,
+        );
+        if (updatedArticle) {
+          const blogSectionIndex = sections.findIndex((s) => s.id === 'blog');
+          if (blogSectionIndex !== -1) {
+            const updatedSections = [...sections];
+            updatedSections[blogSectionIndex].content = updatedSections[
+              blogSectionIndex
+            ].content.map((c) =>
+              c.id === editingContent.id
+                ? {
+                    ...c,
+                    text: editingContent.text,
+                    image: imagePreview || c.image,
+                  }
+                : c,
+            );
+            setSections(updatedSections);
+          }
         }
       }
+
+      // Reset states after saving
+      setIsCreatingContent(false);
+      setEditingSection(null);
+      setEditingContent(null);
+      setImagePreview(null);
     } else {
       // Handle other sections
       const updatedSections = sections.map((section) => {
@@ -203,10 +201,6 @@ const ContentManagerAdminPage = () => {
       });
       setSections(updatedSections);
     }
-
-    setEditingSection(null);
-    setEditingContent(null);
-    setImagePreview(null); // Reset image preview
   };
 
   const handleDeleteContent = async (sectionId: string, contentId: number) => {
@@ -338,10 +332,12 @@ const ContentManagerAdminPage = () => {
           )}
         </Droppable>
       </DragDropContext>
-      {editingSection && (
+      {(editingSection || isCreatingContent) && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg w-3/4 max-w-3xl">
-            <h3 className="text-xl font-semibold mb-4">Edit Content</h3>
+            <h3 className="text-xl font-semibold mb-4">
+              {isCreatingContent ? 'Create New Article' : 'Edit Content'}
+            </h3>
             <RichTextEditor
               value={editingContent ? editingContent.text : ''}
               onChange={(value) =>
@@ -375,6 +371,7 @@ const ContentManagerAdminPage = () => {
             <div className="mt-4 flex justify-end space-x-2">
               <button
                 onClick={() => {
+                  setIsCreatingContent(false);
                   setEditingSection(null);
                   setEditingContent(null);
                   setImagePreview(null);
