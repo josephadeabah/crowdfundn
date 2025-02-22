@@ -10,14 +10,7 @@ interface ParsedCookies {
 // Specify protected, admin, and public routes
 const protectedRoutes = ['/account', '/account/dashboard/create'];
 const adminRoutes = ['/admin', '/admin/manage'];
-const publicRoutes = [
-  '/auth/login',
-  '/auth/register',
-  '/',
-  '/blog', // Add /blog as a public route
-  '/blog/:slug', // Add /blog/:slug as a public route
-  '/blog/:id', // Add /blog/:id as a public route
-];
+const publicRoutes = ['/auth/login', '/auth/register', '/'];
 
 // Helper function to parse cookies from the request header
 const parseCookies = (cookieHeader: string | undefined): ParsedCookies => {
@@ -38,13 +31,7 @@ export default function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.includes(path);
   const isAdminRoute = adminRoutes.includes(path);
-  const isPublicRoute = publicRoutes.some((route) => {
-    // Handle dynamic routes like /blog/:slug or /blog/:id
-    if (route.includes(':slug') || route.includes(':id')) {
-      return path.startsWith('/blog/');
-    }
-    return route === path;
-  });
+  const isPublicRoute = publicRoutes.includes(path);
 
   const cookies = parseCookies(req.headers.get('cookie') ?? undefined);
   const { token, roles } = cookies;
