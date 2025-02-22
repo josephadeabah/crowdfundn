@@ -24,7 +24,7 @@ const BlogPostView: React.FC = () => {
   if (!currentArticle) return <p className="text-center">Article not found</p>;
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center py-12">
       {/* Title & Featured Image (max-w-7xl) */}
       <div className="max-w-7xl w-full px-2 py-8">
         <h1 className="text-6xl font-bold text-center mb-6">
@@ -45,7 +45,7 @@ const BlogPostView: React.FC = () => {
       </div>
 
       {/* Rest of the Content (max-w-4xl) */}
-      <div className="max-w-4xl w-full px-4 py-8 bg-white">
+      <div className="max-w-4xl w-full px-4 py-8">
         <p className="text-gray-500 text-sm mt-4 text-center">
           Published on{' '}
           {moment(currentArticle.published_at).format('MMMM Do, YYYY')}
