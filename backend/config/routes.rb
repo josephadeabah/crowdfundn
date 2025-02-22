@@ -1,6 +1,4 @@
-
 Rails.application.routes.draw do
-
   # redirect to the detailed campaign page
   get 'campaign/:id', to: 'campaigns#show', as: 'campaign'
 
@@ -133,12 +131,10 @@ Rails.application.routes.draw do
 
       namespace :articles do
         resources :articles, only: %i[index create]
-          get 'articles/:slug_or_id', to: 'articles#show', constraints: { slug_or_id: /[^\/]+/ }
-          put 'articles/:slug_or_id', to: 'articles#update', constraints: { slug_or_id: /[^\/]+/ }
-          delete 'articles/:slug_or_id', to: 'articles#destroy', constraints: { slug_or_id: /[^\/]+/ }
-        end
+        get 'articles/:slug_or_id', to: 'articles#show', constraints: { slug_or_id: /[^\/]+/ }
+        put 'articles/:slug_or_id', to: 'articles#update', constraints: { slug_or_id: /[^\/]+/ }
+        delete 'articles/:slug_or_id', to: 'articles#destroy', constraints: { slug_or_id: /[^\/]+/ }
       end
-
     end
   end
 
