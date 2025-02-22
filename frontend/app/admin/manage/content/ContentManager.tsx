@@ -324,12 +324,12 @@ const ContentManagerAdminPage = () => {
                                 <p className="text-gray-600 font-semibold">
                                   {item.title}
                                 </p>
-                                <div
+                                {/* <div
                                   className="prose dark:prose-dark max-w-none"
                                   dangerouslySetInnerHTML={{
                                     __html: item.description.body || '',
                                   }}
-                                />
+                                /> */}
                                 <p className="text-gray-400 text-xs">
                                   {item.meta_description}
                                 </p>
