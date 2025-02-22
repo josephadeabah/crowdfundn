@@ -80,12 +80,12 @@ export const ArticlesProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const fetchArticleById = useCallback(
-    async (id: string): Promise<ArticleResponseDataType | null> => {
+    async (slug: string): Promise<ArticleResponseDataType | null> => {
       setLoading(true);
       setError(null);
       try {
         const response = await nextFetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/articles/articles/${id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/articles/articles/${slug}`,
           { method: 'GET' },
         );
 

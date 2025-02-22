@@ -34,7 +34,7 @@ export interface ArticleState {
     totalPages: number;
   };
   fetchArticles: () => Promise<void>;
-  fetchArticleById: (id: string) => Promise<ArticleResponseDataType | null>;
+  fetchArticleById: (slug: string) => Promise<ArticleResponseDataType | null>;
   createArticle: (article: FormData) => Promise<ArticleResponseDataType | null>;
   updateArticle: (
     id: string,
