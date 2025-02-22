@@ -19,7 +19,7 @@ module Api
           }
         end
 
-        # GET /api/v1/articles/articles/:slug
+        # GET /api/v1/articles/articles/:slug_or_id
         def show
           render json: @article, include: [:description, :featured_image]
         end
@@ -41,7 +41,7 @@ module Api
           end
         end
 
-        # PUT /api/v1/articles/articles/:slug
+        # PUT /api/v1/articles/articles/:slug_or_id
         def update
           authorize_user!(@article) # Ensure the user is authorized to update the article
 
@@ -56,26 +56,27 @@ module Api
           end
         end
 
-        # DELETE /api/v1/articles/articles/:slug
+        # DELETE /api/v1/articles/articles/:slug_or_id
         def destroy
-          @article = Article.find(params[:id])
-          authorize_user!(@article) # Ensure the user is the author
-          
+          authorize_user!(@article) # Ensure the user is authorized to delete the article
+
           if @article.destroy
             render json: { message: 'Article deleted successfully' }
           else
             render json: { error: 'Failed to delete article' }, status: :unprocessable_entity
           end
         end
-        
 
         private
 
         def set_article
+          # Find article by slug or ID
           @article = if params[:slug].present?
                       Article.find_by!(slug: params[:slug])
-                    else
+                    elsif params[:id].present?
                       Article.find_by!(id: params[:id])
+                    else
+                      raise ActiveRecord::RecordNotFound, 'Article not found'
                     end
         end
 
