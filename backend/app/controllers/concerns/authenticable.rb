@@ -39,10 +39,13 @@ module Authenticable
   private
 
   def authorize_user!(resource)
-    return if resource.fundraiser_id == @current_user.id || @current_user.has_role?('Admin') || @current_user.has_role?('Manager')
+    resource_owner_id = resource.respond_to?(:fundraiser_id) ? resource.fundraiser_id : resource.respond_to?(:author_id) ? resource.author_id : nil
+  
+    return if resource_owner_id == @current_user.id || @current_user.has_role?('Admin') || @current_user.has_role?('Manager')
   
     render json: { error: 'You are not authorized to perform this action' }, status: :forbidden
-  end  
+  end
+  
 
   def decode_token(token)
     JWT.decode(token, Rails.application.secret_key_base)[0].with_indifferent_access

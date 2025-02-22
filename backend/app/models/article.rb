@@ -1,7 +1,7 @@
 # app/models/article.rb
 class Article < ApplicationRecord
   # Relationships
-  belongs_to :author, class_name: 'User', foreign_key: 'fundraiser_id'
+  belongs_to :author, class_name: 'User', foreign_key: 'author_id'
   has_rich_text :description
   has_one_attached :featured_image
 
