@@ -48,7 +48,7 @@ const BlogPostView: React.FC = () => {
       <div className="max-w-4xl w-full px-4 py-8">
         <p className="text-gray-500 text-sm mt-4 text-center">
           Published on{' '}
-          {moment(currentArticle.published_at).format('MMMM Do, YYYY')}
+          {moment(currentArticle.created_at).format('MMMM Do, YYYY')}
         </p>
 
         <div className="prose dark:prose-dark max-w-none mt-6 text-lg text-gray-800">

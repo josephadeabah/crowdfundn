@@ -48,7 +48,7 @@ const BlogPosts: React.FC = () => {
                 <p className="text-gray-700">{article.meta_description}</p>
                 <p className="text-gray-500 text-sm mt-4">
                   Published on{' '}
-                  {moment(article.published_at).format('MMMM Do, YYYY')}
+                  {moment(article.created_at).format('MMMM Do, YYYY')}
                 </p>
               </div>
             </Link>
