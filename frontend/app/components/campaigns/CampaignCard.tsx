@@ -102,7 +102,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
 
   const handleLocationChange = (value: string | undefined) => {
     if (value) {
-    setLocation(value);
+      setLocation(value);
     }
   };
 
@@ -114,19 +114,19 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
 
   const handleSortOrderChange = (value: string | undefined) => {
     if (value) {
-    setSortOrder(value);
+      setSortOrder(value);
     }
   };
 
   const handleDateRangeChange = (value: string | undefined) => {
-    if(value){
-    setDateRange(value);
+    if (value) {
+      setDateRange(value);
     }
   };
 
   const handleGoalRangeChange = (value: string | undefined) => {
     if (value) {
-    setGoalRange(value);
+      setGoalRange(value);
     }
   };
 
@@ -181,14 +181,16 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         placement="bottom"
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
-        className="p-4"
+        className="p-6 bg-white rounded-t-lg shadow-lg"
+        size={400} // Adjust the size of the drawer
       >
-        <div className="flex flex-col gap-4">
-          <h2 className="text-xl font-bold mb-4">Filters</h2>
+        <div className="flex flex-col gap-4 max-w-md mx-auto w-full">
+          <h2 className="text-xl font-bold mb-4 text-center">Filters</h2>
           <Select
             label="Sort By"
             value={sortBy}
             onChange={handleSortByChange}
+            className="w-full"
           >
             <Option value="created_at">Date Created</Option>
             <Option value="goal_amount">Goal Amount</Option>
@@ -198,6 +200,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
             label="Sort Order"
             value={sortOrder}
             onChange={handleSortOrderChange}
+            className="w-full"
           >
             <Option value="asc">Ascending</Option>
             <Option value="desc">Descending</Option>
@@ -206,6 +209,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
             label="Date Range"
             value={dateRange}
             onChange={handleDateRangeChange}
+            className="w-full"
           >
             <Option value="all_time">All Time</Option>
             <Option value="today">Today</Option>
@@ -222,6 +226,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
             label="Goal Range"
             value={goalRange}
             onChange={handleGoalRangeChange}
+            className="w-full"
           >
             <Option value="all">All</Option>
             <Option value="0-500">0 - 500</Option>
@@ -235,6 +240,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
             label="Location"
             value={location}
             onChange={handleLocationChange}
+            className="w-full"
           >
             <Option value="all">Worldwide</Option>
             <Option value="Nigeria">Nigeria</Option>
