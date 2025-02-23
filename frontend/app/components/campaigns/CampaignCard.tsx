@@ -202,7 +202,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                             size="sm"
                             imageUrl={campaign?.fundraiser?.profile?.avatar}
                           />
-                          <span className="text-sm font-semibold sm:w-12 truncate">
+                          <span className="text-sm font-semibold sm:w-12 md:32 truncate">
                             {campaign?.fundraiser?.profile?.name}
                           </span>
                         </div>
@@ -252,16 +252,16 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                           {parseFloat(campaign.goal_amount).toLocaleString()}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2">
-                      <div className={`flex items-center space-x-1 ${index === 0 ? '': 'sm:block'}`}>
-                        <FaUser />
-                        <span>{campaign.total_donors || 0} Backers</span>
+                      <div className={`sm:flex-col sm:gap-2 md:flex justify-between items-center text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2`}>
+                        <div className="flex items-center space-x-1">
+                          <FaUser />
+                          <span>{campaign.total_donors || 0} Backers</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <FaClock />
+                          <span>{campaign.remaining_days} days left</span>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-1 sm:block">
-                        <FaClock />
-                        <span>{campaign.remaining_days} days left</span>
-                      </div>
-                    </div>
                     </div>
                   </div>
                 </Link>
