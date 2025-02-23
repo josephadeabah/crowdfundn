@@ -15,6 +15,7 @@ import {
 import { getRankWithSuffix } from '@/app/utils/helpers/ranking.suffix';
 import React, { useEffect } from 'react';
 import LeaderboardChart from './LeaderboardChart';
+import { Card } from '@material-tailwind/react'; // Import only what's needed
 
 const LeaderboardBackersPage = () => {
   const { leaderboard, loading, error, fetchLeaderboard } =
@@ -59,8 +60,8 @@ const LeaderboardBackersPage = () => {
               No change makers yet. Be the first philanthropist!
             </p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left min-w-[600px]">
+            <Card className="overflow-x-auto">
+              <table className="w-full min-w-[600px]">
                 <thead className="bg-gray-100">
                   <tr>
                     <th className="px-4 py-3 text-gray-800 text-sm font-medium">
@@ -81,8 +82,11 @@ const LeaderboardBackersPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {leaderboard.map((backer) => (
-                    <tr key={backer.id} className="border-t border-gray-300">
+                  {leaderboard.map((backer, index) => (
+                    <tr
+                      key={backer.id}
+                      className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                    >
                       <td className="px-4 py-2 text-gray-600">
                         {getRankWithSuffix(backer.rank)}
                       </td>
@@ -171,7 +175,7 @@ const LeaderboardBackersPage = () => {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </Card>
           )}
         </div>
 
