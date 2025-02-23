@@ -33,8 +33,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const { userAccountData } = useUserContext();
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [isLocationLoading, setIsLocationLoading] = useState(true);
-  const { pagination, favoriteCampaign, unfavoriteCampaign, fetchAllCampaigns } =
-    useCampaignContext();
+  const {
+    pagination,
+    favoriteCampaign,
+    unfavoriteCampaign,
+    fetchAllCampaigns,
+  } = useCampaignContext();
   const { user } = useAuth();
   const [page, setPage] = useState<number>(1);
   const [location, setLocation] = useState<string>('all');
@@ -44,7 +48,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [dateRange, setDateRange] = useState<string>('all_time');
   const [goalRange, setGoalRange] = useState<string>('all');
-
 
   const [toast, setToast] = useState({
     isOpen: false,
@@ -129,7 +132,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   });
   */
 
-  
   const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setLocation(e.target.value);
   };
@@ -167,25 +169,24 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
 
   return (
     <div className="w-full max-w-7xl mx-auto p-1 bg-white rounded-lg">
-          <div className="flex justify-center items-center gap-2 mb-4">
-  <h3 className="text-4xl font-bold mb-8 mt-4 text-center">
-    Fundraising Now
-  </h3>
-
-  <select
-    id="location"
-    value={location}
-    onChange={handleLocationChange}
-    className="p-3 border border-gray-50 rounded-full focus:outline-none w-auto"
-  >
-    <option value="all">Happening worldwide</option>
-    <option value="Nigeria">Happening in Nigeria</option>
-    <option value="Kenya">Happening in Kenya</option>
-    <option value="Ghana">Happening in Ghana</option>
-    <option value="South Africa">Happening in South Africa</option>
-    <option value="Eswatini">Happening in Eswatini</option>
-  </select>
-</div>
+      <div className="flex justify-center items-center gap-2 mb-4">
+        <h3 className="text-4xl font-bold mb-8 mt-4 text-center">
+          Fundraising
+        </h3>
+        <select
+          id="location"
+          value={location}
+          onChange={handleLocationChange}
+          className="p-3 border border-gray-50 rounded-full focus:outline-none w-auto"
+        >
+          <option value="all">Happening worldwide</option>
+          <option value="Nigeria">Happening in Nigeria</option>
+          <option value="Kenya">Happening in Kenya</option>
+          <option value="Ghana">Happening in Ghana</option>
+          <option value="South Africa">Happening in South Africa</option>
+          <option value="Eswatini">Happening in Eswatini</option>
+        </select>
+      </div>
 
       <ToastComponent
         isOpen={toast.isOpen}
@@ -308,7 +309,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                           {parseFloat(campaign.goal_amount).toLocaleString()}
                         </span>
                       </div>
-                      <div className={`${index === 0 ? 'flex justify-between items-center': 'block md:flex justify-between items-center'}  text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2`}>
+                      <div
+                        className={`${index === 0 ? 'flex justify-between items-center' : 'block md:flex justify-between items-center'}  text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2`}
+                      >
                         <div className="flex items-center space-x-1">
                           <FaUser />
                           <span>{campaign.total_donors || 0} Backers</span>
