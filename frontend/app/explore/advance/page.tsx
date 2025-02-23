@@ -423,7 +423,7 @@ const CampaignsPage = () => {
                                       size="sm"
                                       imageUrl={campaign?.fundraiser?.profile?.avatar}
                                     />
-                                    <span className="text-sm font-semibold truncate">
+                                    <span className="text-sm font-semibold w-12 truncate">
                                     {campaign?.fundraiser?.profile?.name}
                                     </span>
                                   </div>
