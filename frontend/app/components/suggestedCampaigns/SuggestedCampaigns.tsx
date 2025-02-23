@@ -161,7 +161,7 @@ const SuggestedCampaignsComponent = ({
                             size="sm"
                             imageUrl={campaign?.fundraiser?.profile?.avatar}
                           />
-                          <span className="text-sm font-semibold w-28 truncate">
+                          <span className="text-sm font-semibold w-32 truncate">
                             {campaign?.fundraiser?.profile?.name}
                           </span>
                         </div>
