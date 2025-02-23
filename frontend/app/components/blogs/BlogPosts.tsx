@@ -29,7 +29,7 @@ const BlogPosts: React.FC = () => {
           ) => (
             <Link
               key={article.id}
-              href={`/blog/${article.slug}`} // Make the whole card clickable
+              href={`/articles/${article.slug}`} // Make the whole card clickable
               className="block bg-gray-50 hover:bg-gray-100 rounded-lg overflow-hidden"
             >
               {article.featured_image && (

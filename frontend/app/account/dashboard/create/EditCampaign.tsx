@@ -10,9 +10,9 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import CampaignPermissionSetting from '@/app/account/dashboard/create/settings/PermissionSettings';
 
 import { SingleCampaignResponseDataType } from '@/app/types/campaigns.types';
-import CampaignsLoader from '@/app/loaders/CampaignsLoader';
 import { truncateHTML } from '@/app/utils/helpers/truncate.html';
 import RichTextEditor from '@/app/components/richtext/Richtext';
+import EditCampaignsLoader from '@/app/loaders/EditCampaignLoader';
 
 const EditCampaign = () => {
   const {
@@ -105,7 +105,7 @@ const EditCampaign = () => {
     setIsModalOpen(false);
   };
 
-  if (loading) return <CampaignsLoader />;
+  if (loading) return <EditCampaignsLoader />;
   if (fetchError) {
     return <p className="text-red-500 dark:text-red-300">{fetchError}</p>;
   }
