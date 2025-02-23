@@ -329,7 +329,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                             size="sm"
                             imageUrl={campaign?.fundraiser?.profile?.avatar}
                           />
-                          <span className={`text-sm font-semibold ${index === 0 ? '': 'w-14 md:w-44'} truncate`}>
+                          <span
+                            className={`text-sm font-semibold ${index === 0 ? '' : 'w-14 md:w-44'} truncate`}
+                          >
                             {campaign?.fundraiser?.profile?.name}
                           </span>
                         </div>

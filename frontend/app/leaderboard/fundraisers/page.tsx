@@ -11,6 +11,7 @@ import { deslugify } from '@/app/utils/helpers/categories';
 import { getVerifiedBadge } from '@/app/utils/helpers/get.level.trophy';
 import { getRankWithSuffix } from '@/app/utils/helpers/ranking.suffix';
 import React, { useEffect } from 'react';
+import { Card } from '@material-tailwind/react'; // Import only what's needed
 
 const LeaderboardFundraisersPage = () => {
   const { fundraiserLeaderboard, loading, error, fetchFundraiserLeaderboard } =
@@ -33,7 +34,7 @@ const LeaderboardFundraisersPage = () => {
             </p>
           </div>
         </div>
-        <div className="px-4 py-3 overflow-x-auto">
+        <div className="px-4 py-3 mb-8">
           {loading ? (
             <FundraiserLeaderboardLoader />
           ) : error ? (
@@ -43,31 +44,31 @@ const LeaderboardFundraisersPage = () => {
               No leading fundraiser available.
             </p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[600px] text-left">
+            <Card className="overflow-x-auto shadow-none rounded-none">
+              <table className="w-full min-w-[600px]">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                    <th className="px-4 py-3 text-gray-800 text-sm font-medium text-left">
                       Rank
                     </th>
-                    <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                    <th className="px-4 py-3 text-gray-800 text-sm font-medium text-left">
                       Fund Raiser
                     </th>
-                    <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                    <th className="px-4 py-3 text-gray-800 text-sm font-medium text-left">
                       Total Raised
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {fundraiserLeaderboard.map((fundraiser, index) => (
-                    <tr key={index} className="border-t border-gray-300">
+                    <tr key={index}>
                       {/* Rank Column */}
-                      <td className="px-4 py-2 text-gray-600">
+                      <td className="px-4 py-2 text-gray-600 bg-gray-50">
                         {getRankWithSuffix(fundraiser.rank)}
                       </td>
 
                       {/* Fund Raiser Column */}
-                      <td className="px-4 py-2 flex items-center space-x-3">
+                      <td className="px-4 py-2 flex items-center space-x-3 bg-white">
                         <Popover>
                           <PopoverTrigger asChild>
                             <div className="relative cursor-pointer">
@@ -135,8 +136,9 @@ const LeaderboardFundraisersPage = () => {
                           {fundraiser.username}
                         </span>
                       </td>
+
                       {/* Total Raised Column */}
-                      <td className="px-4 py-2 text-gray-600">
+                      <td className="px-4 py-2 text-gray-600 bg-gray-50">
                         {fundraiser?.currency?.toUpperCase()}{' '}
                         {Number(fundraiser?.total_raised || 0).toFixed(2) ||
                           'N/A'}
@@ -145,7 +147,7 @@ const LeaderboardFundraisersPage = () => {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </Card>
           )}
         </div>
 
