@@ -11,7 +11,7 @@ import Head from './head';
 import { usePathname } from 'next/navigation';
 
 const roboto = Roboto({
-  weight: ['400', '500', '700'],
+  weight: ['400', '500', '700', '900'],
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-roboto',
