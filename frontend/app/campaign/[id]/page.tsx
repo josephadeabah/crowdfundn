@@ -174,7 +174,7 @@ const SingleCampaignPage: React.FC = () => {
             <div className="h-[600px]">
               {' '}
               {/* Parent with defined height */}
-              <div className="relative w-full h-0 mb-4">
+              <div className="relative w-full h-full mb-4">
                 <Image
                   src={currentCampaign?.media || '/bantuhive.svg'}
                   alt={currentCampaign?.title as string}
