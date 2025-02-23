@@ -22,6 +22,7 @@
     "@mantine/hooks": "5.10.5",
     "@mantine/next": "^5.10.5",
     "@mantine/rte": "^5.10.5",
+    "@material-tailwind/react": "^2.1.10",
     "@paystack/inline-js": "^2.22.1",
     "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-icons": "^1.3.0",

@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Progress from '@/app/components/progressbar/ProgressBar';
@@ -12,10 +13,11 @@ import { deslugify } from '@/app/utils/helpers/categories';
 import { useUserContext } from '@/app/context/users/UserContext';
 import Pagination from '../pagination/Pagination';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import { FaBookmark, FaRegBookmark, FaClock, FaUser } from 'react-icons/fa';
+import { FaBookmark, FaRegBookmark, FaClock, FaUser, FaFilter } from 'react-icons/fa';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '../toast/Toast';
 import Avatar from '../avatar/Avatar';
+import { Drawer, Button, Select, Option } from '@material-tailwind/react';
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -48,6 +50,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [dateRange, setDateRange] = useState<string>('all_time');
   const [goalRange, setGoalRange] = useState<string>('all');
+  const [openDrawer, setOpenDrawer] = useState(false); // State for drawer
 
   const [toast, setToast] = useState({
     isOpen: false,
@@ -97,43 +100,34 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     searchTerm,
   ]);
 
-  // Commenting out the location fetching logic
-  /*
-  useEffect(() => {
-    const fetchUserLocation = async () => {
-      try {
-        const ipResponse = await fetch('https://ipapi.co/json/');
-        const data = await ipResponse.json();
-        setUserCountry(data.country_name);
-      } catch (error) {
-        console.error('Error fetching location:', error);
-      } finally {
-        setIsLocationLoading(false);
-      }
-    };
-
-    if (!userAccountData?.country) {
-      fetchUserLocation();
-    } else {
-      setUserCountry(userAccountData.country);
-      setIsLocationLoading(false);
+  const handleLocationChange = (value: string | undefined) => {
+    if (value) {
+    setLocation(value);
     }
-  }, [userAccountData]);
-  */
+  };
 
-  // Commenting out the filteredCampaigns logic
-  /*
-  const filteredCampaigns = campaigns?.filter((campaign) => {
-    return (
-      campaign.location.toLowerCase() === userCountry?.toLowerCase() &&
-      campaign.status !== 'completed' &&
-      campaign.permissions.is_public
-    );
-  });
-  */
+  const handleSortByChange = (value: string | undefined) => {
+    if (value) {
+      setSortBy(value);
+    }
+  };
 
-  const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setLocation(e.target.value);
+  const handleSortOrderChange = (value: string | undefined) => {
+    if (value) {
+    setSortOrder(value);
+    }
+  };
+
+  const handleDateRangeChange = (value: string | undefined) => {
+    if(value){
+    setDateRange(value);
+    }
+  };
+
+  const handleGoalRangeChange = (value: string | undefined) => {
+    if (value) {
+    setGoalRange(value);
+    }
   };
 
   const displayedCampaigns = campaigns?.filter((campaign) => {
@@ -173,20 +167,84 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         <h3 className="text-4xl font-bold mb-8 mt-4 text-center">
           Fundraising
         </h3>
-        <select
-          id="location"
-          value={location}
-          onChange={handleLocationChange}
-          className="p-3 border border-gray-600 rounded-full focus:outline-none w-auto"
+        <Button
+          className="p-3 flex items-center gap-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200"
+          onClick={() => setOpenDrawer(true)}
         >
-          <option value="all">worldwide</option>
-          <option value="Nigeria">in Nigeria</option>
-          <option value="Kenya">in Kenya</option>
-          <option value="Ghana">in Ghana</option>
-          <option value="South Africa">in South Africa</option>
-          <option value="Eswatini">in Eswatini</option>
-        </select>
+          <FaFilter />
+          Filters
+        </Button>
       </div>
+
+      {/* Drawer for Filters */}
+      <Drawer
+        placement="bottom"
+        open={openDrawer}
+        onClose={() => setOpenDrawer(false)}
+        className="p-4"
+      >
+        <div className="flex flex-col gap-4">
+          <h2 className="text-xl font-bold mb-4">Filters</h2>
+          <Select
+            label="Sort By"
+            value={sortBy}
+            onChange={handleSortByChange}
+          >
+            <Option value="created_at">Date Created</Option>
+            <Option value="goal_amount">Goal Amount</Option>
+            <Option value="location">Location</Option>
+          </Select>
+          <Select
+            label="Sort Order"
+            value={sortOrder}
+            onChange={handleSortOrderChange}
+          >
+            <Option value="asc">Ascending</Option>
+            <Option value="desc">Descending</Option>
+          </Select>
+          <Select
+            label="Date Range"
+            value={dateRange}
+            onChange={handleDateRangeChange}
+          >
+            <Option value="all_time">All Time</Option>
+            <Option value="today">Today</Option>
+            <Option value="last_7_days">Last 7 Days</Option>
+            <Option value="last_30_days">Last 30 Days</Option>
+            <Option value="last_60_days">Last 60 Days</Option>
+            <Option value="last_90_days">Last 90 Days</Option>
+            <Option value="this_month">This Month</Option>
+            <Option value="last_month">Last Month</Option>
+            <Option value="this_year">This Year</Option>
+            <Option value="last_year">Last Year</Option>
+          </Select>
+          <Select
+            label="Goal Range"
+            value={goalRange}
+            onChange={handleGoalRangeChange}
+          >
+            <Option value="all">All</Option>
+            <Option value="0-500">0 - 500</Option>
+            <Option value="500-1000">500 - 1,000</Option>
+            <Option value="1000-5000">1,000 - 5,000</Option>
+            <Option value="5000-10000">5,000 - 10,000</Option>
+            <Option value="10000-50000">10,000 - 50,000</Option>
+            <Option value="50000-100000">50,000 - 100,000</Option>
+          </Select>
+          <Select
+            label="Location"
+            value={location}
+            onChange={handleLocationChange}
+          >
+            <Option value="all">Worldwide</Option>
+            <Option value="Nigeria">Nigeria</Option>
+            <Option value="Kenya">Kenya</Option>
+            <Option value="Ghana">Ghana</Option>
+            <Option value="South Africa">South Africa</Option>
+            <Option value="Eswatini">Eswatini</Option>
+          </Select>
+        </div>
+      </Drawer>
 
       <ToastComponent
         isOpen={toast.isOpen}
