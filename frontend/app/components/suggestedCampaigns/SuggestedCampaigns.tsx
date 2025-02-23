@@ -211,7 +211,7 @@ const SuggestedCampaignsComponent = ({
                       <div className="flex justify-between items-center text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2">
                         <div className="flex items-center space-x-1">
                           <FaUser />
-                          <span>{campaign?.total_donors || 0} Backers</span>
+                          <span>{campaign?.total_donors} Backers</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <FaClock />
