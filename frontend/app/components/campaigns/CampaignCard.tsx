@@ -194,7 +194,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       />
                     </div>
                     {/*Detailed Section*/}
-                    <div className="w-full text-xs text-gray-600 dark:text-gray-300 flex flex-col">
+                    <div className="w-full text-xs text-gray-600 dark:text-gray-300 py-2 flex flex-col">
                       <div className="flex justify-between items-center mb-2">
                         <div className="flex items-center space-x-2">
                         <Avatar
