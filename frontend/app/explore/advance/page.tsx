@@ -231,7 +231,7 @@ const CampaignsPage = () => {
       </div>
       <div className="flex flex-col md:flex-row gap-1">
         {/* Filters Section */}
-        <Card className="w-full md:w-1/4 p-4 border border-gray-50 bg-white">
+        <Card className="w-full md:w-1/4 p-4 border border-gray-50 bg-white rounded-none shadow-none">
           <h2 className="text-lg font-semibold mb-4">Find & Fund</h2>
           <div className="mb-4">
             <label htmlFor="sortBy" className="block text-sm font-medium mb-1">
