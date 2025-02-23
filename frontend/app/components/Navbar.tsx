@@ -94,8 +94,7 @@ const Navbar = () => {
     <header
       className={`bg-green-50 dark:bg-gray-950 sticky top-0 z-50 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
     >
-      <nav className="w-full max-w-7xl mx-auto text-gray-800 dark:bg-gray-950 dark:text-gray-50">
-        <div className="max-w-7xl mx-auto relative flex items-center justify-between">
+        <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 dark:bg-gray-950 dark:text-gray-50">
           <div className="text-2xl font-bold text-orange-500">
             <a href="/">
               <img
@@ -385,7 +384,6 @@ const Navbar = () => {
             )}
           </div>
         </div>
-      </nav>
     </header>
   );
 };
