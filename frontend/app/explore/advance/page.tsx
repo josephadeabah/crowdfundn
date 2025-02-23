@@ -16,6 +16,7 @@ import { FaHeart, FaRegHeart, FaClock, FaUser } from 'react-icons/fa';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '@/app/components/toast/Toast';
 import Avatar from '@/app/components/avatar/Avatar';
+import { Card } from '@material-tailwind/react'; // Import Card
 
 const CampaignsPage = () => {
   const {
@@ -230,7 +231,7 @@ const CampaignsPage = () => {
       </div>
       <div className="flex flex-col md:flex-row gap-1">
         {/* Filters Section */}
-        <aside className="w-full md:w-1/4 p-4 border border-gray-50 bg-white">
+        <Card className="w-full md:w-1/4 p-4 border border-gray-50 bg-white">
           <h2 className="text-lg font-semibold mb-4">Find & Fund</h2>
           <div className="mb-4">
             <label htmlFor="sortBy" className="block text-sm font-medium mb-1">
@@ -354,7 +355,7 @@ const CampaignsPage = () => {
               <option value="Eswatini">Eswatini</option>
             </select>
           </div>
-        </aside>
+        </Card>
 
         {/* Campaigns Section */}
         <div className="w-full bg-white md:p-4">
@@ -391,114 +392,116 @@ const CampaignsPage = () => {
                           <Link
                             href={`/campaign/${campaign?.id}?${generateRandomString()}`}
                           >
-                            <div className="relative w-full h-0 pb-[100%]">
-                              <Image
-                                src={campaign?.media || '/bantuhive.svg'}
-                                alt="media thumbnail"
-                                layout="fill"
-                                objectFit="cover"
-                                className="absolute top-0 left-0 w-full h-full"
-                              />
-                            </div>
-                            <div className="px-2 py-2 bg-gray-50 dark:text-gray-50">
-                              <div className="w-full text-xs">
-                                <Progress
-                                  firstProgress={
-                                    (Number(campaign?.transferred_amount) /
-                                      Number(campaign?.goal_amount)) *
-                                    100
-                                  }
-                                  firstTooltipContent={`Progress: ${
-                                    (Number(campaign?.transferred_amount) /
-                                      Number(campaign?.goal_amount)) *
-                                    100
-                                  }%`}
+                            <Card className="h-full">
+                              <div className="relative w-full h-0 pb-[100%]">
+                                <Image
+                                  src={campaign?.media || '/bantuhive.svg'}
+                                  alt="media thumbnail"
+                                  layout="fill"
+                                  objectFit="cover"
+                                  className="absolute top-0 left-0 w-full h-full"
                                 />
                               </div>
-                              <div className="w-full text-xs text-gray-600 flex flex-col py-2">
-                                <div className="flex justify-between items-center mb-2">
-                                  <div className="flex items-center space-x-2">
-                                    <Avatar
-                                      name={campaign?.fundraiser?.profile?.name}
-                                      size="sm"
-                                      imageUrl={
-                                        campaign?.fundraiser?.profile?.avatar
-                                      }
-                                    />
-                                    <span className="text-sm font-semibold w-24 truncate">
-                                      {campaign?.fundraiser?.profile?.name}
-                                    </span>
-                                  </div>
-                                  <div
-                                    className="p-2 bg-white dark:bg-gray-700 rounded-full shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      campaign?.favorited
-                                        ? handleUnfavorite(
-                                            campaign?.id.toString(),
-                                          )
-                                        : handleFavorite(
-                                            campaign?.id.toString(),
-                                          );
-                                    }}
-                                  >
-                                    {campaign.favorited ? (
-                                      <FaHeart className="text-orange-500" />
-                                    ) : (
-                                      <FaRegHeart className="text-gray-700 dark:text-gray-300" />
-                                    )}
-                                  </div>
+                              <div className="px-2 py-2 bg-gray-50 dark:text-gray-50">
+                                <div className="w-full text-xs">
+                                  <Progress
+                                    firstProgress={
+                                      (Number(campaign?.transferred_amount) /
+                                        Number(campaign?.goal_amount)) *
+                                      100
+                                    }
+                                    firstTooltipContent={`Progress: ${
+                                      (Number(campaign?.transferred_amount) /
+                                        Number(campaign?.goal_amount)) *
+                                      100
+                                    }%`}
+                                  />
                                 </div>
-                                <h3 className="text-lg font-bold text-gray-700 truncate mb-1">
-                                  {campaign?.title}
-                                </h3>
-                                <p className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
-                                  <span
-                                    className={`${
-                                      parseFloat(
+                                <div className="w-full text-xs text-gray-600 flex flex-col py-2">
+                                  <div className="flex justify-between items-center mb-2">
+                                    <div className="flex items-center space-x-2">
+                                      <Avatar
+                                        name={campaign?.fundraiser?.profile?.name}
+                                        size="sm"
+                                        imageUrl={
+                                          campaign?.fundraiser?.profile?.avatar
+                                        }
+                                      />
+                                      <span className="text-sm font-semibold w-24 truncate">
+                                        {campaign?.fundraiser?.profile?.name}
+                                      </span>
+                                    </div>
+                                    <div
+                                      className="p-2 bg-white dark:bg-gray-700 rounded-full shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        campaign?.favorited
+                                          ? handleUnfavorite(
+                                              campaign?.id.toString(),
+                                            )
+                                          : handleFavorite(
+                                              campaign?.id.toString(),
+                                            );
+                                      }}
+                                    >
+                                      {campaign.favorited ? (
+                                        <FaHeart className="text-orange-500" />
+                                      ) : (
+                                        <FaRegHeart className="text-gray-700 dark:text-gray-300" />
+                                      )}
+                                    </div>
+                                  </div>
+                                  <h3 className="text-lg font-bold text-gray-700 truncate mb-1">
+                                    {campaign?.title}
+                                  </h3>
+                                  <p className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
+                                    <span
+                                      className={`${
+                                        parseFloat(
+                                          campaign?.transferred_amount?.toString() ||
+                                            '0',
+                                        ) >=
+                                        parseFloat(
+                                          campaign?.goal_amount?.toString() ||
+                                            '0',
+                                        )
+                                          ? 'text-green-600'
+                                          : 'text-orange-500'
+                                      }`}
+                                    >
+                                      <span className="text-gray-600 dark:text-gray-100 mr-1">
+                                        {fundraiserCurrency}
+                                      </span>
+                                      {parseFloat(
                                         campaign?.transferred_amount?.toString() ||
                                           '0',
-                                      ) >=
-                                      parseFloat(
-                                        campaign?.goal_amount?.toString() ||
-                                          '0',
-                                      )
-                                        ? 'text-green-600'
-                                        : 'text-orange-500'
-                                    }`}
-                                  >
-                                    <span className="text-gray-600 dark:text-gray-100 mr-1">
+                                      ).toLocaleString()}
+                                    </span>{' '}
+                                    <span className="text-gray-600 dark:text-gray-100 truncate">
+                                      <span className="text-xs p-1">of</span>
                                       {fundraiserCurrency}
+                                      {parseFloat(
+                                        campaign?.goal_amount,
+                                      ).toLocaleString()}
                                     </span>
-                                    {parseFloat(
-                                      campaign?.transferred_amount?.toString() ||
-                                        '0',
-                                    ).toLocaleString()}
-                                  </span>{' '}
-                                  <span className="text-gray-600 dark:text-gray-100 truncate">
-                                    <span className="text-xs p-1">of</span>
-                                    {fundraiserCurrency}
-                                    {parseFloat(
-                                      campaign?.goal_amount,
-                                    ).toLocaleString()}
-                                  </span>
-                                </p>
-                                <div className="block md:flex justify-between items-center text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2">
-                                  <div className="flex items-center space-x-1">
-                                    <FaUser />
-                                    <span>
-                                      {campaign?.total_donors || 0} Backers
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center space-x-1">
-                                    <FaClock />
-                                    <span>
-                                      {campaign?.remaining_days} days left
-                                    </span>
+                                  </p>
+                                  <div className="block md:flex justify-between items-center text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2">
+                                    <div className="flex items-center space-x-1">
+                                      <FaUser />
+                                      <span>
+                                        {campaign?.total_donors || 0} Backers
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <FaClock />
+                                      <span>
+                                        {campaign?.remaining_days} days left
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
+                            </Card>
                           </Link>
                         </motion.div>
                       );
