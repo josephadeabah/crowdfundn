@@ -202,7 +202,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                             size="sm"
                             imageUrl={campaign?.fundraiser?.profile?.avatar}
                           />
-                          <span className="text-sm font-semibold truncate">
+                          <span className="text-sm font-semibold sm:w-12 truncate">
                             {campaign?.fundraiser?.profile?.name}
                           </span>
                         </div>
@@ -252,7 +252,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                           {parseFloat(campaign.goal_amount).toLocaleString()}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2">
+                      <div className="flex justify-between sm:block items-center text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2">
                         <div className="flex items-center space-x-1">
                           <FaUser />
                           <span>{campaign.total_donors || 0} Backers</span>
