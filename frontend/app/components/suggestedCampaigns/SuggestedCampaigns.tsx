@@ -138,7 +138,7 @@ const SuggestedCampaignsComponent = ({
                       className="absolute top-0 left-0 w-full h-full rounded-t"
                     />
                   </div>
-                  <div className="px-2 py-2">
+                  <div className="px-2 py-2 bg-gray-50">
                     <div className="w-full text-xs">
                       <Progress
                         firstProgress={
