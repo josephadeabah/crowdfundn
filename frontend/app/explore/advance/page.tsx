@@ -418,13 +418,15 @@ const CampaignsPage = () => {
                               <div className="w-full text-xs text-gray-600 flex flex-col py-2">
                                 <div className="flex justify-between items-center mb-2">
                                   <div className="flex items-center space-x-2">
-                                  <Avatar
+                                    <Avatar
                                       name={campaign?.fundraiser?.profile?.name}
                                       size="sm"
-                                      imageUrl={campaign?.fundraiser?.profile?.avatar}
+                                      imageUrl={
+                                        campaign?.fundraiser?.profile?.avatar
+                                      }
                                     />
                                     <span className="text-sm font-semibold w-24 truncate">
-                                    {campaign?.fundraiser?.profile?.name}
+                                      {campaign?.fundraiser?.profile?.name}
                                     </span>
                                   </div>
                                   <div
@@ -432,8 +434,12 @@ const CampaignsPage = () => {
                                     onClick={(e) => {
                                       e.preventDefault();
                                       campaign?.favorited
-                                        ? handleUnfavorite(campaign?.id.toString())
-                                        : handleFavorite(campaign?.id.toString());
+                                        ? handleUnfavorite(
+                                            campaign?.id.toString(),
+                                          )
+                                        : handleFavorite(
+                                            campaign?.id.toString(),
+                                          );
                                     }}
                                   >
                                     {campaign.favorited ? (
@@ -480,11 +486,15 @@ const CampaignsPage = () => {
                                 <div className="flex justify-between items-center text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2">
                                   <div className="flex items-center space-x-1">
                                     <FaUser />
-                                    <span>{campaign?.total_donors || 0} Backers</span>
+                                    <span>
+                                      {campaign?.total_donors || 0} Backers
+                                    </span>
                                   </div>
                                   <div className="flex items-center space-x-1">
                                     <FaClock />
-                                    <span>{campaign?.remaining_days} days left</span>
+                                    <span>
+                                      {campaign?.remaining_days} days left
+                                    </span>
                                   </div>
                                 </div>
                               </div>

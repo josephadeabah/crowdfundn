@@ -156,14 +156,14 @@ const SuggestedCampaignsComponent = ({
                     <div className="w-full text-xs text-gray-600 flex flex-col py-2">
                       <div className="flex justify-between items-center mb-2">
                         <div className="flex items-center space-x-2">
-                        <Avatar
-                                      name={campaign?.fundraiser?.profile?.name}
-                                      size="sm"
-                                      imageUrl={campaign?.fundraiser?.profile?.avatar}
-                                    />
-                                    <span className="text-sm font-semibold truncate">
-                                    {campaign?.fundraiser?.profile?.name}
-                                    </span>
+                          <Avatar
+                            name={campaign?.fundraiser?.profile?.name}
+                            size="sm"
+                            imageUrl={campaign?.fundraiser?.profile?.avatar}
+                          />
+                          <span className="text-sm font-semibold w-20 truncate">
+                            {campaign?.fundraiser?.profile?.name}
+                          </span>
                         </div>
                         <div
                           className="p-2 bg-white dark:bg-gray-700 rounded-full shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300"

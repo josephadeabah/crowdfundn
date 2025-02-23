@@ -63,7 +63,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     setPage(newPage);
   };
 
-    // Commenting out the location fetching logic
+  // Commenting out the location fetching logic
   /*
   useEffect(() => {
     const fetchUserLocation = async () => {
@@ -197,11 +197,11 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                     <div className="w-full text-xs text-gray-600 dark:text-gray-300 py-2 flex flex-col">
                       <div className="flex justify-between items-center mb-2">
                         <div className="flex items-center space-x-2">
-                        <Avatar
-                          name={campaign?.fundraiser?.profile?.name}
-                          size="sm"
-                          imageUrl={campaign?.fundraiser?.profile?.avatar}
-                        />
+                          <Avatar
+                            name={campaign?.fundraiser?.profile?.name}
+                            size="sm"
+                            imageUrl={campaign?.fundraiser?.profile?.avatar}
+                          />
                           <span className="text-sm font-semibold truncate">
                             {campaign?.fundraiser?.profile?.name}
                           </span>
