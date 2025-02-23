@@ -60,37 +60,34 @@ const LeaderboardBackersPage = () => {
               No change makers yet. Be the first philanthropist!
             </p>
           ) : (
-            <Card className="overflow-x-auto">
+            <Card className="overflow-x-auto shadow-none rounded-none">
               <table className="w-full min-w-[600px]">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                    <th className="px-4 py-3 text-gray-800 text-sm font-medium text-left">
                       Rank
                     </th>
-                    <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                    <th className="px-4 py-3 text-gray-800 text-sm font-medium text-left">
                       User
                     </th>
-                    <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                    <th className="px-4 py-3 text-gray-800 text-sm font-medium text-left">
                       Backed
                     </th>
-                    <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                    <th className="px-4 py-3 text-gray-800 text-sm font-medium text-left">
                       Score
                     </th>
-                    <th className="px-4 py-3 text-gray-800 text-sm font-medium">
+                    <th className="px-4 py-3 text-gray-800 text-sm font-medium text-left">
                       Trophy
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {leaderboard.map((backer, index) => (
-                    <tr
-                      key={backer.id}
-                      className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
-                    >
-                      <td className="px-4 py-2 text-gray-600">
+                  {leaderboard.map((backer) => (
+                    <tr key={backer.id}>
+                      <td className="px-4 py-2 text-gray-600 bg-gray-50">
                         {getRankWithSuffix(backer.rank)}
                       </td>
-                      <td className="px-4 py-2 flex items-center space-x-3">
+                      <td className="px-4 py-2 flex items-center space-x-3 bg-white">
                         <Popover>
                           <PopoverTrigger asChild>
                             <div className="relative cursor-pointer">
@@ -160,15 +157,15 @@ const LeaderboardBackersPage = () => {
                           <span>{getVerifiedBadge(backer.level, 16)}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-2 text-gray-700">
+                      <td className="px-4 py-2 text-gray-700 bg-gray-50">
                         {backer?.currency?.toUpperCase()}{' '}
                         {Number(backer?.total_donations || 0).toFixed(2) ||
                           'N/A'}
                       </td>
-                      <td className="px-4 py-2 text-gray-700">
+                      <td className="px-4 py-2 text-gray-700 bg-white">
                         {backer.score || 'N/A'}
                       </td>
-                      <td className="px-4 py-2 text-gray-700 flex items-center gap-2">
+                      <td className="px-4 py-2 text-gray-700 bg-gray-50 flex items-center gap-2">
                         {getCupIcon(backer.level)}
                       </td>
                     </tr>
