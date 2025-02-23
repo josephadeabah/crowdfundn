@@ -191,7 +191,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         size={400} // Adjust the size of the drawer
       >
         <div className="flex flex-col gap-4 max-w-md mx-auto w-full">
-          <h2 className="text-xl font-bold mb-4 text-center">Filters</h2>
+          <h2 className="text-xl font-bold mb-4 text-center">Find & Fund</h2>
           <Select
             label="Sort By"
             value={sortBy}
