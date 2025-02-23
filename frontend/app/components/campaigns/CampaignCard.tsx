@@ -170,7 +170,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   return (
     <div className="w-full max-w-7xl mx-auto p-1 bg-white rounded-lg">
       <div className="flex justify-center items-center gap-2 mb-4">
-        <h3 className="text-4xl font-bold mb-8 mt-4 text-center">
+        <h3 className="text-4xl font-bold mb-8 mt-2 text-center">
           Fundraising
         </h3>
         <Button
