@@ -13,7 +13,13 @@ import { deslugify } from '@/app/utils/helpers/categories';
 import { useUserContext } from '@/app/context/users/UserContext';
 import Pagination from '../pagination/Pagination';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import { FaBookmark, FaRegBookmark, FaClock, FaUser, FaFilter } from 'react-icons/fa';
+import {
+  FaBookmark,
+  FaRegBookmark,
+  FaClock,
+  FaUser,
+  FaFilter,
+} from 'react-icons/fa';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '../toast/Toast';
 import Avatar from '../avatar/Avatar';
