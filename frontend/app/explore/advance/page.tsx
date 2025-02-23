@@ -12,9 +12,10 @@ import { generateRandomString } from '@/app/utils/helpers/generate.random-string
 import { deslugify } from '@/app/utils/helpers/categories';
 import Image from 'next/image';
 import Pagination from '@/app/components/pagination/Pagination';
-import { FaHeart, FaRegHeart } from 'react-icons/fa';
+import { FaHeart, FaRegHeart, FaClock, FaUser } from 'react-icons/fa';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '@/app/components/toast/Toast';
+import Avatar from '@/app/components/avatar/Avatar';
 
 const CampaignsPage = () => {
   const {
@@ -159,7 +160,6 @@ const CampaignsPage = () => {
     visible: { opacity: 1, y: 0 },
   };
 
-  // Handle favorite/unfavorite action
   const handleFavorite = async (campaignId: string) => {
     if (!user) {
       showToast(
@@ -213,7 +213,7 @@ const CampaignsPage = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-50 rounded focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white pr-24" // Added padding-right for button
+                className="w-full px-4 py-3 border border-gray-50 rounded focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white pr-24"
                 placeholder="Search for a campaign"
               />
               <motion.button
@@ -399,23 +399,6 @@ const CampaignsPage = () => {
                                 objectFit="cover"
                                 className="absolute top-0 left-0 w-full h-full"
                               />
-                              {/* Hover Overlay */}
-                              <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                                <h3 className="text-lg font-bold text-white truncate mb-1">
-                                  {campaign?.title}
-                                </h3>
-                                <div className="text-sm text-orange-400 truncate mb-1">
-                                  {deslugify(campaign?.category)}
-                                </div>
-                                <div className="flex justify-between items-center text-xs font-semibold text-gray-300 mb-2">
-                                  <span>
-                                    {campaign?.total_donors || 0} Backers
-                                  </span>
-                                  <span>
-                                    {campaign?.remaining_days} days left
-                                  </span>
-                                </div>
-                              </div>
                             </div>
                             <div className="px-2 py-2 bg-gray-50 dark:text-gray-50">
                               <div className="w-full text-xs">
@@ -432,7 +415,34 @@ const CampaignsPage = () => {
                                   }%`}
                                 />
                               </div>
-                              <div className="w-full text-xs text-gray-600 flex flex-col">
+                              <div className="w-full text-xs text-gray-600 flex flex-col py-2">
+                                <div className="flex justify-between items-center mb-2">
+                                  <div className="flex items-center space-x-2">
+                                  <Avatar
+                                      name={campaign?.fundraiser?.profile?.name}
+                                      size="sm"
+                                      imageUrl={campaign?.fundraiser?.profile?.avatar}
+                                    />
+                                    <span className="text-sm font-semibold truncate">
+                                    {campaign?.fundraiser?.profile?.name}
+                                    </span>
+                                  </div>
+                                  <div
+                                    className="p-2 bg-white dark:bg-gray-700 rounded-full shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      campaign?.favorited
+                                        ? handleUnfavorite(campaign?.id.toString())
+                                        : handleFavorite(campaign?.id.toString());
+                                    }}
+                                  >
+                                    {campaign.favorited ? (
+                                      <FaHeart className="text-orange-500" />
+                                    ) : (
+                                      <FaRegHeart className="text-gray-700 dark:text-gray-300" />
+                                    )}
+                                  </div>
+                                </div>
                                 <h3 className="text-lg font-bold text-gray-700 truncate mb-1">
                                   {campaign?.title}
                                 </h3>
@@ -467,25 +477,19 @@ const CampaignsPage = () => {
                                     ).toLocaleString()}
                                   </span>
                                 </p>
+                                <div className="flex justify-between items-center text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2">
+                                  <div className="flex items-center space-x-1">
+                                    <FaUser />
+                                    <span>{campaign?.total_donors || 0} Backers</span>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <FaClock />
+                                    <span>{campaign?.remaining_days} days left</span>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </Link>
-                          {/* Favorite/Unfavorite Icon */}
-                          <div
-                            className="absolute top-2 right-2 p-2 bg-transparent rounded-full shadow-md cursor-pointer hover:bg-gray-100"
-                            onClick={(e) => {
-                              e.preventDefault(); // Prevent link navigation
-                              campaign?.favorited
-                                ? handleUnfavorite(campaign?.id.toString())
-                                : handleFavorite(campaign?.id.toString());
-                            }}
-                          >
-                            {campaign.favorited ? (
-                              <FaHeart className="text-orange-500" />
-                            ) : (
-                              <FaRegHeart className="text-gray-50" />
-                            )}
-                          </div>
                         </motion.div>
                       );
                     })}
