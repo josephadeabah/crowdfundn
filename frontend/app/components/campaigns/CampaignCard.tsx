@@ -15,6 +15,7 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import { FaBookmark, FaRegBookmark, FaClock, FaUser } from 'react-icons/fa';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '../toast/Toast';
+import Avatar from '../avatar/Avatar';
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -196,13 +197,11 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                     <div className="w-full text-xs text-gray-600 dark:text-gray-300 flex flex-col">
                       <div className="flex justify-between items-center mb-2">
                         <div className="flex items-center space-x-2">
-                          <Image
-                            src={campaign?.media || '/bantuhive.svg'}
-                            alt="fundraiser avatar"
-                            width={24}
-                            height={24}
-                            className="rounded-full"
-                          />
+                        <Avatar
+                          name={campaign?.fundraiser?.profile?.name}
+                          size="md"
+                          imageUrl={campaign?.fundraiser?.profile?.avatar}
+                        />
                           <span className="text-sm font-semibold truncate">
                             {campaign?.fundraiser?.profile?.name}
                           </span>
