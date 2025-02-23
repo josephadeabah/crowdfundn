@@ -6,8 +6,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 const NavbarLoader = () => {
   return (
     <header className="bg-green-50 p-1 dark:bg-gray-950 sticky top-0 z-50">
-      <nav className="w-full max-w-screen-xl mx-auto text-gray-800 dark:bg-gray-950 dark:text-gray-50">
-        <div className="relative flex items-center justify-between">
+        <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 dark:bg-gray-950 dark:text-gray-50">
           {/* Original Logo or Title */}
           <div className="mx-6">
             <img
@@ -45,7 +44,6 @@ const NavbarLoader = () => {
             <Skeleton circle={true} width={40} height={40} />
           </div>
         </div>
-      </nav>
     </header>
   );
 };
