@@ -275,9 +275,6 @@ const HomePage = () => {
 
       <div id="projects" className="dark:bg-gray-950 dark:text-gray-50">
         <div className="w-full">
-          <h2 className="text-4xl font-bold mb-8 mt-4 text-center">
-            Fundraising Now
-          </h2>
           <div className="w-full bg-white p-4">
             <CampaignCard
               campaigns={campaigns}

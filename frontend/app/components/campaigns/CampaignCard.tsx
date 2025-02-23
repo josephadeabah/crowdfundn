@@ -33,10 +33,18 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const { userAccountData } = useUserContext();
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [isLocationLoading, setIsLocationLoading] = useState(true);
-  const { pagination, favoriteCampaign, unfavoriteCampaign } =
+  const { pagination, favoriteCampaign, unfavoriteCampaign, fetchAllCampaigns } =
     useCampaignContext();
   const { user } = useAuth();
   const [page, setPage] = useState<number>(1);
+  const [location, setLocation] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<string>('created_at');
+  const [sortOrder, setSortOrder] = useState<string>('desc');
+  const [pageSize, setPageSize] = useState<number>(12);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [dateRange, setDateRange] = useState<string>('all_time');
+  const [goalRange, setGoalRange] = useState<string>('all');
+
 
   const [toast, setToast] = useState({
     isOpen: false,
@@ -62,6 +70,29 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     onPageChange(newPage);
     setPage(newPage);
   };
+
+  useEffect(() => {
+    fetchAllCampaigns(
+      sortBy,
+      sortOrder,
+      page,
+      pageSize,
+      dateRange,
+      goalRange,
+      location,
+      searchTerm,
+    );
+  }, [
+    fetchAllCampaigns,
+    sortBy,
+    sortOrder,
+    page,
+    pageSize,
+    dateRange,
+    goalRange,
+    location,
+    searchTerm,
+  ]);
 
   // Commenting out the location fetching logic
   /*
@@ -98,6 +129,11 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   });
   */
 
+  
+  const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setLocation(e.target.value);
+  };
+
   const displayedCampaigns = campaigns?.filter((campaign) => {
     return campaign.status !== 'completed' && campaign.permissions.is_public;
   });
@@ -131,6 +167,30 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
 
   return (
     <div className="w-full max-w-7xl mx-auto p-1 bg-white rounded-lg">
+          <div className="flex items-center gap-2 mb-4">
+                      <h3 className="text-4xl font-bold mb-8 mt-4 text-center">
+                        Fundraising Now
+                      </h3>
+            <label
+              htmlFor="location"
+              className="block text-sm font-medium mb-1"
+            >
+              Location
+            </label>
+            <select
+              id="location"
+              value={location}
+              onChange={handleLocationChange}
+              className="p-2 border border-gray-50 rounded-full focus:outline-none w-full"
+            >
+              <option value="all">Worldwide</option>
+              <option value="Nigeria">Nigeria</option>
+              <option value="Kenya">Kenya</option>
+              <option value="Ghana">Ghana</option>
+              <option value="South Africa">South Africa</option>
+              <option value="Eswatini">Eswatini</option>
+            </select>
+          </div>
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
