@@ -109,29 +109,29 @@ module Api
         def group_by_category
           page = params[:page] || 1
           page_size = params[:page_size] || 12
-
           # Group only active campaigns by category
           grouped_campaigns = Campaign.active.order(created_at: :desc).group_by do |campaign|
             campaign.category.downcase.gsub(/\s+/, '-')
           end
-
           grouped_paginated_campaigns = grouped_campaigns.transform_values do |campaigns|
             Kaminari.paginate_array(campaigns).page(page).per(page_size)
           end
-
           response_data = grouped_paginated_campaigns.each_with_object({}) do |(category, campaigns), result|
             result[category] = {
-              campaigns: campaigns,
+              campaigns: campaigns.map do |campaign|
+                # Add total_donors for each campaign
+                campaign.as_json(include: %i[rewards updates comments fundraiser: profile])
+                        .merge(media: campaign.media_url, total_donors: campaign.total_donors)
+              end,
               current_page: campaigns.current_page,
               total_pages: campaigns.total_pages,
               total_count: campaigns.total_count
             }
           end
-
           render json: {
             grouped_campaigns: response_data
           }, status: :ok
-        end
+        end       
 
         # POST /api/v1/fundraisers/campaigns
         def create
