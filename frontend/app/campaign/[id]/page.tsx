@@ -162,7 +162,7 @@ const SingleCampaignPage: React.FC = () => {
       >
         <ContactFundraiserForm campaignId={id} />
       </Modal>
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 mb-10">
+      <div className="flex flex-col lg:flex-row gap-8 mb-10">
         {/* First Column (Bigger Width) */}
         <div className="lg:w-2/3">
           {/* Content for the first column */}
