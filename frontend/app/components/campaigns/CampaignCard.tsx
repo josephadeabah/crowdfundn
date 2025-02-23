@@ -12,7 +12,7 @@ import { deslugify } from '@/app/utils/helpers/categories';
 import { useUserContext } from '@/app/context/users/UserContext';
 import Pagination from '../pagination/Pagination';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
+import { FaBookmark, FaRegBookmark, FaClock, FaUser } from 'react-icons/fa';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '../toast/Toast';
 
@@ -62,7 +62,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     setPage(newPage);
   };
 
-  // Commenting out the location fetching logic
+    // Commenting out the location fetching logic
   /*
   useEffect(() => {
     const fetchUserLocation = async () => {
@@ -97,7 +97,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   });
   */
 
-  // Temporarily display all campaigns
   const displayedCampaigns = campaigns?.filter((campaign) => {
     return campaign.status !== 'completed' && campaign.permissions.is_public;
   });
@@ -126,7 +125,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     await unfavoriteCampaign(campaignId);
   };
 
-  // if (loading || isLocationLoading) return <CampaignCardLoader />;
   if (loading) return <CampaignCardLoader />;
   if (error) return <ErrorPage />;
 
@@ -178,18 +176,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       objectFit="cover"
                       className="absolute top-0 left-0 w-full h-full"
                     />
-                    <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                      <h3 className="text-lg font-bold text-white truncate mb-1">
-                        {campaign?.title}
-                      </h3>
-                      <div className="text-sm text-orange-400 truncate mb-1">
-                        {deslugify(campaign?.category)}
-                      </div>
-                      <div className="flex justify-between items-center text-xs font-semibold text-gray-300 mb-2">
-                        <span>{campaign.total_donors || 0} Backers</span>
-                        <span>{campaign.remaining_days} days left</span>
-                      </div>
-                    </div>
                   </div>
                   <div className="px-4 py-3 h-full bg-gray-50 dark:bg-gray-800">
                     <div className="w-full text-xs">
@@ -206,13 +192,44 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                         }%`}
                       />
                     </div>
+                    {/*Detailed Section*/}
                     <div className="w-full text-xs text-gray-600 dark:text-gray-300 flex flex-col">
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="flex items-center space-x-2">
+                          <Image
+                            src={campaign?.media || '/bantuhive.svg'}
+                            alt="fundraiser avatar"
+                            width={24}
+                            height={24}
+                            className="rounded-full"
+                          />
+                          <span className="text-sm font-semibold truncate">
+                            {campaign?.fundraiser?.profile?.name}
+                          </span>
+                        </div>
+                        <div
+                          className="p-2 bg-white dark:bg-gray-700 rounded-full shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            campaign.favorited
+                              ? handleUnfavorite(campaign.id.toString())
+                              : handleFavorite(campaign.id.toString());
+                          }}
+                        >
+                          {campaign.favorited ? (
+                            <FaBookmark className="text-orange-500" />
+                          ) : (
+                            <FaRegBookmark className="text-gray-700 dark:text-gray-300" />
+                          )}
+                        </div>
+                      </div>
                       <h3
                         className={`text-lg font-bold text-gray-700 dark:text-gray-100 mb-1 ${index === 0 ? '' : 'truncate'}`}
                       >
                         {campaign?.title}
                       </h3>
-                      <p className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
+                      <div className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
                         <span
                           className={`${
                             parseFloat(
@@ -235,26 +252,20 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                           {fundraiserCurrency}
                           {parseFloat(campaign.goal_amount).toLocaleString()}
                         </span>
-                      </p>
+                      </div>
+                      <div className="flex justify-between items-center text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2">
+                        <div className="flex items-center space-x-1">
+                          <FaUser />
+                          <span>{campaign.total_donors || 0} Backers</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <FaClock />
+                          <span>{campaign.remaining_days} days left</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </Link>
-                <div
-                  className="absolute top-2 right-2 p-2 bg-white dark:bg-gray-700 rounded-full shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevents triggering the parent Link navigation
-                    e.preventDefault(); // Ensures no unintended behavior
-                    campaign.favorited
-                      ? handleUnfavorite(campaign.id.toString())
-                      : handleFavorite(campaign.id.toString());
-                  }}
-                >
-                  {campaign.favorited ? (
-                    <FaBookmark className="text-orange-500" />
-                  ) : (
-                    <FaRegBookmark className="text-gray-700 dark:text-gray-300" />
-                  )}
-                </div>
               </motion.div>
             );
           })}
