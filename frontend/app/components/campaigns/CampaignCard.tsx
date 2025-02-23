@@ -177,7 +177,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
           id="location"
           value={location}
           onChange={handleLocationChange}
-          className="p-3 border border-gray-50 rounded-full focus:outline-none w-auto"
+          className="p-3 border border-gray-600 rounded-full focus:outline-none w-auto"
         >
           <option value="all">worldwide</option>
           <option value="Nigeria">in Nigeria</option>
