@@ -183,12 +183,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
               onChange={handleLocationChange}
               className="p-2 border border-gray-50 rounded-full focus:outline-none w-full"
             >
-              <option value="all">Worldwide</option>
-              <option value="Nigeria">Nigeria</option>
-              <option value="Kenya">Kenya</option>
-              <option value="Ghana">Ghana</option>
-              <option value="South Africa">South Africa</option>
-              <option value="Eswatini">Eswatini</option>
+              <option value="all">Happening worldwide</option>
+              <option value="Nigeria">Happening in Nigeria</option>
+              <option value="Kenya">Happening in Kenya</option>
+              <option value="Ghana">Happening in Ghana</option>
+              <option value="South Africa">Happening in South Africa</option>
+              <option value="Eswatini">Happening in Eswatini</option>
             </select>
           </div>
       <ToastComponent
