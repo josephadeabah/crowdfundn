@@ -167,30 +167,26 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
 
   return (
     <div className="w-full max-w-7xl mx-auto p-1 bg-white rounded-lg">
-          <div className="flex items-center gap-2 mb-4">
-                      <h3 className="text-4xl font-bold mb-8 mt-4 text-center">
-                        Fundraising Now
-                      </h3>
-            <label
-              htmlFor="location"
-              className="block text-sm font-medium mb-1"
-            >
-              Location
-            </label>
-            <select
-              id="location"
-              value={location}
-              onChange={handleLocationChange}
-              className="p-2 border border-gray-50 rounded-full focus:outline-none w-full"
-            >
-              <option value="all">Happening worldwide</option>
-              <option value="Nigeria">Happening in Nigeria</option>
-              <option value="Kenya">Happening in Kenya</option>
-              <option value="Ghana">Happening in Ghana</option>
-              <option value="South Africa">Happening in South Africa</option>
-              <option value="Eswatini">Happening in Eswatini</option>
-            </select>
-          </div>
+          <div className="flex justify-center items-center gap-2 mb-4">
+  <h3 className="text-4xl font-bold mb-8 mt-4 text-center">
+    Fundraising Now
+  </h3>
+
+  <select
+    id="location"
+    value={location}
+    onChange={handleLocationChange}
+    className="p-3 border border-gray-50 rounded-full focus:outline-none w-auto"
+  >
+    <option value="all">Happening worldwide</option>
+    <option value="Nigeria">Happening in Nigeria</option>
+    <option value="Kenya">Happening in Kenya</option>
+    <option value="Ghana">Happening in Ghana</option>
+    <option value="South Africa">Happening in South Africa</option>
+    <option value="Eswatini">Happening in Eswatini</option>
+  </select>
+</div>
+
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
