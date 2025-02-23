@@ -59,6 +59,7 @@ const SuggestedCampaignsComponent = ({
         campaignsGroupedByCategory[currentCategory]?.campaigns || [];
       setFilteredCampaigns(campaigns);
     }
+    console.log('campaigns cat', filteredCampaigns);
   }, [campaignsGroupedByCategory, currentCategory]);
 
   const handleFavorite = async (campaignId: string) => {
