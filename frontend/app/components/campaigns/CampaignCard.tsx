@@ -252,7 +252,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                           {parseFloat(campaign.goal_amount).toLocaleString()}
                         </span>
                       </div>
-                      <div className={`${index === 0 ? 'flex justify-between items-center': 'sm:flex-col sm:gap-2 md:flex justify-between items-center'}  text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2`}>
+                      <div className={`${index === 0 ? 'flex justify-between items-center': 'sm:flex-col sm:gap-2 md:flex md:justify-between md:items-center'}  text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2`}>
                         <div className="flex items-center space-x-1">
                           <FaUser />
                           <span>{campaign.total_donors || 0} Backers</span>
