@@ -483,7 +483,7 @@ const CampaignsPage = () => {
                                     ).toLocaleString()}
                                   </span>
                                 </p>
-                                <div className="flex justify-between items-center text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2">
+                                <div className="block md:flex justify-between items-center text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2">
                                   <div className="flex items-center space-x-1">
                                     <FaUser />
                                     <span>
