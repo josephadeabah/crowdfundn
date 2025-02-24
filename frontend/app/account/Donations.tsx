@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
 import DonationsLoader from '../loaders/DonationsLoader';
 import {
@@ -12,14 +12,31 @@ import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { Button } from '../components/button/Button';
 import ErrorPage from '../components/errorpage/ErrorPage';
 import Pagination from '../components/pagination/Pagination';
+import { useAuth } from '../context/auth/AuthContext';
+import AlertPopup from '../components/alertpopup/AlertPopup';
 
-export default function Donations() {
+interface DonationsProps {
+  campaignId?: number; // Optional campaignId prop
+}
+
+export default function Donations({ campaignId }: DonationsProps) {
   const { donations, loading, error, fetchDonations, pagination } =
     useDonationsContext();
   const [filter, setFilter] = useState<'all' | 'specific'>('all');
   const [selectedDonors, setSelectedDonors] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
+  const { token } = useAuth();
+
+  // Alert Popup State
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertTitle, setAlertTitle] = useState('');
+  const [alertMessage, setAlertMessage] = useState<ReactNode>('');
+  const [alertError, setAlertError] = useState<string | null>(null);
+
+  // Fetch campaignId from donations if not provided as a prop
+  const resolvedCampaignId =
+    campaignId || donations[0]?.metadata?.campaign_metadata?.id;
 
   const toggleDonorSelection = (id: number) => {
     if (filter === 'specific') {
@@ -40,6 +57,53 @@ export default function Donations() {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleSendThankYouEmails = async () => {
+    if (!resolvedCampaignId) {
+      setAlertTitle('Error');
+      setAlertMessage('Campaign ID not found.');
+      setAlertError(null);
+      setIsAlertOpen(true);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/donations/send_thank_you_emails`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            campaign_id: resolvedCampaignId, // Use the resolved campaignId
+            filter: filter,
+            donor_ids: filter === 'specific' ? selectedDonors : undefined,
+          }),
+        },
+      );
+
+      if (response.ok) {
+        setAlertTitle('Success');
+        setAlertMessage('Thank you emails sent successfully!');
+        setAlertError(null);
+        setIsAlertOpen(true);
+      } else {
+        const errorData = await response.json();
+        setAlertTitle('Error');
+        setAlertMessage('Failed to send thank you emails.');
+        setAlertError(errorData.error || 'An unknown error occurred.');
+        setIsAlertOpen(true);
+      }
+    } catch (error) {
+      console.error('Error sending thank you emails:', error);
+      setAlertTitle('Error');
+      setAlertMessage('An error occurred while sending thank you emails.');
+      setAlertError('Please try again later.');
+      setIsAlertOpen(true);
+    }
   };
 
   if (loading) {
@@ -138,7 +202,7 @@ export default function Donations() {
           {/* Thank You Button */}
           <div className="mt-6">
             <Button
-              onClick={() => console.log('Sending Thank You emails')}
+              onClick={handleSendThankYouEmails}
               disabled={!isThankYouButtonEnabled}
               className="w-full"
             >
@@ -155,6 +219,16 @@ export default function Donations() {
           )}
         </>
       )}
+
+      {/* Alert Popup */}
+      <AlertPopup
+        title={alertTitle}
+        message={alertMessage}
+        isOpen={isAlertOpen}
+        setIsOpen={setIsAlertOpen}
+        onConfirm={() => setIsAlertOpen(false)}
+        error={alertError}
+      />
     </div>
   );
 }
