@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useEffect, ReactNode } from 'react';
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
 import DonationsLoader from '../loaders/DonationsLoader';
@@ -15,11 +16,7 @@ import Pagination from '../components/pagination/Pagination';
 import { useAuth } from '../context/auth/AuthContext';
 import AlertPopup from '../components/alertpopup/AlertPopup';
 
-interface DonationsProps {
-  campaignId?: number; // Optional campaignId prop
-}
-
-export default function Donations({ campaignId }: DonationsProps) {
+export default function Donations() {
   const { donations, loading, error, fetchDonations, pagination } =
     useDonationsContext();
   const [filter, setFilter] = useState<'all' | 'specific'>('all');
@@ -33,10 +30,6 @@ export default function Donations({ campaignId }: DonationsProps) {
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState<ReactNode>('');
   const [alertError, setAlertError] = useState<string | null>(null);
-
-  // Fetch campaignId from donations if not provided as a prop
-  const resolvedCampaignId =
-    campaignId || donations[0]?.metadata?.campaign_metadata?.id;
 
   const toggleDonorSelection = (id: number) => {
     if (filter === 'specific') {
@@ -53,7 +46,6 @@ export default function Donations({ campaignId }: DonationsProps) {
   // Fetch donations whenever the page changes
   useEffect(() => {
     fetchDonations(currentPage, perPage);
-    console.log('donations:', donations);
   }, [currentPage, perPage, fetchDonations]);
 
   const handlePageChange = (page: number) => {
@@ -61,15 +53,41 @@ export default function Donations({ campaignId }: DonationsProps) {
   };
 
   const handleSendThankYouEmails = async () => {
-    if (!resolvedCampaignId) {
-      setAlertTitle('Error');
-      setAlertMessage('Campaign ID not found.');
-      setAlertError(null);
-      setIsAlertOpen(true);
-      return;
-    }
-
     try {
+      // Get the selected donations
+      const selectedDonations =
+        filter === 'all'
+          ? donations
+          : donations.filter((donation) =>
+              selectedDonors.includes(donation.id),
+            );
+
+      // Extract campaign IDs from the selected donations
+      const campaignIds = selectedDonations.map(
+        (donation) =>
+          donation.campaign_id || donation.metadata?.campaign_metadata?.id,
+      );
+
+      // Check if all selected donations belong to the same campaign
+      const uniqueCampaignIds = [...new Set(campaignIds)];
+      if (uniqueCampaignIds.length > 1) {
+        setAlertTitle('Error');
+        setAlertMessage('Selected donations belong to multiple campaigns.');
+        setAlertError('Please select donations from the same campaign.');
+        setIsAlertOpen(true);
+        return;
+      }
+
+      const resolvedCampaignId = uniqueCampaignIds[0];
+      if (!resolvedCampaignId) {
+        setAlertTitle('Error');
+        setAlertMessage('Campaign ID not found for selected donations.');
+        setAlertError(null);
+        setIsAlertOpen(true);
+        return;
+      }
+
+      // Send thank-you emails
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/donations/send_thank_you_emails`,
         {
@@ -79,7 +97,7 @@ export default function Donations({ campaignId }: DonationsProps) {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            campaign_id: resolvedCampaignId, // Use the resolved campaignId
+            campaign_id: resolvedCampaignId,
             filter: filter,
             donor_ids: filter === 'specific' ? selectedDonors : undefined,
           }),
