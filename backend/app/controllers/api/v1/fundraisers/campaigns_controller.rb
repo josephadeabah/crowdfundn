@@ -262,6 +262,7 @@ module Api
           campaign = Campaign.find(params[:id])
           fundraiser_email = campaign.fundraiser.email
           fundraiser_name = campaign.fundraiser.full_name
+          campaign_name = campaign.title
 
           # Extract user details from the request
           user_name = params[:full_name]
@@ -272,6 +273,7 @@ module Api
           FundraiserContactEmailService.send_contact_email(
             fundraiser_email,
             fundraiser_name,
+            campaign_name,
             user_name,
             user_email,
             message

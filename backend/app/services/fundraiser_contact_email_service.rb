@@ -1,5 +1,5 @@
 class FundraiserContactEmailService
-  def self.send_contact_email(fundraiser_email, fundraiser_name, user_name, user_email, message)
+  def self.send_contact_email(fundraiser_email, fundraiser_name, campaign_name, user_name, user_email, message)
     # Prepare the email content
     send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
       to: [
@@ -10,6 +10,7 @@ class FundraiserContactEmailService
       ],
       template_id: 2, # Keep your current template ID for fundraiser notifications
       params: {
+        'campaign_name' => campaign_name,
         'user_name' => user_name,
         'user_email' => user_email,
         'message' => message
@@ -95,7 +96,7 @@ class FundraiserContactEmailService
               <div class="content">
                 <h1>You've received a new message from a supporter!</h1>
                 <p>Hi #{fundraiser_name},</p>
-                <p>You have received a new message from <strong>#{user_name}</strong> (Email: <strong>#{user_email}</strong>)".</p>
+                <p>You have received a new message from <strong>#{user_name}</strong> (Email: <strong>#{user_email}</strong>) regarding your campaign "<strong>#{campaign_name}</strong>".</p>
                 <p><strong>Message:</strong></p>
                 <p>#{message}</p>
                 <br>
