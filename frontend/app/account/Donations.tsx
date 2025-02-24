@@ -391,7 +391,7 @@ const DonationRow: React.FC<DonationRowProps> = ({
               <FaCheckCircle className="text-green-500" /> Thank You
             </>
           ) : (
-            'Thank You'
+            'Say Thank You'
           )}
         </Button>
       </td>
