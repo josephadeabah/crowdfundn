@@ -24,7 +24,7 @@ const Favorites = () => {
 
   // Show loader while campaigns are being fetched
   if (loading) {
-    return <CampaignCardLoader />;
+    return <div className='py-8'><CampaignCardLoader /></div>;
   }
 
   // Handle favorite/unfavorite action
