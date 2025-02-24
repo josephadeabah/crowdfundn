@@ -11,6 +11,7 @@ class ThankYouEmailService
         }
       ],
       template_id: 2, # Use a specific template ID for thank you emails
+      params: { 'campaign_title' => campaign_title, 'donor_name' => donor_name, 'amount' => amount },
       sender: {
         'name' => 'Bantu Hive Ltd.',
         'email' => 'help@bantuhive.com'
