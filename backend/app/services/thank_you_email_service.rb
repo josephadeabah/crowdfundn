@@ -1,7 +1,7 @@
 # app/services/thank_you_email_service.rb
 
 class ThankYouEmailService
-  def self.send_thank_you_email(donor_email, donor_name, fundraiser_name, campaign_title, currency, amount)
+  def self.send_thank_you_email(donor_email, donor_name, fundraiser_name, fundraiser_avatar, campaign_title, currency, amount)
     # Prepare the email content
     send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
       to: [
@@ -79,13 +79,31 @@ class ThankYouEmailService
               .footer a:hover {
                 text-decoration: underline;
               }
+
+              /* Social Media Links Flexbox */
+              .social-media {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin-top: 10px;
+              }
+              .social-media a {
+                color: black;
+                text-decoration: none;
+                padding: 5px 10px;
+                transition: color 0.3s;
+              }
+              .social-media a:hover {
+                color: #4CAF50;
+              }
             </style>
           </head>
           <body>
             <div class="email-container">
-              <!-- Header with image -->
+              <!-- Header with dynamic fundraiser avatar -->
               <div class="header">
-                <img src="/thank-you.png" alt="Thank You" />
+                <img src="#{fundraiser_avatar}" alt="Thank You" />
               </div>
 
               <!-- Content -->
@@ -102,6 +120,15 @@ class ThankYouEmailService
                 <p>You are receiving this email because you made a donation on Bantu Hive.</p>
                 <p>Sent from Bantu Hive's Headquarters:</p>
                 <p>IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana.</p>
+
+                <!-- Social Media Links -->
+                <div class="social-media">
+                  <a href="https://web.facebook.com/profile.php?id=61568192851056">Facebook</a>
+                  <a href="https://twitter.com/yourprofile">Twitter</a>
+                  <a href="https://www.instagram.com/bantuhive_fund/">Instagram</a>
+                  <a href="https://www.linkedin.com/company/bantu-hive/about/">LinkedIn</a>
+                </div>
+
                 <p><a href="https://bantuhive.com">© BantuHive Ltd 2024</a></p>
               </div>
             </div>

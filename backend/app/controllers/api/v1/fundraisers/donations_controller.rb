@@ -176,6 +176,7 @@ module Api
               donation.email,
               donation.full_name || 'Anonymous',
               campaign.fundraiser.full_name,
+              campaign.fundraiser.profile.avatar_url,
               campaign.title,
               campaign.currency.upcase,
               donation.amount
