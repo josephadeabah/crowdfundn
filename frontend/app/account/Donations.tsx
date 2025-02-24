@@ -14,8 +14,8 @@ import { Button } from '../components/button/Button';
 import ErrorPage from '../components/errorpage/ErrorPage';
 import Pagination from '../components/pagination/Pagination';
 import { useAuth } from '../context/auth/AuthContext';
-import AlertPopup from '../components/alertpopup/AlertPopup';
 import { FaCheckCircle } from 'react-icons/fa';
+import ToastComponent from '../components/toast/Toast';
 
 export default function Donations() {
   const { donations, loading, error, fetchDonations, pagination } =
@@ -26,11 +26,13 @@ export default function Donations() {
   const [perPage] = useState(10);
   const { token } = useAuth();
 
-  // Alert Popup State
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [alertTitle, setAlertTitle] = useState('');
-  const [alertMessage, setAlertMessage] = useState<ReactNode>('');
-  const [alertError, setAlertError] = useState<string | null>(null);
+  // Toast State
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastTitle, setToastTitle] = useState('');
+  const [toastDescription, setToastDescription] = useState('');
+  const [toastType, setToastType] = useState<'success' | 'error' | 'warning'>(
+    'success',
+  );
 
   const toggleDonorSelection = (id: number) => {
     if (filter === 'specific') {
@@ -86,9 +88,20 @@ export default function Donations() {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to send thank-you email');
       }
+
+      // Show success toast
+      setToastTitle('Success');
+      setToastDescription('Thank-you email sent successfully!');
+      setToastType('success');
+      setToastOpen(true);
     } catch (error) {
       console.error('Error sending thank-you email:', error);
-      throw error;
+
+      // Show error toast
+      setToastTitle('Error');
+      setToastDescription('Failed to send thank-you email.');
+      setToastType('error');
+      setToastOpen(true);
     }
   };
 
@@ -111,19 +124,19 @@ export default function Donations() {
       // Check if all selected donations belong to the same campaign
       const uniqueCampaignIds = [...new Set(campaignIds)];
       if (uniqueCampaignIds.length > 1) {
-        setAlertTitle('Error');
-        setAlertMessage('Selected donations belong to multiple campaigns.');
-        setAlertError('Please select donations from the same campaign.');
-        setIsAlertOpen(true);
+        setToastTitle('Error');
+        setToastDescription('Selected donations belong to multiple campaigns.');
+        setToastType('error');
+        setToastOpen(true);
         return;
       }
 
       const resolvedCampaignId = uniqueCampaignIds[0];
       if (!resolvedCampaignId) {
-        setAlertTitle('Error');
-        setAlertMessage('Campaign ID not found for selected donations.');
-        setAlertError(null);
-        setIsAlertOpen(true);
+        setToastTitle('Error');
+        setToastDescription('Campaign ID not found for selected donations.');
+        setToastType('error');
+        setToastOpen(true);
         return;
       }
 
@@ -145,23 +158,23 @@ export default function Donations() {
       );
 
       if (response.ok) {
-        setAlertTitle('Success');
-        setAlertMessage('Thank you emails sent successfully!');
-        setAlertError(null);
-        setIsAlertOpen(true);
+        setToastTitle('Success');
+        setToastDescription('Thank you emails sent successfully!');
+        setToastType('success');
+        setToastOpen(true);
       } else {
         const errorData = await response.json();
-        setAlertTitle('Error');
-        setAlertMessage('Failed to send thank you emails.');
-        setAlertError(errorData.error || 'An unknown error occurred.');
-        setIsAlertOpen(true);
+        setToastTitle('Error');
+        setToastDescription('Failed to send thank you emails.');
+        setToastType('error');
+        setToastOpen(true);
       }
     } catch (error) {
       console.error('Error sending thank you emails:', error);
-      setAlertTitle('Error');
-      setAlertMessage('An error occurred while sending thank you emails.');
-      setAlertError('Please try again later.');
-      setIsAlertOpen(true);
+      setToastTitle('Error');
+      setToastDescription('An error occurred while sending thank you emails.');
+      setToastType('error');
+      setToastOpen(true);
     }
   };
 
@@ -280,14 +293,13 @@ export default function Donations() {
         </>
       )}
 
-      {/* Alert Popup */}
-      <AlertPopup
-        title={alertTitle}
-        message={alertMessage}
-        isOpen={isAlertOpen}
-        setIsOpen={setIsAlertOpen}
-        onConfirm={() => setIsAlertOpen(false)}
-        error={alertError}
+      {/* Toast Component */}
+      <ToastComponent
+        isOpen={toastOpen}
+        onClose={() => setToastOpen(false)}
+        title={toastTitle}
+        description={toastDescription}
+        type={toastType}
       />
     </div>
   );
