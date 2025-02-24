@@ -95,7 +95,7 @@ class FundraiserContactEmailService
               <div class="content">
                 <h1>You've received a new message from a supporter!</h1>
                 <p>Hi #{fundraiser_name},</p>
-                <p>You have received a new message from <strong>#{user_name}</strong> (Email: <strong>#{user_email}</strong>) regarding your campaign "<strong>#{campaign_name}</strong>".</p>
+                <p>You have received a new message from <strong>#{user_name}</strong> (Email: <strong>#{user_email}</strong>)".</p>
                 <p><strong>Message:</strong></p>
                 <p>#{message}</p>
                 <br>
