@@ -170,7 +170,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   return (
     <div className="w-full max-w-7xl mx-auto p-1 bg-white rounded-lg">
       <div className="flex justify-center items-center gap-2 mb-8">
-        <h3 className="text-4xl font-bold text-center">Fundraising</h3>
+        <h3 className="text-3xl font-bold text-center">Fundraising Now</h3>
         <Button
           className="p-3 flex items-center gap-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200"
           onClick={() => setOpenDrawer(true)}
