@@ -2,7 +2,7 @@ module Api
   module V1
     module Fundraisers
       class DonationsController < ApplicationController
-        before_action :authenticate_request, only: %i[index create]
+        before_action :authenticate_request, only: %i[index create send_thank_you_emails]
         before_action :set_campaign, only: [:public_donations]
 
         # Public donations list for a campaign
@@ -154,7 +154,35 @@ module Api
             render json: { error: 'Payment initialization failed: ' + response[:message] },
                    status: :unprocessable_entity
           end
-        end        
+        end
+        
+        # POST /api/v1/fundraisers/donations/send_thank_you_emails
+        def send_thank_you_emails
+          campaign = Campaign.find_by(id: params[:campaign_id])
+          unless campaign
+            return render json: { error: 'Campaign not found' }, status: :not_found
+          end
+
+          # Fetch donations based on the filter
+          if params[:filter] == 'all'
+            donations = campaign.donations.successful
+          else
+            donations = campaign.donations.successful.where(id: params[:donor_ids])
+          end
+
+          # Send thank you emails to donors
+          donations.each do |donation|
+            ThankYouEmailService.send_thank_you_email(
+              donation.email,
+              donation.full_name || 'Anonymous',
+              campaign.fundraiser.full_name,
+              campaign.title,
+              donation.amount
+            )
+          end
+
+          render json: { message: 'Thank you emails sent successfully' }, status: :ok
+        end
 
         private
 

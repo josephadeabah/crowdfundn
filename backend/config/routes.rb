@@ -65,7 +65,12 @@ Rails.application.routes.draw do
           end
         end
 
-        resources :donations, only: [:index]
+        resources :donations, only: [:index] do
+          collection do
+            post :send_thank_you_emails # Add this line for the thank you emails route
+          end
+        end
+
         resources :campaigns do
           resources :campaign_shares, only: [:create]
           collection do
