@@ -9,6 +9,11 @@ class FundraiserContactEmailService
         }
       ],
       template_id: 2, # Keep your current template ID for fundraiser notifications
+      params: {
+        'user_name' => user_name,
+        'user_email' => user_email,
+        'message' => message
+      },
       sender: {
         'name' => 'Bantuhive Ltd',
         'email' => 'help@bantuhive.com'
