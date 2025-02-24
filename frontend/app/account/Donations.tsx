@@ -15,6 +15,7 @@ import ErrorPage from '../components/errorpage/ErrorPage';
 import Pagination from '../components/pagination/Pagination';
 import { useAuth } from '../context/auth/AuthContext';
 import AlertPopup from '../components/alertpopup/AlertPopup';
+import { FaCheckCircle } from 'react-icons/fa';
 
 export default function Donations() {
   const { donations, loading, error, fetchDonations, pagination } =
@@ -50,6 +51,45 @@ export default function Donations() {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleSendThankYou = async (donationId: number) => {
+    try {
+      const donation = donations.find((d) => d.id === donationId);
+      if (!donation) {
+        throw new Error('Donation not found');
+      }
+
+      const campaignId =
+        donation.campaign_id || donation.metadata?.campaign_metadata?.id;
+      if (!campaignId) {
+        throw new Error('Campaign ID not found');
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/donations/send_thank_you_emails`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            campaign_id: campaignId,
+            filter: 'specific',
+            donor_ids: [donationId],
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to send thank-you email');
+      }
+    } catch (error) {
+      console.error('Error sending thank-you email:', error);
+      throw error;
+    }
   };
 
   const handleSendThankYouEmails = async () => {
@@ -212,6 +252,7 @@ export default function Donations() {
                       filter={filter}
                       isSelected={selectedDonors.includes(donation.id)}
                       onToggle={() => toggleDonorSelection(donation.id)}
+                      onSendThankYou={handleSendThankYou} // Pass the function
                     />
                   );
                 })}
@@ -263,6 +304,7 @@ interface DonationRowProps {
   filter: 'all' | 'specific';
   isSelected: boolean;
   onToggle: () => void;
+  onSendThankYou: (donationId: number) => Promise<void>; // Add this prop
 }
 
 const DonationRow: React.FC<DonationRowProps> = ({
@@ -276,9 +318,26 @@ const DonationRow: React.FC<DonationRowProps> = ({
   filter,
   isSelected,
   onToggle,
+  onSendThankYou, // Pass the function to send thank-you emails
 }) => {
+  const [isSending, setIsSending] = useState(false); // Track loading state
+  const [isSent, setIsSent] = useState(false); // Track success state
+
   const formattedCurrency = currency ? currency.toLocaleUpperCase() : '';
   const formattedAmount = amount.toFixed(2);
+
+  const handleSendThankYou = async () => {
+    setIsSending(true); // Set loading state
+    try {
+      await onSendThankYou(id); // Call the function to send the email
+      setIsSent(true); // Set success state
+      setTimeout(() => setIsSent(false), 2000); // Reset success state after 2 seconds
+    } catch (error) {
+      console.error('Error sending thank-you email:', error);
+    } finally {
+      setIsSending(false); // Reset loading state
+    }
+  };
 
   return (
     <tr className="border-b hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors duration-200">
@@ -309,9 +368,19 @@ const DonationRow: React.FC<DonationRowProps> = ({
       <td className="py-3 px-4">
         <Button
           variant="outline"
-          className="px-3 py-1 text-sm rounded-full hover:bg-gray-100 dark:hover:bg-gray-100 transition duration-200"
+          className="px-3 py-1 text-sm rounded-full hover:bg-gray-100 dark:hover:bg-gray-100 transition duration-200 flex items-center gap-2"
+          onClick={handleSendThankYou} // Add onClick handler
+          disabled={isSending || isSent} // Disable button while sending or after success
         >
-          Thank You
+          {isSending ? (
+            'Sending...'
+          ) : isSent ? (
+            <>
+              <FaCheckCircle className="text-green-500" /> Thank You
+            </>
+          ) : (
+            'Thank You'
+          )}
         </Button>
       </td>
     </tr>
