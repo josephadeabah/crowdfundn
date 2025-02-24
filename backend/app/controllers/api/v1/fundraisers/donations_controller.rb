@@ -179,7 +179,7 @@ module Api
               campaign.fundraiser.profile.avatar_url,
               campaign.title,
               campaign.currency.upcase,
-              donation.amount
+              donation.gross_amount.to_f.round(2), # Convert to float
             )
           end
 
