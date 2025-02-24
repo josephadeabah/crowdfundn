@@ -1,5 +1,3 @@
-# app/services/thank_you_email_service.rb
-
 class ThankYouEmailService
   def self.send_thank_you_email(donor_email, donor_name, fundraiser_name, fundraiser_avatar, campaign_title, currency, amount)
     # Prepare the email content
@@ -80,27 +78,6 @@ class ThankYouEmailService
               .footer a:hover {
                 text-decoration: underline;
               }
-
-              /* Social Media Links Flexbox */
-              .social-media {
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                gap: 10px;
-                flex-wrap: wrap;
-                margin-top: 10px;
-              }
-              .social-media a {
-                color: black;
-                text-decoration: none;
-                padding: 5px 10px;
-                transition: color 0.3s;
-              }
-              .social-media a:hover {
-                color: #4CAF50;
-                background-color: #f0faf0;
-              }
             </style>
           </head>
           <body>
@@ -126,10 +103,10 @@ class ThankYouEmailService
                 <p>IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana.</p>
 
                 <!-- Social Media Links -->
-                <div class="social-media">
-                  <a href="https://web.facebook.com/profile.php?id=61568192851056">Facebook</a>
-                  <a href="https://www.instagram.com/bantuhive_fund/">Instagram</a>
-                  <a href="https://www.linkedin.com/company/bantu-hive/about/">LinkedIn</a>
+                <div style="text-align: center; margin-top: 10px;">
+                  <a href="https://web.facebook.com/profile.php?id=61568192851056" style="color: black; text-decoration: none; padding: 5px 10px; transition: color 0.3s;">Facebook</a>
+                  <a href="https://www.instagram.com/bantuhive_fund/" style="color: black; text-decoration: none; padding: 5px 10px; transition: color 0.3s;">Instagram</a>
+                  <a href="https://www.linkedin.com/company/bantu-hive/about/" style="color: black; text-decoration: none; padding: 5px 10px; transition: color 0.3s;">LinkedIn</a>
                 </div>
 
                 <p><a href="https://bantuhive.com">© BantuHive Ltd 2024</a></p>
