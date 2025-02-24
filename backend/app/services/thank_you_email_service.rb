@@ -83,6 +83,7 @@ class ThankYouEmailService
 
               /* Social Media Links Flexbox */
               .social-media {
+                width: 100%;
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -98,6 +99,7 @@ class ThankYouEmailService
               }
               .social-media a:hover {
                 color: #4CAF50;
+                background-color: #f0faf0;
               }
             </style>
           </head>
