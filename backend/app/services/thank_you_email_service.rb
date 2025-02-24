@@ -85,7 +85,7 @@ class ThankYouEmailService
             <div class="email-container">
               <!-- Header with image -->
               <div class="header">
-                <img src="/assets/images/thank-you.png" alt="Thank You" />
+                <img src="/thank-you.png" alt="Thank You" />
               </div>
 
               <!-- Content -->
