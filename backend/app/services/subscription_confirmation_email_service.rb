@@ -1,5 +1,3 @@
-# app/services/subscription_confirmation_email_service.rb
-
 class SubscriptionConfirmationEmailService
   def self.send_confirmation_email(subscription)
     email = subscription.email
@@ -40,37 +38,102 @@ class SubscriptionConfirmationEmailService
       },
       htmlContent: <<~HTML
         <html>
-        <body>
-          <p>Hello #{subscriber_name},</p>
-          <p>You have subscribed to <strong>#{campaign_name}</strong> by <strong>#{fundraiser_name}</strong>.</p>
-          <p>You will be charged <strong>#{currency_symbol} #{transaction_amount}</strong> every #{interval}.</p>
-          <p>See details of your subscription below:</p>
-          <ul>
-            <li>Next Charge Date: <strong>#{transaction_date}</strong></li>
-            <li>Card: <strong>#{card_type}</strong> ending with <strong>#{last4}</strong></li>
-          </ul>
-          <p>Thank you for supporting <strong>#{fundraiser_name}</strong> in achieving their goals!</p>
-          <p>If you have any questions, feel free to reply to this email.</p>
-          <br>
-          <p>Warm Regards,</p>
-          <p><strong>Bantuhive Team</strong></p>
+          <head>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                background-color: #f0faf0; /* Light green background */
+                margin: 0;
+                padding: 0;
+              }
+              .email-container {
+                max-width: 600px;
+                margin: 0 auto;
+                background-color: #ffffff; /* White background for content */
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+              }
+              .header {
+                background-color: #4CAF50; /* Green header */
+                padding: 20px;
+                text-align: center;
+              }
+              .header img {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                object-fit: cover;
+              }
+              .content {
+                padding: 20px;
+                color: #333333;
+              }
+              .content h1 {
+                color: #4CAF50; /* Green heading */
+                font-size: 24px;
+                margin-bottom: 20px;
+              }
+              .content p {
+                font-size: 16px;
+                line-height: 1.6;
+                margin-bottom: 20px;
+              }
+              .footer {
+                background-color: #f0faf0; /* Light green footer */
+                padding: 15px;
+                text-align: center;
+                font-size: 14px;
+                color: #666666;
+              }
+              .footer a {
+                color: #4CAF50; /* Green link */
+                text-decoration: none;
+              }
+              .footer a:hover {
+                text-decoration: underline;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="email-container">
+              <!-- Header -->
+              <div class="header"></div>
 
-          <!-- Footer -->
-          <div style="background-color: orange; padding: 20px; margin-top: 20px; color: black; text-align: center;">
-            <p style="margin: 0; font-size: 14px; font-weight: bold;">Follow Us</p>
-            <p style="margin: 5px 0;">
-              <a href="https://facebook.com/yourpage" style="color: black; text-decoration: none; margin: 0 10px;">Facebook</a> |
-              <a href="https://twitter.com/yourprofile" style="color: black; text-decoration: none; margin: 0 10px;">Twitter</a> |
-              <a href="https://instagram.com/yourprofile" style="color: black; text-decoration: none; margin: 0 10px;">Instagram</a> |
-              <a href="https://linkedin.com/yourpage" style="color: black; text-decoration: none; margin: 0 10px;">LinkedIn</a>
-            </p>
-            <hr style="border: none; height: 1px; background-color: black; margin: 10px 0;">
-            <p style="font-size: 12px; margin: 0;">
-              IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana. <br>
-              <a href="https://bantuhive.com" style="color: black;">© BantuHive Ltd 2024</a>
-            </p>
-          </div>
-        </body>
+              <!-- Content -->
+              <div class="content">
+                <h1>Your subscription to #{campaign_name} is now active 🎉</h1>
+                <p>Hello #{subscriber_name},</p>
+                <p>You have subscribed to <strong>#{campaign_name}</strong> by <strong>#{fundraiser_name}</strong>.</p>
+                <p>You will be charged <strong>#{currency_symbol} #{transaction_amount}</strong> every #{interval}.</p>
+                <p>See details of your subscription below:</p>
+                <ul>
+                  <li>Next Charge Date: <strong>#{transaction_date}</strong></li>
+                  <li>Card: <strong>#{card_type}</strong> ending with <strong>#{last4}</strong></li>
+                </ul>
+                <p>Thank you for supporting <strong>#{fundraiser_name}</strong> in achieving their goals!</p>
+                <p>If you have any questions, feel free to reply to this email.</p>
+                <p>Warm Regards,</p>
+                <p><strong>Bantuhive Team</strong></p>
+              </div>
+
+              <!-- Footer -->
+              <div class="footer">
+                <p>You are receiving this email because you subscribed to a campaign on Bantuhive.</p>
+                <p>Sent from Bantuhive's Headquarters:</p>
+                <p>IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana.</p>
+
+                 <!-- Social Media Links -->
+                <div style="text-align: center; margin-top: 10px;">
+                  <a href="https://web.facebook.com/profile.php?id=61568192851056" style="color: black; text-decoration: none; padding: 5px 10px; transition: color 0.3s;">Facebook</a>
+                  <a href="https://www.instagram.com/bantuhive_fund/" style="color: black; text-decoration: none; padding: 5px 10px; transition: color 0.3s;">Instagram</a>
+                  <a href="https://www.linkedin.com/company/bantu-hive/about/" style="color: black; text-decoration: none; padding: 5px 10px; transition: color 0.3s;">LinkedIn</a>
+                </div>
+
+                <p><a href="https://bantuhive.com">© BantuHive Ltd 2024</a></p>
+              </div>
+            </div>
+          </body>
         </html>
       HTML
     )

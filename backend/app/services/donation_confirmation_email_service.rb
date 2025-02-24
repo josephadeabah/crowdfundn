@@ -1,5 +1,3 @@
-# app/services/donation_confirmation_email_service.rb
-
 class DonationConfirmationEmailService
   def self.send_confirmation_email(donation)
     user = donation.full_name
@@ -18,7 +16,7 @@ class DonationConfirmationEmailService
           'name' => user
         }
       ],
-      template_id: 1, # Replace with your actual template ID
+      template_id: 1, # Keep your current template ID
       params: {
         'name' => donation.full_name,
         'amount' => donation.amount,
@@ -36,38 +34,108 @@ class DonationConfirmationEmailService
         'Accept' => 'application/json'
       },
       htmlContent: <<~HTML
-            <html>
-            <body>
-            <p>Hello #{user}, Our Valued Backer!</p>
-            <p>We deeply appreciate your generous donation of <strong>#{currency_symbol} #{transaction_amount}</strong> to support the <strong>#{campaign_name}</strong> campaign.</p>
-            <p>Your contribution is making a difference for <strong>#{fundraiser_name}</strong> in achieving their goals.</p>
-            <p>The transaction reference for your donation is: <strong>#{transaction_reference}</strong></p>
-            <p>Date: <strong>#{transaction_date}</strong></p>
-            <p>If you have any questions, feel free to reply to this email.</p>
-            <br>
-            <p>Thanks,</p>
-            <p><strong>Bantuhive Team</strong></p>
+        <html>
+          <head>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                background-color: #f0faf0; /* Light green background */
+                margin: 0;
+                padding: 0;
+              }
+              .email-container {
+                max-width: 600px;
+                margin: 0 auto;
+                background-color: #ffffff; /* White background for content */
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+              }
+              .header {
+                background-color: #4CAF50; /* Green header */
+                padding: 20px;
+                text-align: center;
+              }
+              .header img {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                object-fit: cover;
+              }
+              .content {
+                padding: 20px;
+                color: #333333;
+              }
+              .content h1 {
+                color: #4CAF50; /* Green heading */
+                font-size: 24px;
+                margin-bottom: 20px;
+              }
+              .content p {
+                font-size: 16px;
+                line-height: 1.6;
+                margin-bottom: 20px;
+              }
+              .footer {
+                background-color: #f0faf0; /* Light green footer */
+                padding: 15px;
+                text-align: center;
+                font-size: 14px;
+                color: #666666;
+              }
+              .footer a {
+                color: #4CAF50; /* Green link */
+                text-decoration: none;
+              }
+              .footer a:hover {
+                text-decoration: underline;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="email-container">
+              <!-- Header -->
+              <div class="header">
+                <!-- Optionally add an avatar image or logo here -->
+              </div>
 
-            <!-- Footer -->
-            <div style="background-color: orange; padding: 20px; margin-top: 20px; color: black; text-align: center;">
-                <p style="margin: 0; font-size: 14px; font-weight: bold;">Follow Us</p>
-                <p style="margin: 5px 0;">
-                <a href="https://web.facebook.com/profile.php?id=61568192851056" style="color: black; text-decoration: none; margin: 0 10px;">Facebook</a> |#{' '}
-                <a href="https://twitter.com/yourprofile" style="color: black; text-decoration: none; margin: 0 10px;">Twitter</a> |#{' '}
-                <a href="https://www.instagram.com/bantuhive_fund/" style="color: black; text-decoration: none; margin: 0 10px;">Instagram</a> |#{' '}
-                <a href="https://www.linkedin.com/company/bantu-hive/about/" style="color: black; text-decoration: none; margin: 0 10px;">LinkedIn</a>
-                </p>
-                <hr style="border: none; height: 1px; background-color: black; margin: 10px 0;">
-                <p style="font-size: 12px; margin: 0;">
-                 IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana. <br>
-                <a href="https://bantuhive.com" style="color: black;">© BantuHive Ltd 2024</a>
-                </p>
+              <!-- Content -->
+              <div class="content">
+                <h1>Thank You for Your Donation!</h1>
+                <p>Dear #{user},</p>
+                <p>Thank you so much for your generous donation of <strong>#{currency_symbol} #{transaction_amount}</strong> to the <strong>#{campaign_name}</strong> campaign.</p>
+                <p>Your contribution is helping <strong>#{fundraiser_name}</strong> in their efforts to achieve their goals. We truly appreciate your support!</p>
+                <p><strong>Transaction Details:</strong></p>
+                <ul>
+                  <li><strong>Transaction Reference:</strong> #{transaction_reference}</li>
+                  <li><strong>Date:</strong> #{transaction_date}</li>
+                </ul>
+                <p>If you have any questions, feel free to reply to this email.</p>
+                <br>
+                <p>Thanks again for your generosity!</p>
+                <p><strong>Bantuhive Team</strong></p>
+              </div>
+
+              <!-- Footer -->
+              <div class="footer">
+                <p>You are receiving this email because you made a donation through Bantu Hive.</p>
+                <p>Sent from Bantuhive's Headquarters:</p>
+                <p>IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana.</p>
+
+                <!-- Social Media Links -->
+                <div style="text-align: center; margin-top: 10px;">
+                  <a href="https://web.facebook.com/profile.php?id=61568192851056" style="color: black; text-decoration: none; padding: 5px 10px; transition: color 0.3s;">Facebook</a>
+                  <a href="https://www.instagram.com/bantuhive_fund/" style="color: black; text-decoration: none; padding: 5px 10px; transition: color 0.3s;">Instagram</a>
+                  <a href="https://www.linkedin.com/company/bantu-hive/about/" style="color: black; text-decoration: none; padding: 5px 10px; transition: color 0.3s;">LinkedIn</a>
+                </div>
+
+                <p><a href="https://bantuhive.com">© BantuHive Ltd 2024</a></p>
+              </div>
             </div>
-            </body>
+          </body>
         </html>
       HTML
     )
-
 
     api_instance = SibApiV3Sdk::TransactionalEmailsApi.new
 

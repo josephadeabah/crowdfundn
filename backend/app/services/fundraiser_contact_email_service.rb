@@ -1,5 +1,3 @@
-# app/services/fundraiser_contact_email_service.rb
-
 class FundraiserContactEmailService
   def self.send_contact_email(fundraiser_email, fundraiser_name, user_name, user_email, message)
     # Prepare the email content
@@ -10,7 +8,7 @@ class FundraiserContactEmailService
           'name' => fundraiser_name
         }
       ],
-      template_id: 2,
+      template_id: 2, # Keep your current template ID for fundraiser notifications
       sender: {
         'name' => 'Bantuhive Ltd',
         'email' => 'help@bantuhive.com'
@@ -24,27 +22,101 @@ class FundraiserContactEmailService
       },
       htmlContent: <<~HTML
         <html>
+          <head>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                background-color: #f0faf0; /* Light green background */
+                margin: 0;
+                padding: 0;
+              }
+              .email-container {
+                max-width: 600px;
+                margin: 0 auto;
+                background-color: #ffffff; /* White background for content */
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+              }
+              .header {
+                background-color: #4CAF50; /* Green header */
+                padding: 20px;
+                text-align: center;
+              }
+              .header img {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                object-fit: cover;
+              }
+              .content {
+                padding: 20px;
+                color: #333333;
+              }
+              .content h1 {
+                color: #4CAF50; /* Green heading */
+                font-size: 24px;
+                margin-bottom: 20px;
+              }
+              .content p {
+                font-size: 16px;
+                line-height: 1.6;
+                margin-bottom: 20px;
+              }
+              .footer {
+                background-color: #f0faf0; /* Light green footer */
+                padding: 15px;
+                text-align: center;
+                font-size: 14px;
+                color: #666666;
+              }
+              .footer a {
+                color: #4CAF50; /* Green link */
+                text-decoration: none;
+              }
+              .footer a:hover {
+                text-decoration: underline;
+              }
+            </style>
+          </head>
           <body>
-            <p><strong>To respond directly to this message, simply click the 'Reply' button.</strong></p>
-            <br>
-            <p><strong>To:</strong> #{fundraiser_name}</p>
-            <p><strong>From:</strong> #{user_email}</p>
-            <br>
-            <p><strong>Sent from:</strong> Bantu Hive</p>
-            <br>
-            <p><strong>PLEASE NOTE:</strong> The message below is NOT from Bantu Hive, but rather an individual who visited and contacted you through your campaign. We strongly discourage you from clicking links or sharing your personal information without first verifying the sender's identity. Bantu Hive will never ask for your email address, password, or payment information in this manner. Do not respond if you are being offered a wire transfer or asked for a refund outside of Bantu Hive. Please forward all suspicious messages to <a href="mailto:help@bantuhive.com">help@bantuhive.com</a>.</p>
-            <br>
-            <p><strong>** MESSAGE **</strong></p>
-            <p>#{message}</p>
-            <p><strong>** END OF MESSAGE **</strong></p>
-            <br>
-            <p>Is this message abusive? Please forward all suspicious messages to <a href="mailto:help@bantuhive.com">help@bantuhive.com</a>.</p>
-            <br>
-            <hr>
-            <p>You are receiving this email because you have a Bantu Hive account.</p>
-            <p>Sent from Bantu Hive's Headquarters:</p>
-            <p>IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana.</p>
-            <p><a href="https://bantuhive.com">© BantuHive Ltd 2024</a></p>
+            <div class="email-container">
+              <!-- Header -->
+              <div class="header">
+                <!-- Optionally add an avatar image or logo here -->
+              </div>
+
+              <!-- Content -->
+              <div class="content">
+                <h1>You've received a new message from a supporter!</h1>
+                <p>Hi #{fundraiser_name},</p>
+                <p>You have received a new message from <strong>#{user_name}</strong> (Email: <strong>#{user_email}</strong>) regarding your campaign "<strong>#{campaign_name}</strong>".</p>
+                <p><strong>Message:</strong></p>
+                <p>#{message}</p>
+                <br>
+                <p><strong>PLEASE NOTE:</strong> This message is not from Bantuhive, but rather an individual who contacted you through your campaign. We strongly advise verifying the sender's identity before responding to any links or sharing personal information.</p>
+                <p>If you feel the message is suspicious or abusive, please forward it to <a href="mailto:help@bantuhive.com">help@bantuhive.com</a>.</p>
+                <br>
+                <p>Warm Regards,</p>
+                <p><strong>Bantuhive Team</strong></p>
+              </div>
+
+              <!-- Footer -->
+              <div class="footer">
+                <p>You are receiving this email because you have a Bantu Hive account.</p>
+                <p>Sent from Bantuhive's Headquarters:</p>
+                <p>IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana.</p>
+
+                <!-- Social Media Links -->
+                <div style="text-align: center; margin-top: 10px;">
+                  <a href="https://web.facebook.com/profile.php?id=61568192851056" style="color: black; text-decoration: none; padding: 5px 10px; transition: color 0.3s;">Facebook</a>
+                  <a href="https://www.instagram.com/bantuhive_fund/" style="color: black; text-decoration: none; padding: 5px 10px; transition: color 0.3s;">Instagram</a>
+                  <a href="https://www.linkedin.com/company/bantu-hive/about/" style="color: black; text-decoration: none; padding: 5px 10px; transition: color 0.3s;">LinkedIn</a>
+                </div>
+
+                <p><a href="https://bantuhive.com">© BantuHive Ltd 2024</a></p>
+              </div>
+            </div>
           </body>
         </html>
       HTML
