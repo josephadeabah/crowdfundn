@@ -126,7 +126,6 @@ class ThankYouEmailService
                 <!-- Social Media Links -->
                 <div class="social-media">
                   <a href="https://web.facebook.com/profile.php?id=61568192851056">Facebook</a>
-                  <a href="https://twitter.com/yourprofile">Twitter</a>
                   <a href="https://www.instagram.com/bantuhive_fund/">Instagram</a>
                   <a href="https://www.linkedin.com/company/bantu-hive/about/">LinkedIn</a>
                 </div>
