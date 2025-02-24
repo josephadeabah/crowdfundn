@@ -53,6 +53,7 @@ export default function Donations({ campaignId }: DonationsProps) {
   // Fetch donations whenever the page changes
   useEffect(() => {
     fetchDonations(currentPage, perPage);
+    console.log('donations:', donations);
   }, [currentPage, perPage, fetchDonations]);
 
   const handlePageChange = (page: number) => {
