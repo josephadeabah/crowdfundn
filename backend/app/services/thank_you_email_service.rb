@@ -47,8 +47,8 @@ class ThankYouEmailService
                 text-align: center;
               }
               .header img {
-                width: 20px;
-                height: 20px;
+                width: 50px;
+                height: 50px;
                 border-radius: 50%;
                 object-fit: cover;
               }
