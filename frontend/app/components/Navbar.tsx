@@ -353,7 +353,7 @@ const Navbar = () => {
               >
                 <Link
                   href="/auth/login"
-                  className="text-gray-700 text-sm dark:text-gray-50 focus-visible:outline-none focus:ring-0 hover:outline-none"
+                  className="text-gray-50 text-sm dark:text-gray-50 focus-visible:outline-none focus:ring-0 hover:outline-none"
                 >
                   Login
                 </Link>
