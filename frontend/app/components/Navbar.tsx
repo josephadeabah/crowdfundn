@@ -37,7 +37,8 @@ import { useUserContext } from '../context/users/UserContext';
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const { user, token, logout } = useAuth();
   const { userAccountData } = useUserContext();
   const router = useRouter();
@@ -171,7 +172,7 @@ const Navbar = () => {
 
         <div className="hidden lg:flex items-center gap-x-2 mx-6">
           {Object.entries(dropdownLinks).map(([key, links]) => (
-            <Menu key={key} allowHover>
+            <Menu key={key} allowHover handler={setIsMenuOpen}>
               <MenuHandler>
                 <Button
                   variant="ghost"
@@ -250,9 +251,14 @@ const Navbar = () => {
               {Object.entries(dropdownLinks).map(([key, links]) => (
                 <Menu key={key}>
                   <MenuHandler>
-                    <ListItem className="flex justify-between items-center">
+                    <ListItem className="flex justify-between items-center" selected={isMenuOpen || isMobileMenuOpen}  onClick={() => setIsMobileMenuOpen((cur) => !cur)}>
                       {key.charAt(0).toUpperCase() + key.slice(1)}
-                      <ChevronDownIcon className="h-4 w-4" />
+                      <ChevronDownIcon className={`hidden h-4 w-4 transition-transform lg:block ${
+                  isMenuOpen ? "rotate-180" : ""
+                }`} />
+                 <ChevronDownIcon className={`hidden h-4 w-4 transition-transform lg:block ${
+                  isMobileMenuOpen ? "rotate-180" : ""
+                }`} />
                     </ListItem>
                   </MenuHandler>
                   <MenuList className="p-3 bg-gray-50 text-gray-800 dark:text-gray-50 dark:bg-gray-950">
