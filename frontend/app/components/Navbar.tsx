@@ -17,7 +17,6 @@ import Link from 'next/link';
 import {
   UserGroupIcon,
   XMarkIcon,
-  ChevronDownIcon,
   SquaresPlusIcon,
   SunIcon,
   LightBulbIcon,
@@ -26,7 +25,7 @@ import {
   CreditCardIcon,
   UserIcon,
 } from '@heroicons/react/24/outline';
-import { HamburgerMenuIcon } from '@radix-ui/react-icons';
+import { HamburgerMenuIcon, ChevronDownIcon } from '@radix-ui/react-icons';
 import Avatar from '@/app/components/avatar/Avatar';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { useRouter } from 'next/navigation';
