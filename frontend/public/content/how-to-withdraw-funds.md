@@ -30,10 +30,10 @@ Once you’ve clicked the request, you’ll see a confirmation message letting y
 ### Paystack Transfer Information
 
 **Does Paystack charge for Transfers?**  
-Paystack charges a small fee per successful transfer. You can check out their current pricing [here](https://support2.paystack.com/hc/en-us/articles/360012276559-Transfers#:~:text=50%20per%20transfer-,Transfers%20Pricing,-Important%20to%20Note).
+We use Paystack for transfers. Paystack charges a small fee per successful transfer. You can check out their current pricing [here](https://support2.paystack.com/hc/en-us/articles/360012276559-Transfers#:~:text=50%20per%20transfer-,Transfers%20Pricing,-Important%20to%20Note).
 
-**Is there a minimum and maximum amount that can be sent with Paystack?**  
-The minimum amount you can transfer at a time is GHS 1, and the maximum amount is GHS 50,000.
+**Is there a minimum and maximum amount that can be sent with Bantu Hive?**  
+The minimum amount you can transfer at a time is GHS 60, and the maximum amount is GHS 50,000.
 
 ---
 
