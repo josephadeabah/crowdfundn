@@ -185,7 +185,12 @@ const Navbar = () => {
               </MenuHandler>
               <MenuList className="p-2 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950">
                 {links.map((link) => (
-                  <Link href={link.href} key={link.href} passHref className="focus-visible:outline-none focus:ring-0 hover:outline-none">
+                  <Link
+                    href={link.href}
+                    key={link.href}
+                    passHref
+                    className="focus-visible:outline-none focus:ring-0 hover:outline-none"
+                  >
                     <MenuItem className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
                       <div className="flex items-center justify-center rounded-lg !bg-blue-gray-50 p-2">
                         {React.createElement(link.icon, {
@@ -235,12 +240,18 @@ const Navbar = () => {
               {!user && (
                 <>
                   <ListItem>
-                    <Link href="/auth/register" className="block focus-visible:outline-none focus:ring-0 hover:outline-none">
+                    <Link
+                      href="/auth/register"
+                      className="block focus-visible:outline-none focus:ring-0 hover:outline-none"
+                    >
                       Start Project
                     </Link>
                   </ListItem>
                   <ListItem>
-                    <Link href="/auth/login" className="block focus-visible:outline-none focus:ring-0 hover:outline-none">
+                    <Link
+                      href="/auth/login"
+                      className="block focus-visible:outline-none focus:ring-0 hover:outline-none"
+                    >
                       Login
                     </Link>
                   </ListItem>
@@ -256,7 +267,12 @@ const Navbar = () => {
                   </MenuHandler>
                   <MenuList className="p-3 bg-gray-50 text-gray-800 dark:text-gray-50 dark:bg-gray-950">
                     {links.map((link) => (
-                      <Link href={link.href} key={link.href} passHref className="focus-visible:outline-none focus:ring-0 hover:outline-none">
+                      <Link
+                        href={link.href}
+                        key={link.href}
+                        passHref
+                        className="focus-visible:outline-none focus:ring-0 hover:outline-none"
+                      >
                         <MenuItem className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
                           <div className="flex items-center justify-center rounded-lg !bg-blue-gray-50 p-2">
                             {React.createElement(link.icon, {
@@ -286,7 +302,10 @@ const Navbar = () => {
               ))}
               {user && (
                 <ListItem className="flex items-center gap-3 focus-visible:outline-none focus:ring-0 hover:outline-none">
-                  <Link href="/account" className="focus-visible:outline-none focus:ring-0 hover:outline-none">
+                  <Link
+                    href="/account"
+                    className="focus-visible:outline-none focus:ring-0 hover:outline-none"
+                  >
                     <Avatar
                       name={user.full_name}
                       size="sm"
@@ -322,7 +341,8 @@ const Navbar = () => {
               >
                 <Link
                   href="/auth/register"
-                  className="text-gray-700 text-sm dark:text-gray-50 focus-visible:outline-none focus:ring-0 hover:outline-none"                >
+                  className="text-gray-700 text-sm dark:text-gray-50 focus-visible:outline-none focus:ring-0 hover:outline-none"
+                >
                   Start A Project
                 </Link>
               </motion.button>
@@ -333,7 +353,7 @@ const Navbar = () => {
               >
                 <Link
                   href="/auth/login"
-                  className="text-gray-700 text-sm dark:text-gray-50 focus-visible:outline-none focus:ring-0 hover:outline-none" 
+                  className="text-gray-700 text-sm dark:text-gray-50 focus-visible:outline-none focus:ring-0 hover:outline-none"
                 >
                   Login
                 </Link>
@@ -354,7 +374,10 @@ const Navbar = () => {
               </MenuHandler>
               <MenuList className="p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50">
                 <div className="cursor-pointer flex items-center focus-visible:outline-none focus:ring-0 hover:outline-none">
-                  <Link href="/account" className="focus-visible:outline-none focus:ring-0 hover:outline-none" >
+                  <Link
+                    href="/account"
+                    className="focus-visible:outline-none focus:ring-0 hover:outline-none"
+                  >
                     <Avatar
                       name={user.full_name}
                       size="sm"
@@ -378,13 +401,21 @@ const Navbar = () => {
                       (role) =>
                         role.name === 'Admin' || role.name === 'Manager',
                     )) && (
-                    <Link href="/admin/manage" passHref className="focus-visible:outline-none focus:ring-0 hover:outline-none" >
+                    <Link
+                      href="/admin/manage"
+                      passHref
+                      className="focus-visible:outline-none focus:ring-0 hover:outline-none"
+                    >
                       <MenuItem className="hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none">
                         Go to Admin
                       </MenuItem>
                     </Link>
                   )}
-                <Link href="/account" passHref className="focus-visible:outline-none focus:ring-0 hover:outline-none" >
+                <Link
+                  href="/account"
+                  passHref
+                  className="focus-visible:outline-none focus:ring-0 hover:outline-none"
+                >
                   <MenuItem className="hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none">
                     Go to Account
                   </MenuItem>
