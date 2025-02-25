@@ -15,7 +15,6 @@ import SummaryCardComponent from './molecules/SummaryCard';
 import BHScreenKnowHow from './molecules/BHScreenKnowHow';
 import IllustrateImageComponent from './molecules/IllustrateImageComponent';
 import BlogPosts from './components/blogs/BlogPosts';
-import Parallax from './components/parallax/Parallax';
 
 const HomePage = () => {
   const wordRef = React.useRef<HTMLDivElement | null>(null);
@@ -200,19 +199,6 @@ const HomePage = () => {
             </div>
           </motion.div>
         </div>
-          {/* Add the Parallax component here */}
-        <Parallax speed={0.5} className="w-full h-96 bg-gray-100 dark:bg-gray-900">
-          {/* This is where you can add content later */}
-          <SummaryCardComponent />
-        <IllustrateImageComponent
-          images={[
-            '/Cheer-up-bro.svg',
-            '/heart-with-a-little-bow-svgrepo-com.png',
-            '/Team-spirit-bro.svg',
-          ]}
-        />
-        </Parallax>
-
         <SummaryCardComponent />
         <IllustrateImageComponent
           images={[
