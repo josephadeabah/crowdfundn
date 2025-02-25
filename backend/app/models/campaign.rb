@@ -155,21 +155,22 @@ class Campaign < ApplicationRecord
   end
 
   def donations_over_time
-    start_of_campaign = start_date.beginning_of_day
-    end_of_campaign = [end_date.end_of_day, Time.zone.now].min # Avoid future dates
-
-    # Fetch successful donations and group them by day
+    # Define the start and end of the current month
+    start_of_month = Time.zone.now.beginning_of_month
+    end_of_month = Time.zone.now.end_of_month
+  
+    # Fetch successful donations within the current month and group them by day
     donations = self.donations
-                    .where(status: 'successful', created_at: start_of_campaign..end_of_campaign)
+                    .where(status: 'successful', created_at: start_of_month..end_of_month)
                     .group_by_day(:created_at, format: '%Y-%m-%d')
                     .sum(:amount)
-
-    # Ensure all days in the campaign duration are included
-    (start_of_campaign.to_date..end_of_campaign.to_date).each do |date|
+  
+    # Ensure all days in the current month are included, even if there are no donations
+    (start_of_month.to_date..end_of_month.to_date).each do |date|
       formatted_date = date.strftime('%Y-%m-%d')
       donations[formatted_date] ||= 0
     end
-
+  
     donations.sort.to_h
   end
 
