@@ -406,7 +406,9 @@ const CampaignManager = () => {
                             ? 'text-red-600 hover:text-red-900'
                             : 'text-yellow-600 hover:text-yellow-900'
                         } p-1`}
-                        title={campaign.isBlocked ? 'Run Campaign' : 'Pause Campaign'}
+                        title={
+                          campaign.isBlocked ? 'Run Campaign' : 'Pause Campaign'
+                        }
                       >
                         {campaign.isBlocked ? <FaUnlock /> : <FaLock />}
                       </button>

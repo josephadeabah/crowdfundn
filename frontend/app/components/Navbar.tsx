@@ -2,20 +2,33 @@
 
 import React, { useEffect, useState } from 'react';
 import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from '../components/popover/Popover';
+  Menu,
+  MenuHandler,
+  MenuList,
+  MenuItem,
+  Typography,
+  IconButton,
+  List,
+  ListItem,
+} from '@material-tailwind/react';
 import DarkModeBtn from './DarkModeBtn';
 import { Button } from './button/Button';
 import Link from 'next/link';
-import { XMarkIcon } from '@heroicons/react/24/outline';
-import { HamburgerMenuIcon, TriangleDownIcon } from '@radix-ui/react-icons';
+import {
+  UserGroupIcon,
+  XMarkIcon,
+  ChevronDownIcon,
+  SquaresPlusIcon,
+  Bars4Icon,
+  SunIcon,
+  GlobeAmericasIcon,
+  PhoneIcon,
+} from '@heroicons/react/24/outline';
+import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import Avatar from '@/app/components/avatar/Avatar';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { useRouter } from 'next/navigation';
 import NavbarLoader from '../loaders/NavbarLoader';
-import NotificationBar from './noticebar/NotificationBar';
 import { motion } from 'framer-motion';
 import { useUserContext } from '../context/users/UserContext';
 
@@ -23,7 +36,6 @@ const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activePopover, setActivePopover] = useState<string | null>(null);
   const { user, token, logout } = useAuth();
   const { userAccountData } = useUserContext();
   const router = useRouter();
@@ -51,38 +63,56 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const handlePopoverToggle = (key: string) => {
-    setActivePopover(activePopover === key ? null : key);
-  };
-
   const dropdownLinks = {
     About: [
-      { label: 'Who We Are', href: '/about-us' },
+      { label: 'Who We Are', href: '/about-us', icon: UserGroupIcon },
       {
         label: 'Why Is This Right For You?',
         href: '/articles/is-crowdfunding-right-for-you',
+        icon: SunIcon,
       },
-      { label: 'Who Can Fundraise?', href: '/articles/who-can-fundraise' },
+      {
+        label: 'Who Can Fundraise?',
+        href: '/articles/who-can-fundraise',
+        icon: SquaresPlusIcon,
+      },
     ],
     Guides: [
-      { label: 'How To Get Started', href: '/articles/how-to-get-started' },
+      {
+        label: 'How To Get Started',
+        href: '/articles/how-to-get-started',
+        icon: Bars4Icon,
+      },
       {
         label: 'How To Withdraw Funds Safely',
         href: '/articles/how-to-withdraw-funds',
+        icon: PhoneIcon,
       },
-      { label: 'Pricing', href: '/pricing' },
+      { label: 'Pricing', href: '/pricing', icon: GlobeAmericasIcon },
     ],
     Contact: [
-      { label: 'Ghana', href: '/contactus' },
-      { label: 'Eswatini', href: '/contactus' },
+      { label: 'Ghana', href: '/contactus', icon: PhoneIcon },
+      { label: 'Eswatini', href: '/contactus', icon: PhoneIcon },
     ],
     Donate: [
-      { label: 'By Category', href: '/explore/category' },
-      { label: 'By Advance Filtering', href: '/explore/advance' },
+      {
+        label: 'By Category',
+        href: '/explore/category',
+        icon: SquaresPlusIcon,
+      },
+      {
+        label: 'By Advance Filtering',
+        href: '/explore/advance',
+        icon: SquaresPlusIcon,
+      },
     ],
     Leaderboard: [
-      { label: 'Backers', href: '/leaderboard/backers' },
-      { label: 'Fundraisers', href: '/leaderboard/fundraisers' },
+      { label: 'Backers', href: '/leaderboard/backers', icon: UserGroupIcon },
+      {
+        label: 'Fundraisers',
+        href: '/leaderboard/fundraisers',
+        icon: UserGroupIcon,
+      },
     ],
   };
 
@@ -106,70 +136,36 @@ const Navbar = () => {
         </div>
 
         <div className="hidden lg:flex items-center gap-x-2 mx-6">
-          {Object.entries(dropdownLinks).map(([key, links]) => {
-            let closeTimeout: NodeJS.Timeout;
-            return (
-              <Popover
-                key={key}
-                open={activePopover === key}
-                onOpenChange={(isOpen) => {
-                  if (!isOpen) setActivePopover(null);
-                }}
-              >
-                <PopoverTrigger asChild>
-                  <Button
-                    onMouseEnter={() => {
-                      clearTimeout(closeTimeout); // Prevent immediate close
-                      setActivePopover(key);
-                    }}
-                    onMouseLeave={() => {
-                      closeTimeout = setTimeout(
-                        () => setActivePopover(null),
-                        200,
-                      ); // Slight delay before closing
-                    }}
-                    variant="ghost"
-                    className="flex items-center text-gray-700 dark:text-gray-50 group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
-                  >
-                    {key.charAt(0).toUpperCase() + key.slice(1)}
-                    {/* Arrow with rotation */}
-                    <TriangleDownIcon
-                      className={`ml-2 h-4 w-4 transition-transform ${
-                        activePopover === key ? 'rotate-180' : ''
-                      }`}
-                    />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  side="bottom"
-                  align="start"
-                  sideOffset={5}
-                  className="w-full p-0"
-                  onMouseEnter={() => clearTimeout(closeTimeout)} // Keep dropdown open
-                  onMouseLeave={() => {
-                    closeTimeout = setTimeout(
-                      () => setActivePopover(null),
-                      200,
-                    ); // Delay close
-                  }}
+          {Object.entries(dropdownLinks).map(([key, links]) => (
+            <Menu key={key} allowHover>
+              <MenuHandler>
+                <Button
+                  variant="ghost"
+                  className="flex items-center text-gray-700 dark:text-gray-50 group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
                 >
-                  <ul className="p-2 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950">
-                    {links.map((link) => (
-                      <li
-                        key={link.href}
-                        className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800"
-                      >
-                        <Link href={link.href}>{link.label}</Link>
-                      </li>
-                    ))}
-                  </ul>
-                </PopoverContent>
-              </Popover>
-            );
-          })}
+                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                  <ChevronDownIcon className="ml-2 h-4 w-4" />
+                </Button>
+              </MenuHandler>
+              <MenuList className="p-2 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950">
+                {links.map((link) => (
+                  <MenuItem
+                    key={link.href}
+                    className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800"
+                  >
+                    {React.createElement(link.icon, {
+                      className: 'h-5 w-5',
+                    })}
+                    <Link href={link.href}>{link.label}</Link>
+                  </MenuItem>
+                ))}
+              </MenuList>
+            </Menu>
+          ))}
         </div>
+
         <div className="lg:hidden mr-3">
-          <button
+          <IconButton
             onClick={handleMenuToggle}
             className="text-gray-700 dark:text-gray-300"
           >
@@ -178,68 +174,51 @@ const Navbar = () => {
             ) : (
               <HamburgerMenuIcon className="h-8 w-8" />
             )}
-          </button>
+          </IconButton>
         </div>
 
         {isMenuOpen && (
           <div className="absolute top-16 left-0 w-full bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-900 lg:hidden">
-            <ul className="flex flex-col items-start p-4 space-y-4">
+            <List className="flex flex-col items-start p-4 space-y-4">
               {!user && (
                 <>
-                  {/* <li>
-                      <Link href="/cofund" className="block">
-                        Co-Fund
-                      </Link>
-                    </li> */}
-                  <li>
+                  <ListItem>
                     <Link href="/auth/register" className="block">
                       Start Project
                     </Link>
-                  </li>
-                  <li>
+                  </ListItem>
+                  <ListItem>
                     <Link href="/auth/login" className="block">
                       Login
                     </Link>
-                  </li>
+                  </ListItem>
                 </>
               )}
               {Object.entries(dropdownLinks).map(([key, links]) => (
-                <li key={key}>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        onClick={() => handlePopoverToggle(key)}
-                        variant="ghost"
-                        className="flex items-center text-gray-700 dark:text-gray-50 group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
+                <Menu key={key}>
+                  <MenuHandler>
+                    <ListItem className="flex items-center gap-2">
+                      {key.charAt(0).toUpperCase() + key.slice(1)}
+                      <ChevronDownIcon className="h-4 w-4" />
+                    </ListItem>
+                  </MenuHandler>
+                  <MenuList className="p-2 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950">
+                    {links.map((link) => (
+                      <MenuItem
+                        key={link.href}
+                        className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800"
                       >
-                        {key.charAt(0).toUpperCase() + key.slice(1)}
-                        <TriangleDownIcon className="ml-2 h-4 w-4" />
-                      </Button>
-                    </PopoverTrigger>
-                    {activePopover === key && (
-                      <PopoverContent
-                        side="bottom"
-                        align="start"
-                        sideOffset={10}
-                      >
-                        <ul className="grid grid-cols-2 gap-2">
-                          {links.map((link) => (
-                            <li
-                              key={link.href}
-                              className="p-2 hover:bg-gray-950 hover:text-gray-50 dark:hover:bg-gray-800"
-                            >
-                              <Link href={link.href}>{link.label}</Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </PopoverContent>
-                    )}
-                  </Popover>
-                </li>
+                        {React.createElement(link.icon, {
+                          className: 'h-5 w-5',
+                        })}
+                        <Link href={link.href}>{link.label}</Link>
+                      </MenuItem>
+                    ))}
+                  </MenuList>
+                </Menu>
               ))}
-              {/* <DarkModeBtn /> */}
               {user && (
-                <li className="flex items-center gap-3">
+                <ListItem className="flex items-center gap-3">
                   <Link href="/account">
                     <Avatar
                       name={user.full_name}
@@ -254,38 +233,21 @@ const Navbar = () => {
                     <span className="font-semibold">{user.full_name}</span>
                     <span className="text-gray-600">{user.email}</span>
                   </div>
-                  {/* <div className="flex items-center gap-3 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 px-0 py-2 rounded transition">
-                        <Link href="/cofund">
-                          <div>Co-Fund</div>
-                        </Link>
-                      </div> */}
                   <div
                     className="hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
                     onClick={logout}
                   >
                     Logout
                   </div>
-                </li>
+                </ListItem>
               )}
-            </ul>
+            </List>
           </div>
         )}
 
         <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
           {!user ? (
             <>
-              {/* <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="py-1 px-4 bg-white dark:bg-gray-900 dark:text-gray-50 rounded-full focus-visible:outline-none focus:ring-0 hover:outline-none hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300"
-                >
-                  <Link
-                    href="/cofund"
-                    className="text-gray-700 text-sm dark:text-gray-50"
-                  >
-                    Co-Fund
-                  </Link>
-                </motion.button> */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -312,8 +274,8 @@ const Navbar = () => {
               </motion.button>
             </>
           ) : (
-            <Popover>
-              <PopoverTrigger asChild>
+            <Menu>
+              <MenuHandler>
                 <div className="cursor-pointer">
                   <Avatar
                     name={user.full_name}
@@ -323,63 +285,48 @@ const Navbar = () => {
                     }
                   />
                 </div>
-              </PopoverTrigger>
-              <PopoverContent side="bottom" align="end" sideOffset={10}>
-                <div className="flex flex-col justify-start gap-1 p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50">
-                  <div className="cursor-pointer flex items-center">
-                    <Link href="/account">
-                      <Avatar
-                        name={user.full_name}
-                        size="sm"
-                        imageUrl={
-                          userAccountData?.profile?.avatar?.record
-                            ?.avatar as string
-                        }
-                      />
-                    </Link>
-                    <div
-                      className="ml-3 flex flex-col"
-                      onClick={() => router.push('/account')}
-                    >
-                      <span className="font-semibold">{user.full_name}</span>
-                      <span className="text-gray-600">{user.email}</span>
-                    </div>
-                  </div>
-                  {userAccountData &&
-                    (userAccountData?.admin === true ||
-                      userAccountData?.roles.some(
-                        (role) =>
-                          role.name === 'Admin' || role.name === 'Manager',
-                      )) && (
-                      <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
-                        <Link href="/admin/manage">
-                          <div>Go to Admin</div>
-                        </Link>
-                      </div>
-                    )}
-                  <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
-                    <Link href="/account">
-                      <div>Go to Account</div>
-                    </Link>
-                  </div>
-                  {/* <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
-                      <Link href="/cofund">
-                        <div>Co-Fund</div>
-                      </Link>
-                    </div> */}
-                  {/* <div className="flex items-center gap-3 border border-gray-50 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition">
-                        <div>Change Theme</div>
-                        <DarkModeBtn />
-                      </div> */}
+              </MenuHandler>
+              <MenuList className="p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50">
+                <div className="cursor-pointer flex items-center">
+                  <Link href="/account">
+                    <Avatar
+                      name={user.full_name}
+                      size="sm"
+                      imageUrl={
+                        userAccountData?.profile?.avatar?.record
+                          ?.avatar as string
+                      }
+                    />
+                  </Link>
                   <div
-                    className="hover:bg-gray-200 border border-gray-50 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
-                    onClick={logout}
+                    className="ml-3 flex flex-col"
+                    onClick={() => router.push('/account')}
                   >
-                    Logout
+                    <span className="font-semibold">{user.full_name}</span>
+                    <span className="text-gray-600">{user.email}</span>
                   </div>
                 </div>
-              </PopoverContent>
-            </Popover>
+                {userAccountData &&
+                  (userAccountData?.admin === true ||
+                    userAccountData?.roles.some(
+                      (role) =>
+                        role.name === 'Admin' || role.name === 'Manager',
+                    )) && (
+                    <MenuItem className="hover:bg-gray-200 dark:hover:bg-gray-700">
+                      <Link href="/admin/manage">Go to Admin</Link>
+                    </MenuItem>
+                  )}
+                <MenuItem className="hover:bg-gray-200 dark:hover:bg-gray-700">
+                  <Link href="/account">Go to Account</Link>
+                </MenuItem>
+                <MenuItem
+                  className="hover:bg-gray-200 dark:hover:bg-gray-700"
+                  onClick={logout}
+                >
+                  Logout
+                </MenuItem>
+              </MenuList>
+            </Menu>
           )}
         </div>
       </div>
