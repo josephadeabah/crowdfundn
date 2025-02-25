@@ -199,7 +199,7 @@ const Navbar = () => {
               {Object.entries(dropdownLinks).map(([key, links]) => (
                 <Menu key={key}>
                   <MenuHandler>
-                    <ListItem className="flex items-center gap-2">
+                    <ListItem className="flex justify-between items-center">
                       {key.charAt(0).toUpperCase() + key.slice(1)}
                       <ChevronDownIcon className="h-4 w-4" />
                     </ListItem>
