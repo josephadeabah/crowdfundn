@@ -281,8 +281,9 @@ const SingleCampaignPage: React.FC = () => {
                   </div>
 
                   {/* Fundraiser Info Section */}
-                  <div className="flex items-center space-x-4 mb-4">
-                    <div className="text-xs italic text-gray-500 dark:text-gray-400">
+                  {/* Fundraiser Info Section */}
+                  <div className="flex flex-col sm:flex-row items-center sm:space-x-4 mb-4">
+                    <div className="text-xs italic text-gray-500 dark:text-gray-400 sm:mr-4">
                       Fundraiser:
                     </div>
                     <Avatar
@@ -290,18 +291,19 @@ const SingleCampaignPage: React.FC = () => {
                       size="md"
                       imageUrl={currentCampaign?.fundraiser?.profile?.avatar}
                     />
-                    <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                      {fundraiserName}
-                    </h3>
-                    {/* Contact Button */}
-                    <button
-                      onClick={() => setIsContactModalOpen(true)}
-                      className="ml-4 px-4 py-2 bg-white border border-gray-400 text-gray-600 rounded-md hover:bg-gray-100 transition"
-                    >
-                      Contact
-                    </button>
+                    <div className="flex flex-col sm:flex-row items-center w-full sm:w-auto">
+                      <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 sm:mr-4 w-full sm:w-auto">
+                        {fundraiserName}
+                      </h3>
+                      {/* Contact Button */}
+                      <button
+                        onClick={() => setIsContactModalOpen(true)}
+                        className="w-full sm:w-auto ml-0 sm:ml-4 px-4 py-2 bg-white border border-gray-400 text-gray-600 rounded-md hover:bg-gray-100 transition"
+                      >
+                        Contact
+                      </button>
+                    </div>
                   </div>
-
                   {/* Fundraiser Description */}
                   <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     {currentCampaign?.fundraiser?.profile?.description ||
