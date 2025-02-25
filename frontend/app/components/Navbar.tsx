@@ -288,7 +288,7 @@ const Navbar = () => {
                   />
                 </div>
               </MenuHandler>
-              <MenuList className="sm:w-full p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50">
+              <MenuList className="p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50">
                 <div className="cursor-pointer flex items-center focus-visible:outline-none focus:ring-0 hover:outline-none">
                   <Link href="/account">
                     <Avatar
