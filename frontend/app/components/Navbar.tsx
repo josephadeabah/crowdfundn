@@ -143,7 +143,7 @@ const Navbar = () => {
               <MenuHandler>
                 <Button
                   variant="ghost"
-                  className="flex items-center text-gray-700 dark:text-gray-50 group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
+                  className="flex items-center text-gray-800 dark:text-gray-50 group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
                 >
                   {key.charAt(0).toUpperCase() + key.slice(1)}
                   <ChevronDownIcon className="ml-2 h-4 w-4" />
@@ -204,7 +204,7 @@ const Navbar = () => {
                       <ChevronDownIcon className="h-4 w-4" />
                     </ListItem>
                   </MenuHandler>
-                  <MenuList className="sm:w-full p-3 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950">
+                  <MenuList className="sm:w-full p-3 bg-gray-50 text-gray-800 dark:text-gray-50 dark:bg-gray-950">
                     {links.map((link) => (
                       <MenuItem
                         key={link.href}
