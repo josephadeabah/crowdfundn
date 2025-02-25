@@ -186,7 +186,7 @@ const Navbar = () => {
               <MenuList className="p-2 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950">
                 {links.map((link) => (
                   <Link href={link.href} key={link.href} passHref>
-                    <MenuItem className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800">
+                    <MenuItem className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
                       <div className="flex items-center justify-center rounded-lg !bg-blue-gray-50 p-2">
                         {React.createElement(link.icon, {
                           className: 'h-5 w-5 text-gray-900',
@@ -257,7 +257,7 @@ const Navbar = () => {
                   <MenuList className="p-3 bg-gray-50 text-gray-800 dark:text-gray-50 dark:bg-gray-950">
                     {links.map((link) => (
                       <Link href={link.href} key={link.href} passHref>
-                        <MenuItem className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800">
+                        <MenuItem className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
                           <div className="flex items-center justify-center rounded-lg !bg-blue-gray-50 p-2">
                             {React.createElement(link.icon, {
                               className: 'h-5 w-5 text-gray-900',
@@ -380,18 +380,18 @@ const Navbar = () => {
                         role.name === 'Admin' || role.name === 'Manager',
                     )) && (
                     <Link href="/admin/manage" passHref>
-                      <MenuItem className="hover:bg-gray-200 dark:hover:bg-gray-700">
+                      <MenuItem className="hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none">
                         Go to Admin
                       </MenuItem>
                     </Link>
                   )}
                 <Link href="/account" passHref>
-                  <MenuItem className="hover:bg-gray-200 dark:hover:bg-gray-700">
+                  <MenuItem className="hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none">
                     Go to Account
                   </MenuItem>
                 </Link>
                 <MenuItem
-                  className="hover:bg-gray-200 dark:hover:bg-gray-700"
+                  className="hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none"
                   onClick={logout}
                 >
                   Logout
