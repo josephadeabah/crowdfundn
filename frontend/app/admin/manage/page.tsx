@@ -27,7 +27,8 @@ import ContentManagerAdminPage from './content/ContentManager';
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true); // Sidebar open by default on small screens
-  const [activeTab, setActiveTab] = useState<'general-dashboard'>('general-dashboard');
+  const [activeTab, setActiveTab] =
+    useState<'general-dashboard'>('general-dashboard');
 
   useEffect(() => {
     const storedTab = localStorage.getItem('activeTab');
@@ -55,15 +56,51 @@ const AdminDashboard = () => {
   };
 
   const navItems = [
-    { name: 'general-dashboard', label: 'Dashboard', icon: <PresentationChartBarIcon className="h-5 w-5" /> },
-    { name: 'userManagement', label: 'User Manager', icon: <UserCircleIcon className="h-5 w-5" /> },
-    { name: 'moneyTransfers', label: 'Transactions', icon: <ShoppingBagIcon className="h-5 w-5" /> },
-    { name: 'campaignsManager', label: 'Campaigns', icon: <InboxIcon className="h-5 w-5" /> },
-    { name: 'contentManager', label: 'Content', icon: <Cog6ToothIcon className="h-5 w-5" /> },
-    { name: 'promotions', label: 'Promotions', icon: <PowerIcon className="h-5 w-5" /> },
-    { name: 'analytics', label: 'Analytics', icon: <PresentationChartBarIcon className="h-5 w-5" /> },
-    { name: 'support', label: 'Support', icon: <InboxIcon className="h-5 w-5" /> },
-    { name: 'settings', label: 'Settings', icon: <Cog6ToothIcon className="h-5 w-5" /> },
+    {
+      name: 'general-dashboard',
+      label: 'Dashboard',
+      icon: <PresentationChartBarIcon className="h-5 w-5" />,
+    },
+    {
+      name: 'userManagement',
+      label: 'User Manager',
+      icon: <UserCircleIcon className="h-5 w-5" />,
+    },
+    {
+      name: 'moneyTransfers',
+      label: 'Transactions',
+      icon: <ShoppingBagIcon className="h-5 w-5" />,
+    },
+    {
+      name: 'campaignsManager',
+      label: 'Campaigns',
+      icon: <InboxIcon className="h-5 w-5" />,
+    },
+    {
+      name: 'contentManager',
+      label: 'Content',
+      icon: <Cog6ToothIcon className="h-5 w-5" />,
+    },
+    {
+      name: 'promotions',
+      label: 'Promotions',
+      icon: <PowerIcon className="h-5 w-5" />,
+    },
+    {
+      name: 'analytics',
+      label: 'Analytics',
+      icon: <PresentationChartBarIcon className="h-5 w-5" />,
+    },
+    {
+      name: 'support',
+      label: 'Support',
+      icon: <InboxIcon className="h-5 w-5" />,
+    },
+    {
+      name: 'settings',
+      label: 'Settings',
+      icon: <Cog6ToothIcon className="h-5 w-5" />,
+    },
   ];
 
   const tabContent = {
@@ -83,7 +120,7 @@ const AdminDashboard = () => {
       {/* Overlay for Mobile */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black z-40 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={toggleSidebar}
         />
       )}
@@ -97,7 +134,7 @@ const AdminDashboard = () => {
         <Card className="h-full w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
           <div className="mb-2 p-4 flex justify-between items-center">
             <Typography variant="h5" color="blue-gray">
-               Admin
+              Admin
             </Typography>
             {/* Close Icon for Mobile */}
             <button

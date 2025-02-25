@@ -189,10 +189,7 @@ const Navbar = () => {
                     setActiveMenu(key);
                   }}
                   onMouseLeave={() => {
-                    closeTimeout = setTimeout(
-                      () => setActiveMenu(null),
-                      200,
-                    );
+                    closeTimeout = setTimeout(() => setActiveMenu(null), 200);
                   }}
                   variant="ghost"
                   className="flex items-center text-gray-700 dark:text-gray-50 group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
