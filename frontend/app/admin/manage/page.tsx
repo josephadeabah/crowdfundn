@@ -6,8 +6,6 @@ import {
   List,
   ListItem,
   ListItemPrefix,
-  ListItemSuffix,
-  Chip,
 } from '@material-tailwind/react';
 import {
   PresentationChartBarIcon,
@@ -16,6 +14,7 @@ import {
   Cog6ToothIcon,
   InboxIcon,
   PowerIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/solid';
 import TransfersManager from './transfers/TransfersManager';
 import GeneralDashboard from './general/GeneralDashboard';
@@ -49,6 +48,10 @@ const AdminDashboard = () => {
 
   const selectTab = (tabName: 'general-dashboard') => {
     setActiveTab(tabName);
+    // Close sidebar on mobile after selecting a tab
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false);
+    }
   };
 
   const navItems = [
@@ -77,17 +80,32 @@ const AdminDashboard = () => {
 
   return (
     <div className="flex h-screen bg-white text-gray-800">
+      {/* Overlay for Mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={toggleSidebar}
+        />
+      )}
+
       {/* Material Tailwind Sidebar */}
       <div
         className={`${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } fixed inset-y-0 left-0 w-64 sm:w-80 md:w-96 lg:w-56 transition-all duration-300 ease-in-out overflow-hidden lg:translate-x-0 lg:static lg:inset-0`}
+        } fixed inset-y-0 left-0 w-64 sm:w-80 md:w-96 lg:w-56 transition-all duration-300 ease-in-out overflow-hidden lg:translate-x-0 lg:static lg:inset-0 z-50`}
       >
         <Card className="h-full w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
-          <div className="mb-2 p-4">
+          <div className="mb-2 p-4 flex justify-between items-center">
             <Typography variant="h5" color="blue-gray">
-              Bantuhive Admin
+               Admin
             </Typography>
+            {/* Close Icon for Mobile */}
+            <button
+              onClick={toggleSidebar}
+              className="lg:hidden text-gray-700 focus:outline-none"
+            >
+              <XMarkIcon className="h-6 w-6" />
+            </button>
           </div>
           <List>
             {navItems.map((item) => (
