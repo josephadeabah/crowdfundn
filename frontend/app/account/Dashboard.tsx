@@ -77,7 +77,7 @@ export default function Dashboard() {
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Fundraising Goal
             </CardTitle>
-            <CardDescription className="text-yellow-500 dark:text-yellow-400">
+            <CardDescription className="text-cyan-500 dark:text-cyan-400">
               {user?.currency?.toUpperCase()}{' '}
               {statistics &&
                 parseFloat(statistics.total_fundraising_goal).toLocaleString()}
@@ -119,7 +119,7 @@ export default function Dashboard() {
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Pending Withdrawals
             </CardTitle>
-            <CardDescription className="text-yellow-600 dark:text-yellow-300">
+            <CardDescription className="text-brown-500 dark:text-brown-300">
               {user?.currency?.toUpperCase()}{' '}
               {statistics &&
                 parseFloat(statistics?.total_donated_amount).toLocaleString()}
