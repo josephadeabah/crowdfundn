@@ -67,16 +67,23 @@ const Navbar = () => {
 
   const dropdownLinks = {
     About: [
-      { label: 'Who We Are', href: '/about-us', icon: UserGroupIcon },
+      {
+        label: 'Who We Are',
+        href: '/about-us',
+        icon: UserGroupIcon,
+        description: 'Learn more about our mission and vision.',
+      },
       {
         label: 'Why Is This Right For You?',
         href: '/articles/is-crowdfunding-right-for-you',
         icon: SunIcon,
+        description: 'Discover why crowdfunding is the right choice for you.',
       },
       {
         label: 'Who Can Fundraise?',
         href: '/articles/who-can-fundraise',
         icon: UserIcon,
+        description: 'Find out who can start a fundraising campaign.',
       },
     ],
     Guides: [
@@ -84,36 +91,61 @@ const Navbar = () => {
         label: 'How To Get Started',
         href: '/articles/how-to-get-started',
         icon: LightBulbIcon,
+        description: 'Step-by-step guide to launching your campaign.',
       },
       {
         label: 'How To Withdraw Funds Safely',
         href: '/articles/how-to-withdraw-funds',
         icon: CreditCardIcon,
+        description: 'Learn how to securely withdraw your funds.',
       },
-      { label: 'Pricing', href: '/pricing', icon: BanknotesIcon },
+      {
+        label: 'Pricing',
+        href: '/pricing',
+        icon: BanknotesIcon,
+        description: 'Understand our pricing structure.',
+      },
     ],
     Contact: [
-      { label: 'Ghana', href: '/contactus', icon: PhoneIcon },
-      { label: 'Eswatini', href: '/contactus', icon: PhoneIcon },
+      {
+        label: 'Ghana',
+        href: '/contactus',
+        icon: PhoneIcon,
+        description: 'Reach out to our Ghana office.',
+      },
+      {
+        label: 'Eswatini',
+        href: '/contactus',
+        icon: PhoneIcon,
+        description: 'Reach out to our Eswatini office.',
+      },
     ],
     Donate: [
       {
         label: 'By Category',
         href: '/explore/category',
         icon: SquaresPlusIcon,
+        description: 'Donate to campaigns by category.',
       },
       {
         label: 'By Advance Filtering',
         href: '/explore/advance',
         icon: SquaresPlusIcon,
+        description: 'Use advanced filters to find campaigns.',
       },
     ],
     Leaderboard: [
-      { label: 'Backers', href: '/leaderboard/backers', icon: UserGroupIcon },
+      {
+        label: 'Backers',
+        href: '/leaderboard/backers',
+        icon: UserGroupIcon,
+        description: 'See the top backers on our platform.',
+      },
       {
         label: 'Fundraisers',
         href: '/leaderboard/fundraisers',
         icon: UserGroupIcon,
+        description: 'See the top fundraisers on our platform.',
       },
     ],
   };
@@ -146,7 +178,9 @@ const Navbar = () => {
                   className="flex items-center text-gray-800 dark:text-gray-50 group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
                 >
                   {key.charAt(0).toUpperCase() + key.slice(1)}
-                  <ChevronDownIcon className="ml-2 h-4 w-4" />
+                  <ChevronDownIcon
+                    className={`ml-2 h-4 w-4 transition-transform`}
+                  />
                 </Button>
               </MenuHandler>
               <MenuList className="p-2 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950">
@@ -155,10 +189,26 @@ const Navbar = () => {
                     key={link.href}
                     className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800"
                   >
-                    {React.createElement(link.icon, {
-                      className: 'h-5 w-5',
-                    })}
-                    <Link href={link.href}>{link.label}</Link>
+                    <div className="flex items-center justify-center rounded-lg !bg-blue-gray-50 p-2">
+                      {React.createElement(link.icon, {
+                        className: 'h-5 w-5 text-gray-900',
+                      })}
+                    </div>
+                    <div>
+                      <Typography
+                        variant="h6"
+                        color="blue-gray"
+                        className="text-sm font-bold"
+                      >
+                        {link.label}
+                      </Typography>
+                      <Typography
+                        variant="paragraph"
+                        className="text-xs !font-medium text-blue-gray-500"
+                      >
+                        {link.description}
+                      </Typography>
+                    </div>
                   </MenuItem>
                 ))}
               </MenuList>
@@ -211,10 +261,26 @@ const Navbar = () => {
                         key={link.href}
                         className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800"
                       >
-                        {React.createElement(link.icon, {
-                          className: 'h-5 w-5',
-                        })}
-                        <Link href={link.href}>{link.label}</Link>
+                        <div className="flex items-center justify-center rounded-lg !bg-blue-gray-50 p-2">
+                          {React.createElement(link.icon, {
+                            className: 'h-5 w-5 text-gray-900',
+                          })}
+                        </div>
+                        <div>
+                          <Typography
+                            variant="h6"
+                            color="blue-gray"
+                            className="text-sm font-bold"
+                          >
+                            {link.label}
+                          </Typography>
+                          <Typography
+                            variant="paragraph"
+                            className="text-xs !font-medium text-blue-gray-500"
+                          >
+                            {link.description}
+                          </Typography>
+                        </div>
                       </MenuItem>
                     ))}
                   </MenuList>
