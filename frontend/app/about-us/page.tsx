@@ -170,6 +170,21 @@ const TeamCarousel = () => {
           someone's education possible, Bantuhive is here to amplify your
           efforts.
         </p>
+
+        {/* Our Mission Section */}
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Mission</h2>
+        <p className="text-lg leading-8 text-gray-700 mb-6">
+          Empowering communities to fund dreams, transform lives, and drive
+          Africa’s growth.
+        </p>
+
+        {/* Our Vision Section */}
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Vision</h2>
+        <p className="text-lg leading-8 text-gray-700 mb-6">
+          To be Africa’s leading crowdfunding platform, driving a thriving
+          continent through innovation, collaboration, and shared prosperity.
+        </p>
+
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
           What is Crowdfunding?
         </h2>
