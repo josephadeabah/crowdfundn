@@ -34,7 +34,7 @@ const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
   return (
     <div className="bg-white rounded-lg mt-6">
       <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
-        Donations Over Campaign Lifespan
+        Donations in {moment().format('MMMM')}
       </h3>
       <ResponsiveContainer width="100%" height={320}>
         <LineChart
