@@ -169,7 +169,7 @@ const Navbar = () => {
         <div className="lg:hidden mr-3">
           <IconButton
             onClick={handleMenuToggle}
-            className="text-gray-700 bg-transparent dark:text-gray-300"
+            className="text-gray-700 bg-transparent shadow-none rounded-none dark:text-gray-300"
           >
             {isMenuOpen ? (
               <XMarkIcon className="h-8 w-8" />
