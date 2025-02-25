@@ -169,12 +169,12 @@ const Navbar = () => {
         <div className="lg:hidden mr-3">
           <IconButton
             onClick={handleMenuToggle}
-            className="text-gray-700 dark:text-gray-300"
+            className="text-gray-50 dark:text-gray-300"
           >
             {isMenuOpen ? (
-              <XMarkIcon className="h-8 w-8 text-gray-700 bg-white" />
+              <XMarkIcon className="h-8 w-8" />
             ) : (
-              <HamburgerMenuIcon className="h-8 w-8 text-gray-700 bg-white" />
+              <HamburgerMenuIcon className="h-8 w-8" />
             )}
           </IconButton>
         </div>
