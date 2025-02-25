@@ -19,10 +19,12 @@ import {
   XMarkIcon,
   ChevronDownIcon,
   SquaresPlusIcon,
-  Bars4Icon,
   SunIcon,
-  GlobeAmericasIcon,
+  LightBulbIcon,
   PhoneIcon,
+  BanknotesIcon,
+  CreditCardIcon,
+  UserIcon,
 } from '@heroicons/react/24/outline';
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import Avatar from '@/app/components/avatar/Avatar';
@@ -74,21 +76,21 @@ const Navbar = () => {
       {
         label: 'Who Can Fundraise?',
         href: '/articles/who-can-fundraise',
-        icon: SquaresPlusIcon,
+        icon: UserIcon,
       },
     ],
     Guides: [
       {
         label: 'How To Get Started',
         href: '/articles/how-to-get-started',
-        icon: Bars4Icon,
+        icon: LightBulbIcon,
       },
       {
         label: 'How To Withdraw Funds Safely',
         href: '/articles/how-to-withdraw-funds',
-        icon: PhoneIcon,
+        icon: CreditCardIcon,
       },
-      { label: 'Pricing', href: '/pricing', icon: GlobeAmericasIcon },
+      { label: 'Pricing', href: '/pricing', icon: BanknotesIcon },
     ],
     Contact: [
       { label: 'Ghana', href: '/contactus', icon: PhoneIcon },
@@ -170,9 +172,9 @@ const Navbar = () => {
             className="text-gray-700 dark:text-gray-300"
           >
             {isMenuOpen ? (
-              <XMarkIcon className="h-8 w-8" />
+              <XMarkIcon className="h-8 w-8 text-gray-700 bg-white" />
             ) : (
-              <HamburgerMenuIcon className="h-8 w-8" />
+              <HamburgerMenuIcon className="h-8 w-8 text-gray-700 bg-white" />
             )}
           </IconButton>
         </div>
