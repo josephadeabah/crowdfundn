@@ -204,7 +204,7 @@ const Navbar = () => {
                       <ChevronDownIcon className="h-4 w-4" />
                     </ListItem>
                   </MenuHandler>
-                  <MenuList className="w-full p-2 mx-2 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950">
+                  <MenuList className="w-full p-2 mx-auto bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950">
                     {links.map((link) => (
                       <MenuItem
                         key={link.href}
@@ -288,7 +288,7 @@ const Navbar = () => {
                   />
                 </div>
               </MenuHandler>
-              <MenuList className="w-full p-3 mx-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50">
+              <MenuList className="w-full p-3 mx-auto bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50">
                 <div className="cursor-pointer flex items-center">
                   <Link href="/account">
                     <Avatar
