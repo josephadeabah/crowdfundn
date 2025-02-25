@@ -15,6 +15,7 @@ import SummaryCardComponent from './molecules/SummaryCard';
 import BHScreenKnowHow from './molecules/BHScreenKnowHow';
 import IllustrateImageComponent from './molecules/IllustrateImageComponent';
 import BlogPosts from './components/blogs/BlogPosts';
+import Parallax from './components/parallax/Parallax';
 
 const HomePage = () => {
   const wordRef = React.useRef<HTMLDivElement | null>(null);
@@ -199,6 +200,30 @@ const HomePage = () => {
             </div>
           </motion.div>
         </div>
+          {/* Add the Parallax component here */}
+          <div className="relative h-[400px] overflow-hidden">
+          <Parallax speed={0.5} className="absolute inset-0">
+            <div
+              className="w-full h-full bg-cover bg-center"
+              style={{
+                backgroundImage: "url('Cheer-up-bro.svg')",
+              }}
+            />
+             <SummaryCardComponent />
+        <IllustrateImageComponent
+          images={[
+            '/Cheer-up-bro.svg',
+            '/heart-with-a-little-bow-svgrepo-com.png',
+            '/Team-spirit-bro.svg',
+          ]}
+        />
+          </Parallax>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <h2 className="text-4xl font-bold text-white">
+              This is a Parallax Section
+            </h2>
+          </div>
+          </div>
         <SummaryCardComponent />
         <IllustrateImageComponent
           images={[

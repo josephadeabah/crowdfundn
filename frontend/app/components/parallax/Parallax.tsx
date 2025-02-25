@@ -11,7 +11,7 @@ interface ParallaxProps {
 
 const Parallax = ({ children, speed = 1, className }: ParallaxProps) => {
   const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], [0, -100 * speed]);
+  const y = useTransform(scrollYProgress, [0, 1], ['0%', `${100 * speed}%`]);
 
   return (
     <motion.div style={{ y }} className={className}>
