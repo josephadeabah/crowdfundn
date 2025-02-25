@@ -41,7 +41,7 @@ const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activePopover, setActivePopover] = useState<string | null>(null);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const { user, token, logout } = useAuth();
   const { userAccountData } = useUserContext();
   const router = useRouter();
@@ -68,10 +68,6 @@ const Navbar = () => {
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
-  };
-
-  const handlePopoverToggle = (key: string) => {
-    setActivePopover(activePopover === key ? null : key);
   };
 
   const dropdownLinks = {
@@ -182,21 +178,21 @@ const Navbar = () => {
           {Object.entries(dropdownLinks).map(([key, links]) => (
             <Menu key={key} allowHover>
               <MenuHandler
-                open={activePopover === key}
+                open={activeMenu === key}
                 onOpenChange={(isOpen: any) => {
-                  if (!isOpen) setActivePopover(null);
+                  if (!isOpen) setActiveMenu(null);
                 }}
               >
                 <Button
                   onMouseEnter={() => {
                     clearTimeout(closeTimeout); // Prevent immediate close
-                    setActivePopover(key);
+                    setActiveMenu(key);
                   }}
                   onMouseLeave={() => {
                     closeTimeout = setTimeout(
-                      () => setActivePopover(null),
+                      () => setActiveMenu(null),
                       200,
-                    ); // Slight delay before closing
+                    );
                   }}
                   variant="ghost"
                   className="flex items-center text-gray-700 dark:text-gray-50 group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
@@ -205,7 +201,7 @@ const Navbar = () => {
                   {/* Arrow with rotation */}
                   <TriangleDownIcon
                     className={`ml-2 h-4 w-4 transition-transform ${
-                      activePopover === key ? 'rotate-180' : ''
+                      activeMenu === key ? 'rotate-180' : ''
                     }`}
                   />
                 </Button>
