@@ -185,31 +185,30 @@ const Navbar = () => {
               </MenuHandler>
               <MenuList className="p-2 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950">
                 {links.map((link) => (
-                  <MenuItem
-                    key={link.href}
-                    className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800"
-                  >
-                    <div className="flex items-center justify-center rounded-lg !bg-blue-gray-50 p-2">
-                      {React.createElement(link.icon, {
-                        className: 'h-5 w-5 text-gray-900',
-                      })}
-                    </div>
-                    <div>
-                      <Typography
-                        variant="h6"
-                        color="blue-gray"
-                        className="text-sm font-bold"
-                      >
-                        {link.label}
-                      </Typography>
-                      <Typography
-                        variant="paragraph"
-                        className="text-xs !font-medium text-blue-gray-500"
-                      >
-                        {link.description}
-                      </Typography>
-                    </div>
-                  </MenuItem>
+                  <Link href={link.href} key={link.href} passHref>
+                    <MenuItem className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800">
+                      <div className="flex items-center justify-center rounded-lg !bg-blue-gray-50 p-2">
+                        {React.createElement(link.icon, {
+                          className: 'h-5 w-5 text-gray-900',
+                        })}
+                      </div>
+                      <div>
+                        <Typography
+                          variant="h6"
+                          color="blue-gray"
+                          className="text-sm font-bold"
+                        >
+                          {link.label}
+                        </Typography>
+                        <Typography
+                          variant="paragraph"
+                          className="text-xs !font-medium text-blue-gray-500"
+                        >
+                          {link.description}
+                        </Typography>
+                      </div>
+                    </MenuItem>
+                  </Link>
                 ))}
               </MenuList>
             </Menu>
@@ -257,31 +256,30 @@ const Navbar = () => {
                   </MenuHandler>
                   <MenuList className="p-3 bg-gray-50 text-gray-800 dark:text-gray-50 dark:bg-gray-950">
                     {links.map((link) => (
-                      <MenuItem
-                        key={link.href}
-                        className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800"
-                      >
-                        <div className="flex items-center justify-center rounded-lg !bg-blue-gray-50 p-2">
-                          {React.createElement(link.icon, {
-                            className: 'h-5 w-5 text-gray-900',
-                          })}
-                        </div>
-                        <div>
-                          <Typography
-                            variant="h6"
-                            color="blue-gray"
-                            className="text-sm font-bold"
-                          >
-                            {link.label}
-                          </Typography>
-                          <Typography
-                            variant="paragraph"
-                            className="text-xs !font-medium text-blue-gray-500"
-                          >
-                            {link.description}
-                          </Typography>
-                        </div>
-                      </MenuItem>
+                      <Link href={link.href} key={link.href} passHref>
+                        <MenuItem className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800">
+                          <div className="flex items-center justify-center rounded-lg !bg-blue-gray-50 p-2">
+                            {React.createElement(link.icon, {
+                              className: 'h-5 w-5 text-gray-900',
+                            })}
+                          </div>
+                          <div>
+                            <Typography
+                              variant="h6"
+                              color="blue-gray"
+                              className="text-sm font-bold"
+                            >
+                              {link.label}
+                            </Typography>
+                            <Typography
+                              variant="paragraph"
+                              className="text-xs !font-medium text-blue-gray-500"
+                            >
+                              {link.description}
+                            </Typography>
+                          </div>
+                        </MenuItem>
+                      </Link>
                     ))}
                   </MenuList>
                 </Menu>
@@ -381,13 +379,17 @@ const Navbar = () => {
                       (role) =>
                         role.name === 'Admin' || role.name === 'Manager',
                     )) && (
-                    <MenuItem className="hover:bg-gray-200 dark:hover:bg-gray-700">
-                      <Link href="/admin/manage">Go to Admin</Link>
-                    </MenuItem>
+                    <Link href="/admin/manage" passHref>
+                      <MenuItem className="hover:bg-gray-200 dark:hover:bg-gray-700">
+                        Go to Admin
+                      </MenuItem>
+                    </Link>
                   )}
-                <MenuItem className="hover:bg-gray-200 dark:hover:bg-gray-700">
-                  <Link href="/account">Go to Account</Link>
-                </MenuItem>
+                <Link href="/account" passHref>
+                  <MenuItem className="hover:bg-gray-200 dark:hover:bg-gray-700">
+                    Go to Account
+                  </MenuItem>
+                </Link>
                 <MenuItem
                   className="hover:bg-gray-200 dark:hover:bg-gray-700"
                   onClick={logout}
