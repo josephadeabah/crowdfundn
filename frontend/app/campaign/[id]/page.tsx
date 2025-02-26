@@ -225,10 +225,12 @@ const SingleCampaignPage: React.FC = () => {
                   | 'backers',
               ) => setSelectedTab(value)}
             >
-              <TabsHeader className="bg-transparent rounded-none bg-white"
+              <TabsHeader
+                className="bg-transparent rounded-none bg-white"
                 indicatorProps={{
-                  className: "bg-gray-900/10 shadow-none !text-gray-900",
-                }}>
+                  className: 'bg-gray-900/10 shadow-none !text-gray-900',
+                }}
+              >
                 {tabData.map(({ label, value, count, disabled }) => (
                   <Tab
                     key={value}
@@ -315,9 +317,9 @@ const SingleCampaignPage: React.FC = () => {
                               </div>
                             </div>
                             <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                                {currentCampaign?.fundraiser?.profile
-                                  ?.description || 'No description provided.'}
-                              </p>
+                              {currentCampaign?.fundraiser?.profile
+                                ?.description || 'No description provided.'}
+                            </p>
                           </div>
                         </div>
                       </div>
