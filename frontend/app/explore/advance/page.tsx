@@ -200,16 +200,16 @@ const CampaignsPage = () => {
         type={toast.type}
       />
       <div className="w-full mx-auto">
-        <motion.h4
+        <motion.h6
           ref={ref}
           variants={fadeInUp}
           initial="hidden"
           animate={controls}
           transition={{ duration: 0.5 }}
-          className="text-4xl font-bold text-left py-6"
+          className="text-base font-bold text-left py-6"
         >
           Find and support the causes that matter most to you.
-        </motion.h4>
+        </motion.h6>
         {/* Search Section */}
         <div className="flex justify-center mb-1">
           <div className="w-full max-w-7xl mx-auto flex justify-center md:justify-end">
