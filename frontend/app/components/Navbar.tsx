@@ -196,7 +196,7 @@ const Navbar = () => {
                 }}
                 className="flex items-center text-gray-700 dark:text-gray-50 group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
               >
-                <Button variant="ghost" className="flex justify-between items-center">
+                <Button variant="ghost" className="flex items-center">
                   {key.charAt(0).toUpperCase() + key.slice(1)}
                   <TriangleDownIcon
                     className={`ml-2 h-4 w-4 transition-transform ${
