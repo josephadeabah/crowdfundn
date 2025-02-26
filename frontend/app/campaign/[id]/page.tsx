@@ -299,7 +299,7 @@ const SingleCampaignPage: React.FC = () => {
                                 }
                               />
                             </div>
-                            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 flex-1">
+                            <div className="flex flex-col items-center sm:items-start gap-4 flex-1">
                               <div className="text-center sm:text-left">
                                 <div className="text-xs italic text-gray-500 dark:text-gray-400 mb-1">
                                   Fundraiser
