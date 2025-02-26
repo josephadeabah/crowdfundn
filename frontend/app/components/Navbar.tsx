@@ -286,9 +286,9 @@ const Navbar = () => {
                     </div>
                   </PopoverTrigger>
                   <PopoverContent
-                    align="start"
+                    align="center"
                     sideOffset={8}
-                    className="bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-50 p-2"
+                    className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-50 p-2"
                   >
                     {links.map((link) => (
                       <Link
