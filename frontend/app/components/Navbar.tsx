@@ -203,7 +203,7 @@ const Navbar = () => {
                   />
                 </Button>
               </MenuHandler>
-              <MenuList className="p-2 bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-950">
+              <MenuList className="p-2 bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-950 rounded-none shadow-none">
                 {links.map((link) => (
                   <Link
                     href={link.href}
@@ -285,7 +285,7 @@ const Navbar = () => {
                       <ChevronDownIcon className="h-4 w-4" />
                     </ListItem>
                   </MenuHandler>
-                  <MenuList className="p-3 bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-950">
+                  <MenuList className="p-3 bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-950 rounded-none shadow-none">
                     {links.map((link) => (
                       <Link
                         href={link.href}
@@ -392,7 +392,7 @@ const Navbar = () => {
                   />
                 </div>
               </MenuHandler>
-              <MenuList className="p-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-50">
+              <MenuList className="p-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-50 rounded-none shadow-none">
                 <div className="cursor-pointer flex items-center focus-visible:outline-none focus:ring-0 hover:outline-none">
                   <Link
                     href="/account"
