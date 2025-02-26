@@ -288,7 +288,7 @@ const SingleCampaignPage: React.FC = () => {
                           </div>
 
                           {/* Fundraiser Info Section */}
-                          <div className="flex flex-col gap-6 mb-6">
+                          <div className="flex flex-col sm:flex-row items-center gap-6 mb-6">
                             <div className="flex-shrink-0">
                               <Avatar
                                 name={fundraiserName as string}
