@@ -203,7 +203,7 @@ const Navbar = () => {
                   />
                 </Button>
               </MenuHandler>
-              <MenuList className="p-2 bg-gray-50 text-gray-950 dark:text-gray-50 dark:bg-gray-950">
+              <MenuList className="p-2 bg-white text-gray-950 dark:text-gray-50 dark:bg-gray-950">
                 {links.map((link) => (
                   <Link
                     href={link.href}
@@ -212,9 +212,9 @@ const Navbar = () => {
                     className="focus-visible:outline-none focus:ring-0 hover:outline-none"
                   >
                     <MenuItem className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
-                      <div className="flex items-center justify-center rounded-lg !bg-blue-gray-50 p-2">
+                      <div className="flex items-center justify-center rounded-lg !bg-white p-2">
                         {React.createElement(link.icon, {
-                          className: 'h-5 w-5 text-gray-900',
+                          className: 'h-5 w-5 text-gray-500',
                         })}
                       </div>
                       <div>
@@ -285,7 +285,7 @@ const Navbar = () => {
                       <ChevronDownIcon className="h-4 w-4" />
                     </ListItem>
                   </MenuHandler>
-                  <MenuList className="p-3 bg-gray-50 text-gray-800 dark:text-gray-50 dark:bg-gray-950">
+                  <MenuList className="p-3 bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-950">
                     {links.map((link) => (
                       <Link
                         href={link.href}
@@ -294,9 +294,9 @@ const Navbar = () => {
                         className="focus-visible:outline-none focus:ring-0 hover:outline-none"
                       >
                         <MenuItem className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
-                          <div className="flex items-center justify-center rounded-lg !bg-blue-gray-50 p-2">
+                          <div className="flex items-center justify-center rounded-lg !bg-white p-2">
                             {React.createElement(link.icon, {
-                              className: 'h-5 w-5 text-gray-900',
+                              className: 'h-5 w-5 text-gray-500',
                             })}
                           </div>
                           <div>
