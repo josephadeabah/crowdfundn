@@ -176,7 +176,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
           onClick={() => setOpenDrawer(true)}
         >
           <FaFilter />
-          Filters
+          Filter
         </Button>
       </div>
 
