@@ -16,7 +16,7 @@ import { FaClock, FaUser, FaBookmark, FaRegBookmark } from 'react-icons/fa';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '@/app/components/toast/Toast';
 import Avatar from '@/app/components/avatar/Avatar';
-import { Card } from '@material-tailwind/react'; // Import Card
+import { Card, Collapse, Button } from '@material-tailwind/react'; // Import Collapse and Button
 
 const CampaignsPage = () => {
   const {
@@ -50,6 +50,8 @@ const CampaignsPage = () => {
     description: '',
     type: 'success' as 'success' | 'error' | 'warning',
   });
+
+  const [openFilters, setOpenFilters] = useState(false); // State for collapse
 
   const showToast = (
     title: string,
@@ -229,133 +231,149 @@ const CampaignsPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Toggle Button for Filters */}
+      <div className="flex justify-center md:hidden my-4">
+        <Button
+          onClick={() => setOpenFilters(!openFilters)}
+          className="bg-gray-100 text-gray-700 dark:bg-gray-950 dark:text-gray-50"
+        >
+          {openFilters ? 'Hide Filters' : 'Show Filters'}
+        </Button>
+      </div>
+
       <div className="flex flex-col md:flex-row gap-1">
-        {/* Filters Section */}
-        <Card className="w-full md:w-1/4 p-4 border border-gray-50 bg-white rounded-none shadow-none">
-          <h2 className="text-lg font-semibold mb-4">Find & Fund</h2>
-          <div className="mb-4">
-            <label htmlFor="sortBy" className="block text-sm font-medium mb-1">
-              Sort By
-            </label>
-            <select
-              id="sortBy"
-              value={sortBy}
-              onChange={handleSortChange}
-              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
-            >
-              <option value="created_at">Date Created</option>
-              <option value="goal_amount">Goal Amount</option>
-              <option value="location">Location</option>
-            </select>
-          </div>
+        {/* Filters Section inside Collapse */}
+        <Collapse open={openFilters} className="w-full md:w-1/4">
+          <Card className="p-4 border border-gray-50 bg-white rounded-none shadow-none">
+            <h2 className="text-lg font-semibold mb-4">Find & Fund</h2>
+            <div className="mb-4">
+              <label
+                htmlFor="sortBy"
+                className="block text-sm font-medium mb-1"
+              >
+                Sort By
+              </label>
+              <select
+                id="sortBy"
+                value={sortBy}
+                onChange={handleSortChange}
+                className="p-2 border border-gray-50 rounded focus:outline-none w-full"
+              >
+                <option value="created_at">Date Created</option>
+                <option value="goal_amount">Goal Amount</option>
+                <option value="location">Location</option>
+              </select>
+            </div>
 
-          <div className="mb-4">
-            <label
-              htmlFor="sortOrder"
-              className="block text-sm font-medium mb-1"
-            >
-              Sort Order
-            </label>
-            <select
-              id="sortOrder"
-              value={sortOrder}
-              onChange={handleOrderChange}
-              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
-            >
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
+            <div className="mb-4">
+              <label
+                htmlFor="sortOrder"
+                className="block text-sm font-medium mb-1"
+              >
+                Sort Order
+              </label>
+              <select
+                id="sortOrder"
+                value={sortOrder}
+                onChange={handleOrderChange}
+                className="p-2 border border-gray-50 rounded focus:outline-none w-full"
+              >
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+              </select>
+            </div>
 
-          <div className="mb-4">
-            <label
-              htmlFor="dateRange"
-              className="block text-sm font-medium mb-1"
-            >
-              Date Created
-            </label>
-            <select
-              id="dateRange"
-              value={dateRange}
-              onChange={handleDateRangeChange}
-              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
-            >
-              <option value="all_time">All Time</option>
-              <option value="today">Today</option>
-              <option value="last_7_days">Last 7 Days</option>
-              <option value="last_30_days">Last 30 Days</option>
-              <option value="last_60_days">Last 60 Days</option>
-              <option value="last_90_days">Last 90 Days</option>
-              <option value="this_month">This Month</option>
-              <option value="last_month">Last Month</option>
-              <option value="this_year">This Year</option>
-              <option value="last_year">Last Year</option>
-            </select>
-          </div>
+            <div className="mb-4">
+              <label
+                htmlFor="dateRange"
+                className="block text-sm font-medium mb-1"
+              >
+                Date Created
+              </label>
+              <select
+                id="dateRange"
+                value={dateRange}
+                onChange={handleDateRangeChange}
+                className="p-2 border border-gray-50 rounded focus:outline-none w-full"
+              >
+                <option value="all_time">All Time</option>
+                <option value="today">Today</option>
+                <option value="last_7_days">Last 7 Days</option>
+                <option value="last_30_days">Last 30 Days</option>
+                <option value="last_60_days">Last 60 Days</option>
+                <option value="last_90_days">Last 90 Days</option>
+                <option value="this_month">This Month</option>
+                <option value="last_month">Last Month</option>
+                <option value="this_year">This Year</option>
+                <option value="last_year">Last Year</option>
+              </select>
+            </div>
 
-          <div className="mb-4">
-            <label
-              htmlFor="goalRange"
-              className="block text-sm font-medium mb-1"
-            >
-              Goal Amount
-            </label>
-            <select
-              id="goalRange"
-              value={goalRange}
-              onChange={handleGoalRangeChange}
-              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
-            >
-              <option value="all">All</option>
-              <option value="0-500">
-                {userAccountData?.currency.toUpperCase() || 'GHS'}0 -{' '}
-                {userAccountData?.currency.toUpperCase() || 'GHS'}500
-              </option>
-              <option value="500-1000">
-                {userAccountData?.currency.toUpperCase() || 'GHS'}500 -{' '}
-                {userAccountData?.currency.toUpperCase() || 'GHS'}1,000
-              </option>
-              <option value="1000-5000">
-                {userAccountData?.currency.toUpperCase() || 'GHS'}1,000 -{' '}
-                {userAccountData?.currency.toUpperCase() || 'GHS'}5,000
-              </option>
-              <option value="5000-10000">
-                {userAccountData?.currency.toUpperCase() || 'GHS'}5,000 -{' '}
-                {userAccountData?.currency.toUpperCase() || 'GHS'}10,000
-              </option>
-              <option value="10000-50000">
-                {userAccountData?.currency.toUpperCase() || 'GHS'}10,000 -{' '}
-                {userAccountData?.currency.toUpperCase() || 'GHS'}50,000
-              </option>
-              <option value="50000-100000">
-                {userAccountData?.currency.toUpperCase() || 'GHS'}50,000 -{' '}
-                {userAccountData?.currency.toUpperCase() || 'GHS'}10,0000
-              </option>
-            </select>
-          </div>
+            <div className="mb-4">
+              <label
+                htmlFor="goalRange"
+                className="block text-sm font-medium mb-1"
+              >
+                Goal Amount
+              </label>
+              <select
+                id="goalRange"
+                value={goalRange}
+                onChange={handleGoalRangeChange}
+                className="p-2 border border-gray-50 rounded focus:outline-none w-full"
+              >
+                <option value="all">All</option>
+                <option value="0-500">
+                  {userAccountData?.currency.toUpperCase() || 'GHS'}0 -{' '}
+                  {userAccountData?.currency.toUpperCase() || 'GHS'}500
+                </option>
+                <option value="500-1000">
+                  {userAccountData?.currency.toUpperCase() || 'GHS'}500 -{' '}
+                  {userAccountData?.currency.toUpperCase() || 'GHS'}1,000
+                </option>
+                <option value="1000-5000">
+                  {userAccountData?.currency.toUpperCase() || 'GHS'}1,000 -{' '}
+                  {userAccountData?.currency.toUpperCase() || 'GHS'}5,000
+                </option>
+                <option value="5000-10000">
+                  {userAccountData?.currency.toUpperCase() || 'GHS'}5,000 -{' '}
+                  {userAccountData?.currency.toUpperCase() || 'GHS'}10,000
+                </option>
+                <option value="10000-50000">
+                  {userAccountData?.currency.toUpperCase() || 'GHS'}10,000 -{' '}
+                  {userAccountData?.currency.toUpperCase() || 'GHS'}50,000
+                </option>
+                <option value="50000-100000">
+                  {userAccountData?.currency.toUpperCase() || 'GHS'}50,000 -{' '}
+                  {userAccountData?.currency.toUpperCase() || 'GHS'}10,0000
+                </option>
+              </select>
+            </div>
 
-          <div className="mb-4">
-            <label
-              htmlFor="location"
-              className="block text-sm font-medium mb-1"
-            >
-              Location
-            </label>
-            <select
-              id="location"
-              value={location}
-              onChange={handleLocationChange}
-              className="p-2 border border-gray-50 rounded focus:outline-none w-full"
-            >
-              <option value="all">All</option>
-              <option value="Nigeria">Nigeria</option>
-              <option value="Kenya">Kenya</option>
-              <option value="Ghana">Ghana</option>
-              <option value="South Africa">South Africa</option>
-              <option value="Eswatini">Eswatini</option>
-            </select>
-          </div>
-        </Card>
+            <div className="mb-4">
+              <label
+                htmlFor="location"
+                className="block text-sm font-medium mb-1"
+              >
+                Location
+              </label>
+              <select
+                id="location"
+                value={location}
+                onChange={handleLocationChange}
+                className="p-2 border border-gray-50 rounded focus:outline-none w-full"
+              >
+                <option value="all">All</option>
+                <option value="Nigeria">Nigeria</option>
+                <option value="Kenya">Kenya</option>
+                <option value="Ghana">Ghana</option>
+                <option value="South Africa">South Africa</option>
+                <option value="Eswatini">Eswatini</option>
+              </select>
+            </div>
+          </Card>
+        </Collapse>
 
         {/* Campaigns Section */}
         <div className="w-full bg-gray-100 md:p-4">
