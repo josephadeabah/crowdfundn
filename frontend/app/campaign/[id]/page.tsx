@@ -225,7 +225,7 @@ const SingleCampaignPage: React.FC = () => {
                   | 'backers',
               ) => setSelectedTab(value)}
             >
-              <TabsHeader className='rounded-none'>
+              <TabsHeader className="rounded-none">
                 {tabData.map(({ label, value, count, disabled }) => (
                   <Tab
                     key={value}

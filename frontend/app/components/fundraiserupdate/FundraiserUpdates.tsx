@@ -25,7 +25,11 @@ const FundraiserUpdates: React.FC<FundraiserUpdatesProps> = ({
             className="bg-white dark:bg-gray-800 rounded-sm shadow p-4 mb-4 flex items-start"
           >
             <div className="flex-shrink-0">
-              <Avatar name={String(fundraiserName)} size="sm" />
+              <Avatar
+                name={String(fundraiserName)}
+                size="sm"
+                imageUrl={update?.fundraiser?.profile?.avatar as string}
+              />
             </div>
             <div className="ml-3">
               <div className="font-semibold text-sm text-gray-600 dark:text-gray-300">
