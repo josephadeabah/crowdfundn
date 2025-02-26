@@ -236,7 +236,7 @@ const CampaignsPage = () => {
       <div className="flex flex-col md:flex-row gap-1">
         {/* Filters Section */}
         <div className="w-full md:w-1/4">
-          <Button onClick={toggleOpen} className="mb-2">
+          <Button onClick={toggleOpen} className="mb-2 w-full">
             {open ? 'Hide Filters' : 'Show Filters'}
           </Button>
           <Collapse open={open}>
