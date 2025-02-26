@@ -231,7 +231,7 @@ const SingleCampaignPage: React.FC = () => {
                     key={value}
                     value={value}
                     disabled={disabled}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 rounded-none shadow-none"
                   >
                     {label}{' '}
                     {count > 0 && (
