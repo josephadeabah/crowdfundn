@@ -3,75 +3,92 @@ import React from 'react';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
-const SingleCampaignLoader: React.FC = () => {
+const SingleCampaignLoader = () => {
   return (
-    <div className="w-full dark:bg-gray-800">
-      <div className="max-w-7xl mx-auto px-2 mt-3 py-8">
-        {/* Horizontal Tabs Skeleton */}
-        <div className="relative mb-6">
-          <div className="flex items-center mb-6">
-            <button className="absolute left-0 z-10 bg-white shadow-md p-2 rounded-full md:hidden">
-              <Skeleton width={30} height={30} circle />
-            </button>
-            <div className="max-w-7xl mx-auto flex space-x-6 overflow-x-auto scrollbar-hide whitespace-nowrap">
-              <Skeleton width={80} height={30} />
-              <Skeleton width={80} height={30} />
-              <Skeleton width={80} height={30} />
-              <Skeleton width={80} height={30} />
-              <Skeleton width={80} height={30} />
+    <div className="max-w-7xl mx-auto px-2 py-8 mb-12">
+      <div className="flex flex-col lg:flex-row gap-8 mb-10">
+        {/* First Column (Bigger Width) */}
+        <div className="lg:w-2/3">
+          <div className="bg-white p-2 md:px-5 rounded-lg">
+            {/* Campaign Title */}
+            <Skeleton height={40} width={300} className="mb-4" />
+
+            {/* Campaign Image */}
+            <div className="h-[600px] mb-4">
+              <Skeleton height={600} className="rounded-t" />
             </div>
-            <button className="absolute right-0 z-10 bg-white shadow-md p-2 rounded-full md:hidden">
-              <Skeleton width={30} height={30} circle />
-            </button>
-          </div>
-        </div>
 
-        {/* Campaign Title Skeleton */}
-        <Skeleton width={400} height={40} className="mb-4" />
+            {/* Tabs */}
+            <div className="flex gap-4 mb-6">
+              {['Details', 'Donate', 'Updates', 'Comments', 'Backers'].map(
+                (tab, index) => (
+                  <Skeleton key={index} height={40} width={100} />
+                ),
+              )}
+            </div>
 
-        {/* Campaign Image Skeleton */}
-        <div className="w-full aspect-video rounded-md overflow-hidden mb-4">
-          <Skeleton height="100%" />
-        </div>
+            {/* Tab Content - Details */}
+            <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
+              {/* Campaign Description */}
+              <Skeleton count={5} className="mb-4" />
 
-        {/* Progress Section Skeleton */}
-        <div className="flex flex-col sm:flex-row items-center bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8 space-y-6 sm:space-y-0 sm:space-x-6">
-          <div className="w-full space-y-2">
-            <Skeleton width={150} height={20} />
-            <Skeleton width={300} height={20} />
-            <Skeleton width={200} height={20} />
-          </div>
-          <div>
-            <Skeleton circle width={120} height={120} />
-          </div>
-        </div>
+              {/* Share Section */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-8">
+                <Skeleton height={30} width={200} className="mb-4" />
+                <div className="flex gap-4 mb-4">
+                  <Skeleton height={40} width={150} />
+                  <Skeleton height={40} width={100} />
+                </div>
+              </div>
 
-        {/* Campaign Description Skeleton */}
-        <div className="space-y-2 mb-6">
-          <Skeleton width={600} height={20} />
-          <Skeleton width={600} height={20} />
-          <Skeleton width={400} height={20} />
-        </div>
-
-        {/* Share and Fundraiser Info Section Skeleton */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
-          {/* Share Section */}
-          <div className="border-b pb-4 mb-4">
-            <Skeleton width={200} height={25} className="mb-3" />
-            <div className="flex space-x-4">
-              <Skeleton width={100} height={40} />
-              <Skeleton width={100} height={40} />
+              {/* Fundraiser Info Section */}
+              <div className="flex flex-col sm:flex-row items-center gap-6 mb-6">
+                <Skeleton circle height={80} width={80} />
+                <div className="flex-1">
+                  <Skeleton height={20} width={150} className="mb-2" />
+                  <Skeleton height={40} width={200} />
+                </div>
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* Fundraiser Info */}
-          <div className="flex items-center space-x-4 mb-4">
-            <Skeleton circle width={50} height={50} />
-            <Skeleton width={150} height={20} />
+        {/* Second Column (Smaller Width and Sticky) */}
+        <div className="lg:w-1/3">
+          <div className="sticky top-8">
+            <div className="bg-white p-4 rounded-lg">
+              {/* Support This Project */}
+              <Skeleton height={30} width={200} className="mb-4" />
+              <Skeleton height={20} width={300} className="mb-4" />
+
+              {/* Donation Button */}
+              <Skeleton height={50} className="mb-6" />
+
+              {/* Campaign Progress */}
+              <Skeleton height={30} width={200} className="mb-4" />
+              <div className="flex flex-col gap-2 sm:flex-row sm:justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow mb-8 p-2 space-y-6 sm:space-y-0 sm:space-x-6">
+                <div className="text-center sm:text-left">
+                  <Skeleton height={20} width={150} className="mb-2" />
+                  <Skeleton height={20} width={100} className="mb-2" />
+                  <Skeleton height={20} width={120} />
+                </div>
+                <Skeleton circle height={150} width={150} />
+              </div>
+
+              {/* Donations Chart */}
+              <Skeleton height={200} />
+            </div>
           </div>
+        </div>
+      </div>
 
-          <Skeleton width={300} height={20} />
-          <Skeleton width={300} height={20} />
+      {/* Suggested Campaigns */}
+      <div className="mt-8">
+        <Skeleton height={30} width={200} className="mb-4" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <Skeleton key={index} height={200} />
+          ))}
         </div>
       </div>
     </div>
