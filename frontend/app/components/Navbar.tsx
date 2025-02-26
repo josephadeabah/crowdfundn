@@ -279,8 +279,8 @@ const Navbar = () => {
               {Object.entries(dropdownLinks).map(([key, links]) => (
                 <Popover key={key}>
                   <PopoverTrigger>
-                    <div className="flex justify-between items-center w-full">
-                      {key.charAt(0).toUpperCase() + key.slice(1)}
+                    <div className="text-base p-2 flex justify-between items-center w-full">
+                      <div>{key.charAt(0).toUpperCase() + key.slice(1)}</div>
                       <ChevronDownIcon className="h-4 w-4" />
                     </div>
                   </PopoverTrigger>
