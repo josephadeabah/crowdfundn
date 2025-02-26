@@ -290,7 +290,6 @@ const SingleCampaignPage: React.FC = () => {
                                 imageUrl={
                                   currentCampaign?.fundraiser?.profile?.avatar as string
                                 }
-                                className="border-2 border-white dark:border-gray-800 shadow-md"
                               />
                             </div>
                             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 flex-1">
