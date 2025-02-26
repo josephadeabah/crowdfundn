@@ -216,7 +216,14 @@ const SingleCampaignPage: React.FC = () => {
             {/* Material Tailwind Tabs */}
             <Tabs
               value={selectedTab}
-              onChange={(value) => setSelectedTab(value)}
+              onChange={(
+                value:
+                  | 'details'
+                  | 'donate'
+                  | 'updates'
+                  | 'comments'
+                  | 'backers',
+              ) => setSelectedTab(value)}
             >
               <TabsHeader>
                 {tabData.map(({ label, value, count, disabled }) => (
@@ -247,63 +254,67 @@ const SingleCampaignPage: React.FC = () => {
                         />
                         {/* Combined Share and Fundraiser Info Container */}
                         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
-  {/* Share Section */}
-  <div className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
-    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-      Share this fundraiser
-    </h2>
-    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-      <Button
-        onClick={handleShare}
-        className="flex items-center justify-center bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition-all transform hover:scale-105 active:scale-95 shadow-md"
-      >
-        <FaShare className="mr-2" />
-        {currentCampaign?.total_shares || 0} Shares
-      </Button>
-      <button
-        onClick={handleCopy}
-        className="flex items-center justify-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all transform hover:scale-105 active:scale-95 shadow-md"
-      >
-        {copyButtonText}
-      </button>
-    </div>
-    {error && (
-      <p className="text-red-500 text-sm mt-3">{error}</p>
-    )}
-  </div>
+                          {/* Share Section */}
+                          <div className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                              Share this fundraiser
+                            </h2>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                              <Button
+                                onClick={handleShare}
+                                className="flex items-center justify-center bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition-all transform hover:scale-105 active:scale-95 shadow-md"
+                              >
+                                <FaShare className="mr-2" />
+                                {currentCampaign?.total_shares || 0} Shares
+                              </Button>
+                              <button
+                                onClick={handleCopy}
+                                className="flex items-center justify-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all transform hover:scale-105 active:scale-95 shadow-md"
+                              >
+                                {copyButtonText}
+                              </button>
+                            </div>
+                            {error && (
+                              <p className="text-red-500 text-sm mt-3">
+                                {error}
+                              </p>
+                            )}
+                          </div>
 
-  {/* Fundraiser Info Section */}
-  <div className="flex flex-col sm:flex-row items-center gap-6 mb-6">
-    <div className="flex-shrink-0">
-      <Avatar
-        name={fundraiserName as string}
-        size="lg"
-        imageUrl={currentCampaign?.fundraiser?.profile?.avatar}
-        className="border-2 border-white dark:border-gray-800 shadow-md"
-      />
-    </div>
-    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 flex-1">
-      <div className="text-center sm:text-left">
-        <div className="text-xs italic text-gray-500 dark:text-gray-400 mb-1">
-          Fundraiser
-        </div>
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-          {fundraiserName}
-        </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-          {currentCampaign?.fundraiser?.profile?.description ||
-            'No description provided.'}
-        </p>
-      </div>
-      <button
-        onClick={() => setIsContactModalOpen(true)}
-        className="flex items-center justify-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all transform hover:scale-105 active:scale-95 shadow-md"
-      >
-        Contact
-      </button>
-    </div>
-  </div>
-</div>
+                          {/* Fundraiser Info Section */}
+                          <div className="flex flex-col sm:flex-row items-center gap-6 mb-6">
+                            <div className="flex-shrink-0">
+                              <Avatar
+                                name={fundraiserName as string}
+                                size="lg"
+                                imageUrl={
+                                  currentCampaign?.fundraiser?.profile?.avatar
+                                }
+                                className="border-2 border-white dark:border-gray-800 shadow-md"
+                              />
+                            </div>
+                            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 flex-1">
+                              <div className="text-center sm:text-left">
+                                <div className="text-xs italic text-gray-500 dark:text-gray-400 mb-1">
+                                  Fundraiser
+                                </div>
+                                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                  {fundraiserName}
+                                </h3>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                                  {currentCampaign?.fundraiser?.profile
+                                    ?.description || 'No description provided.'}
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => setIsContactModalOpen(true)}
+                                className="flex items-center justify-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all transform hover:scale-105 active:scale-95 shadow-md"
+                              >
+                                Contact
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     )}
                     {value === 'donate' && (
