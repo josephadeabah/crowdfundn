@@ -288,7 +288,7 @@ const SingleCampaignPage: React.FC = () => {
                                 name={fundraiserName as string}
                                 size="lg"
                                 imageUrl={
-                                  currentCampaign?.fundraiser?.profile?.avatar
+                                  currentCampaign?.fundraiser?.profile?.avatar as string
                                 }
                                 className="border-2 border-white dark:border-gray-800 shadow-md"
                               />
