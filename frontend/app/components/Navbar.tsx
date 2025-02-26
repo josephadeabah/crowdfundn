@@ -173,7 +173,13 @@ const Navbar = () => {
 
         <div className="hidden lg:flex items-center gap-x-2 mx-6">
           {Object.entries(dropdownLinks).map(([key, links]) => (
-            <Popover key={key}>
+            <Popover
+              key={key}
+              open={activeMenu === key}
+              onOpenChange={(isOpen) => {
+                if (!isOpen) setActiveMenu(null);
+              }}
+            >
               <PopoverTrigger
                 onMouseEnter={() => {
                   clearTimeout(closeTimeout);
@@ -197,6 +203,13 @@ const Navbar = () => {
                 align="start"
                 sideOffset={8}
                 className="bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-50 p-2"
+                onMouseEnter={() => {
+                  clearTimeout(closeTimeout);
+                  setActiveMenu(key);
+                }}
+                onMouseLeave={() => {
+                  closeTimeout = setTimeout(() => setActiveMenu(null), 200;
+                }}
               >
                 {links.map((link) => (
                   <Link
