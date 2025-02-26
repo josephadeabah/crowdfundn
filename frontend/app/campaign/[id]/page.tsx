@@ -219,7 +219,7 @@ const SingleCampaignPage: React.FC = () => {
                         >
                           {tab.charAt(0).toUpperCase() + tab.slice(1)}{' '}
                           {count > 0 && (
-                            <span className="text-sm bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full ml-4 mr-4">
+                            <span className="text-sm bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full ml-1 mr-4">
                               {count}
                             </span>
                           )}
