@@ -121,9 +121,62 @@ const Campaigns: React.FC = () => {
               key={campaign.id}
               className="relative p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 dark:hover:bg-neutral-700 flex flex-col justify-between"
             >
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                {campaign.title}
-              </h3>
+              {/* Title and Dots Vertical Icon */}
+              <div className="flex justify-between items-start">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex-1 pr-4">
+                  {campaign.title}
+                </h3>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-200">
+                      <DotsVerticalIcon className="h-6 w-6" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-fit">
+                    <ul className="space-y-2">
+                      <li>
+                        <button
+                          className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+                          onClick={() =>
+                            handleEditCampaign(String(campaign.id))
+                          }
+                        >
+                          Edit Campaign
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+                          onClick={() => handleAction(campaign, 'delete')}
+                        >
+                          Delete Campaign
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+                          onClick={() => handleAction(campaign, 'cancel')}
+                          disabled={
+                            campaign.status === 'canceled' ||
+                            campaign.status === 'completed'
+                          }
+                          style={{
+                            cursor:
+                              campaign.status === 'canceled' ||
+                              campaign.status === 'completed'
+                                ? 'not-allowed'
+                                : 'pointer',
+                          }}
+                        >
+                          Cancel Campaign
+                        </button>
+                      </li>
+                    </ul>
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* Campaign Details */}
               <div className="text-gray-500 dark:text-neutral-400 flex justify-between items-center space-x-4">
                 <div className="flex items-center space-x-2">
                   <div className="font-normal">Goal:</div>
@@ -195,52 +248,6 @@ const Campaigns: React.FC = () => {
                   </Button>
                 </div>
               </div>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-200">
-                    <DotsVerticalIcon className="h-6 w-6" />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-fit">
-                  <ul className="space-y-2">
-                    <li>
-                      <button
-                        className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
-                        onClick={() => handleEditCampaign(String(campaign.id))}
-                      >
-                        Edit Campaign
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
-                        onClick={() => handleAction(campaign, 'delete')}
-                      >
-                        Delete Campaign
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
-                        onClick={() => handleAction(campaign, 'cancel')}
-                        disabled={
-                          campaign.status === 'canceled' ||
-                          campaign.status === 'completed'
-                        }
-                        style={{
-                          cursor:
-                            campaign.status === 'canceled' ||
-                            campaign.status === 'completed'
-                              ? 'not-allowed'
-                              : 'pointer',
-                        }}
-                      >
-                        Cancel Campaign
-                      </button>
-                    </li>
-                  </ul>
-                </PopoverContent>
-              </Popover>
             </div>
           ))}
         </div>
