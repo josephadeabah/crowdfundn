@@ -253,7 +253,7 @@ const SingleCampaignPage: React.FC = () => {
                           }}
                         />
                         {/* Combined Share and Fundraiser Info Container */}
-                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
+                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-8">
                           {/* Share Section */}
                           <div className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
