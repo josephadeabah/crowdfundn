@@ -213,7 +213,7 @@ const CampaignsPage = () => {
         {/* Search Section */}
         <div className="flex justify-center mb-1">
           <div className="w-full max-w-7xl mx-auto flex justify-center md:justify-end">
-            <div className="bg-gray-100 relative flex items-center w-full sm:w-auto rounded-full">
+            <div className="bg-gray-100 relative flex items-center w-full sm:w-auto rounded-l-full">
               <input
                 id="search"
                 type="text"
