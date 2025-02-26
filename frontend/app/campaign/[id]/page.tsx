@@ -262,7 +262,7 @@ const SingleCampaignPage: React.FC = () => {
                             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                               <Button
                                 onClick={handleShare}
-                                className="flex items-center justify-center bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition-all transform hover:scale-105 active:scale-95 shadow-md"
+                                className="flex items-center justify-center bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition-all transform hover:scale-105 active:scale-95 shadow-none"
                               >
                                 <FaShare className="mr-2" />
                                 {currentCampaign?.total_shares || 0} Shares
@@ -270,7 +270,7 @@ const SingleCampaignPage: React.FC = () => {
                               <Button
                                 onClick={handleCopy}
                                 variant='outline'
-                                className="flex items-center justify-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all transform hover:scale-105 active:scale-95 shadow-sm"
+                                className="flex items-center justify-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all transform hover:scale-105 active:scale-95 shadow-none"
                               >
                                 {copyButtonText}
                               </Button>
@@ -304,7 +304,7 @@ const SingleCampaignPage: React.FC = () => {
                                 <Button
                                 onClick={() => setIsContactModalOpen(true)}
                                 variant='outline'
-                                className="w-full flex items-center justify-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all transform hover:scale-105 active:scale-95 shadow-sm"
+                                className="w-full flex items-center justify-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all transform hover:scale-105 active:scale-95 shadow-none"
                               >
                                 Contact
                               </Button>
