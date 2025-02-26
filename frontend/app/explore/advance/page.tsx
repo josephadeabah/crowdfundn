@@ -208,13 +208,13 @@ const CampaignsPage = () => {
         {/* Search Section */}
         <div className="flex justify-center mb-1">
           <div className="w-full max-w-7xl mx-auto flex justify-center md:justify-end">
-            <div className="relative flex items-center w-full sm:w-auto">
+            <div className="bg-gray-100 relative flex items-center w-full sm:w-auto">
               <input
                 id="search"
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-50 rounded focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white pr-24"
+                className="w-full px-4 py-3 border border-gray-100 rounded focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white pr-24"
                 placeholder="Search for a campaign"
               />
               <motion.button
