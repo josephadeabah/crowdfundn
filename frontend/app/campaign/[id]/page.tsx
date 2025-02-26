@@ -245,7 +245,7 @@ const SingleCampaignPage: React.FC = () => {
                   </Tab>
                 ))}
               </TabsHeader>
-              <TabsBody>
+              <TabsBody className="overflow-y-auto max-h-[calc(100vh-200px)]">
                 {tabData.map(({ value }) => (
                   <TabPanel key={value} value={value}>
                     {value === 'details' && (
