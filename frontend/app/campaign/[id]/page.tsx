@@ -313,11 +313,11 @@ const SingleCampaignPage: React.FC = () => {
                                   Contact
                                 </Button>
                               </div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                            </div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
                                 {currentCampaign?.fundraiser?.profile
                                   ?.description || 'No description provided.'}
                               </p>
-                            </div>
                           </div>
                         </div>
                       </div>
