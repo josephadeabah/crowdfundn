@@ -240,6 +240,7 @@ const Navbar = () => {
           ))}
         </div>
 
+        {/*For Mobile*/}
         <div className="lg:hidden mr-3">
           <button
             onClick={handleMenuToggle}
