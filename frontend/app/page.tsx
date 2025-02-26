@@ -289,7 +289,7 @@ const HomePage = () => {
       <div id="brands" className="mt-20">
         <BHScreenKnowHow />
       </div>
-      <div className="w-full bg-white p-4">
+      <div className="w-full bg-white p-4 mb-0">
         <BlogPosts />
       </div>
 
