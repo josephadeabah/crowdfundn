@@ -1,12 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import {
-  Typography,
-  IconButton,
-  List,
-  ListItem,
-} from '@material-tailwind/react';
 import DarkModeBtn from './DarkModeBtn';
 import { Button } from './button/Button';
 import Link from 'next/link';
@@ -231,19 +225,12 @@ const Navbar = () => {
                         })}
                       </div>
                       <div>
-                        <Typography
-                          variant="h6"
-                          color="blue-gray"
-                          className="text-sm font-bold"
-                        >
+                        <h6 className="text-sm font-bold text-gray-800 dark:text-gray-50">
                           {link.label}
-                        </Typography>
-                        <Typography
-                          variant="paragraph"
-                          className="text-xs !font-medium text-blue-gray-500"
-                        >
+                        </h6>
+                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
                           {link.description}
-                        </Typography>
+                        </p>
                       </div>
                     </div>
                   </Link>
@@ -254,9 +241,8 @@ const Navbar = () => {
         </div>
 
         <div className="lg:hidden mr-3">
-          <IconButton
+          <button
             onClick={handleMenuToggle}
-            variant="text"
             className="text-gray-800 shadow-none rounded-none dark:text-gray-300"
           >
             {isMenuOpen ? (
@@ -264,39 +250,39 @@ const Navbar = () => {
             ) : (
               <HamburgerMenuIcon className="h-8 w-8" />
             )}
-          </IconButton>
+          </button>
         </div>
 
         {isMenuOpen && (
           <div className="absolute top-16 left-0 w-full bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-900 lg:hidden">
-            <List className="flex flex-col items-start p-4 space-y-4">
+            <div className="flex flex-col items-start p-4 space-y-4">
               {!user && (
                 <>
-                  <ListItem>
+                  <div className="w-full">
                     <Link
                       href="/auth/register"
                       className="block focus-visible:outline-none focus:ring-0 hover:outline-none"
                     >
                       Start Project
                     </Link>
-                  </ListItem>
-                  <ListItem>
+                  </div>
+                  <div className="w-full">
                     <Link
                       href="/auth/login"
                       className="block focus-visible:outline-none focus:ring-0 hover:outline-none"
                     >
                       Login
                     </Link>
-                  </ListItem>
+                  </div>
                 </>
               )}
               {Object.entries(dropdownLinks).map(([key, links]) => (
                 <Popover key={key}>
                   <PopoverTrigger>
-                    <ListItem className="flex justify-between items-center">
+                    <div className="flex justify-between items-center w-full">
                       {key.charAt(0).toUpperCase() + key.slice(1)}
                       <ChevronDownIcon className="h-4 w-4" />
-                    </ListItem>
+                    </div>
                   </PopoverTrigger>
                   <PopoverContent
                     align="start"
@@ -317,19 +303,12 @@ const Navbar = () => {
                             })}
                           </div>
                           <div>
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className="text-sm font-bold"
-                            >
+                            <h6 className="text-sm font-bold text-gray-800 dark:text-gray-50">
                               {link.label}
-                            </Typography>
-                            <Typography
-                              variant="paragraph"
-                              className="text-xs !font-medium text-blue-gray-500"
-                            >
+                            </h6>
+                            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
                               {link.description}
-                            </Typography>
+                            </p>
                           </div>
                         </div>
                       </Link>
@@ -338,7 +317,7 @@ const Navbar = () => {
                 </Popover>
               ))}
               {user && (
-                <ListItem className="flex items-center gap-3 focus-visible:outline-none focus:ring-0 hover:outline-none">
+                <div className="flex items-center gap-3 w-full">
                   <Link
                     href="/account"
                     className="focus-visible:outline-none focus:ring-0 hover:outline-none"
@@ -362,9 +341,9 @@ const Navbar = () => {
                   >
                     Logout
                   </div>
-                </ListItem>
+                </div>
               )}
-            </List>
+            </div>
           </div>
         )}
 
