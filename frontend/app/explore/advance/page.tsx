@@ -208,24 +208,25 @@ const CampaignsPage = () => {
         {/* Search Section */}
         <div className="flex justify-center mb-1">
           <div className="w-full max-w-7xl mx-auto flex justify-center md:justify-end">
-            <div className="bg-gray-100 relative flex items-center w-full sm:w-auto">
-              <input
-                id="search"
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-100 rounded focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white pr-24"
-                placeholder="Search for a campaign"
-              />
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                onClick={handleSearch}
-                whileTap={{ scale: 0.95 }}
-                className="absolute right-0 bg-gray-100 text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-6 py-3 rounded-r-lg font-semibold hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300"
-              >
-                Search
-              </motion.button>
-            </div>
+          <div className="bg-gray-100 relative flex items-center w-full sm:w-auto">
+  <input
+    id="search"
+    type="text"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="w-full px-4 py-3 border border-gray-100 rounded-full focus:outline-none text-gray-900 bg-gray-100 dark:bg-gray-700 dark:text-white pr-24"
+    placeholder="Search for a campaign"
+  />
+  <motion.button
+    whileHover={{ scale: 1.05 }}
+    onClick={handleSearch}
+    whileTap={{ scale: 0.95 }}
+    className="absolute right-0 bg-gray-100 text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-6 py-3 rounded-r-lg font-semibold hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300"
+  >
+    Search
+  </motion.button>
+</div>
+
           </div>
         </div>
       </div>
