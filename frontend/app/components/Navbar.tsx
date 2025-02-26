@@ -2,10 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import {
-  Menu,
-  MenuHandler,
-  MenuList,
-  MenuItem,
   Typography,
   IconButton,
   List,
@@ -36,6 +32,7 @@ import { useRouter } from 'next/navigation';
 import NavbarLoader from '../loaders/NavbarLoader';
 import { motion } from 'framer-motion';
 import { useUserContext } from '../context/users/UserContext';
+import { Popover, PopoverTrigger, PopoverContent } from '@/app/components/popover/Popover'; // Import the Popover components
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -46,7 +43,7 @@ const Navbar = () => {
   const { userAccountData } = useUserContext();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  let closeTimeout: NodeJS.Timeout; // Declare closeTimeout here
+  let closeTimeout: NodeJS.Timeout;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -176,34 +173,31 @@ const Navbar = () => {
 
         <div className="hidden lg:flex items-center gap-x-2 mx-6">
           {Object.entries(dropdownLinks).map(([key, links]) => (
-            <Menu key={key} allowHover>
-              <MenuHandler
-                open={activeMenu === key}
-                onOpenChange={(isOpen: any) => {
-                  if (!isOpen) setActiveMenu(null);
+            <Popover key={key}>
+              <PopoverTrigger
+                onMouseEnter={() => {
+                  clearTimeout(closeTimeout);
+                  setActiveMenu(key);
                 }}
+                onMouseLeave={() => {
+                  closeTimeout = setTimeout(() => setActiveMenu(null), 200);
+                }}
+                className="flex items-center text-gray-700 dark:text-gray-50 group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
               >
-                <Button
-                  onMouseEnter={() => {
-                    clearTimeout(closeTimeout); // Prevent immediate close
-                    setActiveMenu(key);
-                  }}
-                  onMouseLeave={() => {
-                    closeTimeout = setTimeout(() => setActiveMenu(null), 200);
-                  }}
-                  variant="ghost"
-                  className="flex items-center text-gray-700 dark:text-gray-50 group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
-                >
+                <Button variant="ghost" className="flex items-center">
                   {key.charAt(0).toUpperCase() + key.slice(1)}
-                  {/* Arrow with rotation */}
                   <TriangleDownIcon
                     className={`ml-2 h-4 w-4 transition-transform ${
                       activeMenu === key ? 'rotate-180' : ''
                     }`}
                   />
                 </Button>
-              </MenuHandler>
-              <MenuList className="p-2 bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-950">
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                sideOffset={8}
+                className="bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-50 p-2"
+              >
                 {links.map((link) => (
                   <Link
                     href={link.href}
@@ -211,7 +205,7 @@ const Navbar = () => {
                     passHref
                     className="focus-visible:outline-none focus:ring-0 hover:outline-none"
                   >
-                    <MenuItem className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
+                    <div className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
                       <div className="flex items-center justify-center rounded-lg !bg-white p-2">
                         {React.createElement(link.icon, {
                           className: 'h-5 w-5 text-gray-800',
@@ -232,11 +226,11 @@ const Navbar = () => {
                           {link.description}
                         </Typography>
                       </div>
-                    </MenuItem>
+                    </div>
                   </Link>
                 ))}
-              </MenuList>
-            </Menu>
+              </PopoverContent>
+            </Popover>
           ))}
         </div>
 
@@ -278,14 +272,18 @@ const Navbar = () => {
                 </>
               )}
               {Object.entries(dropdownLinks).map(([key, links]) => (
-                <Menu key={key}>
-                  <MenuHandler>
+                <Popover key={key}>
+                  <PopoverTrigger>
                     <ListItem className="flex justify-between items-center">
                       {key.charAt(0).toUpperCase() + key.slice(1)}
                       <ChevronDownIcon className="h-4 w-4" />
                     </ListItem>
-                  </MenuHandler>
-                  <MenuList className="p-3 bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-950">
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="start"
+                    sideOffset={8}
+                    className="bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-50 p-2"
+                  >
                     {links.map((link) => (
                       <Link
                         href={link.href}
@@ -293,7 +291,7 @@ const Navbar = () => {
                         passHref
                         className="focus-visible:outline-none focus:ring-0 hover:outline-none"
                       >
-                        <MenuItem className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
+                        <div className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
                           <div className="flex items-center justify-center rounded-lg !bg-white p-2">
                             {React.createElement(link.icon, {
                               className: 'h-5 w-5 text-gray-800',
@@ -314,11 +312,11 @@ const Navbar = () => {
                               {link.description}
                             </Typography>
                           </div>
-                        </MenuItem>
+                        </div>
                       </Link>
                     ))}
-                  </MenuList>
-                </Menu>
+                  </PopoverContent>
+                </Popover>
               ))}
               {user && (
                 <ListItem className="flex items-center gap-3 focus-visible:outline-none focus:ring-0 hover:outline-none">
@@ -380,8 +378,8 @@ const Navbar = () => {
               </motion.button>
             </>
           ) : (
-            <Menu>
-              <MenuHandler>
+            <Popover>
+              <PopoverTrigger>
                 <div className="cursor-pointer">
                   <Avatar
                     name={user.full_name}
@@ -391,8 +389,12 @@ const Navbar = () => {
                     }
                   />
                 </div>
-              </MenuHandler>
-              <MenuList className="p-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-50 rounded-none">
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                sideOffset={8}
+                className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-50 p-2"
+              >
                 <div className="cursor-pointer flex items-center focus-visible:outline-none focus:ring-0 hover:outline-none">
                   <Link
                     href="/account"
@@ -426,9 +428,9 @@ const Navbar = () => {
                       passHref
                       className="focus-visible:outline-none focus:ring-0 hover:outline-none"
                     >
-                      <MenuItem className="hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none">
+                      <div className="hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2">
                         Go to Admin
-                      </MenuItem>
+                      </div>
                     </Link>
                   )}
                 <Link
@@ -436,18 +438,18 @@ const Navbar = () => {
                   passHref
                   className="focus-visible:outline-none focus:ring-0 hover:outline-none"
                 >
-                  <MenuItem className="hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none">
+                  <div className="hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2">
                     Go to Account
-                  </MenuItem>
+                  </div>
                 </Link>
-                <MenuItem
-                  className="hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none"
+                <div
+                  className="hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2"
                   onClick={logout}
                 >
                   Logout
-                </MenuItem>
-              </MenuList>
-            </Menu>
+                </div>
+              </PopoverContent>
+            </Popover>
           )}
         </div>
       </div>
