@@ -15,15 +15,6 @@ import { useDonationsContext } from '@/app/context/account/donations/DonationsCo
 import ProgressRing from '@/app/components/ring/ProgressRing';
 import DonationList from '@/app/components/backerlist/DonationList';
 import SuggestedCampaignsComponent from '@/app/components/suggestedCampaigns/SuggestedCampaigns';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
 import DonationsChart from '../DonationsChart';
 import { deslugify } from '@/app/utils/helpers/categories';
 import Link from 'next/link';
@@ -228,8 +219,8 @@ const SingleCampaignPage: React.FC = () => {
                         >
                           {tab.charAt(0).toUpperCase() + tab.slice(1)}{' '}
                           {count > 0 && (
-                            <span className="text-sm text-gray-500 dark:text-gray-400">
-                              ({count})
+                            <span className="text-sm bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full ml-2">
+                              {count}
                             </span>
                           )}
                         </button>
