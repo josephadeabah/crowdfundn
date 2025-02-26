@@ -30,6 +30,13 @@ import Link from 'next/link';
 import moment from 'moment';
 import ContactFundraiserForm from '@/app/components/contactfundraiserform/ContactFundraiserForm';
 import Modal from '@/app/components/modal/Modal';
+import {
+  Tabs,
+  TabsHeader,
+  TabsBody,
+  Tab,
+  TabPanel,
+} from '@material-tailwind/react'; // Import Material Tailwind Tabs
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<
@@ -41,8 +48,6 @@ const SingleCampaignPage: React.FC = () => {
   const [copyButtonText, setCopyButtonText] = useState<string>('Copy');
   const [error, setError] = useState<string | null>(null);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-
-  const tabsRef = useRef<HTMLDivElement>(null);
 
   const { id } = useParams() as { id: string };
   const {
@@ -134,15 +139,6 @@ const SingleCampaignPage: React.FC = () => {
     }
   };
 
-  const scrollTabs = (direction: 'left' | 'right') => {
-    if (tabsRef.current) {
-      tabsRef.current.scrollBy({
-        left: direction === 'left' ? -200 : 200,
-        behavior: 'smooth',
-      });
-    }
-  };
-
   const fundraiserName =
     currentCampaign?.fundraiser?.profile?.name ||
     currentCampaign?.fundraiser?.name;
@@ -151,6 +147,36 @@ const SingleCampaignPage: React.FC = () => {
     currentCampaign?.fundraiser?.currency?.toUpperCase();
 
   if (loading) return <SingleCampaignLoader />;
+
+  // Define tab data for Material Tailwind Tabs
+  const tabData = [
+    {
+      label: 'Details',
+      value: 'details',
+      count: 0, // No count for details
+    },
+    {
+      label: 'Donate',
+      value: 'donate',
+      count: 0, // No count for donate
+      disabled: !currentCampaign?.permissions?.accept_donations,
+    },
+    {
+      label: 'Updates',
+      value: 'updates',
+      count: currentCampaign?.updates?.length || 0,
+    },
+    {
+      label: 'Comments',
+      value: 'comments',
+      count: currentCampaign?.comments?.length || 0,
+    },
+    {
+      label: 'Backers',
+      value: 'backers',
+      count: currentCampaign?.total_donors || 0,
+    },
+  ];
 
   return (
     <div className="max-w-7xl mx-auto px-2 py-8 mb-12">
@@ -187,167 +213,140 @@ const SingleCampaignPage: React.FC = () => {
                 />
               </div>
             </div>
-            <div className="relative">
-              <div className="flex items-center mb-6">
-                <button
-                  onClick={() => scrollTabs('left')}
-                  className="absolute left-0 z-10 bg-white dark:text-gray-100 shadow-md p-2 rounded-full md:hidden"
-                >
-                  <FaChevronLeft />
-                </button>
-                <div
-                  ref={tabsRef}
-                  className="flex overflow-x-auto scrollbar-hide whitespace-nowrap"
-                >
-                  {['details', 'donate', 'updates', 'comments', 'backers'].map(
-                    (tab) => {
-                      let count = 0; // Default to 0 for tabs that don't require counts
-                      if (tab === 'updates') {
-                        count = currentCampaign?.updates?.length || 0;
-                      } else if (tab === 'comments') {
-                        count = currentCampaign?.comments?.length || 0;
-                      } else if (tab === 'backers') {
-                        count = currentCampaign?.total_donors || 0;
-                      }
-
-                      // Disable "donate" tab if donations are not allowed
-                      const isDonateTabDisabled =
-                        tab === 'donate' &&
-                        !currentCampaign?.permissions?.accept_donations;
-
-                      return (
-                        <button
-                          key={tab}
-                          className={`px-4 py-2 font-semibold ${selectedTab === tab ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-600'} ${isDonateTabDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          onClick={() => {
-                            if (!isDonateTabDisabled) {
-                              setSelectedTab(tab as any);
-                            }
+            {/* Material Tailwind Tabs */}
+            <Tabs
+              value={selectedTab}
+              onChange={(value) => setSelectedTab(value)}
+            >
+              <TabsHeader>
+                {tabData.map(({ label, value, count, disabled }) => (
+                  <Tab
+                    key={value}
+                    value={value}
+                    disabled={disabled}
+                    className="flex items-center gap-2"
+                  >
+                    {label}{' '}
+                    {count > 0 && (
+                      <span className="text-sm text-gray-500">({count})</span>
+                    )}
+                  </Tab>
+                ))}
+              </TabsHeader>
+              <TabsBody>
+                {tabData.map(({ value }) => (
+                  <TabPanel key={value} value={value}>
+                    {value === 'details' && (
+                      <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
+                        {/* Campaign Description */}
+                        <div
+                          className="prose dark:prose-dark max-w-none"
+                          dangerouslySetInnerHTML={{
+                            __html: currentCampaign?.description?.body || '',
                           }}
-                          disabled={isDonateTabDisabled} // Disable the button if the "donate" tab is disabled
-                        >
-                          {tab.charAt(0).toUpperCase() + tab.slice(1)}{' '}
-                          {count > 0 && (
-                            <span className="text-sm text-gray-500 dark:text-gray-400">
-                              ({count})
-                            </span>
-                          )}
-                        </button>
-                      );
-                    },
-                  )}
-                </div>
-                <button
-                  onClick={() => scrollTabs('right')}
-                  className="absolute right-0 z-10 bg-white shadow-md p-2 rounded-full md:hidden"
-                >
-                  <FaChevronRight />
-                </button>
-              </div>
-            </div>
-            {/* Tab Content */}
-            {selectedTab === 'details' && (
-              <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
-                {/* Campaign Description */}
-                <div
-                  className="prose dark:prose-dark max-w-none"
-                  dangerouslySetInnerHTML={{
-                    __html: currentCampaign?.description?.body || '',
-                  }}
-                />
-                {/* Combined Share and Fundraiser Info Container */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
-                  {/* Share Section */}
-                  <div className="border-b pb-4 mb-4">
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-3">
-                      Share this fundraiser
-                    </h2>
-                    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-                      <Button
-                        onClick={handleShare}
-                        className="flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
-                      >
-                        <FaShare className="mr-2" />{' '}
-                        {currentCampaign?.total_shares || 0} Shares
-                      </Button>
-                      <button
-                        onClick={handleCopy}
-                        className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-                      >
-                        {copyButtonText}
-                      </button>
-                    </div>
-                    {error && <p className="text-red-500 mt-2">{error}</p>}
-                  </div>
+                        />
+                        {/* Combined Share and Fundraiser Info Container */}
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
+                          {/* Share Section */}
+                          <div className="border-b pb-4 mb-4">
+                            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-3">
+                              Share this fundraiser
+                            </h2>
+                            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                              <Button
+                                onClick={handleShare}
+                                className="flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+                              >
+                                <FaShare className="mr-2" />{' '}
+                                {currentCampaign?.total_shares || 0} Shares
+                              </Button>
+                              <button
+                                onClick={handleCopy}
+                                className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                              >
+                                {copyButtonText}
+                              </button>
+                            </div>
+                            {error && (
+                              <p className="text-red-500 mt-2">{error}</p>
+                            )}
+                          </div>
 
-                  {/* Fundraiser Info Section */}
-                  {/* Fundraiser Info Section */}
-                  <div className="flex flex-col sm:flex-row items-center sm:space-x-4 mb-4">
-                    <div className="text-xs italic text-gray-500 dark:text-gray-400 sm:mr-4">
-                      Fundraiser:
-                    </div>
-                    <Avatar
-                      name={fundraiserName as string}
-                      size="md"
-                      imageUrl={currentCampaign?.fundraiser?.profile?.avatar}
-                    />
-                    <div className="flex flex-col sm:flex-row items-center w-full sm:w-auto">
-                      <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 sm:mr-4 w-full sm:w-auto">
-                        {fundraiserName}
-                      </h3>
-                      {/* Contact Button */}
-                      <button
-                        onClick={() => setIsContactModalOpen(true)}
-                        className="w-full sm:w-auto ml-0 sm:ml-4 px-4 py-2 bg-white border border-gray-400 text-gray-600 rounded-md hover:bg-gray-100 transition"
-                      >
-                        Contact
-                      </button>
-                    </div>
-                  </div>
-                  {/* Fundraiser Description */}
-                  <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    {currentCampaign?.fundraiser?.profile?.description ||
-                      'No description provided.'}
-                  </div>
-                </div>
-              </div>
-            )}
-            {selectedTab === 'donate' && (
-              <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
-                <RewardSelection
-                  rewards={currentCampaign?.rewards || []}
-                  selectedTier={selectedTier}
-                  onTierSelect={handleTierSelect}
-                  pledgeAmount={pledgeAmount}
-                  setPledgeAmount={setPledgeAmount}
-                  billingFrequency={billingFrequency}
-                  setBillingFrequency={setBillingFrequency}
-                />
-              </div>
-            )}
-            {selectedTab === 'updates' && (
-              <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
-                <FundraiserUpdates
-                  updates={currentCampaign?.updates || []}
-                  fundraiserName={fundraiserName}
-                />
-              </div>
-            )}
-            {selectedTab === 'comments' && (
-              <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
-                <CommentsSection campaignId={String(currentCampaign?.id)} />
-              </div>
-            )}
-            {selectedTab === 'backers' && (
-              <div className="bg-white dark:bg-gray-800 mx-auto px-2 py-6">
-                <h3 className="text-2xl font-bold mb-6">Backers</h3>
-                <DonationList
-                  donations={donations}
-                  fundraiserCurrency={fundraiserCurrency}
-                  campaignId={String(currentCampaign?.id)}
-                />
-              </div>
-            )}
+                          {/* Fundraiser Info Section */}
+                          <div className="flex flex-col sm:flex-row items-center sm:space-x-4 mb-4">
+                            <div className="text-xs italic text-gray-500 dark:text-gray-400 sm:mr-4">
+                              Fundraiser:
+                            </div>
+                            <Avatar
+                              name={fundraiserName as string}
+                              size="md"
+                              imageUrl={
+                                currentCampaign?.fundraiser?.profile?.avatar
+                              }
+                            />
+                            <div className="flex flex-col sm:flex-row items-center w-full sm:w-auto">
+                              <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 sm:mr-4 w-full sm:w-auto">
+                                {fundraiserName}
+                              </h3>
+                              {/* Contact Button */}
+                              <button
+                                onClick={() => setIsContactModalOpen(true)}
+                                className="w-full sm:w-auto ml-0 sm:ml-4 px-4 py-2 bg-white border border-gray-400 text-gray-600 rounded-md hover:bg-gray-100 transition"
+                              >
+                                Contact
+                              </button>
+                            </div>
+                          </div>
+                          {/* Fundraiser Description */}
+                          <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                            {currentCampaign?.fundraiser?.profile
+                              ?.description || 'No description provided.'}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {value === 'donate' && (
+                      <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
+                        <RewardSelection
+                          rewards={currentCampaign?.rewards || []}
+                          selectedTier={selectedTier}
+                          onTierSelect={handleTierSelect}
+                          pledgeAmount={pledgeAmount}
+                          setPledgeAmount={setPledgeAmount}
+                          billingFrequency={billingFrequency}
+                          setBillingFrequency={setBillingFrequency}
+                        />
+                      </div>
+                    )}
+                    {value === 'updates' && (
+                      <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
+                        <FundraiserUpdates
+                          updates={currentCampaign?.updates || []}
+                          fundraiserName={fundraiserName}
+                        />
+                      </div>
+                    )}
+                    {value === 'comments' && (
+                      <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
+                        <CommentsSection
+                          campaignId={String(currentCampaign?.id)}
+                        />
+                      </div>
+                    )}
+                    {value === 'backers' && (
+                      <div className="bg-white dark:bg-gray-800 mx-auto px-2 py-6">
+                        <h3 className="text-2xl font-bold mb-6">Backers</h3>
+                        <DonationList
+                          donations={donations}
+                          fundraiserCurrency={fundraiserCurrency}
+                          campaignId={String(currentCampaign?.id)}
+                        />
+                      </div>
+                    )}
+                  </TabPanel>
+                ))}
+              </TabsBody>
+            </Tabs>
             <hr className="border-t-1 my-2" /> {/* Top line */}
             <div className="w-full px-1 flex items-center">
               {' '}
