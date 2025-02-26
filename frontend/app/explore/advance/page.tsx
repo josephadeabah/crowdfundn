@@ -16,7 +16,8 @@ import { FaClock, FaUser, FaBookmark, FaRegBookmark } from 'react-icons/fa';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '@/app/components/toast/Toast';
 import Avatar from '@/app/components/avatar/Avatar';
-import { Card, Collapse, Button } from '@material-tailwind/react'; // Import Collapse and Button
+import { Card, Collapse } from '@material-tailwind/react'; // Import Collapse and Button
+import { Button } from '@/app/components/button/Button';
 
 const CampaignsPage = () => {
   const {
@@ -236,7 +237,7 @@ const CampaignsPage = () => {
       <div className="flex flex-col md:flex-row gap-1">
         {/* Filters Section */}
         <div className="w-full md:w-1/4">
-          <Button onClick={toggleOpen} className="mb-2 w-full">
+          <Button onClick={toggleOpen} className="mb-2 w-full" size='lg' variant='outline'>
             {open ? 'Hide Filters' : 'Show Filters'}
           </Button>
           <Collapse open={open}>
