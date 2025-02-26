@@ -221,7 +221,7 @@ const CampaignsPage = () => {
                 whileHover={{ scale: 1.05 }}
                 onClick={handleSearch}
                 whileTap={{ scale: 0.95 }}
-                className="absolute right-0 bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-6 py-3 rounded-r-lg font-semibold hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300"
+                className="absolute right-0 bg-gray-100 text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-6 py-3 rounded-r-lg font-semibold hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300"
               >
                 Search
               </motion.button>
@@ -358,7 +358,7 @@ const CampaignsPage = () => {
         </Card>
 
         {/* Campaigns Section */}
-        <div className="w-full bg-white md:p-4">
+        <div className="w-full bg-gray-100 md:p-4">
           {loading ? (
             <CampaignCardLoader />
           ) : (
@@ -387,7 +387,7 @@ const CampaignsPage = () => {
                           animate="visible"
                           exit="hidden"
                           transition={{ duration: 0.5, delay: index * 0.1 }}
-                          className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 hover:shadow-lg transition-transform duration-300 cursor-pointer overflow-hidden"
+                          className="group relative bg-gray-100 dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 hover:shadow-lg transition-transform duration-300 cursor-pointer overflow-hidden"
                         >
                           <Link
                             href={`/campaign/${campaign?.id}?${generateRandomString()}`}
