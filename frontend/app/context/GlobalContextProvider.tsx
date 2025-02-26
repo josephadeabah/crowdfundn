@@ -14,7 +14,7 @@ import { MetricsProvider } from './admin/metrics/MetricsContext';
 import { LeaderboardProvider } from './leaderboard/LeaderboardContext';
 import { PointRewardProvider } from './pointreward/PointRewardContext';
 import { ArticlesProvider } from './admin/articles/ArticlesContext';
-import { ThemeProvider } from '@material-tailwind/react';
+// import { ThemeProvider } from '@material-tailwind/react';
 
 export const GlobalContextProvider = ({
   children,
@@ -22,7 +22,7 @@ export const GlobalContextProvider = ({
   children: ReactNode;
 }) => {
   return (
-    <ThemeProvider>
+    // <ThemeProvider>
       <AuthProvider>
         <UserProfileProvider>
           <DonationsProvider>
@@ -50,6 +50,6 @@ export const GlobalContextProvider = ({
           </DonationsProvider>
         </UserProfileProvider>
       </AuthProvider>
-    </ThemeProvider>
+    // </ThemeProvider>
   );
 };
