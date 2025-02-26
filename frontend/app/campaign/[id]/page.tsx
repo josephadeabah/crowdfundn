@@ -225,13 +225,16 @@ const SingleCampaignPage: React.FC = () => {
                   | 'backers',
               ) => setSelectedTab(value)}
             >
-              <TabsHeader className="rounded-none bg-white">
+              <TabsHeader className="bg-transparent rounded-none bg-white"
+                indicatorProps={{
+                  className: "bg-gray-900/10 shadow-none !text-gray-900",
+                }}>
                 {tabData.map(({ label, value, count, disabled }) => (
                   <Tab
                     key={value}
                     value={value}
                     disabled={disabled}
-                    className="flex items-center gap-2 rounded-none shadow-none bg-gray-100"
+                    className="flex items-center gap-2"
                   >
                     {label}{' '}
                     {count > 0 && (
