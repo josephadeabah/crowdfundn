@@ -267,12 +267,13 @@ const SingleCampaignPage: React.FC = () => {
                                 <FaShare className="mr-2" />
                                 {currentCampaign?.total_shares || 0} Shares
                               </Button>
-                              <button
+                              <Button
                                 onClick={handleCopy}
+                                variant='outline'
                                 className="flex items-center justify-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all transform hover:scale-105 active:scale-95 shadow-md"
                               >
                                 {copyButtonText}
-                              </button>
+                              </Button>
                             </div>
                             {error && (
                               <p className="text-red-500 text-sm mt-3">
@@ -300,17 +301,18 @@ const SingleCampaignPage: React.FC = () => {
                                 <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                                   {fundraiserName}
                                 </h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                                  {currentCampaign?.fundraiser?.profile
-                                    ?.description || 'No description provided.'}
-                                </p>
-                              </div>
-                              <button
+                                <Button
                                 onClick={() => setIsContactModalOpen(true)}
+                                variant='outline'
                                 className="flex items-center justify-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all transform hover:scale-105 active:scale-95 shadow-md"
                               >
                                 Contact
-                              </button>
+                              </Button>
+                              </div>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                                  {currentCampaign?.fundraiser?.profile
+                                    ?.description || 'No description provided.'}
+                                </p>
                             </div>
                           </div>
                         </div>
