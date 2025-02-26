@@ -299,9 +299,9 @@ const SingleCampaignPage: React.FC = () => {
                                 }
                               />
                             </div>
-                            <div className="flex flex-col items-center sm:items-start gap-4 flex-1">
-                              <div className="text-center sm:text-left">
-                                <div className="text-xs italic text-gray-500 dark:text-gray-400 mb-1">
+                            <div className="flex flex-col items-center gap-4 flex-1">
+                              <div className="text-center">
+                                <div className="text-base italic text-gray-500 dark:text-gray-400 mb-1">
                                   Fundraiser
                                 </div>
                                 <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
