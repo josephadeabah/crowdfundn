@@ -32,7 +32,11 @@ import { useRouter } from 'next/navigation';
 import NavbarLoader from '../loaders/NavbarLoader';
 import { motion } from 'framer-motion';
 import { useUserContext } from '../context/users/UserContext';
-import { Popover, PopoverTrigger, PopoverContent } from '@/app/components/popover/Popover'; // Import the Popover components
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@/app/components/popover/Popover'; // Import the Popover components
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -158,7 +162,9 @@ const Navbar = () => {
 
   return (
     <header
-      className={`bg-green-50 dark:bg-gray-950 sticky top-0 z-50 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
+      className={`bg-green-50 dark:bg-gray-950 sticky top-0 z-50 transition-transform duration-300 ease-in-out ${
+        isVisible ? 'translate-y-0' : '-translate-y-full'
+      }`}
     >
       <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 dark:bg-gray-950 dark:text-gray-50">
         <div className="text-2xl font-bold text-orange-500">
@@ -208,7 +214,7 @@ const Navbar = () => {
                   setActiveMenu(key);
                 }}
                 onMouseLeave={() => {
-                  closeTimeout = setTimeout(() => setActiveMenu(null), 200;
+                  closeTimeout = setTimeout(() => setActiveMenu(null), 200);
                 }}
               >
                 {links.map((link) => (
