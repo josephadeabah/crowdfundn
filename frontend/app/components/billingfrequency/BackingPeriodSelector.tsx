@@ -45,6 +45,7 @@ const BackingPeriodSelector: React.FC<BackingPeriodSelectorProps> = ({
                   value={option}
                   id={option}
                   className="h-5 w-5"
+                  disabled
                 />
                 <label htmlFor={option} className="text-gray-700 capitalize">
                   {option}
