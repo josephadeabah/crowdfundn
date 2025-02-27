@@ -407,7 +407,7 @@ const CampaignsPage = () => {
                           animate="visible"
                           exit="hidden"
                           transition={{ duration: 0.5, delay: index * 0.1 }}
-                          className="group relative bg-gray-100 dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 transition-transform duration-300 cursor-pointer overflow-hidden"
+                          className="group relative bg-gray-100 dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 cursor-pointer overflow-hidden"
                         >
                           <Link
                             href={`/campaign/${campaign?.id}?${generateRandomString()}`}
@@ -422,7 +422,7 @@ const CampaignsPage = () => {
                                   className="absolute top-0 left-0 w-full h-full"
                                 />
                               </div>
-                              <div className="px-2 py-2 bg-gray-50 dark:text-gray-50">
+                              <div className="px-2 py-2 bg-gray-50 hover:bg-white dark:text-gray-50">
                                 <div className="w-full text-xs">
                                   <Progress
                                     firstProgress={

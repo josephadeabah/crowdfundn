@@ -303,7 +303,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 initial="hidden"
                 animate="visible"
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={`group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 transition-transform duration-300 cursor-pointer overflow-hidden rounded-lg ${
+                className={`group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 cursor-pointer overflow-hidden rounded-lg ${
                   index === 0 ? 'col-span-2 row-span-2' : ''
                 } ${index === 4 || index === 5 || index === 6 ? 'col-span-1' : ''}`}
               >
@@ -319,7 +319,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       className="absolute top-0 left-0 w-full h-full"
                     />
                   </div>
-                  <div className="px-4 py-3 h-full bg-gray-50 dark:bg-gray-800">
+                  <div className="px-4 py-3 h-full bg-gray-50 hover:bg-white dark:bg-gray-800">
                     <div className="w-full text-xs">
                       <Progress
                         firstProgress={
