@@ -92,7 +92,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 2000); // 800ms delay (adjust as needed)
+    }, 4000); // 800ms delay (adjust as needed)
 
     return () => clearTimeout(debounceTimer); // Cleanup timer on unmount or searchTerm change
   }, [searchTerm]);
