@@ -235,6 +235,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
             onChange={handleSortByChange}
             placeholder="Sort By"
             variant="outline"
+            size="sm"
           />
           <SelectComponent
             options={sortOrderOptions}
@@ -242,6 +243,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
             onChange={handleSortOrderChange}
             placeholder="Sort Order"
             variant="outline"
+            size="sm"
           />
           <SelectComponent
             options={dateRangeOptions}
@@ -249,6 +251,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
             onChange={handleDateRangeChange}
             placeholder="Date Range"
             variant="outline"
+            size="sm"
           />
           <SelectComponent
             options={goalRangeOptions}
@@ -256,6 +259,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
             onChange={handleGoalRangeChange}
             placeholder="Goal Range"
             variant="outline"
+            size="sm"
           />
           <SelectComponent
             options={locationOptions}
@@ -263,6 +267,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
             onChange={handleLocationChange}
             placeholder="Location"
             variant="outline"
+            size="sm"
           />
         </div>
       </AnimatedDrawer>
