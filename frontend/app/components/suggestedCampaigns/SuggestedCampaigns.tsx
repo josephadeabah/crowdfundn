@@ -125,7 +125,7 @@ const SuggestedCampaignsComponent = ({
                 initial="hidden"
                 animate="visible"
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 rounded-lg hover:shadow-lg transition-transform duration-300 cursor-pointer overflow-hidden"
+                className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 rounded-lg cursor-pointer overflow-hidden"
               >
                 <Link
                   href={`/campaign/${campaign.id}?${generateRandomString()}`}
@@ -139,7 +139,7 @@ const SuggestedCampaignsComponent = ({
                       className="absolute top-0 left-0 w-full h-full rounded-t"
                     />
                   </div>
-                  <div className="px-2 py-2 bg-gray-50">
+                  <div className="px-2 py-2 bg-gray-50 hover:bg-gray-100">
                     <div className="w-full text-xs">
                       <Progress
                         firstProgress={
