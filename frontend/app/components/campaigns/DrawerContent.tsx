@@ -162,7 +162,9 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
 
       {/* Right Column: Search Bar and Results */}
       <div className="w-2/3 p-4">
-        <h2 className="text-xl font-bold mb-4">Search Campaigns |</h2>
+        <h2 className="text-sm md:text-xl font-bold mb-4">
+          Find fundraisers by title or keyword
+        </h2>
         <div className="bg-gray-100 relative flex items-center w-full sm:w-auto rounded-full">
           <input
             id="search"
