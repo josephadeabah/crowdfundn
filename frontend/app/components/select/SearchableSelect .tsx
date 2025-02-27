@@ -26,19 +26,19 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
 }) => {
   // Define base styles for the select box
   const baseStyles =
-    'w-full px-4 py-2 rounded-full text-gray-800 shadow-sm focus:outline-none focus:ring-2 transition duration-300 ease-in-out appearance-none';
+    'w-full px-4 py-2 rounded-full text-gray-800 border-1 focus:outline-none focus:ring-2 transition duration-300 ease-in-out appearance-none';
 
   // Define variant styles
   const variantStyles = {
     default:
       'bg-white border-1 border-gray-100 hover:bg-gray-50 focus-visible:outline-none focus:ring-0 hover:outline-none',
-    black: 'bg-white border-1 border-black hover:bg-gray-50 focus:ring-black',
+    black: 'bg-white  border-black hover:bg-gray-50 focus:ring-black',
     outline:
-      'bg-transparent border-1 border-gray-800 hover:bg-gray-50 focus:ring-gray-800',
+      'bg-transparent border-gray-800 hover:bg-gray-50 focus:ring-gray-800',
     ghost:
-      'bg-transparent border-1 text-gray-800 hover:bg-gray-100 focus:ring-gray-800',
+      'bg-transparent text-gray-800 hover:bg-gray-100 focus:ring-gray-800',
     destructive:
-      'bg-red-100 border-1 border-red-600 text-red-600 hover:bg-red-200 focus:ring-red-600',
+      'bg-red-100 border-red-600 text-red-600 hover:bg-red-200 focus:ring-red-600',
   };
 
   // Combine base styles, variant styles, and any custom className passed
