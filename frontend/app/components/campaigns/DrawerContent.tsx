@@ -161,7 +161,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
       </div>
 
       {/* Right Column: Search Bar and Results */}
-      <div className="w-2/3 p-4 overflow-y-auto h-screen">
+      <div className="w-2/3 p-4 overflow-y-auto h-screen [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
         <h2 className="text-sm md:text-xl font-bold mb-4">
           Find fundraisers by title or keyword
         </h2>
