@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
-import SelectComponent from '../select/SearchableSelect ';
+import SelectComponent from '../select/SearchableSelect';
+import Image from "next/image";
 
 interface DrawerContentProps {
   campaigns: CampaignResponseDataType[];
@@ -107,46 +108,48 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
       {/* Left Column: Selectors */}
       <div className="w-1/3 p-4 border-r border-gray-200">
         <h2 className="text-xl font-bold mb-4">Filters</h2>
-        <SelectComponent
-          options={sortByOptions}
-          value={sortByValue}
-          onChange={handleSortByChange}
-          placeholder="Sort By"
-          variant="outline"
-          size="sm"
-        />
-        <SelectComponent
-          options={sortOrderOptions}
-          value={sortOrderValue}
-          onChange={handleSortOrderChange}
-          placeholder="Sort Order"
-          variant="outline"
-          size="sm"
-        />
-        <SelectComponent
-          options={dateRangeOptions}
-          value={dateRangeValue}
-          onChange={handleDateRangeChange}
-          placeholder="Date Range"
-          variant="outline"
-          size="sm"
-        />
-        <SelectComponent
-          options={goalRangeOptions}
-          value={goalRangeValue}
-          onChange={handleGoalRangeChange}
-          placeholder="Goal Range"
-          variant="outline"
-          size="sm"
-        />
-        <SelectComponent
-          options={locationOptions}
-          value={locationValue}
-          onChange={handleLocationChange}
-          placeholder="Location"
-          variant="outline"
-          size="sm"
-        />
+        <div className="flex flex-col gap-2">
+          <SelectComponent
+            options={sortByOptions}
+            value={sortByValue}
+            onChange={handleSortByChange}
+            placeholder="Sort By"
+            variant="outline"
+            size="sm"
+          />
+          <SelectComponent
+            options={sortOrderOptions}
+            value={sortOrderValue}
+            onChange={handleSortOrderChange}
+            placeholder="Sort Order"
+            variant="outline"
+            size="sm"
+          />
+          <SelectComponent
+            options={dateRangeOptions}
+            value={dateRangeValue}
+            onChange={handleDateRangeChange}
+            placeholder="Date Range"
+            variant="outline"
+            size="sm"
+          />
+          <SelectComponent
+            options={goalRangeOptions}
+            value={goalRangeValue}
+            onChange={handleGoalRangeChange}
+            placeholder="Goal Range"
+            variant="outline"
+            size="sm"
+          />
+          <SelectComponent
+            options={locationOptions}
+            value={locationValue}
+            onChange={handleLocationChange}
+            placeholder="Location"
+            variant="outline"
+            size="sm"
+          />
+        </div>
       </div>
 
       {/* Right Column: Search Bar and Results */}
@@ -165,18 +168,31 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
               {campaigns.map((campaign) => (
                 <div
                   key={campaign.id}
-                  className="p-4 bg-white rounded-lg shadow"
+                  className="p-4 bg-white rounded-lg shadow flex items-center gap-4"
                 >
-                  <h3 className="text-lg font-semibold">{campaign.title}</h3>
-                  <p className="text-sm text-gray-600">
-                    {campaign.fundraiser?.profile?.name}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {campaign.currency_symbol}
-                    {campaign.transferred_amount} raised of{' '}
-                    {campaign.currency_symbol}
-                    {campaign.goal_amount}
-                  </p>
+                  {/* Image on the left */}
+                  <div className="w-1/4 h-24 relative">
+                    <Image
+                      src={campaign?.media || '/bantuhive.svg'}
+                      alt="media thumbnail"
+                      layout="fill"
+                      objectFit="cover"
+                      className="rounded-lg"
+                    />
+                  </div>
+                  {/* Campaign Details on the right */}
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold">{campaign.title}</h3>
+                    <p className="text-sm text-gray-600">
+                      {campaign.fundraiser?.profile?.name}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {campaign.currency_symbol}
+                      {campaign.transferred_amount} raised of{' '}
+                      {campaign.currency_symbol}
+                      {campaign.goal_amount}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
