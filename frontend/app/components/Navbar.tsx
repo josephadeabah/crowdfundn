@@ -218,7 +218,7 @@ const Navbar = () => {
                     passHref
                     className="focus-visible:outline-none focus:ring-0 hover:outline-none"
                   >
-                    <div className="flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
+                    <div className="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
                       <div className="flex items-center justify-center rounded-lg !bg-white p-2">
                         {React.createElement(link.icon, {
                           className: 'h-5 w-5 text-gray-800',
@@ -297,7 +297,7 @@ const Navbar = () => {
                         passHref
                         className="focus-visible:outline-none focus:ring-0 hover:outline-none"
                       >
-                        <div className="w-full flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
+                        <div className="w-full flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
                           <div className="flex items-center justify-center rounded-lg !bg-white p-2">
                             {React.createElement(link.icon, {
                               className: 'h-5 w-5 text-gray-800',
@@ -337,7 +337,7 @@ const Navbar = () => {
                     <span className="text-gray-600">{user.email}</span>
                   </div>
                   <div
-                    className="hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
+                    className="hover:bg-gray-100 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
                     onClick={logout}
                   >
                     Logout
@@ -427,7 +427,7 @@ const Navbar = () => {
                       passHref
                       className="focus-visible:outline-none focus:ring-0 hover:outline-none"
                     >
-                      <div className="hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2">
+                      <div className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2">
                         Go to Admin
                       </div>
                     </Link>
@@ -437,12 +437,12 @@ const Navbar = () => {
                   passHref
                   className="focus-visible:outline-none focus:ring-0 hover:outline-none"
                 >
-                  <div className="hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2">
+                  <div className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2">
                     Go to Account
                   </div>
                 </Link>
                 <div
-                  className="hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2"
+                  className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2"
                   onClick={logout}
                 >
                   Logout
