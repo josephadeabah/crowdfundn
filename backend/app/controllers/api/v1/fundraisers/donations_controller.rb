@@ -98,7 +98,6 @@ module Api
           campaign_metadata = {
             id: campaign.id,
             title: campaign.title,
-            description: campaign.description.to_plain_text,
             goal_amount: campaign.goal_amount,
             current_amount: campaign.current_amount,
             currency: campaign.currency,
@@ -119,8 +118,9 @@ module Api
             anonymous_token: donation.metadata[:anonymous_token], # Anonymous identifier
             donor_name: donation.full_name,
             redirect_url: redirect_url,
-            phone: donation.phone
-          }.merge(campaign_metadata: campaign_metadata) # Merge campaign metadata properly
+            phone: donation.phone,
+            campaign_metadata: campaign_metadata # Merge campaign metadata properly
+          }
         
           donation.plan = params[:donation][:plan]
         
