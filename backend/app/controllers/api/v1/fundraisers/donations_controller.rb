@@ -68,15 +68,13 @@ module Api
         def create
           campaign = Campaign.find_by(id: params[:campaign_id])
           unless campaign
-            return render json: { error: 'The campaign you are trying to donate to no longer exists.' },
-                          status: :not_found
+            return render json: { error: 'The campaign you are trying to donate to no longer exists.' }, status: :not_found
           end
         
           subaccount = Subaccount.find_by(user_id: campaign.fundraiser_id)
         
           if subaccount.nil? || subaccount.subaccount_code.blank?
-            return render json: { error: 'Fundraiser does not meet requirements for raising funds.' },
-                          status: :unprocessable_entity
+            return render json: { error: 'Fundraiser does not meet requirements for raising funds.' }, status: :unprocessable_entity
           end
         
           subaccount_code = subaccount.subaccount_code
@@ -92,10 +90,12 @@ module Api
           else
             # Generate a new anonymous_token if not provided
             anonymous_token = SecureRandom.uuid
+            donation.metadata ||= {}
             donation.metadata[:anonymous_token] = anonymous_token # Add token to metadata
           end
         
-          donation.metadata[:campaign] = {
+          # Construct campaign metadata
+          campaign_metadata = {
             id: campaign.id,
             title: campaign.title,
             description: campaign.description.to_plain_text,
@@ -112,20 +112,22 @@ module Api
           donation.amount = params[:donation][:amount]
           donation.phone = params[:donation][:phone]
         
+          # Prepare metadata
           metadata = {
             user_id: donation.user_id,
             campaign_id: donation.campaign_id,
             anonymous_token: donation.metadata[:anonymous_token], # Anonymous identifier
             donor_name: donation.full_name,
             redirect_url: redirect_url,
-            campaign_metadata: donation.metadata[:campaign],
             phone: donation.phone
-          }
+          }.merge(campaign_metadata: campaign_metadata) # Merge campaign metadata properly
         
           donation.plan = params[:donation][:plan]
         
-          paystack_service = PaystackService.new
+          # Debugging: Log metadata before sending to Paystack
+          Rails.logger.info "Metadata being sent to Paystack: #{metadata.inspect}"
         
+          paystack_service = PaystackService.new
           response = paystack_service.initialize_transaction(
             email: donation.email,
             amount: donation.amount,
@@ -154,7 +156,7 @@ module Api
             render json: { error: 'Payment initialization failed: ' + response[:message] },
                    status: :unprocessable_entity
           end
-        end
+        end        
         
         # POST /api/v1/fundraisers/donations/send_thank_you_emails
         def send_thank_you_emails
