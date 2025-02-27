@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
-import Image from "next/image";
+import Image from 'next/image';
 import SelectComponent from '../select/SearchableSelect ';
 import { motion } from 'framer-motion';
 
@@ -107,7 +107,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
   return (
     <div className="flex h-full">
       {/* Left Column: Selectors */}
-      <div className="w-1/3 p-4 border-r border-gray-200">
+      <div className="w-1/3 border-r border-gray-200">
         <h2 className="text-xl font-bold mb-4">Filters</h2>
         <div className="flex flex-col gap-2">
           <SelectComponent
@@ -157,33 +157,33 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
       <div className="w-2/3 p-4">
         <h2 className="text-xl font-bold mb-4">Search Campaigns</h2>
         <div className="bg-gray-100 relative flex items-center w-full sm:w-auto rounded-full">
-              <input
-                id="search"
-                type="text"
-                placeholder="Search campaigns..."
-                value={searchTerm}
-                onChange={handleSearch}
-                className="w-full px-4 py-3 border border-gray-100 rounded-full focus:outline-none text-gray-900 bg-gray-100 dark:bg-gray-700 dark:text-white pr-24"
-              />
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                onClick={handleSearch as any}
-                whileTap={{ scale: 0.95 }}
-                className="absolute right-0 bg-gray-100 text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-6 py-3 rounded-r-lg font-semibold hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300"
-              >
-                Search
-              </motion.button>
-            </div>
+          <input
+            id="search"
+            type="text"
+            placeholder="Search campaigns..."
+            value={searchTerm}
+            onChange={handleSearch}
+            className="w-full px-4 py-3 border border-gray-100 rounded-full focus:outline-none text-gray-900 bg-gray-100 dark:bg-gray-700 dark:text-white pr-24"
+          />
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            onClick={handleSearch as any}
+            whileTap={{ scale: 0.95 }}
+            className="absolute right-0 bg-gray-100 text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-6 py-3 rounded-r-lg font-semibold hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300"
+          >
+            Search
+          </motion.button>
+        </div>
         <div className="mt-4">
           {campaigns.length > 0 ? (
             <div className="grid grid-cols-1 gap-4">
               {campaigns.map((campaign) => (
                 <div
                   key={campaign.id}
-                  className="p-4 bg-white rounded-lg shadow flex items-center gap-4"
+                  className="p-4 bg-white rounded-lg shadow flex flex-col sm:flex-row items-center gap-4"
                 >
-                  {/* Image on the left */}
-                  <div className="w-1/4 h-24 relative">
+                  {/* Image on the top on small screens, left on larger screens */}
+                  <div className="w-full sm:w-1/4 h-24 relative">
                     <Image
                       src={campaign?.media || '/bantuhive.svg'}
                       alt="media thumbnail"
@@ -192,8 +192,9 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
                       className="rounded-lg"
                     />
                   </div>
-                  {/* Campaign Details on the right */}
-                  <div className="flex-1">
+
+                  {/* Campaign Details on the bottom on small screens, right on larger screens */}
+                  <div className="w-full sm:flex-1">
                     <h3 className="text-lg font-semibold">{campaign.title}</h3>
                     <p className="text-sm text-gray-600">
                       {campaign.fundraiser?.profile?.name}
