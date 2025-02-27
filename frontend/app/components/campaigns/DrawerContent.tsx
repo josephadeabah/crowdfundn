@@ -107,7 +107,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
   return (
     <div className="flex h-full">
       {/* Left Column: Selectors */}
-      <div className="w-1/3 border-r border-gray-200">
+      <div className="w-1/3 mr-1 border-r border-gray-200">
         <h2 className="text-xl font-bold mb-4">Filters</h2>
         <div className="flex flex-col gap-2">
           <SelectComponent
@@ -169,7 +169,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
             whileHover={{ scale: 1.05 }}
             onClick={handleSearch as any}
             whileTap={{ scale: 0.95 }}
-            className="absolute right-0 bg-gray-100 text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-6 py-3 rounded-r-lg font-semibold hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300"
+            className="absolute right-0 bg-gray-100 text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300"
           >
             Search
           </motion.button>

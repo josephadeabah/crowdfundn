@@ -139,7 +139,7 @@ const AnimatedDrawer: React.FC<AnimatedDrawerProps> = ({
         </button>
 
         {/* Content */}
-        <div className="h-full overflow-y-auto p-6 pt-16">{children}</div>
+        <div className="h-full overflow-y-auto p-2 md:p-6 pt-16">{children}</div>
       </div>
     </div>,
     document.body,
