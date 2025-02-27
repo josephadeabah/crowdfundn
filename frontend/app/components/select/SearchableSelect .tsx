@@ -30,13 +30,14 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
 
   // Define variant styles
   const variantStyles = {
-    default: 'bg-white border-2 border-black hover:bg-gray-50 focus:ring-black',
+    default: 'bg-white border-1 border-gray-100 hover:bg-gray-50 focus-visible:outline-none focus:ring-0 hover:outline-none',
+    black: 'bg-white border-1 border-black hover:bg-gray-50 focus:ring-black',
     outline:
-      'bg-transparent border-2 border-gray-800 hover:bg-gray-50 focus:ring-gray-800',
+      'bg-transparent border-1 border-gray-800 hover:bg-gray-50 focus:ring-gray-800',
     ghost:
-      'bg-transparent border-0 text-gray-800 hover:bg-gray-100 focus:ring-gray-800',
+      'bg-transparent border-1 text-gray-800 hover:bg-gray-100 focus:ring-gray-800',
     destructive:
-      'bg-red-100 border-2 border-red-600 text-red-600 hover:bg-red-200 focus:ring-red-600',
+      'bg-red-100 border-1 border-red-600 text-red-600 hover:bg-red-200 focus:ring-red-600',
   };
 
   // Combine base styles, variant styles, and any custom className passed
