@@ -184,9 +184,7 @@ module Api
                 description: "Recipient for #{params[:business_name]}",
                 metadata: metadata
               )
-        
-              Rails.logger.info "Response from Paystack: #{create_response.inspect}"
-        
+                
               if create_response[:status] == true
                 subaccount.update!(recipient_code: create_response[:data][:recipient_code])
               else
