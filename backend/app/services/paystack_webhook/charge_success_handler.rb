@@ -14,27 +14,25 @@ class PaystackWebhook::ChargeSuccessHandler
       return # Ignore duplicate events
     end
 
-    ActiveRecord::Base.transaction do
-      handle_donation_success if @data.present?
+    begin
+      ActiveRecord::Base.transaction do
+        handle_donation_success if @data.present?
+        EventProcessed.create(event_id: transaction_reference) # Mark as processed only if successful
+      end
+    rescue StandardError => e
+      Rails.logger.error "Error processing charge success: #{e.message}"
+      raise e
     end
-  rescue StandardError => e
-    Rails.logger.error "Error processing charge success: #{e.message}"
-    raise e
-  ensure
-    # Mark the event as processed (deduplication logic)
-    EventProcessed.create(event_id: transaction_reference)
   end
 
   private
 
   def handle_donation_success
     transaction_reference = @data[:reference]
-    # Log for debug purposes
     Rails.logger.info "Verifying donation with reference #{transaction_reference}"
 
+    # Find the donation by transaction reference
     donation = Donation.find_by(transaction_reference: transaction_reference)
-
-    # If donation is not found, log and raise error
     unless donation
       Rails.logger.error "Donation not found for reference: #{transaction_reference}"
       raise 'Donation not found'
@@ -47,40 +45,23 @@ class PaystackWebhook::ChargeSuccessHandler
       raise 'Transaction verification failed'
     end
 
-    # Extract transaction status
+    # Check transaction status
     transaction_status = response.dig(:data, :status)
     if transaction_status == 'success'
-      gross_amount = response.dig(:data, :amount).to_f / 100.0 # Gross amount from Paystack
-      # subaccount_fee = response.dig(:data, :fees_split, :subaccount).to_f / 100.0
-      # integration_fee = response.dig(:data, :fees_split, :integration).to_f / 100.0
+      # Calculate fees and net amount
+      gross_amount = response.dig(:data, :amount).to_f / 100.0
+      fees = calculate_fees(gross_amount)
+      net_amount = fees[:net_amount]
+      adjusted_platform_fee = fees[:adjusted_platform_fee]
 
-      # Step 1: Calculate the net amount (93% of the gross amount)
-      net_amount = gross_amount * 0.93
+      # Parse metadata (if it's a JSON string)
+      metadata = JSON.parse(@data[:metadata]) if @data[:metadata].is_a?(String)
+      user_id = metadata.dig('user_id')
+      campaign_id = metadata.dig('campaign_id')
+      session_token = metadata.dig('anonymous_token')
+      campaign_metadata = metadata.dig('campaign_metadata') || {}
 
-      # Step 2: Calculate the platform fee (7% of the gross amount)
-      platform_fee = gross_amount * 0.07
-
-      # Step 3: Adjust the platform fee after Paystack's 1.95% deduction
-      paystack_fee = platform_fee * 0.0195
-
-      # Step 4: Subtract Paystack's fee from the platform fee
-      adjusted_platform_fee = platform_fee - paystack_fee
-
-
-      # Step 4: Extract metadata values (user_id, campaign_id, session_token)
-      user_id = response.dig(:data, :metadata, :user_id)
-      campaign_id = response.dig(:data, :metadata, :campaign_id)
-      session_token = response.dig(:data, :metadata, :anonymous_token)
-
-      # Extract campaign metadata (title, description, etc.)
-      campaign_metadata = response.dig(:data, :metadata, :campaign_metadata) || {}
-
-      # Extract subaccount contact details
-      subaccount_name = response.dig(:data, :subaccount, :primary_contact_name) || 'No contact name'
-      subaccount_contact = response.dig(:data, :subaccount, :primary_contact_email) || 'No contact email'
-      subaccount_phone = response.dig(:data, :subaccount, :primary_contact_phone) || 'No contact phone'
-
-      # Step 5: Update the donation record with extracted metadata and transaction details
+      # Update donation record
       donation.update!(
         status: 'successful',
         gross_amount: gross_amount,
@@ -89,49 +70,76 @@ class PaystackWebhook::ChargeSuccessHandler
         amount: net_amount,
         user_id: user_id.presence, # Update user_id only if provided
         campaign_id: campaign_id.presence, # Update campaign_id only if provided
-        full_name: response.dig(:data, :metadata, :donor_name), # Update full_name with donor's name
+        full_name: metadata.dig('donor_name'), # Update full_name with donor's name
         email: response.dig(:data, :customer, :email),
-        phone: response.dig(:data, :metadata, :phone),
+        phone: metadata.dig('phone'),
         metadata: {
           anonymous_token: session_token,
-          user_id: user_id, # Add user_id to metadata
-          campaign_id: campaign_id, # Add campaign_id to metadata
-          campaign_metadata: campaign_metadata, # Add campaign metadata to donation
+          user_id: user_id,
+          campaign_id: campaign_id,
+          campaign_metadata: campaign_metadata,
           subaccount_contact: {
-            name: subaccount_name,
-            email: subaccount_contact,
-            phone: subaccount_phone
+            name: response.dig(:data, :subaccount, :primary_contact_name) || 'No contact name',
+            email: response.dig(:data, :subaccount, :primary_contact_email) || 'No contact email',
+            phone: response.dig(:data, :subaccount, :primary_contact_phone) || 'No contact phone'
           }
-        }, # Replacing the existing metadata entirely
+        },
         processed: false # New donations will have `processed` set to `false`
       )
 
       # Update the related campaign
-      campaign = donation.campaign
-      campaign.update!(
-        total_successful_donations: campaign.current_amount + net_amount,
-        current_amount: campaign.current_amount + net_amount
-      )
-
-      # Update the transferred amount for the campaign
-      campaign.update_transferred_amount(net_amount)
+      update_campaign(donation, net_amount)
 
       # Send confirmation email to the donor
-      DonationConfirmationEmailService.send_confirmation_email(donation)
-      FundraiserDonationNotificationService.send_notification_email(donation)
+      send_email_notifications(donation)
 
-      # ✅ Fixed points & leaderboard updates
-      if donation.user.present?
-        Point.add_points(donation.user, donation)
-        LeaderboardEntry.update_leaderboard(donation.user, donation.user.total_points)
-      else
-        Rails.logger.info "Skipping points & leaderboard update for anonymous donation: #{donation.id}"
-      end
+      # Update points and leaderboard for the donor (if applicable)
+      update_points_and_leaderboard(donation)
     else
       # If the transaction status isn't 'success', update the donation and raise an error
       donation.update!(status: transaction_status)
       Rails.logger.error "Transaction failed with status #{transaction_status}"
       raise "Transaction status is #{transaction_status}"
+    end
+  end
+
+  # Calculate fees and net amount
+  def calculate_fees(gross_amount)
+    net_amount = gross_amount * 0.93
+    platform_fee = gross_amount * 0.07
+    paystack_fee = platform_fee * 0.0195
+    adjusted_platform_fee = platform_fee - paystack_fee
+
+    { net_amount: net_amount, adjusted_platform_fee: adjusted_platform_fee }
+  end
+
+  # Update campaign with new donation amount
+  def update_campaign(donation, net_amount)
+    campaign = donation.campaign
+    campaign.update!(
+      total_successful_donations: campaign.current_amount + net_amount,
+      current_amount: campaign.current_amount + net_amount
+    )
+    campaign.update_transferred_amount(net_amount)
+  end
+
+  # Send email notifications
+  def send_email_notifications(donation)
+    begin
+      DonationConfirmationEmailService.send_confirmation_email(donation)
+      FundraiserDonationNotificationService.send_notification_email(donation)
+    rescue => e
+      Rails.logger.error "Failed to send email notifications: #{e.message}"
+    end
+  end
+
+  # Update points and leaderboard for the donor
+  def update_points_and_leaderboard(donation)
+    if donation.user.present?
+      Point.add_points(donation.user, donation)
+      LeaderboardEntry.update_leaderboard(donation.user, donation.user.total_points)
+    else
+      Rails.logger.info "Skipping points & leaderboard update for anonymous donation: #{donation.id}"
     end
   end
 end
