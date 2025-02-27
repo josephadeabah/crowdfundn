@@ -30,7 +30,8 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
 
   // Define variant styles
   const variantStyles = {
-    default: 'bg-white border-1 border-gray-100 hover:bg-gray-50 focus-visible:outline-none focus:ring-0 hover:outline-none',
+    default:
+      'bg-white border-1 border-gray-100 hover:bg-gray-50 focus-visible:outline-none focus:ring-0 hover:outline-none',
     black: 'bg-white border-1 border-black hover:bg-gray-50 focus:ring-black',
     outline:
       'bg-transparent border-1 border-gray-800 hover:bg-gray-50 focus:ring-gray-800',
@@ -80,6 +81,12 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
           </svg>
         </div>
       </div>
+      <style jsx>{`
+        /* Custom styles for option hover state */
+        select option:hover {
+          background-color: #f9fafb; /* bg-gray-50 */
+        }
+      `}</style>
     </div>
   );
 };
