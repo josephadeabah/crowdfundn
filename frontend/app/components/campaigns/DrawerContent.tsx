@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
-import SelectComponent from '../select/SearchableSelect';
 import Image from "next/image";
+import SelectComponent from '../select/SearchableSelect ';
 
 interface DrawerContentProps {
   campaigns: CampaignResponseDataType[];
