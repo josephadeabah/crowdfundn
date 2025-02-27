@@ -12,18 +12,6 @@ type Bank = {
   type: string; // nuban or ghipss
 };
 
-// Utility function to mask the account number
-const maskAccountNumber = (accountNumber: string): string => {
-  if (!accountNumber || accountNumber.length <= 4) return accountNumber;
-
-  const visibleDigits = 4; // Number of visible digits
-  const maskedLength = accountNumber.length - visibleDigits;
-  const maskedPart = '•'.repeat(maskedLength); // Replace the rest with gray circles
-  const visiblePart = accountNumber.slice(-visibleDigits); // Last 4 digits
-
-  return `${maskedPart}${visiblePart}`;
-};
-
 const PaymentMethod = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -251,7 +239,7 @@ const PaymentMethod = () => {
                   Account Number:
                 </span>
                 <span className="text-gray-800">
-                  {maskAccountNumber(subaccountData.account_number)}
+                  {subaccountData.account_number}
                 </span>
               </div>
               <div className="flex justify-between items-center">
