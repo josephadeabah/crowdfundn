@@ -115,7 +115,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
     <div className="flex h-full">
       {/* Left Column: Selectors */}
       <div className="w-1/3 p-2 border-r border-gray-200">
-        <h2 className="text-xl font-bold mb-4">Find and Fund</h2>
+        <h2 className="text-sm md:text-xl font-bold mb-4">Find & Fund</h2>
         <div className="flex flex-col gap-2">
           <SelectComponent
             options={sortByOptions}
