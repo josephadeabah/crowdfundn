@@ -119,27 +119,32 @@ module Api
         def update_subaccount
           user = User.find(params[:user_id])
           raise 'User not found' unless user
-
+        
           subaccount = Subaccount.find_by(subaccount_code: params[:subaccount_code])
           if subaccount.nil?
             render json: { success: false, error: 'Subaccount not found' }, status: :not_found
             return
           end
-
+        
           metadata = params[:metadata] || {}
-
+        
           # Check if recipient_code exists. If it does, delete and create a new one.
           if subaccount.recipient_code.present?
             # Attempt to delete the recipient code on Paystack
             delete_response = PaystackService.new.delete_transfer_recipient(subaccount.recipient_code)
             unless delete_response[:status]
-              raise StandardError, "Failed to delete recipient on Paystack: #{delete_response[:message]}"
+              # If the recipient code does not exist on Paystack, skip deletion
+              if delete_response[:message]&.include?('Not Found')
+                Rails.logger.warn "Recipient code not found on Paystack, skipping deletion."
+              else
+                raise StandardError, "Failed to delete recipient on Paystack: #{delete_response[:message]}"
+              end
             end
-
+        
             # Delete recipient code locally
             subaccount.update!(recipient_code: nil)
           end
-
+        
           # Proceed to update the subaccount
           response = PaystackService.new.update_subaccount(
             subaccount_code: subaccount.subaccount_code,
@@ -154,7 +159,7 @@ module Api
             primary_contact_phone: user.phone_number,
             metadata: metadata
           )
-
+        
           if response[:status] == true
             subaccount.update!(
               business_name: response[:data][:business_name],
@@ -167,7 +172,7 @@ module Api
               metadata: metadata,
               user_id: user.id
             )
-
+        
             # If the recipient_code was deleted, create a new one
             if response[:status] == true && subaccount.recipient_code.blank?
               create_response = PaystackService.new.create_transfer_recipient(
@@ -179,9 +184,9 @@ module Api
                 description: "Recipient for #{params[:business_name]}",
                 metadata: metadata
               )
-
+        
               Rails.logger.info "Response from Paystack: #{create_response.inspect}"
-
+        
               if create_response[:status] == true
                 subaccount.update!(recipient_code: create_response[:data][:recipient_code])
               else
@@ -190,7 +195,7 @@ module Api
                 return
               end
             end
-
+        
             render json: { success: true, subaccount: subaccount }, status: :ok
           else
             render json: { success: false, error: response[:message] }, status: :unprocessable_entity
