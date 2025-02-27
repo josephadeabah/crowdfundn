@@ -114,7 +114,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
   return (
     <div className="flex h-full">
       {/* Left Column: Selectors */}
-      <div className="w-1/3 p-2 border-r border-gray-200">
+      <div className="w-1/3 p-2 border-r border-gray-200 sticky top-0 h-screen overflow-y-auto">
         <h2 className="text-sm md:text-xl font-bold mb-4">Find & Fund</h2>
         <div className="flex flex-col gap-2">
           <SelectComponent
@@ -161,7 +161,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
       </div>
 
       {/* Right Column: Search Bar and Results */}
-      <div className="w-2/3 p-4">
+      <div className="w-2/3 p-4 overflow-y-auto h-screen">
         <h2 className="text-sm md:text-xl font-bold mb-4">
           Find fundraisers by title or keyword
         </h2>
