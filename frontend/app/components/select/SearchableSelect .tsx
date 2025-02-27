@@ -1,4 +1,5 @@
 import React from 'react';
+import { MdArrowDropDown } from 'react-icons/md'; // Import the React icon for the dropdown arrow
 
 type Option = {
   value: string;
@@ -28,7 +29,7 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
 }) => {
   // Define base styles for the select box
   const baseStyles =
-    'rounded-full text-gray-800 border focus:outline-none focus:ring-2 transition duration-300 ease-in-out appearance-none';
+    'w-full rounded-full text-gray-800 border focus:outline-none focus:ring-2 transition duration-300 ease-in-out appearance-none';
 
   // Define size styles (padding, text size, and width)
   const sizeStyles = {
@@ -81,27 +82,14 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
                 backgroundColor: 'white', // Default background
                 color: 'black', // Default text color
               }}
-              className="hover:bg-gray-50" // Tailwind hover class (won't work for <option>)
             >
               {option.label}
             </option>
           ))}
         </select>
         <div className="absolute top-1/2 right-3 transform -translate-y-1/2 pointer-events-none text-gray-600">
-          <svg
-            className="w-4 h-4"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
+          {/* Use React Icons here */}
+          <MdArrowDropDown className="w-5 h-5 text-gray-600" />
         </div>
       </div>
       {/* Add custom CSS for the hover state of <option> elements */}
