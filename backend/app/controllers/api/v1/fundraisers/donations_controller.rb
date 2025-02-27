@@ -98,7 +98,6 @@ module Api
           donation.metadata[:campaign] = {
             id: campaign.id,
             title: campaign.title,
-            description: campaign.description.to_plain_text,
             goal_amount: campaign.goal_amount,
             current_amount: campaign.current_amount,
             currency: campaign.currency,
