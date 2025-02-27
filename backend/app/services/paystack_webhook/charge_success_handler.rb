@@ -30,37 +30,41 @@ class PaystackWebhook::ChargeSuccessHandler
   def handle_donation_success
     transaction_reference = @data[:reference]
     Rails.logger.info "Verifying donation with reference #{transaction_reference}"
-
-    # Find the donation by transaction reference
+  
     donation = Donation.find_by(transaction_reference: transaction_reference)
     unless donation
       Rails.logger.error "Donation not found for reference: #{transaction_reference}"
       raise 'Donation not found'
     end
-
+  
     # Verify transaction with Paystack
     response = PaystackService.new.verify_transaction(transaction_reference)
     unless response[:status] == true
       Rails.logger.error "Transaction verification failed for #{transaction_reference}"
       raise 'Transaction verification failed'
     end
-
-    # Check transaction status
+  
     transaction_status = response.dig(:data, :status)
     if transaction_status == 'success'
-      # Calculate fees and net amount
       gross_amount = response.dig(:data, :amount).to_f / 100.0
       fees = calculate_fees(gross_amount)
       net_amount = fees[:net_amount]
       adjusted_platform_fee = fees[:adjusted_platform_fee]
-
-      # Parse metadata (if it's a JSON string)
-      metadata = JSON.parse(@data[:metadata]) if @data[:metadata].is_a?(String)
+  
+      # Parse metadata (handle malformed JSON gracefully)
+      metadata = {}
+      begin
+        metadata = JSON.parse(@data[:metadata]) if @data[:metadata].is_a?(String)
+      rescue JSON::ParserError => e
+        Rails.logger.error "Failed to parse metadata: #{e.message}"
+        metadata = {} # Fallback to an empty hash
+      end
+  
       user_id = metadata.dig('user_id')
       campaign_id = metadata.dig('campaign_id')
       session_token = metadata.dig('anonymous_token')
       campaign_metadata = metadata.dig('campaign_metadata') || {}
-
+  
       # Update donation record
       donation.update!(
         status: 'successful',
@@ -68,9 +72,9 @@ class PaystackWebhook::ChargeSuccessHandler
         net_amount: net_amount,
         platform_fee: adjusted_platform_fee,
         amount: net_amount,
-        user_id: user_id.presence, # Update user_id only if provided
-        campaign_id: campaign_id.presence, # Update campaign_id only if provided
-        full_name: metadata.dig('donor_name'), # Update full_name with donor's name
+        user_id: user_id.presence,
+        campaign_id: campaign_id.presence,
+        full_name: metadata.dig('donor_name'),
         email: response.dig(:data, :customer, :email),
         phone: metadata.dig('phone'),
         metadata: {
@@ -84,19 +88,18 @@ class PaystackWebhook::ChargeSuccessHandler
             phone: response.dig(:data, :subaccount, :primary_contact_phone) || 'No contact phone'
           }
         },
-        processed: false # New donations will have `processed` set to `false`
+        processed: false
       )
-
-      # Update the related campaign
+  
+      # Update campaign
       update_campaign(donation, net_amount)
-
-      # Send confirmation email to the donor
+  
+      # Send emails
       send_email_notifications(donation)
-
-      # Update points and leaderboard for the donor (if applicable)
+  
+      # Update points and leaderboard
       update_points_and_leaderboard(donation)
     else
-      # If the transaction status isn't 'success', update the donation and raise an error
       donation.update!(status: transaction_status)
       Rails.logger.error "Transaction failed with status #{transaction_status}"
       raise "Transaction status is #{transaction_status}"
