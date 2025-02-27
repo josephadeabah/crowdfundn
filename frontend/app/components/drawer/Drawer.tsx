@@ -124,7 +124,7 @@ const AnimatedDrawer: React.FC<AnimatedDrawerProps> = ({
         className={`
           fixed ${positionClasses.base} ${backgroundColor}
           transform transition-transform duration-${duration} ease-in-out
-          shadow-2xl overflow-hidden rounded-t-md
+          shadow-2xl overflow-hidden rounded-t-lg
           ${isOpen ? positionClasses.enterFrom : positionClasses.leaveTo}
         `}
         style={dimensionStyle}
