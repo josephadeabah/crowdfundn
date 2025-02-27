@@ -27,6 +27,7 @@ import AnimatedDrawer from '../drawer/Drawer';
 import { Button } from '../button/Button';
 import SelectComponent from '../select/SearchableSelect ';
 import DrawerContent from './DrawerContent';
+import { debounce } from 'lodash'; // Import debounce from lodash
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -85,6 +86,11 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     onPageChange(newPage);
     setPage(newPage);
   };
+
+  // Debounced search handler
+  const debouncedHandleSearch = debounce((value: string) => {
+    setSearchTerm(value);
+  }, 300); // 300ms delay
 
   useEffect(() => {
     fetchAllCampaigns(
@@ -163,7 +169,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   };
 
   const handleSearch = (value: string) => {
-    setSearchTerm(value); // Update the search term state
+    debouncedHandleSearch(value); // Use debounced search handler
   };
 
   if (loading) return <CampaignCardLoader />;
