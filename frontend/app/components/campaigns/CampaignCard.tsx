@@ -24,11 +24,8 @@ import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '../toast/Toast';
 import Avatar from '../avatar/Avatar';
 import AnimatedDrawer from '../drawer/Drawer';
-import SearchableSelect, {
-  SelectOption,
-  SelectedOptionType,
-} from '../select/SearchableSelect ';
 import { Button } from '../button/Button';
+import SelectComponent from '../select/SearchableSelect ';
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -111,35 +108,25 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     searchTerm,
   ]);
 
-  // Modify the onChange handlers to accept array of selected options
-  const handleLocationChange = (selectedOptions: SelectedOptionType) => {
-    if (Array.isArray(selectedOptions) && selectedOptions.length > 0) {
-      setLocation(selectedOptions[0].value);
-    }
+  // Update handlers to work with string values
+  const handleLocationChange = (value: string) => {
+    setLocation(value);
   };
 
-  const handleSortByChange = (selectedOptions: SelectedOptionType) => {
-    if (Array.isArray(selectedOptions) && selectedOptions.length > 0) {
-      setSortBy(selectedOptions[0].value);
-    }
+  const handleSortByChange = (value: string) => {
+    setSortBy(value);
   };
 
-  const handleSortOrderChange = (selectedOptions: SelectedOptionType) => {
-    if (Array.isArray(selectedOptions) && selectedOptions.length > 0) {
-      setSortOrder(selectedOptions[0].value);
-    }
+  const handleSortOrderChange = (value: string) => {
+    setSortOrder(value);
   };
 
-  const handleDateRangeChange = (selectedOptions: SelectedOptionType) => {
-    if (Array.isArray(selectedOptions) && selectedOptions.length > 0) {
-      setDateRange(selectedOptions[0].value);
-    }
+  const handleDateRangeChange = (value: string) => {
+    setDateRange(value);
   };
 
-  const handleGoalRangeChange = (selectedOptions: SelectedOptionType) => {
-    if (Array.isArray(selectedOptions) && selectedOptions.length > 0) {
-      setGoalRange(selectedOptions[0].value);
-    }
+  const handleGoalRangeChange = (value: string) => {
+    setGoalRange(value);
   };
 
   const displayedCampaigns = campaigns?.filter((campaign) => {
@@ -171,18 +158,18 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   };
 
   // Define options for the Select components
-  const sortByOptions: SelectOption[] = [
+  const sortByOptions = [
     { value: 'created_at', label: 'Date Created' },
     { value: 'goal_amount', label: 'Goal Amount' },
     { value: 'location', label: 'Location' },
   ];
 
-  const sortOrderOptions: SelectOption[] = [
+  const sortOrderOptions = [
     { value: 'asc', label: 'Ascending' },
     { value: 'desc', label: 'Descending' },
   ];
 
-  const dateRangeOptions: SelectOption[] = [
+  const dateRangeOptions = [
     { value: 'all_time', label: 'All Time' },
     { value: 'today', label: 'Today' },
     { value: 'last_7_days', label: 'Last 7 Days' },
@@ -195,7 +182,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     { value: 'last_year', label: 'Last Year' },
   ];
 
-  const goalRangeOptions: SelectOption[] = [
+  const goalRangeOptions = [
     { value: 'all', label: 'All' },
     { value: '0-500', label: '0 - 500' },
     { value: '500-1000', label: '500 - 1,000' },
@@ -205,7 +192,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     { value: '50000-100000', label: '50,000 - 100,000' },
   ];
 
-  const locationOptions: SelectOption[] = [
+  const locationOptions = [
     { value: 'all', label: 'Worldwide' },
     { value: 'Nigeria', label: 'Nigeria' },
     { value: 'Kenya', label: 'Kenya' },
@@ -242,30 +229,35 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       >
         <div className="flex flex-col gap-4 max-w-md mx-auto w-full">
           <h2 className="text-xl font-bold mb-4 text-center">Find & Fund</h2>
-          <SearchableSelect
+          <SelectComponent
             options={sortByOptions}
-            placeholder="Sort By"
+            value={sortBy}
             onChange={handleSortByChange}
+            placeholder="Sort By"
           />
-          <SearchableSelect
+          <SelectComponent
             options={sortOrderOptions}
-            placeholder="Sort Order"
+            value={sortOrder}
             onChange={handleSortOrderChange}
+            placeholder="Sort Order"
           />
-          <SearchableSelect
+          <SelectComponent
             options={dateRangeOptions}
-            placeholder="Date Range"
+            value={dateRange}
             onChange={handleDateRangeChange}
+            placeholder="Date Range"
           />
-          <SearchableSelect
+          <SelectComponent
             options={goalRangeOptions}
-            placeholder="Goal Range"
+            value={goalRange}
             onChange={handleGoalRangeChange}
+            placeholder="Goal Range"
           />
-          <SearchableSelect
+          <SelectComponent
             options={locationOptions}
-            placeholder="Location"
+            value={location}
             onChange={handleLocationChange}
+            placeholder="Location"
           />
         </div>
       </AnimatedDrawer>

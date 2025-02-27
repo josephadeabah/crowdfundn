@@ -1,64 +1,64 @@
-import React, { useState } from 'react';
-import Select, {
-  ActionMeta,
-  MultiValue,
-  SingleValue,
-  StylesConfig,
-} from 'react-select';
+import React from 'react';
 
-export interface SelectOption {
-  label: string;
+type Option = {
   value: string;
-}
+  label: string;
+};
 
-interface SearchableSelectProps {
-  options: SelectOption[];
-  isMulti?: boolean;
-  placeholder?: string;
-  onChange: (selectedOptions: SelectedOptionType) => void;
-  styles?: StylesConfig<SelectOption>;
-}
+type SelectComponentProps = {
+  options: Option[];
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  label?: string;
+};
 
-export type SelectedOptionType = SelectOption | readonly SelectOption[] | null;
-
-const SearchableSelect: React.FC<SearchableSelectProps> = ({
+const SelectComponent: React.FC<SelectComponentProps> = ({
   options,
-  isMulti = false,
-  placeholder = 'Select...',
+  value,
   onChange,
-  styles,
+  placeholder,
+  label,
 }) => {
-  const [selectedOption, setSelectedOption] =
-    useState<SelectedOptionType>(null);
-
-  const handleChange = (
-    newValue: MultiValue<SelectOption> | SingleValue<SelectOption>,
-    actionMeta: ActionMeta<SelectOption>,
-  ) => {
-    setSelectedOption(newValue);
-    onChange(newValue as SelectedOptionType);
-  };
-
-  const customStyles = {
-    ...styles,
-    placeholder: (provided: any) => ({
-      ...provided,
-      textAlign: 'left', // Align placeholder text to the left
-    }),
-  };
-
   return (
-    <Select
-      value={selectedOption}
-      onChange={handleChange}
-      options={options}
-      isMulti={isMulti}
-      isSearchable
-      placeholder={placeholder}
-      classNamePrefix="react-select"
-      styles={customStyles} // Apply custom styles with left-aligned placeholder
-    />
+    <div className="w-full max-w-sm mx-auto">
+      {label && (
+        <label className="block mb-2 text-sm text-gray-700">{label}</label>
+      )}
+      <div className="relative">
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full px-4 py-2 bg-white border-2 border-black rounded-full text-gray-800 shadow-md focus:outline-none focus:ring-2 focus:ring-black hover:bg-gray-50 transition duration-300 ease-in-out appearance-none"
+        >
+          <option value="" disabled hidden>
+            {placeholder}
+          </option>
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <div className="absolute top-1/2 right-3 transform -translate-y-1/2 pointer-events-none text-gray-600">
+          <svg
+            className="w-4 h-4"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default SearchableSelect;
+export default SelectComponent;
