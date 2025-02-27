@@ -193,11 +193,12 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
                     duration: 0.5,
                     delay: Number(campaign?.id) * 0.1,
                   }}
-                  className="p-4 bg-white rounded-lg shadow flex flex-col sm:flex-row sm:items-center gap-4"
+                  className="p-4 bg-white rounded-lg shadow flex flex-col sm:flex-row items-center gap-4"
                 >
                   {/* Wrap the entire content with the Link component */}
                   <Link
                     href={`/campaign/${campaign.id}?${generateRandomString()}`}
+                    className="w-full flex flex-col sm:flex-row items-center gap-4"
                   >
                     {/* Image on the top on small screens, left on larger screens */}
                     <div className="w-full sm:w-1/4 h-24 relative">
