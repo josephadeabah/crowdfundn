@@ -12,7 +12,7 @@ type SelectComponentProps = {
   placeholder: string;
   label?: string;
   className?: string; // Additional class for further customization
-  variant?: 'default' | 'outline' | 'ghost' | 'destructive'; // Variant for different styles
+  variant?: 'default' | 'black' | 'outline' | 'ghost' | 'destructive'; // Variant for different styles
 };
 
 const SelectComponent: React.FC<SelectComponentProps> = ({
@@ -26,7 +26,7 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
 }) => {
   // Define base styles for the select box
   const baseStyles =
-    'w-full px-4 py-2 rounded-full text-gray-800 shadow-md focus:outline-none focus:ring-2 transition duration-300 ease-in-out appearance-none';
+    'w-full px-4 py-2 rounded-full text-gray-800 shadow focus:outline-none focus:ring-2 transition duration-300 ease-in-out appearance-none';
 
   // Define variant styles
   const variantStyles = {
@@ -54,12 +54,26 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className={selectClassNames}
+          style={{
+            // Apply custom styles for the select dropdown
+            backgroundColor: 'white',
+            color: 'black',
+          }}
         >
           <option value="" disabled hidden>
             {placeholder}
           </option>
           {options.map((option) => (
-            <option key={option.value} value={option.value}>
+            <option
+              key={option.value}
+              value={option.value}
+              style={{
+                // Custom styles for the option hover state
+                backgroundColor: 'white', // Default background
+                color: 'black', // Default text color
+              }}
+              className="hover:bg-gray-50" // Tailwind hover class (won't work for <option>)
+            >
               {option.label}
             </option>
           ))}
@@ -81,12 +95,14 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
           </svg>
         </div>
       </div>
-      <style jsx>{`
-        /* Custom styles for option hover state */
-        select option:hover {
-          background-color: #f9fafb; /* bg-gray-50 */
-        }
-      `}</style>
+      {/* Add custom CSS for the hover state of <option> elements */}
+      <style>
+        {`
+          select option:hover {
+            background-color: #f9fafb !important; /* bg-gray-50 */
+          }
+        `}
+      </style>
     </div>
   );
 };
