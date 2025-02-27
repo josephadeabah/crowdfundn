@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import Image from "next/image";
 import SelectComponent from '../select/SearchableSelect ';
+import { motion } from 'framer-motion';
 
 interface DrawerContentProps {
   campaigns: CampaignResponseDataType[];
@@ -155,13 +156,24 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
       {/* Right Column: Search Bar and Results */}
       <div className="w-2/3 p-4">
         <h2 className="text-xl font-bold mb-4">Search Campaigns</h2>
-        <input
-          type="text"
-          placeholder="Search campaigns..."
-          value={searchTerm}
-          onChange={handleSearch}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
-        />
+        <div className="bg-gray-100 relative flex items-center w-full sm:w-auto rounded-full">
+              <input
+                id="search"
+                type="text"
+                placeholder="Search campaigns..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="w-full px-4 py-3 border border-gray-100 rounded-full focus:outline-none text-gray-900 bg-gray-100 dark:bg-gray-700 dark:text-white pr-24"
+              />
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                onClick={handleSearch as any}
+                whileTap={{ scale: 0.95 }}
+                className="absolute right-0 bg-gray-100 text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-6 py-3 rounded-r-lg font-semibold hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300"
+              >
+                Search
+              </motion.button>
+            </div>
         <div className="mt-4">
           {campaigns.length > 0 ? (
             <div className="grid grid-cols-1 gap-4">
