@@ -201,7 +201,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
                     className="w-full flex flex-col md:flex-row items-center gap-4"
                   >
                     {/* Image on the top on small screens, left on larger screens */}
-                    <div className="w-full sm:w-1/4 h-24 relative">
+                    <div className="w-full h-24 relative md:w-1/4">
                       <Image
                         src={campaign?.media || '/bantuhive.svg'}
                         alt="media thumbnail"
@@ -212,7 +212,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
                     </div>
 
                     {/* Campaign Details on the bottom on small screens, right on larger screens */}
-                    <div className="w-full sm:flex-1">
+                    <div className="w-full md:flex-1">
                       <h3 className="text-lg font-semibold">
                         {campaign.title}
                       </h3>
