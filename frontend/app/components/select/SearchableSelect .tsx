@@ -33,11 +33,11 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
 
   // Define size styles (padding, text size, and width)
   const sizeStyles = {
-    xs: 'px-2 py-1 text-xs w-24',      // Extra small size: smaller padding and width
-    sm: 'px-3 py-1.5 text-sm w-32',    // Small size: slightly bigger padding and width
-    md: 'px-4 py-2 text-base w-48',    // Medium size: standard padding and width
-    lg: 'px-5 py-2.5 text-lg w-64',    // Large size: more padding and wider
-    xl: 'px-6 py-3 text-xl w-80',      // Extra large size: maximum padding and width
+    xs: 'px-2 py-1 text-xs w-24', // Extra small size: smaller padding and width
+    sm: 'px-3 py-1.5 text-sm w-32', // Small size: slightly bigger padding and width
+    md: 'px-4 py-2 text-base w-48', // Medium size: standard padding and width
+    lg: 'px-5 py-2.5 text-lg w-64', // Large size: more padding and wider
+    xl: 'px-6 py-3 text-xl w-80', // Extra large size: maximum padding and width
   };
 
   // Define variant styles
