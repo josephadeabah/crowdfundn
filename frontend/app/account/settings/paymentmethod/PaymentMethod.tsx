@@ -241,21 +241,25 @@ const PaymentMethod = () => {
           <div className="p-4 max-w-md bg-white rounded-sm shadow-sm">
             <div className="flex flex-col gap-2">
               <div className="flex justify-between items-center">
-                <span className="font-medium text-gray-600 bg-gray-50 p-2">Name</span>
+                <span className="font-medium text-gray-600 bg-gray-50 p-2 rounded-full">
+                  Name
+                </span>
                 <span className="text-gray-800">
                   {subaccountData.business_name}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="font-medium text-gray-600 bg-gray-50 p-2">
+                <span className="font-medium text-gray-600 bg-gray-50 p-2 rounded-full">
                   Account Number
                 </span>
                 <span className="text-gray-800">
-                {maskAccountNumber(subaccountData.account_number)}
+                  {maskAccountNumber(subaccountData.account_number)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="font-medium text-gray-600 bg-gray-50 p-2">Bank</span>
+                <span className="font-medium text-gray-600 bg-gray-50 p-2 rounded-full">
+                  Bank
+                </span>
                 <span className="text-gray-800">
                   {subaccountData.metadata?.custom_fields?.[0]?.display_name}
                 </span>
