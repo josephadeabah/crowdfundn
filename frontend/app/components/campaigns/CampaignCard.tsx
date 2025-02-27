@@ -234,30 +234,35 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
             value={sortBy}
             onChange={handleSortByChange}
             placeholder="Sort By"
+            variant="outline"
           />
           <SelectComponent
             options={sortOrderOptions}
             value={sortOrder}
             onChange={handleSortOrderChange}
             placeholder="Sort Order"
+            variant="outline"
           />
           <SelectComponent
             options={dateRangeOptions}
             value={dateRange}
             onChange={handleDateRangeChange}
             placeholder="Date Range"
+            variant="outline"
           />
           <SelectComponent
             options={goalRangeOptions}
             value={goalRange}
             onChange={handleGoalRangeChange}
             placeholder="Goal Range"
+            variant="outline"
           />
           <SelectComponent
             options={locationOptions}
             value={location}
             onChange={handleLocationChange}
             placeholder="Location"
+            variant="outline"
           />
         </div>
       </AnimatedDrawer>

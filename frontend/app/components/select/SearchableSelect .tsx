@@ -11,6 +11,8 @@ type SelectComponentProps = {
   onChange: (value: string) => void;
   placeholder: string;
   label?: string;
+  className?: string; // Additional class for further customization
+  variant?: 'default' | 'outline' | 'ghost' | 'destructive'; // Variant for different styles
 };
 
 const SelectComponent: React.FC<SelectComponentProps> = ({
@@ -19,7 +21,27 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
   onChange,
   placeholder,
   label,
+  className = '',
+  variant = 'default',
 }) => {
+  // Define base styles for the select box
+  const baseStyles =
+    'w-full px-4 py-2 rounded-full text-gray-800 shadow-md focus:outline-none focus:ring-2 transition duration-300 ease-in-out appearance-none';
+
+  // Define variant styles
+  const variantStyles = {
+    default: 'bg-white border-2 border-black hover:bg-gray-50 focus:ring-black',
+    outline:
+      'bg-transparent border-2 border-gray-800 hover:bg-gray-50 focus:ring-gray-800',
+    ghost:
+      'bg-transparent border-0 text-gray-800 hover:bg-gray-100 focus:ring-gray-800',
+    destructive:
+      'bg-red-100 border-2 border-red-600 text-red-600 hover:bg-red-200 focus:ring-red-600',
+  };
+
+  // Combine base styles, variant styles, and any custom className passed
+  const selectClassNames = `${baseStyles} ${variantStyles[variant]} ${className}`;
+
   return (
     <div className="w-full max-w-sm mx-auto">
       {label && (
@@ -29,7 +51,7 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full px-4 py-2 bg-white border-2 border-black rounded-full text-gray-800 shadow-md focus:outline-none focus:ring-2 focus:ring-black hover:bg-gray-50 transition duration-300 ease-in-out appearance-none"
+          className={selectClassNames}
         >
           <option value="" disabled hidden>
             {placeholder}
