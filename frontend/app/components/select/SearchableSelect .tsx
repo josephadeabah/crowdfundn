@@ -45,8 +45,8 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
     default: 'bg-white border-gray-100 hover:bg-gray-50 focus:ring-gray-100',
     black: 'bg-white border-gray-800 hover:bg-gray-50 focus:ring-gray-800',
     outline:
-      'bg-transparent border-gray-50 hover:bg-gray-50 focus:ring-gray-50',
-    ghost: 'bg-transparent text-gray-800 hover:bg-gray-100 focus:ring-gray-50',
+      'bg-transparent border-gray-100 hover:bg-gray-50 focus:ring-gray-50',
+    ghost: 'bg-transparent text-gray-800 hover:bg-gray-50 focus:ring-gray-50',
     destructive:
       'bg-red-100 border-red-600 text-red-600 hover:bg-red-200 focus:ring-red-50',
   };
