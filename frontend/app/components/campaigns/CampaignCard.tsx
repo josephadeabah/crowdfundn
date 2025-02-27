@@ -23,8 +23,12 @@ import {
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '../toast/Toast';
 import Avatar from '../avatar/Avatar';
-import { Button, Select, Option } from '@material-tailwind/react';
 import AnimatedDrawer from '../drawer/Drawer';
+import SearchableSelect, {
+  SelectOption,
+  SelectedOptionType,
+} from '../select/SearchableSelect ';
+import { Button } from '../button/Button';
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -107,33 +111,34 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     searchTerm,
   ]);
 
-  const handleLocationChange = (value: string | undefined) => {
-    if (value) {
-      setLocation(value);
+  // Modify the onChange handlers to accept array of selected options
+  const handleLocationChange = (selectedOptions: SelectedOptionType) => {
+    if (Array.isArray(selectedOptions) && selectedOptions.length > 0) {
+      setLocation(selectedOptions[0].value);
     }
   };
 
-  const handleSortByChange = (value: string | undefined) => {
-    if (value) {
-      setSortBy(value);
+  const handleSortByChange = (selectedOptions: SelectedOptionType) => {
+    if (Array.isArray(selectedOptions) && selectedOptions.length > 0) {
+      setSortBy(selectedOptions[0].value);
     }
   };
 
-  const handleSortOrderChange = (value: string | undefined) => {
-    if (value) {
-      setSortOrder(value);
+  const handleSortOrderChange = (selectedOptions: SelectedOptionType) => {
+    if (Array.isArray(selectedOptions) && selectedOptions.length > 0) {
+      setSortOrder(selectedOptions[0].value);
     }
   };
 
-  const handleDateRangeChange = (value: string | undefined) => {
-    if (value) {
-      setDateRange(value);
+  const handleDateRangeChange = (selectedOptions: SelectedOptionType) => {
+    if (Array.isArray(selectedOptions) && selectedOptions.length > 0) {
+      setDateRange(selectedOptions[0].value);
     }
   };
 
-  const handleGoalRangeChange = (value: string | undefined) => {
-    if (value) {
-      setGoalRange(value);
+  const handleGoalRangeChange = (selectedOptions: SelectedOptionType) => {
+    if (Array.isArray(selectedOptions) && selectedOptions.length > 0) {
+      setGoalRange(selectedOptions[0].value);
     }
   };
 
@@ -165,6 +170,50 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     await unfavoriteCampaign(campaignId);
   };
 
+  // Define options for the Select components
+  const sortByOptions: SelectOption[] = [
+    { value: 'created_at', label: 'Date Created' },
+    { value: 'goal_amount', label: 'Goal Amount' },
+    { value: 'location', label: 'Location' },
+  ];
+
+  const sortOrderOptions: SelectOption[] = [
+    { value: 'asc', label: 'Ascending' },
+    { value: 'desc', label: 'Descending' },
+  ];
+
+  const dateRangeOptions: SelectOption[] = [
+    { value: 'all_time', label: 'All Time' },
+    { value: 'today', label: 'Today' },
+    { value: 'last_7_days', label: 'Last 7 Days' },
+    { value: 'last_30_days', label: 'Last 30 Days' },
+    { value: 'last_60_days', label: 'Last 60 Days' },
+    { value: 'last_90_days', label: 'Last 90 Days' },
+    { value: 'this_month', label: 'This Month' },
+    { value: 'last_month', label: 'Last Month' },
+    { value: 'this_year', label: 'This Year' },
+    { value: 'last_year', label: 'Last Year' },
+  ];
+
+  const goalRangeOptions: SelectOption[] = [
+    { value: 'all', label: 'All' },
+    { value: '0-500', label: '0 - 500' },
+    { value: '500-1000', label: '500 - 1,000' },
+    { value: '1000-5000', label: '1,000 - 5,000' },
+    { value: '5000-10000', label: '5,000 - 10,000' },
+    { value: '10000-50000', label: '10,000 - 50,000' },
+    { value: '50000-100000', label: '50,000 - 100,000' },
+  ];
+
+  const locationOptions: SelectOption[] = [
+    { value: 'all', label: 'Worldwide' },
+    { value: 'Nigeria', label: 'Nigeria' },
+    { value: 'Kenya', label: 'Kenya' },
+    { value: 'Ghana', label: 'Ghana' },
+    { value: 'South Africa', label: 'South Africa' },
+    { value: 'Eswatini', label: 'Eswatini' },
+  ];
+
   if (loading) return <CampaignCardLoader />;
   if (error) return <ErrorPage />;
 
@@ -193,69 +242,31 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       >
         <div className="flex flex-col gap-4 max-w-md mx-auto w-full">
           <h2 className="text-xl font-bold mb-4 text-center">Find & Fund</h2>
-          <Select
-            label="Sort By"
-            value={sortBy}
+          <SearchableSelect
+            options={sortByOptions}
+            placeholder="Sort By"
             onChange={handleSortByChange}
-            className="w-full"
-          >
-            <Option value="created_at">Date Created</Option>
-            <Option value="goal_amount">Goal Amount</Option>
-            <Option value="location">Location</Option>
-          </Select>
-          <Select
-            label="Sort Order"
-            value={sortOrder}
+          />
+          <SearchableSelect
+            options={sortOrderOptions}
+            placeholder="Sort Order"
             onChange={handleSortOrderChange}
-            className="w-full"
-          >
-            <Option value="asc">Ascending</Option>
-            <Option value="desc">Descending</Option>
-          </Select>
-          <Select
-            label="Date Range"
-            value={dateRange}
+          />
+          <SearchableSelect
+            options={dateRangeOptions}
+            placeholder="Date Range"
             onChange={handleDateRangeChange}
-            className="w-full"
-          >
-            <Option value="all_time">All Time</Option>
-            <Option value="today">Today</Option>
-            <Option value="last_7_days">Last 7 Days</Option>
-            <Option value="last_30_days">Last 30 Days</Option>
-            <Option value="last_60_days">Last 60 Days</Option>
-            <Option value="last_90_days">Last 90 Days</Option>
-            <Option value="this_month">This Month</Option>
-            <Option value="last_month">Last Month</Option>
-            <Option value="this_year">This Year</Option>
-            <Option value="last_year">Last Year</Option>
-          </Select>
-          <Select
-            label="Goal Range"
-            value={goalRange}
+          />
+          <SearchableSelect
+            options={goalRangeOptions}
+            placeholder="Goal Range"
             onChange={handleGoalRangeChange}
-            className="w-full"
-          >
-            <Option value="all">All</Option>
-            <Option value="0-500">0 - 500</Option>
-            <Option value="500-1000">500 - 1,000</Option>
-            <Option value="1000-5000">1,000 - 5,000</Option>
-            <Option value="5000-10000">5,000 - 10,000</Option>
-            <Option value="10000-50000">10,000 - 50,000</Option>
-            <Option value="50000-100000">50,000 - 100,000</Option>
-          </Select>
-          <Select
-            label="Location"
-            value={location}
+          />
+          <SearchableSelect
+            options={locationOptions}
+            placeholder="Location"
             onChange={handleLocationChange}
-            className="w-full"
-          >
-            <Option value="all">Worldwide</Option>
-            <Option value="Nigeria">Nigeria</Option>
-            <Option value="Kenya">Kenya</Option>
-            <Option value="Ghana">Ghana</Option>
-            <Option value="South Africa">South Africa</Option>
-            <Option value="Eswatini">Eswatini</Option>
-          </Select>
+          />
         </div>
       </AnimatedDrawer>
 
