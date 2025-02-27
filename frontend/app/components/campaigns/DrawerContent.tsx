@@ -176,7 +176,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
             whileHover={{ scale: 1.05 }}
             onClick={handleSearchButtonClick} // Use the new handler for button click
             whileTap={{ scale: 0.95 }}
-            className="absolute right-0 bg-gray-100 text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300"
+            className="absolute right-0 bg-gray-100 text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-6 py-3 rounded-full font-semibold hover:bg-gray-50 hover:text-gray-700 transition-colors duration-300"
           >
             Search
           </motion.button>
