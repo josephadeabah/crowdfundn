@@ -25,9 +25,8 @@ import ToastComponent from '../toast/Toast';
 import Avatar from '../avatar/Avatar';
 import AnimatedDrawer from '../drawer/Drawer';
 import { Button } from '../button/Button';
-import SelectComponent from '../select/SearchableSelect ';
 import DrawerContent from './DrawerContent';
-import { debounce } from 'lodash'; // Import debounce from lodash
+
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -43,8 +42,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   onPageChange,
 }) => {
   const { userAccountData } = useUserContext();
-  const [userCountry, setUserCountry] = useState<string | null>(null);
-  const [isLocationLoading, setIsLocationLoading] = useState(true);
   const {
     pagination,
     favoriteCampaign,
@@ -92,7 +89,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 4000); // 800ms delay (adjust as needed)
+    }, 4000); // 4s delay (adjust as needed)
 
     return () => clearTimeout(debounceTimer); // Cleanup timer on unmount or searchTerm change
   }, [searchTerm]);
