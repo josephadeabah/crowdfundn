@@ -119,7 +119,9 @@ module Api
             redirect_url: redirect_url,
             campaign_metadata: donation.metadata[:campaign],
             phone: donation.phone
-          }
+          }.to_json
+
+          Rails.logger.info("Metadata being sent: #{metadata}")
         
           donation.plan = params[:donation][:plan]
         
