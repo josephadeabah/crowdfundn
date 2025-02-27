@@ -30,10 +30,15 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
   const [goalRangeValue, setGoalRangeValue] = useState('');
   const [locationValue, setLocationValue] = useState('');
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle input change for the search box
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
-    onSearch(value);
+  };
+
+  // Handle search button click
+  const handleSearchButtonClick = () => {
+    onSearch(searchTerm); // Trigger the search with the current search term
   };
 
   const handleSortByChange = (value: string) => {
@@ -162,12 +167,12 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
             type="text"
             placeholder="Search campaigns..."
             value={searchTerm}
-            onChange={handleSearch}
+            onChange={handleSearchInputChange} // Use the new handler for input changes
             className="w-full px-4 py-3 border border-gray-100 rounded-full focus:outline-none text-gray-900 bg-gray-100 dark:bg-gray-700 dark:text-white pr-24"
           />
           <motion.button
             whileHover={{ scale: 1.05 }}
-            onClick={handleSearch as any}
+            onClick={handleSearchButtonClick} // Use the new handler for button click
             whileTap={{ scale: 0.95 }}
             className="absolute right-0 bg-gray-100 text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300"
           >
