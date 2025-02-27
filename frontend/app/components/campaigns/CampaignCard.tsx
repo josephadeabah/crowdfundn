@@ -303,7 +303,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 initial="hidden"
                 animate="visible"
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={`group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 hover:shadow-lg transition-transform duration-300 cursor-pointer overflow-hidden rounded-lg ${
+                className={`group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 transition-transform duration-300 cursor-pointer overflow-hidden rounded-lg ${
                   index === 0 ? 'col-span-2 row-span-2' : ''
                 } ${index === 4 || index === 5 || index === 6 ? 'col-span-1' : ''}`}
               >
