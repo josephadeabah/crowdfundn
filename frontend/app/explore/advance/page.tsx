@@ -422,7 +422,7 @@ const CampaignsPage = () => {
                                   className="absolute top-0 left-0 w-full h-full"
                                 />
                               </div>
-                              <div className="px-2 py-2 bg-gray-50 hover:bg-white dark:text-gray-50">
+                              <div className="px-2 py-2 bg-gray-50 hover:bg-gray-100 dark:text-gray-50">
                                 <div className="w-full text-xs">
                                   <Progress
                                     firstProgress={
