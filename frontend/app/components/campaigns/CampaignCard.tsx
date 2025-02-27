@@ -88,25 +88,23 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 4000); // 4s delay (adjust as needed)
+    }, 400); // 400ms delay (adjust as needed)
 
     return () => clearTimeout(debounceTimer); // Cleanup timer on unmount or searchTerm change
   }, [searchTerm]);
 
-  // Fetch campaigns when debounced search term changes
+  // Fetch campaigns when debounced search term or filter values change
   useEffect(() => {
-    if (debouncedSearchTerm !== '') {
-      fetchAllCampaigns(
-        sortBy,
-        sortOrder,
-        page,
-        pageSize,
-        dateRange,
-        goalRange,
-        location,
-        debouncedSearchTerm, // Use debounced search term here
-      );
-    }
+    fetchAllCampaigns(
+      sortBy,
+      sortOrder,
+      page,
+      pageSize,
+      dateRange,
+      goalRange,
+      location,
+      debouncedSearchTerm, // Use debounced search term here
+    );
   }, [
     fetchAllCampaigns,
     sortBy,
