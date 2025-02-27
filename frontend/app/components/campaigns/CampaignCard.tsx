@@ -27,7 +27,6 @@ import AnimatedDrawer from '../drawer/Drawer';
 import { Button } from '../button/Button';
 import DrawerContent from './DrawerContent';
 
-
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
   loading: boolean;

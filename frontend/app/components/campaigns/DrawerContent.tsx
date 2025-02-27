@@ -3,6 +3,8 @@ import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import Image from 'next/image';
 import SelectComponent from '../select/SearchableSelect ';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
 
 interface DrawerContentProps {
   campaigns: CampaignResponseDataType[];
@@ -183,35 +185,48 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
           {campaigns.length > 0 ? (
             <div className="grid grid-cols-1 gap-4">
               {campaigns.map((campaign) => (
-                <div
+                <motion.div
                   key={campaign.id}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{
+                    duration: 0.5,
+                    delay: Number(campaign?.id) * 0.1,
+                  }}
                   className="p-4 bg-white rounded-lg shadow flex flex-col sm:flex-row items-center gap-4"
                 >
-                  {/* Image on the top on small screens, left on larger screens */}
-                  <div className="w-full sm:w-1/4 h-24 relative">
-                    <Image
-                      src={campaign?.media || '/bantuhive.svg'}
-                      alt="media thumbnail"
-                      layout="fill"
-                      objectFit="cover"
-                      className="rounded-lg"
-                    />
-                  </div>
+                  {/* Wrap the entire content with the Link component */}
+                  <Link
+                    href={`/campaign/${campaign.id}?${generateRandomString()}`}
+                  >
+                    {/* Image on the top on small screens, left on larger screens */}
+                    <div className="w-full sm:w-1/4 h-24 relative">
+                      <Image
+                        src={campaign?.media || '/bantuhive.svg'}
+                        alt="media thumbnail"
+                        layout="fill"
+                        objectFit="cover"
+                        className="rounded-lg"
+                      />
+                    </div>
 
-                  {/* Campaign Details on the bottom on small screens, right on larger screens */}
-                  <div className="w-full sm:flex-1">
-                    <h3 className="text-lg font-semibold">{campaign.title}</h3>
-                    <p className="text-sm text-gray-600">
-                      {campaign.fundraiser?.profile?.name}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {campaign.currency_symbol}
-                      {campaign.transferred_amount} raised of{' '}
-                      {campaign.currency_symbol}
-                      {campaign.goal_amount}
-                    </p>
-                  </div>
-                </div>
+                    {/* Campaign Details on the bottom on small screens, right on larger screens */}
+                    <div className="w-full sm:flex-1">
+                      <h3 className="text-lg font-semibold">
+                        {campaign.title}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {campaign.fundraiser?.profile?.name}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {campaign.currency.toUpperCase()}
+                        {campaign.transferred_amount} raised of{' '}
+                        {campaign.currency.toUpperCase()}
+                        {campaign.goal_amount}
+                      </p>
+                    </div>
+                  </Link>
+                </motion.div>
               ))}
             </div>
           ) : (
