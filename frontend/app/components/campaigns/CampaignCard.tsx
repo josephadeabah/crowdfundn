@@ -23,7 +23,8 @@ import {
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '../toast/Toast';
 import Avatar from '../avatar/Avatar';
-import { Drawer, Button, Select, Option } from '@material-tailwind/react';
+import { Button, Select, Option } from '@material-tailwind/react';
+import AnimatedDrawer from '../drawer/Drawer';
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -181,12 +182,14 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       </div>
 
       {/* Drawer for Filters */}
-      <Drawer
-        placement="bottom"
-        open={openDrawer}
+      <AnimatedDrawer
+        isOpen={openDrawer}
         onClose={() => setOpenDrawer(false)}
-        className="p-6 bg-white rounded-t-lg shadow-lg"
-        size={400} // Adjust the size of the drawer
+        position="bottom"
+        width="100%"
+        height="400px"
+        backgroundColor="bg-white"
+        zIndex="z-50"
       >
         <div className="flex flex-col gap-4 max-w-md mx-auto w-full">
           <h2 className="text-xl font-bold mb-4 text-center">Find & Fund</h2>
@@ -254,7 +257,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
             <Option value="Eswatini">Eswatini</Option>
           </Select>
         </div>
-      </Drawer>
+      </AnimatedDrawer>
 
       <ToastComponent
         isOpen={toast.isOpen}
