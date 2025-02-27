@@ -234,18 +234,21 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
             value={sortBy}
             onChange={handleSortByChange}
             placeholder="Sort By"
+            variant="outline"
           />
           <SelectComponent
             options={sortOrderOptions}
             value={sortOrder}
             onChange={handleSortOrderChange}
             placeholder="Sort Order"
+            variant="outline"
           />
           <SelectComponent
             options={dateRangeOptions}
             value={dateRange}
             onChange={handleDateRangeChange}
             placeholder="Date Range"
+            variant="outline"
           />
           <SelectComponent
             options={goalRangeOptions}
