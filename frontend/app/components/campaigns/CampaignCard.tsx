@@ -58,6 +58,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const [sortOrder, setSortOrder] = useState<string>('desc');
   const [pageSize, setPageSize] = useState<number>(12);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>(''); // New state for debounced search term
   const [dateRange, setDateRange] = useState<string>('all_time');
   const [goalRange, setGoalRange] = useState<string>('all');
   const [openDrawer, setOpenDrawer] = useState(false); // State for drawer
@@ -87,11 +88,16 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     setPage(newPage);
   };
 
-  // Debounced search handler
-  const debouncedHandleSearch = debounce((value: string) => {
-    setSearchTerm(value);
-  }, 300); // 300ms delay
+  // Debounce the search term update
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // 500ms delay
 
+    return () => clearTimeout(debounceTimer); // Cleanup timer on unmount or searchTerm change
+  }, [searchTerm]);
+
+  // Fetch campaigns when debounced search term changes
   useEffect(() => {
     fetchAllCampaigns(
       sortBy,
@@ -101,7 +107,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       dateRange,
       goalRange,
       location,
-      searchTerm,
+      debouncedSearchTerm, // Use debounced search term here
     );
   }, [
     fetchAllCampaigns,
@@ -112,7 +118,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     dateRange,
     goalRange,
     location,
-    searchTerm,
+    debouncedSearchTerm, // Add debouncedSearchTerm to dependency array
   ]);
 
   // Update handlers to work with string values
@@ -140,7 +146,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     return (
       campaign.status !== 'completed' &&
       campaign.permissions.is_public &&
-      campaign.title.toLowerCase().includes(searchTerm.toLowerCase()) // Apply search filtering here
+      campaign.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) // Apply search filtering here
     );
   });
 
@@ -169,7 +175,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   };
 
   const handleSearch = (value: string) => {
-    debouncedHandleSearch(value); // Use debounced search handler
+    setSearchTerm(value); // Update the search term immediately
   };
 
   if (loading) return <CampaignCardLoader />;
