@@ -26,6 +26,7 @@ import Avatar from '../avatar/Avatar';
 import AnimatedDrawer from '../drawer/Drawer';
 import { Button } from '../button/Button';
 import DrawerContent from './DrawerContent';
+import FilterButton from '../filterbutton/FilterButton';
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -181,13 +182,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     <div className="w-full max-w-7xl mx-auto p-1 bg-white rounded-lg">
       <div className="flex justify-center items-center gap-2 mb-8">
         <h3 className="text-3xl font-bold text-center">Fundraising Now</h3>
-        <Button
-          className="p-3 flex items-center gap-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200"
-          onClick={() => setOpenDrawer(true)}
-        >
-          <FaFilter />
-          Filter
-        </Button>
+        <FilterButton onClick={() => setOpenDrawer(true)} />
       </div>
 
       {/* Drawer for Filters */}

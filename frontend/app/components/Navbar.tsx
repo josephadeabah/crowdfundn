@@ -1,5 +1,4 @@
-'use client';
-
+// Navbar.tsx
 import React, { useEffect, useState } from 'react';
 import DarkModeBtn from './DarkModeBtn';
 import { Button } from './button/Button';
@@ -30,7 +29,8 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from '@/app/components/popover/Popover'; // Import the Popover components
+} from '@/app/components/popover/Popover';
+import FilterButton from '@/app/components/filterbutton/FilterButton'; // Import the FilterButton
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -41,6 +41,7 @@ const Navbar = () => {
   const { userAccountData } = useUserContext();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [openDrawer, setOpenDrawer] = useState(false);
   let closeTimeout: NodeJS.Timeout;
 
   useEffect(() => {
@@ -253,7 +254,7 @@ const Navbar = () => {
             )}
           </button>
         </div>
-         {/*For Mobile*/}
+        {/*For Mobile*/}
         {isMenuOpen && (
           <div className="absolute top-16 left-0 w-full bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-900 lg:hidden">
             <div className="flex flex-col items-start p-4 space-y-4">
@@ -348,8 +349,11 @@ const Navbar = () => {
           </div>
         )}
 
-         {/*For Large Screens*/}
+        {/*For Large Screens*/}
         <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
+          {/* Add the FilterButton here */}
+          <FilterButton onClick={() => setOpenDrawer(true)} />
+
           {!user ? (
             <>
               <motion.button
