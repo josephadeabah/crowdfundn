@@ -24,7 +24,7 @@ const DonationByCountryCharts = ({
   const donationsByCountryData = Object.entries(
     statistics?.donations_by_country || {},
   ).map(([country, count]) => ({
-    country,
+    country: country || 'Unknown',
     donations: count,
   }));
 
