@@ -1,6 +1,6 @@
 // components/FilterButton.tsx
 import React from 'react';
-import { FaSearch } from 'react-icons/fa';
+import { FaFilter } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 // components/FilterButton.tsx
@@ -19,8 +19,8 @@ const FilterButton: React.FC<FilterButtonProps> = ({ onClick, isActive }) => {
       } py-1 px-4 dark:bg-gray-900 dark:text-gray-50 rounded-full focus-visible:outline-none focus:ring-0 hover:outline-none hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300`}
       onClick={onClick}
     >
-      <FaSearch className="text-gray-500 w-4 h-4" />
-      Search
+      <FaFilter />
+      Filter
     </motion.button>
   );
 };
