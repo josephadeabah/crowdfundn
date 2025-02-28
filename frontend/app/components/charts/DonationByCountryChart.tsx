@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   BarChart,
   Bar,
@@ -63,21 +63,12 @@ const DonationByCountryCharts = ({
     storedYear ? parseInt(storedYear) : new Date().getFullYear(),
   );
 
-  // Memoize the fetchCampaignStatistics function to prevent unnecessary re-renders
-  const fetchData = useCallback(() => {
-    fetchCampaignStatistics(selectedMonth, selectedYear);
-  }, [selectedMonth, selectedYear, fetchCampaignStatistics]);
-
-  // Fetch statistics data when the component mounts or month/year changes
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
   // Handle month change
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const month = parseInt(e.target.value);
     setSelectedMonth(month);
     sessionStorage.setItem('selectedMonth', month.toString()); // Store selected month in sessionStorage
+    fetchCampaignStatistics(selectedMonth, selectedYear);
   };
 
   // Handle year change
@@ -85,6 +76,7 @@ const DonationByCountryCharts = ({
     const year = parseInt(e.target.value);
     setSelectedYear(year);
     sessionStorage.setItem('selectedYear', year.toString()); // Store selected year in sessionStorage
+    fetchCampaignStatistics(selectedMonth, selectedYear);
   };
 
   // Prepare data for the bar chart
