@@ -101,7 +101,7 @@ class PaystackService
   end
 
   # 3. Initialize Transaction with Split Code
-  def initialize_transaction(email:, amount:, subaccount:, callback_url:, plan: nil, metadata:)
+  def initialize_transaction(email:, amount:, subaccount:, callback_url:, plan: nil, metadata: {})
     return { status: 'error', message: 'Email address is required' } if email.blank?
 
     uri = URI("#{PAYSTACK_BASE_URL}/transaction/initialize")
