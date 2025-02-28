@@ -32,7 +32,7 @@ const DonationByCountryCharts = ({
     <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none my-4">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-          Donations by Country
+          See Where You're Getting Donations From
         </CardTitle>
       </CardHeader>
       <CardDescription>
