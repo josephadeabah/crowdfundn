@@ -81,6 +81,8 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
                 // Custom styles for the option hover state
                 backgroundColor: 'white', // Default background
                 color: 'black', // Default text color
+                borderRadius: 'none', // Remove rounded corners
+                border: '1px solid #ffffff', // Add border bottom
               }}
             >
               {option.label}
