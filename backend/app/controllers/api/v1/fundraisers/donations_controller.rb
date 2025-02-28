@@ -95,7 +95,9 @@ module Api
             donation.metadata[:anonymous_token] = anonymous_token # Add token to metadata
           end
         
-          redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign.id, host: 'bantuhive.com')
+          # Generate a secure random UUID and append it to the redirect_url as a query parameter
+          secure_random_uuid = SecureRandom.uuid
+          redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign.id, host: 'bantuhive.com') + "?#{secure_random_uuid}"
           donation.email = params[:donation][:email]
           donation.amount = params[:donation][:amount]
           donation.phone = params[:donation][:phone]
