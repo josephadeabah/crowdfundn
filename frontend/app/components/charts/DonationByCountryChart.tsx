@@ -60,7 +60,7 @@ const DonationByCountryCharts = ({
             />
             <Tooltip formatter={(value) => `${value} Donations`} />
             <Legend />
-            <Bar dataKey="donations" fill="#8884d8" />
+            <Bar dataKey="donations" fill="#E9762B" />
           </BarChart>
         </ResponsiveContainer>
       </CardDescription>
