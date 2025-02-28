@@ -1,4 +1,5 @@
-// Navbar.tsx
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import DarkModeBtn from './DarkModeBtn';
 import { Button } from './button/Button';
@@ -29,12 +30,9 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from '@/app/components/popover/Popover';
-import FilterButton from '@/app/components/filterbutton/FilterButton'; // Import the FilterButton
-import { useDrawer } from '../context/drawer/DrawerContext';
+} from '@/app/components/popover/Popover'; // Import the Popover components
 
 const Navbar = () => {
-  const { openDrawer } = useDrawer();
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -352,9 +350,6 @@ const Navbar = () => {
 
         {/*For Large Screens*/}
         <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
-          {/* Add the FilterButton here */}
-          <FilterButton onClick={openDrawer} />
-
           {!user ? (
             <>
               <motion.button
@@ -443,12 +438,12 @@ const Navbar = () => {
                   passHref
                   className="focus-visible:outline-none focus:ring-0 hover:outline-none"
                 >
-                  <div className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2 cursor-pointer">
+                  <div className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2">
                     Go to Account
                   </div>
                 </Link>
                 <div
-                  className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2 cursor-pointer"
+                  className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2"
                   onClick={logout}
                 >
                   Logout
