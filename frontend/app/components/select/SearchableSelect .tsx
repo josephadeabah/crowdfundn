@@ -29,7 +29,7 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
 }) => {
   // Define base styles for the select box
   const baseStyles =
-    'w-full rounded-full text-gray-800 border focus:outline-none focus:ring-2 transition duration-300 ease-in-out appearance-none';
+    'w-full text-gray-800 border focus:outline-none focus:ring-2 transition duration-300 ease-in-out appearance-none';
 
   // Define size styles (padding, text size, and width)
   const sizeStyles = {
