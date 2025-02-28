@@ -95,6 +95,7 @@ module Api
             donation.metadata[:anonymous_token] = anonymous_token # Add token to metadata
           end
         
+          # Populate donation metadata
           donation.metadata[:id] = campaign.id
           donation.metadata[:title] = campaign.title
           donation.metadata[:goal_amount] = campaign.goal_amount
@@ -109,6 +110,7 @@ module Api
           donation.amount = params[:donation][:amount]
           donation.phone = params[:donation][:phone]
         
+          # Construct metadata hash
           metadata = {
             user_id: donation.user_id,
             campaign_id: donation.campaign_id,
@@ -123,21 +125,30 @@ module Api
               currency: donation.metadata[:currency],
               currency_symbol: donation.metadata[:currency_symbol],
               fundraiser_id: donation.metadata[:fundraiser_id],
-              fundraiser_name: donation.metadata[:fundraiser_name],
+              fundraiser_name: donation.metadata[:fundraiser_name]
             },
             phone: donation.phone
           }
+        
+          # Validate metadata to ensure no nil values
+          metadata.each do |key, value|
+            if value.nil?
+              Rails.logger.error "Metadata field #{key} is nil. This may cause issues with JSON serialization."
+              return render json: { error: "Metadata field #{key} is missing or invalid." }, status: :unprocessable_entity
+            end
+          end
         
           donation.plan = params[:donation][:plan]
         
           paystack_service = PaystackService.new
         
+          # Serialize metadata to JSON before sending to Paystack
           response = paystack_service.initialize_transaction(
             email: donation.email,
             amount: donation.amount,
             plan: donation.plan,
             callback_url: redirect_url,
-            metadata: metadata,
+            metadata: metadata.to_json, # Serialize metadata to JSON
             subaccount: subaccount_code
           )
         
