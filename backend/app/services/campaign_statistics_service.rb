@@ -22,6 +22,7 @@ class CampaignStatisticsService
       total_updates: total_updates_for_user(user),
       total_favorites: total_favorites_for_user(user),
       donations_over_time: donations_over_time_for_user(user, month, year), # Pass month and year
+      donations_by_country: donations_by_country_for_user(user),
       total_performance_percentage: total_performance
     }
   end
