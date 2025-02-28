@@ -109,7 +109,7 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
                     if (onCancel) onCancel();
                   }}
                 >
-                  Cancel
+                  Close
                 </button>
               </div>
             </div>
