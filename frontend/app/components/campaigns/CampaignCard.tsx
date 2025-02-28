@@ -180,7 +180,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   if (error) return <ErrorPage />;
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-1 bg-white rounded-lg">
+    <div className="w-full max-w-7xl mx-auto p-1 mt-12 bg-white rounded-lg">
       <div className="flex justify-between items-center gap-2 mb-8">
         <h3 className="text-sm lg:text-3xl font-bold text-center">
           Fundraising Now
