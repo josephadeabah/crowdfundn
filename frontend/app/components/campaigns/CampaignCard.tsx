@@ -256,7 +256,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                       className="absolute top-0 left-0 w-full h-full"
                     />
                   </div>
-                  <div className="px-4 py-3 h-full bg-gray-50 hover:bg-gray-100 dark:bg-gray-800">
+                  <div className="px-4 py-3 h-full bg-gray-50 hover:bg-white dark:bg-gray-800">
                     <div className="w-full text-xs">
                       <Progress
                         firstProgress={
