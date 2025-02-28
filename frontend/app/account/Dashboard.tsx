@@ -237,7 +237,10 @@ export default function Dashboard() {
         />
       </div>
       {/* Donations by Country Chart */}
-      <DonationByCountryCharts statistics={statistics} />
+      <DonationByCountryCharts
+        statistics={statistics}
+        fetchCampaignStatistics={fetchCampaignStatistics}
+      />
     </div>
   );
 }
