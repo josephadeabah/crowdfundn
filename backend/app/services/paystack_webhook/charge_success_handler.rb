@@ -52,10 +52,14 @@ class PaystackWebhook::ChargeSuccessHandler
       raise 'Transaction verification failed'
     end
   
+    # Parse the metadata field if it's a string
+    metadata = response[:data][:metadata]
+    metadata = JSON.parse(metadata, symbolize_names: true) if metadata.is_a?(String)
+  
     # Extract transaction status
-    transaction_status = response[:data]&.[](:status) || 'unknown'
+    transaction_status = response[:data][:status] || 'unknown'
     if transaction_status == 'success'
-      gross_amount = (response[:data]&.[](:amount) || 0).to_f / 100.0 # Gross amount from Paystack
+      gross_amount = (response[:data][:amount] || 0).to_f / 100.0 # Gross amount from Paystack
   
       # Calculate net amount and platform fee
       net_amount = gross_amount * 0.93
@@ -64,17 +68,17 @@ class PaystackWebhook::ChargeSuccessHandler
       adjusted_platform_fee = platform_fee - paystack_fee
   
       # Extract metadata values
-      user_id = response[:data]&.[](:metadata)&.[](:user_id)
-      campaign_id = response[:data]&.[](:metadata)&.[](:campaign_id)
-      session_token = response[:data]&.[](:metadata)&.[](:anonymous_token)
+      user_id = metadata[:user_id]
+      campaign_id = metadata[:campaign_id]
+      session_token = metadata[:anonymous_token]
   
       # Extract campaign metadata
-      campaign_metadata = response[:data]&.[](:metadata)&.[](:campaign_metadata) || {}
+      campaign_metadata = metadata[:campaign_metadata] || {}
   
       # Extract subaccount contact details
-      subaccount_name = response[:data]&.[](:subaccount)&.[](:primary_contact_name) || 'No contact name'
-      subaccount_contact = response[:data]&.[](:subaccount)&.[](:primary_contact_email) || 'No contact email'
-      subaccount_phone = response[:data]&.[](:subaccount)&.[](:primary_contact_phone) || 'No contact phone'
+      subaccount_name = response[:data][:subaccount][:primary_contact_name] || 'No contact name'
+      subaccount_contact = response[:data][:subaccount][:primary_contact_email] || 'No contact email'
+      subaccount_phone = response[:data][:subaccount][:primary_contact_phone] || 'No contact phone'
   
       # Update the donation record
       donation.update!(
@@ -85,9 +89,9 @@ class PaystackWebhook::ChargeSuccessHandler
         amount: net_amount,
         user_id: user_id.presence,
         campaign_id: campaign_id.presence,
-        full_name: response[:data]&.[](:metadata)&.[](:donor_name),
-        email: response[:data]&.[](:customer)&.[](:email),
-        phone: response[:data]&.[](:metadata)&.[](:phone),
+        full_name: metadata[:donor_name],
+        email: response[:data][:customer][:email],
+        phone: metadata[:phone],
         metadata: {
           anonymous_token: session_token,
           user_id: user_id,
