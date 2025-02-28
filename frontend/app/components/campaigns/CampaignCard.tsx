@@ -27,6 +27,7 @@ import AnimatedDrawer from '../drawer/Drawer';
 import { Button } from '../button/Button';
 import DrawerContent from './DrawerContent';
 import FilterButton from '../filterbutton/FilterButton';
+import { useDrawer } from '@/app/context/drawer/DrawerContext';
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -58,7 +59,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>(''); // New state for debounced search term
   const [dateRange, setDateRange] = useState<string>('all_time');
   const [goalRange, setGoalRange] = useState<string>('all');
-  const [openDrawer, setOpenDrawer] = useState(false); // State for drawer
+  const { isDrawerOpen, openDrawer, closeDrawer } = useDrawer();
 
   const [toast, setToast] = useState({
     isOpen: false,
@@ -182,13 +183,13 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     <div className="w-full max-w-7xl mx-auto p-1 bg-white rounded-lg">
       <div className="flex justify-center items-center gap-2 mb-8">
         <h3 className="text-3xl font-bold text-center">Fundraising Now</h3>
-        <FilterButton onClick={() => setOpenDrawer(true)} />
+        <FilterButton onClick={openDrawer} />
       </div>
 
       {/* Drawer for Filters */}
       <AnimatedDrawer
-        isOpen={openDrawer}
-        onClose={() => setOpenDrawer(false)}
+        isOpen={isDrawerOpen} // Use the global state
+        onClose={closeDrawer} // Use the global close function
         position="bottom"
         width="100%"
         height="400px"

@@ -31,8 +31,10 @@ import {
   PopoverContent,
 } from '@/app/components/popover/Popover';
 import FilterButton from '@/app/components/filterbutton/FilterButton'; // Import the FilterButton
+import { useDrawer } from '../context/drawer/DrawerContext';
 
 const Navbar = () => {
+  const { openDrawer } = useDrawer();
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -41,7 +43,6 @@ const Navbar = () => {
   const { userAccountData } = useUserContext();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [openDrawer, setOpenDrawer] = useState(false);
   let closeTimeout: NodeJS.Timeout;
 
   useEffect(() => {
@@ -352,7 +353,7 @@ const Navbar = () => {
         {/*For Large Screens*/}
         <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
           {/* Add the FilterButton here */}
-          <FilterButton onClick={() => setOpenDrawer(true)} />
+          <FilterButton onClick={openDrawer} />
 
           {!user ? (
             <>

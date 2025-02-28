@@ -14,6 +14,7 @@ import { MetricsProvider } from './admin/metrics/MetricsContext';
 import { LeaderboardProvider } from './leaderboard/LeaderboardContext';
 import { PointRewardProvider } from './pointreward/PointRewardContext';
 import { ArticlesProvider } from './admin/articles/ArticlesContext';
+import { DrawerProvider } from './drawer/DrawerContext';
 
 export const GlobalContextProvider = ({
   children,
@@ -21,32 +22,34 @@ export const GlobalContextProvider = ({
   children: ReactNode;
 }) => {
   return (
-    <AuthProvider>
-      <UserProfileProvider>
-        <DonationsProvider>
-          <RewardProvider>
-            <CampaignProvider>
-              <CampaignUpdatesProvider>
-                <TransferProvider>
-                  <CampaignCommentsProvider>
-                    <CategoryProvider>
-                      <MetricsProvider>
-                        <ArticlesProvider>
-                          <LeaderboardProvider>
-                            <PointRewardProvider>
-                              {children}
-                            </PointRewardProvider>
-                          </LeaderboardProvider>
-                        </ArticlesProvider>
-                      </MetricsProvider>
-                    </CategoryProvider>
-                  </CampaignCommentsProvider>
-                </TransferProvider>
-              </CampaignUpdatesProvider>
-            </CampaignProvider>
-          </RewardProvider>
-        </DonationsProvider>
-      </UserProfileProvider>
-    </AuthProvider>
+    <DrawerProvider>
+      <AuthProvider>
+        <UserProfileProvider>
+          <DonationsProvider>
+            <RewardProvider>
+              <CampaignProvider>
+                <CampaignUpdatesProvider>
+                  <TransferProvider>
+                    <CampaignCommentsProvider>
+                      <CategoryProvider>
+                        <MetricsProvider>
+                          <ArticlesProvider>
+                            <LeaderboardProvider>
+                              <PointRewardProvider>
+                                {children}
+                              </PointRewardProvider>
+                            </LeaderboardProvider>
+                          </ArticlesProvider>
+                        </MetricsProvider>
+                      </CategoryProvider>
+                    </CampaignCommentsProvider>
+                  </TransferProvider>
+                </CampaignUpdatesProvider>
+              </CampaignProvider>
+            </RewardProvider>
+          </DonationsProvider>
+        </UserProfileProvider>
+      </AuthProvider>
+    </DrawerProvider>
   );
 };
