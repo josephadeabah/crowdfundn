@@ -14,7 +14,6 @@ import { Card, CardHeader, CardTitle, CardDescription } from '../card/Card';
 import { CampaignStatisticsDataType } from '@/app/types/campaigns.types';
 import { getMonthOptions, getYearOptions } from './DashboardCharts';
 
-
 interface DonationByCountryChartsProps {
   statistics: CampaignStatisticsDataType | null;
   fetchCampaignStatistics: (month: number, year: number) => void;
@@ -39,7 +38,7 @@ const DonationByCountryCharts = ({
     const month = parseInt(e.target.value);
     setSelectedMonth(month);
     sessionStorage.setItem('selectedMonth', month.toString()); // Store selected month in sessionStorage
-    fetchCampaignStatistics(selectedMonth, selectedYear);
+    fetchCampaignStatistics(month, selectedYear); // Use the updated month value directly
   };
 
   // Handle year change
@@ -47,7 +46,7 @@ const DonationByCountryCharts = ({
     const year = parseInt(e.target.value);
     setSelectedYear(year);
     sessionStorage.setItem('selectedYear', year.toString()); // Store selected year in sessionStorage
-    fetchCampaignStatistics(selectedMonth, selectedYear);
+    fetchCampaignStatistics(selectedMonth, year); // Use the updated year value directly
   };
 
   // Prepare data for the bar chart
