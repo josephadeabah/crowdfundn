@@ -95,6 +95,16 @@ module Api
             donation.metadata[:anonymous_token] = anonymous_token # Add token to metadata
           end
         
+          donation.metadata[:id] = campaign.id
+          donation.metadata[:title] = campaign.title
+          donation.metadata[:goal_amount] = campaign.goal_amount
+          donation.metadata[:current_amount] = campaign.current_amount
+          donation.metadata[:currency] = campaign.currency
+          donation.metadata[:currency_symbol] = campaign.currency_symbol
+          donation.metadata[:fundraiser_id] = campaign.fundraiser_id
+          donation.metadata[:fundraiser_name] = campaign.fundraiser.full_name
+
+        
           redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign.id, host: 'bantuhive.com')
           donation.email = params[:donation][:email]
           donation.amount = params[:donation][:amount]
@@ -107,14 +117,14 @@ module Api
             donor_name: donation.full_name,
             redirect_url: redirect_url,
             campaign_metadata: {
-              id: campaign.id,
-              title: campaign.title,
-              goal_amount: campaign.goal_amount,
-              current_amount: campaign.current_amount,
-              currency: campaign.currency,
-              currency_symbol: campaign.currency_symbol,
-              fundraiser_id: campaign.fundraiser_id,
-              fundraiser_name: campaign.fundraiser.full_name,
+              id: donation.metadata[:id],
+              title: donation.metadata[:title],
+              goal_amount: donation.metadata[:goal_amount],
+              current_amount: donation.metadata[:current_amount],
+              currency: donation.metadata[:currency],
+              currency_symbol: donation.metadata[:currency_symbol],
+              fundraiser_id: donation.metadata[:fundraiser_id],
+              fundraiser_name: donation.metadata[:fundraiser_name],
             },
             phone: donation.phone
           }
