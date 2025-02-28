@@ -182,7 +182,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   return (
     <div className="w-full max-w-7xl mx-auto p-1 bg-white rounded-lg">
       <div className="flex justify-center items-center gap-2 mb-8">
-        <h3 className="text-3xl font-bold text-center">Fundraising Now</h3>
+        <h3 className="text-sm lg:text-3xl font-bold text-center">Fundraising Now</h3>
         <div className="lg:hidden">
           <FilterButton onClick={openDrawer} />
         </div>
