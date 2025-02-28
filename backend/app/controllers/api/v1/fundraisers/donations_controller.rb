@@ -95,60 +95,43 @@ module Api
             donation.metadata[:anonymous_token] = anonymous_token # Add token to metadata
           end
         
-          # Populate donation metadata
-          donation.metadata[:id] = campaign.id
-          donation.metadata[:title] = campaign.title
-          donation.metadata[:goal_amount] = campaign.goal_amount
-          donation.metadata[:current_amount] = campaign.current_amount
-          donation.metadata[:currency] = campaign.currency
-          donation.metadata[:currency_symbol] = campaign.currency_symbol
-          donation.metadata[:fundraiser_id] = campaign.fundraiser_id
-          donation.metadata[:fundraiser_name] = campaign.fundraiser.full_name
+          donation.metadata[:campaign] = {
+            id: campaign.id,
+            title: campaign.title,
+            description: campaign.description.to_plain_text,
+            goal_amount: campaign.goal_amount,
+            current_amount: campaign.current_amount,
+            currency: campaign.currency,
+            currency_symbol: campaign.currency_symbol,
+            fundraiser_id: campaign.fundraiser_id,
+            fundraiser_name: campaign.fundraiser.full_name
+          }
         
           redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign.id, host: 'bantuhive.com')
           donation.email = params[:donation][:email]
           donation.amount = params[:donation][:amount]
           donation.phone = params[:donation][:phone]
         
-          # Construct metadata hash
           metadata = {
             user_id: donation.user_id,
             campaign_id: donation.campaign_id,
             anonymous_token: donation.metadata[:anonymous_token], # Anonymous identifier
             donor_name: donation.full_name,
             redirect_url: redirect_url,
-            campaign_metadata: {
-              id: donation.metadata[:id],
-              title: donation.metadata[:title],
-              goal_amount: donation.metadata[:goal_amount],
-              current_amount: donation.metadata[:current_amount],
-              currency: donation.metadata[:currency],
-              currency_symbol: donation.metadata[:currency_symbol],
-              fundraiser_id: donation.metadata[:fundraiser_id],
-              fundraiser_name: donation.metadata[:fundraiser_name]
-            },
+            campaign_metadata: donation.metadata[:campaign],
             phone: donation.phone
           }
-        
-          # Validate metadata to ensure no nil values
-          metadata.each do |key, value|
-            if value.nil?
-              Rails.logger.error "Metadata field #{key} is nil. This may cause issues with JSON serialization."
-              return render json: { error: "Metadata field #{key} is missing or invalid." }, status: :unprocessable_entity
-            end
-          end
         
           donation.plan = params[:donation][:plan]
         
           paystack_service = PaystackService.new
         
-          # Serialize metadata to JSON before sending to Paystack
           response = paystack_service.initialize_transaction(
             email: donation.email,
             amount: donation.amount,
             plan: donation.plan,
             callback_url: redirect_url,
-            metadata: metadata.to_json, # Serialize metadata to JSON
+            metadata: metadata,
             subaccount: subaccount_code
           )
         
