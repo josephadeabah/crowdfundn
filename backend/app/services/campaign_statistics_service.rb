@@ -31,7 +31,7 @@ class CampaignStatisticsService
   def self.donations_by_country_for_user(user)
     user.campaigns.joins(:donations)
         .where(donations: { status: 'successful' })
-        .group('donations.country')
+        .group('COALESCE(donations.country, \'Unknown\')') # Group by country or 'Unknown'
         .count
   end
 

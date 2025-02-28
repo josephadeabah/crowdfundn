@@ -77,6 +77,7 @@ class PaystackWebhook::ChargeSuccessHandler
       # Use Paystack's country if available; otherwise, use Geocoder
       country_from_ip = Geocoder.search(donor_ip).first&.country || 'Unknown'
       final_country = donor_country.presence || country_from_ip
+      final_country = 'Unknown' if final_country.blank?
       # Extract campaign metadata (title, description, etc.)
       campaign_metadata = {
         title: response.dig(:data, :metadata, :title),
