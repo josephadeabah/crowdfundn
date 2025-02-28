@@ -103,7 +103,6 @@ module Api
           donation.metadata[:currency_symbol] = campaign.currency_symbol
           donation.metadata[:fundraiser_id] = campaign.fundraiser_id
           donation.metadata[:fundraiser_name] = campaign.fundraiser.full_name
-
         
           redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign.id, host: 'bantuhive.com')
           donation.email = params[:donation][:email]
