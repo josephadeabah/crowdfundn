@@ -73,7 +73,15 @@ class PaystackWebhook::ChargeSuccessHandler
       session_token = response.dig(:data, :metadata, :anonymous_token)
 
       # Extract campaign metadata (title, description, etc.)
-      campaign_metadata = response.dig(:data, :metadata, :campaign_metadata) || {}
+      campaign_metadata = {
+        title: response.dig(:data, :metadata, :title),
+        goal_amount: response.dig(:data, :metadata, :goal_amount),
+        current_amount: response.dig(:data, :metadata, :current_amount),
+        currency: response.dig(:data, :metadata, :currency),
+        currency_symbol: response.dig(:data, :metadata, :currency_symbol),
+        fundraiser_id: response.dig(:data, :metadata, :fundraiser_id),
+        fundraiser_name: response.dig(:data, :metadata, :fundraiser_name)
+      }
 
       # Extract subaccount contact details
       subaccount_name = response.dig(:data, :subaccount, :primary_contact_name) || 'No contact name'
