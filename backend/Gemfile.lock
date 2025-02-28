@@ -136,6 +136,7 @@ GEM
     cronex (0.15.0)
       tzinfo
       unicode (>= 0.4.4.5)
+    csv (3.3.2)
     daemons (1.4.1)
     date (3.3.4)
     debug (1.9.2)
@@ -164,6 +165,9 @@ GEM
     fugit (1.11.1)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
+    geocoder (1.8.5)
+      base64 (>= 0.1.0)
+      csv (>= 3.0.0)
     globalid (1.2.1)
       activesupport (>= 6.1)
     groupdate (6.5.1)
@@ -446,6 +450,7 @@ DEPENDENCIES
   delayed_job_active_record
   dotenv-rails
   foreman
+  geocoder
   groupdate
   image_processing (~> 1.2)
   importmap-rails

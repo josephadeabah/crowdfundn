@@ -26,6 +26,14 @@ class CampaignStatisticsService
     }
   end
 
+  # Add this method to calculate donations by country
+  def self.donations_by_country_for_user(user)
+    user.campaigns.joins(:donations)
+        .where(donations: { status: 'successful' })
+        .group('donations.country')
+        .count
+  end
+
   def self.unique_backers_count(user)
     user.campaigns.joins(:donations)
         .where(donations: { status: 'successful' })

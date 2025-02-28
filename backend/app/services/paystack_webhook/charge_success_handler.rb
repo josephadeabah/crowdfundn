@@ -71,6 +71,12 @@ class PaystackWebhook::ChargeSuccessHandler
       user_id = response.dig(:data, :metadata, :user_id)
       campaign_id = response.dig(:data, :metadata, :campaign_id)
       session_token = response.dig(:data, :metadata, :anonymous_token)
+      donor_ip = response.dig(:data, :ip_address) # Extract the IP address
+      donor_country = response.dig(:data, :authorization, :country_code) # Country from Paystack
+      # Map IP address to country
+      # Use Paystack's country if available; otherwise, use Geocoder
+      country_from_ip = Geocoder.search(donor_ip).first&.country || 'Unknown'
+      final_country = donor_country.presence || country_from_ip
       # Extract campaign metadata (title, description, etc.)
       campaign_metadata = {
         title: response.dig(:data, :metadata, :title),
@@ -99,6 +105,8 @@ class PaystackWebhook::ChargeSuccessHandler
         full_name: response.dig(:data, :metadata, :donor_name), # Update full_name with donor's name
         email: response.dig(:data, :customer, :email),
         phone: response.dig(:data, :metadata, :phone),
+        country: final_country,  # Store the most reliable country info
+        ip_address: donor_ip, # Store the IP address
         metadata: {
           anonymous_token: session_token,
           user_id: user_id, # Add user_id to metadata
