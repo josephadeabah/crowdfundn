@@ -104,6 +104,14 @@ class PaystackWebhook::ChargeSuccessHandler
           user_id: user_id, # Add user_id to metadata
           campaign_id: campaign_id, # Add campaign_id to metadata
           campaign_metadata: campaign_metadata, # Add campaign metadata to donation
+          redirect_url: response.dig(:data, :metadata, :redirect_url),
+          title: response.dig(:data, :metadata, :title),
+          goal_amount: response.dig(:data, :metadata, :goal_amount),
+          current_amount: response.dig(:data, :metadata, :current_amount),
+          currency: response.dig(:data, :metadata, :currency),
+          currency_symbol: response.dig(:data, :metadata, :currency_symbol),
+          fundraiser_id: response.dig(:data, :metadata, :fundraiser_id),
+          fundraiser_name: response.dig(:data, :metadata, :fundraiser_name),
           subaccount_contact: {
             name: subaccount_name,
             email: subaccount_contact,
