@@ -30,10 +30,7 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from '@/app/components/popover/Popover';
-import FilterButton from '@/app/components/filterbutton/FilterButton'; // Import the FilterButton
-import AnimatedDrawer from '@/app/components/drawer/Drawer'; // Import the AnimatedDrawer
-import { useDrawer } from '@/app/context/drawer/DrawerContext'; // Import the useDrawer hook
+} from '@/app/components/popover/Popover'; // Import the Popover components
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -44,7 +41,6 @@ const Navbar = () => {
   const { userAccountData } = useUserContext();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const { isDrawerOpen, openDrawer, closeDrawer } = useDrawer(); // Use the drawer context
   let closeTimeout: NodeJS.Timeout;
 
   useEffect(() => {
@@ -165,18 +161,14 @@ const Navbar = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 dark:bg-gray-950 dark:text-gray-50">
-        {/* Add the FilterButton as the first element on the left */}
-        <div className="flex items-center gap-4">
-          <FilterButton onClick={openDrawer} />
-          <div className="text-2xl font-bold text-orange-500">
-            <a href="/">
-              <img
-                src="/bantuhive.svg"
-                alt="Bantuhive Logo"
-                className="w-24 h-auto"
-              />
-            </a>
-          </div>
+        <div className="text-2xl font-bold text-orange-500">
+          <a href="/">
+            <img
+              src="/bantuhive.svg"
+              alt="Bantuhive Logo"
+              className="w-24 h-auto"
+            />
+          </a>
         </div>
 
         <div className="hidden lg:flex items-center gap-x-2 mx-6">
@@ -248,7 +240,7 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* For Mobile */}
+        {/*For Mobile*/}
         <div className="lg:hidden mr-3">
           <button
             onClick={handleMenuToggle}
@@ -261,7 +253,7 @@ const Navbar = () => {
             )}
           </button>
         </div>
-        {/* For Mobile */}
+        {/*For Mobile*/}
         {isMenuOpen && (
           <div className="absolute top-16 left-0 w-full bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-900 lg:hidden">
             <div className="flex flex-col items-start p-4 space-y-4">
@@ -356,7 +348,7 @@ const Navbar = () => {
           </div>
         )}
 
-        {/* For Large Screens */}
+        {/*For Large Screens*/}
         <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
           {!user ? (
             <>
@@ -461,22 +453,6 @@ const Navbar = () => {
           )}
         </div>
       </div>
-
-      {/* Add the AnimatedDrawer */}
-      <AnimatedDrawer
-        isOpen={isDrawerOpen}
-        onClose={closeDrawer}
-        position="top"
-        height="200px"
-      >
-        <div className="p-4">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
-          />
-        </div>
-      </AnimatedDrawer>
     </header>
   );
 };
