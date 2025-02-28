@@ -209,6 +209,7 @@ export interface CampaignStatisticsDataType {
   total_fundraising_goal: string;
   total_backers: number;
   donations_over_time: {};
+  donations_by_country: Record<string, number>;
   total_performance_percentage: number;
   total_active_campaigns: number;
   total_donated_amount: string;

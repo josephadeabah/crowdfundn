@@ -16,6 +16,7 @@ import { deslugify } from '../utils/helpers/categories';
 import moment from 'moment'; // Import moment
 import DashboardCharts from '../components/charts/DashboardCharts';
 import { FiPlusCircle } from 'react-icons/fi';
+import DonationByCountryCharts from '../components/charts/DonationByCountryChart';
 
 export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
@@ -235,6 +236,8 @@ export default function Dashboard() {
           fetchCampaignStatistics={fetchCampaignStatistics}
         />
       </div>
+      {/* Donations by Country Chart */}
+      <DonationByCountryCharts statistics={statistics} />
     </div>
   );
 }
