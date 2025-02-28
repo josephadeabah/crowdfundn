@@ -253,7 +253,7 @@ const Navbar = () => {
             )}
           </button>
         </div>
-
+         {/*For Mobile*/}
         {isMenuOpen && (
           <div className="absolute top-16 left-0 w-full bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-900 lg:hidden">
             <div className="flex flex-col items-start p-4 space-y-4">
@@ -348,6 +348,7 @@ const Navbar = () => {
           </div>
         )}
 
+         {/*For Large Screens*/}
         <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
           {!user ? (
             <>
