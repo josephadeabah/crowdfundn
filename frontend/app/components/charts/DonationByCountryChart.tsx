@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -12,37 +12,8 @@ import {
 } from 'recharts';
 import { Card, CardHeader, CardTitle, CardDescription } from '../card/Card';
 import { CampaignStatisticsDataType } from '@/app/types/campaigns.types';
+import { getMonthOptions, getYearOptions } from './DashboardCharts';
 
-// Helper function to generate month options
-const getMonthOptions = () => {
-  const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-  return months.map((month, index) => ({
-    value: index + 1, // Months are 1-indexed (January = 1)
-    label: month,
-  }));
-};
-
-// Helper function to generate year options
-const getYearOptions = () => {
-  const currentYear = new Date().getFullYear();
-  return Array.from({ length: 5 }, (_, i) => ({
-    value: currentYear - i,
-    label: `${currentYear - i}`,
-  }));
-};
 
 interface DonationByCountryChartsProps {
   statistics: CampaignStatisticsDataType | null;

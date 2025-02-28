@@ -23,7 +23,7 @@ import { CampaignStatisticsDataType } from '@/app/types/campaigns.types';
 import { LoginUserType } from '@/app/types/auth.login.types';
 
 // Helper function to generate month options
-const getMonthOptions = () => {
+export const getMonthOptions = () => {
   const months = [
     'January',
     'February',
@@ -45,7 +45,7 @@ const getMonthOptions = () => {
 };
 
 // Helper function to generate year options
-const getYearOptions = () => {
+export const getYearOptions = () => {
   const currentYear = new Date().getFullYear();
   return Array.from({ length: 5 }, (_, i) => ({
     value: currentYear - i,
