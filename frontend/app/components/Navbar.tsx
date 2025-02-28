@@ -437,12 +437,12 @@ const Navbar = () => {
                   passHref
                   className="focus-visible:outline-none focus:ring-0 hover:outline-none"
                 >
-                  <div className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2">
+                  <div className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2 cursor-pointer">
                     Go to Account
                   </div>
                 </Link>
                 <div
-                  className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2"
+                  className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2 cursor-pointer"
                   onClick={logout}
                 >
                   Logout
