@@ -24,8 +24,8 @@ const DonationByCountryCharts = ({
   fetchCampaignStatistics,
 }: DonationByCountryChartsProps) => {
   // Initialize selected month and year from sessionStorage, or default to current month/year
-  const storedMonth = sessionStorage.getItem('selectedMonth');
-  const storedYear = sessionStorage.getItem('selectedYear');
+  const storedMonth = sessionStorage.getItem('selectedMonthDonationsByCountry');
+  const storedYear = sessionStorage.getItem('selectedYearDonationsByCountry');
   const [selectedMonth, setSelectedMonth] = useState(
     storedMonth ? parseInt(storedMonth) : new Date().getMonth() + 1,
   );
@@ -37,7 +37,7 @@ const DonationByCountryCharts = ({
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const month = parseInt(e.target.value);
     setSelectedMonth(month);
-    sessionStorage.setItem('selectedMonth', month.toString()); // Store selected month in sessionStorage
+    sessionStorage.setItem('selectedMonthDonationsByCountry', month.toString()); // Store selected month in sessionStorage
     fetchCampaignStatistics(month, selectedYear); // Use the updated month value directly
   };
 
@@ -45,7 +45,7 @@ const DonationByCountryCharts = ({
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const year = parseInt(e.target.value);
     setSelectedYear(year);
-    sessionStorage.setItem('selectedYear', year.toString()); // Store selected year in sessionStorage
+    sessionStorage.setItem('selectedYearDonationsByCountry', year.toString()); // Store selected year in sessionStorage
     fetchCampaignStatistics(selectedMonth, year); // Use the updated year value directly
   };
 
