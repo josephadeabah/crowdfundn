@@ -83,11 +83,11 @@ const LeaderboardBackersPage = () => {
                 </thead>
                 <tbody>
                   {leaderboard.map((backer) => (
-                    <tr key={backer.id}>
-                      <td className="px-4 py-2 text-gray-600 bg-gray-50">
+                    <tr key={backer.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-gray-600 bg-gray-50 align-middle">
                         {getRankWithSuffix(backer.rank)}
                       </td>
-                      <td className="px-4 py-2 flex items-center space-x-3 bg-white">
+                      <td className="px-4 py-3 flex items-center space-x-3 bg-white align-middle">
                         <Popover>
                           <PopoverTrigger asChild>
                             <div className="relative cursor-pointer">
@@ -157,15 +157,15 @@ const LeaderboardBackersPage = () => {
                           <span>{getVerifiedBadge(backer.level, 16)}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-2 text-gray-700 bg-gray-50">
+                      <td className="px-4 py-3 text-gray-700 bg-gray-50 align-middle">
                         {backer?.currency?.toUpperCase()}{' '}
                         {Number(backer?.total_donations || 0).toFixed(2) ||
                           'N/A'}
                       </td>
-                      <td className="px-4 py-2 text-gray-700 bg-white">
+                      <td className="px-4 py-3 text-gray-700 bg-white align-middle">
                         {backer.score || 'N/A'}
                       </td>
-                      <td className="px-4 py-2 text-gray-700 bg-gray-50 flex items-center gap-2">
+                      <td className="px-4 py-3 text-gray-700 bg-gray-50 flex items-center gap-2 align-middle">
                         {getCupIcon(backer.level)}
                       </td>
                     </tr>
