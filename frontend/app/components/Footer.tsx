@@ -35,7 +35,6 @@ const Footer = () => {
                 'Event Fundraising',
                 'Charity Fundraising',
                 'Success Stories',
-                'Mobile App',
                 'Integrations',
               ].map((item) => (
                 <li key={item}>
@@ -56,11 +55,8 @@ const Footer = () => {
             <ul className="space-y-2">
               {[
                 'About Us',
-                'Accessibility',
                 'Blog',
                 'Careers',
-                'CSR',
-                'Press',
                 'Partners',
                 'Investors',
                 'Supported Countries',
@@ -82,7 +78,6 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Support</h3>
             <ul className="space-y-2">
               {[
-                'Help Center',
                 'FAQs',
                 'Community Forum',
                 'Contact Support',
