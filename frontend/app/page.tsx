@@ -277,8 +277,7 @@ const HomePage = () => {
         id="projects"
         className="dark:bg-gray-950 dark:text-gray-50 mt-10 md:mt-20"
       >
-        <div className="w-full">
-          <div className="w-full bg-white p-4">
+          <div className="bg-white p-4">
             <CampaignCard
               campaigns={campaigns}
               loading={loading}
@@ -286,7 +285,6 @@ const HomePage = () => {
               onPageChange={handlePageChange}
             />
           </div>
-        </div>
       </div>
 
       <div id="brands" className="mt-20">
