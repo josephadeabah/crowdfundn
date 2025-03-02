@@ -80,7 +80,7 @@ const CarouselComponent = ({
         {title && (
           <h2 className="text-3xl font-bold text-left px-6 mb-4">{title}</h2>
         )}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center gap-2">
         <PrevArrow onClick={() => {}} />
         <NextArrow onClick={() => {}} />
         </div>
