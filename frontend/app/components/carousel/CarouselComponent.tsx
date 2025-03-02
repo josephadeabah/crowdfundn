@@ -55,8 +55,6 @@ const CarouselComponent = ({
     slidesToShow, // Use the passed value or default to 5
     slidesToScroll: 1,
     centerMode: false,
-    prevArrow: <PrevArrow onClick={() => {}} />, // Custom previous arrow
-    nextArrow: <NextArrow onClick={() => {}} />, // Custom next arrow
     autoplay, // Enable or disable autoplay based on the prop
     autoplaySpeed, // Set the autoplay speed
     responsive: [
@@ -78,12 +76,16 @@ const CarouselComponent = ({
   return (
     <section className="py-20 overflow-hidden relative">
       <div className="w-full">
+        <div className="flex justify-between items-center px-6">
         {title && (
           <h2 className="text-3xl font-bold text-left px-6 mb-4">{title}</h2>
         )}
-        <div className="py-3">
-        <Slider {...carouselSettings}>{children}</Slider>
+        <div className="flex items-center space-x-4">
+        <PrevArrow onClick={() => {}} />
+        <NextArrow onClick={() => {}} />
         </div>
+        </div>
+        <Slider {...carouselSettings}>{children}</Slider>
       </div>
     </section>
   );
