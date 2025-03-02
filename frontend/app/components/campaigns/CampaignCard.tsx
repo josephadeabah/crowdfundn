@@ -163,12 +163,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 initial="hidden"
                 animate="visible"
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 cursor-pointer overflow-hidden rounded-lg"
+                className="group relative bg-white dark:bg-gray-900 flex flex-col gap-12 h-full dark:text-gray-50 cursor-pointer overflow-hidden rounded-lg"
               >
                 <Link
                   href={`/campaign/${campaign.id}?${generateRandomString()}`}
                 >
-                  <div className="grid grid-cols-2 gap-12 h-full">
+                  <div className="grid grid-cols-2 h-full">
                     {/* Image on the left */}
                     <div className="relative w-full h-full">
                       <Image
