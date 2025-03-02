@@ -278,14 +278,14 @@ const HomePage = () => {
         className="dark:bg-gray-950 dark:text-gray-50 mt-10 md:mt-20"
       >
         <div className="w-full">
-          <section className="w-full bg-white p-4">
+          <div className="w-full bg-white p-4">
             <CampaignCard
               campaigns={campaigns}
               loading={loading}
               error={error}
               onPageChange={handlePageChange}
             />
-          </section>
+          </div>
         </div>
       </div>
 

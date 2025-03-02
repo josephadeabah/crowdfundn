@@ -157,7 +157,7 @@ const SingleCampaignPage: React.FC = () => {
         {/* First Column (Bigger Width) */}
         <div className="lg:w-2/3">
           {/* Content for the first column */}
-          <div className="bg-white p-2 md:px-5 rounded-lg">
+          <section className="bg-white p-2 md:px-5 rounded-lg">
             <h1 className="text-4xl font-bold mb-4">
               {currentCampaign?.title}
             </h1>
@@ -376,7 +376,7 @@ const SingleCampaignPage: React.FC = () => {
                 </a>
               </Link>
             </div>
-          </div>
+          </section>
         </div>
 
         {/* Second Column (Smaller Width and Sticky) */}
