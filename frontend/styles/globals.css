@@ -14,10 +14,6 @@ body {
   font-family: var(--font-roboto);
 }
 
-.slick-slide > div {
-  margin: 0 10px !important; /* Adjust the margin to control the gap */
-}
-
 /* body {
   background-color: #ffffff;
   background-size: cover;

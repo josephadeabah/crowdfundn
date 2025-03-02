@@ -58,6 +58,7 @@ const CarouselComponent = ({
     slidesToShow: 3, // Show 3 cards per row
     slidesToScroll: 3, // Scroll 3 cards at a time
     rows: 2,
+    className: 'center w-full py-6',
     slidesPerRow: 1,
     centerMode: false,
     autoplay, // Enable or disable autoplay based on the prop
