@@ -181,7 +181,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                     </div>
 
                     {/* Details on the right */}
-                    <div className="px-4 py-3 h-full bg-gray-50 hover:bg-white dark:bg-gray-800 flex flex-col justify-between">
+                    <div className="w-auto px-4 py-3 h-full bg-gray-50 hover:bg-white dark:bg-gray-800 flex flex-col justify-between">
                       <div className="w-full text-xs">
                         <Progress
                           firstProgress={
@@ -196,7 +196,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                           }%`}
                         />
                       </div>
-                      <div className="w-auto text-xs text-gray-600 dark:text-gray-300 py-2 flex flex-col">
+                      <div className="w-full text-xs text-gray-600 dark:text-gray-300 py-2 flex flex-col">
                         <div className="flex justify-between items-center mb-2">
                           <div className="flex items-center space-x-2">
                             <Avatar
