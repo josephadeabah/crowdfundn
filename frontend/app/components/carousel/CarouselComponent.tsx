@@ -53,7 +53,7 @@ export interface CarouselProps {
 const CarouselComponent = ({
   children,
   title,
-  slidesToShow = 5,
+  slidesToShow = 2,
   autoplay = false,
   autoplaySpeed = 5000,
 }: CarouselProps) => {
@@ -65,7 +65,6 @@ const CarouselComponent = ({
     dots: false, // Hide dots
     infinite: false, // Disable infinite scrolling
     speed: 100,
-    slidesToShow: 3, // Show 3 cards per row
     slidesToScroll: 3, // Scroll 3 cards at a time
     rows: 2,
     slidesPerRow: 1,
