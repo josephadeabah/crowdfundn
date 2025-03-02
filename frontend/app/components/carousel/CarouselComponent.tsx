@@ -19,7 +19,9 @@ const PrevArrow = (props: {
         disabled ? 'opacity-50 cursor-not-allowed bg-gray-100' : 'bg-white'
       }`}
     >
-      <FaChevronLeft className={`w-5 h-5 ${disabled ? 'opacity-50 cursor-not-allowed text-gray-400' : 'text-gray-700'}`} />
+      <FaChevronLeft
+        className={`w-5 h-5 ${disabled ? 'opacity-50 cursor-not-allowed text-gray-400' : 'text-gray-700'}`}
+      />
     </button>
   );
 };
@@ -37,7 +39,9 @@ const NextArrow = (props: {
         disabled ? 'opacity-50 cursor-not-allowed bg-gray-100' : ''
       }`}
     >
-      <FaChevronRight className={`w-5 h-5 ${disabled ? 'opacity-50 cursor-not-allowed text-gray-400' : 'text-gray-700'}`} />
+      <FaChevronRight
+        className={`w-5 h-5 ${disabled ? 'opacity-50 cursor-not-allowed text-gray-400' : 'text-gray-700'}`}
+      />
     </button>
   );
 };
