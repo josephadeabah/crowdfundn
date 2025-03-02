@@ -163,7 +163,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 initial="hidden"
                 animate="visible"
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group relative dark:bg-gray-900 px-3 h-full dark:text-gray-50 cursor-pointer overflow-hidden rounded-lg"
+                className="group relative dark:bg-gray-900 px-3 h-full flex flex-wrap gap-4 dark:text-gray-50 cursor-pointer overflow-hidden rounded-lg"
               >
                 <Link
                   href={`/campaign/${campaign.id}?${generateRandomString()}`}
@@ -181,7 +181,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                     </div>
 
                     {/* Details on the right */}
-                    <div className="w-fit px-4 py-3 h-full bg-gray-50 hover:bg-white dark:bg-gray-800 flex flex-col justify-between">
+                    <div className="px-4 py-3 h-full bg-gray-50 hover:bg-white dark:bg-gray-800 flex flex-col justify-between">
                       <div className="w-full text-xs">
                         <Progress
                           firstProgress={
