@@ -12,7 +12,7 @@ const PrevArrow = (props: {
   return (
     <button
       onClick={onClick}
-      className="bg-gray-200 bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-opacity"
+      className="absolute top-0 right-16 z-10 bg-gray-200 bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-opacity"
     >
       <FaChevronLeft className="w-6 h-6 text-white" />
     </button>
@@ -26,7 +26,7 @@ const NextArrow = (props: {
   return (
     <button
       onClick={onClick}
-      className="bg-gray-200 bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-opacity"
+      className="absolute top-0 right-4 z-10 bg-gray-200 bg-opacity-50 text-white p-3 m-5 rounded-full hover:bg-opacity-70 transition-opacity"
     >
       <FaChevronRight className="w-6 h-6 text-white" />
     </button>
@@ -78,18 +78,9 @@ const CarouselComponent = ({
   return (
     <section className="py-20 overflow-hidden relative">
       <div className="w-full">
-        {/* Title */}
         {title && (
           <h2 className="text-3xl font-bold text-left px-6 mb-4">{title}</h2>
         )}
-
-        {/* Buttons Container */}
-        <div className="absolute top-0 right-6 z-10 flex space-x-4">
-          <PrevArrow onClick={() => {}} />
-          <NextArrow onClick={() => {}} />
-        </div>
-
-        {/* Slider */}
         <Slider {...carouselSettings}>{children}</Slider>
       </div>
     </section>
