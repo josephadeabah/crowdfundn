@@ -57,6 +57,8 @@ const CarouselComponent = ({
     centerMode: false,
     autoplay, // Enable or disable autoplay based on the prop
     autoplaySpeed, // Set the autoplay speed
+    prevArrow: <PrevArrow onClick={() => {}} />, // Pass the onClick handler
+    nextArrow: <NextArrow onClick={() => {}} />, // Pass the onClick handler
     responsive: [
       {
         breakpoint: 1024,
@@ -77,13 +79,9 @@ const CarouselComponent = ({
     <section className="py-20 overflow-hidden relative">
       <div className="w-full">
         <div className="flex justify-between items-center px-6">
-        {title && (
-          <h2 className="text-3xl font-bold text-left px-6 mb-4">{title}</h2>
-        )}
-        <div className="flex items-center gap-2">
-        <PrevArrow onClick={() => {}} />
-        <NextArrow onClick={() => {}} />
-        </div>
+          {title && (
+            <h2 className="text-3xl font-bold text-left px-6 mb-4">{title}</h2>
+          )}
         </div>
         <Slider {...carouselSettings}>{children}</Slider>
       </div>
