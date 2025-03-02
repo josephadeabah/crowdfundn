@@ -16,10 +16,10 @@ const PrevArrow = (props: {
       onClick={onClick}
       disabled={disabled} // Disable the button if `disabled` is true
       className={`bg-gray-200 bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-opacity ${
-        disabled ? 'opacity-50 cursor-not-allowed' : ''
+        disabled ? 'opacity-50 cursor-not-allowed bg-gray-100' : ''
       }`}
     >
-      <FaChevronLeft className="w-6 h-6 text-white hover:text-gray-100" />
+      <FaChevronLeft className={`w-5 h-5 ${disabled ? 'opacity-50 cursor-not-allowed text-gray-50' : 'text-gray-700'}`} />
     </button>
   );
 };
@@ -33,11 +33,11 @@ const NextArrow = (props: {
     <button
       onClick={onClick}
       disabled={disabled} // Disable the button if `disabled` is true
-      className={`bg-gray-200 bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-opacity ${
-        disabled ? 'opacity-50 cursor-not-allowed' : ''
+      className={`bg-white shadow-lg text-white p-3 rounded-full hover:bg-opacity-70 transition-opacity ${
+        disabled ? 'opacity-50 cursor-not-allowed bg-gray-100' : ''
       }`}
     >
-      <FaChevronRight className="w-6 h-6 text-white hover:text-gray-100" />
+      <FaChevronRight className={`w-5 h-5 ${disabled ? 'opacity-50 cursor-not-allowed text-gray-50' : 'text-gray-700'}`} />
     </button>
   );
 };
