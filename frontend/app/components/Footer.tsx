@@ -77,11 +77,7 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Support</h3>
             <ul className="space-y-2">
-              {[
-                'FAQs',
-                'Community Forum',
-                'Contact Support',
-              ].map((item) => (
+              {['FAQs', 'Community Forum', 'Contact Support'].map((item) => (
                 <li key={item}>
                   <a
                     href={`/${item.toLowerCase().replace(/\s+/g, '-')}`}

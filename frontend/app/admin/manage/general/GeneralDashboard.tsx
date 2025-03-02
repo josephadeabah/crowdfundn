@@ -53,6 +53,9 @@ const GeneralDashboard = () => {
     );
     csvRows.push(`Donations,Repeat Donors,${metrics.donations.repeat_donors}`);
 
+    // Platform Fees
+    csvRows.push(`Platform Fees,Total,${metrics.platform_fees}`);
+
     // Subscriptions
     csvRows.push(`Subscriptions,Active,${metrics.subscriptions.active}`);
     csvRows.push(`Subscriptions,MRR,${metrics.subscriptions.mrr}`);
@@ -152,6 +155,20 @@ const GeneralDashboard = () => {
       tooltip: 'The average amount of a single donation.',
       tooltipId: 'tooltip-average-donation',
     },
+    // Add Platform Fees Card
+    {
+      title: 'Platform Fees',
+      value: `${
+        metrics?.platform_fees
+          ? new Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: 'GHS',
+            }).format(parseFloat(metrics.platform_fees))
+          : '0.00'
+      }`,
+      tooltip: 'The total platform fees from unprocessed donations.',
+      tooltipId: 'tooltip-platform-fees',
+    },
   ];
 
   return (
@@ -187,6 +204,17 @@ const GeneralDashboard = () => {
             <p className="text-2xl font-bold text-left">{card.value}</p>
           </div>
         ))}
+      </div>
+
+      {/*Add Platform fees here */}
+      <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 className="text-xl font-semibold mb-4 text-left">Platform Fees</h2>
+        <div className="bg-gray-200 p-6 rounded-lg text-left">
+          <p>
+            Total Platform Fees: GHS
+            {metrics?.platform_fees || '0.00'}
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">

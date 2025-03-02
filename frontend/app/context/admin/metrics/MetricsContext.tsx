@@ -37,6 +37,7 @@ export interface Metrics {
     donations_over_time: Record<string, string | number>;
     repeat_donors: number;
   };
+  platform_fees?: string;
   roles: Record<string, number>;
   subscriptions: {
     active: number;
