@@ -54,7 +54,7 @@ const CarouselComponent = ({
   const carouselSettings = {
     dots: false, // Hide dots
     infinite: true,
-    speed: 500,
+    speed: 5000,
     slidesToShow: 3, // Show 3 cards per row
     slidesToScroll: 3, // Scroll 3 cards at a time
     centerMode: false,
