@@ -15,7 +15,7 @@ const PrevArrow = (props: {
       onClick={onClick}
       className="bg-gray-200 bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-opacity"
     >
-      <FaChevronLeft className="w-6 h-6 text-white" />
+      <FaChevronLeft className="w-6 h-6 text-gray-100" />
     </button>
   );
 };
@@ -29,7 +29,7 @@ const NextArrow = (props: {
       onClick={onClick}
       className="bg-gray-200 bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-opacity"
     >
-      <FaChevronRight className="w-6 h-6 text-white" />
+      <FaChevronRight className="w-6 h-6 text-gray-100" />
     </button>
   );
 };
