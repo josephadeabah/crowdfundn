@@ -168,7 +168,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 <Link
                   href={`/campaign/${campaign.id}?${generateRandomString()}`}
                 >
-                  <div className="grid grid-cols-2 h-full">
+                  <div className="grid grid-cols-2 gap-12 h-full">
                     {/* Image on the left */}
                     <div className="relative w-full h-full">
                       <Image

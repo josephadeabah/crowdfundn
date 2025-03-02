@@ -275,16 +275,14 @@ const HomePage = () => {
 
       <div
         id="projects"
-        className="dark:bg-gray-950 dark:text-gray-50 mt-10 md:mt-20"
+        className="max-w-7xl mx-auto dark:bg-gray-950 dark:text-gray-50 mt-10 md:mt-20"
       >
-        <div className="bg-white p-4">
           <CampaignCard
             campaigns={campaigns}
             loading={loading}
             error={error}
             onPageChange={handlePageChange}
           />
-        </div>
       </div>
 
       <div id="brands" className="mt-20">
