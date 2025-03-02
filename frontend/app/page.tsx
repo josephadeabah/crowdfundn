@@ -296,12 +296,14 @@ const HomePage = () => {
       <div>
               {/* Custom Content Carousel */}
       <CarouselComponent title="Custom Content" slidesToShow={3}>
-           <CampaignCard
-              campaigns={campaigns}
-              loading={loading}
-              error={error}
-              onPageChange={handlePageChange}
-            />
+      {[1, 2, 3, 4, 5].map((item) => (
+          <div key={item} className="p-4">
+            <div className="bg-blue-500 text-white p-6 rounded-lg text-center">
+              <h3>Slide {item}</h3>
+              <p>This is a custom slide.</p>
+            </div>
+          </div>
+        ))}
       </CarouselComponent>
       </div>
       <div className="w-full bg-white p-4 mb-0">
