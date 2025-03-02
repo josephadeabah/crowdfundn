@@ -197,7 +197,7 @@ const GeneralDashboard = () => {
         <h2 className="text-base font-semibold mb-4 text-left">Currently accumulated platform fees to be sent to the company's bank account as profit.</h2>
         <div className="bg-gray-200 p-6 rounded-lg text-left">
           <p>
-            Total Platform Fees:
+            <span className="mr-1">Total Platform Fees:</span>
             {`${
               metrics?.platform_fees
                 ? new Intl.NumberFormat('en-US', {
