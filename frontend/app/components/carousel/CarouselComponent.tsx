@@ -3,6 +3,7 @@ import Slider from 'react-slick';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { useRef } from 'react'; // Import useRef
 
 // Custom Arrow Components
 const PrevArrow = (props: {
@@ -12,7 +13,7 @@ const PrevArrow = (props: {
   return (
     <button
       onClick={onClick}
-      className="absolute top-0 right-16 z-10 bg-gray-200 bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-opacity"
+      className="bg-gray-200 bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-opacity"
     >
       <FaChevronLeft className="w-6 h-6 text-white" />
     </button>
@@ -26,7 +27,7 @@ const NextArrow = (props: {
   return (
     <button
       onClick={onClick}
-      className="absolute top-0 right-4 z-10 bg-gray-200 bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-opacity"
+      className="bg-gray-200 bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-opacity"
     >
       <FaChevronRight className="w-6 h-6 text-white" />
     </button>
@@ -48,6 +49,8 @@ const CarouselComponent = ({
   autoplay = true,
   autoplaySpeed = 5000,
 }: CarouselProps) => {
+  const sliderRef = useRef<Slider>(null); // Create a ref for the Slider
+
   const carouselSettings = {
     dots: false, // Hide dots
     infinite: true,
@@ -57,8 +60,6 @@ const CarouselComponent = ({
     centerMode: false,
     autoplay, // Enable or disable autoplay based on the prop
     autoplaySpeed, // Set the autoplay speed
-    prevArrow: <PrevArrow onClick={() => {}} />, // Pass the onClick handler
-    nextArrow: <NextArrow onClick={() => {}} />, // Pass the onClick handler
     responsive: [
       {
         breakpoint: 1024,
@@ -78,12 +79,22 @@ const CarouselComponent = ({
   return (
     <section className="py-20 overflow-hidden relative">
       <div className="w-full">
-        <div className="flex justify-between items-center px-6">
+        <div className="flex justify-between items-center px-6 mb-4">
           {title && (
-            <h2 className="text-3xl font-bold text-left px-6 mb-4">{title}</h2>
+            <h2 className="text-3xl font-bold text-left px-6">{title}</h2>
           )}
+          <div className="flex items-center gap-2">
+            <PrevArrow
+              onClick={() => sliderRef.current?.slickPrev()} // Trigger previous slide
+            />
+            <NextArrow
+              onClick={() => sliderRef.current?.slickNext()} // Trigger next slide
+            />
+          </div>
         </div>
-        <Slider {...carouselSettings}>{children}</Slider>
+        <Slider ref={sliderRef} {...carouselSettings}>
+          {children}
+        </Slider>
       </div>
     </section>
   );
