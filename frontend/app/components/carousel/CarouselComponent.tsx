@@ -46,7 +46,7 @@ const CarouselComponent = ({
   children,
   title,
   slidesToShow = 5,
-  autoplay = true,
+  autoplay = false,
   autoplaySpeed = 5000,
 }: CarouselProps) => {
   const sliderRef = useRef<Slider>(null); // Create a ref for the Slider
