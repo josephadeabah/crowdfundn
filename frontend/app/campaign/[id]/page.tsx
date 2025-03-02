@@ -157,7 +157,7 @@ const SingleCampaignPage: React.FC = () => {
         {/* First Column (Bigger Width) */}
         <div className="lg:w-2/3">
           {/* Content for the first column */}
-          <section className="bg-white p-2 md:px-5 rounded-lg">
+          <div className="bg-white p-2 md:px-5 rounded-lg">
             <h1 className="text-4xl font-bold mb-4">
               {currentCampaign?.title}
             </h1>
@@ -240,7 +240,7 @@ const SingleCampaignPage: React.FC = () => {
             {selectedTab === 'details' && (
               <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
                 {/* Campaign Description */}
-                <div
+                <section
                   className="prose dark:prose-dark max-w-none"
                   dangerouslySetInnerHTML={{
                     __html: currentCampaign?.description?.body || '',
@@ -376,7 +376,7 @@ const SingleCampaignPage: React.FC = () => {
                 </a>
               </Link>
             </div>
-          </section>
+          </div>
         </div>
 
         {/* Second Column (Smaller Width and Sticky) */}
