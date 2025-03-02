@@ -9,25 +9,13 @@ import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import EmptyPage from '../emptypage/EmptyPage';
 import { generateRandomString } from '../../utils/helpers/generate.random-string';
 import Image from 'next/image';
-import { deslugify } from '@/app/utils/helpers/categories';
 import { useUserContext } from '@/app/context/users/UserContext';
-import Pagination from '../pagination/Pagination';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import {
-  FaBookmark,
-  FaRegBookmark,
-  FaClock,
-  FaUser,
-  FaFilter,
-} from 'react-icons/fa';
+import { FaBookmark, FaRegBookmark, FaClock, FaUser } from 'react-icons/fa';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '../toast/Toast';
 import Avatar from '../avatar/Avatar';
-import AnimatedDrawer from '../drawer/Drawer';
-import { Button } from '../button/Button';
-import DrawerContent from './DrawerContent';
-import FilterButton from '../filterbutton/FilterButton';
-import { useDrawer } from '@/app/context/drawer/DrawerContext';
+import CarouselComponent from '@/app/components/carousel/CarouselComponent'; // Import CarouselComponent
 
 type CampaignCardProps = {
   campaigns: CampaignResponseDataType[];
@@ -56,10 +44,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const [sortOrder, setSortOrder] = useState<string>('desc');
   const [pageSize, setPageSize] = useState<number>(12);
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>(''); // New state for debounced search term
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('');
   const [dateRange, setDateRange] = useState<string>('all_time');
   const [goalRange, setGoalRange] = useState<string>('all');
-  const { isDrawerOpen, openDrawer, closeDrawer } = useDrawer();
 
   const [toast, setToast] = useState({
     isOpen: false,
@@ -86,16 +73,14 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     setPage(newPage);
   };
 
-  // Debounce the search term update
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 400); // 400ms delay (adjust as needed)
+    }, 400);
 
-    return () => clearTimeout(debounceTimer); // Cleanup timer on unmount or searchTerm change
+    return () => clearTimeout(debounceTimer);
   }, [searchTerm]);
 
-  // Fetch campaigns when debounced search term or filter values change
   useEffect(() => {
     fetchAllCampaigns(
       sortBy,
@@ -105,7 +90,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       dateRange,
       goalRange,
       location,
-      debouncedSearchTerm, // Use debounced search term here
+      debouncedSearchTerm,
     );
   }, [
     fetchAllCampaigns,
@@ -116,35 +101,14 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     dateRange,
     goalRange,
     location,
-    debouncedSearchTerm, // Add debouncedSearchTerm to dependency array
+    debouncedSearchTerm,
   ]);
-
-  // Update handlers to work with string values
-  const handleLocationChange = (value: string) => {
-    setLocation(value);
-  };
-
-  const handleSortByChange = (value: string) => {
-    setSortBy(value);
-  };
-
-  const handleSortOrderChange = (value: string) => {
-    setSortOrder(value);
-  };
-
-  const handleDateRangeChange = (value: string) => {
-    setDateRange(value);
-  };
-
-  const handleGoalRangeChange = (value: string) => {
-    setGoalRange(value);
-  };
 
   const displayedCampaigns = campaigns?.filter((campaign) => {
     return (
       campaign.status !== 'completed' &&
       campaign.permissions.is_public &&
-      campaign.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) // Apply search filtering here
+      campaign.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
     );
   });
 
@@ -172,10 +136,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     await unfavoriteCampaign(campaignId);
   };
 
-  const handleSearch = (value: string) => {
-    setSearchTerm(value); // Update the search term immediately
-  };
-
   if (loading) return <CampaignCardLoader />;
   if (error) return <ErrorPage />;
 
@@ -185,29 +145,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         <h3 className="text-sm lg:text-3xl font-bold text-center">
           Fundraising Now
         </h3>
-        <FilterButton onClick={openDrawer} />
       </div>
-
-      {/* Drawer for Filters */}
-      <AnimatedDrawer
-        isOpen={isDrawerOpen} // Use the global state
-        onClose={closeDrawer} // Use the global close function
-        position="bottom"
-        width="100%"
-        height="400px"
-        backgroundColor="bg-white"
-        zIndex="z-50"
-      >
-        <DrawerContent
-          campaigns={displayedCampaigns}
-          onSearch={handleSearch}
-          onSortByChange={handleSortByChange}
-          onSortOrderChange={handleSortOrderChange}
-          onDateRangeChange={handleDateRangeChange}
-          onGoalRangeChange={handleGoalRangeChange}
-          onLocationChange={handleLocationChange}
-        />
-      </AnimatedDrawer>
 
       <ToastComponent
         isOpen={toast.isOpen}
@@ -216,23 +154,14 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         description={toast.description}
         type={toast.type}
       />
+
       {displayedCampaigns.length === 0 ? (
         <EmptyPage />
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {displayedCampaigns.slice(0, 5).map((campaign, index) => {
+        <CarouselComponent title="Featured Campaigns" slidesToShow={3}>
+          {displayedCampaigns.map((campaign, index) => {
             const fundraiserCurrency =
               campaign?.currency_symbol || campaign?.currency?.toUpperCase();
-
-            let colSpan = 1;
-            let rowSpan = 1;
-            if (index === 0) {
-              colSpan = 2;
-              rowSpan = 2;
-            } else if (index === 4 || index === 5 || index === 6) {
-              colSpan = 1;
-              rowSpan = 1;
-            }
 
             return (
               <motion.div
@@ -240,9 +169,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 initial="hidden"
                 animate="visible"
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={`group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 cursor-pointer overflow-hidden rounded-lg ${
-                  index === 0 ? 'col-span-2 row-span-2' : ''
-                } ${index === 4 || index === 5 || index === 6 ? 'col-span-1' : ''}`}
+                className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 cursor-pointer overflow-hidden rounded-lg"
               >
                 <Link
                   href={`/campaign/${campaign.id}?${generateRandomString()}`}
@@ -271,7 +198,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                         }%`}
                       />
                     </div>
-                    {/*Detailed Section*/}
                     <div className="w-full text-xs text-gray-600 dark:text-gray-300 py-2 flex flex-col">
                       <div className="flex justify-between items-center mb-2">
                         <div className="flex items-center space-x-2">
@@ -280,9 +206,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                             size="sm"
                             imageUrl={campaign?.fundraiser?.profile?.avatar}
                           />
-                          <span
-                            className={`text-sm font-semibold ${index === 0 ? '' : 'w-14 md:w-44'} truncate`}
-                          >
+                          <span className="text-sm font-semibold truncate">
                             {campaign?.fundraiser?.profile?.name}
                           </span>
                         </div>
@@ -303,9 +227,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                           )}
                         </div>
                       </div>
-                      <h3
-                        className={`font-bold text-gray-700 dark:text-gray-100 mb-1 ${index === 0 ? 'text-4xl' : 'truncate text-lg'}`}
-                      >
+                      <h3 className="font-bold text-gray-700 dark:text-gray-100 mb-1 truncate text-lg">
                         {campaign?.title}
                       </h3>
                       <div className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
@@ -332,9 +254,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                           {parseFloat(campaign.goal_amount).toLocaleString()}
                         </span>
                       </div>
-                      <div
-                        className={`${index === 0 ? 'flex justify-between items-center' : 'block md:flex justify-between items-center'}  text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2`}
-                      >
+                      <div className="block md:flex justify-between items-center text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2">
                         <div className="flex items-center space-x-1">
                           <FaUser />
                           <span>{campaign.total_donors || 0} Backers</span>
@@ -350,7 +270,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
               </motion.div>
             );
           })}
-        </div>
+        </CarouselComponent>
       )}
     </div>
   );

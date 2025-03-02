@@ -15,7 +15,6 @@ import SummaryCardComponent from './molecules/SummaryCard';
 import BHScreenKnowHow from './molecules/BHScreenKnowHow';
 import IllustrateImageComponent from './molecules/IllustrateImageComponent';
 import BlogPosts from './components/blogs/BlogPosts';
-import CarouselComponent from './components/carousel/CarouselComponent';
 
 const HomePage = () => {
   const wordRef = React.useRef<HTMLDivElement | null>(null);
@@ -293,20 +292,6 @@ const HomePage = () => {
       <div id="brands" className="mt-20">
         <BHScreenKnowHow />
       </div>
-
-      <div className="max-w-7xl mx-auto">
-      <CarouselComponent title="Custom Content" slidesToShow={3}>
-      {[1, 2, 3, 4, 5].map((item) => (
-          <div key={item} className="p-4">
-            <div className="bg-blue-500 text-white p-6 rounded-lg text-center">
-              <h3>Slide {item}</h3>
-              <p>This is a custom slide.</p>
-            </div>
-          </div>
-        ))}
-      </CarouselComponent>
-      </div>
-
       <div className="w-full bg-white p-4 mb-0">
         <BlogPosts />
       </div>
