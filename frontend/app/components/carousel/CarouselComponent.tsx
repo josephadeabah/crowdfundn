@@ -3,31 +3,39 @@ import Slider from 'react-slick';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { useRef } from 'react'; // Import useRef
+import React, { useRef, useState } from 'react'; // Import useRef and useState
 
 // Custom Arrow Components
 const PrevArrow = (props: {
   onClick: React.MouseEventHandler<HTMLButtonElement>;
+  disabled: boolean; // Add disabled prop
 }) => {
-  const { onClick } = props;
+  const { onClick, disabled } = props;
   return (
     <button
       onClick={onClick}
-      className="bg-gray-200 bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-opacity"
+      disabled={disabled} // Disable the button if `disabled` is true
+      className={`bg-gray-200 bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-opacity ${
+        disabled ? 'opacity-50 cursor-not-allowed' : ''
+      }`}
     >
-      <FaChevronLeft className="w-6 h-6  text-white hover:text-gray-100" />
+      <FaChevronLeft className="w-6 h-6 text-white hover:text-gray-100" />
     </button>
   );
 };
 
 const NextArrow = (props: {
   onClick: React.MouseEventHandler<HTMLButtonElement>;
+  disabled: boolean; // Add disabled prop
 }) => {
-  const { onClick } = props;
+  const { onClick, disabled } = props;
   return (
     <button
       onClick={onClick}
-      className="bg-gray-200 bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-opacity"
+      disabled={disabled} // Disable the button if `disabled` is true
+      className={`bg-gray-200 bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-opacity ${
+        disabled ? 'opacity-50 cursor-not-allowed' : ''
+      }`}
     >
       <FaChevronRight className="w-6 h-6 text-white hover:text-gray-100" />
     </button>
@@ -50,10 +58,12 @@ const CarouselComponent = ({
   autoplaySpeed = 5000,
 }: CarouselProps) => {
   const sliderRef = useRef<Slider>(null); // Create a ref for the Slider
+  const [currentSlide, setCurrentSlide] = useState(0); // Track the current slide index
+  const totalSlides = React.Children.count(children); // Total number of slides
 
   const carouselSettings = {
     dots: false, // Hide dots
-    infinite: true,
+    infinite: false, // Disable infinite scrolling
     speed: 100,
     slidesToShow: 3, // Show 3 cards per row
     slidesToScroll: 3, // Scroll 3 cards at a time
@@ -62,23 +72,30 @@ const CarouselComponent = ({
     centerMode: false,
     autoplay, // Enable or disable autoplay based on the prop
     autoplaySpeed, // Set the autoplay speed
+    beforeChange: (current: number, next: number) => {
+      setCurrentSlide(next); // Update the current slide index
+    },
     responsive: [
       {
         breakpoint: 1024,
         settings: {
-            slidesToShow: 2, // Show 2 cards per row on tablets
-            slidesToScroll: 2,
+          slidesToShow: 2, // Show 2 cards per row on tablets
+          slidesToScroll: 2,
         },
       },
       {
         breakpoint: 600,
         settings: {
-            slidesToShow: 1, // Show 1 card per row on mobile
-            slidesToScroll: 1,
+          slidesToShow: 1, // Show 1 card per row on mobile
+          slidesToScroll: 1,
         },
       },
     ],
   };
+
+  // Calculate whether the "Prev" and "Next" buttons should be disabled
+  const isPrevDisabled = currentSlide === 0;
+  const isNextDisabled = currentSlide >= totalSlides - slidesToShow * 2; // Adjust for rows
 
   return (
     <div className="py-8 overflow-hidden relative">
@@ -90,9 +107,11 @@ const CarouselComponent = ({
           <div className="flex items-center gap-2">
             <PrevArrow
               onClick={() => sliderRef.current?.slickPrev()} // Trigger previous slide
+              disabled={isPrevDisabled} // Disable if at the start
             />
             <NextArrow
               onClick={() => sliderRef.current?.slickNext()} // Trigger next slide
+              disabled={isNextDisabled} // Disable if at the end
             />
           </div>
         </div>
