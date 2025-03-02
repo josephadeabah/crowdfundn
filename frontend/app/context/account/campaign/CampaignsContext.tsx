@@ -199,7 +199,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       sortBy: string = 'created_at',
       sortOrder: string = 'desc',
       page: number = 1,
-      pageSize: number = 10,
+      pageSize: number = 20,
       dateRange = 'all_time',
       goalRange = 'all',
       location = 'all',
