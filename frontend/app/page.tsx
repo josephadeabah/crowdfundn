@@ -293,8 +293,8 @@ const HomePage = () => {
       <div id="brands" className="mt-20">
         <BHScreenKnowHow />
       </div>
-      <div>
-              {/* Custom Content Carousel */}
+
+      <div className="max-w-7xl mx-auto">
       <CarouselComponent title="Custom Content" slidesToShow={3}>
       {[1, 2, 3, 4, 5].map((item) => (
           <div key={item} className="p-4">
@@ -306,6 +306,7 @@ const HomePage = () => {
         ))}
       </CarouselComponent>
       </div>
+
       <div className="w-full bg-white p-4 mb-0">
         <BlogPosts />
       </div>
