@@ -82,7 +82,7 @@ const CarouselComponent = ({
   };
 
   return (
-    <section className="py-20 overflow-hidden relative">
+    <div className="py-8 overflow-hidden relative">
       <div className="w-full">
         <div className="flex justify-between items-center px-6 mb-4">
           {title && (
@@ -101,7 +101,7 @@ const CarouselComponent = ({
           {children}
         </Slider>
       </div>
-    </section>
+    </div>
   );
 };
 
