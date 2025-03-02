@@ -52,27 +52,27 @@ const CarouselComponent = ({
   const sliderRef = useRef<Slider>(null); // Create a ref for the Slider
 
   const carouselSettings = {
-    dots: false, // Hide dots
+    dots: false,
     infinite: true,
-    speed: 100,
+    speed: 500,
     slidesToShow: 3, // Show 3 cards per row
     slidesToScroll: 3, // Scroll 3 cards at a time
     centerMode: false,
-    autoplay, // Enable or disable autoplay based on the prop
-    autoplaySpeed, // Set the autoplay speed
+    autoplay: true,
+    autoplaySpeed: 5000,
     responsive: [
       {
         breakpoint: 1024,
         settings: {
-            slidesToShow: 2, // Show 2 cards per row on tablets
-            slidesToScroll: 2,
+          slidesToShow: 2, // Show 2 cards per row on tablets
+          slidesToScroll: 2,
         },
       },
       {
         breakpoint: 600,
         settings: {
-            slidesToShow: 1, // Show 1 card per row on mobile
-            slidesToScroll: 1,
+          slidesToShow: 1, // Show 1 card per row on mobile
+          slidesToScroll: 1,
         },
       },
     ],
