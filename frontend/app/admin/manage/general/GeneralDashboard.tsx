@@ -194,7 +194,10 @@ const GeneralDashboard = () => {
 
       {/*Add Platform fees here */}
       <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h2 className="text-base font-semibold mb-4 text-left">Currently accumulated platform fees to be sent to the company's bank account as profit.</h2>
+        <h2 className="text-base font-semibold mb-4 text-left">
+          Currently accumulated platform fees to be sent to the company's bank
+          account as profit.
+        </h2>
         <div className="bg-gray-200 p-6 rounded-lg text-left">
           <p>
             <span className="mr-1">Total Platform Fees:</span>
@@ -239,8 +242,15 @@ const GeneralDashboard = () => {
                 ([date, amount]) => (
                   <div key={date} className="mb-2">
                     <p>
-                      {moment(date).format('MMM DD, YYYY')}: GHS
-                      {amount}
+                      {moment(date).format('MMM DD, YYYY')}:
+                      {`${
+                        amount
+                          ? new Intl.NumberFormat('en-US', {
+                              style: 'currency',
+                              currency: 'GHS',
+                            }).format(parseFloat(amount as string))
+                          : '0.00'
+                      }`}
                     </p>
                   </div>
                 ),
