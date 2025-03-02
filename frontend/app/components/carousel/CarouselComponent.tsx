@@ -55,8 +55,8 @@ const CarouselComponent = ({
     dots: false, // Hide dots
     infinite: true,
     speed: 500,
-    slidesToShow, // Use the passed value or default to 5
-    slidesToScroll: 1,
+    slidesToShow: 3, // Show 3 cards per row
+    slidesToScroll: 3, // Scroll 3 cards at a time
     centerMode: false,
     autoplay, // Enable or disable autoplay based on the prop
     autoplaySpeed, // Set the autoplay speed
@@ -64,13 +64,15 @@ const CarouselComponent = ({
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: 3, // Show 3 slides on tablets
+            slidesToShow: 2, // Show 2 cards per row on tablets
+            slidesToScroll: 2,
         },
       },
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2, // Show 2 slides on mobile
+            slidesToShow: 1, // Show 1 card per row on mobile
+            slidesToScroll: 1,
         },
       },
     ],
