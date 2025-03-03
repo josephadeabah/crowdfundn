@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { FiUsers, FiBarChart, FiAward } from 'react-icons/fi';
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { ParallaxProvider, Parallax } from 'react-scroll-parallax';
 
 import { CarouselPlugin } from './molecules/CarouselPlugin';
 import DownloadApp from './molecules/DownloadApp';
@@ -18,7 +19,6 @@ import BlogPosts from './components/blogs/BlogPosts';
 
 const HomePage = () => {
   const wordRef = React.useRef<HTMLDivElement | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [scrollY, setScrollY] = useState(0);
   const controls = useAnimation();
   const [ref, inView] = useInView();
@@ -27,13 +27,11 @@ const HomePage = () => {
   const [isVisible, setIsVisible] = useState(false);
   const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
 
-  // States for sorting and pagination
   const [sortCriteria, setSortCriteria] = useState<string>('created_at');
   const [sortOrder, setSortOrder] = useState<string>('desc');
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(12);
 
-  // Function to handle page change
   const handlePageChange = (page: number) => {
     setPageNumber(page);
   };
@@ -142,170 +140,172 @@ const HomePage = () => {
   };
 
   return (
-    <div className="text-gray-700 dark:text-gray-50 min-h-screen">
-      <main className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-center">
-          <div className="absolute inset-0 bg-cover bg-center" />
-          <motion.div
-            variants={fadeIn}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            className="w-full relative text-center"
-          >
-            <div className="flex-grow flex flex-col justify-center items-center text-gray-800  dark:text-gray-50 dark:bg-gray-800 mx-auto w-full pt-1">
-              <div className="w-full flex flex-col sm:flex-row gap-2">
-                <div className="p-4 sm:w-1/2">
-                  <h1 className="text-4xl md:text-7xl">
-                    <div
-                      className="anim-words flex justify-center items-center w-full p-0 md:p-0"
-                      style={{ height: '250px' }}
-                    >
-                      <h1
-                        className="word text-center text-2xl text-gray-700 dark:text-gray-50 md:text-4xl lg:text-5xl font-bold"
-                        ref={wordRef}
+    <ParallaxProvider>
+      <div className="text-gray-700 dark:text-gray-50 min-h-screen">
+        <main className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-center">
+            <div className="absolute inset-0 bg-cover bg-center" />
+            <motion.div
+              variants={fadeIn}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+              className="w-full relative text-center"
+            >
+              <div className="flex-grow flex flex-col justify-center items-center text-gray-800  dark:text-gray-50 dark:bg-gray-800 mx-auto w-full pt-1">
+                <div className="w-full flex flex-col sm:flex-row gap-2">
+                  <div className="p-4 sm:w-1/2">
+                    <h1 className="text-4xl md:text-7xl">
+                      <div
+                        className="anim-words flex justify-center items-center w-full p-0 md:p-0"
+                        style={{ height: '250px' }}
                       >
-                        .
-                      </h1>
+                        <h1
+                          className="word text-center text-2xl text-gray-700 dark:text-gray-50 md:text-4xl lg:text-5xl font-bold"
+                          ref={wordRef}
+                        >
+                          .
+                        </h1>
+                      </div>
+                    </h1>
+                    <div className="w-full flex flex-row justify-center items-center gap-4 lg:justify-start *:w-full *:px-5 *:py-3 *:text-base *:font-medium *:text-center *:transition *:duration-[250ms] *:ease-in-out lg:*:w-auto">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="bg-green-700 text-white sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-green-500 hover:scale-105 transition-transform duration-300 whitespace-nowrap"
+                      >
+                        <a
+                          href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
+                        >
+                          Fundraise Now for Free
+                        </a>
+                      </motion.button>
+
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300"
+                      >
+                        <a href="/how-it-works">How It Works</a>
+                      </motion.button>
                     </div>
-                  </h1>
-                  <div className="w-full flex flex-row justify-center items-center gap-4 lg:justify-start *:w-full *:px-5 *:py-3 *:text-base *:font-medium *:text-center *:transition *:duration-[250ms] *:ease-in-out lg:*:w-auto">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="bg-green-700 text-white sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-green-500 hover:scale-105 transition-transform duration-300 whitespace-nowrap"
-                    >
-                      <a
-                        href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
-                      >
-                        Fundraise Now for Free
-                      </a>
-                    </motion.button>
-
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300"
-                    >
-                      <a href="/how-it-works">How It Works</a>
-                    </motion.button>
                   </div>
-                </div>
 
-                <div className="sm:w-1/2">
-                  <CarouselPlugin />
+                  <div className="sm:w-1/2">
+                    <CarouselPlugin />
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        </div>
-        <SummaryCardComponent />
-        <IllustrateImageComponent
-          images={[
-            '/Cheer-up-bro.svg',
-            '/heart-with-a-little-bow-svgrepo-com.png',
-            '/Team-spirit-bro.svg',
-          ]}
-        />
+            </motion.div>
+          </div>
+          <SummaryCardComponent />
+          <IllustrateImageComponent
+            images={[
+              '/Cheer-up-bro.svg',
+              '/heart-with-a-little-bow-svgrepo-com.png',
+              '/Team-spirit-bro.svg',
+            ]}
+          />
 
-        <div
-          ref={ref}
-          className="py-20 bg-white dark:bg-gray-800 dark:text-gray-50"
-        >
-          <div className="px-4">
-            <motion.h2
-              variants={fadeInUp}
-              initial="hidden"
-              animate={controls}
-              transition={{ duration: 0.5 }}
-              className="text-4xl font-bold text-center mb-5"
-            >
-              Why Choose Us?
-            </motion.h2>
-            <div className="text-2xl text-gray-500 font-bold text-center mb-7">
-              We're Africa's Premier And Trusted Reward-based And Gamified
-              Crowdfunding Platform
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {[
-                {
-                  title: 'Raise Money with No Stress',
-                  description:
-                    'We take care of everything so you can focus on your mission.',
-                  icon: <FiUsers size={80} />,
-                },
-                {
-                  title: 'Back a Cause and Make a Difference',
-                  description:
-                    'Donate to a Cause You Care About with Confidence, Purpose, Ease and Fun.',
-                  icon: <FaHandHoldingUsd size={80} />,
-                },
-                {
-                  title: 'Rewards & Recognition',
-                  description:
-                    'Earn recognition, rewards and certifications for your contributions.',
-                  icon: <FiAward size={80} />,
-                },
-                {
-                  title: 'Track Your Impact',
-                  description:
-                    'Monitor campaign to see how your efforts are making a difference.',
-                  icon: <FiBarChart size={80} />,
-                },
-              ].map((item, index) => (
-                <motion.div
-                  key={index}
-                  variants={fadeInUp}
-                  initial="hidden"
-                  animate={controls}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-gray-50 dark:bg-gray-950 dark:text-gray-50 p-6 rounded-lg text-center hover:bg-white transition-colors duration-300"
-                >
-                  <div className="flex justify-center items-center mb-4">
-                    <div className="text-4xl text-orange-400">{item.icon}</div>
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                  <p className="text-gray-500">{item.description}</p>
-                </motion.div>
-              ))}
+          <div
+            ref={ref}
+            className="py-20 bg-white dark:bg-gray-800 dark:text-gray-50"
+          >
+            <div className="px-4">
+              <motion.h2
+                variants={fadeInUp}
+                initial="hidden"
+                animate={controls}
+                transition={{ duration: 0.5 }}
+                className="text-4xl font-bold text-center mb-5"
+              >
+                Why Choose Us?
+              </motion.h2>
+              <div className="text-2xl text-gray-500 font-bold text-center mb-7">
+                We're Africa's Premier And Trusted Reward-based And Gamified
+                Crowdfunding Platform
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {[
+                  {
+                    title: 'Raise Money with No Stress',
+                    description:
+                      'We take care of everything so you can focus on your mission.',
+                    icon: <FiUsers size={80} />,
+                  },
+                  {
+                    title: 'Back a Cause and Make a Difference',
+                    description:
+                      'Donate to a Cause You Care About with Confidence, Purpose, Ease and Fun.',
+                    icon: <FaHandHoldingUsd size={80} />,
+                  },
+                  {
+                    title: 'Rewards & Recognition',
+                    description:
+                      'Earn recognition, rewards and certifications for your contributions.',
+                    icon: <FiAward size={80} />,
+                  },
+                  {
+                    title: 'Track Your Impact',
+                    description:
+                      'Monitor campaign to see how your efforts are making a difference.',
+                    icon: <FiBarChart size={80} />,
+                  },
+                ].map((item, index) => (
+                  <motion.div
+                    key={index}
+                    variants={fadeInUp}
+                    initial="hidden"
+                    animate={controls}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="bg-gray-50 dark:bg-gray-950 dark:text-gray-50 p-6 rounded-lg text-center hover:bg-white transition-colors duration-300"
+                  >
+                    <div className="flex justify-center items-center mb-4">
+                      <div className="text-4xl text-orange-400">{item.icon}</div>
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                    <p className="text-gray-500">{item.description}</p>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
 
-      <div
-        id="projects"
-        className="max-w-7xl mx-auto dark:bg-gray-950 dark:text-gray-50 mt-10 md:mt-20"
-      >
-        <CampaignCard
-          campaigns={campaigns}
-          loading={loading}
-          error={error}
-          onPageChange={handlePageChange}
-        />
-      </div>
-
-      <div id="brands" className="mt-20">
-        <BHScreenKnowHow />
-      </div>
-      <div className="w-full bg-white p-4 mb-0">
-        <BlogPosts />
-      </div>
-
-      <div className="mb-8 text-gray-700 dark:bg-gray-950 dark:text-gray-50">
-        <ChatbotComponent />
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isVisible ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
-          className="fixed bottom-8 right-8 bg-orange-400 text-white p-3 rounded-full shadow-lg hover:bg-orange-500 transition duration-300"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          aria-label="Scroll to top"
+        <div
+          id="projects"
+          className="max-w-7xl mx-auto dark:bg-gray-950 dark:text-gray-50 mt-10 md:mt-20"
         >
-          ↑
-        </motion.button>
+          <CampaignCard
+            campaigns={campaigns}
+            loading={loading}
+            error={error}
+            onPageChange={handlePageChange}
+          />
+        </div>
+
+        <div id="brands" className="mt-20">
+          <BHScreenKnowHow />
+        </div>
+        <div className="w-full bg-white p-4 mb-0">
+          <BlogPosts />
+        </div>
+
+        <div className="mb-8 text-gray-700 dark:bg-gray-950 dark:text-gray-50">
+          <ChatbotComponent />
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isVisible ? 1 : 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed bottom-8 right-8 bg-orange-400 text-white p-3 rounded-full shadow-lg hover:bg-orange-500 transition duration-300"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            aria-label="Scroll to top"
+          >
+            ↑
+          </motion.button>
+        </div>
       </div>
-    </div>
+    </ParallaxProvider>
   );
 };
 
