@@ -18,7 +18,6 @@ import BlogPosts from './components/blogs/BlogPosts';
 
 const HomePage = () => {
   const wordRef = React.useRef<HTMLDivElement | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [scrollY, setScrollY] = useState(0);
   const controls = useAnimation();
   const [ref, inView] = useInView();
@@ -144,6 +143,42 @@ const HomePage = () => {
   return (
     <div className="text-gray-700 dark:text-gray-50 min-h-screen">
       <main className="max-w-7xl mx-auto">
+        {/* Parallax Section */}
+        <div
+          id="test-start-end"
+          className="uk-height-large uk-background-cover uk-overflow-hidden uk-light uk-flex uk-flex-center uk-flex-middle"
+          style={{ backgroundImage: "url('/images/dark.jpg')" }}
+          uk-parallax="bgy: -200"
+        >
+          <div className="uk-grid uk-margin-auto uk-flex-inline">
+            <div>
+              <div
+                className="uk-card uk-card-default uk-padding-small"
+                uk-parallax="target: #test-start-end; y: 398; easing: 0;"
+              >
+                0 / 0
+              </div>
+            </div>
+            {/* Add more empty containers here */}
+            <div>
+              <div
+                className="uk-card uk-card-default uk-padding-small"
+                uk-parallax="target: #test-start-end; y: 200; easing: 0;"
+              >
+                Empty Container 1
+              </div>
+            </div>
+            <div>
+              <div
+                className="uk-card uk-card-default uk-padding-small"
+                uk-parallax="target: #test-start-end; y: 100; easing: 0;"
+              >
+                Empty Container 2
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="flex items-center justify-center">
           <div className="absolute inset-0 bg-cover bg-center" />
           <motion.div
