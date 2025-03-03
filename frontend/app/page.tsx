@@ -202,8 +202,8 @@ const HomePage = () => {
           <SummaryCardComponent />
         </div>
 
-        {/* Parallax Section - Scrolls Normally Below Hero Section */}
-        <div className="relative z-0 mt-screen">
+        {/* Parallax Section - Scrolls Over Hero Section */}
+        <div className="relative z-20 mt-screen">
           <Parallax translateY={[100, -100]}>
             <div
               ref={ref}
