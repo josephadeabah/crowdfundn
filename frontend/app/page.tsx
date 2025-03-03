@@ -142,8 +142,9 @@ const HomePage = () => {
   return (
     <ParallaxProvider>
       <div className="text-gray-700 dark:text-gray-50 min-h-screen">
-        <main className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-center">
+        {/* Hero Section - Fixed */}
+        <div className="fixed top-0 left-0 w-full h-screen z-10">
+          <div className="flex items-center justify-center h-full">
             <div className="absolute inset-0 bg-cover bg-center" />
             <motion.div
               variants={fadeIn}
@@ -152,7 +153,7 @@ const HomePage = () => {
               transition={{ duration: 1 }}
               className="w-full relative text-center"
             >
-              <div className="flex-grow flex flex-col justify-center items-center text-gray-800  dark:text-gray-50 dark:bg-gray-800 mx-auto w-full pt-1">
+              <div className="flex-grow flex flex-col justify-center items-center text-gray-800 dark:text-gray-50 dark:bg-gray-800 mx-auto w-full pt-1">
                 <div className="w-full flex flex-col sm:flex-row gap-2">
                   <div className="p-4 sm:w-1/2">
                     <h1 className="text-4xl md:text-7xl">
@@ -199,15 +200,10 @@ const HomePage = () => {
             </motion.div>
           </div>
           <SummaryCardComponent />
-          {/* <IllustrateImageComponent
-            images={[
-              '/Cheer-up-bro.svg',
-              '/heart-with-a-little-bow-svgrepo-com.png',
-              '/Team-spirit-bro.svg',
-            ]}
-          /> */}
+        </div>
 
-          {/* Parallax Section */}
+        {/* Parallax Section - Scrolls Over Hero Section */}
+        <div className="relative z-20 mt-screen">
           <Parallax translateY={[100, -100]}>
             <div
               ref={ref}
@@ -272,19 +268,20 @@ const HomePage = () => {
                 </div>
               </div>
             </div>
-                    <div
-          id="projects"
-          className="max-w-7xl mx-auto dark:bg-gray-950 dark:text-gray-50 mt-10 md:mt-20"
-        >
-          <CampaignCard
-            campaigns={campaigns}
-            loading={loading}
-            error={error}
-            onPageChange={handlePageChange}
-          />
-        </div>
           </Parallax>
-        </main>
+
+          <div
+            id="projects"
+            className="max-w-7xl mx-auto dark:bg-gray-950 dark:text-gray-50 mt-10 md:mt-20"
+          >
+            <CampaignCard
+              campaigns={campaigns}
+              loading={loading}
+              error={error}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        </div>
 
         <div id="brands" className="mt-20">
           <BHScreenKnowHow />
