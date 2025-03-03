@@ -200,7 +200,6 @@ const HomePage = () => {
                 </div>
               </motion.div>
             </div>
-            <SummaryCardComponent />
             {/*End hero section */}
           </div>
           {/* <IllustrateImageComponent
@@ -213,6 +212,8 @@ const HomePage = () => {
 
           {/* Parallax Section */}
           <Parallax translateY={[100, -100]}>
+          <SummaryCardComponent />
+
             <div
               ref={ref}
               className="py-20 bg-white dark:bg-gray-800 dark:text-gray-50"
