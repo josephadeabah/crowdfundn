@@ -71,7 +71,6 @@ const CarouselComponent = ({
     speed: 100,
     slidesToShow: 3, // Show 3 cards per row
     slidesToScroll: 3, // Scroll 3 cards at a time
-    rows: 2,
     slidesPerRow: 1,
     centerMode: false,
     autoplay, // Enable or disable autoplay based on the prop
@@ -85,6 +84,7 @@ const CarouselComponent = ({
         settings: {
           slidesToShow: 2, // Show 2 cards per row on tablets
           slidesToScroll: 2,
+          rows: 2,
         },
       },
       {
@@ -92,6 +92,7 @@ const CarouselComponent = ({
         settings: {
           slidesToShow: 1, // Show 1 card per row on mobile
           slidesToScroll: 1,
+          rows: 4,
         },
       },
     ],
