@@ -61,10 +61,10 @@ export default function SearchBar() {
             style={{ pointerEvents: 'none' }}
           >
             <div
-              className="w-full h-1/2 bg-white dark:bg-gray-900 rounded-lg shadow-lg transform -rotate-45 origin-bottom-left"
+              className="w-full h-1/2 bg-white dark:bg-gray-900 rounded-lg shadow-lg"
               style={{ pointerEvents: 'auto' }}
             >
-              <div className="rotate-45 p-6">
+              <div className="p-6">
                 <h3 className="text-lg font-semibold mb-4">Search Results</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
                   {Array.from({ length: 20 }, (_, index) => (
