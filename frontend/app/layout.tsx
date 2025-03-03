@@ -4,14 +4,11 @@ import { Roboto, Ubuntu } from 'next/font/google';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Providers from './Providers';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 // import { Analytics } from '@vercel/analytics/react';
 import { GlobalContextProvider } from './context/GlobalContextProvider';
 import Head from './head';
 import { usePathname } from 'next/navigation';
-import UIkit from "uikit";
-import "uikit/dist/css/uikit.min.css";
-import Icons from "uikit/dist/js/uikit-icons";
 
 const roboto = Roboto({
   weight: ['400', '500', '700', '900'],
@@ -32,9 +29,6 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-  useEffect(() => {
-    UIkit.use(Icons); // Load UIkit icons (optional)
-  }, []);
   const pathname = usePathname();
   const hideFooter =
     pathname.startsWith('/account') || pathname.startsWith('/admin');
