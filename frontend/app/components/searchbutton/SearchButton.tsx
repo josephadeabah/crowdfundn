@@ -50,7 +50,7 @@ export default function SearchBar() {
             Search Results
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {Array.from({ length: 20 }, (_, index) => (
+            {Array.from({ length: 5 }, (_, index) => (
               <div
                 key={index}
                 className="bg-gray-200 dark:bg-gray-800 p-4 rounded-lg shadow-md text-center text-gray-700 dark:text-gray-50 font-semibold"
