@@ -58,24 +58,17 @@ export default function SearchBar() {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Search Results</h3>
           <div className="space-y-2">
-            {/* Example Search Cards */}
-            <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md">
-              <p className="text-sm">Search Result 1</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 p-6">
+            {Array.from({ length: 20 }, (_, index) => (
+                <div 
+                key={index} 
+                className="bg-gray-200 dark:bg-gray-800 p-6 rounded-lg shadow-md text-center text-gray-700 dark:text-gray-50 font-semibold"
+                >
+                Item {index + 1}
+                </div>
+            ))}
             </div>
-            <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md">
-              <p className="text-sm">Search Result 2</p>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold">Filters</h3>
-            <div className="flex space-x-2">
-              <button className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-sm">
-                Filter 1
-              </button>
-              <button className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-sm">
-                Filter 2
-              </button>
-            </div>
+
           </div>
         </div>
       </PopoverContent>
