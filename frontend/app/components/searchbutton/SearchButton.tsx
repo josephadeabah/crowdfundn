@@ -25,7 +25,7 @@ export default function SearchBar() {
         <PopoverTrigger asChild>
           <div
             className={twMerge(
-              'flex items-center p-2 rounded-full transition-all duration-300 cursor-pointer overflow-hidden',
+              'flex items-center p-2 transition-all duration-300 cursor-pointer overflow-hidden',
               isOpen ? 'w-72 bg-white shadow-lg' : 'w-10 bg-transparent',
             )}
             onClick={handleSearchClick}
@@ -37,7 +37,8 @@ export default function SearchBar() {
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="ml-2 flex-1 outline-none bg-transparent text-gray-900 dark:text-white"
+                className="ml-2 flex-1 outline-none bg-transparent text-gray-900 dark:text-white rounded-none" // Removed rounded corners
+                onFocus={() => setIsOpen(true)} // Keep the popover open on focus
               />
             )}
             {isOpen && (
@@ -52,7 +53,7 @@ export default function SearchBar() {
 
       {/* Popover Content */}
       <PopoverContent
-        className="w-full max-w-5xl p-4 bg-white dark:bg-gray-900 rounded-none shadow-lg mx-auto"
+        className="w-72 p-4 bg-white dark:bg-gray-900 rounded-none shadow-lg mx-auto" // Set width to match the search input
         style={{ maxHeight: '50vh', overflowY: 'auto' }}
       >
         <div className="space-y-4">
