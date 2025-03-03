@@ -1,14 +1,13 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { FaSearch } from 'react-icons/fa';
+import * as React from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { FaSearch } from 'react-icons/fa';
 import { twMerge } from 'tailwind-merge';
 
 export default function SearchBar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState('');
 
   const handleSearchClick = () => {
     setIsOpen(true);
@@ -19,26 +18,13 @@ export default function SearchBar() {
     setSearchQuery('');
   };
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   return (
-    <div className="relative w-full max-w-sm mx-auto" ref={dropdownRef}>
-      {/* Search Input */}
+    <div className="relative">
+      {/* Search Bar */}
       <div
         className={twMerge(
-          'flex items-center p-2 rounded-full transition-all duration-300 cursor-pointer border border-gray-300',
-          isOpen ? 'w-80 bg-white shadow-lg' : 'w-12 bg-transparent',
+          'flex items-center p-2 rounded-full transition-all duration-300 cursor-pointer overflow-hidden',
+          isOpen ? 'w-72 bg-white shadow-lg' : 'w-10 bg-transparent',
         )}
         onClick={handleSearchClick}
       >
@@ -57,9 +43,9 @@ export default function SearchBar() {
         )}
       </div>
 
-      {/* Dropdown Search Results */}
+      {/* Dropdown Positioned to the Left */}
       {isOpen && (
-        <div className="absolute left-0 mt-2 w-full bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4 max-h-60 overflow-y-auto">
+        <div className="absolute left-0 mt-2 w-96 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4 max-h-60 overflow-y-auto">
           <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-50 mb-3">
             Search Results
           </h3>
