@@ -31,6 +31,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from '@/app/components/popover/Popover';
+import SearchBar from '@/app/components/searchbutton/SearchButton'; // Import the SearchBar component
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -359,6 +360,9 @@ const Navbar = () => {
 
         {/*For Large Screens*/}
         <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
+          {/* Add the SearchBar here */}
+          <SearchBar />
+
           {!user ? (
             <>
               <motion.button
