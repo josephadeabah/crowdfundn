@@ -272,10 +272,7 @@ const HomePage = () => {
                 </div>
               </div>
             </div>
-          </Parallax>
-        </main>
-
-        <div
+            <div
           id="projects"
           className="max-w-7xl mx-auto dark:bg-gray-950 dark:text-gray-50 mt-10 md:mt-20"
         >
@@ -286,6 +283,8 @@ const HomePage = () => {
             onPageChange={handlePageChange}
           />
         </div>
+          </Parallax>
+        </main>
 
         <div id="brands" className="mt-20">
           <BHScreenKnowHow />
