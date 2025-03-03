@@ -199,13 +199,13 @@ const HomePage = () => {
             </motion.div>
           </div>
           <SummaryCardComponent />
-          <IllustrateImageComponent
+          {/* <IllustrateImageComponent
             images={[
               '/Cheer-up-bro.svg',
               '/heart-with-a-little-bow-svgrepo-com.png',
               '/Team-spirit-bro.svg',
             ]}
-          />
+          /> */}
 
           {/* Parallax Section */}
           <Parallax translateY={[100, -100]}>
@@ -272,7 +272,7 @@ const HomePage = () => {
                 </div>
               </div>
             </div>
-            <div
+                    <div
           id="projects"
           className="max-w-7xl mx-auto dark:bg-gray-950 dark:text-gray-50 mt-10 md:mt-20"
         >
@@ -285,10 +285,10 @@ const HomePage = () => {
         </div>
           </Parallax>
         </main>
-{/* 
+
         <div id="brands" className="mt-20">
           <BHScreenKnowHow />
-        </div> */}
+        </div>
         <div className="w-full bg-white p-4 mb-0">
           <BlogPosts />
         </div>
