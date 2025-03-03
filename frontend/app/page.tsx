@@ -197,8 +197,15 @@ const HomePage = () => {
                 </div>
               </div>
             </motion.div>
-            <SummaryCardComponent />
           </div>
+          <SummaryCardComponent />
+          {/* <IllustrateImageComponent
+            images={[
+              '/Cheer-up-bro.svg',
+              '/heart-with-a-little-bow-svgrepo-com.png',
+              '/Team-spirit-bro.svg',
+            ]}
+          /> */}
 
           {/* Parallax Section */}
           <Parallax translateY={[100, -100]}>
