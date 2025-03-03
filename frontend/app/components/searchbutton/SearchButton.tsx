@@ -21,11 +21,19 @@ export default function SearchBar() {
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
+      {/* Backdrop */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={handleClose}
+        />
+      )}
+
       <div className="relative">
         <PopoverTrigger asChild>
           <div
             className={twMerge(
-              'flex items-center p-2 rounded-full transition-all duration-300 cursor-pointer',
+              'flex items-center p-2 rounded-full transition-all duration-300 cursor-pointer overflow-hidden',
               isOpen ? 'w-72 bg-white shadow-lg' : 'w-10 bg-transparent',
             )}
             onClick={handleSearchClick}
@@ -50,7 +58,10 @@ export default function SearchBar() {
         </PopoverTrigger>
       </div>
 
-      <PopoverContent className="w-96 p-4">
+      <PopoverContent
+        className="w-full max-w-3xl p-4 bg-white dark:bg-gray-900 rounded-lg shadow-lg"
+        style={{ maxHeight: '50vh', overflowY: 'auto' }}
+      >
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Search Results</h3>
           <div className="space-y-2">
