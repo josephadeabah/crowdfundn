@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { StarIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import { FaSearch } from 'react-icons/fa';
 import { twMerge } from 'tailwind-merge';
 import { Popover, PopoverTrigger, PopoverContent } from '@/app/components/popover/Popover'; // Adjust the import path
 
@@ -25,11 +26,11 @@ export default function SearchBar() {
           <div
             className={twMerge(
               'flex items-center p-2 rounded-full transition-all duration-300 cursor-pointer',
-              isOpen ? 'w-72 bg-white shadow-lg' : 'w-10 bg-gray-200',
+              isOpen ? 'w-72 bg-white shadow-lg' : 'w-10 bg-transparent',
             )}
             onClick={handleSearchClick}
           >
-            <StarIcon className="h-5 w-5 text-gray-500" />
+            <FaSearch className="h-5 w-5 text-gray-500" />
             {isOpen && (
               <input
                 type="text"
