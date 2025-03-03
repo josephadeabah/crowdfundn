@@ -30,13 +30,14 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from '@/app/components/popover/Popover'; // Import the Popover components
+} from '@/app/components/popover/Popover';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const { user, token, logout } = useAuth();
   const { userAccountData } = useUserContext();
   const router = useRouter();
@@ -63,6 +64,11 @@ const Navbar = () => {
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
+    setOpenDropdown(null); // Reset dropdown state when menu is toggled
+  };
+
+  const handleDropdownToggle = (key: string) => {
+    setOpenDropdown(openDropdown === key ? null : key);
   };
 
   const dropdownLinks = {
@@ -278,44 +284,47 @@ const Navbar = () => {
                 </>
               )}
               {Object.entries(dropdownLinks).map(([key, links]) => (
-                <Popover key={key}>
-                  <PopoverTrigger className="w-full">
-                    <div className="text-base p-2 flex justify-between items-center w-full">
-                      <div>{key.charAt(0).toUpperCase() + key.slice(1)}</div>
-                      <ChevronDownIcon className="h-4 w-4" />
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    align="center"
-                    sideOffset={8}
-                    className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-50 p-2"
+                <div key={key} className="w-full">
+                  <div
+                    className="text-base p-2 flex justify-between items-center w-full cursor-pointer"
+                    onClick={() => handleDropdownToggle(key)}
                   >
-                    {links.map((link) => (
-                      <Link
-                        href={link.href}
-                        key={link.href}
-                        passHref
-                        className="focus-visible:outline-none focus:ring-0 hover:outline-none"
-                      >
-                        <div className="w-full flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
-                          <div className="flex items-center justify-center rounded-lg !bg-white p-2">
-                            {React.createElement(link.icon, {
-                              className: 'h-5 w-5 text-gray-800',
-                            })}
+                    <div>{key.charAt(0).toUpperCase() + key.slice(1)}</div>
+                    <ChevronDownIcon
+                      className={`h-4 w-4 transition-transform ${
+                        openDropdown === key ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </div>
+                  {openDropdown === key && (
+                    <div className="pl-4 w-full">
+                      {links.map((link) => (
+                        <Link
+                          href={link.href}
+                          key={link.href}
+                          passHref
+                          className="focus-visible:outline-none focus:ring-0 hover:outline-none"
+                        >
+                          <div className="w-full flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
+                            <div className="flex items-center justify-center rounded-lg !bg-white p-2">
+                              {React.createElement(link.icon, {
+                                className: 'h-5 w-5 text-gray-800',
+                              })}
+                            </div>
+                            <div>
+                              <h6 className="text-sm font-bold text-gray-800 dark:text-gray-50">
+                                {link.label}
+                              </h6>
+                              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                                {link.description}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <h6 className="text-sm font-bold text-gray-800 dark:text-gray-50">
-                              {link.label}
-                            </h6>
-                            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                              {link.description}
-                            </p>
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </PopoverContent>
-                </Popover>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
               {user && (
                 <div className="flex items-center gap-3 w-full">
