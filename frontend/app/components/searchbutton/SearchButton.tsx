@@ -33,7 +33,7 @@ export default function SearchBar() {
   }, []);
 
   return (
-    <div className="relative w-full max-w-lg mx-auto" ref={dropdownRef}>
+    <div className="relative w-full max-w-sm mx-auto" ref={dropdownRef}>
       {/* Search Input */}
       <div
         className={twMerge(
