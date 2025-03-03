@@ -41,9 +41,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <GlobalContextProvider>
           <Providers>
             <Navbar />
-            <main className="flex-grow w-full">
-              {children}
-            </main>
+            <main className="flex-grow w-full">{children}</main>
             {!hideFooter && <Footer />}
           </Providers>
         </GlobalContextProvider>

@@ -145,63 +145,63 @@ const HomePage = () => {
         <main className="max-w-7xl mx-auto">
           {/*Start hero section */}
           <div>
-          <div className="flex items-center justify-center">
-            <div className="absolute inset-0 bg-cover bg-center" />
-            <motion.div
-              variants={fadeIn}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1 }}
-              className="w-full relative text-center"
-            >
-              <div className="flex-grow flex flex-col justify-center items-center text-gray-800  dark:text-gray-50 dark:bg-gray-800 mx-auto w-full pt-1">
-                <div className="w-full flex flex-col sm:flex-row gap-2">
-                  <div className="p-4 sm:w-1/2">
-                    <h1 className="text-4xl md:text-7xl">
-                      <div
-                        className="anim-words flex justify-center items-center w-full p-0 md:p-0"
-                        style={{ height: '250px' }}
-                      >
-                        <h1
-                          className="word text-center text-2xl text-gray-700 dark:text-gray-50 md:text-4xl lg:text-5xl font-bold"
-                          ref={wordRef}
+            <div className="flex items-center justify-center">
+              <div className="absolute inset-0 bg-cover bg-center" />
+              <motion.div
+                variants={fadeIn}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1 }}
+                className="w-full relative text-center"
+              >
+                <div className="flex-grow flex flex-col justify-center items-center text-gray-800  dark:text-gray-50 dark:bg-gray-800 mx-auto w-full pt-1">
+                  <div className="w-full flex flex-col sm:flex-row gap-2">
+                    <div className="p-4 sm:w-1/2">
+                      <h1 className="text-4xl md:text-7xl">
+                        <div
+                          className="anim-words flex justify-center items-center w-full p-0 md:p-0"
+                          style={{ height: '250px' }}
                         >
-                          .
-                        </h1>
-                      </div>
-                    </h1>
-                    <div className="w-full flex flex-row justify-center items-center gap-4 lg:justify-start *:w-full *:px-5 *:py-3 *:text-base *:font-medium *:text-center *:transition *:duration-[250ms] *:ease-in-out lg:*:w-auto">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="bg-green-700 text-white sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-green-500 hover:scale-105 transition-transform duration-300 whitespace-nowrap"
-                      >
-                        <a
-                          href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
+                          <h1
+                            className="word text-center text-2xl text-gray-700 dark:text-gray-50 md:text-4xl lg:text-5xl font-bold"
+                            ref={wordRef}
+                          >
+                            .
+                          </h1>
+                        </div>
+                      </h1>
+                      <div className="w-full flex flex-row justify-center items-center gap-4 lg:justify-start *:w-full *:px-5 *:py-3 *:text-base *:font-medium *:text-center *:transition *:duration-[250ms] *:ease-in-out lg:*:w-auto">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="bg-green-700 text-white sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-green-500 hover:scale-105 transition-transform duration-300 whitespace-nowrap"
                         >
-                          Fundraise Now for Free
-                        </a>
-                      </motion.button>
+                          <a
+                            href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
+                          >
+                            Fundraise Now for Free
+                          </a>
+                        </motion.button>
 
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300"
-                      >
-                        <a href="/how-it-works">How It Works</a>
-                      </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300"
+                        >
+                          <a href="/how-it-works">How It Works</a>
+                        </motion.button>
+                      </div>
+                    </div>
+
+                    <div className="sm:w-1/2">
+                      <CarouselPlugin />
                     </div>
                   </div>
-
-                  <div className="sm:w-1/2">
-                    <CarouselPlugin />
-                  </div>
                 </div>
-              </div>
-            </motion.div>
-          </div>
-          <SummaryCardComponent />
-          {/*End hero section */}
+              </motion.div>
+            </div>
+            <SummaryCardComponent />
+            {/*End hero section */}
           </div>
           {/* <IllustrateImageComponent
             images={[
@@ -267,35 +267,40 @@ const HomePage = () => {
                       className="bg-gray-50 dark:bg-gray-950 dark:text-gray-50 p-6 rounded-lg text-center hover:bg-white transition-colors duration-300"
                     >
                       <div className="flex justify-center items-center mb-4">
-                        <div className="text-4xl text-orange-400">{item.icon}</div>
+                        <div className="text-4xl text-orange-400">
+                          {item.icon}
+                        </div>
                       </div>
-                      <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                      <h3 className="text-xl font-semibold mb-2">
+                        {item.title}
+                      </h3>
                       <p className="text-gray-500">{item.description}</p>
                     </motion.div>
                   ))}
                 </div>
               </div>
             </div>
-                    <div
-          id="projects"
-          className="max-w-7xl mx-auto dark:bg-gray-950 dark:text-gray-50 mt-10 md:mt-20"
-        >
-          <CampaignCard
-            campaigns={campaigns}
-            loading={loading}
-            error={error}
-            onPageChange={handlePageChange}
-          />
-        </div>
-          </Parallax>
-        </main>
-
-        <div id="brands" className="mt-20">
+            <div
+              id="projects"
+              className="max-w-7xl mx-auto dark:bg-gray-950 dark:text-gray-50 mt-10 md:mt-20"
+            >
+              <CampaignCard
+                campaigns={campaigns}
+                loading={loading}
+                error={error}
+                onPageChange={handlePageChange}
+              />
+            </div>
+            <div id="brands" className="mt-20">
           <BHScreenKnowHow />
         </div>
         <div className="w-full bg-white p-4 mb-0">
           <BlogPosts />
         </div>
+          </Parallax>
+        </main>
+
+
 
         <div className="mb-8 text-gray-700 dark:bg-gray-950 dark:text-gray-50">
           <ChatbotComponent />
