@@ -297,7 +297,7 @@ const Navbar = () => {
                     />
                   </div>
                   {openDropdown === key && (
-                    <div className="pl-4 w-full">
+                    <div className="pl-4 w-full border-l-2 border-gray-200">
                       {links.map((link) => (
                         <Link
                           href={link.href}
