@@ -207,69 +207,72 @@ const HomePage = () => {
             ]}
           />
 
-          <div
-            ref={ref}
-            className="py-20 bg-white dark:bg-gray-800 dark:text-gray-50"
-          >
-            <div className="px-4">
-              <motion.h2
-                variants={fadeInUp}
-                initial="hidden"
-                animate={controls}
-                transition={{ duration: 0.5 }}
-                className="text-4xl font-bold text-center mb-5"
-              >
-                Why Choose Us?
-              </motion.h2>
-              <div className="text-2xl text-gray-500 font-bold text-center mb-7">
-                We're Africa's Premier And Trusted Reward-based And Gamified
-                Crowdfunding Platform
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {[
-                  {
-                    title: 'Raise Money with No Stress',
-                    description:
-                      'We take care of everything so you can focus on your mission.',
-                    icon: <FiUsers size={80} />,
-                  },
-                  {
-                    title: 'Back a Cause and Make a Difference',
-                    description:
-                      'Donate to a Cause You Care About with Confidence, Purpose, Ease and Fun.',
-                    icon: <FaHandHoldingUsd size={80} />,
-                  },
-                  {
-                    title: 'Rewards & Recognition',
-                    description:
-                      'Earn recognition, rewards and certifications for your contributions.',
-                    icon: <FiAward size={80} />,
-                  },
-                  {
-                    title: 'Track Your Impact',
-                    description:
-                      'Monitor campaign to see how your efforts are making a difference.',
-                    icon: <FiBarChart size={80} />,
-                  },
-                ].map((item, index) => (
-                  <motion.div
-                    key={index}
-                    variants={fadeInUp}
-                    initial="hidden"
-                    animate={controls}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="bg-gray-50 dark:bg-gray-950 dark:text-gray-50 p-6 rounded-lg text-center hover:bg-white transition-colors duration-300"
-                  >
-                    <div className="flex justify-center items-center mb-4">
-                      <div className="text-4xl text-orange-400">{item.icon}</div>
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                    <p className="text-gray-500">{item.description}</p>
-                  </motion.div>
-                ))}
+          {/* Parallax Section */}
+          <Parallax translateY={[100, -100]}>
+            <div
+              ref={ref}
+              className="py-20 bg-white dark:bg-gray-800 dark:text-gray-50"
+            >
+              <div className="px-4">
+                <motion.h2
+                  variants={fadeInUp}
+                  initial="hidden"
+                  animate={controls}
+                  transition={{ duration: 0.5 }}
+                  className="text-4xl font-bold text-center mb-5"
+                >
+                  Why Choose Us?
+                </motion.h2>
+                <div className="text-2xl text-gray-500 font-bold text-center mb-7">
+                  We're Africa's Premier And Trusted Reward-based And Gamified
+                  Crowdfunding Platform
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                  {[
+                    {
+                      title: 'Raise Money with No Stress',
+                      description:
+                        'We take care of everything so you can focus on your mission.',
+                      icon: <FiUsers size={80} />,
+                    },
+                    {
+                      title: 'Back a Cause and Make a Difference',
+                      description:
+                        'Donate to a Cause You Care About with Confidence, Purpose, Ease and Fun.',
+                      icon: <FaHandHoldingUsd size={80} />,
+                    },
+                    {
+                      title: 'Rewards & Recognition',
+                      description:
+                        'Earn recognition, rewards and certifications for your contributions.',
+                      icon: <FiAward size={80} />,
+                    },
+                    {
+                      title: 'Track Your Impact',
+                      description:
+                        'Monitor campaign to see how your efforts are making a difference.',
+                      icon: <FiBarChart size={80} />,
+                    },
+                  ].map((item, index) => (
+                    <motion.div
+                      key={index}
+                      variants={fadeInUp}
+                      initial="hidden"
+                      animate={controls}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="bg-gray-50 dark:bg-gray-950 dark:text-gray-50 p-6 rounded-lg text-center hover:bg-white transition-colors duration-300"
+                    >
+                      <div className="flex justify-center items-center mb-4">
+                        <div className="text-4xl text-orange-400">{item.icon}</div>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                      <p className="text-gray-500">{item.description}</p>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          </Parallax>
         </main>
 
         <div
