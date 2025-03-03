@@ -21,14 +21,6 @@ export default function SearchBar() {
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      {/* Backdrop */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={handleClose}
-        />
-      )}
-
       <div className="relative">
         <PopoverTrigger asChild>
           <div
@@ -58,34 +50,39 @@ export default function SearchBar() {
         </PopoverTrigger>
       </div>
 
-      <PopoverContent
-        className="w-full max-w-3xl p-4 bg-white dark:bg-gray-900 rounded-lg shadow-lg"
-        style={{ maxHeight: '50vh', overflowY: 'auto' }}
-      >
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Search Results</h3>
-          <div className="space-y-2">
-            {/* Example Search Cards */}
-            <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md">
-              <p className="text-sm">Search Result 1</p>
+      {/* Backdrop and Popover Content */}
+      {isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-40">
+          <PopoverContent
+            className="w-full max-w-3xl p-4 bg-white dark:bg-gray-900 rounded-lg shadow-lg mx-auto mt-10"
+            style={{ maxHeight: '50vh', overflowY: 'auto' }}
+          >
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Search Results</h3>
+              <div className="space-y-2">
+                {/* Example Search Cards */}
+                <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md">
+                  <p className="text-sm">Search Result 1</p>
+                </div>
+                <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md">
+                  <p className="text-sm">Search Result 2</p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">Filters</h3>
+                <div className="flex space-x-2">
+                  <button className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-sm">
+                    Filter 1
+                  </button>
+                  <button className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-sm">
+                    Filter 2
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md">
-              <p className="text-sm">Search Result 2</p>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold">Filters</h3>
-            <div className="flex space-x-2">
-              <button className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-sm">
-                Filter 1
-              </button>
-              <button className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-sm">
-                Filter 2
-              </button>
-            </div>
-          </div>
+          </PopoverContent>
         </div>
-      </PopoverContent>
+      )}
     </Popover>
   );
 }
