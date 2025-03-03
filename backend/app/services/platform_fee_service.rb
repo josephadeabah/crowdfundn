@@ -7,7 +7,6 @@ class PlatformFeeService
       # Transfer the total platform fee to the company's subaccount
       paystack_service = PaystackService.new
       response = paystack_service.initiate_transfer(
-        source: 'balance',
         amount: total_platform_fee.round,
         currency: 'GHS',
         recipient: 'RCP_u42j3ol690ghw1q', # Your company's recipient account
