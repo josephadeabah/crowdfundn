@@ -52,7 +52,7 @@ export default function SearchBar() {
 
       {/* Popover Content */}
       <PopoverContent
-        className="w-full max-w-3xl p-4 bg-white dark:bg-gray-900 rounded-lg shadow-lg mx-auto mt-10"
+        className="w-full max-w-3xl p-4 bg-white dark:bg-gray-900 rounded-lg shadow-lg mx-auto"
         style={{ maxHeight: '50vh', overflowY: 'auto' }}
       >
         <div className="space-y-4">
