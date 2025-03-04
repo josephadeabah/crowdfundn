@@ -268,26 +268,26 @@ const CheckoutPageContent = () => {
         <>
           <div className="mb-8">
             <h2 className="text-xl font-semibold mb-4">Delivery Options</h2>
-            <div className="flex gap-4">
-              <label className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <label className="flex items-center gap-2 whitespace-nowrap">
                 <input
                   type="radio"
                   name="delivery"
                   value="home"
                   checked={deliveryOption === 'home'}
                   onChange={() => handleDeliveryOptionChange('home')}
-                  className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                  className="mt-1"
                 />
                 Home Delivery
               </label>
-              <label className="flex items-center gap-2">
+              <label className="flex items-center gap-2 whitespace-nowrap">
                 <input
                   type="radio"
                   name="delivery"
                   value="pickup"
                   checked={deliveryOption === 'pickup'}
                   onChange={() => handleDeliveryOptionChange('pickup')}
-                  className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                  className="mt-1"
                 />
                 Pick Up
               </label>
@@ -336,7 +336,7 @@ const CheckoutPageContent = () => {
                       value="individual"
                       checked={formData.entityType === 'individual'}
                       onChange={handleFormChange}
-                      className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                      className="mt-1"
                     />
                     Individual
                   </label>
@@ -347,7 +347,7 @@ const CheckoutPageContent = () => {
                       value="organization"
                       checked={formData.entityType === 'organization'}
                       onChange={handleFormChange}
-                      className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                      className="mt-1"
                     />
                     Organization
                   </label>
@@ -358,7 +358,7 @@ const CheckoutPageContent = () => {
                       value="business"
                       checked={formData.entityType === 'business'}
                       onChange={handleFormChange}
-                      className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                      className="mt-1"
                     />
                     Business
                   </label>
