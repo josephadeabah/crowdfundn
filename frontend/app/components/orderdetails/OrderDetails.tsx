@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { MdError } from 'react-icons/md';
+import { generateToken } from '@/app/utils/helpers/jwt.sign'; // Import generateToken
 
 interface Reward {
   id: number;
@@ -37,13 +38,18 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
   };
 
   // Function to handle the "Confirm" button click
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const data = {
       selectedRewards,
       allRewards: rewards,
     };
 
-    window.location.href = `/creator/projects/checkout?data=${encodeURIComponent(JSON.stringify(data))}`;
+    // Generate a JWT token for the data
+    const secretKey = process.env.NEXT_PUBLIC_JWT_SECRET!;
+    const token = await generateToken(data, secretKey);
+
+    // Navigate to the checkout page with the encrypted token
+    window.location.href = `/creator/projects/checkout?token=${encodeURIComponent(token)}`;
   };
 
   return (

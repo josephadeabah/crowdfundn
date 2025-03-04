@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { FaTrashAlt, FaPlus } from 'react-icons/fa'; // Import icons
 import UserNotice from '@/app/components/usernote/UserNotice';
 import PaystackForm from '@/app/components/payments/PaystackForm';
+import { jwtVerify } from 'jose'; // Import jwtVerify
 
 interface Reward {
   id: number;
@@ -41,10 +42,26 @@ const CheckoutPageContent = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
-    const dataParam = searchParams.get('data');
-    if (dataParam) {
-      setData(JSON.parse(decodeURIComponent(dataParam)));
-    }
+    const fetchData = async () => {
+      const token = searchParams.get('token');
+      if (token) {
+        try {
+          const secretKey = process.env.NEXT_PUBLIC_JWT_SECRET!;
+          const encoder = new TextEncoder();
+          const secret = encoder.encode(secretKey);
+
+          // Decode the JWT token
+          const { payload } = await jwtVerify(token, secret);
+          setData(
+            payload as { selectedRewards: Reward[]; allRewards: Reward[] },
+          );
+        } catch (error) {
+          console.error('Failed to decode token:', error);
+        }
+      }
+    };
+
+    fetchData();
   }, [searchParams]);
 
   // Set "Home Delivery" as default when moving to Step 2
