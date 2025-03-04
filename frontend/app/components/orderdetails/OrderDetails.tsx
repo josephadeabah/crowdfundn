@@ -42,7 +42,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
       selectedRewards,
       allRewards: rewards,
     };
-  
+
     window.location.href = `/creator/projects/checkout?data=${encodeURIComponent(JSON.stringify(data))}`;
   };
 

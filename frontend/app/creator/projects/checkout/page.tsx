@@ -21,7 +21,9 @@ const CheckoutPageContent = () => {
   } | null>(null);
 
   const [currentStep, setCurrentStep] = useState(1); // 1: Select Rewards, 2: Delivery, 3: Payment
-  const [deliveryOption, setDeliveryOption] = useState<'home' | 'pickup' | null>(null);
+  const [deliveryOption, setDeliveryOption] = useState<
+    'home' | 'pickup' | null
+  >(null);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -35,6 +37,13 @@ const CheckoutPageContent = () => {
       setData(JSON.parse(decodeURIComponent(dataParam)));
     }
   }, [searchParams]);
+
+  // Set "Home Delivery" as default when moving to Step 2
+  useEffect(() => {
+    if (currentStep === 2 && !deliveryOption) {
+      setDeliveryOption('home');
+    }
+  }, [currentStep, deliveryOption]);
 
   // Function to add a reward to the selected rewards
   const addReward = (reward: Reward) => {
@@ -85,8 +94,15 @@ const CheckoutPageContent = () => {
     currentStep === 1
       ? !data || data.selectedRewards.length === 0
       : currentStep === 2
-      ? !deliveryOption || !formData.firstName || !formData.lastName
-      : false;
+        ? !deliveryOption || !formData.firstName || !formData.lastName
+        : false;
+
+  // Handle "Back" button click
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep((prev) => prev - 1);
+    }
+  };
 
   return (
     <div className="max-w-2xl mx-auto min-h-screen bg-gray-100 p-8 mb-12">
@@ -154,7 +170,8 @@ const CheckoutPageContent = () => {
             </h2>
             {data?.allRewards
               .filter(
-                (reward) => !data?.selectedRewards.some((r) => r.id === reward.id),
+                (reward) =>
+                  !data?.selectedRewards.some((r) => r.id === reward.id),
               )
               .map((reward) => (
                 <div
@@ -321,8 +338,19 @@ const CheckoutPageContent = () => {
         </div>
       )}
 
-      {/* Continue Button */}
-      <div className="flex justify-end">
+      {/* Navigation Buttons */}
+      <div className="flex justify-between">
+        {/* Back Button */}
+        {currentStep > 1 && (
+          <button
+            onClick={handleBack}
+            className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Back
+          </button>
+        )}
+
+        {/* Continue Button */}
         <button
           onClick={() => setCurrentStep((prev) => prev + 1)}
           disabled={isContinueDisabled}
