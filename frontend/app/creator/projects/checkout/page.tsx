@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import FullscreenLoader from '@/app/loaders/FullscreenLoader';
 
 interface Reward {
   id: number;
@@ -25,7 +26,11 @@ const CheckoutPage = () => {
   }, [searchParams]);
 
   if (!data) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <FullscreenLoader />
+      </div>
+    );
   }
 
   return (
@@ -73,5 +78,8 @@ const CheckoutPage = () => {
     </div>
   );
 };
+
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
 
 export default CheckoutPage;

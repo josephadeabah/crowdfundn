@@ -82,7 +82,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
                 selectedRewards.map((reward) => (
                   <div
                     key={reward.id}
-                    className="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm hover:shadow-md"
+                    className="bg-green-50 p-4 rounded-lg mb-4 shadow-sm hover:shadow-md border-2 border-green-500"
                   >
                     <div className="relative w-full h-48 rounded-lg overflow-hidden">
                       <Image
@@ -117,7 +117,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
                 .map((reward) => (
                   <div
                     key={reward.id}
-                    className="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm hover:shadow-md cursor-pointer"
+                    className="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm hover:shadow-md cursor-pointer border-2 border-gray-200 hover:border-gray-300"
                     onClick={() => handleRewardSelection(reward)}
                   >
                     <div className="relative w-full h-48 rounded-lg overflow-hidden">
