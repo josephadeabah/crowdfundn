@@ -192,7 +192,9 @@ const SingleCampaignPage: React.FC = () => {
                 />
               </div>
             </div>
-            <div className={`relative ${isSticky ? 'sticky top-0 bg-white z-50 shadow-md' : ''}`}>
+            <div
+              className={`relative ${isSticky ? 'sticky top-0 bg-white z-50 shadow-md' : ''}`}
+            >
               <div className="flex items-center mb-6">
                 <button
                   onClick={() => scrollTabs('left')}

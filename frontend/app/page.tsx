@@ -15,6 +15,7 @@ import SummaryCardComponent from './molecules/SummaryCard';
 import BHScreenKnowHow from './molecules/BHScreenKnowHow';
 import IllustrateImageComponent from './molecules/IllustrateImageComponent';
 import BlogPosts from './components/blogs/BlogPosts';
+import RewardCard from './components/campaigns/RewardCard';
 
 const HomePage = () => {
   const wordRef = React.useRef<HTMLDivElement | null>(null);
@@ -207,6 +208,7 @@ const HomePage = () => {
             '/Team-spirit-bro.svg',
           ]}
         />
+        <RewardCard campaigns={campaigns} />
 
         <div
           ref={ref}

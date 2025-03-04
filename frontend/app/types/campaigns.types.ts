@@ -1,5 +1,6 @@
 export interface Reward {
   id: number;
+  campaign_id?: number;
   title: string;
   description: string;
   amount: number;
