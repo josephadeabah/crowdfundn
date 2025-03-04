@@ -385,24 +385,78 @@ const CheckoutPageContent = () => {
 
       {/* Step 3: Payment Form */}
       {currentStep === 3 && (
-        <div className="max-w-sm mx-auto bg-white p-4 rounded-lg shadow mb-8">
-          <h2 className="text-xl font-semibold mb-4">Payment Details</h2>
-          <PaystackForm
-            cardholderName={cardholderName}
-            paymentEmail={paymentEmail}
-            paymentPhone={paymentPhone}
-            paymentAmount={paymentAmount}
-            campaignId="your-campaign-id" // Replace with actual campaign ID
-            campaignTitle="your-campaign-title" // Replace with actual campaign title
-            billingFrequency="one-time" // Replace with actual billing frequency
-            errors={errors}
-            isPaymentFormValidated={isPaymentFormValidated}
-            setCardholderName={setCardholderName}
-            setPaymentEmail={setPaymentEmail}
-            setPaymentPhone={setPaymentPhone}
-            setPaymentAmount={setPaymentAmount}
-          />
-        </div>
+        <>
+          {/* Preview of Selected Data */}
+          <div className="bg-white p-4 rounded-lg shadow mb-8">
+            <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+            <div className="space-y-4">
+              {/* Selected Rewards */}
+              <div>
+                <h3 className="font-bold text-lg">Selected Rewards</h3>
+                {data?.selectedRewards.map((reward) => (
+                  <div key={reward.id} className="flex justify-between">
+                    <span>{reward.title}</span>
+                    <span className="font-semibold text-green-600">
+                      ${reward.amount}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Delivery Option */}
+              <div>
+                <h3 className="font-bold text-lg">Delivery Option</h3>
+                <p>{deliveryOption === 'home' ? 'Home Delivery' : 'Pick Up'}</p>
+              </div>
+
+              {/* Delivery Details */}
+              <div>
+                <h3 className="font-bold text-lg">Delivery Details</h3>
+                <p>
+                  <strong>Name:</strong> {formData.firstName}{' '}
+                  {formData.lastName}
+                </p>
+                <p>
+                  <strong>Entity Type:</strong> {formData.entityType}
+                </p>
+                {deliveryOption === 'home' && (
+                  <p>
+                    <strong>Shipping Address:</strong>{' '}
+                    {formData.shippingAddress}
+                  </p>
+                )}
+              </div>
+
+              {/* Total Amount */}
+              <div className="flex justify-between">
+                <h3 className="font-bold text-lg">Total</h3>
+                <span className="font-semibold text-green-600">
+                  ${formattedTotalAmount}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Payment Form */}
+          <div className="max-w-sm mx-auto bg-white p-4 rounded-lg shadow mb-8">
+            <h2 className="text-xl font-semibold mb-4">Payment Details</h2>
+            <PaystackForm
+              cardholderName={cardholderName}
+              paymentEmail={paymentEmail}
+              paymentPhone={paymentPhone}
+              paymentAmount={paymentAmount}
+              campaignId="your-campaign-id" // Replace with actual campaign ID
+              campaignTitle="your-campaign-title" // Replace with actual campaign title
+              billingFrequency="one-time" // Replace with actual billing frequency
+              errors={errors}
+              isPaymentFormValidated={isPaymentFormValidated}
+              setCardholderName={setCardholderName}
+              setPaymentEmail={setPaymentEmail}
+              setPaymentPhone={setPaymentPhone}
+              setPaymentAmount={setPaymentAmount}
+            />
+          </div>
+        </>
       )}
 
       {/* Navigation Buttons */}
@@ -417,14 +471,16 @@ const CheckoutPageContent = () => {
           </button>
         )}
 
-        {/* Continue Button */}
-        <button
-          onClick={() => setCurrentStep((prev) => prev + 1)}
-          disabled={isContinueDisabled}
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          Continue
-        </button>
+        {/* Continue Button (Hidden on Payment Step) */}
+        {currentStep !== 3 && (
+          <button
+            onClick={() => setCurrentStep((prev) => prev + 1)}
+            disabled={isContinueDisabled}
+            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            Continue
+          </button>
+        )}
       </div>
     </div>
   );
