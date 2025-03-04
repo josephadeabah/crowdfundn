@@ -39,7 +39,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
 
   return (
     <div className="w-full max-w-7xl mx-auto p-1 bg-white rounded-lg">
-      <CarouselComponent title="Support projects with rewards" slidesToShow={4}>
+      <CarouselComponent title="Support projects with rewards" slidesToShow={5}>
         {rewards.map((reward) => {
           const campaign = reward.campaign;
           return (
@@ -53,7 +53,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
               <Link  href={`/campaign/${campaign.id}?${generateRandomString()}`}>
                 <div className="grid grid-cols-1 h-full">
                   {/* Reward Image */}
-                  <div className="relative w-full h-48">
+                  <div className="relative w-full h-32">
                     <Image
                       src={reward.image || '/bantuhive.svg'}
                       alt={reward.title}
