@@ -27,6 +27,10 @@ const CheckoutPageContent = () => {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0); // Scroll to top after data is loaded
+  }, [data]);
+
   // Function to add a reward to the selected rewards
   const addReward = (reward: Reward) => {
     if (data) {
