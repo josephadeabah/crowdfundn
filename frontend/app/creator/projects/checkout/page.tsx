@@ -259,6 +259,7 @@ const CheckoutPageContent = () => {
                   value="home"
                   checked={deliveryOption === 'home'}
                   onChange={() => handleDeliveryOptionChange('home')}
+                  className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                 />
                 Home Delivery
               </label>
@@ -269,6 +270,7 @@ const CheckoutPageContent = () => {
                   value="pickup"
                   checked={deliveryOption === 'pickup'}
                   onChange={() => handleDeliveryOptionChange('pickup')}
+                  className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                 />
                 Pick Up
               </label>
@@ -289,7 +291,7 @@ const CheckoutPageContent = () => {
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleFormChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                   />
                 </div>
                 <div>
@@ -301,7 +303,7 @@ const CheckoutPageContent = () => {
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleFormChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                   />
                 </div>
               </div>
@@ -317,6 +319,7 @@ const CheckoutPageContent = () => {
                       value="individual"
                       checked={formData.entityType === 'individual'}
                       onChange={handleFormChange}
+                      className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                     />
                     Individual
                   </label>
@@ -327,6 +330,7 @@ const CheckoutPageContent = () => {
                       value="organization"
                       checked={formData.entityType === 'organization'}
                       onChange={handleFormChange}
+                      className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                     />
                     Organization
                   </label>
@@ -337,6 +341,7 @@ const CheckoutPageContent = () => {
                       value="business"
                       checked={formData.entityType === 'business'}
                       onChange={handleFormChange}
+                      className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                     />
                     Business
                   </label>
@@ -352,7 +357,7 @@ const CheckoutPageContent = () => {
                     name="shippingAddress"
                     value={formData.shippingAddress}
                     onChange={handleFormChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                   />
                 </div>
               )}
@@ -363,7 +368,7 @@ const CheckoutPageContent = () => {
 
       {/* Step 3: Payment Form */}
       {currentStep === 3 && (
-        <div className="bg-white p-4 rounded-lg shadow mb-8">
+        <div className="max-w-lg mx-auto bg-white p-4 rounded-lg shadow mb-8">
           <h2 className="text-xl font-semibold mb-4">Payment Details</h2>
           <PaystackForm
             cardholderName={cardholderName}
