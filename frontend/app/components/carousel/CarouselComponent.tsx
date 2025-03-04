@@ -101,7 +101,7 @@ const CarouselComponent = ({
 
   // Calculate whether the "Prev" and "Next" buttons should be disabled
   const isPrevDisabled = currentSlide === 0;
-  const isNextDisabled = currentSlide >= totalSlides - slidesToShow * 2; // Adjust for rows
+  const isNextDisabled = currentSlide >= totalSlides - Number(slidesToShow) * 2; // Adjust for rows
 
   return (
     <div className="py-8 overflow-hidden relative">
