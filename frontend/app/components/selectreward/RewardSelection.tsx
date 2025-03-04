@@ -67,7 +67,7 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
         )}
       </div>
       <form className="mb-4 relative">
-      <h3 className="text-gray-700 py-2">Support without reward</h3>
+      <h4 className="text-gray-700 py-2">Support without reward</h4>
         <FaInfoCircle
           data-tooltip-id="amount-info"
           data-tooltip-content="Enter the amount you want to pledge. You will be charged this amount during payment. Choose backing period and proceed to Back Now."
