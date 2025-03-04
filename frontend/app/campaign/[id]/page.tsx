@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import DonationButton from '@/app/components/donate/DonationButton';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation'; // Import useSearchParams
 import { FaShare, FaChevronLeft, FaChevronRight, FaFlag } from 'react-icons/fa';
 import { Button } from '@/app/components/button/Button';
 import SingleCampaignLoader from '@/app/loaders/SingleCampaignLoader';
@@ -38,6 +38,9 @@ const SingleCampaignPage: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { id } = useParams() as { id: string };
+  const searchParams = useSearchParams(); // Get search params
+  const tabParam = searchParams.get('tab'); // Get the 'tab' query parameter
+
   const {
     currentCampaign,
     campaignShares,
@@ -46,6 +49,13 @@ const SingleCampaignPage: React.FC = () => {
     loading,
   } = useCampaignContext();
   const { donations, fetchPublicDonations } = useDonationsContext();
+
+  // Set the selected tab based on the query parameter
+  useEffect(() => {
+    if (tabParam === 'donate') {
+      setSelectedTab('donate');
+    }
+  }, [tabParam]);
 
   useEffect(() => {
     if (id) {
