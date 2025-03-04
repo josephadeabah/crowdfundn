@@ -1,8 +1,11 @@
-import React from 'react';
+'use client';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { FaInfoCircle } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import BackingPeriodSelector from '../billingfrequency/BackingPeriodSelector';
+import Modal from '../modal/Modal';
+import OrderDetailsPage from '../orderdetails/OrderDetails';
 
 interface Reward {
   id: number;
@@ -31,6 +34,15 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
   billingFrequency,
   setBillingFrequency,
 }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
+  const [selectedReward, setSelectedReward] = useState<Reward | null>(null); // State to store the selected reward
+
+  // Function to handle the "Choose +" button click
+  const handleChooseReward = (reward: Reward) => {
+    setSelectedReward(reward); // Set the selected reward
+    setIsModalOpen(true); // Open the modal
+  };
+
   return (
     <>
       <h2 className="text-2xl font-bold mb-4">Select a Reward</h2>
@@ -60,6 +72,16 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
               <div className="font-semibold">
                 Pledge ${reward.amount} or more
               </div>
+              {/* Add the "Choose +" button */}
+              <button
+                className="mt-2 w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition-colors duration-200"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent the parent div's onClick from firing
+                  handleChooseReward(reward); // Open the modal with the selected reward
+                }}
+              >
+                Choose +
+              </button>
             </div>
           ))
         ) : (
@@ -99,6 +121,15 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
           setBillingFrequency={setBillingFrequency}
         />
       </form>
+
+      {/* Modal for Order Details */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        size="large"
+      >
+        <OrderDetailsPage /> {/* Render the OrderDetails component */}
+      </Modal>
     </>
   );
 };
