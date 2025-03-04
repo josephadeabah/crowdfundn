@@ -39,7 +39,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
 
   return (
     <div className="w-full max-w-7xl mx-auto p-1 bg-white rounded-lg">
-      <CarouselComponent title="Support projects with rewards" slidesToShow={5}>
+      <CarouselComponent title="Support projects with rewards" slidesToShow={4}>
         {rewards.map((reward) => {
           const campaign = reward.campaign;
           return (
@@ -50,7 +50,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
               transition={{ duration: 0.5 }}
               className="group relative dark:bg-gray-900 px-3 py-3 h-full dark:text-gray-50 cursor-pointer overflow-hidden rounded-lg"
             >
-              <Link  href={`/campaign/${campaign.id}?${generateRandomString()}`}>
+              <Link href={`/campaign/${campaign.id}?${generateRandomString()}`}>
                 <div className="grid grid-cols-1 h-full">
                   {/* Reward Image */}
                   <div className="relative w-full h-32">
@@ -62,20 +62,21 @@ const RewardCard: React.FC<RewardCardsProps> = ({
                       className="absolute top-0 left-0 w-full h-full"
                     />
                   </div>
-
                   {/* Reward Details */}
-                  <div className="px-4 py-3 h-40 bg-gray-50 hover:bg-white dark:bg-gray-800 flex flex-col justify-between">
-                    <div className="flex flex-col gap-2">
+                  <div className="px-4 py-3 h-40 bg-gray-50 hover:bg-white dark:bg-gray-800 flex flex-col">
+                    {/* Content should grow to push the label down */}
+                    <div className="flex-grow flex flex-col gap-2">
                       <h3 className="font-bold text-gray-700 dark:text-gray-100 text-lg">
                         {reward.title}
                       </h3>
                       <p className="text-sm text-gray-600 dark:text-gray-300 truncate">
                         {reward.description}
                       </p>
-                      <div className="flex items-center space-x-2 text-sm font-semibold text-green-600 dark:text-green-400">
+                    </div>
+                    {/* Ensure this stays at the bottom */}
+                    <div className="flex items-center space-x-2 text-sm font-semibold text-green-600 dark:text-green-400">
                       <FaGift className="text-lg" />
                       <span>Exclusive Reward</span>
-                    </div>
                     </div>
                   </div>
                 </div>
