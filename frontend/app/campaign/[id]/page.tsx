@@ -327,7 +327,7 @@ const SingleCampaignPage: React.FC = () => {
               </div>
             )}
             {selectedTab === 'donate' && (
-              <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 dark:text-gray-100 px-2 py-6">
+              <div className="max-w-xl mx-auto bg-white dark:bg-gray-800 dark:text-gray-100 px-2 py-6">
                 <RewardSelection
                   rewards={currentCampaign?.rewards || []}
                   selectedTier={selectedTier}
