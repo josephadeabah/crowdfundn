@@ -56,7 +56,7 @@ const CheckoutPageContent = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto min-h-screen bg-gray-100 p-8 overflow-y-auto">
+    <div className="max-w-2xl mx-auto h-full bg-gray-100 p-8 overflow-y-auto">
       {' '}
       {/* Ensure vertical scrolling */}
       <h1 className="text-2xl font-bold mb-8">Checkout</h1>
