@@ -385,7 +385,7 @@ const CheckoutPageContent = () => {
 
       {/* Step 3: Payment Form */}
       {currentStep === 3 && (
-        <div className="max-w-lg mx-auto bg-white p-4 rounded-lg shadow mb-8">
+        <div className="max-w-sm mx-auto bg-white p-4 rounded-lg shadow mb-8">
           <h2 className="text-xl font-semibold mb-4">Payment Details</h2>
           <PaystackForm
             cardholderName={cardholderName}
