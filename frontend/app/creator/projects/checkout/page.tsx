@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import FullscreenLoader from '@/app/loaders/FullscreenLoader';
 import Image from 'next/image';
 import { FaTrashAlt, FaPlus } from 'react-icons/fa'; // Import icons
+import UserNotice from '@/app/components/usernote/UserNotice';
 
 interface Reward {
   id: number;
@@ -162,7 +163,7 @@ const CheckoutPageContent = () => {
               </div>
             </div>
           </div>
-
+          <UserNotice />
           {/* Other Rewards */}
           <div>
             <h2 className="text-xl font-semibold mb-4">
