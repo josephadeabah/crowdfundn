@@ -77,7 +77,7 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
           className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded"
         />
         <div className="py-1">
-          <h3 className="text-gray-700 py-2">Support Without Reward</h3>
+          <h3 className="text-gray-700 py-2">Support without reward</h3>
           <input
             type="number"
             className="mt-2 bm-4 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
