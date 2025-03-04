@@ -47,7 +47,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
     };
 
     // Navigate to the next page with the data
-    router.push(`/checkout?data=${encodeURIComponent(JSON.stringify(data))}`);
+    router.push(`/creator/projects/checkout?data=${encodeURIComponent(JSON.stringify(data))}`);
   };
 
   return (
