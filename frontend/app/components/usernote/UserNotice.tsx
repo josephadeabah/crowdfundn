@@ -4,7 +4,7 @@ import React from 'react';
 
 const UserNotice = () => {
   return (
-    <div className="w-full py-6 bg-white">
+    <div className="w-full p-4 bg-white my-6">
       {/* Card Header */}
       <h2 className="text-2xl font-semibold mb-4">User Notice</h2>
 
