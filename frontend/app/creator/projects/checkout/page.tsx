@@ -29,7 +29,6 @@ const CheckoutPageContent = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0); // Scroll to top after data is loaded
-    window.location.reload(); // Reload the page after data is loaded
   }, [data]);
 
   // Function to add a reward to the selected rewards
