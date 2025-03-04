@@ -11,6 +11,7 @@ class Campaign < ApplicationRecord
   has_many :favorites, dependent: :destroy
   has_many :favorited_by_users, through: :favorites, source: :user
   has_many :campaign_shares, dependent: :destroy
+  has_many :pledges, dependent: :destroy
 
   has_rich_text :description
 
