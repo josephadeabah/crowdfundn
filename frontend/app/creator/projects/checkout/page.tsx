@@ -60,10 +60,6 @@ const CheckoutPageContent = () => {
   // Format the total amount to two decimal places
   const formattedTotalAmount = totalAmount.toFixed(2);
 
-  if (!data) {
-    return <div className="flex justify-center items-center min-h-screen"><FullscreenLoader /></div>;
-  }
-
   return (
     <div className="max-w-2xl mx-auto min-h-screen bg-gray-100 p-8 mb-12">
       <h1 className="text-2xl font-bold mb-8">Checkout</h1>
