@@ -40,17 +40,12 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
 
   // Function to handle the "Confirm" button click
   const handleConfirm = () => {
-    // Prepare data to send to the next page
     const data = {
       selectedRewards,
       allRewards: rewards,
     };
-
-    // Navigate to the next page with the data
-    router.push(
-        `/creator/projects/checkout?data=${encodeURIComponent(JSON.stringify(data))}`,
-        { scroll: false },
-    );
+  
+    window.location.href = `/creator/projects/checkout?data=${encodeURIComponent(JSON.stringify(data))}`;
   };
 
   return (
