@@ -1,27 +1,53 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { MdError } from 'react-icons/md';
+import { useRouter } from 'next/navigation';
+
+interface Reward {
+  id: number;
+  title: string;
+  description: string;
+  amount: number;
+  image?: string;
+}
 
 interface OrderDetailsPageProps {
-  selectedReward: {
-    id: number;
-    title: string;
-    description: string;
-    amount: number;
-    image?: string;
-  } | null;
+  selectedReward: Reward | null;
+  rewards: Reward[]; // Pass all rewards to the modal
 }
 
 const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
   selectedReward,
+  rewards,
 }) => {
-  const [error, setError] = React.useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedRewards, setSelectedRewards] = useState<Reward[]>(
+    selectedReward ? [selectedReward] : [],
+  );
+  const router = useRouter();
 
-  const orderDetails = {
-    orderNumber: 'ORD-12345',
-    estimatedDeliveryDate: '2023-06-15',
-    status: 'Processing',
+  // Function to handle adding/removing rewards
+  const handleRewardSelection = (reward: Reward) => {
+    if (selectedRewards.some((r) => r.id === reward.id)) {
+      // Remove reward if already selected
+      setSelectedRewards((prev) => prev.filter((r) => r.id !== reward.id));
+    } else {
+      // Add reward if not selected
+      setSelectedRewards((prev) => [...prev, reward]);
+    }
+  };
+
+  // Function to handle the "Confirm" button click
+  const handleConfirm = () => {
+    // Prepare data to send to the next page
+    const data = {
+      selectedRewards,
+      allRewards: rewards,
+    };
+
+    // Navigate to the next page with the data
+    router.push(`/checkout?data=${encodeURIComponent(JSON.stringify(data))}`);
   };
 
   return (
@@ -31,9 +57,6 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
           <h1 className="text-2xl font-semibold text-gray-900">
             Order Details
           </h1>
-          <p className="mt-1 text-sm text-gray-600">
-            Order Number: {orderDetails.orderNumber}
-          </p>
         </div>
 
         {error && (
@@ -53,68 +76,77 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
             {/* Left Section: Selected Reward Details */}
             <div className="lg:w-1/2">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Selected Reward
+                Selected Rewards
               </h2>
-              {selectedReward ? (
-                <div className="bg-gray-50 p-4 shadow-sm hover:shadow-md">
-                  <div className="relative w-full h-48 rounded-lg overflow-hidden">
-                    <Image
-                      src={selectedReward.image || '/bantuhive.svg'}
-                      alt={selectedReward.title}
-                      layout="fill"
-                      objectFit="cover"
-                      className="rounded-lg"
-                    />
+              {selectedRewards.length > 0 ? (
+                selectedRewards.map((reward) => (
+                  <div
+                    key={reward.id}
+                    className="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm hover:shadow-md"
+                  >
+                    <div className="relative w-full h-48 rounded-lg overflow-hidden">
+                      <Image
+                        src={reward.image || '/bantuhive.svg'}
+                        alt={reward.title}
+                        layout="fill"
+                        objectFit="cover"
+                        className="rounded-lg"
+                      />
+                    </div>
+                    <h3 className="font-bold text-xl mt-4">{reward.title}</h3>
+                    <p className="text-gray-600 mt-2">{reward.description}</p>
+                    <div className="font-semibold text-green-600 mt-2">
+                      Pledge ${reward.amount} or more
+                    </div>
                   </div>
-                  <h3 className="font-bold text-xl mt-4">
-                    {selectedReward.title}
-                  </h3>
-                  <p className="text-gray-600 mt-2">
-                    {selectedReward.description}
-                  </p>
-                  <div className="font-semibold text-green-600 mt-2">
-                    Pledge ${selectedReward.amount} or more
-                  </div>
-                </div>
+                ))
               ) : (
-                <p className="text-gray-600">No reward selected.</p>
+                <p className="text-gray-600">No rewards selected.</p>
               )}
             </div>
 
-            {/* Right Section: Shipping and Delivery Information */}
+            {/* Right Section: Other Rewards */}
             <div className="lg:w-1/2">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Shipping & Delivery Information
+                Other Rewards
               </h2>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="space-y-4">
-                  <div>
-                    <h5 className="font-medium text-gray-700">
-                      Delivery Address
-                    </h5>
-                    <p className="text-gray-600">
-                      123 Main St, Apt 4B, New York, NY 10001
-                    </p>
+              {rewards
+                .filter(
+                  (reward) => !selectedRewards.some((r) => r.id === reward.id),
+                )
+                .map((reward) => (
+                  <div
+                    key={reward.id}
+                    className="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm hover:shadow-md cursor-pointer"
+                    onClick={() => handleRewardSelection(reward)}
+                  >
+                    <div className="relative w-full h-48 rounded-lg overflow-hidden">
+                      <Image
+                        src={reward.image || '/bantuhive.svg'}
+                        alt={reward.title}
+                        layout="fill"
+                        objectFit="cover"
+                        className="rounded-lg"
+                      />
+                    </div>
+                    <h3 className="font-bold text-xl mt-4">{reward.title}</h3>
+                    <p className="text-gray-600 mt-2">{reward.description}</p>
+                    <div className="font-semibold text-green-600 mt-2">
+                      Pledge ${reward.amount} or more
+                    </div>
                   </div>
-                  <div>
-                    <h5 className="font-medium text-gray-700">
-                      Estimated Delivery Date
-                    </h5>
-                    <p className="text-gray-600">
-                      {orderDetails.estimatedDeliveryDate}
-                    </p>
-                  </div>
-                  <div>
-                    <h5 className="font-medium text-gray-700">
-                      Shipping Method
-                    </h5>
-                    <p className="text-gray-600">
-                      Standard Shipping (5-7 business days)
-                    </p>
-                  </div>
-                </div>
-              </div>
+                ))}
             </div>
+          </div>
+
+          {/* Confirm Button */}
+          <div className="mt-8 flex justify-end">
+            <button
+              onClick={handleConfirm}
+              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+            >
+              Confirm
+            </button>
           </div>
         </div>
       </div>

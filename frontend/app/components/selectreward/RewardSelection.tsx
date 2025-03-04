@@ -128,8 +128,8 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
         onClose={() => setIsModalOpen(false)}
         size="xxxlarge"
       >
-        <OrderDetailsPage selectedReward={selectedReward} />{' '}
-        {/* Pass the selected reward */}
+        <OrderDetailsPage selectedReward={selectedReward} rewards={rewards} />{' '}
+        {/* Pass all rewards */}
       </Modal>
     </>
   );
