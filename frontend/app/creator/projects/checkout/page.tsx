@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import FullscreenLoader from '@/app/loaders/FullscreenLoader';
 
@@ -11,7 +11,7 @@ interface Reward {
   image?: string;
 }
 
-const CheckoutPage = () => {
+const CheckoutPageContent = () => {
   const searchParams = useSearchParams();
   const [data, setData] = useState<{
     selectedRewards: Reward[];
@@ -26,11 +26,7 @@ const CheckoutPage = () => {
   }, [searchParams]);
 
   if (!data) {
-    return (
-      <div>
-        <FullscreenLoader />
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
   return (
@@ -76,6 +72,14 @@ const CheckoutPage = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const CheckoutPage = () => {
+  return (
+    <Suspense fallback={<FullscreenLoader />}>
+      <CheckoutPageContent />
+    </Suspense>
   );
 };
 
