@@ -25,12 +25,34 @@ const CheckoutPageContent = () => {
     }
   }, [searchParams]);
 
+  // Function to add a reward to the selected rewards
+  const addReward = (reward: Reward) => {
+    if (data) {
+      setData({
+        ...data,
+        selectedRewards: [...data.selectedRewards, reward],
+      });
+    }
+  };
+
+  // Function to remove a reward from the selected rewards
+  const removeReward = (rewardId: number) => {
+    if (data) {
+      setData({
+        ...data,
+        selectedRewards: data.selectedRewards.filter(
+          (reward) => reward.id !== rewardId,
+        ),
+      });
+    }
+  };
+
   if (!data) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="max-w-7xl mx-auto min-h-screen bg-gray-100 p-8">
       <h1 className="text-2xl font-bold mb-8">Checkout</h1>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Selected Rewards */}
@@ -46,6 +68,13 @@ const CheckoutPageContent = () => {
               <div className="font-semibold text-green-600">
                 Pledge ${reward.amount} or more
               </div>
+              {/* Remove Button */}
+              <button
+                onClick={() => removeReward(reward.id)}
+                className="mt-2 w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors duration-200"
+              >
+                Remove
+              </button>
             </div>
           ))}
         </div>
@@ -67,6 +96,13 @@ const CheckoutPageContent = () => {
                 <div className="font-semibold text-green-600">
                   Pledge ${reward.amount} or more
                 </div>
+                {/* Add Button */}
+                <button
+                  onClick={() => addReward(reward)}
+                  className="mt-2 w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition-colors duration-200"
+                >
+                  Add to Selected
+                </button>
               </div>
             ))}
         </div>
