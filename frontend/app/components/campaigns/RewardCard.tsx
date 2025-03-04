@@ -7,18 +7,34 @@ import { FaGift } from 'react-icons/fa';
 import CarouselComponent from '@/app/components/carousel/CarouselComponent';
 
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
+import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
+import ErrorPage from '../errorpage/ErrorPage';
 
 type RewardCardsProps = {
   campaigns: CampaignResponseDataType[];
+  loading: boolean;
+  error: string | null;
 };
 
-const RewardCard: React.FC<RewardCardsProps> = ({ campaigns }) => {
+const RewardCard: React.FC<RewardCardsProps> = ({
+  campaigns,
+  loading,
+  error,
+}) => {
   const rewards = campaigns.flatMap((campaign) =>
     campaign.rewards.map((reward) => ({
       ...reward,
       campaign,
     })),
   );
+
+  if (loading)
+    return (
+      <div className="px-2">
+        <CampaignCardLoader />
+      </div>
+    );
+  if (error) return <ErrorPage />;
 
   return (
     <div className="w-full max-w-7xl mx-auto p-1 bg-white rounded-lg">

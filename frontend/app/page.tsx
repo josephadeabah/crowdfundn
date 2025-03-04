@@ -201,7 +201,7 @@ const HomePage = () => {
           </motion.div>
         </div>
         <SummaryCardComponent />
-        <RewardCard campaigns={campaigns} />
+        <RewardCard campaigns={campaigns} loading={loading} error={error} />
 
         <div
           ref={ref}
