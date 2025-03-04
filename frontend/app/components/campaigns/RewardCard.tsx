@@ -9,6 +9,7 @@ import CarouselComponent from '@/app/components/carousel/CarouselComponent';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import ErrorPage from '../errorpage/ErrorPage';
+import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
 
 type RewardCardsProps = {
   campaigns: CampaignResponseDataType[];
@@ -49,7 +50,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
               transition={{ duration: 0.5 }}
               className="group relative dark:bg-gray-900 px-3 py-3 h-full dark:text-gray-50 cursor-pointer overflow-hidden rounded-lg"
             >
-              <Link href={`/campaign/${campaign.id}`}>
+              <Link  href={`/campaign/${campaign.id}?${generateRandomString()}`}>
                 <div className="grid grid-cols-1 h-full">
                   {/* Reward Image */}
                   <div className="relative w-full h-48">
