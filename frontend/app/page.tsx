@@ -201,13 +201,6 @@ const HomePage = () => {
           </motion.div>
         </div>
         <SummaryCardComponent />
-        <IllustrateImageComponent
-          images={[
-            '/Cheer-up-bro.svg',
-            '/heart-with-a-little-bow-svgrepo-com.png',
-            '/Team-spirit-bro.svg',
-          ]}
-        />
         <RewardCard campaigns={campaigns} />
 
         <div
