@@ -34,7 +34,7 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
   return (
     <>
       <h2 className="text-2xl font-bold mb-4">Select a Reward</h2>
-      <div className="max-h-96 overflow-y-auto py-4 [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
+      <div className="h-full py-4">
         {rewards.length ? (
           rewards.map((reward) => (
             <div

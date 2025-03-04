@@ -13,7 +13,6 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
   const [fetchLoading, setFetchLoading] = useState(false); // for fetch comments loading
   const [submitLoading, setSubmitLoading] = useState(false); // for submit comment loading
   const [comment, setComment] = useState<string>(''); // Comment text
-  const [areCommentsVisible, setAreCommentsVisible] = useState<boolean>(false);
 
   const {
     comments,
@@ -83,14 +82,11 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
     }
   };
 
-  const toggleCommentsVisibility = () =>
-    setAreCommentsVisible(!areCommentsVisible);
-
   return (
     <div className="bg-white rounded-lg shadow p-6 mb-8">
       <ToastComponent
         isOpen={toast.isOpen}
-        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))} 
         title={toast.title}
         description={toast.description}
         type={toast.type}
@@ -98,51 +94,46 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
 
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Comments</h2>
-        <button onClick={toggleCommentsVisibility} className="text-orange-500">
-          {areCommentsVisible ? 'Hide' : 'Show'}
-        </button>
       </div>
 
-      {areCommentsVisible && (
-        <div className="max-h-96 overflow-y-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
-          {fetchLoading ? (
-            Array.from({ length: 3 }).map((_, index) => (
-              <CommentLoader key={index} />
-            ))
-          ) : comments && comments.length > 0 ? (
-            comments.map((comment) => (
-              <div
-                key={comment.id}
-                className="bg-white dark:bg-gray-800 rounded-sm shadow p-4 mb-4 flex items-start"
-              >
-                <div className="flex-shrink-0">
-                  <Avatar
-                    name={String(comment?.full_name) || 'Anonymous'}
-                    size="sm"
-                  />
-                </div>
-                <div className="ml-3 w-full">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-gray-800 dark:text-gray-100 font-semibold text-sm">
-                      {comment?.full_name || 'Anonymous'}
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {moment(comment.created_at).format(
-                        'MMM DD, YYYY, hh:mm:ss A',
-                      )}
-                    </div>
-                  </div>
-                  <p className="text-gray-800 dark:text-gray-200 break-words">
-                    {comment.content}
-                  </p>
-                </div>
+      <div className="h-full">
+        {fetchLoading ? (
+          Array.from({ length: 3 }).map((_, index) => (
+            <CommentLoader key={index} />
+          ))
+        ) : comments && comments.length > 0 ? (
+          comments.map((comment) => (
+            <div
+              key={comment.id}
+              className="bg-white dark:bg-gray-800 rounded-sm shadow p-4 mb-4 flex items-start"
+            >
+              <div className="flex-shrink-0">
+                <Avatar
+                  name={String(comment?.full_name) || 'Anonymous'}
+                  size="sm"
+                />
               </div>
-            ))
-          ) : (
-            <div>No comments yet.</div>
-          )}
-        </div>
-      )}
+              <div className="ml-3 w-full">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-gray-800 dark:text-gray-100 font-semibold text-sm">
+                    {comment?.full_name || 'Anonymous'}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    {moment(comment.created_at).format(
+                      'MMM DD, YYYY, hh:mm:ss A',
+                    )}
+                  </div>
+                </div>
+                <p className="text-gray-800 dark:text-gray-200 break-words">
+                  {comment.content}
+                </p>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div>No comments yet.</div>
+        )}
+      </div>
 
       <form onSubmit={handleCommentSubmit} className="mt-4">
         {/* Removed email input, as it's no longer required */}
