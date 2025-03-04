@@ -115,7 +115,9 @@ const CheckoutPageContent = () => {
 
       {/* Other Rewards */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">You can add other rewards</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          You can add other rewards
+        </h2>
         {data.allRewards
           .filter(
             (reward) => !data.selectedRewards.some((r) => r.id === reward.id),
