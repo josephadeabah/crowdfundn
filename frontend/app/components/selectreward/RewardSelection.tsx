@@ -46,7 +46,7 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
               }`}
               onClick={() => onTierSelect(reward.id)}
             >
-              <div className="relative w-60 h-fit aspect-square rounded overflow-hidden">
+              <div className="relative w-full h-fit aspect-square rounded overflow-hidden">
                 <Image
                   src={reward.image || '/bantuhive.svg'}
                   alt="fundraising thumbnail"
