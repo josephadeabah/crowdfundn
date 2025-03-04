@@ -50,13 +50,16 @@ const CheckoutPageContent = () => {
   };
 
   // Calculate the total amount of selected rewards
+  // Calculate the total amount of selected rewards
   const totalAmount = data
-    ? data.selectedRewards.reduce((sum, reward) => sum + reward.amount, 0)
+    ? data.selectedRewards.reduce(
+        (sum, reward) => sum + Number(reward.amount),
+        0,
+      )
     : 0;
 
-  if (!data) {
-    return <div>Loading...</div>;
-  }
+  // Format the total amount to two decimal places
+  const formattedTotalAmount = totalAmount.toFixed(2);
 
   return (
     <div className="max-w-2xl mx-auto min-h-screen bg-gray-100 p-8">
@@ -65,7 +68,7 @@ const CheckoutPageContent = () => {
       {/* Selected Rewards */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Selected Rewards</h2>
-        {data.selectedRewards.map((reward) => (
+        {data?.selectedRewards.map((reward) => (
           <div
             key={reward.id}
             className="bg-white p-4 rounded-lg shadow mb-4 relative"
@@ -109,7 +112,9 @@ const CheckoutPageContent = () => {
       <div className="bg-white p-4 rounded-lg shadow mb-8">
         <div className="flex justify-between items-center">
           <h3 className="font-bold text-lg">Total</h3>
-          <div className="font-semibold text-green-600">${totalAmount}</div>
+          <div className="font-semibold text-green-600">
+            ${formattedTotalAmount}
+          </div>
         </div>
       </div>
 
@@ -118,9 +123,9 @@ const CheckoutPageContent = () => {
         <h2 className="text-xl font-semibold mb-4">
           You can add other rewards
         </h2>
-        {data.allRewards
+        {data?.allRewards
           .filter(
-            (reward) => !data.selectedRewards.some((r) => r.id === reward.id),
+            (reward) => !data?.selectedRewards.some((r) => r.id === reward.id),
           )
           .map((reward) => (
             <div
