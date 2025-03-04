@@ -205,22 +205,9 @@ const HomePage = () => {
 
         <div
           ref={ref}
-          className="py-20 bg-white dark:bg-gray-800 dark:text-gray-50"
+          className="py-8 bg-white dark:bg-gray-800 dark:text-gray-50"
         >
           <div className="px-4">
-            <motion.h2
-              variants={fadeInUp}
-              initial="hidden"
-              animate={controls}
-              transition={{ duration: 0.5 }}
-              className="text-4xl font-bold text-center mb-5"
-            >
-              Why Choose Us?
-            </motion.h2>
-            <div className="text-2xl text-gray-500 font-bold text-center mb-7">
-              We're Africa's Premier And Trusted Reward-based And Gamified
-              Crowdfunding Platform
-            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {[
                 {
