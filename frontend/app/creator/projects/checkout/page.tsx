@@ -2,6 +2,7 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import FullscreenLoader from '@/app/loaders/FullscreenLoader';
+import Image from 'next/image';
 
 interface Reward {
   id: number;
@@ -47,65 +48,111 @@ const CheckoutPageContent = () => {
     }
   };
 
+  // Calculate the total amount of selected rewards
+  const totalAmount = data
+    ? data.selectedRewards.reduce((sum, reward) => sum + reward.amount, 0)
+    : 0;
+
   if (!data) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="max-w-7xl mx-auto min-h-screen bg-gray-100 p-8">
+    <div className="max-w-2xl mx-auto min-h-screen bg-gray-100 p-8">
       <h1 className="text-2xl font-bold mb-8">Checkout</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Selected Rewards */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Selected Rewards</h2>
-          {data.selectedRewards.map((reward) => (
+
+      {/* Selected Rewards */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Selected Rewards</h2>
+        {data.selectedRewards.map((reward) => (
+          <div key={reward.id} className="bg-white p-4 rounded-lg shadow mb-4">
+            <div className="flex items-start gap-4">
+              {/* Reward Image */}
+              <div className="relative w-24 h-24 flex-shrink-0">
+                <Image
+                  src={reward.image || '/bantuhive.svg'}
+                  alt={reward.title}
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded-lg"
+                />
+              </div>
+
+              {/* Reward Details */}
+              <div className="flex-1">
+                <h3 className="font-bold text-lg">{reward.title}</h3>
+                <p className="text-gray-600">{reward.description}</p>
+              </div>
+
+              {/* Counter and Amount */}
+              <div className="flex flex-col items-end">
+                <div className="font-semibold text-green-600">
+                  ${reward.amount}
+                </div>
+              </div>
+            </div>
+
+            {/* Remove Button */}
+            <button
+              onClick={() => removeReward(reward.id)}
+              className="mt-2 w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors duration-200"
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Total Amount */}
+      <div className="bg-white p-4 rounded-lg shadow mb-8">
+        <div className="flex justify-between items-center">
+          <h3 className="font-bold text-lg">Total</h3>
+          <div className="font-semibold text-green-600">${totalAmount}</div>
+        </div>
+      </div>
+
+      {/* Other Rewards */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4">
+          You can add other rewards
+        </h2>
+        {data.allRewards
+          .filter(
+            (reward) => !data.selectedRewards.some((r) => r.id === reward.id),
+          )
+          .map((reward) => (
             <div
               key={reward.id}
               className="bg-white p-4 rounded-lg shadow mb-4"
             >
-              <h3 className="font-bold text-lg">{reward.title}</h3>
-              <p className="text-gray-600">{reward.description}</p>
-              <div className="font-semibold text-green-600">
-                Pledge ${reward.amount} or more
-              </div>
-              {/* Remove Button */}
-              <button
-                onClick={() => removeReward(reward.id)}
-                className="mt-2 w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors duration-200"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-        </div>
-
-        {/* Other Rewards */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Other Rewards</h2>
-          {data.allRewards
-            .filter(
-              (reward) => !data.selectedRewards.some((r) => r.id === reward.id),
-            )
-            .map((reward) => (
-              <div
-                key={reward.id}
-                className="bg-white p-4 rounded-lg shadow mb-4"
-              >
-                <h3 className="font-bold text-lg">{reward.title}</h3>
-                <p className="text-gray-600">{reward.description}</p>
-                <div className="font-semibold text-green-600">
-                  Pledge ${reward.amount} or more
+              <div className="flex items-start gap-4">
+                {/* Reward Image */}
+                <div className="relative w-24 h-24 flex-shrink-0">
+                  <Image
+                    src={reward.image || '/bantuhive.svg'}
+                    alt={reward.title}
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-lg"
+                  />
                 </div>
-                {/* Add Button */}
+
+                {/* Reward Details */}
+                <div className="flex-1">
+                  <h3 className="font-bold text-lg">{reward.title}</h3>
+                  <p className="text-gray-600">{reward.description}</p>
+                </div>
+
+                {/* Choose + Button */}
                 <button
                   onClick={() => addReward(reward)}
-                  className="mt-2 w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition-colors duration-200"
+                  className="mt-2 bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition-colors duration-200"
                 >
-                  Add to Selected
+                  Choose +
                 </button>
               </div>
-            ))}
-        </div>
+            </div>
+          ))}
       </div>
     </div>
   );
