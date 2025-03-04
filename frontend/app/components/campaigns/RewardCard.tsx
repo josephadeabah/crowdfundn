@@ -42,7 +42,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({ campaigns }) => {
                       alt={reward.title}
                       layout="fill"
                       objectFit="cover"
-                      className="absolute top-0 left-0 w-full h-full rounded-t-lg"
+                      className="absolute top-0 left-0 w-full h-full"
                     />
                   </div>
 
