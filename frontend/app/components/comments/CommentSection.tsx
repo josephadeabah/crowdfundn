@@ -86,7 +86,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
     <div className="bg-white rounded-lg shadow p-6 mb-8">
       <ToastComponent
         isOpen={toast.isOpen}
-        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))} 
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
         title={toast.title}
         description={toast.description}
         type={toast.type}

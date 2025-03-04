@@ -66,8 +66,8 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
           <div>No rewards on this fundraising at this time.</div>
         )}
       </div>
-      <form className="mb-4 relative">
       <h4 className="text-gray-700 py-2">Support without reward</h4>
+      <form className="mb-4 relative">
         <FaInfoCircle
           data-tooltip-id="amount-info"
           data-tooltip-content="Enter the amount you want to pledge. You will be charged this amount during payment. Choose backing period and proceed to Back Now."
