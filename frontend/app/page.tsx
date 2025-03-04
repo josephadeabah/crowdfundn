@@ -202,7 +202,6 @@ const HomePage = () => {
         </div>
         <SummaryCardComponent />
         <RewardCard campaigns={campaigns} loading={loading} error={error} />
-
         <div
           ref={ref}
           className="py-8 bg-white dark:bg-gray-800 dark:text-gray-50"
