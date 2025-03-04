@@ -441,10 +441,10 @@ const CheckoutPageContent = () => {
           <div className="max-w-sm mx-auto bg-white p-4 rounded-lg shadow mb-8">
             <h2 className="text-xl font-semibold mb-4">Payment Details</h2>
             <PaystackForm
-              cardholderName={cardholderName}
+              cardholderName={formData.firstName}
               paymentEmail={paymentEmail}
               paymentPhone={paymentPhone}
-              paymentAmount={paymentAmount}
+              paymentAmount={formattedTotalAmount}
               campaignId="your-campaign-id" // Replace with actual campaign ID
               campaignTitle="your-campaign-title" // Replace with actual campaign title
               billingFrequency="one-time" // Replace with actual billing frequency
