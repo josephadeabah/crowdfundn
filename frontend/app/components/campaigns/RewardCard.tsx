@@ -47,12 +47,12 @@ const RewardCard: React.FC<RewardCardsProps> = ({ campaigns }) => {
                   </div>
 
                   {/* Reward Details */}
-                  <div className="px-4 py-3 h-full bg-gray-50 hover:bg-white dark:bg-gray-800 flex flex-col justify-between">
-                    <div>
-                      <h3 className="font-bold text-gray-700 dark:text-gray-100 mb-1 truncate text-lg">
+                  <div className="px-4 py-3 h-40 bg-gray-50 hover:bg-white dark:bg-gray-800 flex flex-col justify-between">
+                    <div className="flex-grow">
+                      <h3 className="font-bold text-gray-700 dark:text-gray-100 mb-1 text-lg">
                         {reward.title}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 truncate">
                         {reward.description}
                       </p>
                     </div>
