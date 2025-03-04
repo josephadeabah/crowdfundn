@@ -3,22 +3,20 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaClock, FaUser } from 'react-icons/fa';
-import Avatar from '../avatar/Avatar';
-import Progress from '../progressbar/ProgressBar';
-import { CampaignResponseDataType } from '@/app/types/campaigns.types';
+import { FaGift } from 'react-icons/fa';
 import CarouselComponent from '@/app/components/carousel/CarouselComponent';
+
+import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 
 type RewardCardsProps = {
   campaigns: CampaignResponseDataType[];
 };
 
 const RewardCard: React.FC<RewardCardsProps> = ({ campaigns }) => {
-  // Flatten the rewards array from all campaigns
   const rewards = campaigns.flatMap((campaign) =>
     campaign.rewards.map((reward) => ({
       ...reward,
-      campaign, // Include the campaign data for each reward
+      campaign,
     })),
   );
 
@@ -27,9 +25,6 @@ const RewardCard: React.FC<RewardCardsProps> = ({ campaigns }) => {
       <CarouselComponent title="Support projects with rewards" slidesToShow={3}>
         {rewards.map((reward) => {
           const campaign = reward.campaign;
-          const fundraiserCurrency =
-            campaign.currency_symbol || campaign.currency?.toUpperCase();
-
           return (
             <motion.div
               key={reward.id}
@@ -62,68 +57,10 @@ const RewardCard: React.FC<RewardCardsProps> = ({ campaigns }) => {
                       </p>
                     </div>
 
-                    {/* Campaign Progress */}
-                    <div className="w-full text-xs">
-                      <Progress
-                        firstProgress={
-                          (Number(campaign.transferred_amount) /
-                            Number(campaign.goal_amount)) *
-                          100
-                        }
-                        firstTooltipContent={`Progress: ${
-                          (Number(campaign.transferred_amount) /
-                            Number(campaign.goal_amount)) *
-                          100
-                        }%`}
-                      />
-                    </div>
-
-                    {/* Campaign Details */}
-                    <div className="w-full text-xs text-gray-600 dark:text-gray-300 py-2 flex flex-col">
-                      <div className="flex justify-between items-center mb-2">
-                        <div className="flex items-center space-x-2">
-                          <Avatar
-                            name={campaign.fundraiser.profile.name}
-                            size="sm"
-                            imageUrl={campaign.fundraiser.profile.avatar}
-                          />
-                          <span className="w-20 text-sm font-semibold truncate">
-                            {campaign.fundraiser.profile.name}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
-                        <span
-                          className={`${
-                            parseFloat(campaign.transferred_amount) >=
-                            parseFloat(campaign.goal_amount)
-                              ? 'text-green-600'
-                              : 'text-orange-500'
-                          }`}
-                        >
-                          <span className="text-gray-600 dark:text-gray-100 mr-1">
-                            {fundraiserCurrency}
-                          </span>
-                          {parseFloat(
-                            campaign.transferred_amount,
-                          ).toLocaleString()}
-                        </span>{' '}
-                        <span className="text-gray-600 dark:text-gray-100 truncate">
-                          <span className="text-xs p-1">of</span>
-                          {fundraiserCurrency}
-                          {parseFloat(campaign.goal_amount).toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="block md:flex justify-between items-center text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2">
-                        <div className="flex items-center space-x-1">
-                          <FaUser />
-                          <span>{campaign.total_donors || 0} Backers</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <FaClock />
-                          <span>{campaign.remaining_days} days left</span>
-                        </div>
-                      </div>
+                    {/* Reward Label */}
+                    <div className="flex items-center space-x-2 mt-3 text-sm font-semibold text-green-600 dark:text-green-400">
+                      <FaGift className="text-lg" />
+                      <span>Exclusive Reward</span>
                     </div>
                   </div>
                 </div>
