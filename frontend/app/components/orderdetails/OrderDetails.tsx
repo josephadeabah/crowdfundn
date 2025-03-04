@@ -25,7 +25,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-100">
       <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
           <h1 className="text-2xl font-semibold text-gray-900">
@@ -89,25 +89,25 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="space-y-4">
                   <div>
-                    <h3 className="font-medium text-gray-700">
+                    <h5 className="font-medium text-gray-700">
                       Delivery Address
-                    </h3>
+                    </h5>
                     <p className="text-gray-600">
                       123 Main St, Apt 4B, New York, NY 10001
                     </p>
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-700">
+                    <h5 className="font-medium text-gray-700">
                       Estimated Delivery Date
-                    </h3>
+                    </h5>
                     <p className="text-gray-600">
                       {orderDetails.estimatedDeliveryDate}
                     </p>
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-700">
+                    <h5 className="font-medium text-gray-700">
                       Shipping Method
-                    </h3>
+                    </h5>
                     <p className="text-gray-600">
                       Standard Shipping (5-7 business days)
                     </p>
