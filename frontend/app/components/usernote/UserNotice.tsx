@@ -6,7 +6,7 @@ const UserNotice = () => {
   return (
     <div className="w-full p-4 bg-white my-6">
       {/* Card Header */}
-      <h2 className="text-2xl font-semibold mb-4">User Notice</h2>
+      <h2 className="text-2xl font-semibold mb-4">Backer Notice</h2>
 
       {/* Card Content */}
       <p className="text-gray-700 mb-4">

@@ -5,6 +5,7 @@ import FullscreenLoader from '@/app/loaders/FullscreenLoader';
 import Image from 'next/image';
 import { FaTrashAlt, FaPlus } from 'react-icons/fa'; // Import icons
 import UserNotice from '@/app/components/usernote/UserNotice';
+import PaystackForm from '@/app/components/payments/PaystackForm';
 
 interface Reward {
   id: number;
@@ -31,6 +32,13 @@ const CheckoutPageContent = () => {
     entityType: 'individual', // 'individual', 'organization', 'business'
     shippingAddress: '',
   });
+
+  // Payment form state
+  const [cardholderName, setCardholderName] = useState('');
+  const [paymentEmail, setPaymentEmail] = useState('');
+  const [paymentPhone, setPaymentPhone] = useState('');
+  const [paymentAmount, setPaymentAmount] = useState('');
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     const dataParam = searchParams.get('data');
@@ -105,8 +113,30 @@ const CheckoutPageContent = () => {
     }
   };
 
+  // Validate payment form
+  const isPaymentFormValidated = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!cardholderName) {
+      newErrors.cardholderName = 'Name is required';
+    }
+    if (!paymentEmail) {
+      newErrors.paymentEmail = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(paymentEmail)) {
+      newErrors.paymentEmail = 'Invalid email address';
+    }
+    if (!paymentAmount) {
+      newErrors.paymentAmount = 'Amount is required';
+    } else if (isNaN(Number(paymentAmount))) {
+      newErrors.paymentAmount = 'Amount must be a number';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   return (
-    <div className="max-w-2xl mx-auto min-h-screen bg-gray-100 p-8 mb-12">
+    <div className="max-w-2xl mx-auto min-h-screen bg-gray-100 p-8 my-10">
       <h1 className="text-2xl font-bold mb-8">Checkout</h1>
 
       {/* Step 1: Select Rewards */}
@@ -335,7 +365,21 @@ const CheckoutPageContent = () => {
       {currentStep === 3 && (
         <div className="bg-white p-4 rounded-lg shadow mb-8">
           <h2 className="text-xl font-semibold mb-4">Payment Details</h2>
-          {/* Payment form will go here */}
+          <PaystackForm
+            cardholderName={cardholderName}
+            paymentEmail={paymentEmail}
+            paymentPhone={paymentPhone}
+            paymentAmount={paymentAmount}
+            campaignId="your-campaign-id" // Replace with actual campaign ID
+            campaignTitle="your-campaign-title" // Replace with actual campaign title
+            billingFrequency="one-time" // Replace with actual billing frequency
+            errors={errors}
+            isPaymentFormValidated={isPaymentFormValidated}
+            setCardholderName={setCardholderName}
+            setPaymentEmail={setPaymentEmail}
+            setPaymentPhone={setPaymentPhone}
+            setPaymentAmount={setPaymentAmount}
+          />
         </div>
       )}
 
