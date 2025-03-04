@@ -56,7 +56,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
                 Selected Reward
               </h2>
               {selectedReward ? (
-                <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="bg-gray-50 p-4 shadow-sm hover:shadow-md">
                   <div className="relative w-full h-48 rounded-lg overflow-hidden">
                     <Image
                       src={selectedReward.image || '/bantuhive.svg'}
