@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { MdError } from 'react-icons/md';
-import { useRouter } from 'next/navigation';
 
 interface Reward {
   id: number;
@@ -25,7 +24,6 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
   const [selectedRewards, setSelectedRewards] = useState<Reward[]>(
     selectedReward ? [selectedReward] : [],
   );
-  const router = useRouter();
 
   // Function to handle adding/removing rewards
   const handleRewardSelection = (reward: Reward) => {
