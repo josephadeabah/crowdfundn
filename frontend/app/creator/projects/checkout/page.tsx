@@ -62,7 +62,7 @@ const CheckoutPageContent = () => {
   const formattedTotalAmount = totalAmount.toFixed(2);
 
   return (
-    <div className="max-w-2xl mx-auto min-h-screen bg-gray-100 p-8">
+    <div className="max-w-2xl mx-auto min-h-screen bg-gray-100 p-8 mb-12">
       <h1 className="text-2xl font-bold mb-8">Checkout</h1>
 
       {/* Selected Rewards */}
