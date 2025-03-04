@@ -30,7 +30,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
 
   if (loading)
     return (
-      <div className="px-2">
+      <div className="p-4">
         <CampaignCardLoader />
       </div>
     );
@@ -68,13 +68,11 @@ const RewardCard: React.FC<RewardCardsProps> = ({
                       <h3 className="font-bold text-gray-700 dark:text-gray-100 mb-1 text-lg">
                         {reward.title}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 truncate">
+                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-1 truncate">
                         {reward.description}
                       </p>
                     </div>
-
-                    {/* Reward Label */}
-                    <div className="flex items-center space-x-2 mt-3 text-sm font-semibold text-green-600 dark:text-green-400">
+                    <div className="flex items-center space-x-2 text-sm font-semibold text-green-600 dark:text-green-400">
                       <FaGift className="text-lg" />
                       <span>Exclusive Reward</span>
                     </div>
