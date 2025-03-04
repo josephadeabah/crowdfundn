@@ -30,7 +30,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
 
   if (loading)
     return (
-      <div className="p-4">
+      <div className="py-4">
         <CampaignCardLoader />
       </div>
     );
