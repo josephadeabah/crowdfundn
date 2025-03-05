@@ -200,7 +200,7 @@ img[src*='#markdown-transferspage'] {
   /* border-radius: 0.5rem;  Optional: Add rounded corners */
 }
 
-.slide-slick {
+.slick-list {
   display: flex;
   justify-content: flex-start;
 }
