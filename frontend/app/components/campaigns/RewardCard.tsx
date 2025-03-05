@@ -71,7 +71,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
                     />
                   </div>
                   {/* Reward Details */}
-                  <div className="px-4 py-3 h-40 bg-gray-50 hover:bg-white dark:bg-gray-800 flex flex-col">
+                  <div className="w-full px-4 py-3 h-40 bg-gray-50 hover:bg-white dark:bg-gray-800 flex flex-col">
                     {/* Content should grow to push the label down */}
                     <div className="flex-grow flex flex-col gap-2">
                       <h3 className="font-bold text-gray-700 dark:text-gray-100 text-lg">
