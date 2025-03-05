@@ -73,7 +73,7 @@ const CarouselComponent = ({
     slidesToScroll: 3, // Scroll 3 cards at a time
     rows: 2,
     slidesPerRow: 1,
-    centerMode: true,
+    centerMode: false,
     autoplay, // Enable or disable autoplay based on the prop
     autoplaySpeed, // Set the autoplay speed
     beforeChange: (current: number, next: number) => {
