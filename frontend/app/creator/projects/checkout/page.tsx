@@ -326,64 +326,8 @@ const CheckoutPageContent = () => {
                 Pick Up
               </label>
             </div>
-          </div>
-
-          {/* Delivery Form */}
-          <div className="bg-white p-4 rounded-lg shadow mb-8">
-            <h2 className="text-xl font-semibold mb-4">Delivery Details</h2>
-            <form>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleFormChange}
-                    className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleFormChange}
-                    className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-                  />
-                </div>
-              </div>
-            </form>
-          </div>
-        </>
-      )}
-
-      {/* Step 3: Payment Form */}
-      {currentStep === 3 && (
-        <>
-          <div className="max-w-sm mx-auto bg-white p-4 rounded-lg shadow mb-8">
-            <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-            <div className="space-y-4">
-              {/* Selected Rewards */}
-              <div>
-                <h3 className="font-bold text-lg">Selected Rewards</h3>
-                {data?.selectedRewards.map((reward) => (
-                  <div key={reward.id} className="flex justify-between">
-                    <span>{reward.title}</span>
-                    <span className="font-semibold text-green-600">
-                      ${reward.amount}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Delivery Option */}
-              <div>
+             {/* Delivery Option */}
+             <div>
                 <h3 className="font-bold text-lg">Delivery Option</h3>
                 <p>{deliveryOption === 'home' ? 'Home Delivery' : 'Pick Up'}</p>
               </div>
@@ -441,6 +385,61 @@ const CheckoutPageContent = () => {
                   />
                 </div>
               )}
+          </div>
+
+          {/* Delivery Form */}
+          <div className="bg-white p-4 rounded-lg shadow mb-8">
+            <h2 className="text-xl font-semibold mb-4">Delivery Details</h2>
+            <form>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleFormChange}
+                    className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleFormChange}
+                    className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                  />
+                </div>
+              </div>
+            </form>
+          </div>
+        </>
+      )}
+
+      {/* Step 3: Payment Form */}
+      {currentStep === 3 && (
+        <>
+          <div className="max-w-sm mx-auto bg-white p-4 rounded-lg shadow mb-8">
+            <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+            <div className="space-y-4">
+              {/* Selected Rewards */}
+              <div>
+                <h3 className="font-bold text-lg">Selected Rewards</h3>
+                {data?.selectedRewards.map((reward) => (
+                  <div key={reward.id} className="flex justify-between">
+                    <span>{reward.title}</span>
+                    <span className="font-semibold text-green-600">
+                      ${reward.amount}
+                    </span>
+                  </div>
+                ))}
+              </div>
               {/* Delivery Details */}
               <div>
                 <h3 className="font-bold text-lg">Delivery Details</h3>
