@@ -22,12 +22,18 @@ const RewardCard: React.FC<RewardCardsProps> = ({
   loading,
   error,
 }) => {
-  const rewards = campaigns.flatMap((campaign) =>
-    campaign.rewards.map((reward) => ({
-      ...reward,
-      campaign,
-    })),
-  );
+  // Filter rewards based on campaign status and permissions
+  const rewards = campaigns
+    .filter(
+      (campaign) =>
+        campaign.status !== 'completed' && campaign.permissions.is_public,
+    )
+    .flatMap((campaign) =>
+      campaign.rewards.map((reward) => ({
+        ...reward,
+        campaign,
+      })),
+    );
 
   if (loading)
     return (
