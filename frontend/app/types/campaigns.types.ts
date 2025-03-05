@@ -1,11 +1,5 @@
-export interface Reward {
-  id: number;
-  campaign_id?: number;
-  title: string;
-  description: string;
-  amount: number;
-  image: string;
-}
+import { Reward } from "../context/account/rewards/RewardsContext";
+
 
 export interface Update {
   id: number;
