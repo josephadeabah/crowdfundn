@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { MdError } from 'react-icons/md';
 import { generateToken } from '@/app/utils/helpers/jwt.sign'; // Import generateToken
+import { FundraiserDetails } from '../selectreward/RewardSelection';
 
 interface Reward {
   id: number;
@@ -15,11 +16,17 @@ interface Reward {
 interface OrderDetailsPageProps {
   selectedReward: Reward | null;
   rewards: Reward[]; // Pass all rewards to the modal
+  fundraiserDetails: FundraiserDetails;
+  billingFrequency: string;
+  selectedTier: number | null;
 }
 
 const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
   selectedReward,
   rewards,
+  fundraiserDetails,
+  billingFrequency,
+  selectedTier,
 }) => {
   const [error, setError] = useState<string | null>(null);
   const [selectedRewards, setSelectedRewards] = useState<Reward[]>(
@@ -42,6 +49,9 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
     const data = {
       selectedRewards,
       allRewards: rewards,
+      fundraiser: fundraiserDetails,
+      billingFrequency,
+      selectedTier,
     };
 
     // Generate a JWT token for the data

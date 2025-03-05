@@ -15,6 +15,12 @@ interface Reward {
   image?: string;
 }
 
+export interface FundraiserDetails {
+  id: string;
+  campaignId: string;
+  campaignTitle?: string;
+}
+
 interface RewardSelectionProps {
   rewards: Reward[];
   selectedTier: number | null;
@@ -23,6 +29,7 @@ interface RewardSelectionProps {
   setPledgeAmount: (amount: string) => void;
   billingFrequency: string;
   setBillingFrequency: (frequency: string) => void;
+  fundraiserDetails: FundraiserDetails;
 }
 
 const RewardSelection: React.FC<RewardSelectionProps> = ({
@@ -33,6 +40,7 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
   setPledgeAmount,
   billingFrequency,
   setBillingFrequency,
+  fundraiserDetails,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
   const [selectedReward, setSelectedReward] = useState<Reward | null>(null); // State to store the selected reward
@@ -128,7 +136,13 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
         onClose={() => setIsModalOpen(false)}
         size="xxxlarge"
       >
-        <OrderDetailsPage selectedReward={selectedReward} rewards={rewards} />{' '}
+        <OrderDetailsPage
+          selectedReward={selectedReward}
+          rewards={rewards}
+          fundraiserDetails={fundraiserDetails}
+          selectedTier={selectedTier}
+          billingFrequency={billingFrequency}
+        />{' '}
         {/* Pass all rewards */}
       </Modal>
     </>

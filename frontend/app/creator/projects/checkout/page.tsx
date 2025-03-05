@@ -7,6 +7,7 @@ import { FaTrashAlt, FaPlus } from 'react-icons/fa'; // Import icons
 import UserNotice from '@/app/components/usernote/UserNotice';
 import PaystackForm from '@/app/components/payments/PaystackForm';
 import { jwtVerify } from 'jose'; // Import jwtVerify
+import { FundraiserDetails } from '@/app/components/selectreward/RewardSelection';
 
 interface Reward {
   id: number;
@@ -21,6 +22,9 @@ const CheckoutPageContent = () => {
   const [data, setData] = useState<{
     selectedRewards: Reward[];
     allRewards: Reward[];
+    fundraiser: FundraiserDetails;
+    billingFrequency: string;
+    selectedTier: string;
   } | null>(null);
 
   const [currentStep, setCurrentStep] = useState(1); // 1: Select Rewards, 2: Delivery, 3: Payment
@@ -39,6 +43,10 @@ const CheckoutPageContent = () => {
   const [paymentEmail, setPaymentEmail] = useState('');
   const [paymentPhone, setPaymentPhone] = useState('');
   const [paymentAmount, setPaymentAmount] = useState('');
+  const campaignId = data?.fundraiser.campaignId || '';
+  const campaignTitle = data?.fundraiser.campaignTitle || '';
+  const billingFrequency = data?.billingFrequency || '';
+  const selectedTier = data?.selectedTier || '';
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
@@ -53,7 +61,13 @@ const CheckoutPageContent = () => {
           // Decode the JWT token
           const { payload } = await jwtVerify(token, secret);
           setData(
-            payload as { selectedRewards: Reward[]; allRewards: Reward[] },
+            payload as {
+              selectedRewards: Reward[];
+              allRewards: Reward[];
+              fundraiser: FundraiserDetails;
+              billingFrequency: string;
+              selectedTier: string;
+            },
           );
         } catch (error) {
           console.error('Failed to decode token:', error);
@@ -445,9 +459,9 @@ const CheckoutPageContent = () => {
               paymentEmail={paymentEmail}
               paymentPhone={paymentPhone}
               paymentAmount={formattedTotalAmount}
-              campaignId="your-campaign-id" // Replace with actual campaign ID
-              campaignTitle="your-campaign-title" // Replace with actual campaign title
-              billingFrequency="one-time" // Replace with actual billing frequency
+              campaignId={campaignId}
+              campaignTitle={campaignTitle}
+              billingFrequency={billingFrequency}
               errors={errors}
               isPaymentFormValidated={isPaymentFormValidated}
               setCardholderName={setCardholderName}

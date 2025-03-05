@@ -346,6 +346,11 @@ const SingleCampaignPage: React.FC = () => {
                   setPledgeAmount={setPledgeAmount}
                   billingFrequency={billingFrequency}
                   setBillingFrequency={setBillingFrequency}
+                  fundraiserDetails={{
+                    id: String(currentCampaign?.fundraiser_id),
+                    campaignId: String(currentCampaign?.id),
+                    campaignTitle: currentCampaign?.title,
+                  }}
                 />
               </div>
             )}
