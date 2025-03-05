@@ -43,7 +43,7 @@ const CheckoutPageContent = () => {
   const campaignTitle = data?.fundraiser.campaignTitle || '';
   const billingFrequency = data?.billingFrequency || '';
   const selectedTier = data?.selectedTier || '';
-
+  
   // Payment form state
   const [cardholderName, setCardholderName] = useState(formData.firstName); // Pre-fill with firstName
   const [paymentEmail, setPaymentEmail] = useState('');
@@ -149,7 +149,7 @@ const CheckoutPageContent = () => {
   // Validate payment form
   const validatePayStackForm = () => {
     const newErrors: { [key: string]: string } = {};
-
+  
     if (!cardholderName) {
       newErrors.cardholderName = 'Name is required';
     }
@@ -163,7 +163,7 @@ const CheckoutPageContent = () => {
     } else if (isNaN(Number(paymentAmount))) {
       newErrors.paymentAmount = 'Amount must be a number';
     }
-
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -327,6 +327,18 @@ const CheckoutPageContent = () => {
                     className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleFormChange}
+                    className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                  />
+                </div>
               </div>
               <div className="mt-4">
                 <label className="block text-sm font-medium text-gray-700">
@@ -438,7 +450,13 @@ const CheckoutPageContent = () => {
                   ${formattedTotalAmount}
                 </span>
               </div>
-              <div>Campaign Details</div>
+              <div>
+                Campaign Details
+                Campaign ID: {campaignId}
+                Campaign Title: {campaignTitle}
+                Billing Frequency: {billingFrequency}
+                Selected Tier: {selectedTier}
+              </div>
             </div>
           </div>
 
@@ -446,20 +464,20 @@ const CheckoutPageContent = () => {
           <div className="max-w-sm mx-auto bg-white p-4 rounded-lg shadow mb-8">
             <h2 className="text-xl font-semibold mb-4">Payment Details</h2>
             <PaystackForm
-              cardholderName={cardholderName}
-              paymentEmail={paymentEmail}
-              paymentPhone={paymentPhone}
-              paymentAmount={paymentAmount}
-              campaignId={campaignId}
-              campaignTitle={campaignTitle}
-              billingFrequency={billingFrequency}
-              errors={errors}
-              isPaymentFormValidated={validatePayStackForm}
-              setCardholderName={setCardholderName}
-              setPaymentEmail={setPaymentEmail}
-              setPaymentPhone={setPaymentPhone}
-              setPaymentAmount={setPaymentAmount}
-            />
+            cardholderName={cardholderName}
+            paymentEmail={paymentEmail}
+            paymentPhone={paymentPhone}
+            paymentAmount={paymentAmount}
+            campaignId={campaignId}
+            campaignTitle={campaignTitle}
+            billingFrequency={billingFrequency}
+            errors={errors}
+            isPaymentFormValidated={validatePayStackForm}
+            setCardholderName={setCardholderName}
+            setPaymentEmail={setPaymentEmail}
+            setPaymentPhone={setPaymentPhone}
+            setPaymentAmount={setPaymentAmount}
+          />
           </div>
         </>
       )}
