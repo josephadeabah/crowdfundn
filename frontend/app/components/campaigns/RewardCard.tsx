@@ -45,7 +45,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
 
   return (
     <div className="w-full max-w-7xl mx-auto p-1 bg-white rounded-lg mb-10 md:mb-20">
-      <CarouselComponent title="Support projects with rewards" slidesToShow={4}>
+      <CarouselComponent title="Support projects with rewards" slidesToShow={2}>
         {rewards.map((reward) => {
           const campaign = reward.campaign;
           return (
