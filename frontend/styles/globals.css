@@ -199,3 +199,7 @@ img[src*='#markdown-transferspage'] {
   aspect-ratio: 16 / 9; /* Maintain a 16:9 aspect ratio for videos */
   /* border-radius: 0.5rem;  Optional: Add rounded corners */
 }
+
+.slick-track {
+  margin-left:0;
+}
