@@ -71,8 +71,8 @@ const CarouselComponent = ({
     speed: 100,
     slidesToShow, // Show 3 cards per row
     slidesToScroll: 3, // Scroll 3 cards at a time
-    variableWidth: true, // This will align items to the left
     rows: 2,
+    variableWidth: false, // We don't need variableWidth for left alignment in this case
     slidesPerRow: 1,
     centerMode: false,
     autoplay, // Enable or disable autoplay based on the prop
@@ -122,9 +122,11 @@ const CarouselComponent = ({
             />
           </div>
         </div>
+        <div className="flex justify-start">
         <Slider ref={sliderRef} {...carouselSettings}>
           {children}
         </Slider>
+        </div>
       </div>
     </div>
   );
