@@ -1,4 +1,4 @@
-import { Reward } from "../context/account/rewards/RewardsContext";
+import { Reward } from '@/app/context/account/rewards/RewardsContext';
 
 
 export interface Update {
