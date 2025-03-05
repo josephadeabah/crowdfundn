@@ -51,8 +51,6 @@ class PaystackWebhook::ChargeSuccessHandler
     transaction_status = response.dig(:data, :status)
     if transaction_status == 'success'
       gross_amount = response.dig(:data, :amount).to_f / 100.0 # Gross amount from Paystack
-      # subaccount_fee = response.dig(:data, :fees_split, :subaccount).to_f / 100.0
-      # integration_fee = response.dig(:data, :fees_split, :integration).to_f / 100.0
 
       # Step 1: Calculate the net amount (93% of the gross amount)
       net_amount = gross_amount * 0.93
@@ -66,18 +64,18 @@ class PaystackWebhook::ChargeSuccessHandler
       # Step 4: Subtract Paystack's fee from the platform fee
       adjusted_platform_fee = platform_fee - paystack_fee
 
-
-      # Step 4: Extract metadata values (user_id, campaign_id, session_token)
+      # Step 5: Extract metadata values (user_id, campaign_id, session_token)
       user_id = response.dig(:data, :metadata, :user_id)
       campaign_id = response.dig(:data, :metadata, :campaign_id)
       session_token = response.dig(:data, :metadata, :anonymous_token)
       donor_ip = response.dig(:data, :ip_address) # Extract the IP address
       donor_country = response.dig(:data, :authorization, :country_code) # Country from Paystack
+
       # Map IP address to country
-      # Use Paystack's country if available; otherwise, use Geocoder
       country_from_ip = Geocoder.search(donor_ip).first&.country || 'Unknown'
       final_country = donor_country.presence || country_from_ip
       final_country = 'Unknown' if final_country.blank?
+      
       # Extract campaign metadata (title, description, etc.)
       campaign_metadata = {
         title: response.dig(:data, :metadata, :title),
@@ -94,7 +92,12 @@ class PaystackWebhook::ChargeSuccessHandler
       subaccount_contact = response.dig(:data, :subaccount, :primary_contact_email) || 'No contact email'
       subaccount_phone = response.dig(:data, :subaccount, :primary_contact_phone) || 'No contact phone'
 
-      # Step 5: Update the donation record with extracted metadata and transaction details
+      # Step 6: Extract shipping data, selected rewards, and delivery option
+      shipping_data = response.dig(:data, :metadata, :metadata, :shippingData)
+      selected_rewards = response.dig(:data, :metadata, :metadata, :selectedRewards)
+      delivery_option = response.dig(:data, :metadata, :metadata, :deliveryOption)
+
+      # Step 7: Update the donation record with extracted metadata and transaction details
       donation.update!(
         status: 'successful',
         gross_amount: gross_amount,
@@ -130,7 +133,7 @@ class PaystackWebhook::ChargeSuccessHandler
         processed: false # New donations will have `processed` set to `false`
       )
 
-      # Update the related campaign
+      # Step 8: Update the related campaign
       campaign = donation.campaign
       campaign.update!(
         total_successful_donations: campaign.current_amount + net_amount,
@@ -139,6 +142,21 @@ class PaystackWebhook::ChargeSuccessHandler
 
       # Update the transferred amount for the campaign
       campaign.update_transferred_amount(net_amount)
+
+      # Step 9: Create or update pledges with shipping data, selected rewards, and delivery option
+      selected_rewards.each do |reward|
+        Pledge.create!(
+          donation_id: donation.id,
+          reward_id: reward[:id],
+          amount: reward[:amount],
+          shipping_data: shipping_data,
+          selected_rewards: selected_rewards,
+          delivery_option: delivery_option,
+          status: 'pending',
+          shipping_status: 'not_shipped',
+          campaign_id: campaign_id
+        )
+      end
 
       # Send confirmation email to the donor
       DonationConfirmationEmailService.send_confirmation_email(donation)
