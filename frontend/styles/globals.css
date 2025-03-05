@@ -201,15 +201,15 @@ img[src*='#markdown-transferspage'] {
 }
 
 .slick-track {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 2 columns for large screens */
-  gap: 20px; /* Space between items */
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important; /* 2 columns for large screens */
+  gap: 20px !important; /* Space between items */
   width: 100% !important;
 }
 
 @media (max-width: 768px) {
   .slick-track {
-    grid-template-columns: repeat(1, 1fr); /* 2 columns on smaller screens */
-    grid-template-rows: repeat(4, 1fr); /* 4 rows on mobile */
+    grid-template-columns: repeat(1, 1fr) !important; /* 2 columns on smaller screens */
+    grid-template-rows: repeat(4, 1fr) !important; /* 4 rows on mobile */
   }
 }
