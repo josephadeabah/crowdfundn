@@ -74,7 +74,7 @@ const CarouselComponent = ({
     rows: 2,
     rtl: true,
     slidesPerRow: 1,
-    centerMode: false,
+    centerMode: true,
     autoplay, // Enable or disable autoplay based on the prop
     autoplaySpeed, // Set the autoplay speed
     beforeChange: (current: number, next: number) => {
