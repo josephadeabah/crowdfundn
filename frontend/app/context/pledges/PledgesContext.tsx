@@ -50,7 +50,7 @@ export const PledgesProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/pledges`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/pledges/pledges`,
         {
           method: 'GET',
           headers: {
@@ -87,7 +87,7 @@ export const PledgesProvider = ({ children }: { children: ReactNode }) => {
       setError(null);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/pledges/${pledgeId}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/pledges/pledges/${pledgeId}`,
           {
             method: 'DELETE',
             headers: {
