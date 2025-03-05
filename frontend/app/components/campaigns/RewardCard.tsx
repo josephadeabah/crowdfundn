@@ -37,11 +37,11 @@ const RewardCard: React.FC<RewardCardsProps> = ({
 
   if (loading)
     return (
-      <div className="p-4">
+      <div className="px-2">
         <CampaignCardLoader />
       </div>
     );
-  if (error) return <ErrorPage />;
+  if (error) return <div className="px-2"><ErrorPage /></div>;
 
   return (
     <div className="w-full max-w-7xl mx-auto p-1 bg-white rounded-lg mb-10 md:mb-20">
