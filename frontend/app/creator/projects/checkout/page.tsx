@@ -43,12 +43,14 @@ const CheckoutPageContent = () => {
   const campaignTitle = data?.fundraiser.campaignTitle || '';
   const billingFrequency = data?.billingFrequency || '';
   const selectedTier = data?.selectedTier || '';
-  
+
   // Payment form state
-  const [cardholderName, setCardholderName] = useState(formData.firstName); // Pre-fill with firstName
+  const [cardholderName, setCardholderName] = useState(
+    `${formData.firstName} ${formData.lastName}`,
+  ); // Prefill with firstName and lastName
   const [paymentEmail, setPaymentEmail] = useState('');
   const [paymentPhone, setPaymentPhone] = useState('');
-  const [paymentAmount, setPaymentAmount] = useState(''); // Pre-fill with formattedTotalAmount
+  const [paymentAmount, setPaymentAmount] = useState(''); // Prefill with formattedTotalAmount
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
@@ -120,6 +122,11 @@ const CheckoutPageContent = () => {
   // Format the total amount to two decimal places
   const formattedTotalAmount = totalAmount.toFixed(2);
 
+  // Update the paymentAmount whenever the totalAmount changes
+  useEffect(() => {
+    setPaymentAmount(formattedTotalAmount); // Update payment amount based on total
+  }, [formattedTotalAmount]);
+
   // Handle delivery option change
   const handleDeliveryOptionChange = (option: 'home' | 'pickup') => {
     setDeliveryOption(option);
@@ -128,7 +135,18 @@ const CheckoutPageContent = () => {
   // Handle form input change
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      const updatedFormData = { ...prev, [name]: value };
+
+      // If firstName or lastName changes, update cardholderName
+      if (name === 'firstName' || name === 'lastName') {
+        setCardholderName(
+          `${updatedFormData.firstName} ${updatedFormData.lastName}`,
+        );
+      }
+
+      return updatedFormData;
+    });
   };
 
   // Check if "Continue" button should be disabled
@@ -149,7 +167,7 @@ const CheckoutPageContent = () => {
   // Validate payment form
   const validatePayStackForm = () => {
     const newErrors: { [key: string]: string } = {};
-  
+
     if (!cardholderName) {
       newErrors.cardholderName = 'Name is required';
     }
@@ -163,7 +181,7 @@ const CheckoutPageContent = () => {
     } else if (isNaN(Number(paymentAmount))) {
       newErrors.paymentAmount = 'Amount must be a number';
     }
-  
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -340,6 +358,35 @@ const CheckoutPageContent = () => {
                   />
                 </div>
               </div>
+            </form>
+          </div>
+        </>
+      )}
+
+      {/* Step 3: Payment Form */}
+      {currentStep === 3 && (
+        <>
+          <div className="max-w-sm mx-auto bg-white p-4 rounded-lg shadow mb-8">
+            <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+            <div className="space-y-4">
+              {/* Selected Rewards */}
+              <div>
+                <h3 className="font-bold text-lg">Selected Rewards</h3>
+                {data?.selectedRewards.map((reward) => (
+                  <div key={reward.id} className="flex justify-between">
+                    <span>{reward.title}</span>
+                    <span className="font-semibold text-green-600">
+                      ${reward.amount}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Delivery Option */}
+              <div>
+                <h3 className="font-bold text-lg">Delivery Option</h3>
+                <p>{deliveryOption === 'home' ? 'Home Delivery' : 'Pick Up'}</p>
+              </div>
               <div className="mt-4">
                 <label className="block text-sm font-medium text-gray-700">
                   Entity Type
@@ -394,37 +441,6 @@ const CheckoutPageContent = () => {
                   />
                 </div>
               )}
-            </form>
-          </div>
-        </>
-      )}
-
-      {/* Step 3: Payment Form */}
-      {currentStep === 3 && (
-        <>
-          {/* Preview of Selected Data */}
-          <div className="max-w-sm mx-auto bg-white p-4 rounded-lg shadow mb-8">
-            <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-            <div className="space-y-4">
-              {/* Selected Rewards */}
-              <div>
-                <h3 className="font-bold text-lg">Selected Rewards</h3>
-                {data?.selectedRewards.map((reward) => (
-                  <div key={reward.id} className="flex justify-between">
-                    <span>{reward.title}</span>
-                    <span className="font-semibold text-green-600">
-                      ${reward.amount}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Delivery Option */}
-              <div>
-                <h3 className="font-bold text-lg">Delivery Option</h3>
-                <p>{deliveryOption === 'home' ? 'Home Delivery' : 'Pick Up'}</p>
-              </div>
-
               {/* Delivery Details */}
               <div>
                 <h3 className="font-bold text-lg">Delivery Details</h3>
@@ -450,13 +466,6 @@ const CheckoutPageContent = () => {
                   ${formattedTotalAmount}
                 </span>
               </div>
-              <div>
-                Campaign Details
-                Campaign ID: {campaignId}
-                Campaign Title: {campaignTitle}
-                Billing Frequency: {billingFrequency}
-                Selected Tier: {selectedTier}
-              </div>
             </div>
           </div>
 
@@ -464,20 +473,20 @@ const CheckoutPageContent = () => {
           <div className="max-w-sm mx-auto bg-white p-4 rounded-lg shadow mb-8">
             <h2 className="text-xl font-semibold mb-4">Payment Details</h2>
             <PaystackForm
-            cardholderName={cardholderName}
-            paymentEmail={paymentEmail}
-            paymentPhone={paymentPhone}
-            paymentAmount={paymentAmount}
-            campaignId={campaignId}
-            campaignTitle={campaignTitle}
-            billingFrequency={billingFrequency}
-            errors={errors}
-            isPaymentFormValidated={validatePayStackForm}
-            setCardholderName={setCardholderName}
-            setPaymentEmail={setPaymentEmail}
-            setPaymentPhone={setPaymentPhone}
-            setPaymentAmount={setPaymentAmount}
-          />
+              cardholderName={cardholderName}
+              paymentEmail={paymentEmail}
+              paymentPhone={paymentPhone}
+              paymentAmount={paymentAmount}
+              campaignId={campaignId}
+              campaignTitle={campaignTitle}
+              billingFrequency={billingFrequency}
+              errors={errors}
+              isPaymentFormValidated={validatePayStackForm}
+              setCardholderName={setCardholderName}
+              setPaymentEmail={setPaymentEmail}
+              setPaymentPhone={setPaymentPhone}
+              setPaymentAmount={setPaymentAmount}
+            />
           </div>
         </>
       )}
@@ -517,7 +526,6 @@ const CheckoutPage = () => {
   );
 };
 
-// Disable static generation for this page
 export const dynamic = 'force-dynamic';
 
 export default CheckoutPage;
