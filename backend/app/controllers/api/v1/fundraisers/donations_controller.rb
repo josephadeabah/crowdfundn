@@ -101,6 +101,7 @@ module Api
           donation.email = params[:donation][:email]
           donation.amount = params[:donation][:amount]
           donation.phone = params[:donation][:phone]
+          donation.metadata = params[:donation][:metadata]
         
           metadata = {
             user_id: donation.user_id,
@@ -115,7 +116,8 @@ module Api
             currency_symbol: campaign.currency_symbol,
             fundraiser_id: campaign.fundraiser_id,
             fundraiser_name: campaign.fundraiser.full_name,
-            phone: donation.phone
+            phone: donation.phone,
+            metadata: donation.metadata
           }
         
           donation.plan = params[:donation][:plan]
