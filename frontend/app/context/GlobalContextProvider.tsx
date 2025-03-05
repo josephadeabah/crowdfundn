@@ -14,6 +14,7 @@ import { MetricsProvider } from './admin/metrics/MetricsContext';
 import { LeaderboardProvider } from './leaderboard/LeaderboardContext';
 import { PointRewardProvider } from './pointreward/PointRewardContext';
 import { ArticlesProvider } from './admin/articles/ArticlesContext';
+import { PledgesProvider } from './pledges/PledgesContext';
 import { DrawerProvider } from './drawer/DrawerContext';
 
 export const GlobalContextProvider = ({
@@ -36,7 +37,9 @@ export const GlobalContextProvider = ({
                           <ArticlesProvider>
                             <LeaderboardProvider>
                               <PointRewardProvider>
+                                <PledgesProvider>
                                 {children}
+                                </PledgesProvider>
                               </PointRewardProvider>
                             </LeaderboardProvider>
                           </ArticlesProvider>

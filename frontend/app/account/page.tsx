@@ -22,6 +22,7 @@ import ProfileTabsLoader from '@/app/loaders/ProfileTabsLoader';
 import AccountSettings from '@/app/account/settings/AccountSettings';
 import OnboardingModal from '@/app/components/onboarding/OnboardingModal';
 import Favorites from '@/app/account/Favorites';
+import PledgesListPage from './Pledges';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState<string>('');
@@ -52,6 +53,12 @@ const ProfileTabs = () => {
       description: 'View and manage your transfers.',
     },
     {
+      label: 'Pledges', // New Pledges tab
+      icon: <SymbolIcon />, // Use an appropriate icon
+      component: <PledgesListPage />,
+      description: 'View and manage your pledges here.',
+    },
+    {
       label: 'Rewards',
       icon: <IconJarLogoIcon />,
       component: <Rewards />,
@@ -70,8 +77,8 @@ const ProfileTabs = () => {
       description: 'Add your fundraising updates in this tab.',
     },
     {
-      label: 'Favorites', // New Favorites tab
-      icon: <StarIcon />, // Use an appropriate icon
+      label: 'Favorites',
+      icon: <StarIcon />,
       component: <Favorites />,
       description: 'View your favorited campaigns here.',
     },
