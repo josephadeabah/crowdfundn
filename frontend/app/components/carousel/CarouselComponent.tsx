@@ -121,11 +121,9 @@ const CarouselComponent = ({
             />
           </div>
         </div>
-        <div className="slider-container">
         <Slider ref={sliderRef} {...carouselSettings}>
           {children}
         </Slider>
-        </div>
       </div>
     </div>
   );
