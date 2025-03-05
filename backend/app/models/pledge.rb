@@ -10,9 +10,10 @@ class Pledge < ApplicationRecord
 
   # Custom JSON serialization
   def as_json(_options = {})
-    super(only: %i[id donation_id reward_id campaign_id amount status created_at]).merge(
-      paystack_transaction_data: paystack_transaction_data,
-      shipping_address: shipping_address
+    super(only: %i[id donation_id reward_id campaign_id user_id amount status shipping_status created_at]).merge(
+      shipping_data: shipping_data,
+      selected_rewards: selected_rewards,
+      delivery_option: delivery_option
     )
   end
 end
