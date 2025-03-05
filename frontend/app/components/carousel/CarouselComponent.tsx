@@ -72,7 +72,6 @@ const CarouselComponent = ({
     slidesToShow, // Show 3 cards per row
     slidesToScroll: 3, // Scroll 3 cards at a time
     rows: 2,
-    variableWidth: false, // We don't need variableWidth for left alignment in this case
     slidesPerRow: 1,
     centerMode: false,
     autoplay, // Enable or disable autoplay based on the prop
