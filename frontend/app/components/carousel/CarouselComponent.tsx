@@ -74,7 +74,6 @@ const CarouselComponent = ({
     rows: 2,
     slidesPerRow: 1,
     centerMode: false,
-    className: "left",
     autoplay, // Enable or disable autoplay based on the prop
     autoplaySpeed, // Set the autoplay speed
     beforeChange: (current: number, next: number) => {
@@ -122,9 +121,11 @@ const CarouselComponent = ({
             />
           </div>
         </div>
+        <div className="slider-container">
         <Slider ref={sliderRef} {...carouselSettings}>
           {children}
         </Slider>
+        </div>
       </div>
     </div>
   );
