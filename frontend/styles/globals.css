@@ -203,3 +203,6 @@ img[src*='#markdown-transferspage'] {
 .slick-track {
   margin-left:0;
 }
+::ng-deep .slick-track{
+  margin-left: 0 !important;
+}

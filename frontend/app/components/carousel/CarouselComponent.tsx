@@ -121,11 +121,9 @@ const CarouselComponent = ({
             />
           </div>
         </div>
-        <div className="flex justify-start">
         <Slider ref={sliderRef} {...carouselSettings}>
           {children}
         </Slider>
-        </div>
       </div>
     </div>
   );
