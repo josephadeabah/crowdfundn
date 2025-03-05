@@ -75,7 +75,7 @@ class PaystackWebhook::ChargeSuccessHandler
       country_from_ip = Geocoder.search(donor_ip).first&.country || 'Unknown'
       final_country = donor_country.presence || country_from_ip
       final_country = 'Unknown' if final_country.blank?
-      
+
       # Extract campaign metadata (title, description, etc.)
       campaign_metadata = {
         title: response.dig(:data, :metadata, :title),
@@ -154,7 +154,8 @@ class PaystackWebhook::ChargeSuccessHandler
           delivery_option: delivery_option,
           status: 'pending',
           shipping_status: 'not_shipped',
-          campaign_id: campaign_id
+          campaign_id: campaign_id,
+          fundraiser_id: response.dig(:data, :metadata, :fundraiser_id)
         )
       end
 

@@ -140,6 +140,10 @@ Rails.application.routes.draw do
         put 'articles/:slug_or_id', to: 'articles#update', constraints: { slug_or_id: /[^\/]+/ }
         delete 'articles/:slug_or_id', to: 'articles#destroy', constraints: { slug_or_id: /[^\/]+/ }
       end
+      
+      namespace :pledges do
+        resources :pledges, only: [:index, :destroy] # Add this line
+      end
     end
   end
 

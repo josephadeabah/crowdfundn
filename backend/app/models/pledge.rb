@@ -1,4 +1,5 @@
 class Pledge < ApplicationRecord
+  belongs_to :user
   belongs_to :donation
   belongs_to :reward
   belongs_to :campaign
