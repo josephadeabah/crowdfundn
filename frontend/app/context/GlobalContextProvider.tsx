@@ -37,9 +37,7 @@ export const GlobalContextProvider = ({
                           <ArticlesProvider>
                             <LeaderboardProvider>
                               <PointRewardProvider>
-                                <PledgesProvider>
-                                {children}
-                                </PledgesProvider>
+                                <PledgesProvider>{children}</PledgesProvider>
                               </PointRewardProvider>
                             </LeaderboardProvider>
                           </ArticlesProvider>
