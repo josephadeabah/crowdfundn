@@ -93,7 +93,7 @@ const CarouselComponent = ({
         settings: {
           slidesToShow: 1, // Show 1 card per row on mobile
           slidesToScroll: 1,
-          rows: 4,
+          rows: 2,
         },
       },
     ],
