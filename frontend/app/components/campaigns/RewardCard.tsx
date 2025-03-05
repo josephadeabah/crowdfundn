@@ -59,7 +59,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
               <Link
                 href={`/campaign/${campaign.id}?tab=donate&${generateRandomString()}`}
               >
-                <div className="grid grid-cols-1 h-full">
+                <div className="grid grid-cols-1 h-full justify-items-start">
                   {/* Reward Image */}
                   <div className="relative w-full h-32">
                     <Image
