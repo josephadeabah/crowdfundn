@@ -121,7 +121,7 @@ const CarouselComponent = ({
             />
           </div>
         </div>
-        <Slider ref={sliderRef} {...carouselSettings}>
+        <Slider ref={sliderRef} {...carouselSettings} className="justify-start">
           {children}
         </Slider>
       </div>
