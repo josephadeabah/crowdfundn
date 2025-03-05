@@ -155,7 +155,7 @@ class PaystackWebhook::ChargeSuccessHandler
           status: 'pending',
           shipping_status: 'not_shipped',
           campaign_id: campaign_id,
-          fundraiser_id: response.dig(:data, :metadata, :fundraiser_id)
+          user_id: response.dig(:data, :metadata, :fundraiser_id)
         )
       end
 

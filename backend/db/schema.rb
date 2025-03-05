@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_03_05_215354) do
+ActiveRecord::Schema[7.1].define(version: 2025_03_05_225348) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -211,7 +211,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_05_215354) do
     t.jsonb "shipping_data", default: {}
     t.jsonb "selected_rewards", default: []
     t.string "delivery_option"
-    t.integer "fundraiser_id"
+    t.integer "user_id"
     t.index ["campaign_id"], name: "index_pledges_on_campaign_id"
     t.index ["donation_id"], name: "index_pledges_on_donation_id"
     t.index ["reward_id"], name: "index_pledges_on_reward_id"

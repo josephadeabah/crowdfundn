@@ -15,7 +15,7 @@ module Api
         # DELETE /api/v1/pledges/:id
         def destroy
           # Ensure the pledge belongs to the current user
-          if @pledge.fundraiser_id == @current_user.id
+          if @pledge.user_id == @current_user.id
             if @pledge.destroy
               render json: { message: 'Pledge deleted successfully' }, status: :ok
             else
