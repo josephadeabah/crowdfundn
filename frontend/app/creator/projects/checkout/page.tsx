@@ -326,11 +326,40 @@ const CheckoutPageContent = () => {
                 Pick Up
               </label>
             </div>
-             {/* Delivery Option */}
-             <div>
-                <h3 className="font-bold text-lg">Delivery Option</h3>
-                <p>{deliveryOption === 'home' ? 'Home Delivery' : 'Pick Up'}</p>
+          </div>
+
+          {/* Delivery Form */}
+          <div className="bg-white p-4 rounded-lg shadow mb-8">
+            <h2 className="text-xl font-semibold mb-4">Delivery Details</h2>
+            <form>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleFormChange}
+                    className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleFormChange}
+                    className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                  />
+                </div>
               </div>
+
+              {/* Entity Type */}
               <div className="mt-4">
                 <label className="block text-sm font-medium text-gray-700">
                   Entity Type
@@ -371,6 +400,8 @@ const CheckoutPageContent = () => {
                   </label>
                 </div>
               </div>
+
+              {/* Shipping Address (Only for Home Delivery) */}
               {deliveryOption === 'home' && (
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700">
@@ -385,38 +416,6 @@ const CheckoutPageContent = () => {
                   />
                 </div>
               )}
-          </div>
-
-          {/* Delivery Form */}
-          <div className="bg-white p-4 rounded-lg shadow mb-8">
-            <h2 className="text-xl font-semibold mb-4">Delivery Details</h2>
-            <form>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleFormChange}
-                    className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleFormChange}
-                    className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-                  />
-                </div>
-              </div>
             </form>
           </div>
         </>
