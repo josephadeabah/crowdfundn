@@ -142,7 +142,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         <CampaignCardLoader />
       </div>
     );
-  if (error) return <div className="p-2"><ErrorPage /></div>;
+  if (error)
+    return (
+      <div className="p-2">
+        <ErrorPage />
+      </div>
+    );
 
   return (
     <div className="w-full max-w-7xl mx-auto p-1 bg-white rounded-lg">
