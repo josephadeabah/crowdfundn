@@ -1,5 +1,12 @@
-import { Reward } from '@/app/context/account/rewards/RewardsContext';
-
+export interface Reward {
+  id: number;
+  message: string;
+  campaign_id?: number;
+  title: string;
+  description: string;
+  amount: number;
+  image: string;
+}
 
 export interface Update {
   id: number;
