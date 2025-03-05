@@ -54,12 +54,12 @@ const RewardCard: React.FC<RewardCardsProps> = ({
               initial="hidden"
               animate="visible"
               transition={{ duration: 0.5 }}
-              className="group relative dark:bg-gray-900 px-3 py-3 h-full dark:text-gray-50 cursor-pointer overflow-hidden rounded-lg"
+              className="group relative dark:bg-gray-900 px-3 py-3 h-full dark:text-gray-50 cursor-pointer rounded-lg"
             >
               <Link
                 href={`/campaign/${campaign.id}?tab=donate&${generateRandomString()}`}
               >
-                <div className="grid grid-cols-1 h-full justify-items-start">
+                <div className="grid grid-cols-1 h-full">
                   {/* Reward Image */}
                   <div className="relative w-full h-32">
                     <Image
