@@ -190,7 +190,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             email: email,
             full_name: fullName,
             phone: phoneNumber,
-            metadata: combinedMetadata,
+            metadata: combinedMetadata || {},
             plan: planCodeRef.current,
           }),
         },
