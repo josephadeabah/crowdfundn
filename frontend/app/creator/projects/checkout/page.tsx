@@ -8,14 +8,8 @@ import UserNotice from '@/app/components/usernote/UserNotice';
 import PaystackForm from '@/app/components/payments/PaystackForm';
 import { jwtVerify } from 'jose'; // Import jwtVerify
 import { FundraiserDetails } from '@/app/components/selectreward/RewardSelection';
-
-interface Reward {
-  id: number;
-  title: string;
-  description: string;
-  amount: number;
-  image?: string;
-}
+import { Reward } from '@/app/context/account/rewards/RewardsContext';
+import { useAuth } from '@/app/context/auth/AuthContext'; // Import useAuth
 
 const CheckoutPageContent = () => {
   const searchParams = useSearchParams();
@@ -45,13 +39,25 @@ const CheckoutPageContent = () => {
   const selectedTier = data?.selectedTier || '';
 
   // Payment form state
-  const [cardholderName, setCardholderName] = useState(
-    `${formData.firstName} ${formData.lastName}`,
-  ); // Prefill with firstName and lastName
+  const [cardholderName, setCardholderName] = useState('');
   const [paymentEmail, setPaymentEmail] = useState('');
   const [paymentPhone, setPaymentPhone] = useState('');
   const [paymentAmount, setPaymentAmount] = useState(''); // Prefill with formattedTotalAmount
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  // Get the logged-in user from the AuthContext
+  const { user } = useAuth();
+
+  // Prefill cardholderName and paymentEmail for logged-in users
+  useEffect(() => {
+    if (user) {
+      // Prefill cardholderName with user.full_name
+      setCardholderName(user.full_name || '');
+
+      // Prefill paymentEmail with user.email
+      setPaymentEmail(user.email || '');
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -184,6 +190,18 @@ const CheckoutPageContent = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  // Combine shipping data, selected rewards, and entity type into one object
+  const combinedMetadata = {
+    shippingData: {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      shippingAddress: formData.shippingAddress,
+      entityType: formData.entityType,
+    },
+    selectedRewards: data?.selectedRewards || [],
+    deliveryOption,
   };
 
   return (
@@ -439,6 +457,7 @@ const CheckoutPageContent = () => {
                   </div>
                 ))}
               </div>
+
               {/* Delivery Details */}
               <div>
                 <h3 className="font-bold text-lg">Delivery Details</h3>
@@ -484,6 +503,7 @@ const CheckoutPageContent = () => {
               setPaymentEmail={setPaymentEmail}
               setPaymentPhone={setPaymentPhone}
               setPaymentAmount={setPaymentAmount}
+              combinedMetadata={combinedMetadata} // Pass the combined data
             />
           </div>
         </>

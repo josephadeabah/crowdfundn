@@ -121,7 +121,7 @@ const CarouselComponent = ({
             />
           </div>
         </div>
-        <Slider ref={sliderRef} {...carouselSettings}>
+        <Slider ref={sliderRef} {...carouselSettings} className="w-full">
           {children}
         </Slider>
       </div>

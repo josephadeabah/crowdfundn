@@ -1,3 +1,4 @@
+import { Reward } from '../context/account/rewards/RewardsContext';
 import { SingleCampaignResponseDataType } from './campaigns.types';
 
 export interface Pagination {
@@ -61,6 +62,16 @@ export interface DonationsState {
     campaignId: string,
     campaignTitle: string,
     billingFrequency: string,
+    combinedMetadata?: {
+      shippingData: {
+        firstName: string;
+        lastName: string;
+        shippingAddress: string;
+        entityType: string;
+      };
+      selectedRewards: Reward[];
+      deliveryOption: 'home' | 'pickup' | null;
+    },
   ) => Promise<void>;
   fetchDonations: (currentPage: number, perPage: number) => Promise<void>;
   fetchPublicDonations: (

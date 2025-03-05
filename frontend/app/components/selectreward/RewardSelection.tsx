@@ -6,14 +6,7 @@ import { Tooltip } from 'react-tooltip';
 import BackingPeriodSelector from '../billingfrequency/BackingPeriodSelector';
 import Modal from '../modal/Modal';
 import OrderDetailsPage from '../orderdetails/OrderDetails';
-
-interface Reward {
-  id: number;
-  title: string;
-  description: string;
-  amount: number;
-  image?: string;
-}
+import { Reward } from '@/app/context/account/rewards/RewardsContext';
 
 export interface FundraiserDetails {
   id: string;

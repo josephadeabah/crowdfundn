@@ -13,6 +13,7 @@ import React, {
   useRef,
 } from 'react';
 import { useAuth } from '../../auth/AuthContext';
+import { Reward } from '../rewards/RewardsContext';
 
 const DonationsContext = createContext<DonationsState | undefined>(undefined);
 
@@ -130,6 +131,16 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     campaignId: string,
     campaignTitle: string,
     billingFrequency: string,
+    combinedMetadata?: {
+      shippingData: {
+        firstName: string;
+        lastName: string;
+        shippingAddress: string;
+        entityType: string;
+      };
+      selectedRewards: Reward[];
+      deliveryOption: 'home' | 'pickup' | null;
+    },
   ) => {
     try {
       setLoading(true);
@@ -179,7 +190,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             email: email,
             full_name: fullName,
             phone: phoneNumber,
-            metadata: {},
+            metadata: combinedMetadata,
             plan: planCodeRef.current,
           }),
         },

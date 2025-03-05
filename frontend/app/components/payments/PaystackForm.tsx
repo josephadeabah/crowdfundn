@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
 import ToastComponent from '@/app/components/toast/Toast';
+import { Reward } from '@/app/context/account/rewards/RewardsContext';
 
 interface PaystackFormProps {
   cardholderName: string;
@@ -11,6 +12,16 @@ interface PaystackFormProps {
   campaignTitle: string;
   billingFrequency: string;
   errors: { [key: string]: string };
+  combinedMetadata?: {
+    shippingData: {
+      firstName: string;
+      lastName: string;
+      shippingAddress: string;
+      entityType: string;
+    };
+    selectedRewards: Reward[];
+    deliveryOption: 'home' | 'pickup' | null;
+  };
   isPaymentFormValidated: () => boolean;
   setCardholderName: React.Dispatch<React.SetStateAction<string>>;
   setPaymentEmail: React.Dispatch<React.SetStateAction<string>>;
@@ -27,6 +38,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   campaignTitle,
   billingFrequency,
   errors,
+  combinedMetadata,
   isPaymentFormValidated: validatePaystackForm,
   setCardholderName,
   setPaymentEmail,
@@ -56,6 +68,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         campaignId,
         campaignTitle,
         billingFrequency,
+        combinedMetadata,
       );
     }
   };
