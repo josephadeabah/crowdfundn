@@ -70,7 +70,7 @@ const AccordionContentWrapper = React.forwardRef<
 >(({ children, className, ...props }, forwardedRef) => (
   <AccordionContent
     className={classNames(
-      'overflow-hidden bg-gray-50 text-sm text-gray-700 transition-all duration-300 ease-in-out',
+      'overflow-hidden bg-white text-sm text-gray-700 transition-all duration-300 ease-in-out',
       className,
     )}
     {...props}
