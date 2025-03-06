@@ -67,7 +67,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
       <div className="max-w-6xl mx-auto bg-white">
         <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
           <h1 className="text-2xl font-semibold text-gray-900">
-            Order Details
+            Pledge Details
           </h1>
         </div>
 
@@ -108,7 +108,8 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
                     <h3 className="font-bold text-xl mt-4">{reward.title}</h3>
                     <p className="text-gray-600 mt-2">{reward.description}</p>
                     <div className="font-semibold text-green-600 mt-2">
-                      Pledge {fundraiserDetails.campaignCurrency}{reward.amount} or more
+                      Pledge {fundraiserDetails.campaignCurrency}
+                      {reward.amount} or more
                     </div>
                   </div>
                 ))
@@ -144,7 +145,8 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
                     <h3 className="font-bold text-xl mt-4">{reward.title}</h3>
                     <p className="text-gray-600 mt-2">{reward.description}</p>
                     <div className="font-semibold text-green-600 mt-2">
-                      Pledge {fundraiserDetails.campaignCurrency}{reward.amount} or more
+                      Pledge {fundraiserDetails.campaignCurrency}
+                      {reward.amount} or more
                     </div>
                   </div>
                 ))}

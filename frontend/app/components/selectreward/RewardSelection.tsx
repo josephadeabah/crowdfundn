@@ -72,7 +72,8 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
               <h3 className="font-bold mb-2">{reward.title}</h3>
               <p className="text-gray-600 mb-2">{reward.description}</p>
               <div className="font-semibold">
-                Pledge {fundraiserDetails.campaignCurrency}{reward.amount} or more
+                Pledge {fundraiserDetails.campaignCurrency}
+                {reward.amount} or more
               </div>
               {/* Add the "Choose +" button */}
               <button
@@ -94,7 +95,7 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
       <form className="mb-4 relative">
         <FaInfoCircle
           data-tooltip-id="amount-info"
-          data-tooltip-content="Enter the amount you want to pledge. You will be charged this amount during payment. Choose backing period and proceed to Back Now."
+          data-tooltip-content="If you do not want to pledge with reward, Enter the amount you want to donate and click Back Now to proceed. Otherwise choose reward and proceed. You will be charged this amount during payment."
           className="absolute top-0 left-0 text-gray-500"
         />
         <Tooltip

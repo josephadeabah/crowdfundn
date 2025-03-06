@@ -239,7 +239,8 @@ const CheckoutPageContent = () => {
 
                   {/* Amount */}
                   <div className="font-semibold text-green-600">
-                  {campaignCurrency}{reward.amount}
+                    {campaignCurrency}
+                    {reward.amount}
                   </div>
                 </div>
 
@@ -259,7 +260,8 @@ const CheckoutPageContent = () => {
             <div className="flex justify-between items-center">
               <h3 className="font-bold text-lg">Total</h3>
               <div className="font-semibold text-green-600">
-              {campaignCurrency}{formattedTotalAmount}
+                {campaignCurrency}
+                {formattedTotalAmount}
               </div>
             </div>
           </div>
@@ -299,7 +301,8 @@ const CheckoutPageContent = () => {
 
                     {/* Amount */}
                     <div className="font-semibold text-green-600">
-                    {campaignCurrency}{reward.amount}
+                      {campaignCurrency}
+                      {reward.amount}
                     </div>
                   </div>
 
@@ -453,7 +456,8 @@ const CheckoutPageContent = () => {
                   <div key={reward.id} className="flex justify-between">
                     <span>{reward.title}</span>
                     <span className="font-semibold text-green-600">
-                    {campaignCurrency}{reward.amount}
+                      {campaignCurrency}
+                      {reward.amount}
                     </span>
                   </div>
                 ))}
@@ -481,7 +485,8 @@ const CheckoutPageContent = () => {
               <div className="flex justify-between">
                 <h3 className="font-bold text-lg">Total</h3>
                 <span className="font-semibold text-green-600">
-                {campaignCurrency}{formattedTotalAmount}
+                  {campaignCurrency}
+                  {formattedTotalAmount}
                 </span>
               </div>
             </div>

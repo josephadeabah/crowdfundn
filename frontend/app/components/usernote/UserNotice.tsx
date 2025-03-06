@@ -21,10 +21,11 @@ const UserNotice = () => {
       </p>
 
       <p className="text-gray-700 mb-4">
-        This project might be set in the <span className="font-semibold">currency </span>of the fundraiser. If
-        you choose to pay in any other<span className="font-semibold">currency</span>, a
-        conversion rate and possible additional fees will be applied by your
-        card issuer.
+        This project might be set in the{' '}
+        <span className="font-semibold">currency </span>of the fundraiser. If
+        you choose to pay in any other{' '}
+        <span className="font-semibold">currency</span>, a conversion rate and
+        possible additional fees will be applied by your card issuer.
       </p>
 
       {/* Learn More Link */}
