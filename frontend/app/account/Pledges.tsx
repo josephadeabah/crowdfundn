@@ -40,7 +40,7 @@ const PledgesListPage = () => {
             value={campaign.campaign_id.toString()}
           >
             <AccordionTriggerWrapper>
-              <h2 className="text-2xl font-semibold truncate max-w-full">
+              <h2 className="text-2xl font-semibold w-full">
                 {campaign.campaign_name}
               </h2>
             </AccordionTriggerWrapper>

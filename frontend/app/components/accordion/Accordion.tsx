@@ -49,7 +49,7 @@ const AccordionTriggerWrapper = React.forwardRef<
 >(({ children, className, ...props }, forwardedRef) => (
   <AccordionTrigger
     className={classNames(
-      'group flex h-[45px] flex-1 cursor-pointer items-center justify-between bg-white p-4 text-sm leading-none text-gray-700 outline-none hover:bg-gray-200',
+      'group flex h-[45px] w-full break-words whitespace-normal flex-1 cursor-pointer items-center justify-between bg-white p-4 text-sm leading-none text-gray-700 outline-none hover:bg-gray-200',
       className,
     )}
     {...props}
