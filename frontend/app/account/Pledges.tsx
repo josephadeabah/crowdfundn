@@ -37,7 +37,7 @@ const PledgesListPage = () => {
         {pledges.map((campaign) => (
           <AccordionItemWrapper key={campaign.campaign_id} value={campaign.campaign_id.toString()}>
             <AccordionTriggerWrapper>
-              <h2 className="text-2xl font-semibold truncate">
+              <h2 className="text-2xl font-semibold truncate max-w-xs">
                {campaign.campaign_name}
               </h2>
             </AccordionTriggerWrapper>
