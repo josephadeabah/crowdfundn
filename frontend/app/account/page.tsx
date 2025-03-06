@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react';
 import {
   DashboardIcon,
   HandIcon,
-  SymbolIcon,
   IconJarLogoIcon,
   GearIcon,
   RocketIcon,
   ChatBubbleIcon,
   StarIcon,
 } from '@radix-ui/react-icons';
+import { HiOutlineShoppingCart } from "react-icons/hi";
 import { BiTransfer } from 'react-icons/bi';
 import Rewards from '@/app/account/Rewards';
 import Campaigns from '@/app/account/Campaigns';
@@ -54,7 +54,7 @@ const ProfileTabs = () => {
     },
     {
       label: 'Pledges', // New Pledges tab
-      icon: <SymbolIcon />, // Use an appropriate icon
+      icon: <HiOutlineShoppingCart />, // Use an appropriate icon
       component: <PledgesListPage />,
       description: 'View and manage your pledges here.',
     },
