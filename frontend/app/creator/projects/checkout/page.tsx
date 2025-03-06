@@ -205,7 +205,7 @@ const CheckoutPageContent = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto min-h-screen bg-gray-100 p-8 my-10">
+    <div className="max-w-2xl mx-auto min-h-screen bg-white p-8 my-10">
       <h1 className="text-2xl font-bold mb-8">Checkout</h1>
 
       {/* Step 1: Select Rewards */}
@@ -442,7 +442,7 @@ const CheckoutPageContent = () => {
       {/* Step 3: Payment Form */}
       {currentStep === 3 && (
         <>
-          <div className="max-w-sm mx-auto bg-white p-4 rounded-lg shadow mb-8">
+          <div className="max-w-full mx-auto bg-white p-4 rounded-lg shadow mb-8">
             <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
             <div className="space-y-4">
               {/* Selected Rewards */}
@@ -515,7 +515,7 @@ const CheckoutPageContent = () => {
         {currentStep > 1 && (
           <button
             onClick={handleBack}
-            className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+            className="w-1/2 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-full"
           >
             Back
           </button>
@@ -526,7 +526,7 @@ const CheckoutPageContent = () => {
           <button
             onClick={() => setCurrentStep((prev) => prev + 1)}
             disabled={isContinueDisabled}
-            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="w-1/2 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             Continue
           </button>
