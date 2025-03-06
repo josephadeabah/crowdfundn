@@ -93,9 +93,9 @@ class PaystackWebhook::ChargeSuccessHandler
       subaccount_phone = response.dig(:data, :subaccount, :primary_contact_phone) || 'No contact phone'
 
       # Step 6: Extract shipping data, selected rewards, and delivery option
-      shipping_data = response.dig(:data, :metadata, :metadata, :shippingData)
-      selected_rewards = response.dig(:data, :metadata, :metadata, :selectedRewards)
-      delivery_option = response.dig(:data, :metadata, :metadata, :deliveryOption)
+      shipping_data = response.dig(:data, :metadata, :metadata, :shippingData) || {}
+      selected_rewards = response.dig(:data, :metadata, :metadata, :selectedRewards) || []
+      delivery_option = response.dig(:data, :metadata, :metadata, :deliveryOption) || 'pickup'
 
       # Step 7: Update the donation record with extracted metadata and transaction details
       donation.update!(
@@ -145,18 +145,20 @@ class PaystackWebhook::ChargeSuccessHandler
 
       # Step 9: Create or update pledges with shipping data, selected rewards, and delivery option
       selected_rewards.each do |reward|
-        Pledge.create!(
-          donation_id: donation.id,
-          reward_id: reward[:id],
-          amount: reward[:amount],
-          shipping_data: shipping_data,
-          selected_rewards: selected_rewards,
-          delivery_option: delivery_option,
-          status: 'pending',
-          shipping_status: 'not_shipped',
-          campaign_id: campaign_id,
-          user_id: response.dig(:data, :metadata, :fundraiser_id)
-        )
+        unless Pledge.exists?(donation_id: donation.id, reward_id: reward[:id])
+          Pledge.create!(
+            donation_id: donation.id,
+            reward_id: reward[:id],
+            amount: reward[:amount],
+            shipping_data: shipping_data,
+            selected_rewards: [reward],
+            delivery_option: delivery_option,
+            status: 'pending',
+            shipping_status: 'not_shipped',
+            campaign_id: campaign_id,
+            user_id: response.dig(:data, :metadata, :fundraiser_id)
+          )
+        end
       end
 
       # Send confirmation email to the donor
