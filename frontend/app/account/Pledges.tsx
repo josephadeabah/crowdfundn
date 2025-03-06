@@ -36,13 +36,21 @@ const PledgesListPage = () => {
     <div className="container mx-auto px-2 py-8">
       <div className="w-full flex justify-start items-center">
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
-          Pledged Donations
+          Pledges From Your Backers
         </h2>
       </div>
-      <p className="text-gray-500 dark:text-neutral-400 mb-4">
-        Here are all your pledges to various campaigns
+      <p className="text-gray-500 dark:text-neutral-400">
+        All shipping or delivery is done by you.{' '}
+        <span className="font-semibold text-gray-700 dark:text-neutral-300">
+          Bantu Hive disclaims any responsibility
+        </span>
+        <a
+          href="/learn-more"
+          className="text-orange-500 dark:text-orange-400 hover:underline"
+        >
+          Learn More
+        </a>
       </p>
-
       <Accordion type="single" collapsible>
         {pledges.map((campaign) => (
           <AccordionItemWrapper
