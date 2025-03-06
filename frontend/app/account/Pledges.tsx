@@ -64,8 +64,8 @@ const PledgesListPage = () => {
                               pledge.status === 'pending'
                                 ? 'text-yellow-600'
                                 : pledge.status === 'success'
-                                ? 'text-green-600'
-                                : 'text-red-600'
+                                  ? 'text-green-600'
+                                  : 'text-red-600'
                             }`}
                           >
                             {pledge.status}
