@@ -21,8 +21,8 @@ const UserNotice = () => {
       </p>
 
       <p className="text-gray-700 mb-4">
-        This project is set in <span className="font-semibold">GHS</span>. If
-        you choose to pay in <span className="font-semibold">USD</span>, a
+        This project might be set in the <span className="font-semibold">currency </span>of the fundraiser. If
+        you choose to pay in any other<span className="font-semibold">currency</span>, a
         conversion rate and possible additional fees will be applied by your
         card issuer.
       </p>
