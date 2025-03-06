@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {Accordion,
+import {
+  Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
@@ -31,8 +32,8 @@ const AccordionItemWrapper = React.forwardRef<
 >(({ children, className, ...props }, forwardedRef) => (
   <AccordionItem
     className={classNames(
-      'mt-0 overflow-hidden first:rounded-t last:rounded-b focus-within:relative focus-within:z-10 focus-within:shadow-md',
-      className
+      'mt-0 overflow-hidden first:rounded-t last:rounded-b focus-within:relative focus-within:z-10 focus-within:shadow-sm',
+      className,
     )}
     {...props}
     ref={forwardedRef}
@@ -48,8 +49,8 @@ const AccordionTriggerWrapper = React.forwardRef<
 >(({ children, className, ...props }, forwardedRef) => (
   <AccordionTrigger
     className={classNames(
-      'group flex h-[45px] flex-1 cursor-pointer items-center justify-between bg-white p-4 text-sm leading-none text-gray-700 shadow-sm outline-none hover:bg-gray-200',
-      className
+      'group flex h-[45px] flex-1 cursor-pointer items-center justify-between bg-white p-4 text-sm leading-none text-gray-700 outline-none hover:bg-gray-200',
+      className,
     )}
     {...props}
     ref={forwardedRef}
@@ -70,7 +71,7 @@ const AccordionContentWrapper = React.forwardRef<
   <AccordionContent
     className={classNames(
       'overflow-hidden bg-gray-50 text-sm text-gray-700 transition-all duration-300 ease-in-out',
-      className
+      className,
     )}
     {...props}
     ref={forwardedRef}
@@ -80,7 +81,7 @@ const AccordionContentWrapper = React.forwardRef<
 ));
 
 export {
-    Accordion,
+  Accordion,
   AccordionItemWrapper,
   AccordionTriggerWrapper,
   AccordionContentWrapper,

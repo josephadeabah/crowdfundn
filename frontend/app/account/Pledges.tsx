@@ -35,10 +35,13 @@ const PledgesListPage = () => {
 
       <Accordion type="single" collapsible>
         {pledges.map((campaign) => (
-          <AccordionItemWrapper key={campaign.campaign_id} value={campaign.campaign_id.toString()}>
+          <AccordionItemWrapper
+            key={campaign.campaign_id}
+            value={campaign.campaign_id.toString()}
+          >
             <AccordionTriggerWrapper>
               <h2 className="text-2xl font-semibold truncate max-w-xs">
-               {campaign.campaign_name}
+                {campaign.campaign_name}
               </h2>
             </AccordionTriggerWrapper>
             <AccordionContentWrapper>
@@ -60,15 +63,17 @@ const PledgesListPage = () => {
                                 pledge.status === 'pending'
                                   ? 'text-yellow-600'
                                   : pledge.status === 'success'
-                                  ? 'text-green-600'
-                                  : 'text-red-600'
+                                    ? 'text-green-600'
+                                    : 'text-red-600'
                               }`}
                             >
                               {pledge.status}
                             </span>
                           </p>
                           <p className="text-sm text-gray-700">
-                            <span className="font-medium">Shipping Status:</span>{' '}
+                            <span className="font-medium">
+                              Shipping Status:
+                            </span>{' '}
                             <span
                               className={`capitalize ${
                                 pledge.shipping_status === 'not_shipped'
@@ -80,7 +85,9 @@ const PledgesListPage = () => {
                             </span>
                           </p>
                           <p className="text-sm text-gray-700">
-                            <span className="font-medium">Delivery Option:</span>{' '}
+                            <span className="font-medium">
+                              Delivery Option:
+                            </span>{' '}
                             {pledge.delivery_option}
                           </p>
                         </div>
