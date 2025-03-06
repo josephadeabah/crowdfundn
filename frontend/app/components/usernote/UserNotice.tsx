@@ -28,7 +28,7 @@ const UserNotice = () => {
       </p>
 
       {/* Learn More Link */}
-      <a href="#" className="text-blue-500 hover:underline">
+      <a href="#" className="text-cyan-500 hover:underline">
         Learn More
       </a>
     </div>
