@@ -10,7 +10,7 @@ import {
   ChatBubbleIcon,
   StarIcon,
 } from '@radix-ui/react-icons';
-import { HiOutlineTruck } from "react-icons/hi";
+import { HiOutlineTruck } from 'react-icons/hi';
 import { BiTransfer } from 'react-icons/bi';
 import Rewards from '@/app/account/Rewards';
 import Campaigns from '@/app/account/Campaigns';
