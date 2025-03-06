@@ -510,7 +510,7 @@ const CheckoutPageContent = () => {
       )}
 
       {/* Navigation Buttons */}
-      <div className="flex justify-between">
+      <div className="flex justify-between gap-1">
         {/* Back Button */}
         {currentStep > 1 && (
           <button
