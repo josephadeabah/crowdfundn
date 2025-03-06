@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { usePledgesContext } from '@/app/context/pledges/PledgesContext';
@@ -9,6 +8,8 @@ import {
   AccordionTriggerWrapper,
   AccordionContentWrapper,
 } from '@/app/components/accordion/Accordion';
+import PledgeListPageLoader from '../loaders/PledgeListPageLoader ';
+import ErrorPage from '../components/errorpage/ErrorPage';
 
 const PledgesListPage = () => {
   const { pledges, loading, error, fetchPledges, deletePledge } =
@@ -18,9 +19,18 @@ const PledgesListPage = () => {
     fetchPledges();
   }, [fetchPledges]);
 
-  if (loading) return <div className="text-center py-8">Loading...</div>;
+  if (loading)
+    return (
+      <div className="text-center py-8 px-2">
+        <PledgeListPageLoader />
+      </div>
+    );
   if (error)
-    return <div className="text-center py-8 text-red-500">Error: {error}</div>;
+    return (
+      <div className="text-center py-8 px-2">
+        <ErrorPage />
+      </div>
+    );
 
   return (
     <div className="container mx-auto px-2 py-8">
@@ -40,7 +50,7 @@ const PledgesListPage = () => {
             value={campaign.campaign_id.toString()}
           >
             <AccordionTriggerWrapper>
-                {campaign.campaign_name}
+              {campaign.campaign_name}
             </AccordionTriggerWrapper>
             <AccordionContentWrapper>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
