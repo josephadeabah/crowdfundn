@@ -42,13 +42,13 @@ const PledgesListPage = () => {
       <p className="text-gray-500 dark:text-neutral-400 mb-4">
         All shipping or delivery is done by you.{' '}
         <span className="font-semibold text-gray-600 dark:text-neutral-300">
-          Bantu Hive disclaims any responsibility
+          Bantu Hive disclaims any responsibility.
         </span>
         <a
           href="/learn-more"
           className="text-orange-500 dark:text-orange-400 hover:underline ml-2"
         >
-          Learn More
+          Learn more
         </a>
       </p>
       <Accordion type="single" collapsible>
