@@ -44,7 +44,7 @@ const PledgesListPage = () => {
                 key={pledge.id}
                 className="bg-white rounded-lg shadow-sm overflow-hidden transition-shadow duration-300"
               >
-                <div className="flex flex-col md:flex-row">
+                <div className="flex flex-row flex-wrap gap-3">
                   {/* Accordion Wrapper */}
                   <Accordion type="single" collapsible>
                     {/* Accordion for Pledge Details */}
