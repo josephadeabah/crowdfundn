@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {
+import {Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
@@ -80,6 +80,7 @@ const AccordionContentWrapper = React.forwardRef<
 ));
 
 export {
+    Accordion,
   AccordionItemWrapper,
   AccordionTriggerWrapper,
   AccordionContentWrapper,
