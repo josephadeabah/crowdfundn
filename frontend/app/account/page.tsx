@@ -10,7 +10,7 @@ import {
   ChatBubbleIcon,
   StarIcon,
 } from '@radix-ui/react-icons';
-import { HiOutlineShoppingCart } from "react-icons/hi";
+import { HiOutlineTruck } from "react-icons/hi";
 import { BiTransfer } from 'react-icons/bi';
 import Rewards from '@/app/account/Rewards';
 import Campaigns from '@/app/account/Campaigns';
@@ -54,7 +54,7 @@ const ProfileTabs = () => {
     },
     {
       label: 'Pledges', // New Pledges tab
-      icon: <HiOutlineShoppingCart />, // Use an appropriate icon
+      icon: <HiOutlineTruck />, // Use an appropriate icon
       component: <PledgesListPage />,
       description: 'View and manage your pledges here.',
     },
