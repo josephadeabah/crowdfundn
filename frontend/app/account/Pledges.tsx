@@ -161,7 +161,7 @@ const PledgesListPage = () => {
                         <div className="mt-6">
                           <button
                             onClick={() => deletePledge(pledge.id)}
-                            className="w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors duration-300"
+                            className="w-1/2 bg-red-300 text-white py-2 px-4 rounded-full hover:bg-red-600 transition-colors duration-300"
                           >
                             Delete Pledge
                           </button>
