@@ -30,6 +30,7 @@ const Footer = () => {
               {[
                 'How It Works',
                 'Pricing',
+                'Business Fundraising',
                 'Team Fundraising',
                 'Corporate Fundraising',
                 'Event Fundraising',
