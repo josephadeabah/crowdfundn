@@ -32,6 +32,36 @@ const PledgesListPage = () => {
       </div>
     );
 
+  // Check if pledges are empty
+  if (pledges.length === 0) {
+    return (
+      <div className="container mx-auto px-2 py-8">
+        <div className="w-full flex justify-start items-center">
+          <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
+            Pledges From Your Backers
+          </h2>
+        </div>
+        <p className="text-sm text-gray-500 dark:text-neutral-400 mb-4">
+          All shipping or delivery is done by you.{' '}
+          <span className="font-semibold text-gray-600 dark:text-neutral-300">
+            Bantu Hive disclaims any responsibility.
+          </span>
+          <a
+            href="/learn-more"
+            className="text-orange-500 dark:text-orange-400 hover:underline ml-2"
+          >
+            Learn more
+          </a>
+        </p>
+        <div className="text-center py-8">
+          <p className="text-gray-600 dark:text-neutral-400">
+            You have not received any pledges yet.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-2 py-8">
       <div className="w-full flex justify-start items-center">
