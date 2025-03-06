@@ -1,4 +1,3 @@
-// components/Accordion.tsx
 import * as React from 'react';
 import {
   AccordionItem,
@@ -32,8 +31,8 @@ const AccordionItemWrapper = React.forwardRef<
 >(({ children, className, ...props }, forwardedRef) => (
   <AccordionItem
     className={classNames(
-      'mt-px overflow-hidden first:mt-0 first:rounded-t last:rounded-b focus-within:relative focus-within:z-10 focus-within:shadow-[0_0_0_2px] focus-within:shadow-mauve12',
-      className,
+      'mt-0 overflow-hidden first:rounded-t last:rounded-b focus-within:relative focus-within:z-10 focus-within:shadow-md',
+      className
     )}
     {...props}
     ref={forwardedRef}
@@ -49,15 +48,15 @@ const AccordionTriggerWrapper = React.forwardRef<
 >(({ children, className, ...props }, forwardedRef) => (
   <AccordionTrigger
     className={classNames(
-      'group flex h-[45px] flex-1 cursor-default items-center justify-between bg-mauve1 px-5 text-[15px] leading-none text-violet11 shadow-[0_1px_0] shadow-mauve6 outline-none hover:bg-mauve2',
-      className,
+      'group flex h-[45px] flex-1 cursor-pointer items-center justify-between bg-gray-100 px-5 text-sm leading-none text-gray-700 shadow-sm outline-none hover:bg-gray-200',
+      className
     )}
     {...props}
     ref={forwardedRef}
   >
     {children}
     <ChevronDownIcon
-      className="text-violet10 transition-transform duration-300 ease-[cubic-bezier(0.87,_0,_0.13,_1)] group-data-[state=open]:rotate-180"
+      className="text-gray-600 transition-transform duration-300 ease-in-out group-data-[state=open]:rotate-180"
       aria-hidden
     />
   </AccordionTrigger>
@@ -70,13 +69,13 @@ const AccordionContentWrapper = React.forwardRef<
 >(({ children, className, ...props }, forwardedRef) => (
   <AccordionContent
     className={classNames(
-      'overflow-hidden bg-mauve2 text-[15px] text-mauve11 data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown',
-      className,
+      'overflow-hidden bg-gray-200 text-sm text-gray-700 transition-all duration-300 ease-in-out',
+      className
     )}
     {...props}
     ref={forwardedRef}
   >
-    <div className="px-5 py-[15px]">{children}</div>
+    <div className="px-5 py-4">{children}</div>
   </AccordionContent>
 ));
 
