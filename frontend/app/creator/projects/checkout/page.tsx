@@ -442,7 +442,7 @@ const CheckoutPageContent = () => {
       {/* Step 3: Payment Form */}
       {currentStep === 3 && (
         <>
-          <div className="max-w-full mx-auto bg-white p-4 rounded-lg shadow mb-8">
+          <div className="max-w-full mx-auto bg-white p-4 mb-8">
             <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
             <div className="space-y-4">
               {/* Selected Rewards */}
