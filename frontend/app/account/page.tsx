@@ -22,7 +22,7 @@ import ProfileTabsLoader from '@/app/loaders/ProfileTabsLoader';
 import AccountSettings from '@/app/account/settings/AccountSettings';
 import OnboardingModal from '@/app/components/onboarding/OnboardingModal';
 import Favorites from '@/app/account/Favorites';
-import PledgesListPage from './Pledges';
+import PledgesListPage from '@/app/account/Pledges';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState<string>('');
