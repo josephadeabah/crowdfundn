@@ -155,7 +155,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
           <div className="mt-8 flex justify-end">
             <button
               onClick={handleConfirm}
-              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+              className="w-1/2 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full"
             >
               Confirm
             </button>
