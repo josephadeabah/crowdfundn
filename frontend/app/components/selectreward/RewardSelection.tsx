@@ -12,6 +12,7 @@ export interface FundraiserDetails {
   id: string;
   campaignId: string;
   campaignTitle?: string;
+  campaignCurrency?: string;
 }
 
 interface RewardSelectionProps {
@@ -71,7 +72,7 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
               <h3 className="font-bold mb-2">{reward.title}</h3>
               <p className="text-gray-600 mb-2">{reward.description}</p>
               <div className="font-semibold">
-                Pledge ${reward.amount} or more
+                Pledge {fundraiserDetails.campaignCurrency}{reward.amount} or more
               </div>
               {/* Add the "Choose +" button */}
               <button

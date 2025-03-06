@@ -37,6 +37,7 @@ const CheckoutPageContent = () => {
   const campaignTitle = data?.fundraiser.campaignTitle || '';
   const billingFrequency = data?.billingFrequency || '';
   const selectedTier = data?.selectedTier || '';
+  const campaignCurrency = data?.fundraiser.campaignCurrency || '';
 
   // Payment form state
   const [cardholderName, setCardholderName] = useState('');
@@ -238,7 +239,7 @@ const CheckoutPageContent = () => {
 
                   {/* Amount */}
                   <div className="font-semibold text-green-600">
-                    ${reward.amount}
+                  {campaignCurrency}{reward.amount}
                   </div>
                 </div>
 
@@ -258,7 +259,7 @@ const CheckoutPageContent = () => {
             <div className="flex justify-between items-center">
               <h3 className="font-bold text-lg">Total</h3>
               <div className="font-semibold text-green-600">
-                ${formattedTotalAmount}
+              {campaignCurrency}{formattedTotalAmount}
               </div>
             </div>
           </div>
@@ -298,7 +299,7 @@ const CheckoutPageContent = () => {
 
                     {/* Amount */}
                     <div className="font-semibold text-green-600">
-                      ${reward.amount}
+                    {campaignCurrency}{reward.amount}
                     </div>
                   </div>
 
@@ -452,7 +453,7 @@ const CheckoutPageContent = () => {
                   <div key={reward.id} className="flex justify-between">
                     <span>{reward.title}</span>
                     <span className="font-semibold text-green-600">
-                      ${reward.amount}
+                    {campaignCurrency}{reward.amount}
                     </span>
                   </div>
                 ))}
@@ -480,7 +481,7 @@ const CheckoutPageContent = () => {
               <div className="flex justify-between">
                 <h3 className="font-bold text-lg">Total</h3>
                 <span className="font-semibold text-green-600">
-                  ${formattedTotalAmount}
+                {campaignCurrency}{formattedTotalAmount}
                 </span>
               </div>
             </div>

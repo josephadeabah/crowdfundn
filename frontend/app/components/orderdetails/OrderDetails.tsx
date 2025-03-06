@@ -108,7 +108,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
                     <h3 className="font-bold text-xl mt-4">{reward.title}</h3>
                     <p className="text-gray-600 mt-2">{reward.description}</p>
                     <div className="font-semibold text-green-600 mt-2">
-                      Pledge ${reward.amount} or more
+                      Pledge {fundraiserDetails.campaignCurrency}{reward.amount} or more
                     </div>
                   </div>
                 ))

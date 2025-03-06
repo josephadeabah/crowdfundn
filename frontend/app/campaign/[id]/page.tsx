@@ -350,6 +350,7 @@ const SingleCampaignPage: React.FC = () => {
                     id: String(currentCampaign?.fundraiser_id),
                     campaignId: String(currentCampaign?.id),
                     campaignTitle: currentCampaign?.title,
+                    campaignCurrency: fundraiserCurrency,
                   }}
                 />
               </div>
