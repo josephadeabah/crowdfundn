@@ -8,24 +8,41 @@ import React, {
 } from 'react';
 import { useAuth } from '../auth/AuthContext';
 
+interface RewardDataType {
+  id: number;
+  title: string;
+  description: string;
+  amount: number;
+  image: string;
+}
+
+interface ShippingDataType {
+  firstName: string;
+  lastName: string;
+  shippingAddress: string;
+}
+
 interface PledgeDataType {
   id: number;
   amount: number;
   status: string;
   shipping_status: string;
   created_at: string;
-  updated_at: string;
-  fundraiser_id: number;
-  campaign_id: number;
   donation_id: number;
   reward_id: number | null;
-  shipping_data: any; // Adjust this type based on your data structure
-  selected_rewards: any; // Adjust this type based on your data structure
+  shipping_data: ShippingDataType | null;
+  selected_rewards: RewardDataType[];
   delivery_option: string;
 }
 
-interface PledgesState {
+interface CampaignPledgeType {
+  campaign_id: number;
+  campaign_name: string;
   pledges: PledgeDataType[];
+}
+
+interface PledgesState {
+  pledges: CampaignPledgeType[];
   loading: boolean;
   error: string | null;
   fetchPledges: () => Promise<void>;
@@ -35,7 +52,7 @@ interface PledgesState {
 const PledgesContext = createContext<PledgesState | undefined>(undefined);
 
 export const PledgesProvider = ({ children }: { children: ReactNode }) => {
-  const [pledges, setPledges] = useState<PledgeDataType[]>([]);
+  const [pledges, setPledges] = useState<CampaignPledgeType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
@@ -66,7 +83,7 @@ export const PledgesProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      const fetchedPledges = await response.json();
+      const fetchedPledges: CampaignPledgeType[] = await response.json();
       setPledges(fetchedPledges);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error fetching pledges');
@@ -105,7 +122,12 @@ export const PledgesProvider = ({ children }: { children: ReactNode }) => {
 
         // Remove the deleted pledge from the local state
         setPledges((prevPledges) =>
-          prevPledges.filter((pledge) => pledge.id !== pledgeId),
+          prevPledges.map((campaign) => ({
+            ...campaign,
+            pledges: campaign.pledges.filter(
+              (pledge) => pledge.id !== pledgeId,
+            ),
+          })),
         );
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error deleting pledge');
