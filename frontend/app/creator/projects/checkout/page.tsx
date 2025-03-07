@@ -447,7 +447,7 @@ const CheckoutPageContent = () => {
       {currentStep === 3 && (
         <>
           <div className="max-w-full mx-auto bg-white p-4 mb-8">
-            <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+            <h2 className="text-xl font-semibold mb-4">Pledge Summary</h2>
             <div className="space-y-4">
               {/* Selected Rewards */}
               <div>
