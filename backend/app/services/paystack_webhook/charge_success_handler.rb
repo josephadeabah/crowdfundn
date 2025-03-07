@@ -64,10 +64,17 @@ class PaystackWebhook::ChargeSuccessHandler
       # Step 4: Subtract Paystack's fee from the platform fee
       adjusted_platform_fee = platform_fee - paystack_fee
 
+      # Parse metadata if it's a string
+      metadata = if response[:data] && response[:data][:metadata].is_a?(String)
+                  JSON.parse(response[:data][:metadata], symbolize_names: true)
+                else
+                  response[:data] && response[:data][:metadata] || {}
+                end
+
       # Step 5: Extract metadata values (user_id, campaign_id, session_token)
-      user_id = response[:data] && response[:data][:metadata] && response[:data][:metadata][:user_id]
-      campaign_id = response[:data] && response[:data][:metadata] && response[:data][:metadata][:campaign_id]
-      session_token = response[:data] && response[:data][:metadata] && response[:data][:metadata][:anonymous_token]
+      user_id = metadata[:user_id]
+      campaign_id = metadata[:campaign_id]
+      session_token = metadata[:anonymous_token]
       donor_ip = response[:data] && response[:data][:ip_address] # Extract the IP address
       donor_country = response[:data] && response[:data][:authorization] && response[:data][:authorization][:country_code] # Country from Paystack
 
@@ -78,13 +85,13 @@ class PaystackWebhook::ChargeSuccessHandler
 
       # Extract campaign metadata (title, description, etc.)
       campaign_metadata = {
-        title: response[:data] && response[:data][:metadata] && response[:data][:metadata][:title],
-        goal_amount: response[:data] && response[:data][:metadata] && response[:data][:metadata][:goal_amount],
-        current_amount: response[:data] && response[:data][:metadata] && response[:data][:metadata][:current_amount],
-        currency: response[:data] && response[:data][:metadata] && response[:data][:metadata][:currency],
-        currency_symbol: response[:data] && response[:data][:metadata] && response[:data][:metadata][:currency_symbol],
-        fundraiser_id: response[:data] && response[:data][:metadata] && response[:data][:metadata][:fundraiser_id],
-        fundraiser_name: response[:data] && response[:data][:metadata] && response[:data][:metadata][:fundraiser_name]
+        title: metadata[:title],
+        goal_amount: metadata[:goal_amount],
+        current_amount: metadata[:current_amount],
+        currency: metadata[:currency],
+        currency_symbol: metadata[:currency_symbol],
+        fundraiser_id: metadata[:fundraiser_id],
+        fundraiser_name: metadata[:fundraiser_name]
       }
 
       # Extract subaccount contact details
@@ -93,9 +100,9 @@ class PaystackWebhook::ChargeSuccessHandler
       subaccount_phone = response[:data] && response[:data][:subaccount] && response[:data][:subaccount][:primary_contact_phone] || 'No contact phone'
 
       # Step 6: Extract shipping data, selected rewards, and delivery option
-      shipping_data = response[:data] && response[:data][:metadata] && response[:data][:metadata][:metadata] && response[:data][:metadata][:metadata][:shippingData] || {}
-      selected_rewards = response[:data] && response[:data][:metadata] && response[:data][:metadata][:metadata] && response[:data][:metadata][:metadata][:selectedRewards] || []
-      delivery_option = response[:data] && response[:data][:metadata] && response[:data][:metadata][:metadata] && response[:data][:metadata][:metadata][:deliveryOption] || 'pickup'
+      shipping_data = metadata[:metadata] && metadata[:metadata][:shippingData] || {}
+      selected_rewards = metadata[:metadata] && metadata[:metadata][:selectedRewards] || []
+      delivery_option = metadata[:metadata] && metadata[:metadata][:deliveryOption] || 'pickup'
 
       # Step 7: Update the donation record with extracted metadata and transaction details
       donation.update!(
@@ -106,9 +113,9 @@ class PaystackWebhook::ChargeSuccessHandler
         amount: net_amount,
         user_id: user_id.presence, # Update user_id only if provided
         campaign_id: campaign_id.presence, # Update campaign_id only if provided
-        full_name: response[:data] && response[:data][:metadata] && response[:data][:metadata][:donor_name], # Update full_name with donor's name
+        full_name: metadata[:donor_name], # Update full_name with donor's name
         email: response[:data] && response[:data][:customer] && response[:data][:customer][:email],
-        phone: response[:data] && response[:data][:metadata] && response[:data][:metadata][:phone],
+        phone: metadata[:phone],
         country: final_country,  # Store the most reliable country info
         ip_address: donor_ip, # Store the IP address
         metadata: {
@@ -116,14 +123,14 @@ class PaystackWebhook::ChargeSuccessHandler
           user_id: user_id, # Add user_id to metadata
           campaign_id: campaign_id, # Add campaign_id to metadata
           campaign_metadata: campaign_metadata, # Add campaign metadata to donation
-          redirect_url: response[:data] && response[:data][:metadata] && response[:data][:metadata][:redirect_url],
-          title: response[:data] && response[:data][:metadata] && response[:data][:metadata][:title],
-          goal_amount: response[:data] && response[:data][:metadata] && response[:data][:metadata][:goal_amount],
-          current_amount: response[:data] && response[:data][:metadata] && response[:data][:metadata][:current_amount],
-          currency: response[:data] && response[:data][:metadata] && response[:data][:metadata][:currency],
-          currency_symbol: response[:data] && response[:data][:metadata] && response[:data][:metadata][:currency_symbol],
-          fundraiser_id: response[:data] && response[:data][:metadata] && response[:data][:metadata][:fundraiser_id],
-          fundraiser_name: response[:data] && response[:data][:metadata] && response[:data][:metadata][:fundraiser_name],
+          redirect_url: metadata[:redirect_url],
+          title: metadata[:title],
+          goal_amount: metadata[:goal_amount],
+          current_amount: metadata[:current_amount],
+          currency: metadata[:currency],
+          currency_symbol: metadata[:currency_symbol],
+          fundraiser_id: metadata[:fundraiser_id],
+          fundraiser_name: metadata[:fundraiser_name],
           subaccount_contact: {
             name: subaccount_name,
             email: subaccount_contact,
@@ -156,7 +163,7 @@ class PaystackWebhook::ChargeSuccessHandler
             status: 'pending',
             shipping_status: 'not_shipped',
             campaign_id: campaign_id,
-            user_id: response[:data] && response[:data][:metadata] && response[:data][:metadata][:fundraiser_id]
+            user_id: metadata[:fundraiser_id]
           )
         end
       end
