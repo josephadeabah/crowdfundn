@@ -47,9 +47,9 @@ const HomePage = () => {
     const words = [
       "Africa's Premier Reward-based & Gamified Crowdfunding Platform",
       'Online Crowdfunding, Personal fundraising, Grant funding',
-      'Fundraise for charity, medical bills, disaster relief, education, and more',
+      'Fundraise for SME, charity, medical bills, disaster relief, education, and more',
       'Fundraise for community projects, social causes and make a difference',
-      'Donate to a Cause You Care About with Confidence, Purpose and Ease',
+      'Donate to a Cause You Care About with Confidence, Purpose, Ease and Security',
       "We're Happy to Invest in your story",
     ];
 
