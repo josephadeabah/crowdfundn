@@ -5,7 +5,6 @@ module Api
         before_action :authenticate_request
         before_action :set_campaign
         before_action :set_update, only: %i[update destroy]
-        before_action :authorize_campaign_user!, only: %i[create update destroy]
 
         def create
           update = @campaign.updates.new(update_params)
@@ -27,10 +26,6 @@ module Api
         def destroy
           @update.destroy
           head :no_content
-        end
-
-        def authorize_campaign_user!
-          authorize_user!(@campaign) # Call the authorization method
         end
 
         private
