@@ -48,9 +48,9 @@ class PaystackWebhook::ChargeSuccessHandler
     end
 
     # Extract transaction status
-    transaction_status = response.dig(:data, :status)
+    transaction_status = response[:data] && response[:data][:status]
     if transaction_status == 'success'
-      gross_amount = response.dig(:data, :amount).to_f / 100.0 # Gross amount from Paystack
+      gross_amount = (response[:data] && response[:data][:amount]).to_f / 100.0 # Gross amount from Paystack
 
       # Step 1: Calculate the net amount (93% of the gross amount)
       net_amount = gross_amount * 0.93
@@ -65,11 +65,11 @@ class PaystackWebhook::ChargeSuccessHandler
       adjusted_platform_fee = platform_fee - paystack_fee
 
       # Step 5: Extract metadata values (user_id, campaign_id, session_token)
-      user_id = response.dig(:data, :metadata, :user_id)
-      campaign_id = response.dig(:data, :metadata, :campaign_id)
-      session_token = response.dig(:data, :metadata, :anonymous_token)
-      donor_ip = response.dig(:data, :ip_address) # Extract the IP address
-      donor_country = response.dig(:data, :authorization, :country_code) # Country from Paystack
+      user_id = response[:data] && response[:data][:metadata] && response[:data][:metadata][:user_id]
+      campaign_id = response[:data] && response[:data][:metadata] && response[:data][:metadata][:campaign_id]
+      session_token = response[:data] && response[:data][:metadata] && response[:data][:metadata][:anonymous_token]
+      donor_ip = response[:data] && response[:data][:ip_address] # Extract the IP address
+      donor_country = response[:data] && response[:data][:authorization] && response[:data][:authorization][:country_code] # Country from Paystack
 
       # Map IP address to country
       country_from_ip = Geocoder.search(donor_ip).first&.country || 'Unknown'
@@ -78,24 +78,24 @@ class PaystackWebhook::ChargeSuccessHandler
 
       # Extract campaign metadata (title, description, etc.)
       campaign_metadata = {
-        title: response.dig(:data, :metadata, :title),
-        goal_amount: response.dig(:data, :metadata, :goal_amount),
-        current_amount: response.dig(:data, :metadata, :current_amount),
-        currency: response.dig(:data, :metadata, :currency),
-        currency_symbol: response.dig(:data, :metadata, :currency_symbol),
-        fundraiser_id: response.dig(:data, :metadata, :fundraiser_id),
-        fundraiser_name: response.dig(:data, :metadata, :fundraiser_name)
+        title: response[:data] && response[:data][:metadata] && response[:data][:metadata][:title],
+        goal_amount: response[:data] && response[:data][:metadata] && response[:data][:metadata][:goal_amount],
+        current_amount: response[:data] && response[:data][:metadata] && response[:data][:metadata][:current_amount],
+        currency: response[:data] && response[:data][:metadata] && response[:data][:metadata][:currency],
+        currency_symbol: response[:data] && response[:data][:metadata] && response[:data][:metadata][:currency_symbol],
+        fundraiser_id: response[:data] && response[:data][:metadata] && response[:data][:metadata][:fundraiser_id],
+        fundraiser_name: response[:data] && response[:data][:metadata] && response[:data][:metadata][:fundraiser_name]
       }
 
       # Extract subaccount contact details
-      subaccount_name = response.dig(:data, :subaccount, :primary_contact_name) || 'No contact name'
-      subaccount_contact = response.dig(:data, :subaccount, :primary_contact_email) || 'No contact email'
-      subaccount_phone = response.dig(:data, :subaccount, :primary_contact_phone) || 'No contact phone'
+      subaccount_name = response[:data] && response[:data][:subaccount] && response[:data][:subaccount][:primary_contact_name] || 'No contact name'
+      subaccount_contact = response[:data] && response[:data][:subaccount] && response[:data][:subaccount][:primary_contact_email] || 'No contact email'
+      subaccount_phone = response[:data] && response[:data][:subaccount] && response[:data][:subaccount][:primary_contact_phone] || 'No contact phone'
 
       # Step 6: Extract shipping data, selected rewards, and delivery option
-      shipping_data = response.dig(:data, :metadata, :metadata, :shippingData) || {}
-      selected_rewards = response.dig(:data, :metadata, :metadata, :selectedRewards) || []
-      delivery_option = response.dig(:data, :metadata, :metadata, :deliveryOption) || 'pickup'
+      shipping_data = response[:data] && response[:data][:metadata] && response[:data][:metadata][:metadata] && response[:data][:metadata][:metadata][:shippingData] || {}
+      selected_rewards = response[:data] && response[:data][:metadata] && response[:data][:metadata][:metadata] && response[:data][:metadata][:metadata][:selectedRewards] || []
+      delivery_option = response[:data] && response[:data][:metadata] && response[:data][:metadata][:metadata] && response[:data][:metadata][:metadata][:deliveryOption] || 'pickup'
 
       # Step 7: Update the donation record with extracted metadata and transaction details
       donation.update!(
@@ -106,9 +106,9 @@ class PaystackWebhook::ChargeSuccessHandler
         amount: net_amount,
         user_id: user_id.presence, # Update user_id only if provided
         campaign_id: campaign_id.presence, # Update campaign_id only if provided
-        full_name: response.dig(:data, :metadata, :donor_name), # Update full_name with donor's name
-        email: response.dig(:data, :customer, :email),
-        phone: response.dig(:data, :metadata, :phone),
+        full_name: response[:data] && response[:data][:metadata] && response[:data][:metadata][:donor_name], # Update full_name with donor's name
+        email: response[:data] && response[:data][:customer] && response[:data][:customer][:email],
+        phone: response[:data] && response[:data][:metadata] && response[:data][:metadata][:phone],
         country: final_country,  # Store the most reliable country info
         ip_address: donor_ip, # Store the IP address
         metadata: {
@@ -116,14 +116,14 @@ class PaystackWebhook::ChargeSuccessHandler
           user_id: user_id, # Add user_id to metadata
           campaign_id: campaign_id, # Add campaign_id to metadata
           campaign_metadata: campaign_metadata, # Add campaign metadata to donation
-          redirect_url: response.dig(:data, :metadata, :redirect_url),
-          title: response.dig(:data, :metadata, :title),
-          goal_amount: response.dig(:data, :metadata, :goal_amount),
-          current_amount: response.dig(:data, :metadata, :current_amount),
-          currency: response.dig(:data, :metadata, :currency),
-          currency_symbol: response.dig(:data, :metadata, :currency_symbol),
-          fundraiser_id: response.dig(:data, :metadata, :fundraiser_id),
-          fundraiser_name: response.dig(:data, :metadata, :fundraiser_name),
+          redirect_url: response[:data] && response[:data][:metadata] && response[:data][:metadata][:redirect_url],
+          title: response[:data] && response[:data][:metadata] && response[:data][:metadata][:title],
+          goal_amount: response[:data] && response[:data][:metadata] && response[:data][:metadata][:goal_amount],
+          current_amount: response[:data] && response[:data][:metadata] && response[:data][:metadata][:current_amount],
+          currency: response[:data] && response[:data][:metadata] && response[:data][:metadata][:currency],
+          currency_symbol: response[:data] && response[:data][:metadata] && response[:data][:metadata][:currency_symbol],
+          fundraiser_id: response[:data] && response[:data][:metadata] && response[:data][:metadata][:fundraiser_id],
+          fundraiser_name: response[:data] && response[:data][:metadata] && response[:data][:metadata][:fundraiser_name],
           subaccount_contact: {
             name: subaccount_name,
             email: subaccount_contact,
@@ -156,7 +156,7 @@ class PaystackWebhook::ChargeSuccessHandler
             status: 'pending',
             shipping_status: 'not_shipped',
             campaign_id: campaign_id,
-            user_id: response.dig(:data, :metadata, :fundraiser_id)
+            user_id: response[:data] && response[:data][:metadata] && response[:data][:metadata][:fundraiser_id]
           )
         end
       end
