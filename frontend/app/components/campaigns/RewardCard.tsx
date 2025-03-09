@@ -55,7 +55,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
     <>
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-12">
         <div className="animate-fade-up">
-          <span className="inline-block px-3 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-full mb-4">
+          <span className="inline-block px-3 py-1 text-xs font-semibold bg-green-500/10 text-green-500 rounded-full mb-4">
             Trending Now
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground">
@@ -87,7 +87,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
             onClick={() => setCurrentFilter(filter)}
             className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
               currentFilter === filter
-                ? 'bg-primary text-primary-foreground'
+                ? 'bg-green-500 text-white'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
@@ -109,7 +109,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
             style={{ animationDelay: `${index * 100}ms` }}
           >
             <div
-              className="group relative overflow-hidden rounded-xl bg-background border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300 animate-fade-up h-full flex flex-col"
+              className="group relative overflow-hidden rounded-xl bg-background border border-border hover:border-green-500/30 hover:shadow-lg transition-all duration-300 animate-fade-up h-full flex flex-col"
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
             >
@@ -134,8 +134,8 @@ const RewardCard: React.FC<RewardCardsProps> = ({
                     className={cn(
                       'absolute top-4 right-4 p-2 rounded-full transition-colors',
                       isLiked
-                        ? 'bg-primary/20 text-primary'
-                        : 'bg-background/80 text-muted-foreground hover:text-primary',
+                        ? 'bg-green-500/20 text-green-500'
+                        : 'bg-background/80 text-muted-foreground hover:text-green-500',
                     )}
                     onClick={(e) => {
                       e.preventDefault();
@@ -143,7 +143,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
                     }}
                   >
                     <Heart
-                      className={cn('h-4 w-4', isLiked && 'fill-primary')}
+                      className={cn('h-4 w-4', isLiked && 'fill-green-500')}
                     />
                   </button>
                 </div>
