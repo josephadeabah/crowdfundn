@@ -31,6 +31,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from '@/app/components/popover/Popover';
+import { cn } from '../lib/utils';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
