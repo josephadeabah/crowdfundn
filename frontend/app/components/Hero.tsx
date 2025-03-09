@@ -48,7 +48,7 @@ const Hero = () => {
   const overlayOpacity = Math.min(0.7 + scrollY * 0.0005, 0.85);
 
   return (
-    <section className="relative h-screen overflow-hidden">
+    <div className="relative h-screen overflow-hidden">
       {/* Parallax background with enhanced overflow effect */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -151,7 +151,7 @@ const Hero = () => {
           />
         </svg>
       </div>
-    </section>
+    </div>
   );
 };
 
