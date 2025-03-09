@@ -329,7 +329,7 @@ const SingleCampaignPage: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 p-2">
+                  <div className="text-sm text-gray-700 dark:text-gray-400 p-2">
                     {currentCampaign?.fundraiser?.profile?.description ||
                       'No description provided.'}
                   </div>
