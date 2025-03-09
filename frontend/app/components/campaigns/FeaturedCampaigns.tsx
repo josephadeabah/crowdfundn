@@ -54,7 +54,7 @@ const FeaturedCampaigns = () => {
         />
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-12">
           <div className="animate-fade-up">
-            <span className="inline-block px-3 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-full mb-4">
+            <span className="inline-block px-3 py-1 text-xs font-semibold bg-orange-500/10 text-orange-500 rounded-full mb-4">
               Trending Now
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground">
@@ -86,7 +86,7 @@ const FeaturedCampaigns = () => {
               onClick={() => setCurrentFilter(filter)}
               className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                 currentFilter === filter
-                  ? 'bg-primary text-primary-foreground'
+                  ? 'bg-orange-500 text-white'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'
               }`}
             >
