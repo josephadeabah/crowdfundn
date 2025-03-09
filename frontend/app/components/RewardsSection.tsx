@@ -8,7 +8,11 @@ const rewards = [
     id: 1,
     name: 'Early Bird',
     points: 100,
-    benefits: ['10% discount on next backing', 'Access to exclusive updates'],
+    benefits: [
+      '10% discount on next backing',
+      'Access to exclusive updates',
+      'Silver Certificates of Honour',
+    ],
     icon: <Gift className="h-6 w-6" />,
     level: 'Silver',
     color: 'from-slate-400/20 to-slate-600/20',
@@ -19,9 +23,11 @@ const rewards = [
     name: 'Strategic Backer',
     points: 500,
     benefits: [
-      '15% discount on next backing',
-      'Monthly community calls',
-      'Early access to new campaigns',
+      '25% discount on next backing', // Moved from Diamond
+      'Voting rights on platform features', // Moved from Diamond
+      'Exclusive merchandise', // Moved from Diamond
+      'VIP events access', // Moved from Diamond
+      'Gold Certificates of Honour', // Existing benefit
     ],
     icon: <Star className="h-6 w-6" />,
     level: 'Gold',
@@ -33,15 +39,16 @@ const rewards = [
     name: 'Super Supporter',
     points: 1000,
     benefits: [
-      '25% discount on next backing',
-      'Voting rights on platform features',
-      'Exclusive merchandise',
-      'VIP events access',
+      'Featured in our newsletters',
+      '$1000 cash prize',
+      'Get featured on the leaderboard',
+      'Personalized thank-you video from the team',
+      'Diamond Certificates of Honour',
     ],
     icon: <Trophy className="h-6 w-6" />,
     level: 'Diamond',
-    color: 'from-amber-300/20 to-amber-500/20',
-    textColor: 'text-amber-500',
+    color: 'from-cyan-500/20 to-cyan-700/20', // Changed to blue
+    textColor: 'text-cyan-500', // Changed to blue
   },
 ];
 
