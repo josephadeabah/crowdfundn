@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { cn } from '@/app/lib/utils';
-import { Link } from 'react-router-dom';
+import Link  from 'next/link';
 import { Heart, Award } from 'lucide-react';
 
 interface CampaignCardProps {
@@ -33,7 +33,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link to="/campaign" className="block flex-1">
+      <Link href="/campaign" className="block flex-1">
         <div className="relative aspect-[3/2] overflow-hidden">
           <img
             src={campaign.imageUrl}
