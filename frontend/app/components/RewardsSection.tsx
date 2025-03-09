@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { Star, Gift, Trophy, ArrowRight } from 'lucide-react';
+import { HandIcon } from '@radix-ui/react-icons';
 
 // Sample rewards data
 const rewards = [
@@ -132,7 +133,7 @@ const RewardsSection = () => {
         <div className="text-center animate-on-scroll">
           <button className="group inline-flex items-center gap-2 px-6 py-3 bg-green-500/10 text-green-500 hover:bg-green-500/20 rounded-md transition-colors">
             Make Impact Now
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <HandIcon className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
       </div>

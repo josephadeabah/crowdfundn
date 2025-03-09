@@ -2,9 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/app/lib/utils';
 import { ArrowRight, ArrowDown } from 'lucide-react'; // Import ArrowDown
+import { useAuth } from '../context/auth/AuthContext';
+import Link from 'next/link';
 
 const Hero = () => {
   const [scrollY, setScrollY] = useState(0);
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -98,11 +101,15 @@ const Hero = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 animate-fade-up animate-delay-300">
             <button className="group px-6 py-3 bg-green-600 text-primary-foreground rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2">
-              Fundraise Now For Free
+              <Link
+                href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
+              >
+                Fundraise Now for Free
+              </Link>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
             <button className="px-6 py-3 bg-transparent border border-border text-foreground rounded-md hover:bg-muted transition-colors">
-              How It Works
+              <Link href="/how-it-works">How It Works</Link>
             </button>
           </div>
 
