@@ -53,7 +53,7 @@ const Hero = () => {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('/Heropage.webp')`,
+          backgroundImage: `url('/Heropage.jpeg')`,
           transform: `translateY(${backgroundY}px) scale(${1 + scrollY * 0.0002})`,
           transformOrigin: 'bottom',
           top: `-${Math.min(scrollY * 0.2, 100)}px`, // Creates overflow effect
