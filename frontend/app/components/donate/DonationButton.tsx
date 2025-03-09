@@ -205,7 +205,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
                 className="px-4 py-2 text-gray-800 dark:text-gray-50 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex items-center"
                 disabled={isProcessing}
                 size="lg"
-                variant="default"
+                variant="outline"
               >
                 {isProcessing ? 'Processing...' : 'Proceed to Payment'}
               </Button>
