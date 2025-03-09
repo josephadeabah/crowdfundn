@@ -18,6 +18,7 @@ import Avatar from '../avatar/Avatar';
 import CarouselComponent from '@/app/components/carousel/CarouselComponent';
 import { cn } from '@/app/lib/utils';
 import { Heart, Award } from 'lucide-react';
+import { deslugify } from '@/app/utils/helpers/categories';
 
 type CampaignCardProps = {
   campaign: CampaignResponseDataType;
@@ -152,7 +153,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
           <span className="absolute top-4 left-4 px-2 py-1 text-xs font-semibold bg-background/90 text-foreground rounded-md">
-            {campaign?.category}
+            {deslugify(campaign?.category)}
           </span>
 
           <button

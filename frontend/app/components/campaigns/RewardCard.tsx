@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import { cn } from '@/app/lib/utils';
 import { Heart } from 'lucide-react';
+import { deslugify } from '@/app/utils/helpers/categories';
 
 type RewardCardsProps = {
   campaigns: CampaignResponseDataType[];
@@ -127,7 +128,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
                   <span className="absolute top-4 left-4 px-2 py-1 text-xs font-semibold bg-background/90 text-foreground rounded-md">
-                    {reward?.campaign?.category}
+                    {deslugify(reward?.campaign?.category)}
                   </span>
 
                   <button
