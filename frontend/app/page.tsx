@@ -37,7 +37,7 @@ const HomePage = () => {
       <Hero />
 
       {/* Platform Benefits */}
-      <section className="py-20 bg-muted/50">
+      <div className="py-20 bg-muted/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 animate-on-scroll">
             <span className="inline-block px-3 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-full mb-4">
@@ -85,13 +85,13 @@ const HomePage = () => {
             ))}
           </div>
         </div>
-      </section>
+      </div>
 
       <FeaturedCampaigns />
       <RewardsSection />
 
       {/* Stats section */}
-      <section className="py-20 bg-background border-y border-border">
+      <div className="py-20 bg-background border-y border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -112,7 +112,7 @@ const HomePage = () => {
             ))}
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };
