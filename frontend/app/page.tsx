@@ -40,7 +40,7 @@ const HomePage = () => {
       <div className="py-20 bg-muted/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 animate-on-scroll">
-            <span className="inline-block px-3 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-full mb-4">
+            <span className="inline-block px-3 py-1 text-xs font-semibold bg-green-200 text-green-600 rounded-full mb-4">
               Why Choose Us
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
@@ -91,7 +91,7 @@ const HomePage = () => {
       <RewardsSection />
 
       {/* Stats section */}
-      <div className="py-20 bg-background border-y border-border">
+      <div className="py-20 bg-background border-y border-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
