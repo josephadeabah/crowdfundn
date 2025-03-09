@@ -52,8 +52,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
     );
 
   return (
-    <div className="py-20 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <>
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-12">
           <div className="animate-fade-up">
             <span className="inline-block px-3 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-full mb-4">
@@ -156,11 +155,9 @@ const RewardCard: React.FC<RewardCardsProps> = ({
             </div>
           ))}
         </div>
-
         {/* Applied CSS without using the style tag with jsx prop */}
         <div className="no-scrollbar"></div>
-      </div>
-    </div>
+      </>
   );
 };
 
