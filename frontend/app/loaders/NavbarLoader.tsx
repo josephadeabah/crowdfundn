@@ -5,7 +5,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 const NavbarLoader = () => {
   return (
-    <header className="bg-green-50 p-1 dark:bg-gray-950 sticky top-0 z-50">
+    <header className="bg-white/90 backdrop-blur-md shadow-sm p-1 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 dark:bg-gray-950 dark:text-gray-50">
         {/* Original Logo or Title */}
         <div className="mx-6">
