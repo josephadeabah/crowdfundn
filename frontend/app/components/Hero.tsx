@@ -53,7 +53,7 @@ const Hero = () => {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2274&q=80')`,
+          backgroundImage: `url('/Heropage.jpg')`,
           transform: `translateY(${backgroundY}px) scale(${1 + scrollY * 0.0002})`,
           transformOrigin: 'bottom',
           top: `-${Math.min(scrollY * 0.2, 100)}px`, // Creates overflow effect
@@ -75,16 +75,16 @@ const Hero = () => {
         }}
       >
         <div className="max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-full mb-4 animate-fade-up">
+          <div className="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold bg-orange-500 text-primary rounded-full mb-4 animate-fade-up">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-600 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600"></span>
             </span>
             Launch your dreams with crowdfunding
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
-            Fund, Play, <span className="text-primary">Earn Rewards</span>
+            Fund, Play, <span className="text-white">Earn Rewards</span>
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground mb-8 animate-fade-up animate-delay-200">
