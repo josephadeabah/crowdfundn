@@ -43,7 +43,7 @@
     "@types/react-scroll": "^1.8.10",
     "@vercel/analytics": "^1.4.1",
     "axios": "^1.7.7",
-    "class-variance-authority": "^0.7.0",
+    "class-variance-authority": "^0.7.1",
     "embla-carousel": "^8.3.1",
     "embla-carousel-autoplay": "^8.3.0",
     "embla-carousel-react": "^8.3.1",
@@ -81,7 +81,16 @@
     "slick-carousel": "^1.8.1",
     "tailwind-merge": "^2.5.2",
     "typescript": "^5.6.3",
-    "use-sound": "^4.0.1"
+    "use-sound": "^4.0.1",
+    "sonner": "^1.5.0",
+    "tailwindcss-animate": "^1.0.7",
+    "vaul": "^0.9.3",
+    "zod": "^3.23.8",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.0.0",
+    "date-fns": "^3.6.0",
+    "input-otp": "^1.2.4",
+    "lucide-react": "^0.462.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
@@ -96,7 +105,8 @@
     "postcss": "^8.4.21",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.2.7",
-    "typescript-eslint": "^8.11.0"
+    "@typescript-eslint/eslint-plugin": "^8.11.0",
+    "@typescript-eslint/parser": "^8.11.0"
   },
   "resolutions": {
     "string-width": "^4.2.0"
