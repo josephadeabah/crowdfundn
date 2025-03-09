@@ -195,7 +195,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
 
           {/* Progress bar */}
           <div className="mt-auto">
-            <div className="w-full bg-muted h-2 rounded-full mb-2 overflow-hidden">
+            <div className="w-full bg-muted h-2 rounded-full py-4 mb-2 overflow-hidden">
               <Progress
                 firstProgress={
                   (Number(campaign?.transferred_amount) /
