@@ -55,7 +55,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
 
   return (
     <div
-      className="group relative overflow-hidden py-5 rounded-xl bg-background border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300 animate-fade-up h-full flex flex-col"
+      className="group relative overflow-hidden my-5 rounded-xl bg-background border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300 animate-fade-up h-full flex flex-col"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
