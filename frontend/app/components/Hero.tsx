@@ -75,7 +75,7 @@ const Hero = () => {
         }}
       >
         <div className="max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold bg-orange-500 text-primary rounded-full mb-4 animate-fade-up">
+          <div className="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold bg-white text-gray-500 rounded-full mb-4 animate-fade-up">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-600 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600"></span>
