@@ -10,7 +10,7 @@ const rewards = [
     points: 100,
     benefits: [
       '10% discount on next backing',
-      'Access to exclusive updates',
+      'Get featured on the leaderboard',
       'Silver Certificates of Honour',
     ],
     icon: <Gift className="h-6 w-6" />,
@@ -26,7 +26,7 @@ const rewards = [
       '25% discount on next backing', // Moved from Diamond
       'Voting rights on platform features', // Moved from Diamond
       'Exclusive merchandise', // Moved from Diamond
-      'VIP events access', // Moved from Diamond
+      'Get featured on the leaderboard',, // Moved from Diamond
       'Gold Certificates of Honour', // Existing benefit
     ],
     icon: <Star className="h-6 w-6" />,
