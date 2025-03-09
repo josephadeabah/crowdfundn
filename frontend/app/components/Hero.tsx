@@ -85,8 +85,8 @@ const Hero = () => {
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
-              <span className="text-green-500">Fund</span>,{' '}
-              <span className="text-orange-500">Play</span>,{' '}
+              <span className="text-green-500">Fund,</span>{' '}
+              <span className="text-orange-500">Play,</span>{' '}
               <span className="text-white">Earn Rewards</span>
             </h1>
           </h1>
