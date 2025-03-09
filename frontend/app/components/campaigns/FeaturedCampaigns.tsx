@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import CampaignCard from './CampaignCard';
 import { useCampaignContext } from '../../context/account/campaign/CampaignsContext';
+import RewardCard from './RewardCard';
 
 const FeaturedCampaigns = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -31,6 +32,19 @@ const FeaturedCampaigns = () => {
     return campaign.status !== 'completed' && campaign.permissions.is_public;
   });
 
+  // Filter rewards based on campaign status and permissions
+  const rewards = campaigns
+    .filter(
+      (campaign) =>
+        campaign.status !== 'completed' && campaign.permissions.is_public,
+    )
+    .flatMap((campaign) =>
+      campaign.rewards.map((reward) => ({
+        ...reward,
+        campaign,
+      })),
+    );
+
   const scrollLeft = () => {
     if (carouselRef.current) {
       carouselRef.current.scrollBy({ left: -320, behavior: 'smooth' });
@@ -46,6 +60,27 @@ const FeaturedCampaigns = () => {
   return (
     <div className="py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Carousel */}
+        <div
+          ref={carouselRef}
+          className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory no-scrollbar"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {rewards.map((reward, index) => (
+            <div
+              key={reward.id}
+              className="snap-start flex-none w-[280px] md:w-[350px]"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <RewardCard
+                reward={reward.campaign}
+                loading={loading}
+                error={error}
+              />
+            </div>
+          ))}
+        </div>
+
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-12">
           <div className="animate-fade-up">
             <span className="inline-block px-3 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-full mb-4">
