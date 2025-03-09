@@ -4,10 +4,28 @@ import { cn } from '@/app/lib/utils';
 import { ArrowRight, ArrowDown } from 'lucide-react'; // Import ArrowDown
 import { useAuth } from '../context/auth/AuthContext';
 import Link from 'next/link';
+import { useLeaderboardContext } from '../context/leaderboard/LeaderboardContext';
+import { deslugify } from '../utils/helpers/categories';
+import { Popover, PopoverContent, PopoverTrigger } from './popover/Popover';
+import Avatar from './avatar/Avatar';
+import { getVerifiedBadge } from '../utils/helpers/get.level.trophy';
 
 const Hero = () => {
   const [scrollY, setScrollY] = useState(0);
   const { user } = useAuth();
+  const {
+    topBackers,
+    mostActiveBackers,
+    topBackersWithRewards,
+    topFundraisersStories,
+    loading,
+    error,
+    fetchLeaderboardData,
+  } = useLeaderboardContext(); // Access the context
+
+  useEffect(() => {
+    fetchLeaderboardData(); // Fetch leaderboard data on component mount
+  }, [fetchLeaderboardData]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -115,21 +133,71 @@ const Hero = () => {
 
           <div className="mt-12 flex items-center gap-4 animate-fade-up animate-delay-400">
             <div className="flex -space-x-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="h-8 w-8 rounded-full border-2 border-background overflow-hidden"
-                >
-                  <img
-                    src={`https://i.pravatar.cc/100?img=${i + 10}`}
-                    alt="User"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
+              {topBackers?.map((backer, index) => (
+                <Popover key={index}>
+                  <PopoverTrigger asChild>
+                    <div
+                      className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
+                      style={{ zIndex: topBackers.length - index }}
+                    >
+                      <Avatar
+                        name={backer.name}
+                        size="sm"
+                        imageUrl={backer.profile_picture}
+                      />
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-96">
+                    <div className="space-y-4 p-4">
+                      <div className="flex items-center space-x-4">
+                        <Avatar
+                          name={backer.name}
+                          size="xl"
+                          imageUrl={backer.profile_picture}
+                        />
+                        <div>
+                          <div className="flex items-center gap-1">
+                            <h4 className="font-semibold text-lg text-gray-800">
+                              {backer.name}
+                            </h4>
+                            <span>{getVerifiedBadge(backer.level, 20)}</span>
+                          </div>
+                          <p className="text-sm text-gray-500">
+                            {backer.country}
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">
+                          Category Interest
+                        </p>
+                        <p className="text-sm text-gray-700">
+                          {deslugify(backer.category_interest)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">Bio</p>
+                        <p className="text-sm text-gray-700">{backer.bio}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">Total Donated</p>
+                        <p className="text-sm text-gray-700">
+                          {backer?.currency}
+                          {backer.amount}
+                        </p>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               ))}
+              {topBackers?.length > 5 && (
+                <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  +{topBackers?.length - 5}
+                </div>
+              )}
             </div>
             <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">10+</span> backers
+              <span className="font-semibold text-foreground">{topBackers?.length || 0}+</span> backers
               joined this month
             </p>
           </div>
