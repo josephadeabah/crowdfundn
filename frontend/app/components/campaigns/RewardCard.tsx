@@ -147,7 +147,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
                     </button>
                   </div>
                   {/* Ensure this stays at the bottom */}
-                  <div className="flex items-center space-x-2 text-sm font-semibold text-green-600 dark:text-green-400">
+                  <div className="flex items-center space-x-2 px-2 py-4 text-sm font-semibold text-green-600 dark:text-green-400">
                     <FaGift className="text-lg" />
                     <span>Exclusive Reward</span>
                   </div>
