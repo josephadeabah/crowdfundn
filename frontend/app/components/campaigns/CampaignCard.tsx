@@ -139,7 +139,18 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link href={`/campaign/${campaign.id}?${generateRandomString()}`} className="block flex-1">
+      <ToastComponent
+        isOpen={toast.isOpen}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
+        title={toast.title}
+        description={toast.description}
+        type={toast.type}
+      />
+
+      <Link
+        href={`/campaign/${campaign.id}?${generateRandomString()}`}
+        className="block flex-1"
+      >
         <div className="relative aspect-[3/2] overflow-hidden">
           <Image
             src={campaign?.media || '/bantuhive.svg'}
@@ -159,22 +170,27 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
           <button
             className={cn(
               'absolute top-4 right-4 p-2 rounded-full transition-colors',
-              isLiked
+              campaign.favorited
                 ? 'bg-primary/20 text-primary'
                 : 'bg-background/80 text-muted-foreground hover:text-primary',
             )}
             onClick={(e) => {
+              e.stopPropagation();
               e.preventDefault();
-              setIsLiked(!isLiked);
+              campaign.favorited
+                ? handleUnfavorite(campaign.id.toString())
+                : handleFavorite(campaign.id.toString());
             }}
           >
-            <Heart className={cn('h-4 w-4', isLiked && 'fill-primary')} />
+            <Heart
+              className={cn('h-4 w-4', campaign.favorited && 'fill-primary')}
+            />
           </button>
         </div>
 
         <div className="p-5 flex-1 flex flex-col">
           <div className="mb-3 flex items-center gap-2">
-          <Avatar
+            <Avatar
               name={campaign?.fundraiser?.profile?.name}
               size="sm"
               imageUrl={campaign?.fundraiser?.profile?.avatar}

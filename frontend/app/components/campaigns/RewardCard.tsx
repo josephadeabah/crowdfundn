@@ -10,6 +10,10 @@ import { cn } from '@/app/lib/utils';
 import { Heart } from 'lucide-react';
 import { deslugify } from '@/app/utils/helpers/categories';
 import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
+import { useAuth } from '@/app/context/auth/AuthContext';
+import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
+import CarouselComponent from '@/app/components/carousel/CarouselComponent';
+import ToastComponent from '../toast/Toast';
 
 type RewardCardsProps = {
   campaigns: CampaignResponseDataType[];
@@ -27,6 +31,8 @@ const RewardCard: React.FC<RewardCardsProps> = ({
   const [currentFilter, setCurrentFilter] = useState('All');
   const filters = ['All'];
   const carouselRef = useRef<HTMLDivElement>(null);
+  const { favoriteCampaign, unfavoriteCampaign } = useCampaignContext();
+  const { user } = useAuth();
 
   const scrollLeft = () => {
     if (carouselRef.current) {
@@ -53,8 +59,60 @@ const RewardCard: React.FC<RewardCardsProps> = ({
       })),
     );
 
+  const handleFavorite = async (campaignId: string) => {
+    if (!user) {
+      showToast(
+        'Error',
+        'You must log in first to add to your favorite and track campaign progress.',
+        'error',
+      );
+      return;
+    }
+    await favoriteCampaign(campaignId);
+  };
+
+  const handleUnfavorite = async (campaignId: string) => {
+    if (!user) {
+      showToast(
+        'Error',
+        'You must log in first to add to your favorite and track campaign progress.',
+        'error',
+      );
+      return;
+    }
+    await unfavoriteCampaign(campaignId);
+  };
+
+  const [toast, setToast] = useState({
+    isOpen: false,
+    title: '',
+    description: '',
+    type: 'success' as 'success' | 'error' | 'warning',
+  });
+
+  const showToast = (
+    title: string,
+    description: string,
+    type: 'success' | 'error' | 'warning',
+  ) => {
+    setToast({
+      isOpen: true,
+      title,
+      description,
+      type,
+    });
+  };
+
   return (
     <>
+      <ToastComponent
+        isOpen={toast.isOpen}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
+        title={toast.title}
+        description={toast.description}
+        type={toast.type}
+      />
+
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-12">
         <div className="animate-fade-up">
           <span className="inline-block px-3 py-1 text-xs font-semibold bg-green-500/10 text-green-500 rounded-full mb-4">
@@ -138,17 +196,23 @@ const RewardCard: React.FC<RewardCardsProps> = ({
                   <button
                     className={cn(
                       'absolute top-4 right-4 p-2 rounded-full transition-colors',
-                      isLiked
+                      reward.campaign.favorited
                         ? 'bg-green-500/20 text-green-500'
                         : 'bg-background/80 text-muted-foreground hover:text-green-500',
                     )}
                     onClick={(e) => {
+                      e.stopPropagation();
                       e.preventDefault();
-                      setIsLiked(!isLiked);
+                      reward.campaign.favorited
+                        ? handleUnfavorite(reward.campaign.id.toString())
+                        : handleFavorite(reward.campaign.id.toString());
                     }}
                   >
                     <Heart
-                      className={cn('h-4 w-4', isLiked && 'fill-green-500')}
+                      className={cn(
+                        'h-4 w-4',
+                        reward.campaign?.favorited && 'fill-green-500',
+                      )}
                     />
                   </button>
                 </div>
