@@ -84,10 +84,14 @@ const Hero = () => {
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
-            Fund, Play, <span className="text-white">Earn Rewards</span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
+            <span className="text-green-500">Fund</span>,{' '}
+            <span className="text-orange-500">Play</span>,{' '}
+            <span className="text-white">Earn Rewards</span>
+          </h1>
           </h1>
 
-          <p className="text-lg md:text-xl text-muted-foreground mb-8 animate-fade-up animate-delay-200">
+          <p className="text-lg md:text-xl text-gray-500 mb-8 animate-fade-up animate-delay-200">
             Join the gamified crowdfunding platform where backers earn rewards
             and creators bring their visions to life.
           </p>
