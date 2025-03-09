@@ -49,7 +49,7 @@ const RewardsSection = () => {
   const [selectedReward, setSelectedReward] = useState(rewards[1].id);
 
   return (
-    <section className="py-20 bg-muted/30">
+    <div className="py-20 bg-muted/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 animate-on-scroll">
           <span className="inline-block px-3 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-full mb-4">
@@ -129,7 +129,7 @@ const RewardsSection = () => {
           </button>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 

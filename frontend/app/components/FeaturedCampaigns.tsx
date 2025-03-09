@@ -115,7 +115,7 @@ const FeaturedCampaigns = () => {
   };
 
   return (
-    <section className="py-20 overflow-hidden">
+    <div className="py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-12">
           <div className="animate-fade-up">
@@ -180,7 +180,7 @@ const FeaturedCampaigns = () => {
         {/* Applied CSS without using the style tag with jsx prop */}
         <div className="no-scrollbar"></div>
       </div>
-    </section>
+    </div>
   );
 };
 
