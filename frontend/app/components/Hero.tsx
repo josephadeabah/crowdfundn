@@ -93,12 +93,12 @@ const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 animate-fade-up animate-delay-300">
-            <button className="group px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
-              Start a Campaign
+            <button className="bg-green-700 text-white sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-green-500 hover:scale-105 transition-transform duration-300 whitespace-nowrap">
+              Fundraise Now For Free
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="px-6 py-3 bg-transparent border border-border text-foreground rounded-md hover:bg-muted transition-colors">
-              Explore Projects
+            <button className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 sm:px-6 md:px-4 rounded-full text-xs md:text-base font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300">
+              How It Works
             </button>
           </div>
 
