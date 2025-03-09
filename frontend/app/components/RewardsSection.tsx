@@ -26,7 +26,8 @@ const rewards = [
       '25% discount on next backing', // Moved from Diamond
       'Voting rights on platform features', // Moved from Diamond
       'Exclusive merchandise', // Moved from Diamond
-      'Get featured on the leaderboard',, // Moved from Diamond
+      'Get featured on the leaderboard', // Moved from Diamond
+      ,
       'Gold Certificates of Honour', // Existing benefit
     ],
     icon: <Star className="h-6 w-6" />,

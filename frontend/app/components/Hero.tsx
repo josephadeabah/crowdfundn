@@ -140,7 +140,7 @@ const Hero = () => {
           Scroll to explore
         </span>
         {/* Replace SVG with ArrowDown from lucide-react */}
-        <ArrowDown className="w-6 h-6 text-white" />{' '}
+        <ArrowDown className="w-6 h-6 text-gray-500" />{' '}
         {/* White arrow-down icon */}
       </div>
     </div>
