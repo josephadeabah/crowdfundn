@@ -1,9 +1,24 @@
 'use client';
 
-import React, { useEffect } from 'react';
 import RewardsSection from './components/RewardsSection';
-import FeaturedCampaigns from './components/FeaturedCampaigns';
+import FeaturedCampaigns from './components/campaigns/FeaturedCampaigns';
 import Hero from './components/Hero';
+import React, { useState, useEffect } from 'react';
+import { FiUsers, FiBarChart, FiAward } from 'react-icons/fi';
+import { motion, useAnimation } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
+import { CarouselPlugin } from './molecules/CarouselPlugin';
+import DownloadApp from './molecules/DownloadApp';
+import ChatbotComponent from './chatbot/ChatbotComponent';
+import { FaHandHoldingUsd } from 'react-icons/fa';
+import { useAuth } from './context/auth/AuthContext';
+import CampaignCard from './components/campaigns/CampaignCard';
+import { useCampaignContext } from './context/account/campaign/CampaignsContext';
+import SummaryCardComponent from './molecules/SummaryCard';
+import BHScreenKnowHow from './molecules/BHScreenKnowHow';
+import IllustrateImageComponent from './molecules/IllustrateImageComponent';
+import BlogPosts from './components/blogs/BlogPosts';
+import RewardCard from './components/campaigns/RewardCard';
 
 const HomePage = () => {
   useEffect(() => {
