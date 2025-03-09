@@ -3,8 +3,7 @@
 import React, { useEffect } from 'react';
 import RewardsSection from './components/RewardsSection';
 import FeaturedCampaigns from './components/FeaturedCampaigns';
-import Hero from './components/Hero'
-
+import Hero from './components/Hero';
 
 const HomePage = () => {
   useEffect(() => {
@@ -19,7 +18,7 @@ const HomePage = () => {
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     // Select all elements with animate-on-scroll class

@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { cn } from '@/app/lib/utils';
-import Link  from 'next/link';
+import Link from 'next/link';
 import { Heart, Award } from 'lucide-react';
 
 interface CampaignCardProps {
@@ -40,7 +40,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
             alt={campaign.title}
             className={cn(
               'w-full h-full object-cover transition-transform duration-700',
-              isHovered ? 'scale-105' : 'scale-100'
+              isHovered ? 'scale-105' : 'scale-100',
             )}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
@@ -53,7 +53,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
               'absolute top-4 right-4 p-2 rounded-full transition-colors',
               isLiked
                 ? 'bg-primary/20 text-primary'
-                : 'bg-background/80 text-muted-foreground hover:text-primary'
+                : 'bg-background/80 text-muted-foreground hover:text-primary',
             )}
             onClick={(e) => {
               e.preventDefault();
@@ -79,7 +79,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
           <h3
             className={cn(
               'text-lg font-semibold text-foreground mb-2 line-clamp-2 transition-colors duration-300',
-              isHovered ? 'text-primary' : ''
+              isHovered ? 'text-primary' : '',
             )}
           >
             {campaign.title}

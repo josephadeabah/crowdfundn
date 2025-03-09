@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/app/lib/utils';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowDown } from 'lucide-react'; // Import ArrowDown
 
 const Hero = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -28,7 +28,7 @@ const Hero = () => {
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     // Select all elements with animate-on-scroll class
@@ -53,7 +53,7 @@ const Hero = () => {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('/Heropage.jpg')`,
+          backgroundImage: `url('/Heropage.webp')`,
           transform: `translateY(${backgroundY}px) scale(${1 + scrollY * 0.0002})`,
           transformOrigin: 'bottom',
           top: `-${Math.min(scrollY * 0.2, 100)}px`, // Creates overflow effect
@@ -118,8 +118,8 @@ const Hero = () => {
               ))}
             </div>
             <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">1,200+</span>{' '}
-              backers joined this month
+              <span className="font-semibold text-foreground">10+</span> backers
+              joined this month
             </p>
           </div>
         </div>
@@ -129,27 +129,15 @@ const Hero = () => {
       <div
         className={cn(
           'absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center transition-opacity duration-300',
-          scrollY > 100 ? 'opacity-0' : 'opacity-100 animate-float'
+          scrollY > 100 ? 'opacity-0' : 'opacity-100 animate-float',
         )}
       >
         <span className="text-sm text-muted-foreground mb-2">
           Scroll to explore
         </span>
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M12 5V19M12 19L6 13M12 19L18 13"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        {/* Replace SVG with ArrowDown from lucide-react */}
+        <ArrowDown className="w-6 h-6 text-white" />{' '}
+        {/* White arrow-down icon */}
       </div>
     </div>
   );

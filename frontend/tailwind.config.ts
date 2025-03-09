@@ -145,7 +145,7 @@ export default {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         serif: ['Georgia', 'serif'],
         roboto: 'var(--font-roboto)',
-        ubuntu: 'var(--font-ubuntu)'
+        ubuntu: 'var(--font-ubuntu)',
       },
       transitionProperty: {
         height: 'height',
@@ -155,4 +155,3 @@ export default {
   },
   plugins: [animate], // Use the imported plugin
 } satisfies Config;
-
