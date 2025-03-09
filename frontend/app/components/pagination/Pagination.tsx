@@ -23,6 +23,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <Button
         disabled={currentPage === 1}
         onClick={() => handlePageChange(currentPage - 1)}
+        variant="outline"
       >
         Previous
       </Button>
@@ -32,6 +33,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <Button
         disabled={currentPage === totalPages}
         onClick={() => handlePageChange(currentPage + 1)}
+        variant="outline"
       >
         Next
       </Button>
