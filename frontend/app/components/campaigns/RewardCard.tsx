@@ -9,6 +9,7 @@ import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import { cn } from '@/app/lib/utils';
 import { Heart } from 'lucide-react';
 import { deslugify } from '@/app/utils/helpers/categories';
+import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
 
 type RewardCardsProps = {
   campaigns: CampaignResponseDataType[];
@@ -114,7 +115,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
             >
-              <Link href="/campaign" className="block flex-1">
+              <Link href={`/campaign/${campaign.id}?tab=donate&${generateRandomString()}`} className="block flex-1">
                 <div className="relative aspect-[3/2] overflow-hidden">
                   <Image
                     src={reward?.image || '/bantuhive.svg'}

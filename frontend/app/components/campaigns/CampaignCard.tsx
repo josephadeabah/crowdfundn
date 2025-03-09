@@ -7,7 +7,6 @@ import ErrorPage from '../errorpage/ErrorPage';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import EmptyPage from '../emptypage/EmptyPage';
-import { generateRandomString } from '../../utils/helpers/generate.random-string';
 import Image from 'next/image';
 import { useUserContext } from '@/app/context/users/UserContext';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
@@ -19,6 +18,7 @@ import CarouselComponent from '@/app/components/carousel/CarouselComponent';
 import { cn } from '@/app/lib/utils';
 import { Heart, Award } from 'lucide-react';
 import { deslugify } from '@/app/utils/helpers/categories';
+import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
 
 type CampaignCardProps = {
   campaign: CampaignResponseDataType;
@@ -139,7 +139,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link href="/campaign" className="block flex-1">
+      <Link href={`/campaign/${campaign.id}?${generateRandomString()}`} className="block flex-1">
         <div className="relative aspect-[3/2] overflow-hidden">
           <Image
             src={campaign?.media || '/bantuhive.svg'}
