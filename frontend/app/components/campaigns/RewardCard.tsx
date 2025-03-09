@@ -61,42 +61,10 @@ const RewardCard: React.FC<RewardCardsProps> = ({ reward, loading, error }) => {
             <Heart className={cn('h-4 w-4', isLiked && 'fill-primary')} />
           </button>
         </div>
-
-        <div className="p-5 flex-1 flex flex-col">
-          <div className="mb-3 flex items-center gap-2">
-            <Image
-              src={reward?.media || '/bantuhive.svg'}
-              alt={reward.title}
-              className="h-6 w-6 rounded-full object-cover"
-            />
-            <span className="text-xs text-muted-foreground">
-              {reward?.fundraiser?.profile?.name}
-            </span>
-          </div>
-
-          <h3
-            className={cn(
-              'text-lg font-semibold text-foreground mb-2 line-clamp-2 transition-colors duration-300',
-              isHovered ? 'text-primary' : '',
-            )}
-          >
-            {reward.title}
-          </h3>
-
-          {/* Reward Details */}
-          <div className="w-full px-4 py-3 h-40 bg-gray-50 hover:bg-white dark:bg-gray-800 flex flex-col">
-            {/* Content should grow to push the label down */}
-            <div className="flex-grow flex flex-col gap-2">
-              <h3 className="font-bold text-gray-700 dark:text-gray-100 text-lg">
-                {reward.title}
-              </h3>
-            </div>
-            {/* Ensure this stays at the bottom */}
-            <div className="flex items-center space-x-2 text-sm font-semibold text-green-600 dark:text-green-400">
+        {/* Ensure this stays at the bottom */}
+        <div className="flex items-center space-x-2 text-sm font-semibold text-green-600 dark:text-green-400">
               <FaGift className="text-lg" />
               <span>Exclusive Reward</span>
-            </div>
-          </div>
         </div>
       </Link>
     </div>
