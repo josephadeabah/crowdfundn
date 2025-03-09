@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/app/lib/utils';
 import { ArrowRight } from 'lucide-react';
 
 const Hero = () => {

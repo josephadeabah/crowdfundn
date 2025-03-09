@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/app/lib/utils';
 import { Link } from 'react-router-dom';
 import { Heart, Award } from 'lucide-react';
 
