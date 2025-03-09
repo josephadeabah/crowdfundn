@@ -82,7 +82,7 @@ const CategoryList: React.FC = () => {
                       : 'text-gray-800 dark:bg-slate-950 dark:text-gray-50'
                   }`}
                   onClick={() => handleCategoryClick(category.value)}
-                  variant="default"
+                  variant="secondary"
                 >
                   <div className="flex items-center gap-2">
                     {category.icon}
