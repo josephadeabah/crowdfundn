@@ -47,11 +47,11 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background rounded-t-xl">
+    <div className="min-h-screen bg-background rounded-t-2xl">
       <Hero />
 
       {/* Platform Benefits */}
-      <div className="py-20 bg-green-50">
+      <div className="py-20 bg-green-50 rounded-t-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 animate-on-scroll">
             <span className="inline-block px-3 py-1 text-xs font-semibold bg-green-200 text-green-600 rounded-full mb-4">
