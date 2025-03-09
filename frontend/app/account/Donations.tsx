@@ -278,6 +278,7 @@ export default function Donations() {
               onClick={handleSendThankYouEmails}
               disabled={!isThankYouButtonEnabled}
               className="w-full"
+              variant="outline"
             >
               {filter === 'all' ? 'Send Thank You to All' : 'Send Thank You'}
             </Button>
