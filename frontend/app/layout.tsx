@@ -1,5 +1,6 @@
 'use client';
 import '../styles/globals.css';
+import '../styles/index.css';
 import { Roboto, Ubuntu } from 'next/font/google';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
