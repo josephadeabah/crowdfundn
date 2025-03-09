@@ -23,7 +23,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({
   const [isHovered, setIsHovered] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [currentFilter, setCurrentFilter] = useState('All');
-  const filters = ['All', 'Tech', 'Creative', 'Community', 'Green'];
+  const filters = ['All'];
   const carouselRef = useRef<HTMLDivElement>(null);
 
   const scrollLeft = () => {
