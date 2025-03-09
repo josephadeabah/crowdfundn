@@ -42,7 +42,20 @@ const Navbar = () => {
   const { userAccountData } = useUserContext();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
   let closeTimeout: NodeJS.Timeout;
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    // Add scroll event listener
+    window.addEventListener('scroll', handleScroll);
+
+    // Cleanup the event listener
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -162,9 +175,12 @@ const Navbar = () => {
 
   return (
     <header
-      className={`bg-green-50 dark:bg-gray-950 sticky top-0 z-50 transition-transform duration-300 ease-in-out ${
-        isVisible ? 'translate-y-0' : '-translate-y-full'
-      }`}
+      className={cn(
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+        isVisible && isScrolled
+          ? 'bg-white/90 backdrop-blur-md shadow-sm py-4 translate-y-0'
+          : 'bg-transparent py-6 -translate-y-full'
+      )}
     >
       <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 dark:bg-gray-950 dark:text-gray-50">
         <div className="text-2xl font-bold text-orange-500">
