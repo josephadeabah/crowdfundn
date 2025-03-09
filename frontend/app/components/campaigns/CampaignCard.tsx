@@ -139,10 +139,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link
-        href={`/campaign/${campaign.id}?${generateRandomString()}`}
-        className="block flex-1"
-      >
+      <Link href={`/campaign/${campaign.id}?${generateRandomString()}`} className="block flex-1">
         <div className="relative aspect-[3/2] overflow-hidden">
           <Image
             src={campaign?.media || '/bantuhive.svg'}
@@ -177,12 +174,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
 
         <div className="p-5 flex-1 flex flex-col">
           <div className="mb-3 flex items-center gap-2">
-            <Avatar
+          <Avatar
               name={campaign?.fundraiser?.profile?.name}
               size="sm"
               imageUrl={campaign?.fundraiser?.profile?.avatar}
             />
-            <span className="w-20 text-sm">
+            <span className="text-xs text-muted-foreground">
               {campaign?.fundraiser?.profile?.name}
             </span>
           </div>
