@@ -115,7 +115,10 @@ const RewardCard: React.FC<RewardCardsProps> = ({
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
             >
-              <Link href={`/campaign/${reward.campaign.id}?tab=donate&${generateRandomString()}`} className="block flex-1">
+              <Link
+                href={`/campaign/${reward.campaign.id}?tab=donate&${generateRandomString()}`}
+                className="block flex-1"
+              >
                 <div className="relative aspect-[3/2] overflow-hidden">
                   <Image
                     src={reward?.image || '/bantuhive.svg'}
