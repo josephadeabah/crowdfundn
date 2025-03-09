@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -22,6 +22,19 @@ type RewardCardsProps = {
 const RewardCard: React.FC<RewardCardsProps> = ({ campaigns, loading, error }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+    const carouselRef = useRef<HTMLDivElement>(null);
+    
+    const scrollLeft = () => {
+      if (carouselRef.current) {
+        carouselRef.current.scrollBy({ left: -320, behavior: 'smooth' });
+      }
+    };
+  
+    const scrollRight = () => {
+      if (carouselRef.current) {
+        carouselRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+      }
+    };
 
   // Filter rewards based on campaign status and permissions
   const rewards = campaigns
@@ -42,6 +55,11 @@ const RewardCard: React.FC<RewardCardsProps> = ({ campaigns, loading, error }) =
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+       <div
+          ref={carouselRef}
+          className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory no-scrollbar"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
       {rewards.map((reward, index) => (
         <div
           key={reward.id}
@@ -88,6 +106,7 @@ const RewardCard: React.FC<RewardCardsProps> = ({ campaigns, loading, error }) =
           </Link>
         </div>
       ))}
+      </div>
     </div>
   );
 };
