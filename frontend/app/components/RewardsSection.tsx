@@ -27,7 +27,6 @@ const rewards = [
       'Voting rights on platform features', // Moved from Diamond
       'Exclusive merchandise', // Moved from Diamond
       'Get featured on the leaderboard', // Moved from Diamond
-      ,
       'Gold Certificates of Honour', // Existing benefit
     ],
     icon: <Star className="h-6 w-6" />,
@@ -79,8 +78,8 @@ const RewardsSection = () => {
               onClick={() => setSelectedReward(reward.id)}
               className={`p-6 rounded-xl cursor-pointer transition-all duration-300 animate-on-scroll relative overflow-hidden ${
                 selectedReward === reward.id
-                  ? 'border-2 border-green-500 shadow-lg transform -translate-y-1'
-                  : 'border border-border hover:border-green-500/30'
+                  ? 'shadow-lg transform -translate-y-1' // Removed border-2
+                  : 'hover:shadow-lg' // Removed border and hover:border
               }`}
             >
               {/* Background gradient */}
