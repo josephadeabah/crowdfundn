@@ -52,7 +52,7 @@ const RewardsSection = () => {
     <div className="py-20 bg-muted/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 animate-on-scroll">
-          <span className="inline-block px-3 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-full mb-4">
+          <span className="inline-block px-3 py-1 text-xs font-semibold bg-green-500/10 text-green-500 rounded-full mb-4">
             Earn While You Back
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
@@ -71,8 +71,8 @@ const RewardsSection = () => {
               onClick={() => setSelectedReward(reward.id)}
               className={`p-6 rounded-xl cursor-pointer transition-all duration-300 animate-on-scroll relative overflow-hidden ${
                 selectedReward === reward.id
-                  ? 'border-2 border-primary shadow-lg transform -translate-y-1'
-                  : 'border border-border hover:border-primary/30'
+                  ? 'border-2 border-green-500 shadow-lg transform -translate-y-1'
+                  : 'border border-border hover:border-green-500/30'
               }`}
             >
               {/* Background gradient */}
@@ -101,7 +101,7 @@ const RewardsSection = () => {
                   {reward.benefits.map((benefit, index) => (
                     <li key={index} className="flex items-start gap-2 text-sm">
                       <svg
-                        className="h-5 w-5 text-primary flex-shrink-0 mt-0.5"
+                        className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -123,7 +123,7 @@ const RewardsSection = () => {
         </div>
 
         <div className="text-center animate-on-scroll">
-          <button className="group inline-flex items-center gap-2 px-6 py-3 bg-primary/10 text-primary hover:bg-primary/20 rounded-md transition-colors">
+          <button className="group inline-flex items-center gap-2 px-6 py-3 bg-green-500/10 text-green-500 hover:bg-green-500/20 rounded-md transition-colors">
             View All Rewards
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
