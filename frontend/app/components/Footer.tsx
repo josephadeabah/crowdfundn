@@ -17,7 +17,7 @@ const Footer = () => {
           {/* Logo & Mission */}
           <div>
             <BantuHiveLogoIcon className="w-40 h-auto mb-4" />
-            <p className="text-sm">
+            <p className="text-sm text-white">
               Empowering communities to fund dreams, transform lives, and drive
               Africa’s growth.
             </p>
@@ -95,7 +95,7 @@ const Footer = () => {
         {/* Mission & Vision Section */}
         <div className="mt-12 text-center border-t border-green-700 pt-8">
           <h3 className="text-xl font-bold">Our Vision</h3>
-          <p className="text-sm mt-2 max-w-2xl mx-auto">
+          <p className="text-sm mt-2 max-w-2xl mx-auto text-white">
             To be Africa’s leading crowdfunding platform, driving a thriving
             continent through innovation, collaboration, and shared prosperity.
           </p>
@@ -141,7 +141,7 @@ const Footer = () => {
         </div>
 
         {/* Copyright */}
-        <p className="text-center text-xs mt-8">
+        <p className="text-center text-xs mt-8 text-white">
           &copy; {new Date().getFullYear()} BantuHive Ltd. All rights reserved.
         </p>
       </div>
