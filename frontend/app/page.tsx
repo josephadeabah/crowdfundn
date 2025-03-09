@@ -88,30 +88,6 @@ const HomePage = () => {
 
       <FeaturedCampaigns />
       <RewardsSection />
-
-      {/* Stats section */}
-      <div className="py-20 bg-background border-y border-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { number: '$2.7M+', label: 'Funds Raised' },
-              { number: '10k+', label: 'Active Backers' },
-              { number: '125+', label: 'Successful Campaigns' },
-            ].map((stat, index) => (
-              <div
-                key={index}
-                className="flex flex-col items-center animate-on-scroll"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <span className="text-4xl md:text-5xl font-bold text-foreground mb-2">
-                  {stat.number}
-                </span>
-                <span className="text-muted-foreground">{stat.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
