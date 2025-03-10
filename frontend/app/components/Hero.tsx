@@ -113,7 +113,7 @@ const Hero = () => {
           </h1>
 
           <p className="text-lg md:text-xl text-gray-500 mb-8 animate-fade-up animate-delay-200">
-            Join the gamified crowdfunding platform where backers earn rewards
+            Join the gamified and AI-powered crowdfunding platform where backers earn rewards
             and creators bring their visions to life.
           </p>
 
