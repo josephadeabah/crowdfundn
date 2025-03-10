@@ -109,7 +109,7 @@ const FeaturedCampaigns = () => {
           className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory no-scrollbar"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {loading ? (
+          {loading && (
             // Show loader when loading
             Array.from({ length: 6 }).map((_, index) => (
               <div
@@ -120,7 +120,8 @@ const FeaturedCampaigns = () => {
                 <HomeCampaignCardLoader />
               </div>
             ))
-          ) : displayedCampaigns.length > 0 ? (
+          )}
+          {!loading && displayedCampaigns.length > 0 ? (
             // Show actual campaigns when not loading
             displayedCampaigns.map((campaign, index) => (
               <div
