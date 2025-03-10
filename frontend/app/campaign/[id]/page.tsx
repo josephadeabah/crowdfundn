@@ -267,7 +267,7 @@ const SingleCampaignPage: React.FC = () => {
               <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
                 {/* Campaign Description */}
                 <div
-                  className="prose dark:prose-dark max-w-none text-gray-700 dark:text-gray-50"
+                  className="prose dark:prose-dark max-w-none"
                   dangerouslySetInnerHTML={{
                     __html: currentCampaign?.description?.body || '',
                   }}
