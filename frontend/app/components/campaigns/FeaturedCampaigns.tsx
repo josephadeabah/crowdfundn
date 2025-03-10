@@ -11,7 +11,6 @@ const FeaturedCampaigns = () => {
   const [currentFilter, setCurrentFilter] = useState('All');
   const filters = ['All', 'Tech', 'Creative', 'Community', 'Green'];
 
-  const [isVisible, setIsVisible] = useState(false);
   const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
 
   // States for sorting and pagination
@@ -27,11 +26,11 @@ const FeaturedCampaigns = () => {
 
   useEffect(() => {
     fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, itemsPerPage);
-  }, [fetchAllCampaigns, sortCriteria, pageNumber, itemsPerPage]);
+  }, [sortCriteria, sortOrder, pageNumber, itemsPerPage, fetchAllCampaigns]);
 
   const displayedCampaigns = campaigns?.filter((campaign) => {
     return campaign.status !== 'completed' && campaign.permissions.is_public;
-  });
+  }) || [];
 
   const scrollLeft = () => {
     if (carouselRef.current) {
@@ -44,6 +43,14 @@ const FeaturedCampaigns = () => {
       carouselRef.current.scrollBy({ left: 320, behavior: 'smooth' });
     }
   };
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  console.log('Loading:', loading);
+  console.log('Campaigns:', campaigns);
+  console.log('Displayed Campaigns:', displayedCampaigns);
 
   return (
     <div className="py-20 overflow-hidden">
@@ -102,31 +109,39 @@ const FeaturedCampaigns = () => {
           className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory no-scrollbar"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {loading
-            ? // Show loader when loading
-              Array.from({ length: 6 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="snap-start flex-none w-[280px] md:w-[350px]"
-                >
-                  <HomeCampaignCardLoader />
-                </div>
-              ))
-            : // Show actual campaigns when not loading
-              displayedCampaigns.map((campaign, index) => (
-                <div
-                  key={campaign.id}
-                  className="snap-start flex-none w-[280px] md:w-[350px]"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <CampaignCard
-                    campaign={campaign}
-                    loading={loading}
-                    error={error}
-                    onPageChange={handlePageChange}
-                  />
-                </div>
-              ))}
+          {loading ? (
+            // Show loader when loading
+            Array.from({ length: 6 }).map((_, index) => (
+              <div
+                key={index}
+                className="snap-start flex-none w-[280px] md:w-[350px]"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <HomeCampaignCardLoader />
+              </div>
+            ))
+          ) : displayedCampaigns.length > 0 ? (
+            // Show actual campaigns when not loading
+            displayedCampaigns.map((campaign, index) => (
+              <div
+                key={campaign.id}
+                className="snap-start flex-none w-[280px] md:w-[350px]"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <CampaignCard
+                  campaign={campaign}
+                  loading={loading}
+                  error={error}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+            ))
+          ) : (
+            // Fallback if no campaigns are available
+            <div className="text-center text-muted-foreground">
+              No campaigns available.
+            </div>
+          )}
         </div>
 
         {/* Applied CSS without using the style tag with jsx prop */}
