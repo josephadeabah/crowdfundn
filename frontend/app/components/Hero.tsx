@@ -197,8 +197,10 @@ const Hero = () => {
               )}
             </div>
             <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">{topBackers?.length || 0}+</span> backers
-              joined this month
+              <span className="font-semibold text-foreground">
+                {topBackers?.length || 0}+
+              </span>{' '}
+              backers joined this month
             </p>
           </div>
         </div>
