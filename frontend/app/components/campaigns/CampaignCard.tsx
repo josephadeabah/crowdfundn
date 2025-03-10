@@ -140,128 +140,116 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         description={toast.description}
         type={toast.type}
       />
-      {/* Show loading spinner or message if loading is true */}
-      {loading ? (
-        <div className="flex items-center justify-center h-full">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-600"></div>
-          <span className="ml-2">Loading...</span>
-        </div>
-      ) : error ? (
-        <div className="flex items-center justify-center h-full">
-          <span className="ml-2">Sorry, Error Encountered!</span>
-        </div>
-      ) : (
-        <div
-          className="group relative overflow-hidden rounded-xl bg-background border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300 animate-fade-up h-full flex flex-col"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+      <div
+        className="group relative overflow-hidden rounded-xl bg-background border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300 animate-fade-up h-full flex flex-col"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <Link
+          href={`/campaign/${campaign.id}?${generateRandomString()}`}
+          className="block flex-1"
         >
-          <Link
-            href={`/campaign/${campaign.id}?${generateRandomString()}`}
-            className="block flex-1"
-          >
-            <div className="relative aspect-[3/2] overflow-hidden">
-              <Image
-                src={campaign?.media || '/bantuhive.svg'}
-                alt={campaign.title}
-                layout="fill"
-                objectFit="cover"
-                className={cn(
-                  'w-full h-full object-cover transition-transform duration-700',
-                  isHovered ? 'scale-105' : 'scale-100',
-                )}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
-              <span className="absolute top-4 left-4 px-2 py-1 text-xs font-semibold bg-background/90 text-foreground rounded-md">
-                {deslugify(campaign?.category)}
-              </span>
+          <div className="relative aspect-[3/2] overflow-hidden">
+            <Image
+              src={campaign?.media || '/bantuhive.svg'}
+              alt={campaign.title}
+              layout="fill"
+              objectFit="cover"
+              className={cn(
+                'w-full h-full object-cover transition-transform duration-700',
+                isHovered ? 'scale-105' : 'scale-100',
+              )}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
+            <span className="absolute top-4 left-4 px-2 py-1 text-xs font-semibold bg-background/90 text-foreground rounded-md">
+              {deslugify(campaign?.category)}
+            </span>
 
-              <button
-                className={cn(
-                  'absolute top-4 right-4 p-2 rounded-full transition-colors',
-                  campaign.favorited
-                    ? 'bg-primary/20 text-primary'
-                    : 'bg-background/80 text-muted-foreground hover:text-primary',
-                )}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  campaign.favorited
-                    ? handleUnfavorite(campaign.id.toString())
-                    : handleFavorite(campaign.id.toString());
-                }}
-              >
-                <Heart
-                  className={cn('h-4 w-4', campaign.favorited && 'fill-primary')}
-                />
-              </button>
+            <button
+              className={cn(
+                'absolute top-4 right-4 p-2 rounded-full transition-colors',
+                campaign.favorited
+                  ? 'bg-primary/20 text-primary'
+                  : 'bg-background/80 text-muted-foreground hover:text-primary',
+              )}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                campaign.favorited
+                  ? handleUnfavorite(campaign.id.toString())
+                  : handleFavorite(campaign.id.toString());
+              }}
+            >
+              <Heart
+                className={cn('h-4 w-4', campaign.favorited && 'fill-primary')}
+              />
+            </button>
+          </div>
+
+          <div className="p-5 flex-1 flex flex-col">
+            <div className="mb-3 flex items-center gap-2">
+              <Avatar
+                name={campaign?.fundraiser?.profile?.name}
+                size="sm"
+                imageUrl={campaign?.fundraiser?.profile?.avatar}
+              />
+              <span className="text-xs text-muted-foreground">
+                {campaign?.fundraiser?.profile?.name}
+              </span>
             </div>
 
-            <div className="p-5 flex-1 flex flex-col">
-              <div className="mb-3 flex items-center gap-2">
-                <Avatar
-                  name={campaign?.fundraiser?.profile?.name}
-                  size="sm"
-                  imageUrl={campaign?.fundraiser?.profile?.avatar}
+            <h3
+              className={cn(
+                'text-lg font-semibold text-foreground mb-2 line-clamp-2 transition-colors duration-300',
+                isHovered ? 'text-primary' : '',
+              )}
+            >
+              {campaign.title}
+            </h3>
+
+            {/* Progress bar */}
+            <div className="mt-auto">
+              <div className="w-full text-xs mb-2">
+                <Progress
+                  firstProgress={
+                    (Number(campaign?.transferred_amount) /
+                      Number(campaign?.goal_amount)) *
+                    100
+                  }
+                  firstTooltipContent={`Progress: ${
+                    (Number(campaign?.transferred_amount) /
+                      Number(campaign?.goal_amount)) *
+                    100
+                  }%`}
                 />
-                <span className="text-xs text-muted-foreground">
-                  {campaign?.fundraiser?.profile?.name}
+              </div>
+
+              <div className="flex justify-between text-sm mb-4">
+                <span className="text-muted-foreground">
+                  {campaign?.currency_symbol ||
+                    campaign?.currency?.toUpperCase()}{' '}
+                  {parseFloat(
+                    campaign?.transferred_amount?.toString() || '0',
+                  ).toLocaleString()}{' '}
+                  raised
                 </span>
               </div>
 
-              <h3
-                className={cn(
-                  'text-lg font-semibold text-foreground mb-2 line-clamp-2 transition-colors duration-300',
-                  isHovered ? 'text-primary' : '',
-                )}
-              >
-                {campaign.title}
-              </h3>
-
-              {/* Progress bar */}
-              <div className="mt-auto">
-                <div className="w-full text-xs mb-2">
-                  <Progress
-                    firstProgress={
-                      (Number(campaign?.transferred_amount) /
-                        Number(campaign?.goal_amount)) *
-                      100
-                    }
-                    firstTooltipContent={`Progress: ${
-                      (Number(campaign?.transferred_amount) /
-                      Number(campaign?.goal_amount)) *
-                      100
-                    }%`}
-                  />
-                </div>
-
-                <div className="flex justify-between text-sm mb-4">
-                  <span className="text-muted-foreground">
-                    {campaign?.currency_symbol ||
-                      campaign?.currency?.toUpperCase()}{' '}
-                    {parseFloat(
-                      campaign?.transferred_amount?.toString() || '0',
-                    ).toLocaleString()}{' '}
-                    raised
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-1.5">
+                  <Award className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-medium">
+                    {campaign.total_donors || 0} Backers
                   </span>
                 </div>
-
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-1.5">
-                    <Award className="h-4 w-4 text-primary" />
-                    <span className="text-xs font-medium">
-                      {campaign.total_donors || 0} Backers
-                    </span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">
-                    {campaign.remaining_days} days left
-                  </span>
-                </div>
+                <span className="text-xs text-muted-foreground">
+                  {campaign.remaining_days} days left
+                </span>
               </div>
             </div>
-          </Link>
-        </div>
-      )}
+          </div>
+        </Link>
+      </div>
     </>
   );
 };
