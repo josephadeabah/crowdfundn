@@ -216,6 +216,17 @@ const RewardCard: React.FC<RewardCardsProps> = ({
                     />
                   </button>
                 </div>
+
+                {/* Reward Title and Truncated Description */}
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    {reward.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground truncate">
+                    {reward.description}
+                  </p>
+                </div>
+
                 {/* Ensure this stays at the bottom */}
                 <div className="flex items-center space-x-2 px-2 py-4 text-sm font-semibold text-green-600 dark:text-green-400">
                   <FaGift className="text-lg" />
