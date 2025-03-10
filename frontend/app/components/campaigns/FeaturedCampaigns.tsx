@@ -4,7 +4,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import CampaignCard from './CampaignCard';
 import { useCampaignContext } from '../../context/account/campaign/CampaignsContext';
 import RewardCard from './RewardCard';
-import HomeCampaignCardLoader from '@/app/loaders/HomeCampaignCardLoader';
 
 const FeaturedCampaigns = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -102,31 +101,20 @@ const FeaturedCampaigns = () => {
           className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory no-scrollbar"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {loading
-            ? // Show skeleton loaders when loading
-              Array.from({ length: 6 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="snap-start flex-none w-[280px] md:w-[350px]"
-                >
-                  <HomeCampaignCardLoader />
-                </div>
-              ))
-            : // Show actual campaigns when not loading
-              displayedCampaigns.map((campaign, index) => (
-                <div
-                  key={campaign.id}
-                  className="snap-start flex-none w-[280px] md:w-[350px]"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <CampaignCard
-                    campaign={campaign}
-                    loading={loading}
-                    error={error}
-                    onPageChange={handlePageChange}
-                  />
-                </div>
-              ))}
+          {displayedCampaigns.map((campaign, index) => (
+            <div
+              key={campaign.id}
+              className="snap-start flex-none w-[280px] md:w-[350px]"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <CampaignCard
+                campaign={campaign}
+                loading={loading}
+                error={error}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          ))}
         </div>
 
         {/* Applied CSS without using the style tag with jsx prop */}
