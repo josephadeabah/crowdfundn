@@ -108,7 +108,7 @@
   }
 
   p {
-    @apply leading-relaxed text-muted-foreground;
+    @apply leading-relaxed;
   }
 }
 
