@@ -360,7 +360,7 @@ const CreateCampaign = () => {
               <Button variant="secondary" onClick={handleCancel}>
                 Close
               </Button>
-              <Button variant="destructive" onClick={handleSubmit}>
+              <Button variant="outline" onClick={handleSubmit}>
                 {loading ? 'Creating...' : 'Create'}
               </Button>
             </div>
