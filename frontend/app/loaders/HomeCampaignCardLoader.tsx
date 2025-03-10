@@ -5,7 +5,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 const HomeCampaignCardLoader = () => {
   return (
-    <div className="group relative overflow-hidden rounded-xl bg-background border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300 animate-fade-up h-full flex flex-col">
+    <div className="group relative overflow-hidden rounded-xl bg-background hover:shadow-lg transition-all duration-300 animate-fade-up h-full flex flex-col">
       {/* Image placeholder */}
       <div className="relative aspect-[3/2] overflow-hidden">
         <Skeleton className="w-full h-full" />
