@@ -14,6 +14,7 @@ import { useAuth } from '@/app/context/auth/AuthContext';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import CarouselComponent from '@/app/components/carousel/CarouselComponent';
 import ToastComponent from '../toast/Toast';
+import HomeCampaignCardLoader from '@/app/loaders/HomeCampaignCardLoader';
 
 type RewardCardsProps = {
   campaigns: CampaignResponseDataType[];
@@ -162,69 +163,80 @@ const RewardCard: React.FC<RewardCardsProps> = ({
         className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory no-scrollbar"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {rewards.map((reward, index) => (
-          <div
-            key={reward.id}
-            className="snap-start flex-none w-[280px] md:w-[350px]"
-            style={{ animationDelay: `${index * 100}ms` }}
-          >
-            <div
-              className="group relative overflow-hidden rounded-xl bg-background border border-border hover:border-green-500/30 hover:shadow-lg transition-all duration-300 animate-fade-up h-full flex flex-col"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-            >
-              <Link
-                href={`/campaign/${reward.campaign.id}?tab=donate&${generateRandomString()}`}
-                className="block flex-1"
+        {loading
+          ? // Show skeleton loaders when loading
+            Array.from({ length: 6 }).map((_, index) => (
+              <div
+                key={index}
+                className="snap-start flex-none w-[280px] md:w-[350px]"
               >
-                <div className="relative aspect-[3/2] overflow-hidden">
-                  <Image
-                    src={reward?.image || '/bantuhive.svg'}
-                    alt={reward.title}
-                    layout="fill"
-                    objectFit="cover"
-                    className={cn(
-                      'w-full h-full object-cover transition-transform duration-700',
-                      isHovered ? 'scale-105' : 'scale-100',
-                    )}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
-                  <span className="absolute top-4 left-4 px-2 py-1 text-xs font-semibold bg-background/90 text-foreground rounded-md">
-                    {deslugify(reward?.campaign?.category)}
-                  </span>
-
-                  <button
-                    className={cn(
-                      'absolute top-4 right-4 p-2 rounded-full transition-colors',
-                      reward.campaign.favorited
-                        ? 'bg-green-500/20 text-green-500'
-                        : 'bg-background/80 text-muted-foreground hover:text-green-500',
-                    )}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      reward.campaign.favorited
-                        ? handleUnfavorite(reward.campaign.id.toString())
-                        : handleFavorite(reward.campaign.id.toString());
-                    }}
+                <HomeCampaignCardLoader />
+              </div>
+            ))
+          : // Show actual rewards when not loading
+            rewards.map((reward, index) => (
+              <div
+                key={reward.id}
+                className="snap-start flex-none w-[280px] md:w-[350px]"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div
+                  className="group relative overflow-hidden rounded-xl bg-background border border-border hover:border-green-500/30 hover:shadow-lg transition-all duration-300 animate-fade-up h-full flex flex-col"
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                >
+                  <Link
+                    href={`/campaign/${reward.campaign.id}?tab=donate&${generateRandomString()}`}
+                    className="block flex-1"
                   >
-                    <Heart
-                      className={cn(
-                        'h-4 w-4',
-                        reward.campaign?.favorited && 'fill-green-500',
-                      )}
-                    />
-                  </button>
+                    <div className="relative aspect-[3/2] overflow-hidden">
+                      <Image
+                        src={reward?.image || '/bantuhive.svg'}
+                        alt={reward.title}
+                        layout="fill"
+                        objectFit="cover"
+                        className={cn(
+                          'w-full h-full object-cover transition-transform duration-700',
+                          isHovered ? 'scale-105' : 'scale-100',
+                        )}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
+                      <span className="absolute top-4 left-4 px-2 py-1 text-xs font-semibold bg-background/90 text-foreground rounded-md">
+                        {deslugify(reward?.campaign?.category)}
+                      </span>
+
+                      <button
+                        className={cn(
+                          'absolute top-4 right-4 p-2 rounded-full transition-colors',
+                          reward.campaign.favorited
+                            ? 'bg-green-500/20 text-green-500'
+                            : 'bg-background/80 text-muted-foreground hover:text-green-500',
+                        )}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          reward.campaign.favorited
+                            ? handleUnfavorite(reward.campaign.id.toString())
+                            : handleFavorite(reward.campaign.id.toString());
+                        }}
+                      >
+                        <Heart
+                          className={cn(
+                            'h-4 w-4',
+                            reward.campaign?.favorited && 'fill-green-500',
+                          )}
+                        />
+                      </button>
+                    </div>
+                    {/* Ensure this stays at the bottom */}
+                    <div className="flex items-center space-x-2 px-2 py-4 text-sm font-semibold text-green-600 dark:text-green-400">
+                      <FaGift className="text-lg" />
+                      <span>Exclusive Reward</span>
+                    </div>
+                  </Link>
                 </div>
-                {/* Ensure this stays at the bottom */}
-                <div className="flex items-center space-x-2 px-2 py-4 text-sm font-semibold text-green-600 dark:text-green-400">
-                  <FaGift className="text-lg" />
-                  <span>Exclusive Reward</span>
-                </div>
-              </Link>
-            </div>
-          </div>
-        ))}
+              </div>
+            ))}
       </div>
       {/* Applied CSS without using the style tag with jsx prop */}
       <div className="no-scrollbar"></div>
