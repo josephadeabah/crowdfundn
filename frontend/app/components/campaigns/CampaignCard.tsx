@@ -33,7 +33,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   error,
   onPageChange,
 }) => {
-  const { userAccountData } = useUserContext();
   const {
     pagination,
     favoriteCampaign,
@@ -51,7 +50,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const [dateRange, setDateRange] = useState<string>('all_time');
   const [goalRange, setGoalRange] = useState<string>('all');
   const [isHovered, setIsHovered] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
 
   const [toast, setToast] = useState({
     isOpen: false,
