@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { Star, Gift, Trophy, ArrowRight } from 'lucide-react';
 import { HandIcon } from '@radix-ui/react-icons';
 
@@ -24,11 +24,11 @@ const rewards = [
     name: 'Strategic Backer',
     points: 500,
     benefits: [
-      '25% discount on next backing', // Moved from Diamond
-      'Voting rights on platform features', // Moved from Diamond
-      'Exclusive merchandise', // Moved from Diamond
-      'Get featured on the leaderboard', // Moved from Diamond
-      'Gold Certificates of Honour', // Existing benefit
+      '25% discount on next backing',
+      'Voting rights on platform features',
+      'Exclusive merchandise',
+      'Get featured on the leaderboard',
+      'Gold Certificates of Honour',
     ],
     icon: <Star className="h-6 w-6" />,
     level: 'Gold',
@@ -48,14 +48,12 @@ const rewards = [
     ],
     icon: <Trophy className="h-6 w-6" />,
     level: 'Diamond',
-    color: 'from-cyan-500/20 to-cyan-700/20', // Changed to blue
-    textColor: 'text-cyan-500', // Changed to blue
+    color: 'from-cyan-500/20 to-cyan-700/20',
+    textColor: 'text-cyan-500',
   },
 ];
 
 const RewardsSection = () => {
-  const [selectedReward, setSelectedReward] = useState(rewards[1].id);
-
   return (
     <div className="py-20 bg-muted/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -76,12 +74,7 @@ const RewardsSection = () => {
           {rewards.map((reward) => (
             <div
               key={reward.id}
-              onClick={() => setSelectedReward(reward.id)}
-              className={`p-6 rounded-xl cursor-pointer transition-all duration-300 animate-on-scroll relative overflow-hidden ${
-                selectedReward === reward.id
-                  ? 'shadow-lg transform -translate-y-1' // Removed border-2
-                  : 'hover:shadow-lg' // Removed border and hover:border
-              }`}
+              className={`p-6 rounded-xl transition-all duration-300 animate-on-scroll relative overflow-hidden shadow-sm`}
             >
               {/* Background gradient */}
               <div
