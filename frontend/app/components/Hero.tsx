@@ -199,7 +199,7 @@ const Hero = () => {
           </div>
         </div>
 
-        <div className="lg:-mr-5 xl:-mr-14  reveal reveal-delay-4">
+        <div className="lg:-mr-8 xl:-mr-16  reveal reveal-delay-4">
           <VideoPlayer
             src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
             posterImage="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2340&auto=format&fit=crop"
