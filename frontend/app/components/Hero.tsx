@@ -81,7 +81,7 @@ const Hero = () => {
         ></div>
       </div>
 
-      <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center px-4 sm:px-6 lg:px-12 py-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center px-4 sm:px-6 lg:px-12 py-8">
         <div
           className="relative h-full max-w-7xl mx-auto flex items-center"
           style={{
