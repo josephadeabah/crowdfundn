@@ -88,6 +88,7 @@ const Hero = () => {
       </div>
 
       {/* Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
       <div
         className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center"
         style={{
@@ -204,6 +205,15 @@ const Hero = () => {
             </p>
           </div>
         </div>
+      </div> 
+    <div className="lg:-mr-8 xl:-mr-16 reveal reveal-delay-4">
+      <VideoPlayer 
+        src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        posterImage="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2340&auto=format&fit=crop"
+        title="Discover the future of design"
+        className="aspect-video md:aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl"
+      />
+    </div>
       </div>
 
       {/* Scroll indicator */}
