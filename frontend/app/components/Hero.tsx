@@ -200,7 +200,7 @@ const Hero = () => {
           <div className="lg:-mr-5 xl:-mr-14  reveal reveal-delay-4">
           <VideoPlayer
             src="/gifts.webm"
-            posterImage="/undraw_gift-box_io08.png"
+            posterImage="/undraw_party_k6eg.png"
             title="Introducing Gift for Fundraisers"
             className="aspect-video md:aspect-[16/9] rounded-2xl overflow-hidden shadow-none"
           />
