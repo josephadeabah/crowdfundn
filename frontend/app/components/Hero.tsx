@@ -202,7 +202,7 @@ const Hero = () => {
             src="/gifts.webm"
             posterImage=""
             title="Introducing Gift for Fundraisers"
-            className="aspect-video md:aspect-[16/9] rounded-2xl overflow-hidden"
+            className="aspect-video md:aspect-[16/9] rounded-2xl overflow-hidden shadow-none"
           />
         </div>
       </div>
