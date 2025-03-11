@@ -81,7 +81,7 @@ const Hero = () => {
         ></div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center px-4 sm:px-6 lg:px-12 py-8">
+      
         <div
           className="relative h-full max-w-7xl mx-auto flex items-center"
           style={{
@@ -89,6 +89,7 @@ const Hero = () => {
             opacity: opacityValue,
           }}
         >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center px-4 sm:px-6 lg:px-12 py-8">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold bg-white text-gray-500 rounded-full mb-4 animate-fade-up">
               <span className="relative flex h-2 w-2">
