@@ -203,7 +203,7 @@ const Hero = () => {
           <VideoPlayer
             src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
             posterImage="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2340&auto=format&fit=crop"
-            title="Discover the future of design"
+            title="Introducing Gift For Creators and Businesses"
             className="aspect-video md:aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl"
           />
         </div>
