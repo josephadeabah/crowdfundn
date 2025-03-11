@@ -60,9 +60,6 @@ export default {
           ring: 'hsl(var(--sidebar-ring))',
         },
       },
-      backgroundColor: {
-        'video-overlay': 'rgba(0, 0, 0, 0.3)', // Map the video.overlay value to a utility class
-      },
       video: {
         play: '#34D399',
         overlay: 'rgba(0, 0, 0, 0.3)',

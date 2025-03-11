@@ -99,6 +99,12 @@
   }
 }
 
+@layer components {
+  .bg-video-overlay {
+    background-color: rgba(0, 0, 0, 0.3); /* Use the value from video.overlay */
+  }
+}
+
 @layer utilities {
   .parallax {
     background-attachment: fixed;
