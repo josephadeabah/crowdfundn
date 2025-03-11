@@ -65,7 +65,7 @@ const Hero = () => {
   const overlayOpacity = Math.min(0.7 + scrollY * 0.0005, 0.85);
 
   return (
-    <div className="relative h-screen overflow-x-hidden">
+    <div className="relative h-screen overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
