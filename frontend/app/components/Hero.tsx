@@ -202,7 +202,7 @@ const Hero = () => {
             src="/gift.mp4"
             posterImage="/undraw_gift-box_io08.png"
             title="Introducing Gift for Fundraisers"
-            className="aspect-video md:aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl"
+            className="aspect-video md:aspect-[16/9] rounded-2xl overflow-hidden"
           />
         </div>
       </div>
