@@ -81,15 +81,15 @@ const Hero = () => {
         ></div>
       </div>
 
-      
-        <div
-          className="relative h-full max-w-7xl mx-auto flex items-center"
-          style={{
-            transform: `translateY(${contentY}px)`,
-            opacity: opacityValue,
-          }}
-        >
-          <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center px-4 sm:px-6 lg:px-12 py-8">
+      <div
+        className="relative h-full max-w-7xl mx-auto flex items-center"
+        style={{
+          transform: `translateY(${contentY}px)`,
+          opacity: opacityValue,
+        }}
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center px-4 sm:px-6 lg:px-12 py-8">
+
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold bg-white text-gray-500 rounded-full mb-4 animate-fade-up">
               <span className="relative flex h-2 w-2">
@@ -197,17 +197,18 @@ const Hero = () => {
               </p>
             </div>
           </div>
-        </div>
-
-        <div className="lg:-mr-8 xl:-mr-16  reveal reveal-delay-4">
+          <div className="lg:-mr-5 xl:-mr-14  reveal reveal-delay-4">
           <VideoPlayer
             src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
             posterImage="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2340&auto=format&fit=crop"
-            title="Introducing Gift For Creators and Businesses"
+            title="Introducing Gift for Fundraisers"
             className="aspect-video md:aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl"
           />
         </div>
       </div>
+      </div>
+
+
 
       <div
         className={cn(
