@@ -69,7 +69,7 @@ const Hero = () => {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('/undraw_connected-world_anke.png')`,
+          backgroundImage: `url('/Heropage.png')`,
           transform: `translateY(${backgroundY}px) scale(${1 + scrollY * 0.0002})`,
           transformOrigin: 'bottom',
           top: `-${Math.min(scrollY * 0.2, 100)}px`,
@@ -200,7 +200,7 @@ const Hero = () => {
           <div className="lg:-mr-5 xl:-mr-14  reveal reveal-delay-4">
           <VideoPlayer
             src="/gifts.webm"
-            posterImage="/Heropage.png"
+            posterImage="/undraw_walk-in-the-city_qd81.png"
             title="Introducing Gift for Fundraisers"
             className="aspect-video md:aspect-[16/9] rounded-2xl overflow-hidden shadow-none"
           />
