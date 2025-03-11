@@ -209,7 +209,7 @@ const Hero = () => {
       </div>
 
 
-
+{/* 
       <div
         className={cn(
           'absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center transition-opacity duration-300',
@@ -220,7 +220,7 @@ const Hero = () => {
           Scroll to explore
         </span>
         <ArrowDown className="w-6 h-6 text-gray-500" />
-      </div>
+      </div> */}
     </div>
   );
 };
