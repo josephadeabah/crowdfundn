@@ -9,6 +9,7 @@ import { deslugify } from '../utils/helpers/categories';
 import { Popover, PopoverContent, PopoverTrigger } from './popover/Popover';
 import Avatar from './avatar/Avatar';
 import { getVerifiedBadge } from '../utils/helpers/get.level.trophy';
+import VideoPlayer from './videoplayer/VideoPlayer';
 
 const Hero = () => {
   const [scrollY, setScrollY] = useState(0);
