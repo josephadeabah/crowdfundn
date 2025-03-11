@@ -199,7 +199,7 @@ const Hero = () => {
           </div>
           <div className="lg:-mr-5 xl:-mr-14  reveal reveal-delay-4">
           <VideoPlayer
-            src="/gift.mp4"
+            src="/gift.webm"
             posterImage="/undraw_gift-box_io08.png"
             title="Introducing Gift for Fundraisers"
             className="aspect-video md:aspect-[16/9] rounded-2xl overflow-hidden"
