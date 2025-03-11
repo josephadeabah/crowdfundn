@@ -105,7 +105,7 @@ const VideoPlayer = ({ src, posterImage, title, className }: VideoPlayerProps) =
       <div 
         className={cn(
           'absolute inset-0 bg-video-overlay transition-opacity duration-300',
-          isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-0'
         )}
       />
       
