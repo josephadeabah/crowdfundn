@@ -179,7 +179,7 @@
 
 /* Video Player Styles */
 .video-container {
-  @apply relative overflow-hidden rounded-2xl shadow-lg transition-all duration-500 ease-out;
+  @apply relative overflow-hidden rounded-2xl transition-all duration-500 ease-out;
 }
 
 .video-container.playing {
