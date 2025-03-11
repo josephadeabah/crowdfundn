@@ -70,7 +70,7 @@ const Hero = () => {
   const overlayOpacity = Math.min(0.7 + scrollY * 0.0005, 0.85);
 
   return (
-    <div className="relative h-screen overflow-hidden">
+    <div className="relative h-screen overflow-visible">
       {/* Parallax background with enhanced overflow effect */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -89,7 +89,7 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center h-full">
       <div
         className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center"
         style={{
