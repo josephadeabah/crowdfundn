@@ -81,7 +81,7 @@ const Hero = () => {
         ></div>
       </div>
 
-      <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center px-4 sm:px-6 lg:px-8">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center px-4 sm:px-6 lg:px-12">
         <div
           className="relative h-full max-w-7xl mx-auto flex items-center"
           style={{
@@ -198,7 +198,7 @@ const Hero = () => {
           </div>
         </div>
 
-        <div className="lg:-mr-8 xl:-mr-16 reveal reveal-delay-4">
+        <div className="lg:-mr-8 xl:-mr-16  reveal reveal-delay-4">
           <VideoPlayer
             src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
             posterImage="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2340&auto=format&fit=crop"
