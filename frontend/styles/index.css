@@ -99,15 +99,6 @@
   }
 }
 
-@layer components {
-  .bg-video-overlay {
-    background-color: rgba(0, 0, 0, 0.3); /* Use the value from video.overlay */
-  }
-  .text-video-play {
-    color: #34D399; /* Fallback definition */
-  }
-}
-
 @layer utilities {
   .parallax {
     background-attachment: fixed;
