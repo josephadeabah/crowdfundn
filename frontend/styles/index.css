@@ -178,13 +178,6 @@
 
 
 /* Video Player Styles */
-.play-button {
-  @apply absolute flex items-center justify-center w-20 h-20 bg-white/90 rounded-full 
-         text-video-play transform transition-all duration-300 ease-out
-         shadow-lg hover:scale-105 hover:shadow-xl
-         active:scale-95 z-10;
-}
-
 .video-container {
   @apply relative overflow-hidden rounded-2xl shadow-lg transition-all duration-500 ease-out;
 }
