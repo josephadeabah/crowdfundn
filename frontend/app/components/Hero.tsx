@@ -255,7 +255,7 @@ const Hero = () => {
       {isVideoOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <VideoPlayer
-            videoSrc="https://static.videezy.com/system/resources/previews/000/039/511/original/Marketing.mp4"
+            videoSrc="/gifts.webm"
             isOpen={isVideoOpen}
             onClose={closeVideo}
           />
