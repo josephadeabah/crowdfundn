@@ -100,6 +100,12 @@
   .bg-video {
     background-color: #10B981; /* Use the value from video.background */
   }
+  .bg-video-hover {
+    background-color: #047857; /* Use the value from video.hover */
+  }
+  .text-video-play {
+    color: #34d399; /* Use the value from video.play */
+  }
   .text-video-play {
     color: #34d399; /* Fallback definition */
   }
