@@ -225,7 +225,7 @@ const Hero = () => {
               <div className="relative rounded-xl overflow-hidden shadow-2xl group">
                 {/* Thumbnail image */}
                 <img
-                  src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1632&q=80"
+                  src="/vidnail.webp"
                   alt="Video thumbnail"
                   className="w-full aspect-video object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
                 />
