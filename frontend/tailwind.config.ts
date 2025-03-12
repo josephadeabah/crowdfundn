@@ -60,7 +60,7 @@ export default {
           ring: 'hsl(var(--sidebar-ring))',
         },
       },
-      video: {
+      'bg-video': {
         play: '#34D399',
         overlay: 'rgba(0, 0, 0, 0.3)',
         DEFAULT: '#10B981',
