@@ -173,6 +173,30 @@
   .hover-glow:hover::after {
     @apply opacity-100;
   }
+
+    
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .video-play-button {
+    @apply relative w-16 h-16 bg-video rounded-full flex items-center justify-center 
+           transition-transform duration-300 ease-out
+           hover:bg-video-hover hover:scale-110;
+  }
+  
+  .video-play-button::before {
+    content: '';
+    @apply absolute inset-0 bg-video/20 rounded-full 
+           transform scale-110 opacity-0 transition-all duration-300
+           group-hover:scale-125 group-hover:opacity-100;
+  }
+  
+  .video-control-button {
+    @apply w-12 h-12 bg-video rounded-full flex items-center justify-center text-white 
+           transition-all duration-300 ease-out shadow-md
+           hover:bg-video-hover hover:scale-110;
+  }
 }
 
 /* Video Player Styles */
@@ -229,4 +253,16 @@
 
 .reveal-delay-4 {
   animation-delay: 0.4s;
+}
+
+
+/* Modal animation */
+.modal-overlay {
+  @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-50 
+         flex items-center justify-center;
+  animation: fadeIn 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.modal-content {
+  animation: scaleIn 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
