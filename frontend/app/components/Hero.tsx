@@ -225,7 +225,7 @@ const Hero = () => {
               <div className="relative rounded-xl overflow-hidden shadow-2xl group">
                 {/* Thumbnail image */}
                 <img
-                  src="/welcome.mp4"
+                  src="/vidnail.webp"
                   alt="Video thumbnail"
                   className="w-full aspect-video object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
                 />
@@ -255,7 +255,7 @@ const Hero = () => {
       {isVideoOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <VideoPlayer
-            videoSrc="/gifts.webm"
+            videoSrc="/welcome.mp4"
             isOpen={isVideoOpen}
             onClose={closeVideo}
           />
