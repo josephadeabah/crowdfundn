@@ -63,6 +63,8 @@ export default {
       video: {
         play: '#34D399',
         overlay: 'rgba(0, 0, 0, 0.3)',
+        DEFAULT: '#10B981',
+        hover: '#059669',
       },
       borderRadius: {
         lg: 'var(--radius)',

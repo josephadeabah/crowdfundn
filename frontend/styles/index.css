@@ -104,7 +104,7 @@
     background-color: rgba(0, 0, 0, 0.3); /* Use the value from video.overlay */
   }
   .text-video-play {
-    color: #34D399; /* Fallback definition */
+    color: #34d399; /* Fallback definition */
   }
 }
 
@@ -174,8 +174,6 @@
     @apply opacity-100;
   }
 }
-
-
 
 /* Video Player Styles */
 .video-container {
