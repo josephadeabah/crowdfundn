@@ -62,7 +62,7 @@ const CampaignSidebar = ({
             <span className="text-sm text-muted-foreground">Duration:</span>
             <span className="text-sm font-medium">
               {startDate && endDate
-                ? `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`
+                ? `${startDate?.toLocaleDateString()} - ${endDate?.toLocaleDateString()}`
                 : 'Not set'}
             </span>
           </div>

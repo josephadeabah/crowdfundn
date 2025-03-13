@@ -187,7 +187,7 @@ const CampaignCreator = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
-      <div className="container py-8 px-4 sm:px-6 lg:px-8 mx-auto animate-fade-in">
+      <div className="max-w-7xl py-8 px-4 sm:px-6 lg:px-4 mx-auto animate-fade-in">
         <CampaignHeader />
 
         <div className="mb-6">
@@ -200,17 +200,17 @@ const CampaignCreator = () => {
             <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
               <TabsTrigger
                 value="details"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className="data-[state=active]:bg-emerald-900 data-[state=active]:text-primary-foreground"
               >
                 <Settings className="w-4 h-4 mr-2" />
                 Campaign Details
               </TabsTrigger>
               <TabsTrigger
                 value="content"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className="data-[state=active]:bg-emerald-900 data-[state=active]:text-primary-foreground"
               >
                 <FileText className="w-4 h-4 mr-2" />
-                Edit Content
+                Editor Pane
               </TabsTrigger>
             </TabsList>
 

@@ -72,21 +72,21 @@ const CampaignEditor = ({
             <TabsList className="grid w-full max-w-md grid-cols-3">
               <TabsTrigger
                 value="editor"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className="data-[state=active]:bg-emerald-900  data-[state=active]:text-primary-foreground"
               >
                 <Edit className="w-4 h-4 mr-2" />
                 Editor
               </TabsTrigger>
               <TabsTrigger
                 value="templates"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className="data-[state=active]:bg-emerald-900 data-[state=active]:text-primary-foreground"
               >
                 <LayoutTemplate className="w-4 h-4 mr-2" />
                 Templates
               </TabsTrigger>
               <TabsTrigger
                 value="preview"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className="data-[state=active]:bg-emerald-900 data-[state=active]:text-primary-foreground"
               >
                 <Eye className="w-4 h-4 mr-2" />
                 Preview
