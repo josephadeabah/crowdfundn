@@ -74,7 +74,7 @@ const CampaignCreator = () => {
     editorActiveTab: 'editor',
     goalAmount: '',
     category: '',
-    currencyCode: 'GHS', // Default currency
+    currencyCode: String(userAccountData?.currency), // Default currency
     location: '',
   };
 
