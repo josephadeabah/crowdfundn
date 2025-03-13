@@ -30,7 +30,6 @@ interface CampaignDetailsProps {
   onContinue: () => void;
   currencies: Array<{ code: string; symbol: string }>;
   categories: string[];
-  isLocationDisabled?: boolean; // New prop to disable location field
 }
 
 const CampaignDetails = ({
@@ -53,7 +52,6 @@ const CampaignDetails = ({
   onContinue,
   currencies,
   categories,
-  isLocationDisabled = false, // Default to false
 }: CampaignDetailsProps) => {
   const getCurrencySymbol = (code: string) => {
     const currency = currencies.find((c) => c.code === code);
@@ -115,7 +113,6 @@ const CampaignDetails = ({
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="Where is your project based?"
                 className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-emerald/20 focus:border-emerald/60"
-                disabled={isLocationDisabled} // Disable the field if isLocationDisabled is true
               />
             </div>
           </div>

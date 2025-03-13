@@ -75,7 +75,6 @@ interface FormErrors {
 }
 
 const CampaignCreator = () => {
-  const { userAccountData } = useUserContext();
   const initialCampaignData: CampaignData = {
     title: '',
     description: '',
@@ -84,15 +83,16 @@ const CampaignCreator = () => {
     selectedTemplate: null,
     editorActiveTab: 'editor',
     goalAmount: '',
-    category: String(userAccountData?.category),
-    currencyCode: String(userAccountData?.currency), // Default currency
-    location: String(userAccountData?.country),
+    category: '',
+    currencyCode: 'GHS', // Default currency
+    location: '',
   };
 
   const [campaignData, setCampaignData] = useLocalStorage<CampaignData>(
     'campaign-draft',
     initialCampaignData,
   );
+  const { userAccountData } = useUserContext();
   const [error, setError] = useState<FormErrors>({
     title: '',
     description: '',
@@ -151,17 +151,14 @@ const CampaignCreator = () => {
   }, [campaignData, initialCampaignData]);
 
   useEffect(() => {
-    // Set default values from userAccountData only if campaignData is in its initial state
-    if (userAccountData && campaignData === initialCampaignData) {
-      setCampaignData({
-        ...campaignData,
-        category: userAccountData.category || '',
-        location: userAccountData.country || '',
-        goalAmount: userAccountData.target_amount || '',
-        currencyCode: userAccountData.currency || 'GHS',
-      });
+    // Set default values from userAccountData
+    if (userAccountData) {
+      setCategory(userAccountData.category || '');
+      setLocation(userAccountData.country || '');
+      setGoalAmount(userAccountData.target_amount || '');
+      setCurrencyCode(userAccountData.currency || 'GHS'); // Default to GHS if not provided
     }
-  }, [userAccountData, campaignData, initialCampaignData]);
+  }, [userAccountData]);
 
   const validateForm = (): boolean => {
     const formErrors: FormErrors = {
@@ -303,7 +300,7 @@ const CampaignCreator = () => {
                       setDescription={setDescription}
                       category={campaignData.category}
                       setCategory={setCategory}
-                      location={campaignData.location}
+                      location={campaignData.location || String(userAccountData?.country)}
                       setLocation={setLocation}
                       currencyCode={campaignData.currencyCode}
                       setCurrencyCode={setCurrencyCode}
@@ -316,7 +313,6 @@ const CampaignCreator = () => {
                       onContinue={() => setActiveTab('content')}
                       currencies={CURRENCIES}
                       categories={CATEGORIES}
-                      isLocationDisabled={!!userAccountData?.country} // Disable location if userAccountData.country exists
                     />
                   </div>
 
