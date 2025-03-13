@@ -20,7 +20,7 @@ const FundraiserPage = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Create':
-        return <CampaignCreator/>;
+        return <CampaignCreator />;
       case 'Edit':
         return <EditCampaign />;
       default:

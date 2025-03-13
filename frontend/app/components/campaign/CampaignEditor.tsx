@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+'use client';
+import React, { useCallback, useState } from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import {
   Tabs,
@@ -9,11 +10,12 @@ import {
 import { Button } from '@/app/components/ui/button';
 import { Edit, Eye, LayoutTemplate, Save } from 'lucide-react';
 import RichTextEditor from '@/app/components/ui/RichTextEditor';
-import MediaUpload from '@/app/components/ui/MediaUpload';
 import TemplateSelector from '@/app/components/ui/TemplateSelector';
 import { CampaignTemplate } from '@/app/lib/campaign-templates';
 import { toast } from 'sonner';
 import { Separator } from '../ui/seperator';
+import { useDropzone } from 'react-dropzone';
+import { FiX } from 'react-icons/fi';
 
 interface CampaignEditorProps {
   title: string;
@@ -24,7 +26,8 @@ interface CampaignEditorProps {
   setSelectedTemplate: (template: CampaignTemplate | null) => void;
   onSave: () => void;
   onSelectTemplate: (template: CampaignTemplate) => void;
-  onMediaSelect: (url: string, type: 'image' | 'video') => void;
+  selectedImage: File | null;
+  setSelectedImage: (file: File | null) => void;
   description: string;
   category: string;
   location: string;
@@ -43,7 +46,8 @@ const CampaignEditor = ({
   selectedTemplate,
   onSave,
   onSelectTemplate,
-  onMediaSelect,
+  selectedImage,
+  setSelectedImage,
   description,
   category,
   location,
@@ -54,10 +58,28 @@ const CampaignEditor = ({
   endDate,
 }: CampaignEditorProps) => {
   const [editorActiveTab, setEditorActiveTab] = useState('editor');
-
   const getCurrencySymbol = (code: string) => {
     const currency = currencies.find((c) => c.code === code);
     return currency ? currency.symbol : '$';
+  };
+
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (acceptedFiles.length > 0) {
+        setSelectedImage(acceptedFiles[0]);
+      }
+    },
+    [setSelectedImage],
+  );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'image/*': [] },
+    multiple: false,
+  });
+
+  const handleRemoveImage = () => {
+    setSelectedImage(null);
   };
 
   return (
@@ -72,7 +94,7 @@ const CampaignEditor = ({
             <TabsList className="grid w-full max-w-md grid-cols-3">
               <TabsTrigger
                 value="editor"
-                className="data-[state=active]:bg-emerald-900  data-[state=active]:text-primary-foreground"
+                className="data-[state=active]:bg-emerald-900 data-[state=active]:text-primary-foreground"
               >
                 <Edit className="w-4 h-4 mr-2" />
                 Editor
@@ -108,7 +130,42 @@ const CampaignEditor = ({
 
               <div>
                 <label className="form-label">Add Media</label>
-                <MediaUpload onMediaSelect={onMediaSelect} />
+                <div className="mb-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-bold">Image Upload</h3>
+                    {selectedImage && (
+                      <FiX
+                        size={24}
+                        className="text-gray-500 cursor-pointer"
+                        onClick={handleRemoveImage}
+                      />
+                    )}
+                  </div>
+
+                  {!selectedImage ? (
+                    <div
+                      {...getRootProps()}
+                      className={`border-2 border-dashed rounded-md p-4 text-center ${
+                        isDragActive ? 'border-green-600' : 'border-gray-400'
+                      }`}
+                    >
+                      <input {...getInputProps()} />
+                      {isDragActive ? (
+                        <p>Drop the files here...</p>
+                      ) : (
+                        <p>Drag 'n' drop a file here, or click to select one</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="relative h-64 bg-cover bg-center rounded-md overflow-hidden">
+                      <img
+                        src={URL.createObjectURL(selectedImage) || ''}
+                        alt="Selected image"
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </TabsContent>
@@ -166,8 +223,8 @@ const CampaignEditor = ({
               {startDate && endDate && (
                 <div className="inline-flex items-center bg-emerald-50 text-emerald-800 px-3 py-1 rounded-full text-sm mb-6">
                   <span>
-                    Campaign runs: {startDate.toLocaleString()} -{' '}
-                    {endDate.toLocaleString()}
+                    Campaign runs: {new Date(startDate).toLocaleDateString()} -{' '}
+                    {new Date(endDate).toLocaleDateString()}
                   </span>
                 </div>
               )}

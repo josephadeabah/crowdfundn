@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Tabs,
   TabsContent,
@@ -10,7 +10,6 @@ import { Settings, FileText } from 'lucide-react';
 import { CampaignTemplate } from '@/app/lib/campaign-templates';
 import { toast } from 'sonner';
 import { useLocalStorage } from '@/app/hooks/useLocalStorage';
-
 import CampaignHeader from '@/app/components/campaign/CampaignHeader';
 import CampaignDetails from '@/app/components/campaign/CampaignDetails';
 import CampaignTips from '@/app/components/campaign/CampaignTips';
@@ -21,7 +20,7 @@ import { useUserContext } from '@/app/context/users/UserContext';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { FaCheck, FaExclamationTriangle } from 'react-icons/fa';
 import { categories } from '@/app/utils/helpers/categories';
-
+import { useDropzone } from 'react-dropzone';
 
 const CURRENCIES = [
   { code: 'USD', symbol: '$' },
@@ -35,10 +34,10 @@ const CURRENCIES = [
   { code: 'INR', symbol: '₹' },
   { code: 'BRL', symbol: 'R$' },
   { code: 'GHS', symbol: '₵' },
-  { code: 'KES', symbol: 'KSh' }, // Kenya Shilling
-  { code: 'NGN', symbol: '₦' },  // Nigerian Naira
-  { code: 'SZL', symbol: 'E' },  // Eswatini Lilangeni
-  { code: 'ZAR', symbol: 'R' }   // South African Rand
+  { code: 'KES', symbol: 'KSh' },
+  { code: 'NGN', symbol: '₦' },
+  { code: 'SZL', symbol: 'E' },
+  { code: 'ZAR', symbol: 'R' },
 ];
 
 interface CampaignData {
@@ -79,7 +78,7 @@ const CampaignCreator = () => {
     editorActiveTab: 'editor',
     goalAmount: '',
     category: '',
-    currencyCode: '', // Default currency
+    currencyCode: '',
     location: '',
   };
 
@@ -102,6 +101,13 @@ const CampaignCreator = () => {
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<React.ReactNode>('');
   const [alertTitle, setAlertTitle] = useState<string>('');
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles.length > 0) {
+      setSelectedImage(acceptedFiles[0]);
+    }
+  }, []);
 
   const setTitle = (value: string) =>
     setCampaignData({ ...campaignData, title: value });
@@ -149,12 +155,15 @@ const CampaignCreator = () => {
       setCampaignData((prevData) => ({
         ...prevData,
         category: prevData.category || userAccountData.category || '',
-        location: userAccountData.country || '', // Ensure location is set but remains unchanged
-        currencyCode: (prevData.currencyCode || userAccountData.currency || '').toUpperCase(),
+        location: userAccountData.country || '',
+        currencyCode: (
+          prevData.currencyCode ||
+          userAccountData.currency ||
+          ''
+        ).toUpperCase(),
       }));
     }
   }, [userAccountData]);
-  
 
   const validateForm = (): boolean => {
     const formErrors: FormErrors = {
@@ -170,37 +179,28 @@ const CampaignCreator = () => {
     };
 
     if (!campaignData.title.trim()) formErrors.title = 'Title is required';
-    if (!campaignData.content.trim()) formErrors.content = 'Content is required';
-    if (!campaignData.startDate) formErrors.startDate = 'Start date is required';
+    if (!campaignData.content.trim())
+      formErrors.content = 'Content is required';
+    if (!campaignData.startDate)
+      formErrors.startDate = 'Start date is required';
     if (!campaignData.endDate) formErrors.endDate = 'End date is required';
-    if (!campaignData.goalAmount) formErrors.goalAmount = 'Goal amount is required';
+    if (!campaignData.goalAmount)
+      formErrors.goalAmount = 'Goal amount is required';
     if (!campaignData.category) formErrors.category = 'Category is required';
-    if (!campaignData.currencyCode) formErrors.currencyCode = 'Currency is required';
+    if (!campaignData.currencyCode)
+      formErrors.currencyCode = 'Currency is required';
     if (!campaignData.location) formErrors.location = 'Location is required';
 
-    if (campaignData.startDate && campaignData.endDate && new Date(campaignData.startDate) > new Date(campaignData.endDate)) {
+    if (
+      campaignData.startDate &&
+      campaignData.endDate &&
+      new Date(campaignData.startDate) > new Date(campaignData.endDate)
+    ) {
       formErrors.endDate = 'End date must be after start date';
     }
 
     setError(formErrors);
     return Object.values(formErrors).every((err) => !err);
-  };
-
-  const handleMediaSelect = (url: string, type: 'image' | 'video') => {
-    let htmlToInsert = '';
-
-    if (type === 'image') {
-      htmlToInsert = `<img src="${url}" alt="Campaign image" />`;
-    } else if (type === 'video') {
-      if (url.startsWith('data:video')) {
-        htmlToInsert = `<video controls src="${url}" class="w-full"></video>`;
-      } else {
-        htmlToInsert = `<iframe src="${url}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full aspect-video"></iframe>`;
-      }
-    }
-
-    const newContent = campaignData.content + htmlToInsert;
-    setContent(newContent);
   };
 
   const handleSelectTemplate = (template: CampaignTemplate) => {
@@ -226,6 +226,9 @@ const CampaignCreator = () => {
     formData.append('campaign[category]', campaignData.category);
     formData.append('campaign[location]', campaignData.location);
     formData.append('campaign[currency]', campaignData.currencyCode);
+    if (selectedImage) {
+      formData.append('campaign[media]', selectedImage);
+    }
 
     try {
       const createdCampaign = await addCampaign(formData);
@@ -285,10 +288,7 @@ const CampaignCreator = () => {
 
               <TabsContent value="details" className="animate-fade-in">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                  <div
-                    className="lg:col-span-8 space-y-6 animate-slide-up"
-                    style={{ animationDelay: '0.1s' }}
-                  >
+                  <div className="lg:col-span-8 space-y-6 animate-slide-up">
                     <CampaignDetails
                       title={campaignData.title}
                       setTitle={setTitle}
@@ -336,7 +336,8 @@ const CampaignCreator = () => {
                       setSelectedTemplate={setSelectedTemplate}
                       onSave={handleSaveCampaign}
                       onSelectTemplate={handleSelectTemplate}
-                      onMediaSelect={handleMediaSelect}
+                      selectedImage={selectedImage}
+                      setSelectedImage={setSelectedImage}
                       description={campaignData.description}
                       category={campaignData.category}
                       location={campaignData.location}
