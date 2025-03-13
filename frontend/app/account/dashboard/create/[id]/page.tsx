@@ -1,12 +1,23 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import EditCampaign from '../EditCampaign';
 import CampaignCreator from '@/app/components/campaign/CampaignCreator';
 import { useRouter, useSearchParams } from 'next/navigation';
+import FullscreenLoader from '@/app/loaders/FullscreenLoader';
 
+// Wrap the main component in Suspense
 const FundraiserPage = () => {
+  return (
+    <Suspense fallback={<FullscreenLoader />}>
+      <FundraiserPageContent />
+    </Suspense>
+  );
+};
+
+// Move the main logic to a separate component
+const FundraiserPageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('Create New Campaign');
