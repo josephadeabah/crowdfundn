@@ -111,7 +111,7 @@ const EditCampaign = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-8">
+    <div className="max-w-7xl mx-auto py-12">
       <div className="py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Title */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
