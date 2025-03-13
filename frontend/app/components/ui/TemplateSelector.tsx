@@ -27,10 +27,13 @@ const TemplateSelector = ({
             className={cn(
               'cursor-pointer border transition-all duration-300 hover:shadow-md',
               selectedTemplate?.id === template.id
-                ? 'border-emerald-900 bg-emerald/5 ring-1 ring-emerald/70'
-                : 'hover:border-emerald/30',
+                ? 'border-emerald-900 bg-emerald-50 ring-1 ring-emerald-700' // Fixed Tailwind classes
+                : 'hover:border-emerald-300', // Fixed Tailwind classes
             )}
-            onClick={() => onSelectTemplate(template)}
+            onClick={() => {
+              console.log('Selected Template:', template); // Debugging
+              onSelectTemplate(template);
+            }}
           >
             <CardContent className="p-4">
               <div className="flex items-start gap-2">
@@ -42,7 +45,8 @@ const TemplateSelector = ({
                 </div>
                 {selectedTemplate?.id === template.id && (
                   <div className="w-5 h-5 bg-emerald-900 rounded-full flex items-center justify-center">
-                    <Check className="h-3 w-3 text-primary-foreground" />
+                    <Check className="h-3 w-3 text-white" />{' '}
+                    {/* Fixed text color */}
                   </div>
                 )}
               </div>
