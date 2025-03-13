@@ -1,5 +1,5 @@
 'use client';
-import { FaEdit } from 'react-icons/fa';
+import { FaArrowLeft, FaEdit } from 'react-icons/fa';
 import React, { useState, useCallback, useEffect } from 'react';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { useDropzone } from 'react-dropzone';
@@ -112,6 +112,15 @@ const EditCampaign = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="mb-6 mt-3">
+        <button
+          onClick={() => (window.location.href = '/account#Campaigns')}
+          className="flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200"
+        >
+          <FaArrowLeft className="mr-2" />
+          Back to Dashboard
+        </button>
+      </div>
       <div className="py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Title */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
