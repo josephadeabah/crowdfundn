@@ -34,6 +34,7 @@ const CURRENCIES = [
   { code: 'CNY', symbol: '¥' },
   { code: 'INR', symbol: '₹' },
   { code: 'BRL', symbol: 'R$' },
+  { code: 'GHS', symbol: '₵'},
 ];
 
 interface CampaignData {
