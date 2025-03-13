@@ -7,7 +7,7 @@ import EditCampaign from '../EditCampaign';
 import CampaignCreator from '@/app/components/campaign/CampaignCreator';
 
 const FundraiserPage = () => {
-  const [activeTab, setActiveTab] = useState('Details');
+  const [activeTab, setActiveTab] = useState('Create');
   const [error, setError] = useState('');
 
   const tabs = ['Create', 'Edit'];
