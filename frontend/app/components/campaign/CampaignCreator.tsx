@@ -132,7 +132,7 @@ const CampaignCreator = () => {
   const setCurrencyCode = (value: string) =>
     setCampaignData({ ...campaignData, currencyCode: value });
   const setLocation = (value: string) =>
-    setCampaignData({ ...campaignData, location: value });
+    setCampaignData({ ...campaignData, location: value || String(userAccountData?.country)});
 
   useEffect(() => {
     const hasSavedData = Object.values(campaignData).some(
