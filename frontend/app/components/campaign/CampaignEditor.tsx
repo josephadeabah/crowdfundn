@@ -1,0 +1,193 @@
+import React, { useState } from 'react';
+import { Card, CardContent } from '@/app/components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/app/components/ui/tabs';
+import { Button } from '@/app/components/ui/button';
+import { Edit, Eye, LayoutTemplate, Save } from 'lucide-react';
+import RichTextEditor from '@/app/components/ui/RichTextEditor';
+import MediaUpload from '@/app/components/ui/MediaUpload';
+import TemplateSelector from '@/app/components/ui/TemplateSelector';
+import { CampaignTemplate } from '@/app/lib/campaign-templates';
+import { toast } from 'sonner';
+import { Separator } from '../ui/seperator';
+
+interface CampaignEditorProps {
+  title: string;
+  setTitle: (value: string) => void;
+  content: string;
+  setContent: (value: string) => void;
+  selectedTemplate: CampaignTemplate | null;
+  setSelectedTemplate: (template: CampaignTemplate | null) => void;
+  onSave: () => void;
+  onSelectTemplate: (template: CampaignTemplate) => void;
+  onMediaSelect: (url: string, type: 'image' | 'video') => void;
+  description: string;
+  category: string;
+  location: string;
+  goalAmount: string;
+  currencyCode: string;
+  currencies: Array<{ code: string; symbol: string }>;
+  startDate?: Date;
+  endDate?: Date;
+}
+
+const CampaignEditor = ({
+  title,
+  setTitle,
+  content,
+  setContent,
+  selectedTemplate,
+  onSave,
+  onSelectTemplate,
+  onMediaSelect,
+  description,
+  category,
+  location,
+  goalAmount,
+  currencyCode,
+  currencies,
+  startDate,
+  endDate,
+}: CampaignEditorProps) => {
+  const [editorActiveTab, setEditorActiveTab] = useState('editor');
+
+  const getCurrencySymbol = (code: string) => {
+    const currency = currencies.find((c) => c.code === code);
+    return currency ? currency.symbol : '$';
+  };
+
+  return (
+    <Card className="glass-card">
+      <CardContent className="p-5">
+        <Tabs
+          value={editorActiveTab}
+          onValueChange={setEditorActiveTab}
+          className="w-full"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <TabsList className="grid w-full max-w-md grid-cols-3">
+              <TabsTrigger
+                value="editor"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <Edit className="w-4 h-4 mr-2" />
+                Editor
+              </TabsTrigger>
+              <TabsTrigger
+                value="templates"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <LayoutTemplate className="w-4 h-4 mr-2" />
+                Templates
+              </TabsTrigger>
+              <TabsTrigger
+                value="preview"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <Eye className="w-4 h-4 mr-2" />
+                Preview
+              </TabsTrigger>
+            </TabsList>
+
+            <Button onClick={onSave} className="ml-auto">
+              <Save className="w-4 h-4 mr-2" />
+              Save Campaign
+            </Button>
+          </div>
+
+          <TabsContent value="editor" className="space-y-6 animate-fade-in">
+            <div className="space-y-4">
+              <div>
+                <label className="form-label">Campaign Story</label>
+                <RichTextEditor value={content} onChange={setContent} />
+              </div>
+
+              <div>
+                <label className="form-label">Add Media</label>
+                <MediaUpload onMediaSelect={onMediaSelect} />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="templates" className="animate-fade-in">
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-semibold mb-2">
+                  Choose a Template
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  Select a pre-designed template to jumpstart your campaign.
+                </p>
+                <TemplateSelector
+                  selectedTemplate={selectedTemplate}
+                  onSelectTemplate={onSelectTemplate}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="preview" className="animate-fade-in">
+            <div className="bg-white rounded-xl border border-border p-6 max-w-4xl mx-auto">
+              <h1 className="text-3xl font-bold mb-3">
+                {title || 'Your Campaign Title'}
+              </h1>
+
+              {description && (
+                <p className="text-lg text-muted-foreground mb-6">
+                  {description}
+                </p>
+              )}
+
+              {category && (
+                <div className="inline-flex items-center bg-emerald-50 text-emerald-800 px-3 py-1 rounded-full text-sm mr-2 mb-4">
+                  <span>{category}</span>
+                </div>
+              )}
+
+              {location && (
+                <div className="inline-flex items-center bg-emerald-50 text-emerald-800 px-3 py-1 rounded-full text-sm mb-4">
+                  <span>{location}</span>
+                </div>
+              )}
+
+              {goalAmount && (
+                <div className="mb-4">
+                  <span className="font-semibold text-emerald-800">
+                    Goal: {getCurrencySymbol(currencyCode)}
+                    {goalAmount}
+                  </span>
+                </div>
+              )}
+
+              {startDate && endDate && (
+                <div className="inline-flex items-center bg-emerald-50 text-emerald-800 px-3 py-1 rounded-full text-sm mb-6">
+                  <span>
+                    Campaign runs: {startDate.toLocaleDateString()} -{' '}
+                    {endDate.toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+
+              <Separator className="my-6" />
+
+              <div
+                className="prose prose-emerald max-w-none"
+                dangerouslySetInnerHTML={{
+                  __html:
+                    content ||
+                    '<p class="text-muted-foreground">Your campaign story will appear here. Switch to the Editor tab to add content.</p>',
+                }}
+              />
+            </div>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default CampaignEditor;

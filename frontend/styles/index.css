@@ -183,6 +183,121 @@
   }
 }
 
+@layer components {
+  .glass-panel {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-glass;
+  }
+
+  .glass-card {
+    @apply bg-white/90 backdrop-blur-sm border border-white/40 shadow-card rounded-xl transition duration-300 ease-in-out;
+  }
+
+  .glass-card:hover {
+    @apply shadow-glass-md bg-white/95;
+  }
+
+  .rich-editor-container {
+    @apply rounded-xl overflow-hidden transition-all duration-300 ease-in-out border border-border/80 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/60;
+  }
+
+  .rich-editor-toolbar {
+    @apply bg-muted/70 backdrop-blur-sm p-2 border-b border-border/80 flex flex-wrap gap-1 items-center sticky top-0 z-10;
+  }
+
+  .rich-editor-content {
+    @apply p-4 min-h-[200px] outline-none;
+  }
+
+  .media-upload-area {
+    @apply border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center transition-all duration-300 ease-in-out hover:border-secondary/60 cursor-pointer;
+  }
+
+  .media-upload-area:hover {
+    @apply bg-muted/50;
+  }
+
+  .form-label {
+    @apply text-sm font-medium mb-1.5 text-foreground/90;
+  }
+}
+
+/* Rich text editor content styles */
+.ProseMirror p {
+  @apply mb-3;
+}
+
+.ProseMirror h1 {
+  @apply text-3xl font-bold mb-4;
+}
+
+.ProseMirror h2 {
+  @apply text-2xl font-bold mb-3;
+}
+
+.ProseMirror h3 {
+  @apply text-xl font-bold mb-2;
+}
+
+.ProseMirror ul {
+  @apply list-disc pl-6 mb-4;
+}
+
+.ProseMirror ol {
+  @apply list-decimal pl-6 mb-4;
+}
+
+.ProseMirror blockquote {
+  @apply border-l-4 border-secondary/60 pl-4 italic my-4;
+}
+
+.ProseMirror a {
+  @apply text-primary underline decoration-primary/30 hover:decoration-primary;
+}
+
+.ProseMirror img,
+.ProseMirror video {
+  @apply my-4 rounded-md max-w-full h-auto shadow-subtle;
+}
+
+.ProseMirror code {
+  @apply bg-muted px-1.5 py-0.5 rounded font-mono text-sm;
+}
+
+/* Transition classes */
+.page-transition-enter {
+  @apply opacity-0;
+}
+
+.page-transition-enter-active {
+  @apply opacity-100 transition-opacity duration-300;
+}
+
+.page-transition-exit {
+  @apply opacity-100;
+}
+
+.page-transition-exit-active {
+  @apply opacity-0 transition-opacity duration-300;
+}
+
+/* Custom scroll bar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/20 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/30;
+}
+
 /* Video Player Styles */
 .video-container {
   @apply relative overflow-hidden rounded-2xl transition-all duration-500 ease-out;

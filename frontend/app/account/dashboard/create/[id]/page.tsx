@@ -4,12 +4,13 @@ import CreateCampaign from '../AddCampaign';
 import React, { useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import EditCampaign from '../EditCampaign';
+import CampaignCreator from '@/app/components/campaign/CampaignCreator';
 
 const FundraiserPage = () => {
   const [activeTab, setActiveTab] = useState('Details');
   const [error, setError] = useState('');
 
-  const tabs = ['Details', 'Team'];
+  const tabs = ['Edit', 'Create'];
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
@@ -18,15 +19,10 @@ const FundraiserPage = () => {
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'Details':
+      case 'Edit':
         return <EditCampaign />;
-      case 'Team':
-        return (
-          <div className="p-4">
-            <h2 className="text-xl font-semibold mb-4">Fundraiser Team</h2>
-            <p>Manage your fundraiser team here.</p>
-          </div>
-        );
+      case 'Create':
+        return <CampaignCreator />;
       default:
         return null;
     }

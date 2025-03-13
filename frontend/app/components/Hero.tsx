@@ -246,11 +246,11 @@ const Hero = () => {
               {/* Decorative elements */}
               <div className="absolute -z-10 -bottom-6 -right-6 w-64 h-64 bg-gray-200/50 rounded-full blur-3xl"></div>
               <div className="absolute -z-10 -top-6 -left-6 w-40 h-40 bg-video/10 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 p-6 w-full">
-                  <h3 className="text-white text-lg md:text-xl font-medium drop-shadow-md">
-                    Introducing Gift For Fundraisers
-                  </h3>
-                </div>
+              <div className="absolute bottom-0 left-0 p-6 w-full">
+                <h3 className="text-white text-lg md:text-xl font-medium drop-shadow-md">
+                  Introducing Gift For Fundraisers
+                </h3>
+              </div>
             </div>
           </div>
         </div>
