@@ -20,19 +20,8 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import { useUserContext } from '@/app/context/users/UserContext';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { FaCheck, FaExclamationTriangle } from 'react-icons/fa';
+import { categories } from '@/app/utils/helpers/categories';
 
-const CATEGORIES = [
-  'Technology',
-  'Creative Arts',
-  'Community Projects',
-  'Education',
-  'Environment',
-  'Health',
-  'Business',
-  'Social Causes',
-  'Sports',
-  'Other',
-];
 
 const CURRENCIES = [
   { code: 'USD', symbol: '$' },
@@ -311,7 +300,7 @@ const CampaignCreator = () => {
                       setEndDate={setEndDate}
                       onContinue={() => setActiveTab('content')}
                       currencies={CURRENCIES}
-                      categories={CATEGORIES}
+                      categories={categories}
                     />
                   </div>
 

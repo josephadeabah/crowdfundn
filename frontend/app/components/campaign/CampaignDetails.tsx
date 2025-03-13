@@ -9,6 +9,7 @@ import {
 } from '@/app/components/ui/select';
 import { Button } from '@/app/components/ui/button';
 import DateRangePicker from '@/app/components/ui/DateRangePicker';
+import { Category } from '@/app/utils/helpers/categories';
 
 interface CampaignDetailsProps {
   title: string;
@@ -29,7 +30,7 @@ interface CampaignDetailsProps {
   setEndDate: (value: Date | string | undefined) => void;
   onContinue: () => void;
   currencies: Array<{ code: string; symbol: string }>;
-  categories: string[];
+  categories: Category[];
 }
 
 const CampaignDetails = ({
@@ -97,8 +98,8 @@ const CampaignDetails = ({
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat}
+                    <SelectItem key={cat.value} value={cat.value}>
+                      {cat.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
