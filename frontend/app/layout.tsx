@@ -37,7 +37,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en" className="h-full scroll-smooth light">
       <Head />
       <body
-        className={`max-w-full dark:bg-gray-900 mx-auto transition-all duration-150 ${roboto.variable} ${ubuntu.variable} h-full flex flex-col min-h-screen`}
+        className={`max-w-full bg-green-50 opacity-20 dark:bg-gray-900 mx-auto transition-all duration-150 ${roboto.variable} ${ubuntu.variable} h-full flex flex-col min-h-screen`}
       >
         <GlobalContextProvider>
           <Providers>
