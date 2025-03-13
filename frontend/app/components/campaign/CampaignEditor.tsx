@@ -93,7 +93,7 @@ const CampaignEditor = ({
               </TabsTrigger>
             </TabsList>
 
-            <Button onClick={onSave} className="ml-auto">
+            <Button variant="secondary" onClick={onSave} className="ml-auto">
               <Save className="w-4 h-4 mr-2" />
               Save Campaign
             </Button>
