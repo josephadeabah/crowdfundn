@@ -167,7 +167,7 @@ const CampaignDetails = ({
             <Button
               variant="outline"
               onClick={onContinue}
-              className="ml-auto bg-emerald-700"
+              className="ml-auto bg-emerald-700 text-white"
             >
               Continue to Content
             </Button>
