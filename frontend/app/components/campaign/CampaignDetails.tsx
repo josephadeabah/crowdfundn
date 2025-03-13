@@ -73,7 +73,7 @@ const CampaignDetails = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter your campaign title..."
-              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-emerald/20 focus:border-emerald/60"
+              className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
             />
           </div>
 
@@ -84,7 +84,7 @@ const CampaignDetails = ({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Brief description of your campaign..."
               rows={3}
-              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-emerald/20 focus:border-emerald/60"
+              className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
             />
           </div>
 
@@ -112,7 +112,8 @@ const CampaignDetails = ({
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="Where is your project based?"
-                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-emerald/20 focus:border-emerald/60"
+                className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                disabled={true}
               />
             </div>
           </div>
@@ -145,7 +146,7 @@ const CampaignDetails = ({
                   value={goalAmount}
                   onChange={(e) => setGoalAmount(e.target.value)}
                   placeholder="Amount"
-                  className="w-full pl-7 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-emerald/20 focus:border-emerald/60"
+                  className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                 />
               </div>
             </div>

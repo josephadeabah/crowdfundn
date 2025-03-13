@@ -153,10 +153,9 @@ const CampaignCreator = () => {
   useEffect(() => {
     // Set default values from userAccountData
     if (userAccountData) {
-      setCategory(userAccountData.category || '');
-      setLocation(userAccountData.country || '');
-      setGoalAmount(userAccountData.target_amount || '');
-      setCurrencyCode(userAccountData.currency || 'GHS'); // Default to GHS if not provided
+      setCampaignData({ ...campaignData, category: userAccountData.category || ''});
+      setCampaignData({...campaignData, location: userAccountData.country || ''});
+      setCampaignData({...campaignData, currencyCode: userAccountData.currency || ''});
     }
   }, [userAccountData]);
 
@@ -300,7 +299,7 @@ const CampaignCreator = () => {
                       setDescription={setDescription}
                       category={campaignData.category}
                       setCategory={setCategory}
-                      location={campaignData.location || String(userAccountData?.country)}
+                      location={campaignData.location}
                       setLocation={setLocation}
                       currencyCode={campaignData.currencyCode}
                       setCurrencyCode={setCurrencyCode}
