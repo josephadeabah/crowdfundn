@@ -65,6 +65,7 @@ interface FormErrors {
 
 const CampaignCreator = () => {
   const { userAccountData } = useUserContext();
+  console.log("user sccount data", userAccountData);
   const initialCampaignData: CampaignData = {
     title: '',
     description: '',
@@ -74,7 +75,7 @@ const CampaignCreator = () => {
     editorActiveTab: 'editor',
     goalAmount: '',
     category: '',
-    currencyCode: String(userAccountData?.currency), // Default currency
+    currencyCode: userAccountData?.currency ? String(userAccountData.currency) : '', // Default currency
     location: '',
   };
 
