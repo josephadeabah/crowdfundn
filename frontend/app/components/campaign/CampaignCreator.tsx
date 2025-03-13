@@ -136,18 +136,20 @@ const CampaignCreator = () => {
         description: 'Continue where you left off',
         duration: 3000,
       });
-      setAlertTitle('Your draft campaign has been restored. Continue where you left off');
     }
   }, [campaignData, initialCampaignData]);
 
   useEffect(() => {
-    // Set default values from userAccountData
     if (userAccountData) {
-      setCampaignData({ ...campaignData, category: userAccountData.category || ''});
-      setCampaignData({...campaignData, location: userAccountData.country || ''});
-      setCampaignData({...campaignData, currencyCode: userAccountData.currency || ''});
+      setCampaignData((prevData) => ({
+        ...prevData,
+        category: prevData.category || userAccountData.category || '',
+        location: userAccountData.country || '', // Ensure location is set but remains unchanged
+        currencyCode: prevData.currencyCode || userAccountData.currency || '',
+      }));
     }
   }, [userAccountData]);
+  
 
   const validateForm = (): boolean => {
     const formErrors: FormErrors = {
@@ -200,14 +202,12 @@ const CampaignCreator = () => {
     setSelectedTemplate(template);
     setTitle(template.title);
     setContent(template.content);
-    setAlertTitle(`Applied "${template.name}" template`);
     toast.success(`Applied "${template.name}" template`);
   };
 
   const handleSaveCampaign = async () => {
     if (!validateForm()) {
       toast.error('Please fix the errors in the form');
-      setAlertTitle('Please fix the errors in the form');
       return;
     }
 
