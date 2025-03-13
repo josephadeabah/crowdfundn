@@ -35,6 +35,7 @@ interface CampaignEditorProps {
   currencies: Array<{ code: string; symbol: string }>;
   startDate?: Date | string;
   endDate?: Date | string;
+  loading: boolean;
 }
 
 const CampaignEditor = ({
@@ -54,6 +55,7 @@ const CampaignEditor = ({
   currencies,
   startDate,
   endDate,
+  loading,
 }: CampaignEditorProps) => {
   const [editorActiveTab, setEditorActiveTab] = useState('editor');
   const getCurrencySymbol = (code: string) => {
@@ -112,10 +114,13 @@ const CampaignEditor = ({
                 Preview
               </TabsTrigger>
             </TabsList>
-
-            <Button variant="secondary" onClick={onSave} className="ml-auto">
-              <Save className="w-4 h-4 mr-2" />
-              Save Campaign
+            <Button variant="secondary" onClick={onSave} className="ml-auto" disabled={loading}>
+              {loading ? (
+                <div className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4 mr-2"></div>
+              ) : (
+                <Save className="w-4 h-4 mr-2" />
+              )}
+              {loading ? 'Saving...' : 'Save Campaign'}
             </Button>
           </div>
 

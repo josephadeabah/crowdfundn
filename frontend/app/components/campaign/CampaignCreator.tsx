@@ -350,6 +350,7 @@ const CampaignCreator = () => {
                       currencies={CURRENCIES}
                       startDate={campaignData.startDate}
                       endDate={campaignData.endDate}
+                      loading={loading}
                     />
                   </div>
 
