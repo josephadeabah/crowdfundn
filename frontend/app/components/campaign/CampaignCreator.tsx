@@ -287,14 +287,14 @@ const CampaignCreator = () => {
               <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
                 <TabsTrigger
                   value="details"
-                  className="data-[state=active]:bg-emerald-900 data-[state=active]:text-primary-foreground"
+                  className="data-[state=active]:bg-white data-[state=active]:text-gray-500"
                 >
                   <Settings className="w-4 h-4 mr-2" />
                   Campaign Details
                 </TabsTrigger>
                 <TabsTrigger
                   value="content"
-                  className="data-[state=active]:bg-emerald-900 data-[state=active]:text-primary-foreground"
+                  className="data-[state=active]:bg-white data-[state=active]:text-gray-500"
                 >
                   <FileText className="w-4 h-4 mr-2" />
                   Editor Pane
