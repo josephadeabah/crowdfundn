@@ -43,7 +43,6 @@ const CURRENCIES = [
 
 interface CampaignData {
   title: string;
-  description: string;
   content: string;
   startDate?: Date | string;
   endDate?: Date | string;
@@ -58,7 +57,6 @@ interface CampaignData {
 
 interface FormErrors {
   title: string;
-  description: string;
   content: string;
   startDate?: string;
   endDate?: string;
@@ -72,7 +70,6 @@ const CampaignCreator = () => {
   const { userAccountData } = useUserContext();
   const initialCampaignData: CampaignData = {
     title: '',
-    description: '',
     content: '',
     activeTab: 'details',
     selectedTemplate: null,
@@ -89,7 +86,6 @@ const CampaignCreator = () => {
   );
   const [error, setError] = useState<FormErrors>({
     title: '',
-    description: '',
     content: '',
     startDate: '',
     endDate: '',
@@ -114,8 +110,6 @@ const CampaignCreator = () => {
 
   const setTitle = (value: string) =>
     setCampaignData({ ...campaignData, title: value });
-  const setDescription = (value: string) =>
-    setCampaignData({ ...campaignData, description: value });
   const setContent = (value: string) =>
     setCampaignData({ ...campaignData, content: value });
   const setStartDate = (value: Date | string | undefined) =>
@@ -172,7 +166,6 @@ const CampaignCreator = () => {
   const validateForm = (): boolean => {
     const formErrors: FormErrors = {
       title: '',
-      description: '',
       content: '',
       startDate: '',
       endDate: '',
@@ -229,8 +222,7 @@ const CampaignCreator = () => {
 
     const formData = new FormData();
     formData.append('campaign[title]', campaignData.title);
-    formData.append('campaign[description]', campaignData.description);
-    formData.append('campaign[content]', campaignData.content);
+    formData.append('campaign[description]', campaignData.content);
     formData.append(
       'campaign[current_amount]',
       parseFloat(currentAmount).toString(),
@@ -307,8 +299,6 @@ const CampaignCreator = () => {
                     <CampaignDetails
                       title={campaignData.title}
                       setTitle={setTitle}
-                      description={campaignData.description}
-                      setDescription={setDescription}
                       category={campaignData.category}
                       setCategory={setCategory}
                       location={campaignData.location}
@@ -353,7 +343,6 @@ const CampaignCreator = () => {
                       onSelectTemplate={handleSelectTemplate}
                       selectedImage={selectedImage}
                       setSelectedImage={setSelectedImage}
-                      description={campaignData.description}
                       category={campaignData.category}
                       location={campaignData.location}
                       goalAmount={campaignData.goalAmount}

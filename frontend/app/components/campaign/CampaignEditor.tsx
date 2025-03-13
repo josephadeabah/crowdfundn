@@ -28,7 +28,6 @@ interface CampaignEditorProps {
   onSelectTemplate: (template: CampaignTemplate) => void;
   selectedImage: File | null;
   setSelectedImage: (file: File | null) => void;
-  description: string;
   category: string;
   location: string;
   goalAmount: string;
@@ -48,7 +47,6 @@ const CampaignEditor = ({
   onSelectTemplate,
   selectedImage,
   setSelectedImage,
-  description,
   category,
   location,
   goalAmount,
@@ -191,12 +189,6 @@ const CampaignEditor = ({
               <h1 className="text-3xl font-bold mb-3">
                 {title || 'Your Campaign Title'}
               </h1>
-
-              {description && (
-                <p className="text-lg text-muted-foreground mb-6">
-                  {description}
-                </p>
-              )}
 
               {category && (
                 <div className="inline-flex items-center bg-emerald-50 text-emerald-800 px-3 py-1 rounded-full text-sm mr-2 mb-4">

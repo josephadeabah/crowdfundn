@@ -14,8 +14,6 @@ import { Category } from '@/app/utils/helpers/categories';
 interface CampaignDetailsProps {
   title: string;
   setTitle: (value: string) => void;
-  description: string;
-  setDescription: (value: string) => void;
   category: string;
   setCategory: (value: string) => void;
   location: string;
@@ -36,8 +34,6 @@ interface CampaignDetailsProps {
 const CampaignDetails = ({
   title,
   setTitle,
-  description,
-  setDescription,
   category,
   setCategory,
   location,
@@ -74,17 +70,6 @@ const CampaignDetails = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter your campaign title..."
-              className="block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-            />
-          </div>
-
-          <div>
-            <label className="form-label">Short Description</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Brief description of your campaign..."
-              rows={3}
               className="block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
             />
           </div>
