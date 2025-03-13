@@ -114,7 +114,7 @@ const CampaignEditor = ({
                 Preview
               </TabsTrigger>
             </TabsList>
-            <Button variant="secondary" onClick={onSave} className="ml-auto" disabled={loading}>
+            <Button variant="secondary" onClick={onSave} className="ml-auto text-gray-500" disabled={loading}>
               {loading ? (
                 <div className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4 mr-2"></div>
               ) : (
