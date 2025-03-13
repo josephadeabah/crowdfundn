@@ -450,6 +450,7 @@ const RichTextEditor = ({
                       className="flex-1"
                     />
                     <Button
+                      variant="outline"
                       onClick={() => searchUnsplashImages(searchQuery)}
                       disabled={isSearching}
                     >
@@ -503,6 +504,7 @@ const RichTextEditor = ({
                     onChange={(e) => setImageTitle(e.target.value)}
                   />
                   <Button
+                    variant="secondary"
                     className="w-full"
                     onClick={() => insertImage(searchQuery, imageTitle)}
                     disabled={!searchQuery}
