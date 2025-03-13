@@ -26,9 +26,6 @@ const FundraiserPageContent = () => {
   // Define the tabs
   const tabs = ['Create New Campaign', 'Edit Campaign'];
 
-  // Read the campaignId from the URL
-  const campaignId = searchParams.get('campaignId');
-
   // Set the active tab based on the URL query parameter
   useEffect(() => {
     const tab = searchParams.get('tab');
@@ -50,11 +47,7 @@ const FundraiserPageContent = () => {
       case 'Create New Campaign':
         return <CampaignCreator />;
       case 'Edit Campaign':
-        return campaignId ? (
-          <EditCampaign />
-        ) : (
-          <p className="text-red-500">No campaign ID provided for editing.</p>
-        );
+        return <EditCampaign />;
       default:
         return null;
     }
