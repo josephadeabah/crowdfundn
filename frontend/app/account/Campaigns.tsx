@@ -51,7 +51,7 @@ const Campaigns: React.FC = () => {
 
   const handleEditCampaign = (campaignId: string) => {
     router.push(
-      `/account/dashboard/create/?tab=Edit%20Campaign${campaignId}?${generateRandomString()}`,
+      `/account/dashboard/create?tab=Edit%20Campaign${campaignId}?${generateRandomString()}`,
     );
   };
 
