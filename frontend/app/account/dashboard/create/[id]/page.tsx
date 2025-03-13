@@ -38,7 +38,7 @@ const FundraiserPageContent = () => {
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
     setError('');
-    router.push(`/fundraiser?tab=${encodeURIComponent(tab)}`);
+    router.push(`/account/dashboard/create?tab=${encodeURIComponent(tab)}`);
   };
 
   // Render the content for the active tab
