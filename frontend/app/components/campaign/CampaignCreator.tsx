@@ -21,6 +21,7 @@ import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { FaCheck, FaExclamationTriangle } from 'react-icons/fa';
 import { categories } from '@/app/utils/helpers/categories';
 import { useDropzone } from 'react-dropzone';
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 const CURRENCIES = [
   { code: 'USD', symbol: '$' },
@@ -103,7 +104,7 @@ const CampaignCreator = () => {
   const [alertTitle, setAlertTitle] = useState<string>('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [currentAmount, setCurrentAmount] = useState('0');
-  
+  const router = useRouter(); // Initialize useRouter
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -386,7 +387,12 @@ const CampaignCreator = () => {
         message={alertMessage}
         isOpen={alertOpen}
         setIsOpen={setAlertOpen}
-        onConfirm={() => setAlertOpen(false)}
+        onConfirm={() => {
+          setAlertOpen(false); // Close the popup
+          if (alertTitle === 'Campaign created successfully') {
+            router.push('/account#Campaigns'); // Navigate to /account#Campaigns
+          }
+        }}
         icon={
           alertTitle === 'Campaign created successfully' ? (
             <FaCheck className="w-6 h-6 text-green-600" />
