@@ -46,8 +46,8 @@ interface CampaignData {
   title: string;
   description: string;
   content: string;
-  startDate?: Date;
-  endDate?: Date;
+  startDate?: Date | string;
+  endDate?: Date | string;
   activeTab: string;
   selectedTemplate: CampaignTemplate | null;
   editorActiveTab: string;
@@ -82,9 +82,9 @@ const CampaignCreator = () => {
     setCampaignData({ ...campaignData, description: value });
   const setContent = (value: string) =>
     setCampaignData({ ...campaignData, content: value });
-  const setStartDate = (value: Date | undefined) =>
+  const setStartDate = (value: Date | string | undefined) =>
     setCampaignData({ ...campaignData, startDate: value });
-  const setEndDate = (value: Date | undefined) =>
+  const setEndDate = (value: Date | string | undefined) =>
     setCampaignData({ ...campaignData, endDate: value });
   const setActiveTab = (value: string) =>
     setCampaignData({ ...campaignData, activeTab: value });

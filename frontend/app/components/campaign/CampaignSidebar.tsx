@@ -9,8 +9,8 @@ interface CampaignSidebarProps {
   category: string;
   goalAmount: string;
   currencyCode: string;
-  startDate?: Date;
-  endDate?: Date;
+  startDate?: Date | string; // Allow string or Date
+  endDate?: Date | string; // Allow string or Date
   content: string;
   onViewFullPreview: () => void;
   currencies: Array<{ code: string; symbol: string }>;
@@ -30,6 +30,19 @@ const CampaignSidebar = ({
   const getCurrencySymbol = (code: string) => {
     const currency = currencies.find((c) => c.code === code);
     return currency ? currency.symbol : '$';
+  };
+
+  // Helper function to format dates
+  const formatDate = (date: Date | string | undefined): string => {
+    if (!date) return 'Not set';
+
+    // Convert string to Date if necessary
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+    // Check if the date is valid
+    if (isNaN(dateObj.getTime())) return 'Invalid date';
+
+    return dateObj.toLocaleDateString();
   };
 
   return (
@@ -62,7 +75,7 @@ const CampaignSidebar = ({
             <span className="text-sm text-muted-foreground">Duration:</span>
             <span className="text-sm font-medium">
               {startDate && endDate
-                ? `${startDate?.toLocaleDateString()} - ${endDate?.toLocaleDateString()}`
+                ? `${formatDate(startDate)} - ${formatDate(endDate)}`
                 : 'Not set'}
             </span>
           </div>

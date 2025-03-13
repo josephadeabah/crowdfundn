@@ -23,10 +23,10 @@ interface CampaignDetailsProps {
   setCurrencyCode: (value: string) => void;
   goalAmount: string;
   setGoalAmount: (value: string) => void;
-  startDate: Date | undefined;
-  setStartDate: (value: Date | undefined) => void;
-  endDate: Date | undefined;
-  setEndDate: (value: Date | undefined) => void;
+  startDate?: Date | string;
+  setStartDate: (value: Date | string | undefined) => void;
+  endDate?: Date | string;
+  setEndDate: (value: Date | string | undefined) => void;
   onContinue: () => void;
   currencies: Array<{ code: string; symbol: string }>;
   categories: string[];
@@ -154,8 +154,8 @@ const CampaignDetails = ({
           <div>
             <label className="form-label">Campaign Duration</label>
             <DateRangePicker
-              startDate={startDate}
-              endDate={endDate}
+              startDate={startDate instanceof Date ? startDate : undefined}
+              endDate={endDate instanceof Date ? endDate : undefined}
               onStartDateChange={setStartDate}
               onEndDateChange={setEndDate}
             />

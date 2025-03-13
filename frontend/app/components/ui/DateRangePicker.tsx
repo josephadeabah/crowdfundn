@@ -11,8 +11,8 @@ import {
 } from '@/app/components/ui/popover';
 
 interface DateRangePickerProps {
-  startDate: Date | undefined;
-  endDate: Date | undefined;
+  startDate?: Date;
+  endDate?: Date;
   onStartDateChange: (date: Date | undefined) => void;
   onEndDateChange: (date: Date | undefined) => void;
   className?: string;
@@ -40,7 +40,7 @@ const DateRangePicker = ({
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
               {startDate ? (
-                format(startDate, 'PPP')
+                format(startDate as Date, 'PPP')
               ) : (
                 <span>Select start date</span>
               )}

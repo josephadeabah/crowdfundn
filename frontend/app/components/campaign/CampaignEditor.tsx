@@ -31,8 +31,8 @@ interface CampaignEditorProps {
   goalAmount: string;
   currencyCode: string;
   currencies: Array<{ code: string; symbol: string }>;
-  startDate?: Date;
-  endDate?: Date;
+  startDate?: Date | string;
+  endDate?: Date | string;
 }
 
 const CampaignEditor = ({
@@ -166,8 +166,8 @@ const CampaignEditor = ({
               {startDate && endDate && (
                 <div className="inline-flex items-center bg-emerald-50 text-emerald-800 px-3 py-1 rounded-full text-sm mb-6">
                   <span>
-                    Campaign runs: {startDate.toLocaleDateString()} -{' '}
-                    {endDate.toLocaleDateString()}
+                    Campaign runs: {startDate.toLocaleString()} -{' '}
+                    {endDate.toLocaleString()}
                   </span>
                 </div>
               )}
