@@ -154,9 +154,9 @@ const CampaignCreator = () => {
     // Set default values from userAccountData
     if (userAccountData) {
       setCategory(userAccountData.category || '');
-      setLocation(userAccountData.country || '');
+      setLocation(userAccountData.country || ''); // Set location to user's country
       setGoalAmount(userAccountData.target_amount || '');
-      setCurrencyCode(userAccountData.currency || 'GHS'); // Default to GHS if not provided
+      setCurrencyCode(userAccountData.currency || 'GHS'); // Set currency to user's currency
     }
   }, [userAccountData]);
 
@@ -300,7 +300,7 @@ const CampaignCreator = () => {
                       setDescription={setDescription}
                       category={campaignData.category}
                       setCategory={setCategory}
-                      location={campaignData.location || String(userAccountData?.country)}
+                      location={campaignData.location}
                       setLocation={setLocation}
                       currencyCode={campaignData.currencyCode}
                       setCurrencyCode={setCurrencyCode}
@@ -313,6 +313,7 @@ const CampaignCreator = () => {
                       onContinue={() => setActiveTab('content')}
                       currencies={CURRENCIES}
                       categories={CATEGORIES}
+                      isLocationDisabled={!!userAccountData?.country} // Disable location if userAccountData.country exists
                     />
                   </div>
 
