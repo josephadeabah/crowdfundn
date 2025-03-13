@@ -146,7 +146,7 @@ const CampaignDetails = ({
                   value={goalAmount}
                   onChange={(e) => setGoalAmount(e.target.value)}
                   placeholder="Amount"
-                  className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                  className="mt-1 block w-full pl-7 px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                 />
               </div>
             </div>
