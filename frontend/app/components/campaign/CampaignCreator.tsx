@@ -75,6 +75,7 @@ interface FormErrors {
 }
 
 const CampaignCreator = () => {
+  const { userAccountData } = useUserContext();
   const initialCampaignData: CampaignData = {
     title: '',
     description: '',
@@ -83,16 +84,15 @@ const CampaignCreator = () => {
     selectedTemplate: null,
     editorActiveTab: 'editor',
     goalAmount: '',
-    category: '',
-    currencyCode: 'GHS', // Default currency
-    location: '',
+    category: String(userAccountData?.category),
+    currencyCode: String(userAccountData?.currency), // Default currency
+    location: String(userAccountData?.country),
   };
 
   const [campaignData, setCampaignData] = useLocalStorage<CampaignData>(
     'campaign-draft',
     initialCampaignData,
   );
-  const { userAccountData } = useUserContext();
   const [error, setError] = useState<FormErrors>({
     title: '',
     description: '',
@@ -132,7 +132,7 @@ const CampaignCreator = () => {
   const setCurrencyCode = (value: string) =>
     setCampaignData({ ...campaignData, currencyCode: value });
   const setLocation = (value: string) =>
-    setCampaignData({ ...campaignData, location: value || String(userAccountData?.country)});
+    setCampaignData({ ...campaignData, location: value });
 
   useEffect(() => {
     const hasSavedData = Object.values(campaignData).some(
@@ -151,14 +151,17 @@ const CampaignCreator = () => {
   }, [campaignData, initialCampaignData]);
 
   useEffect(() => {
-    // Set default values from userAccountData
-    if (userAccountData) {
-      setCategory(userAccountData.category || '');
-      setLocation(userAccountData.country || ''); // Set location to user's country
-      setGoalAmount(userAccountData.target_amount || '');
-      setCurrencyCode(userAccountData.currency || 'GHS'); // Set currency to user's currency
+    // Set default values from userAccountData only if campaignData is in its initial state
+    if (userAccountData && campaignData === initialCampaignData) {
+      setCampaignData({
+        ...campaignData,
+        category: userAccountData.category || '',
+        location: userAccountData.country || '',
+        goalAmount: userAccountData.target_amount || '',
+        currencyCode: userAccountData.currency || 'GHS',
+      });
     }
-  }, [userAccountData]);
+  }, [userAccountData, campaignData, initialCampaignData]);
 
   const validateForm = (): boolean => {
     const formErrors: FormErrors = {
