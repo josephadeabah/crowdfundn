@@ -89,9 +89,9 @@ const CampaignCreator = () => {
     startDate: '',
     endDate: '',
     goalAmount: '',
-    category: String(userAccountData?.category),
-    currencyCode: String(userAccountData?.currency),
-    location: String(userAccountData?.country),
+    category: '',
+    currencyCode: '',
+    location: '',
   });
   const { addCampaign, loading } = useCampaignContext();
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
