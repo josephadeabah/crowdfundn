@@ -64,6 +64,7 @@ interface FormErrors {
 }
 
 const CampaignCreator = () => {
+  const { userAccountData } = useUserContext();
   const initialCampaignData: CampaignData = {
     title: '',
     description: '',
@@ -81,7 +82,6 @@ const CampaignCreator = () => {
     'campaign-draft',
     initialCampaignData,
   );
-  const { userAccountData } = useUserContext();
   const [error, setError] = useState<FormErrors>({
     title: '',
     description: '',
@@ -89,9 +89,9 @@ const CampaignCreator = () => {
     startDate: '',
     endDate: '',
     goalAmount: '',
-    category: '',
-    currencyCode: '',
-    location: '',
+    category: String(userAccountData?.category),
+    currencyCode: String(userAccountData?.currency),
+    location: String(userAccountData?.country),
   });
   const { addCampaign, loading } = useCampaignContext();
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
