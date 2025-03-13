@@ -187,7 +187,7 @@ const CampaignCreator = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
-      <div className="max-w-7xl px-4 sm:px-6 mx-auto animate-fade-in">
+      <div className="max-w-7xl px-4 mx-auto animate-fade-in">
         <CampaignHeader />
 
         <div className="mb-6">
