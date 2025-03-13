@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 import {
   Tabs,
   TabsContent,
@@ -15,6 +16,10 @@ import CampaignDetails from '@/app/components/campaign/CampaignDetails';
 import CampaignTips from '@/app/components/campaign/CampaignTips';
 import CampaignEditor from '@/app/components/campaign/CampaignEditor';
 import CampaignSidebar from '@/app/components/campaign/CampaignSidebar';
+import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
+import { useUserContext } from '@/app/context/users/UserContext';
+import AlertPopup from '@/app/components/alertpopup/AlertPopup';
+import { FaCheck, FaExclamationTriangle } from 'react-icons/fa';
 
 const CATEGORIES = [
   'Technology',
@@ -57,6 +62,18 @@ interface CampaignData {
   location: string;
 }
 
+interface FormErrors {
+  title: string;
+  description: string;
+  content: string;
+  startDate?: string;
+  endDate?: string;
+  goalAmount: string;
+  category: string;
+  currencyCode: string;
+  location: string;
+}
+
 const CampaignCreator = () => {
   const initialCampaignData: CampaignData = {
     title: '',
@@ -67,7 +84,7 @@ const CampaignCreator = () => {
     editorActiveTab: 'editor',
     goalAmount: '',
     category: '',
-    currencyCode: 'GHS',
+    currencyCode: 'GHS', // Default currency
     location: '',
   };
 
@@ -75,6 +92,22 @@ const CampaignCreator = () => {
     'campaign-draft',
     initialCampaignData,
   );
+  const { userAccountData } = useUserContext();
+  const [error, setError] = useState<FormErrors>({
+    title: '',
+    description: '',
+    content: '',
+    startDate: '',
+    endDate: '',
+    goalAmount: '',
+    category: '',
+    currencyCode: '',
+    location: '',
+  });
+  const { addCampaign, loading } = useCampaignContext();
+  const [alertOpen, setAlertOpen] = useState<boolean>(false);
+  const [alertMessage, setAlertMessage] = useState<React.ReactNode>('');
+  const [alertTitle, setAlertTitle] = useState<string>('');
 
   const setTitle = (value: string) =>
     setCampaignData({ ...campaignData, title: value });
@@ -115,7 +148,47 @@ const CampaignCreator = () => {
         duration: 3000,
       });
     }
-  }, []);
+  }, [campaignData, initialCampaignData]);
+
+  useEffect(() => {
+    // Set default values from userAccountData
+    if (userAccountData) {
+      setCategory(userAccountData.category || '');
+      setLocation(userAccountData.country || '');
+      setGoalAmount(userAccountData.target_amount || '');
+      setCurrencyCode(userAccountData.currency || 'GHS'); // Default to GHS if not provided
+    }
+  }, [userAccountData]);
+
+  const validateForm = (): boolean => {
+    const formErrors: FormErrors = {
+      title: '',
+      description: '',
+      content: '',
+      startDate: '',
+      endDate: '',
+      goalAmount: '',
+      category: '',
+      currencyCode: '',
+      location: '',
+    };
+
+    if (!campaignData.title.trim()) formErrors.title = 'Title is required';
+    if (!campaignData.content.trim()) formErrors.content = 'Content is required';
+    if (!campaignData.startDate) formErrors.startDate = 'Start date is required';
+    if (!campaignData.endDate) formErrors.endDate = 'End date is required';
+    if (!campaignData.goalAmount) formErrors.goalAmount = 'Goal amount is required';
+    if (!campaignData.category) formErrors.category = 'Category is required';
+    if (!campaignData.currencyCode) formErrors.currencyCode = 'Currency is required';
+    if (!campaignData.location) formErrors.location = 'Location is required';
+
+    if (campaignData.startDate && campaignData.endDate && new Date(campaignData.startDate) > new Date(campaignData.endDate)) {
+      formErrors.endDate = 'End date must be after start date';
+    }
+
+    setError(formErrors);
+    return Object.values(formErrors).every((err) => !err);
+  };
 
   const handleMediaSelect = (url: string, type: 'image' | 'video') => {
     let htmlToInsert = '';
@@ -141,169 +214,184 @@ const CampaignCreator = () => {
     toast.success(`Applied "${template.name}" template`);
   };
 
-  const handleSaveCampaign = () => {
-    if (!campaignData.title) {
-      toast.error('Please add a title for your campaign');
+  const handleSaveCampaign = async () => {
+    if (!validateForm()) {
+      toast.error('Please fix the errors in the form');
       return;
     }
 
-    if (!campaignData.content) {
-      toast.error('Please add content to your campaign');
-      return;
+    const formData = new FormData();
+    formData.append('campaign[title]', campaignData.title);
+    formData.append('campaign[description]', campaignData.description);
+    formData.append('campaign[content]', campaignData.content);
+    formData.append('campaign[goal_amount]', campaignData.goalAmount);
+    formData.append('campaign[start_date]', campaignData.startDate as string);
+    formData.append('campaign[end_date]', campaignData.endDate as string);
+    formData.append('campaign[category]', campaignData.category);
+    formData.append('campaign[location]', campaignData.location);
+    formData.append('campaign[currency]', campaignData.currencyCode);
+
+    try {
+      const createdCampaign = await addCampaign(formData);
+      setAlertTitle('Campaign created successfully');
+      setAlertMessage(
+        <a href="/account#Campaigns" className="text-gray-700 underline">
+          View created campaign in the "Campaigns" tab
+        </a>,
+      );
+      setCampaignData(initialCampaignData);
+      localStorage.removeItem('campaign-draft');
+    } catch (err) {
+      setAlertTitle('Failed to create campaign');
+      setAlertMessage(
+        <div>
+          {Object.values(error).map((errMsg, index) => (
+            <p key={index} className="text-red-500">
+              {errMsg}
+            </p>
+          ))}
+        </div>,
+      );
+    } finally {
+      setAlertOpen(true);
     }
-
-    if (!campaignData.startDate || !campaignData.endDate) {
-      toast.error('Please select both start and end dates');
-      return;
-    }
-
-    if (!campaignData.goalAmount) {
-      toast.error('Please set a goal amount');
-      return;
-    }
-
-    if (!campaignData.category) {
-      toast.error('Please select a category');
-      return;
-    }
-
-    toast.success('Campaign saved successfully!');
-
-    setCampaignData(initialCampaignData);
-    localStorage.removeItem('campaign-draft');
-
-    console.log({
-      title: campaignData.title,
-      description: campaignData.description,
-      content: campaignData.content,
-      startDate: campaignData.startDate,
-      endDate: campaignData.endDate,
-      goalAmount: campaignData.goalAmount,
-      category: campaignData.category,
-      currencyCode: campaignData.currencyCode,
-      location: campaignData.location,
-    });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
-      <div className="max-w-7xl mx-auto animate-fade-in">
-        <CampaignHeader />
+    <>
+      <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
+        <div className="max-w-7xl mx-auto animate-fade-in">
+          <CampaignHeader />
 
-        <div className="mb-6">
-          <Tabs
-            defaultValue={campaignData.activeTab}
-            value={campaignData.activeTab}
-            onValueChange={setActiveTab}
-            className="w-full"
-          >
-            <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
-              <TabsTrigger
-                value="details"
-                className="data-[state=active]:bg-emerald-900 data-[state=active]:text-primary-foreground"
-              >
-                <Settings className="w-4 h-4 mr-2" />
-                Campaign Details
-              </TabsTrigger>
-              <TabsTrigger
-                value="content"
-                className="data-[state=active]:bg-emerald-900 data-[state=active]:text-primary-foreground"
-              >
-                <FileText className="w-4 h-4 mr-2" />
-                Editor Pane
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="details" className="animate-fade-in">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div
-                  className="lg:col-span-8 space-y-6 animate-slide-up"
-                  style={{ animationDelay: '0.1s' }}
+          <div className="mb-6">
+            <Tabs
+              defaultValue={campaignData.activeTab}
+              value={campaignData.activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
+              <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
+                <TabsTrigger
+                  value="details"
+                  className="data-[state=active]:bg-emerald-900 data-[state=active]:text-primary-foreground"
                 >
-                  <CampaignDetails
-                    title={campaignData.title}
-                    setTitle={setTitle}
-                    description={campaignData.description}
-                    setDescription={setDescription}
-                    category={campaignData.category}
-                    setCategory={setCategory}
-                    location={campaignData.location}
-                    setLocation={setLocation}
-                    currencyCode={campaignData.currencyCode}
-                    setCurrencyCode={setCurrencyCode}
-                    goalAmount={campaignData.goalAmount}
-                    setGoalAmount={setGoalAmount}
-                    startDate={campaignData.startDate}
-                    setStartDate={setStartDate}
-                    endDate={campaignData.endDate}
-                    setEndDate={setEndDate}
-                    onContinue={() => setActiveTab('content')}
-                    currencies={CURRENCIES}
-                    categories={CATEGORIES}
-                  />
-                </div>
-
-                <div
-                  className="lg:col-span-4 space-y-6 animate-slide-up"
-                  style={{ animationDelay: '0.2s' }}
+                  <Settings className="w-4 h-4 mr-2" />
+                  Campaign Details
+                </TabsTrigger>
+                <TabsTrigger
+                  value="content"
+                  className="data-[state=active]:bg-emerald-900 data-[state=active]:text-primary-foreground"
                 >
-                  <CampaignTips />
-                </div>
-              </div>
-            </TabsContent>
+                  <FileText className="w-4 h-4 mr-2" />
+                  Editor Pane
+                </TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="content" className="animate-fade-in">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div
-                  className="lg:col-span-8 space-y-6 animate-slide-up"
-                  style={{ animationDelay: '0.1s' }}
-                >
-                  <CampaignEditor
-                    title={campaignData.title}
-                    setTitle={setTitle}
-                    content={campaignData.content}
-                    setContent={setContent}
-                    selectedTemplate={campaignData.selectedTemplate}
-                    setSelectedTemplate={setSelectedTemplate}
-                    onSave={handleSaveCampaign}
-                    onSelectTemplate={handleSelectTemplate}
-                    onMediaSelect={handleMediaSelect}
-                    description={campaignData.description}
-                    category={campaignData.category}
-                    location={campaignData.location}
-                    goalAmount={campaignData.goalAmount}
-                    currencyCode={campaignData.currencyCode}
-                    currencies={CURRENCIES}
-                    startDate={campaignData.startDate}
-                    endDate={campaignData.endDate}
-                  />
-                </div>
+              <TabsContent value="details" className="animate-fade-in">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div
+                    className="lg:col-span-8 space-y-6 animate-slide-up"
+                    style={{ animationDelay: '0.1s' }}
+                  >
+                    <CampaignDetails
+                      title={campaignData.title}
+                      setTitle={setTitle}
+                      description={campaignData.description}
+                      setDescription={setDescription}
+                      category={campaignData.category}
+                      setCategory={setCategory}
+                      location={campaignData.location || String(userAccountData?.country)}
+                      setLocation={setLocation}
+                      currencyCode={campaignData.currencyCode}
+                      setCurrencyCode={setCurrencyCode}
+                      goalAmount={campaignData.goalAmount}
+                      setGoalAmount={setGoalAmount}
+                      startDate={campaignData.startDate}
+                      setStartDate={setStartDate}
+                      endDate={campaignData.endDate}
+                      setEndDate={setEndDate}
+                      onContinue={() => setActiveTab('content')}
+                      currencies={CURRENCIES}
+                      categories={CATEGORIES}
+                    />
+                  </div>
 
-                <div
-                  className="lg:col-span-4 space-y-6 animate-slide-up"
-                  style={{ animationDelay: '0.2s' }}
-                >
-                  <CampaignSidebar
-                    title={campaignData.title}
-                    category={campaignData.category}
-                    goalAmount={campaignData.goalAmount}
-                    currencyCode={campaignData.currencyCode}
-                    startDate={campaignData.startDate}
-                    endDate={campaignData.endDate}
-                    content={campaignData.content}
-                    onViewFullPreview={() => {
-                      setActiveTab('content');
-                      setEditorActiveTab('preview');
-                    }}
-                    currencies={CURRENCIES}
-                  />
+                  <div
+                    className="lg:col-span-4 space-y-6 animate-slide-up"
+                    style={{ animationDelay: '0.2s' }}
+                  >
+                    <CampaignTips />
+                  </div>
                 </div>
-              </div>
-            </TabsContent>
-          </Tabs>
+              </TabsContent>
+
+              <TabsContent value="content" className="animate-fade-in">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div
+                    className="lg:col-span-8 space-y-6 animate-slide-up"
+                    style={{ animationDelay: '0.1s' }}
+                  >
+                    <CampaignEditor
+                      title={campaignData.title}
+                      setTitle={setTitle}
+                      content={campaignData.content}
+                      setContent={setContent}
+                      selectedTemplate={campaignData.selectedTemplate}
+                      setSelectedTemplate={setSelectedTemplate}
+                      onSave={handleSaveCampaign}
+                      onSelectTemplate={handleSelectTemplate}
+                      onMediaSelect={handleMediaSelect}
+                      description={campaignData.description}
+                      category={campaignData.category}
+                      location={campaignData.location}
+                      goalAmount={campaignData.goalAmount}
+                      currencyCode={campaignData.currencyCode}
+                      currencies={CURRENCIES}
+                      startDate={campaignData.startDate}
+                      endDate={campaignData.endDate}
+                    />
+                  </div>
+
+                  <div
+                    className="lg:col-span-4 space-y-6 animate-slide-up"
+                    style={{ animationDelay: '0.2s' }}
+                  >
+                    <CampaignSidebar
+                      title={campaignData.title}
+                      category={campaignData.category}
+                      goalAmount={campaignData.goalAmount}
+                      currencyCode={campaignData.currencyCode}
+                      startDate={campaignData.startDate}
+                      endDate={campaignData.endDate}
+                      content={campaignData.content}
+                      onViewFullPreview={() => {
+                        setActiveTab('content');
+                        setEditorActiveTab('preview');
+                      }}
+                      currencies={CURRENCIES}
+                    />
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
       </div>
-    </div>
+      <AlertPopup
+        title={alertTitle}
+        message={alertMessage}
+        isOpen={alertOpen}
+        setIsOpen={setAlertOpen}
+        onConfirm={() => setAlertOpen(false)}
+        icon={
+          alertTitle === 'Campaign created successfully' ? (
+            <FaCheck className="w-6 h-6 text-green-600" />
+          ) : (
+            <FaExclamationTriangle className="w-6 h-6 text-red-600" />
+          )
+        }
+      />
+    </>
   );
 };
 

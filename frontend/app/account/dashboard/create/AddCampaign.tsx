@@ -31,6 +31,7 @@ const CreateCampaign = () => {
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<React.ReactNode>('');
   const [alertTitle, setAlertTitle] = useState<string>('');
+  
 
   interface FormErrors {
     title?: string;
