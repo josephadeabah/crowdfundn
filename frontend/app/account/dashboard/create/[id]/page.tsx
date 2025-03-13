@@ -10,7 +10,7 @@ const FundraiserPage = () => {
   const [activeTab, setActiveTab] = useState('Details');
   const [error, setError] = useState('');
 
-  const tabs = ['Edit', 'Create'];
+  const tabs = ['Create', 'Edit'];
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
@@ -19,10 +19,10 @@ const FundraiserPage = () => {
 
   const renderTabContent = () => {
     switch (activeTab) {
+      case 'Create':
+        return <CampaignCreator/>;
       case 'Edit':
         return <EditCampaign />;
-      case 'Create':
-        return <CampaignCreator />;
       default:
         return null;
     }
