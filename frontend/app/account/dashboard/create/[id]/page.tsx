@@ -51,7 +51,7 @@ const FundraiserPageContent = () => {
         return <CampaignCreator />;
       case 'Edit Campaign':
         return campaignId ? (
-          <EditCampaign campaignId={campaignId} />
+          <EditCampaign />
         ) : (
           <p className="text-red-500">No campaign ID provided for editing.</p>
         );
