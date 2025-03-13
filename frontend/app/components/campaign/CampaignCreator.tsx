@@ -145,7 +145,7 @@ const CampaignCreator = () => {
         duration: 3000,
       });
     }
-  }, []);
+  }, [campaignData, initialCampaignData]);
 
   useEffect(() => {
     if (userAccountData) {
@@ -219,8 +219,6 @@ const CampaignCreator = () => {
       toast.error('Please fix the errors in the form');
       return;
     }
-    setCampaignData(initialCampaignData);
-    localStorage.removeItem('campaign-draft');
 
     const formData = new FormData();
     formData.append('campaign[title]', campaignData.title);
@@ -241,7 +239,6 @@ const CampaignCreator = () => {
 
     try {
       const createdCampaign = await addCampaign(formData);
-      toast.success('Campaign saved successfully!');
       setAlertTitle('Campaign created successfully');
       setAlertMessage(
         <a href="/account#Campaigns" className="text-gray-700 underline">
