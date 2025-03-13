@@ -74,7 +74,7 @@ const CampaignCreator = () => {
     editorActiveTab: 'editor',
     goalAmount: '',
     category: '',
-    currencyCode: userAccountData?.currency ? String(userAccountData.currency) : '', // Default currency
+    currencyCode: '', // Default currency
     location: '',
   };
 
@@ -144,15 +144,11 @@ const CampaignCreator = () => {
       setCampaignData((prevData) => ({
         ...prevData,
         category: prevData.category || userAccountData.category || '',
-        location: userAccountData.country || '',
-        currencyCode:
-          prevData.currencyCode && prevData.currencyCode.trim() !== ''
-            ? prevData.currencyCode.toUpperCase()
-            : (userAccountData.currency || '').toUpperCase(),
+        location: userAccountData.country || '', // Ensure location is set but remains unchanged
+        currencyCode: (prevData.currencyCode || userAccountData.currency || '').toUpperCase(),
       }));
     }
   }, [userAccountData]);
-  
   
 
   const validateForm = (): boolean => {
