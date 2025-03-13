@@ -34,7 +34,11 @@ const CURRENCIES = [
   { code: 'CNY', symbol: '¥' },
   { code: 'INR', symbol: '₹' },
   { code: 'BRL', symbol: 'R$' },
-  { code: 'GHS', symbol: '₵'},
+  { code: 'GHS', symbol: '₵' },
+  { code: 'KES', symbol: 'KSh' }, // Kenya Shilling
+  { code: 'NGN', symbol: '₦' },  // Nigerian Naira
+  { code: 'SZL', symbol: 'E' },  // Eswatini Lilangeni
+  { code: 'ZAR', symbol: 'R' }   // South African Rand
 ];
 
 interface CampaignData {
