@@ -5,16 +5,18 @@ import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { useDropzone } from 'react-dropzone';
 import Modal from '@/app/components/modal/Modal';
 import { Button } from '@/app/components/button/Button';
-import { useParams } from 'next/navigation';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import CampaignPermissionSetting from '@/app/account/dashboard/create/settings/PermissionSettings';
-
 import { SingleCampaignResponseDataType } from '@/app/types/campaigns.types';
 import { truncateHTML } from '@/app/utils/helpers/truncate.html';
 import RichTextEditor from '@/app/components/richtext/Richtext';
 import EditCampaignsLoader from '@/app/loaders/EditCampaignLoader';
 
-const EditCampaign = () => {
+interface EditCampaignProps {
+  campaignId: string | null;
+}
+
+const EditCampaign: React.FC<EditCampaignProps> = ({ campaignId }) => {
   const {
     loading,
     editCampaign,
@@ -22,54 +24,34 @@ const EditCampaign = () => {
     currentCampaign,
     fetchCampaigns,
   } = useCampaignContext();
-  const { id } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editMode, setEditMode] = useState({ field: '', value: '' });
   const [title, setTitle] = useState('');
   const [goalAmount, setGoalAmount] = useState('');
   const [description, setDescription] = useState('');
-  const [image, setImage] = useState(
-    'https://images.pexels.com/photos/28974077/pexels-photo-28974077/free-photo-of-close-up-of-two-polar-bears-on-rocky-terrain.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  );
+  const [image, setImage] = useState('');
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
-  // Additional state variables
-  const [currentAmount, setCurrentAmount] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [category, setCategory] = useState('');
-  const [location, setLocation] = useState('');
-  const [currency, setCurrency] = useState('');
-  const [currencyCode, setCurrencyCode] = useState<string | null>(null);
-  const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
-  const [status, setStatus] = useState<string | null>(null);
-
+  const [saveLoading, setSaveLoading] = useState(false); // Loading state for save operation
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
 
+  // Fetch campaign data when campaignId changes
   useEffect(() => {
-    if (id && typeof id === 'string') {
-      fetchCampaignById(id)
+    if (campaignId) {
+      fetchCampaignById(campaignId)
         .then((campaignData: SingleCampaignResponseDataType) => {
           if (campaignData) {
             setTitle(campaignData.title);
             setGoalAmount(campaignData.goal_amount.toString());
             setDescription(campaignData.description.body);
             setImage(campaignData.media || '');
-            setCurrentAmount(campaignData.current_amount);
-            setStartDate(campaignData.start_date);
-            setEndDate(campaignData.end_date);
-            setCategory(campaignData.category);
-            setLocation(campaignData.location);
-            setCurrency(campaignData.currency);
-            setCurrencyCode(campaignData.currency_code);
-            setCurrencySymbol(campaignData.currency_symbol);
-            setStatus(campaignData.status);
           }
         })
         .catch(() => setFetchError('Error fetching campaign details.'));
     }
-  }, [id, fetchCampaignById, fetchCampaigns]);
+  }, [campaignId, fetchCampaignById]);
 
+  // Handle image drop
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       const selectedImage = URL.createObjectURL(acceptedFiles[0]);
@@ -84,13 +66,17 @@ const EditCampaign = () => {
     multiple: false,
   });
 
+  // Open modal for editing a field
   const openEditModal = (field: string, value: string) => {
     setEditMode({ field, value });
     setIsModalOpen(true);
   };
 
+  // Save changes to the campaign
   const handleSave = async (newValue: string) => {
-    if (!currentCampaign) return;
+    if (!campaignId || !currentCampaign) return;
+
+    setSaveLoading(true); // Start loading
 
     const updatedData = new FormData();
     updatedData.append(`campaign[${editMode.field}]`, newValue);
@@ -99,10 +85,16 @@ const EditCampaign = () => {
       updatedData.append('campaign[media]', selectedImageFile);
     }
 
-    await editCampaign(id, updatedData);
-    await fetchCampaignById(String(id));
-    await fetchCampaigns();
-    setIsModalOpen(false);
+    try {
+      await editCampaign(campaignId, updatedData);
+      await fetchCampaignById(campaignId); // Refresh campaign data
+      await fetchCampaigns(); // Refresh campaigns list
+      setIsModalOpen(false);
+    } catch (error) {
+      setFetchError('Failed to update campaign. Please try again.');
+    } finally {
+      setSaveLoading(false); // Stop loading
+    }
   };
 
   if (loading) return <EditCampaignsLoader />;
@@ -184,8 +176,8 @@ const EditCampaign = () => {
           />
         </div>
 
-        {/* Dropdown for Campaign Permissions and Promotion Settings */}
-        {id != null && (
+        {/* Campaign Settings */}
+        {campaignId && (
           <div className="col-span-full">
             <button
               onClick={() => setSettingsOpen((prev) => !prev)}
@@ -197,17 +189,14 @@ const EditCampaign = () => {
           </div>
         )}
 
-        {settingsOpen && (
+        {settingsOpen && campaignId && (
           <div className="p-4 border rounded-lg bg-gray-50 col-span-full">
-            {currentCampaign && (
-              <CampaignPermissionSetting
-                campaignId={Array.isArray(id) ? id[0] : id}
-              />
-            )}
+            <CampaignPermissionSetting campaignId={campaignId} />
           </div>
         )}
       </div>
-      {/* Modal Component */}
+
+      {/* Modal for Editing Fields */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -216,7 +205,6 @@ const EditCampaign = () => {
       >
         <div className="overflow-y-auto max-h-[60vh] p-2">
           <div className="p-4">
-            {/* Conditional Fields in Modal */}
             {editMode.field === 'title' && (
               <>
                 <h3 className="text-lg font-semibold mb-2">Edit Title</h3>
@@ -286,16 +274,14 @@ const EditCampaign = () => {
               </>
             )}
 
-            {/* Save Button */}
             <Button
-              onClick={() => {
-                handleSave(editMode.value);
-              }}
+              onClick={() => handleSave(editMode.value)}
               className="mt-4 dark:bg-gray-800 text-gray-800 hover:bg-gray-100 dark:text-gray-50 py-2 px-4 rounded-full"
               size="lg"
               variant="secondary"
+              disabled={saveLoading}
             >
-              Save Changes
+              {saveLoading ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
         </div>
