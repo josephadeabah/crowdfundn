@@ -65,7 +65,6 @@ interface FormErrors {
 
 const CampaignCreator = () => {
   const { userAccountData } = useUserContext();
-  console.log("user sccount data", userAccountData);
   const initialCampaignData: CampaignData = {
     title: '',
     description: '',
@@ -145,11 +144,15 @@ const CampaignCreator = () => {
       setCampaignData((prevData) => ({
         ...prevData,
         category: prevData.category || userAccountData.category || '',
-        location: userAccountData.country || '', // Ensure location is set but remains unchanged
-        currencyCode: prevData.currencyCode || userAccountData.currency || '',
+        location: userAccountData.country || '',
+        currencyCode:
+          prevData.currencyCode && prevData.currencyCode.trim() !== ''
+            ? prevData.currencyCode.toUpperCase()
+            : (userAccountData.currency || '').toUpperCase(),
       }));
     }
   }, [userAccountData]);
+  
   
 
   const validateForm = (): boolean => {
