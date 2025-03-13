@@ -1,27 +1,41 @@
 'use client';
 
-import CreateCampaign from '../AddCampaign';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import EditCampaign from '../EditCampaign';
 import CampaignCreator from '@/app/components/campaign/CampaignCreator';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const FundraiserPage = () => {
-  const [activeTab, setActiveTab] = useState('Create');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState('Create New Campaign');
   const [error, setError] = useState('');
 
-  const tabs = ['Create', 'Edit'];
+  // Define the tabs
+  const tabs = ['Create New Campaign', 'Edit Campaign'];
 
+  // Set the active tab based on the URL query parameter
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && tabs.includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  // Handle tab click and update the URL
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
     setError('');
+    router.push(`/fundraiser?tab=${encodeURIComponent(tab)}`);
   };
 
+  // Render the content for the active tab
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'Create':
+      case 'Create New Campaign':
         return <CampaignCreator />;
-      case 'Edit':
+      case 'Edit Campaign':
         return <EditCampaign />;
       default:
         return null;
@@ -30,11 +44,9 @@ const FundraiserPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4">
-      <CreateCampaign />
-
       <div className="mb-6">
         <button
-          onClick={() => (window.location.href = '/account')}
+          onClick={() => router.push('/account')}
           className="flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200"
         >
           <FaArrowLeft className="mr-2" />
@@ -42,7 +54,7 @@ const FundraiserPage = () => {
         </button>
       </div>
 
-      <h1 className="text-3xl font-bold mb-8">Edit Fundraising</h1>
+      <h1 className="text-3xl font-bold mb-8">Fundraising</h1>
 
       <div className="mb-6">
         <nav className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
@@ -57,7 +69,7 @@ const FundraiserPage = () => {
               }`}
               aria-selected={activeTab === tab}
               role="tab"
-              aria-controls={`${tab.toLowerCase()}-tab`}
+              aria-controls={`${tab.toLowerCase().replace(/ /g, '-')}-tab`}
             >
               {tab}
             </button>
