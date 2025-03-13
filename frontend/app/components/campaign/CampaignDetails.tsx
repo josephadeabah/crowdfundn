@@ -164,7 +164,7 @@ const CampaignDetails = ({
           </div>
 
           <div className="flex justify-end mt-6">
-            <Button onClick={onContinue} className="ml-auto bg-emerald-700">
+            <Button variant="outline" onClick={onContinue} className="ml-auto bg-emerald-700">
               Continue to Content
             </Button>
           </div>
