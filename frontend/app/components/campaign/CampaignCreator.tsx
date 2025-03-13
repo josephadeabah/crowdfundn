@@ -102,6 +102,8 @@ const CampaignCreator = () => {
   const [alertMessage, setAlertMessage] = useState<React.ReactNode>('');
   const [alertTitle, setAlertTitle] = useState<string>('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [currentAmount, setCurrentAmount] = useState('0');
+  
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -163,6 +165,7 @@ const CampaignCreator = () => {
         ).toUpperCase(),
       }));
     }
+    setCurrentAmount('0');
   }, [userAccountData]);
 
   const validateForm = (): boolean => {
@@ -220,6 +223,10 @@ const CampaignCreator = () => {
     formData.append('campaign[title]', campaignData.title);
     formData.append('campaign[description]', campaignData.description);
     formData.append('campaign[content]', campaignData.content);
+    formData.append(
+      'campaign[current_amount]',
+      parseFloat(currentAmount).toString(),
+    );
     formData.append('campaign[goal_amount]', campaignData.goalAmount);
     formData.append('campaign[start_date]', campaignData.startDate as string);
     formData.append('campaign[end_date]', campaignData.endDate as string);
