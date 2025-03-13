@@ -37,7 +37,7 @@ const FundraiserPage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-4 bg-gradient-to-tr from-green-50 to-emerald-50">
+    <div className="max-w-7xl mx-auto p-4 bg-gradient-to-tr from-green-50 to-white">
       <div className="mb-6">
         <button
           onClick={() => (window.location.href = '/account')}
