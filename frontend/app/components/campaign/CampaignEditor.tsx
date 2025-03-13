@@ -132,7 +132,6 @@ const CampaignEditor = ({
                 <label className="form-label">Add Media</label>
                 <div className="mb-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-bold">Image Upload</h3>
                     {selectedImage && (
                       <FiX
                         size={24}
