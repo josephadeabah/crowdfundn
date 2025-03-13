@@ -52,7 +52,7 @@ const FundraiserPage = () => {
               onClick={() => handleTabClick(tab)}
               className={`px-4 py-2 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-900 ${
                 activeTab === tab
-                  ? 'bg-gray-900 text-white'
+                  ? 'bg-emerald-900 text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
               aria-selected={activeTab === tab}
