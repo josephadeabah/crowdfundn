@@ -55,7 +55,7 @@ const CampaignDetails = ({
 }: CampaignDetailsProps) => {
   const getCurrencySymbol = (code: string) => {
     const currency = currencies.find((c) => c.code === code);
-    return currency ? currency.symbol : 'GHS';
+    return currency ? currency.symbol : '₵';
   };
 
   return (
