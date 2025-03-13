@@ -7,8 +7,7 @@ const CampaignHeader = () => {
         Campaign Creator
       </h1>
       <p className="text-emerald-600 max-w-2xl mx-auto">
-        Create your crowdfunding campaign with our easy-to-use editor and
-        templates.
+        Create your crowdfunding campaign. You can choose a templates to start with.
       </p>
     </header>
   );

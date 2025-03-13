@@ -84,7 +84,7 @@ const RichTextEditor = ({
         openOnClick: false,
         HTMLAttributes: {
           class:
-            'text-primary underline decoration-primary/30 hover:decoration-primary',
+            'text-emerald-600 underline decoration-emerald/30 hover:decoration-emerald',
         },
       }),
       Image.configure({
@@ -468,7 +468,7 @@ const RichTextEditor = ({
                     {searchResults.map((image) => (
                       <div
                         key={image.id}
-                        className="rounded-md overflow-hidden border border-border hover:border-primary cursor-pointer transition-all"
+                        className="rounded-md overflow-hidden border border-border hover:border-emerald-900 cursor-pointer transition-all"
                         onClick={() =>
                           insertImage(
                             image.urls.regular,

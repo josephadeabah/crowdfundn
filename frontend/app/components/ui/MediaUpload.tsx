@@ -116,7 +116,7 @@ const MediaUpload = ({ onMediaSelect, className }: MediaUploadProps) => {
                 value={urlInput}
                 onChange={(e) => setUrlInput(e.target.value)}
                 placeholder={`Enter ${urlType} URL...`}
-                className="flex-1 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/60"
+                className="flex-1 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-emerald/20 focus:border-emerald/60"
               />
               <Button type="submit" size="sm">
                 Add
@@ -136,7 +136,7 @@ const MediaUpload = ({ onMediaSelect, className }: MediaUploadProps) => {
         <div
           className={cn(
             'media-upload-area',
-            isDragging && 'border-primary bg-muted',
+            isDragging && 'border-emerald bg-muted',
             'animate-fade-in',
           )}
           onDragOver={handleDragOver}
@@ -152,7 +152,7 @@ const MediaUpload = ({ onMediaSelect, className }: MediaUploadProps) => {
           />
           <div className="flex flex-col items-center gap-2">
             <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center">
-              <Upload className="h-6 w-6 text-primary opacity-70" />
+              <Upload className="h-6 w-6 text-emerald-600 opacity-70" />
             </div>
             <div>
               <p className="font-medium text-foreground">
