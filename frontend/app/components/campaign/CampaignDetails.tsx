@@ -73,7 +73,7 @@ const CampaignDetails = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter your campaign title..."
-              className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+              className="block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
             />
           </div>
 
@@ -84,7 +84,7 @@ const CampaignDetails = ({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Brief description of your campaign..."
               rows={3}
-              className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+              className="block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
             />
           </div>
 
@@ -112,7 +112,7 @@ const CampaignDetails = ({
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="Where is your project based?"
-                className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                className="block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                 disabled={true}
               />
             </div>
@@ -146,7 +146,7 @@ const CampaignDetails = ({
                   value={goalAmount}
                   onChange={(e) => setGoalAmount(e.target.value)}
                   placeholder="Amount"
-                  className="mt-1 block w-full pl-7 px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+                  className="block w-full pl-7 px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
                 />
               </div>
             </div>
