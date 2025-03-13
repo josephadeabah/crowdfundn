@@ -214,6 +214,13 @@ const CampaignCreator = () => {
     toast.success(`Applied "${template.name}" template`);
   };
 
+  const onConfirmAction = () => {
+    setAlertOpen(false);
+    setAlertMessage('');
+    setAlertTitle('');
+    window.location.href = '/account#Campaigns';
+  };
+
   const handleSaveCampaign = async () => {
     if (!validateForm()) {
       toast.error('Please fix the errors in the form');
@@ -387,12 +394,7 @@ const CampaignCreator = () => {
         message={alertMessage}
         isOpen={alertOpen}
         setIsOpen={setAlertOpen}
-        onConfirm={() => {
-          setAlertOpen(false); // Close the popup
-          if (alertTitle === 'Campaign created successfully') {
-            router.push('/account#Campaigns'); // Navigate to /account#Campaigns
-          }
-        }}
+        onConfirm={onConfirmAction}
         icon={
           alertTitle === 'Campaign created successfully' ? (
             <FaCheck className="w-6 h-6 text-green-600" />
