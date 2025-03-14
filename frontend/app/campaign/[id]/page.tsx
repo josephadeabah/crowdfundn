@@ -168,7 +168,10 @@ const SingleCampaignPage: React.FC = () => {
   if (loading) return <SingleCampaignLoader />;
 
   return (
-    <div className="max-w-7xl mx-auto px-2 py-8 mb-12 bg-gradient-to-tr from-green-50 to-white" ref={containerRef}>
+    <div
+      className="max-w-7xl mx-auto px-2 py-8 mb-12 bg-gradient-to-tr from-green-50 to-white"
+      ref={containerRef}
+    >
       <Modal
         isOpen={isContactModalOpen}
         onClose={() => setIsContactModalOpen(false)}
