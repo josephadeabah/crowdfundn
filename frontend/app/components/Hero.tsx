@@ -139,7 +139,7 @@ const Hero = () => {
                   </button>
                 </div>
 
-                <div className="mt-12 flex items-center gap-4 animate-fade-up animate-delay-400">
+                <div className="mt-12 flex sm:flex-col items-center gap-4 animate-fade-up animate-delay-400">
                   <div className="flex -space-x-3">
                     {topBackers?.map((backer, index) => (
                       <Popover key={index}>
