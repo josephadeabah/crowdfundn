@@ -53,9 +53,10 @@ interface CampaignData {
   category: string;
   currencyCode: string;
   location: string;
+  image: string;
 }
 
-interface FormErrors {
+export interface FormErrors {
   title: string;
   content: string;
   startDate?: string;
@@ -64,6 +65,7 @@ interface FormErrors {
   category: string;
   currencyCode: string;
   location: string;
+  image: string;
 }
 
 const CampaignCreator = () => {
@@ -78,6 +80,7 @@ const CampaignCreator = () => {
     category: '',
     currencyCode: '',
     location: '',
+    image: '',
   };
 
   const [campaignData, setCampaignData] = useLocalStorage<CampaignData>(
@@ -93,6 +96,7 @@ const CampaignCreator = () => {
     category: '',
     currencyCode: '',
     location: '',
+    image: '',
   });
   const { addCampaign, loading } = useCampaignContext();
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
@@ -173,6 +177,7 @@ const CampaignCreator = () => {
       category: '',
       currencyCode: '',
       location: '',
+      image: '',
     };
 
     if (!campaignData.title.trim()) formErrors.title = 'Title is required';
@@ -187,6 +192,10 @@ const CampaignCreator = () => {
     if (!campaignData.currencyCode)
       formErrors.currencyCode = 'Currency is required';
     if (!campaignData.location) formErrors.location = 'Location is required';
+    // Add validation for the image
+    if (!selectedImage) {
+      formErrors.image = 'An image is required for the campaign';
+    }
 
     if (
       campaignData.startDate &&
@@ -351,6 +360,7 @@ const CampaignCreator = () => {
                       startDate={campaignData.startDate}
                       endDate={campaignData.endDate}
                       loading={loading}
+                      error={error}
                     />
                   </div>
 

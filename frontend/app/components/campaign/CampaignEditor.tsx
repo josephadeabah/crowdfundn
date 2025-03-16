@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { Separator } from '../ui/seperator';
 import { useDropzone } from 'react-dropzone';
 import { FiX } from 'react-icons/fi';
+import { FormErrors } from './CampaignCreator';
 
 interface CampaignEditorProps {
   title: string;
@@ -36,6 +37,7 @@ interface CampaignEditorProps {
   startDate?: Date | string;
   endDate?: Date | string;
   loading: boolean;
+  error: FormErrors;
 }
 
 const CampaignEditor = ({
@@ -56,6 +58,7 @@ const CampaignEditor = ({
   startDate,
   endDate,
   loading,
+  error,
 }: CampaignEditorProps) => {
   const [editorActiveTab, setEditorActiveTab] = useState('editor');
   const getCurrencySymbol = (code: string) => {
@@ -171,6 +174,10 @@ const CampaignEditor = ({
                         className="h-full w-full object-cover"
                       />
                     </div>
+                  )}
+                  {/* Display the image validation error */}
+                  {error.image && (
+                    <p className="text-red-500 text-sm mt-2">{error.image}</p>
                   )}
                 </div>
               </div>
