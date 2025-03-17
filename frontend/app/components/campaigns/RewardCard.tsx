@@ -183,10 +183,15 @@ const RewardCard: React.FC<RewardCardsProps> = ({
                     alt={reward.title}
                     layout="fill"
                     objectFit="cover"
+                    unoptimized
                     className={cn(
                       'w-full h-full object-cover transition-transform duration-700',
                       isHovered ? 'scale-105' : 'scale-100',
                     )}
+                    onError={(e) => {
+                      console.error('Image failed to load:', e);
+                      e.currentTarget.src = '/bantuhive.svg'; // Fallback on error
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
                   <span className="absolute top-4 left-4 px-2 py-1 text-xs font-semibold bg-background/90 text-foreground rounded-md">
