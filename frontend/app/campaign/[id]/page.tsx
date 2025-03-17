@@ -199,9 +199,14 @@ const SingleCampaignPage: React.FC = () => {
                   loading="eager"
                   layout="fill"
                   objectFit="cover"
+                  unoptimized
                   className="absolute top-0 left-0 w-full h-full rounded-t"
                   quality={100} // Ensures maximum image quality
                   priority // Ensures the image is prioritized for loading
+                  onError={(e) => {
+                    console.error('Image failed to load:', e);
+                    e.currentTarget.src = '/bantuhive.svg';
+                  }}
                 />
               </div>
             </div>
