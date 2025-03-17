@@ -121,8 +121,13 @@ export default function Transfers() {
         Transfers
       </h2>
       <p className="text-gray-500 dark:text-neutral-400 mb-4">
-        Review your transfer history or request new transfers. Typically request for transfer weekdays from 10:30AM
+        Review your transfer history or request new transfers.
+        <span className="text-emerald-900">
+          {' '}
+          Typically request for transfer weekdays from 10:30AM
+        </span>
       </p>
+
       {/* Secure Transfers Button */}
       <Button
         variant="ghost"
