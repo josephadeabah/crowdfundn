@@ -88,7 +88,10 @@ export default function Head() {
         }}
       />
       {/* Google Tag */}
-      <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWLECWF7W7"></script>
+      <script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-YWLECWF7W7"
+      ></script>
       <script
         dangerouslySetInnerHTML={{
           __html: `
