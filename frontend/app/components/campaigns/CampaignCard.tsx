@@ -151,7 +151,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         >
           <div className="relative aspect-[3/2] overflow-hidden">
             <Image
-              src={campaign?.media}
+              src={campaign?.media || '/bantuhive.svg'}
               alt={campaign.title}
               layout="fill"
               objectFit="cover"

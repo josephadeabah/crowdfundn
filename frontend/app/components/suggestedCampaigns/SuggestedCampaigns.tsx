@@ -136,7 +136,12 @@ const SuggestedCampaignsComponent = ({
                       alt="media thumbnail"
                       layout="fill"
                       objectFit="cover"
+                      unoptimized
                       className="absolute top-0 left-0 w-full h-full rounded-t"
+                      onError={(e) => {
+                        console.error('Image failed to load:', e);
+                        e.currentTarget.src = '/bantuhive.svg'; // Fallback on error
+                      }}
                     />
                   </div>
                   <div className="px-2 py-2 bg-gray-50 hover:bg-gray-100">
