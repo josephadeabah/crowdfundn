@@ -124,7 +124,7 @@ export default function Transfers() {
         Review your transfer history or request new transfers.
         <span className="text-cyan-500">
           {' '}
-          You can request for transfer weekdays from 10:30 am
+          Typically request for transfer weekdays from 10:30 am
         </span>
       </p>
 
