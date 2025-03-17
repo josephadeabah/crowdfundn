@@ -65,8 +65,13 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
                   src={reward.image || '/bantuhive.svg'}
                   alt="fundraising thumbnail"
                   layout="fill"
+                  unoptimized
                   loading="eager"
                   objectFit="cover"
+                  onError={(e) => {
+                    console.error('Image failed to load:', e);
+                    e.currentTarget.src = '/bantuhive.svg'; // Fallback on error
+                  }}
                 />
               </div>
               <h3 className="font-bold mb-2">{reward.title}</h3>
