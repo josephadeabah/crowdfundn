@@ -6,7 +6,7 @@ class PaystackWebhook::ChargeSuccessHandler
   def call
     transaction_reference = @data[:reference]
     subscription_code = @data[:subscription_code]
-    Rails.logger.debug { "Processing charge success: #{transaction_reference} or subscription #{subscription_code}" }
+    Rails.logger.info { "Processing charge success: #{transaction_reference} or subscription #{subscription_code}" }
 
     # Check if the event has already been processed (deduplication)
     if EventProcessed.exists?(event_id: transaction_reference)
@@ -18,7 +18,7 @@ class PaystackWebhook::ChargeSuccessHandler
       handle_donation_success if @data.present?
     end
   rescue StandardError => e
-    Rails.logger.error "Error processing charge success: #{e.message}"
+    Rails.logger.info "Error processing charge success: #{e.message}"
     raise e
   ensure
     # Mark the event as processed (deduplication logic)

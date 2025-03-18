@@ -3,7 +3,7 @@ class PlatformFeeService
     # Sum up all unprocessed platform fees
     total_platform_fee = Donation.where(processed: false).sum(:platform_fee)
 
-    if total_platform_fee >= 60
+    if total_platform_fee >= 200
       # Transfer the total platform fee to the company's subaccount
       paystack_service = PaystackService.new
       response = paystack_service.initiate_transfer(
