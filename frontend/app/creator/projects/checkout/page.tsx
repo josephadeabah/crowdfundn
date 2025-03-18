@@ -227,7 +227,12 @@ const CheckoutPageContent = () => {
                       alt={reward.title}
                       layout="fill"
                       objectFit="cover"
+                      unoptimized
                       className="rounded-lg"
+                      onError={(e) => {
+                        console.error('Image failed to load:', e);
+                        e.currentTarget.src = '/bantuhive.svg'; // Fallback on error
+                      }}
                     />
                   </div>
 
@@ -289,7 +294,12 @@ const CheckoutPageContent = () => {
                         alt={reward.title}
                         layout="fill"
                         objectFit="cover"
+                        unoptimized
                         className="rounded-lg"
+                        onError={(e) => {
+                          console.error('Image failed to load:', e);
+                          e.currentTarget.src = '/bantuhive.svg'; // Fallback on error
+                        }}
                       />
                     </div>
 
