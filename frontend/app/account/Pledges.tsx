@@ -164,11 +164,16 @@ const PledgesListPage = () => {
                               {/* Reward Image */}
                               <div className="relative w-full h-48 mb-4">
                                 <Image
-                                  src={reward.image || '/placeholder-image.jpg'}
+                                  src={reward.image || '/bantuhive.svg'}
                                   alt={reward.title || 'Reward Image'}
                                   layout="fill"
                                   objectFit="cover"
+                                  unoptimized
                                   className="rounded-lg"
+                                  onError={(e) => {
+                                    console.error('Image failed to load:', e);
+                                    e.currentTarget.src = '/bantuhive.svg';
+                                  }}
                                 />
                               </div>
 
