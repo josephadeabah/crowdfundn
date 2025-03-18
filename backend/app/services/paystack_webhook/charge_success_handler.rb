@@ -8,10 +8,10 @@ class PaystackWebhook::ChargeSuccessHandler
     subscription_code = @data[:subscription_code]
     Rails.logger.debug { "Processing charge success: #{transaction_reference} or subscription #{subscription_code}" }
 
-    # Check if the event has already been processed (optional deduplication)
+    # Check if the event has already been processed (deduplication)
     if EventProcessed.exists?(event_id: transaction_reference)
       Rails.logger.info "Charge success already processed: #{transaction_reference}"
-      return # Ignore duplicate events
+      return # Skip processing if the event has already been processed
     end
 
     ActiveRecord::Base.transaction do
@@ -31,14 +31,6 @@ class PaystackWebhook::ChargeSuccessHandler
     transaction_reference = @data[:reference]
     # Log for debug purposes
     Rails.logger.info "Verifying donation with reference #{transaction_reference}"
-
-    donation = Donation.find_by(transaction_reference: transaction_reference)
-
-    # If donation is not found, log and raise error
-    unless donation
-      Rails.logger.error "Donation not found for reference: #{transaction_reference}"
-      raise 'Donation not found'
-    end
 
     # Verify transaction with Paystack
     response = PaystackService.new.verify_transaction(transaction_reference)
@@ -113,8 +105,9 @@ class PaystackWebhook::ChargeSuccessHandler
       selected_rewards = metadata[:metadata] && metadata[:metadata][:selectedRewards] || []
       delivery_option = metadata[:metadata] && metadata[:metadata][:deliveryOption] || 'pickup'
 
-      # Step 7: Update the donation record with extracted metadata and transaction details
-      donation.update!(
+      # Step 7: Create the donation record with extracted metadata and transaction details
+      donation = Donation.create!(
+        transaction_reference: transaction_reference,
         status: 'successful',
         gross_amount: gross_amount,
         net_amount: net_amount,
@@ -189,8 +182,7 @@ class PaystackWebhook::ChargeSuccessHandler
         Rails.logger.info "Skipping points & leaderboard update for anonymous donation: #{donation.id}"
       end
     else
-      # If the transaction status isn't 'success', update the donation and raise an error
-      donation.update!(status: transaction_status)
+      # If the transaction status isn't 'success', raise an error
       Rails.logger.error "Transaction failed with status #{transaction_status}"
       raise "Transaction status is #{transaction_status}"
     end
