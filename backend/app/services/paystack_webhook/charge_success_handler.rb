@@ -32,12 +32,10 @@ class PaystackWebhook::ChargeSuccessHandler
     # Log for debug purposes
     Rails.logger.info "Verifying donation with reference #{transaction_reference}"
 
-    donation = Donation.find_by(transaction_reference: transaction_reference)
-
-    # If donation is not found, log and raise error
-    unless donation
-      Rails.logger.error "Donation not found for reference: #{transaction_reference}"
-      raise 'Donation not found'
+    # Check if the donation already exists
+    if Donation.exists?(transaction_reference: transaction_reference)
+      Rails.logger.info "Donation already exists for reference: #{transaction_reference}"
+      return # Skip processing if the donation already exists
     end
 
     # Verify transaction with Paystack
@@ -113,8 +111,9 @@ class PaystackWebhook::ChargeSuccessHandler
       selected_rewards = metadata[:metadata] && metadata[:metadata][:selectedRewards] || []
       delivery_option = metadata[:metadata] && metadata[:metadata][:deliveryOption] || 'pickup'
 
-      # Step 7: Update the donation record with extracted metadata and transaction details
-      donation.update!(
+      # Step 7: Create the donation record with extracted metadata and transaction details
+      donation = Donation.create!(
+        transaction_reference: transaction_reference,
         status: 'successful',
         gross_amount: gross_amount,
         net_amount: net_amount,
@@ -189,8 +188,7 @@ class PaystackWebhook::ChargeSuccessHandler
         Rails.logger.info "Skipping points & leaderboard update for anonymous donation: #{donation.id}"
       end
     else
-      # If the transaction status isn't 'success', update the donation and raise an error
-      donation.update!(status: transaction_status)
+      # If the transaction status isn't 'success', raise an error
       Rails.logger.error "Transaction failed with status #{transaction_status}"
       raise "Transaction status is #{transaction_status}"
     end
