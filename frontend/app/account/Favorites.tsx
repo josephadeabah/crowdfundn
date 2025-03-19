@@ -73,7 +73,12 @@ const Favorites = () => {
                     alt={campaign.title}
                     layout="fill"
                     objectFit="cover"
+                    unoptimized
                     className="rounded-t-lg"
+                    onError={(e) => {
+                      console.error('Image failed to load:', e);
+                      e.currentTarget.src = '/bantuhive.svg';
+                    }}
                   />
                 </div>
                 <div className="p-4">
