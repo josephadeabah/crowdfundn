@@ -18,8 +18,7 @@ const Footer = () => {
           <div>
             <BantuHiveLogoIcon className="w-40 h-auto mb-4" />
             <p className="text-sm text-white">
-              Empowering communities to fund dreams, transform lives, and drive
-              Africa’s growth.
+            To provide an accessible, transparent, and engaging platform for funding initiatives that drive positive change across Africa.
             </p>
           </div>
 
