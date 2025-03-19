@@ -174,8 +174,8 @@ const TeamCarousel = () => {
         {/* Our Mission Section */}
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Mission</h2>
         <p className="text-lg leading-8 text-gray-700 mb-6">
-          Empowering communities to fund dreams, transform lives, and drive
-          Africa’s growth.
+          To provide an accessible, transparent, and engaging platform for
+          funding initiatives that drive positive change across Africa.
         </p>
 
         {/* Our Vision Section */}
