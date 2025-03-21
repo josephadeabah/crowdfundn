@@ -4,6 +4,7 @@ module Api
       class TransfersController < ApplicationController
         include ErrorHandler
         before_action :authenticate_request, only: %i[fetch_user_transfers fetch_transfers_from_paystack]
+        before_action :verify_fundraiser_ownership, only: [:initialize_transfer]
         before_action :set_transfer_service
 
         # Approve or reject a transfer based on the payload
@@ -235,27 +236,27 @@ module Api
         # Initialize a transfer
         def initialize_transfer
           raise 'Campaign ID is missing' unless params[:campaign_id]
-
-          @campaign = Campaign.find(params[:campaign_id])
+        
+          # @campaign is already set by the before_action
           @fundraiser = @campaign.fundraiser
           subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
           subaccount.reload if subaccount.present?
           recipient_code = params[:recipient_code]
-
-          raise 'You do not have a account number added.' unless subaccount
+        
+          raise 'You do not have an account number added.' unless subaccount
           raise 'Recipient code not found for this fundraiser' unless recipient_code.present?
-
+        
           total_donations = @campaign.current_amount
           raise 'You have no funds available for payout.' if total_donations <= 0.0
-
+        
           balance_response = @paystack_service.check_balance
-
+        
           unless balance_response[:status]
             render json: { error: 'Unable to perform transaction at this time. Please try again later.' },
                    status: :unprocessable_entity
             return
           end
-
+        
           currency = @campaign.currency.upcase
           available_balance = balance_response[:data].find { |b| b[:currency] == currency }&.dig(:balance).to_f
 
@@ -468,6 +469,13 @@ module Api
             { approve: false, reason: 'Amount exceeds approval limit' }
           else
             { approve: true }
+          end
+        end
+
+        def verify_fundraiser_ownership
+          @campaign = Campaign.find(params[:campaign_id])
+          unless @campaign.fundraiser == @current_user
+            render json: { error: 'You are not authorized to perform this action' }, status: :forbidden
           end
         end
 
