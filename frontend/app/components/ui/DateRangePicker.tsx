@@ -26,7 +26,10 @@ const DateRangePicker = ({
   className,
 }: DateRangePickerProps) => {
   return (
-    <div className={cn('grid grid-cols-2 gap-4', className)}>
+    <div
+      className={cn('flex flex-col md:grid md:grid-cols-2 gap-4', className)}
+    >
+      {/* Start Date Picker */}
       <div className="space-y-2">
         <label className="form-label">Start Date</label>
         <Popover>
@@ -66,6 +69,7 @@ const DateRangePicker = ({
         </Popover>
       </div>
 
+      {/* End Date Picker */}
       <div className="space-y-2">
         <label className="form-label">End Date</label>
         <Popover>
