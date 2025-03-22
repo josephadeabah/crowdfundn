@@ -3,7 +3,7 @@ import React from 'react';
 const CampaignHeader = () => {
   return (
     <div className="w-full mb-3 text-left">
-      <p className="text-gray-200">
+      <p className="text-gray-400">
         Create your crowdfunding campaign. You can choose a templates to start
         with.
       </p>
