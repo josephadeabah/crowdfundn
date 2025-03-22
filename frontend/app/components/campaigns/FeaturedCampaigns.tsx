@@ -101,28 +101,21 @@ const FeaturedCampaigns = () => {
           className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory no-scrollbar"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {/* Loading Overlay */}
-          {loading ? (
-            <div className="absolute inset-0 bg-background/80 z-10 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+          {displayedCampaigns.map((campaign, index) => (
+            <div
+              key={campaign.id}
+              className="snap-start flex-none w-[280px] md:w-[350px]"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <CampaignCard
+                campaign={campaign}
+                loading={loading}
+                error={error}
+                onPageChange={handlePageChange}
+                fetchAllCampaigns={fetchAllCampaigns}
+              />
             </div>
-          ) : (
-            displayedCampaigns.map((campaign, index) => (
-              <div
-                key={campaign.id}
-                className="snap-start flex-none w-[280px] md:w-[350px]"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <CampaignCard
-                  campaign={campaign}
-                  loading={loading}
-                  error={error}
-                  onPageChange={handlePageChange}
-                  fetchAllCampaigns={fetchAllCampaigns}
-                />
-              </div>
-            ))
-          )}
+          ))}
         </div>
 
         {/* Applied CSS without using the style tag with jsx prop */}
