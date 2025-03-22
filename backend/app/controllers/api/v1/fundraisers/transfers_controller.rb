@@ -119,7 +119,7 @@ module Api
             })
 
             if response[:status] == true
-              subaccount.update!(recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id, metadata: full_metadata)
+              subaccount.update!(recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id)
               render json: { message: 'Recipient created successfully.', recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id },
                      status: :ok
             else
