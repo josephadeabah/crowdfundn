@@ -25,6 +25,16 @@ type CampaignCardProps = {
   loading: boolean;
   error: string | null;
   onPageChange: (newPage: number) => void;
+  fetchAllCampaigns: (
+      sortBy: string,
+      sortOrder: string,
+      page: number,
+      pageSize: number,
+      dateRange?: string,
+      goalRange?: string,
+      location?: string,
+      title?: string,
+    ) => Promise<void>;
 };
 
 const CampaignCard: React.FC<CampaignCardProps> = ({
@@ -32,12 +42,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   loading,
   error,
   onPageChange,
+  fetchAllCampaigns
 }) => {
   const {
     pagination,
     favoriteCampaign,
     unfavoriteCampaign,
-    fetchAllCampaigns,
   } = useCampaignContext();
   const { user } = useAuth();
   const [page, setPage] = useState<number>(1);
@@ -145,6 +155,13 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
+        {/* Loading Overlay */}
+        {loading && (
+          <div className="absolute inset-0 bg-background/80 z-10 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        )}
+
         <Link
           href={`/campaign/${campaign.id}?${generateRandomString()}`}
           className="block flex-1"

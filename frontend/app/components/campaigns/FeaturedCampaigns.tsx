@@ -112,6 +112,7 @@ const FeaturedCampaigns = () => {
                 loading={loading}
                 error={error}
                 onPageChange={handlePageChange}
+                fetchAllCampaigns={fetchAllCampaigns}
               />
             </div>
           ))}
