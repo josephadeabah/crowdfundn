@@ -5,12 +5,6 @@ import CampaignCard from './CampaignCard';
 import { useCampaignContext } from '../../context/account/campaign/CampaignsContext';
 import RewardCard from './RewardCard';
 
-const Loader = () => (
-  <div className="flex justify-center items-center py-20">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-  </div>
-);
-
 const FeaturedCampaigns = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [currentFilter, setCurrentFilter] = useState('All');
@@ -49,14 +43,6 @@ const FeaturedCampaigns = () => {
       carouselRef.current.scrollBy({ left: 320, behavior: 'smooth' });
     }
   };
-
-  if (loading) {
-    return <Loader />;
-  }
-
-  if (error) {
-    return <div className="text-center py-20 text-red-500">Error: {error}</div>;
-  }
 
   return (
     <div className="py-20 overflow-hidden">
