@@ -32,6 +32,7 @@ const FeaturedCampaigns = () => {
 
   useEffect(() => {
     fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, itemsPerPage);
+    console.log("loading", loading);
   }, [fetchAllCampaigns, sortCriteria, pageNumber, itemsPerPage]);
 
   const displayedCampaigns = campaigns?.filter((campaign) => {
