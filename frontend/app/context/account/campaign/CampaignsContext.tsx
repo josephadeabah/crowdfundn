@@ -207,54 +207,49 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     ): Promise<void> => {
       setLoading(true);
       setError(null);
+  
       try {
         const headers: Record<string, string> = {
           'Content-Type': 'application/json',
         };
-
-        // Check if user is authenticated
+  
         if (user) {
           headers.Authorization = `Bearer ${token}`;
         }
-
+  
         const queryParams = new URLSearchParams({
           sortBy,
           sortOrder,
           page: page.toString(),
           pageSize: pageSize.toString(),
+          dateRange,
+          goalRange,
+          location,
+          title,
         });
-
-        // Add the new parameters to the query string if they're provided
-        if (dateRange) queryParams.append('dateRange', dateRange);
-        if (goalRange) queryParams.append('goalRange', goalRange);
-        if (location) queryParams.append('location', location);
-        if (title) queryParams.append('title', title);
-
+  
         const response = await nextFetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?${queryParams.toString()}`,
           { method: 'GET', headers },
         );
-
+  
         if (!response.ok) {
-          handleApiError("Couldn't fetch campaigns. Please refresh the page.");
-          return;
+          throw new Error("Couldn't fetch campaigns. Please refresh the page.");
         }
-
+  
         const allCampaigns = await response.json();
-
-        // Update the campaigns and pagination data
-        setCampaigns(allCampaigns?.campaigns);
+        setCampaigns(allCampaigns?.campaigns || []);
         setPagination({
           currentPage: allCampaigns?.current_page || 1,
           totalPages: allCampaigns?.total_pages || 1,
         });
       } catch (err) {
-        setError('Error fetching campaigns. Please refresh the page.');
+        handleApiError('Error fetching campaigns. Please refresh the page.');
       } finally {
         setLoading(false);
       }
     },
-    [token, loading],
+    [token, user],
   );
 
   const fetchCampaignById = useCallback(
