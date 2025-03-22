@@ -14,7 +14,7 @@ const BantuHiveLogoIcon = (
     {...props}
   >
     <style type="text/css">
-      {'\n\t.st0{fill:#FFFFFF;}\n\t.st1{fill:#FFB400;}\n'}
+      {'\n\t.st0{fill:#EEEEEE;}\n\t.st1{fill:#FFB400;}\n'}
     </style>
     <g>
       <path
