@@ -1,3 +1,4 @@
+import { useUserContext } from '@/app/context/users/UserContext';
 import { Reward } from '@/app/types/campaigns.types';
 import React from 'react';
 import { FiTrash } from 'react-icons/fi'; // Import the trash icon
@@ -11,6 +12,7 @@ const RewardCard = ({
   campaignId: string;
   onDelete: (campaignId: string, rewardId: number) => void;
 }) => {
+  const { userAccountData } = useUserContext();
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col">
       <img
@@ -27,7 +29,7 @@ const RewardCard = ({
         </p>
         <div className="flex justify-between items-center mt-auto">
           <span className="text-green-600 dark:text-green-400 font-bold">
-            ${reward.amount}
+            {userAccountData?.currency.toUpperCase()}{reward.amount}
           </span>
           <button
             onClick={() => onDelete(campaignId, reward.id)}
