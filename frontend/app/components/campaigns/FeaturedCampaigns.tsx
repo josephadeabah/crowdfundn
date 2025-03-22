@@ -105,7 +105,7 @@ const FeaturedCampaigns = () => {
             <div
               key={campaign.id}
               className="snap-start flex-none w-[280px] md:w-[350px]"
-              style={{ animationDelay: `${index * 100}ms` }}
+              style={{ animationDelay: `${index * 10}ms` }}
             >
               <CampaignCard
                 campaign={campaign}
