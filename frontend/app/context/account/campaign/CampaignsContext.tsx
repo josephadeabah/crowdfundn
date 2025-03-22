@@ -254,7 +254,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, loading],
   );
 
   const fetchCampaignById = useCallback(
