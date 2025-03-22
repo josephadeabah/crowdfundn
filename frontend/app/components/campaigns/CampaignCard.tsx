@@ -25,16 +25,6 @@ type CampaignCardProps = {
   loading: boolean;
   error: string | null;
   onPageChange: (newPage: number) => void;
-  fetchAllCampaigns: (
-      sortBy: string,
-      sortOrder: string,
-      page: number,
-      pageSize: number,
-      dateRange?: string,
-      goalRange?: string,
-      location?: string,
-      title?: string,
-    ) => Promise<void>;
 };
 
 const CampaignCard: React.FC<CampaignCardProps> = ({
@@ -42,12 +32,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   loading,
   error,
   onPageChange,
-  fetchAllCampaigns
 }) => {
   const {
     pagination,
     favoriteCampaign,
     unfavoriteCampaign,
+    fetchAllCampaigns,
   } = useCampaignContext();
   const { user } = useAuth();
   const [page, setPage] = useState<number>(1);
