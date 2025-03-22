@@ -65,7 +65,8 @@ const RewardsSection = () => {
           </h2>
           <p className="max-w-2xl mx-auto text-muted-foreground">
             Back projects, earn points, and unlock exclusive rewards. The more
-            you participate, the more perks you unlock, the greater your impact and recognition.
+            you participate, the more perks you unlock, the greater your impact
+            and recognition.
           </p>
         </div>
 

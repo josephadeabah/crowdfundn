@@ -187,7 +187,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 dark:bg-gray-950 dark:text-gray-50">
         <div className="text-2xl font-bold text-orange-500">
           <a href="/">
-          <BantuHiveLogoIcon className="w-24 h-auto" />
+            <BantuHiveLogoIcon className="w-24 h-auto" />
           </a>
         </div>
 

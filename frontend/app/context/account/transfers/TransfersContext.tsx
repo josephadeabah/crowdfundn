@@ -195,7 +195,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-               Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
               campaign_id: campaignId,

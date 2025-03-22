@@ -10,7 +10,6 @@ const FeaturedCampaigns = () => {
   const [currentFilter, setCurrentFilter] = useState('All');
   const filters = ['All', 'Tech', 'Creative', 'Community', 'Green'];
 
-  const [isVisible, setIsVisible] = useState(false);
   const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
 
   // States for sorting and pagination
@@ -28,10 +27,6 @@ const FeaturedCampaigns = () => {
     fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, itemsPerPage);
   }, [fetchAllCampaigns, sortCriteria, pageNumber, itemsPerPage]);
 
-  const displayedCampaigns = campaigns?.filter((campaign) => {
-    return campaign.status !== 'completed' && campaign.permissions.is_public;
-  });
-
   const scrollLeft = () => {
     if (carouselRef.current) {
       carouselRef.current.scrollBy({ left: -320, behavior: 'smooth' });
@@ -47,11 +42,17 @@ const FeaturedCampaigns = () => {
   return (
     <div className="py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Reward Card Section */}
         <RewardCard
-          campaigns={displayedCampaigns}
+          campaigns={campaigns?.filter(
+            (campaign) =>
+              campaign.status !== 'completed' && campaign.permissions.is_public,
+          )}
           loading={loading}
           error={error}
         />
+
+        {/* Heading and Buttons Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-12">
           <div className="animate-fade-up">
             <span className="inline-block px-3 py-1 text-xs font-semibold bg-orange-500/10 text-orange-500 rounded-full mb-4">
@@ -78,7 +79,7 @@ const FeaturedCampaigns = () => {
           </div>
         </div>
 
-        {/* Filter tabs */}
+        {/* Filter Tabs Section */}
         <div className="flex overflow-x-auto pb-4 gap-2 mb-8 animate-fade-up">
           {filters.map((filter) => (
             <button
@@ -95,27 +96,41 @@ const FeaturedCampaigns = () => {
           ))}
         </div>
 
-        {/* Carousel */}
-        <div
-          ref={carouselRef}
-          className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory no-scrollbar"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          {displayedCampaigns.map((campaign, index) => (
-            <div
-              key={campaign.id}
-              className="snap-start flex-none w-[280px] md:w-[350px]"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <CampaignCard
-                campaign={campaign}
-                loading={loading}
-                error={error}
-                onPageChange={handlePageChange}
-              />
-            </div>
-          ))}
-        </div>
+        {/* Carousel Section */}
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          </div>
+        ) : error ? (
+          <div className="text-center py-20 text-red-500">Error: {error}</div>
+        ) : (
+          <div
+            ref={carouselRef}
+            className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory no-scrollbar"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {campaigns
+              ?.filter(
+                (campaign) =>
+                  campaign.status !== 'completed' &&
+                  campaign.permissions.is_public,
+              )
+              .map((campaign, index) => (
+                <div
+                  key={campaign.id}
+                  className="snap-start flex-none w-[280px] md:w-[350px]"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <CampaignCard
+                    campaign={campaign}
+                    loading={loading}
+                    error={error}
+                    onPageChange={handlePageChange}
+                  />
+                </div>
+              ))}
+          </div>
+        )}
 
         {/* Applied CSS without using the style tag with jsx prop */}
         <div className="no-scrollbar"></div>

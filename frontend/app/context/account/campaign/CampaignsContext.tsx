@@ -207,16 +207,16 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     ): Promise<void> => {
       setLoading(true);
       setError(null);
-  
+
       try {
         const headers: Record<string, string> = {
           'Content-Type': 'application/json',
         };
-  
+
         if (user) {
           headers.Authorization = `Bearer ${token}`;
         }
-  
+
         const queryParams = new URLSearchParams({
           sortBy,
           sortOrder,
@@ -227,16 +227,16 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           location,
           title,
         });
-  
+
         const response = await nextFetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?${queryParams.toString()}`,
           { method: 'GET', headers },
         );
-  
+
         if (!response.ok) {
           throw new Error("Couldn't fetch campaigns. Please refresh the page.");
         }
-  
+
         const allCampaigns = await response.json();
         setCampaigns(allCampaigns?.campaigns || []);
         setPagination({
