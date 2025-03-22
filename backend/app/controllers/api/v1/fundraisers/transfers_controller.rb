@@ -3,8 +3,7 @@ module Api
     module Fundraisers
       class TransfersController < ApplicationController
         include ErrorHandler
-        before_action :authenticate_request, only: %i[fetch_user_transfers fetch_transfers_from_paystack initialize_transfer]
-        before_action :verify_fundraiser_ownership, only: [:initialize_transfer]
+        before_action :authenticate_request, only: %i[fetch_user_transfers fetch_transfers_from_paystack initialize_transfer verify_fundraiser_ownership]
         before_action :set_transfer_service
 
         # Approve or reject a transfer based on the payload
