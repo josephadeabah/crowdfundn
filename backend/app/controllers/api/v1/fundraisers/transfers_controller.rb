@@ -110,11 +110,16 @@ module Api
               bank_code: bank_code_value,
               currency: campaign.currency.upcase,
               description: 'Transfer recipient for campaign payouts',
-              metadata: full_metadata # Include user and campaign details
-            )
+              metadata: {
+                user_id: @fundraiser.id,
+                campaign_id: campaign.id,
+                email: @fundraiser.email,
+                user_name: @fundraiser.full_name,
+                metadata: metadata
+            })
 
             if response[:status] == true
-              subaccount.update!(recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id)
+              subaccount.update!(recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id, metadata: full_metadata)
               render json: { message: 'Recipient created successfully.', recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id },
                      status: :ok
             else
