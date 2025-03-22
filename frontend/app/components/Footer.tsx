@@ -5,7 +5,7 @@ import BantuHiveLogoIcon from './icons/BantuHiveLogoIcon';
 
 const Footer = () => {
   return (
-    <footer className="relative bg-gradient-to-r from-green-500 to-green-800 hover:from-green-800 hover:to-green-700 text-gray-50 py-16">
+    <footer className="relative bg-white text-black py-16">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-no-repeat bg-contain opacity-10"
@@ -17,7 +17,7 @@ const Footer = () => {
           {/* Logo & Mission */}
           <div>
             <BantuHiveLogoIcon className="w-40 h-auto mb-4" />
-            <p className="text-sm text-white">
+            <p className="text-sm">
               To provide an accessible, transparent, and engaging platform for
               funding initiatives that drive positive change across Africa.
             </p>
@@ -93,9 +93,9 @@ const Footer = () => {
         </div>
 
         {/* Mission & Vision Section */}
-        <div className="mt-12 text-center border-t border-green-700 pt-8">
+        <div className="mt-12 text-center border-t border-gray-300 pt-8">
           <h3 className="text-xl font-bold">Our Vision</h3>
-          <p className="text-sm mt-2 max-w-2xl mx-auto text-white">
+          <p className="text-sm mt-2 max-w-2xl mx-auto">
             To be Africa’s leading crowdfunding platform, driving a thriving
             continent through innovation, collaboration, and shared prosperity.
           </p>
@@ -141,7 +141,7 @@ const Footer = () => {
         </div>
 
         {/* Copyright */}
-        <p className="text-center text-xs mt-8 text-white">
+        <p className="text-center text-xs mt-8">
           &copy; {new Date().getFullYear()} BantuHive Ltd. All rights reserved.
         </p>
       </div>
