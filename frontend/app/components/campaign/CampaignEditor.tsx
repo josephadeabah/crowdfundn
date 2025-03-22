@@ -93,8 +93,9 @@ const CampaignEditor = ({
           onValueChange={setEditorActiveTab}
           className="w-full"
         >
-          <div className="flex items-center justify-between mb-4">
-            <TabsList className="grid w-full max-w-md grid-cols-3">
+          {/* Tabs List */}
+          <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4">
+            <TabsList className="grid w-full md:max-w-md grid-cols-3">
               <TabsTrigger
                 value="editor"
                 className="data-[state=active]:bg-white data-[state=active]:text-gray-500"
@@ -120,7 +121,7 @@ const CampaignEditor = ({
             <Button
               variant="secondary"
               onClick={onSave}
-              className="ml-auto text-gray-500"
+              className="w-full md:w-auto text-gray-500"
               disabled={loading}
             >
               {loading ? (
@@ -132,6 +133,7 @@ const CampaignEditor = ({
             </Button>
           </div>
 
+          {/* Editor Tab */}
           <TabsContent value="editor" className="space-y-6 animate-fade-in">
             <div className="space-y-4">
               <div>
@@ -184,6 +186,7 @@ const CampaignEditor = ({
             </div>
           </TabsContent>
 
+          {/* Templates Tab */}
           <TabsContent value="templates" className="animate-fade-in">
             <div className="space-y-4">
               <div>
@@ -201,6 +204,7 @@ const CampaignEditor = ({
             </div>
           </TabsContent>
 
+          {/* Preview Tab */}
           <TabsContent value="preview" className="animate-fade-in">
             <div className="bg-white rounded-xl border border-border p-6 max-w-4xl mx-auto">
               <h1 className="text-3xl font-bold mb-3">
