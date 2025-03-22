@@ -80,7 +80,7 @@ module Api
             return
           end
 
-          metadata = subaccount.metadata || {}
+          metadata = subaccount.metadata
           custom_fields = metadata['custom_fields']
 
           # Extract the appropriate field based on the type (ghipss or mobile_money)
@@ -95,12 +95,13 @@ module Api
           # If no recipient_code exists, proceed to create one
           if subaccount.recipient_code.blank?
             # Merge existing metadata with new fields
-            full_metadata = metadata.merge(
+            full_metadata = {
               user_id: @fundraiser.id,
               campaign_id: campaign.id,
               email: @fundraiser.email,
-              user_name: @fundraiser.full_name
-            )
+              user_name: @fundraiser.full_name,
+              metadata: metadata
+          }
             # recipient_type = subaccount.subaccount_type
             response = @paystack_service.create_transfer_recipient(
               type: bank_code_value,
