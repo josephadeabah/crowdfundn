@@ -29,7 +29,8 @@ const RewardCard = ({
         </p>
         <div className="flex justify-between items-center mt-auto">
           <span className="text-green-600 dark:text-green-400 font-bold">
-            {userAccountData?.currency.toUpperCase()}{reward.amount}
+            {userAccountData?.currency.toUpperCase()}
+            {reward.amount}
           </span>
           <button
             onClick={() => onDelete(campaignId, reward.id)}
