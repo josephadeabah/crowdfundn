@@ -3,7 +3,7 @@ module Api
     module Fundraisers
       class TransfersController < ApplicationController
         include ErrorHandler
-        before_action :authenticate_request, only: %i[fetch_user_transfers fetch_transfers_from_paystack]
+        before_action :authenticate_request, only: %i[fetch_user_transfers fetch_transfers_from_paystack initialize_transfer]
         before_action :verify_fundraiser_ownership, only: [:initialize_transfer]
         before_action :set_transfer_service
 
@@ -474,7 +474,10 @@ module Api
 
         def verify_fundraiser_ownership
           @campaign = Campaign.find(params[:campaign_id])
-          unless @campaign.fundraiser == @current_user
+          Rails.logger.info "Campaign Fundraiser: #{@campaign.fundraiser.inspect}"
+          Rails.logger.info "Current User: #{@current_user.inspect}"
+        
+          unless @campaign.fundraiser.id == @current_user.id
             render json: { error: 'You are not authorized to perform this action' }, status: :forbidden
           end
         end
