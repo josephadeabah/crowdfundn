@@ -155,13 +155,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Loading Overlay */}
-        {loading && (
-          <div className="absolute inset-0 bg-background/80 z-10 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-          </div>
-        )}
-
         <Link
           href={`/campaign/${campaign.id}?${generateRandomString()}`}
           className="block flex-1"
