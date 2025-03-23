@@ -250,7 +250,7 @@ module Api
 
           @campaign = Campaign.find(params[:campaign_id])
           
-          unless @campaign.fundraiser.id == @current_user.id
+          unless @campaign.fundraiser_id == @current_user.id
             render json: { error: 'You are not authorized to perform this action' }, status: :forbidden
           end
 
