@@ -100,7 +100,7 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
       <form className="mb-4 relative">
         <FaInfoCircle
           data-tooltip-id="amount-info"
-          data-tooltip-content="If you do not want to pledge with reward, Enter the amount you want to donate and click Back Now to proceed. Otherwise choose reward and proceed. You will be charged this amount during payment."
+          data-tooltip-content="If you do not want to pledge with reward, Enter the amount you want to donate and click Support Now to proceed. Otherwise choose reward and proceed. You will be charged this amount during payment."
           className="absolute top-0 left-0 text-gray-500"
         />
         <Tooltip
