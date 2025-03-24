@@ -15,7 +15,7 @@ export const InfoBanner = () => {
         <p className="flex-1">
           Due to a recent system update on Bantu Hive, your payment method may
           have been inadvertently removed from your account. To continue
-          receiving support on your campaigns and enjoying a seamless
+          receiving support on your fundraising and enjoying a seamless
           experience, please take a moment to re-add your payment method.
           <span className="block mt-1">
             We're sorry for the inconvenience caused.
