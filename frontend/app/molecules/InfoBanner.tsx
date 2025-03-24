@@ -30,7 +30,7 @@ export const InfoBanner = () => {
         </p>
         <div className="flex items-center gap-2">
           <Link
-            href="/account/settings/payment"
+            href="/account#Settings"
             className="font-medium underline hover:text-red-600 whitespace-nowrap"
           >
             Add Payment Now
