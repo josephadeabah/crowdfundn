@@ -30,12 +30,12 @@ export const InfoBanner = () => {
           </span>
         </p>
         <div className="flex items-center gap-2 mt-2 md:mt-0">
-          <Link
+          <a
             href="/account#Settings"
             className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 whitespace-nowrap text-sm font-medium transition-colors"
           >
             Update Payment Method
-          </Link>
+          </a>
           <button
             onClick={() => setShowBanner(false)}
             className="ml-2 text-red-600 hover:text-red-800 p-1"
