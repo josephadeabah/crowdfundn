@@ -33,7 +33,6 @@ import {
 } from '@/app/components/popover/Popover';
 import { cn } from '../lib/utils';
 import BantuHiveLogoIcon from './icons/BantuHiveLogoIcon';
-import { InfoBanner } from '../molecules/InfoBanner';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -177,7 +176,6 @@ const Navbar = () => {
   }
 
   return (
-    <>
       <header
         className={cn(
           'sticky top-0 z-50 transition-transform duration-300 ease-in-out',
@@ -480,8 +478,6 @@ const Navbar = () => {
           </div>
         </div>
       </header>
-      <InfoBanner />
-    </>
   );
 };
 
