@@ -14,9 +14,7 @@ export const InfoBanner = () => {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
         <p className="flex-1">
           Due to a recent system update on Bantu Hive, your payment method may
-          have been inadvertently removed from your account. To continue
-          receiving support on your fundraising and enjoying a seamless
-          experience, please take a moment to re-add your payment method.
+          have been inadvertently removed from your account.
           <span className="block mt-1">
             We're sorry for the inconvenience caused.
           </span>
