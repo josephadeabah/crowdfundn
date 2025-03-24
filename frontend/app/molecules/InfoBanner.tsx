@@ -16,7 +16,7 @@ export const InfoBanner = () => {
           Due to a recent system update on Bantu Hive, your payment method may have been 
           inadvertently removed from your account. To continue receiving support on your 
           campaigns and enjoying a seamless experience, please take a moment to re-add 
-          your payment method.
+          your payment method. We're sorry for the inconvenience caused.
           
           <span className="block mt-1 md:inline md:mt-0">
             How to Re-Add Your Payment Method:
