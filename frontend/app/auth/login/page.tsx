@@ -126,7 +126,7 @@ const LoginPage = () => {
                 <div className="flex items-center justify-end">
                   <Button
                     type="submit"
-                    className="w-full md:w-1/2 flex justify-center py-2 px-4 border rounded-md shadow-sm text-sm font-medium text-white bg-green-500 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out"
+                    className="w-full md:w-1/2 flex justify-center py-2 px-4 border rounded-md shadow-sm text-sm font-medium text-white bg-green-500 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out"
                     disabled={isLoading}
                   >
                     {isLoading ? (
