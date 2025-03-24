@@ -176,6 +176,7 @@ const Navbar = () => {
   }
 
   return (
+    <>
     <header
       className={cn(
         'sticky top-0 z-50 transition-transform duration-300 ease-in-out',
@@ -477,6 +478,8 @@ const Navbar = () => {
         </div>
       </div>
     </header>
+    <InfoBanner />
+    </>
   );
 };
 
