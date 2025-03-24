@@ -22,7 +22,7 @@ const BackingPeriodSelector: React.FC<BackingPeriodSelectorProps> = ({
       <RadioGroup value={billingFrequency} onValueChange={setBillingFrequency}>
         {/* One-Time option is always enabled */}
         <div className="flex items-center space-x-3 mb-4">
-          <RadioGroupItem value="once" id="once" className="h-5 w-5" />
+          <RadioGroupItem value="" id="once" className="h-5 w-5" />
           <label htmlFor="once" className="text-gray-700">
             One-Time
           </label>
