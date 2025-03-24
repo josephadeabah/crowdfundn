@@ -13,6 +13,11 @@ const BackingPeriodSelector: React.FC<BackingPeriodSelectorProps> = ({
 }) => {
   const { user } = useAuth();
 
+  // Only show the component if user is logged in
+  if (!user) {
+    return null;
+  }
+
   return (
     <div className="mb-6 px-4 py-6 bg-white rounded-lg shadow-sm">
       <h5 className="font-semibold text-xl mb-4 text-gray-800">
@@ -20,40 +25,27 @@ const BackingPeriodSelector: React.FC<BackingPeriodSelectorProps> = ({
       </h5>
 
       <RadioGroup value={billingFrequency} onValueChange={setBillingFrequency}>
-        {/* One-Time option is always enabled */}
-        <div className="flex items-center space-x-3 mb-4">
-          <RadioGroupItem value="" id="once" className="h-5 w-5" />
-          <label htmlFor="once" className="text-gray-700">
-            One-Time
-          </label>
+        <div className="space-y-3">
+          {[
+            'daily',
+            'weekly',
+            'monthly',
+            'quarterly',
+            'biannually',
+            'annually'
+          ].map((option) => (
+            <div key={option} className="flex items-center space-x-3">
+              <RadioGroupItem
+                value={option}
+                id={option}
+                className="h-5 w-5"
+              />
+              <label htmlFor={option} className="text-gray-700 capitalize">
+                {option}
+              </label>
+            </div>
+          ))}
         </div>
-
-        {/* Show other options only if user is logged in */}
-        {user && (
-          <div className="space-y-3">
-            {[
-              'hourly',
-              'daily',
-              'weekly',
-              'monthly',
-              'quartely',
-              'biannually',
-              'annualy',
-            ].map((option) => (
-              <div key={option} className="flex items-center space-x-3">
-                <RadioGroupItem
-                  value={option}
-                  id={option}
-                  className="h-5 w-5"
-                  disabled
-                />
-                <label htmlFor={option} className="text-gray-700 capitalize">
-                  {option}
-                </label>
-              </div>
-            ))}
-          </div>
-        )}
       </RadioGroup>
     </div>
   );
