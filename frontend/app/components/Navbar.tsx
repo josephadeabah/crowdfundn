@@ -33,6 +33,7 @@ import {
 } from '@/app/components/popover/Popover';
 import { cn } from '../lib/utils';
 import BantuHiveLogoIcon from './icons/BantuHiveLogoIcon';
+import { InfoBanner } from '../molecules/InfoBanner';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
