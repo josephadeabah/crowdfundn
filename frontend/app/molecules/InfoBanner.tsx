@@ -10,7 +10,7 @@ export const InfoBanner = () => {
   if (!showBanner) return null;
 
   return (
-    <div className="bg-red-100 border-b border-red-200 text-red-800 p-3 text-center text-sm">
+    <div className="bg-red-50 border-b border-red-200 text-red-800 p-3 text-center text-sm">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
         <p className="flex-1">
           Due to a recent system update on Bantu Hive, your payment method may
