@@ -130,7 +130,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     amount: number,
     campaignId: string,
     campaignTitle: string,
-    billingFrequency: string | null, // Make billingFrequency nullable
+    billingFrequency: string,
     combinedMetadata?: {
       shippingData: {
         firstName: string;
@@ -152,43 +152,34 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         headers.Authorization = `Bearer ${token}`;
       }
 
-      // Step 1: Create subscription plan ONLY if billingFrequency exists
-      if (billingFrequency) {
-        try {
-          const subscriptionResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/subscriptions/create_plan`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                amount: amount,
-                interval: billingFrequency,
-                name: campaignTitle,
-              }),
+      // Step 1: Create subscription plan
+      try {
+        const subscriptionResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/subscriptions/create_plan`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
             },
-          );
+            body: JSON.stringify({
+              amount: amount,
+              interval: billingFrequency,
+              name: campaignTitle,
+            }),
+          },
+        );
 
-          if (!subscriptionResponse.ok) {
-            throw new Error('Failed to create subscription plan');
-          }
-
-          const subscriptionData = await subscriptionResponse.json();
-          planCodeRef.current = subscriptionData.plan?.plan_code;
-        } catch (error) {
-          handleApiError(
-            'Creating your subscription failed! Proceeding with one-time donation.',
-          );
-          // Clear any potentially invalid plan code
-          planCodeRef.current = null;
-        }
-      } else {
-        // Clear plan code for one-time donations
-        planCodeRef.current = null;
+        const subscriptionData = await subscriptionResponse.json();
+        planCodeRef.current = subscriptionData.plan?.plan_code;
+        // Extract plan_code from subscription plan response
+      } catch (error) {
+        handleApiError(
+          'Creating your subscription failed!, proceeding with one time donation. You may restart the process to create your subscription.',
+        );
+        // If plan creation fails, proceed with the donation without the plan_code
       }
 
-      // Step 2: Create donation transaction
+      // Step 2: Create donation transaction (with or without plan_code)
       const donationResponse = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
         {
@@ -200,7 +191,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             full_name: fullName,
             phone: phoneNumber,
             metadata: combinedMetadata || {},
-            plan: planCodeRef.current, // Will be null for one-time donations
+            plan: planCodeRef.current,
           }),
         },
       );
@@ -208,11 +199,12 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       const donationData = await donationResponse.json();
 
       if (!donationResponse.ok) {
+        // If the donation request fails, check for a specific error message
         if (
           donationData.error ===
           'Fundraiser does not meet requirements for raising funds.'
         ) {
-          handleApiError(donationData.error);
+          handleApiError(donationData.error); // Display the backend error message to the user
           return;
         }
         handleApiError(
@@ -220,7 +212,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         );
         return;
       }
-
       const { authorization_url } = donationData;
 
       if (authorization_url) {
