@@ -126,16 +126,19 @@ class PaystackService
   end
 
   def create_subscription_plan(name:, interval:, amount:)
-    return { status: 'error', message: 'Amount is required and must be a number' } if amount.nil? || amount <= 0
-
+    valid_intervals = %w[daily weekly monthly quarterly biannually annually]
+    
+    return { status: 'error', message: 'Invalid interval' } unless valid_intervals.include?(interval.to_s)
+    return { status: 'error', message: 'Amount must be at least 50' } if amount.to_f < 0.5 # Minimum ₦0.5/GHS0.5
+  
     uri = URI("#{PAYSTACK_BASE_URL}/plan")
     body = {
       name: name,
       interval: interval,
-      amount: (amount * 100).to_i, # Convert to kobo
-      currency: 'GHS'
+      amount: (amount.to_f * 100).to_i, # Convert to kobo/pesewa
+      currency: 'GHS' # or 'NGN' depending on your needs
     }.to_json
-
+  
     response = make_post_request(uri, body)
     parse_response(response)
   end
