@@ -20,11 +20,11 @@ const BackingPeriodSelector: React.FC<BackingPeriodSelectorProps> = ({
 
   const validIntervals = [
     'daily',
-    'weekly', 
+    'weekly',
     'monthly',
     'quarterly',
     'biannually',
-    'annually'
+    'annually',
   ];
 
   return (
@@ -32,16 +32,16 @@ const BackingPeriodSelector: React.FC<BackingPeriodSelectorProps> = ({
       <h5 className="font-semibold text-xl mb-4 text-gray-800">
         Choose Backing Period
       </h5>
+      <span className="text-gray-500 text-sm">
+        By choosing any of the below, you'll be subscribed and charged according
+        to the chosen duration. You can cancel anytime.
+      </span>
 
       <RadioGroup value={billingFrequency} onValueChange={setBillingFrequency}>
         <div className="space-y-3">
           {validIntervals.map((option) => (
             <div key={option} className="flex items-center space-x-3">
-              <RadioGroupItem
-                value={option}
-                id={option}
-                className="h-5 w-5"
-              />
+              <RadioGroupItem value={option} id={option} className="h-5 w-5" />
               <label htmlFor={option} className="text-gray-700 capitalize">
                 {option}
               </label>
