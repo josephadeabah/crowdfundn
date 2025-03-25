@@ -118,6 +118,7 @@ const SystemSettingsPage = () => {
                 onCheckedChange={(checked) =>
                   handleChange('email', 'notifications', checked)
                 }
+
               />
             </div>
             <div>
@@ -274,7 +275,7 @@ const SystemSettingsPage = () => {
             className="w-full md:w-1/2 rounded-full hover:bg-gray-700 hover:text-gray-50 focus:outline-none"
             onClick={saveSettings}
             size="lg"
-            variant="default"
+            variant="outline"
           >
             Save
           </Button>
