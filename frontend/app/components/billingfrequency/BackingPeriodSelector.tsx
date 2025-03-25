@@ -32,7 +32,7 @@ const BackingPeriodSelector: React.FC<BackingPeriodSelectorProps> = ({
       <h5 className="font-semibold text-xl mb-4 text-gray-800">
         Choose Backing Period
       </h5>
-      <span className="text-gray-500 text-sm font-semibold">
+      <span className="text-gray-500 text-sm">
         By choosing any of the below, you'll be subscribed and charged according
         to the chosen duration. You can cancel anytime.
       </span>
