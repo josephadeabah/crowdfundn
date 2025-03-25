@@ -136,7 +136,6 @@ class PaystackService
       name: name,
       interval: interval,
       amount: (amount.to_f * 100).to_i, # Convert to kobo/pesewa
-      currency: 'GHS' # or 'NGN' depending on your needs
     }.to_json
   
     response = make_post_request(uri, body)
