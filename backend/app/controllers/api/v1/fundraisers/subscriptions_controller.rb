@@ -7,6 +7,7 @@ module Api
 
         def create_plan
           paystack_service = PaystackService.new
+            logger.info "Creating plan with: #{params.permit(:name, :interval, :amount).to_h}"
           response = paystack_service.create_subscription_plan(
             name: params[:name],
             interval: params[:interval],
