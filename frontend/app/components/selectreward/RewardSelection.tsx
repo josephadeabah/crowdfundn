@@ -122,7 +122,10 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
             min="0" // Prevent negative numbers from being entered
             required
           />
-          <span className="text-sm text-gray-500">For one-time donation, enter the amount and click Support Now to proceed.</span>
+          <span className="text-sm text-gray-500 font-semibold">
+            For one-time donation, enter the amount and click Support Now to
+            proceed.
+          </span>
         </div>
         {/* Assuming BackingPeriodSelector is another reusable component */}
         <BackingPeriodSelector
