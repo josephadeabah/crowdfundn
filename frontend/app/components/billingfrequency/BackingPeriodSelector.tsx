@@ -18,6 +18,15 @@ const BackingPeriodSelector: React.FC<BackingPeriodSelectorProps> = ({
     return null;
   }
 
+  const validIntervals = [
+    'daily',
+    'weekly', 
+    'monthly',
+    'quarterly',
+    'biannually',
+    'annually'
+  ];
+
   return (
     <div className="mb-6 px-4 py-6 bg-white rounded-lg shadow-sm">
       <h5 className="font-semibold text-xl mb-4 text-gray-800">
@@ -26,14 +35,7 @@ const BackingPeriodSelector: React.FC<BackingPeriodSelectorProps> = ({
 
       <RadioGroup value={billingFrequency} onValueChange={setBillingFrequency}>
         <div className="space-y-3">
-          {[
-            'daily',
-            'weekly',
-            'monthly',
-            'quarterly',
-            'biannually',
-            'annually'
-          ].map((option) => (
+          {validIntervals.map((option) => (
             <div key={option} className="flex items-center space-x-3">
               <RadioGroupItem
                 value={option}

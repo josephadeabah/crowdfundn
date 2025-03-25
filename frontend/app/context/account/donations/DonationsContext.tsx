@@ -153,7 +153,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       }
 
       // Step 1: Create subscription plan ONLY if billingFrequency exists
-      if (billingFrequency) {
+      if (billingFrequency && billingFrequency !== 'once') {
         try {
           const subscriptionResponse = await fetch(
             `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/subscriptions/create_plan`,
