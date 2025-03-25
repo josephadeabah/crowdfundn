@@ -132,7 +132,8 @@ class PaystackService
     body = {
       name: name,
       interval: interval,
-      amount: (amount * 100).to_i # Convert to kobo
+      amount: (amount * 100).to_i, # Convert to kobo
+      currency: 'GHS'
     }.to_json
 
     response = make_post_request(uri, body)
