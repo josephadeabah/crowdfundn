@@ -8,6 +8,7 @@ import TransferCampaignLoader from '../loaders/TransferCampaignLoader';
 import TransferLoader from '../loaders/TransferLoader ';
 import Pagination from '../components/pagination/Pagination';
 import moment from 'moment';
+import ProgressRing from '../components/ring/ProgressRing';
 
 export default function Transfers() {
   const {
@@ -148,36 +149,45 @@ export default function Transfers() {
               className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow w-full"
             >
               <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                    {campaign.title}
-                  </h3>
-                  <p className="text-gray-500 dark:text-neutral-400">
-                    <span className="mr-1"> Raised:</span>
-                    <span
-                      className={`${
-                        parseFloat(
+                <div className="flex items-center space-x-4">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                      {campaign.title}
+                    </h3>
+                    <p className="text-gray-500 dark:text-neutral-400">
+                      <span
+                        className={`${
+                          parseFloat(
+                            campaign.current_amount?.toString() || '0',
+                          ) >=
+                          parseFloat(campaign.goal_amount?.toString() || '0')
+                            ? 'text-green-600'
+                            : 'text-orange-500'
+                        }`}
+                      >
+                        {campaign.currency.toUpperCase()}
+                        {parseFloat(
                           campaign.current_amount?.toString() || '0',
-                        ) >= parseFloat(campaign.goal_amount?.toString() || '0')
-                          ? 'text-green-600'
-                          : 'text-orange-500'
-                      }`}
-                    >
-                      <span className="text-gray-900 dark:text-gray-100 mr-1">
+                        ).toLocaleString()}
+                      </span>{' '}
+                      raised of{' '}
+                      <span className="text-green-600">
                         {campaign.currency.toUpperCase()}
-                      </span>
-                      {parseFloat(
-                        campaign.current_amount?.toString() || '0',
-                      ).toLocaleString()}
-                    </span>{' '}
-                    of{' '}<span className="mr-1"> Target:</span>
-                    <span className="text-green-600">
-                      <span className="text-gray-900 dark:text-gray-100 mr-1">
-                        {campaign.currency.toUpperCase()}
-                      </span>
-                      {parseFloat(campaign.goal_amount).toLocaleString()}
-                    </span>
-                  </p>
+                        {parseFloat(campaign.goal_amount).toLocaleString()}
+                      </span>{' '}
+                      goal
+                    </p>
+                  </div>
+                  <ProgressRing
+                    value={Math.round(
+                      (parseFloat(campaign.current_amount?.toString() || '0') /
+                        parseFloat(campaign.goal_amount?.toString() || '1')) *
+                        100,
+                    )}
+                    size={50}
+                    strokeWidth={5}
+                    color="#22c55e"
+                  />
                 </div>
                 <Button
                   onClick={() => handleRequestTransfer(campaign.id)}
