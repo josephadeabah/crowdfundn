@@ -172,32 +172,32 @@ const SingleCampaignPage: React.FC = () => {
         <div className="lg:w-2/3">
           {/* Content for the first column */}
           <div className="bg-white p-2 md:px-5 rounded-lg">
-           <div className="shadow-md">
-            <h1 className="text-4xl font-bold mb-4">
-              {currentCampaign?.title}
-            </h1>
-            {/* Add more content here */}
-            <div className="h-[600px]">
-              {' '}
-              {/* Parent with defined height */}
-              <div className="relative w-full h-full mb-4">
-                <Image
-                  src={currentCampaign?.media || '/bantuhive.svg'}
-                  alt={currentCampaign?.title as string}
-                  loading="eager"
-                  layout="fill"
-                  objectFit="cover"
-                  unoptimized
-                  className="absolute top-0 left-0 w-full h-full rounded-t"
-                  quality={100} // Ensures maximum image quality
-                  priority // Ensures the image is prioritized for loading
-                  onError={(e) => {
-                    console.error('Image failed to load:', e);
-                    e.currentTarget.src = '/bantuhive.svg';
-                  }}
-                />
+            <div className="shadow-md p-5">
+              <h1 className="text-4xl font-bold mb-4">
+                {currentCampaign?.title}
+              </h1>
+              {/* Add more content here */}
+              <div className="h-[600px]">
+                {' '}
+                {/* Parent with defined height */}
+                <div className="relative w-full h-full mb-4">
+                  <Image
+                    src={currentCampaign?.media || '/bantuhive.svg'}
+                    alt={currentCampaign?.title as string}
+                    loading="eager"
+                    layout="fill"
+                    objectFit="cover"
+                    unoptimized
+                    className="absolute top-0 left-0 w-full h-full rounded-t"
+                    quality={100} // Ensures maximum image quality
+                    priority // Ensures the image is prioritized for loading
+                    onError={(e) => {
+                      console.error('Image failed to load:', e);
+                      e.currentTarget.src = '/bantuhive.svg';
+                    }}
+                  />
+                </div>
               </div>
-            </div>
             </div>
             <div className="relative">
               <div className="flex items-center mb-6">
