@@ -148,9 +148,9 @@ export default function Transfers() {
               key={campaign.id}
               className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow w-full"
             >
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-4">
-                  <div>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="flex items-center gap-6 w-full sm:w-auto">
+                  <div className="space-y-2 flex-1">
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
                       {campaign.title}
                     </h3>
@@ -169,38 +169,45 @@ export default function Transfers() {
                         {parseFloat(
                           campaign.current_amount?.toString() || '0',
                         ).toLocaleString()}
-                      </span>{' '}
-                      raised of{' '}
+                      </span>
+                      <span className="mx-1">raised of</span>
                       <span className="text-green-600">
                         {campaign.currency.toUpperCase()}
                         {parseFloat(campaign.goal_amount).toLocaleString()}
-                      </span>{' '}
-                      goal
+                      </span>
+                      <span className="ml-1">goal</span>
                     </p>
                   </div>
-                  <ProgressRing
-                    value={Math.round(
-                      (parseFloat(campaign.current_amount?.toString() || '0') /
-                        parseFloat(campaign.goal_amount?.toString() || '1')) *
-                        100,
-                    )}
-                    size={50}
-                    strokeWidth={5}
-                    color="#22c55e"
-                  />
+                  <div className="shrink-0">
+                    <ProgressRing
+                      value={Math.round(
+                        (parseFloat(
+                          campaign.current_amount?.toString() || '0',
+                        ) /
+                          parseFloat(campaign.goal_amount?.toString() || '1')) *
+                          100,
+                      )}
+                      size={50}
+                      strokeWidth={5}
+                      color="#22c55e"
+                    />
+                  </div>
                 </div>
-                <Button
-                  onClick={() => handleRequestTransfer(campaign.id)}
-                  className="px-4 py-2 bg-green-400 text-white rounded-full hover:bg-green-600 dark:hover:bg-green-700"
-                  disabled={
-                    loadingCampaigns[campaign.id] ||
-                    parseFloat(campaign.current_amount) < 60.0
-                  }
-                >
-                  {loadingCampaigns[campaign.id]
-                    ? 'Transferring...'
-                    : 'Request Transfer'}
-                </Button>
+
+                <div className="w-full sm:w-auto flex justify-end">
+                  <Button
+                    onClick={() => handleRequestTransfer(campaign.id)}
+                    className="px-4 py-2 bg-green-400 text-white rounded-full hover:bg-green-600 dark:hover:bg-green-700 whitespace-nowrap"
+                    disabled={
+                      loadingCampaigns[campaign.id] ||
+                      parseFloat(campaign.current_amount) < 60.0
+                    }
+                  >
+                    {loadingCampaigns[campaign.id]
+                      ? 'Transferring...'
+                      : 'Request Transfer'}
+                  </Button>
+                </div>
               </div>
             </div>
           ))
