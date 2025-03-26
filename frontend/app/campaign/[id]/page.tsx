@@ -32,7 +32,6 @@ const SingleCampaignPage: React.FC = () => {
   const [copyButtonText, setCopyButtonText] = useState<string>('Copy');
   const [error, setError] = useState<string | null>(null);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [isSticky, setIsSticky] = useState(false);
 
   const tabsRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -63,18 +62,6 @@ const SingleCampaignPage: React.FC = () => {
       fetchPublicDonations(id, 1, 10);
     }
   }, [id, fetchCampaignById, fetchPublicDonations]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (containerRef.current) {
-        const { top } = containerRef.current.getBoundingClientRect();
-        setIsSticky(top <= 0);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const handleTierSelect = (tierId: number) => {
     setSelectedTier(tierId);
@@ -185,6 +172,7 @@ const SingleCampaignPage: React.FC = () => {
         <div className="lg:w-2/3">
           {/* Content for the first column */}
           <div className="bg-white p-2 md:px-5 rounded-lg">
+           <div className="shadow-md">
             <h1 className="text-4xl font-bold mb-4">
               {currentCampaign?.title}
             </h1>
@@ -210,9 +198,8 @@ const SingleCampaignPage: React.FC = () => {
                 />
               </div>
             </div>
-            <div
-              className={`relative ${isSticky ? 'sticky top-0 bg-white z-50 shadow-md' : ''}`}
-            >
+            </div>
+            <div className="relative">
               <div className="flex items-center mb-6">
                 <button
                   onClick={() => scrollTabs('left')}

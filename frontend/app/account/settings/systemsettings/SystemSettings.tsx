@@ -118,7 +118,6 @@ const SystemSettingsPage = () => {
                 onCheckedChange={(checked) =>
                   handleChange('email', 'notifications', checked)
                 }
-
               />
             </div>
             <div>
