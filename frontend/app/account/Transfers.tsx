@@ -170,7 +170,7 @@ export default function Transfers() {
                         campaign.current_amount?.toString() || '0',
                       ).toLocaleString()}
                     </span>{' '}
-                    /{' '}
+                    of{' '}<span className="mr-1"> Target:</span>
                     <span className="text-green-600">
                       <span className="text-gray-900 dark:text-gray-100 mr-1">
                         {campaign.currency.toUpperCase()}
