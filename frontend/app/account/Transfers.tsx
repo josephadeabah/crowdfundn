@@ -187,7 +187,7 @@ export default function Transfers() {
                           parseFloat(campaign.goal_amount?.toString() || '1')) *
                           100,
                       )}
-                      size={50}
+                      size={80}
                       strokeWidth={5}
                       color="#22c55e"
                     />
