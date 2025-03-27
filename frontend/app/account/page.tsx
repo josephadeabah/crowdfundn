@@ -23,9 +23,6 @@ import AccountSettings from '@/app/account/settings/AccountSettings';
 import OnboardingModal from '@/app/components/onboarding/OnboardingModal';
 import Favorites from '@/app/account/Favorites';
 import PledgesListPage from '@/app/account/Pledges';
-import { BellIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
-import { NotificationsComponent } from '../components/NotificationsComponent';
-import { MessagesComponent } from '../components/MessagesComponent';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState<string>('');
@@ -34,7 +31,7 @@ const ProfileTabs = () => {
   const [currentStep, setCurrentStep] = useState<number>(0); // To track the onboarding step
 
   // Tab titles and icons
-  const visibleTabs = [
+  const tabs = [
     {
       label: 'Dashboard',
       icon: <DashboardIcon />,
@@ -94,67 +91,25 @@ const ProfileTabs = () => {
     },
   ];
 
-  // Special hidden tabs
-  const hiddenTabs = [
-    {
-      label: 'notifications',
-      component: <NotificationsComponent notifications={[]} />,
-      hidden: true
-    },
-    {
-      label: 'messages',
-      component: <MessagesComponent messages={[]} />,
-      hidden: true
-    }
-  ];
-
-  // Combined tabs
-  const allTabs = [...visibleTabs, ...hiddenTabs];
-
   // Navigate to a tab based on hash in URL
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace('#', '');
-      const savedTab = localStorage.getItem('activeTab');
-      const onboardingCompleted = localStorage.getItem('onboardingCompleted');
+    const savedTab = localStorage.getItem('activeTab');
+    const onboardingCompleted = localStorage.getItem('onboardingCompleted');
+    const hashTab = window.location.hash.replace('#', '');
 
-      // First check for hidden tabs (case insensitive)
-      const hiddenTabMatch = hiddenTabs.find(tab => 
-        tab.label.toLowerCase() === hash.toLowerCase()
-      );
-      
-      if (hiddenTabMatch) {
-        setActiveTab(hiddenTabMatch.label);
-        return;
-      }
+    if (hashTab && tabs.find((tab) => tab.label === hashTab)) {
+      setActiveTab(hashTab); // Set tab from URL hash
+    } else if (savedTab) {
+      setActiveTab(savedTab); // Set tab from local storage
+    } else {
+      setActiveTab(tabs[0].label); // Default to the first tab
+    }
 
-      // Then check for regular tabs
-      const visibleTabMatch = visibleTabs.find(tab => 
-        tab.label.toLowerCase() === hash.toLowerCase()
-      );
-      
-      if (visibleTabMatch) {
-        setActiveTab(visibleTabMatch.label);
-      } else if (savedTab) {
-        setActiveTab(savedTab);
-      } else {
-        setActiveTab(visibleTabs[0].label);
-      }
+    if (!onboardingCompleted) {
+      setShowOnboarding(true); // Show onboarding if it's not completed
+    }
 
-      if (!onboardingCompleted) {
-        setShowOnboarding(true);
-      }
-    };
-
-    // Initial load
-    handleHashChange();
-
-    // Add hashchange event listener
-    window.addEventListener('hashchange', handleHashChange);
-    
-    return () => {
-      window.removeEventListener('hashchange', handleHashChange);
-    };
+    setLoading(false);
   }, []);
 
   // Update URL hash and save the active tab in local storage
@@ -187,20 +142,20 @@ const ProfileTabs = () => {
   return (
     <div className="w-full bg-white dark:bg-gray-800">
       <div className="max-w-7xl mx-auto flex flex-col mt-0 md:flex-row h-screen">
-        {/* Tabs Menu - Only show visible tabs */}
+        {/* Tabs Menu */}
         <div className="md:w-1/6 border-b h-auto md:h-screen md:border-b-0 md:border-r-2 border-dashed border-orange-200 dark:border-neutral-700">
           <div
             className="flex md:flex-col w-full space-x-2 md:space-x-0 md:space-y-2 !overflow-x-auto md:overflow-visible"
             aria-label="Tabs"
           >
-            {visibleTabs.map(({ label, icon }, index) => {
+            {tabs.map(({ label, icon }, index) => {
               const isActive = activeTab === label;
               const isOnboarding = showOnboarding && currentStep === index;
 
               return (
                 <a
                   key={label}
-                  href={`#${label}`}
+                  href={`#${label}`} // Anchor link
                   className={`py-3 px-3 h-full whitespace-nowrap text-sm font-medium md:text-base transform transition-transform duration-300 ${
                     isActive
                       ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-400 dark:text-orange-600'
@@ -211,13 +166,13 @@ const ProfileTabs = () => {
                       : ''
                   }`}
                   onClick={(e) => {
-                    e.preventDefault();
-                    handleTabClick(label);
+                    e.preventDefault(); // Prevent default anchor behavior
+                    handleTabClick(label); // Handle tab click
                   }}
                   aria-selected={isActive}
                   aria-controls={`vertical-tab-${label}`}
                   role="tab"
-                  id={`tab-${label}`}
+                  id={`tab-${label}`} // Specific ID for better targeting
                 >
                   <span className="mr-2">{icon}</span>
                   {label}
@@ -227,17 +182,14 @@ const ProfileTabs = () => {
           </div>
         </div>
 
-        {/* Tab Content */}         
-        <div className="flex-1 flex flex-col bg-gradient-to-tr from-green-50 to-orange-50 dark:from-green-900 dark:to-orange-900 dark:bg-gray-900 px-3 mb-0 overflow-auto h-full md:h-screen">
+        {/* Tab Content */}
+        <div className="flex-1 flex flex-col bg-gradient-to-tr from-green-50 to-orange-50 dark:from-green-900 dark:to-orange-900 dark:bg-gray-900 px-3 mb-0 overflow-auto h-full md:h-screen [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
           <div
             role="tabpanel"
             id={`vertical-tab-${activeTab}`}
             className="flex-1 mb-8"
           >
-            {/* Find the exact tab match */}
-            {allTabs.find(tab => tab.label === activeTab)?.component || 
-             (activeTab === 'notifications' && <NotificationsComponent notifications={[]} />) ||
-             (activeTab === 'messages' && <MessagesComponent messages={[]} />)}
+            {tabs.find((tab) => tab.label === activeTab)?.component}
           </div>
           <div className="bg-white w-full m-0 text-center py-4 text-gray-600 dark:text-gray-400">
             © 2025 Bantu Hive Ltd
@@ -250,7 +202,7 @@ const ProfileTabs = () => {
             currentStep={currentStep}
             setCurrentStep={setCurrentStep}
             completeOnboarding={completeOnboarding}
-            tabs={visibleTabs}
+            tabs={tabs}
           />
         )}
       </div>
