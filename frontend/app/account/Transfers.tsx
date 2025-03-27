@@ -290,7 +290,7 @@ export default function Transfers() {
                     <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
                       {transfer.bank_name || 'N/A'}
                     </td>
-                    <td className="px-4 py-2 truncate text-gray-800 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis">
+                    <td className="px-4 py-2 truncate text-gray-800 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis" style={{ fontFamily: 'system-ui, sans-serif' }}>
                       {transfer.reason}
                     </td>
                   </tr>
