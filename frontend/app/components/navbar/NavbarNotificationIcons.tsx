@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 import { BellIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
-import { useRouter } from 'next/navigation';
 import { Notification } from '@/app/types/navbar.types';
 
 interface NavbarNotificationIconsProps {
@@ -12,13 +11,12 @@ interface NavbarNotificationIconsProps {
 export const NavbarNotificationIcons: React.FC<
   NavbarNotificationIconsProps
 > = ({ notifications, messages }) => {
-  const router = useRouter();
   const unreadNotifications = notifications.filter((n) => !n.read).length;
   const unreadMessages = messages.filter((m) => !m.read).length;
 
   const handleNavigation = (hash: string) => {
-    // Force a full page reload to ensure the hash is processed
-    window.location.href = `/account${hash}`;
+    // Use window.location.assign to ensure full page navigation
+    window.location.assign(`/account${hash}`);
   };
 
   return (

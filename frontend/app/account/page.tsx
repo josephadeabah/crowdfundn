@@ -114,18 +114,20 @@ const ProfileTabs = () => {
   useEffect(() => {
     const savedTab = localStorage.getItem('activeTab');
     const onboardingCompleted = localStorage.getItem('onboardingCompleted');
-    const hashTab = window.location.hash.replace('#', '').toLowerCase();
+    const hash = window.location.hash.replace('#', '');
+    const hashTab = hash.toLowerCase();
 
-    // Check for hidden tabs first
-    if (hashTab === 'notifications' || hashTab === 'messages') {
-      setActiveTab(hashTab);
+    // First check for hidden tabs (case insensitive)
+    const hiddenTabMatch = hiddenTabs.find(tab => tab.label.toLowerCase() === hashTab);
+    if (hiddenTabMatch) {
+      setActiveTab(hiddenTabMatch.label); // Use the exact label from hiddenTabs
+      return;
     }
+
     // Then check for regular tabs
-    else if (
-      hashTab &&
-      visibleTabs.find((tab) => tab.label.toLowerCase() === hashTab)
-    ) {
-      setActiveTab(hashTab);
+    const visibleTabMatch = visibleTabs.find(tab => tab.label.toLowerCase() === hashTab);
+    if (visibleTabMatch) {
+      setActiveTab(visibleTabMatch.label);
     } else if (savedTab) {
       setActiveTab(savedTab);
     } else {
@@ -137,9 +139,6 @@ const ProfileTabs = () => {
     }
 
     setLoading(false);
-
-    // Fetch notifications and messages data here if needed
-    // fetchNotificationsAndMessages();
   }, []);
 
   // Update URL hash and save the active tab in local storage
