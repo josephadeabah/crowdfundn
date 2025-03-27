@@ -1,6 +1,5 @@
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
-import Link from 'next/link';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { useUserContext } from '../context/users/UserContext';
@@ -29,12 +28,12 @@ const Navbar = () => {
 
   // Mock data for notifications and messages
   const [notifications, setNotifications] = useState([
-    { id: 1, text: 'New donation received', read: false },
-    { id: 2, text: 'Campaign approved', read: true },
+    // { id: 1, text: 'New donation received', read: false },
+    // { id: 2, text: 'Campaign approved', read: true },
   ]);
 
   const [messages, setMessages] = useState([
-    { id: 1, text: 'Message from supporter', read: false },
+    // { id: 1, text: 'Message from supporter', read: false },
   ]);
 
   useEffect(() => {
