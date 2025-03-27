@@ -189,11 +189,11 @@ const Navbar = () => {
 
   // Notification and message icons component
   const NotificationIcons = () => (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-2">
       {/* Notification Icon */}
       <Popover>
         <PopoverTrigger>
-          <div className="relative cursor-pointer p-2 rounded-full bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-800">
+          <div className="relative cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
             <BellIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
             {unreadNotifications > 0 && (
               <span className="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 rounded-full bg-orange-500 text-white text-xs">
@@ -232,7 +232,7 @@ const Navbar = () => {
       {/* Message Icon */}
       <Popover>
         <PopoverTrigger>
-          <div className="relative cursor-pointer p-2 rounded-full bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-800">
+          <div className="relative cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
             <EnvelopeIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
             {unreadMessages > 0 && (
               <span className="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 rounded-full bg-orange-500 text-white text-xs">
@@ -275,11 +275,11 @@ const Navbar = () => {
       className={cn(
         'sticky top-0 z-50 transition-transform duration-300 ease-in-out',
         isVisible || isScrolled
-          ? 'bg-white/90 backdrop-blur-md shadow-sm  translate-y-0'
+          ? 'bg-white/90 backdrop-blur-md shadow-sm translate-y-0'
           : 'bg-transparent -translate-y-full',
       )}
     >
-      <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 dark:bg-gray-950 dark:text-gray-50">
+      <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 dark:bg-gray-950 dark:text-gray-50 px-4">
         <div className="text-2xl font-bold text-orange-500">
           <a href="/">
             <BantuHiveLogoIcon className="w-24 h-auto" />
@@ -288,13 +288,9 @@ const Navbar = () => {
 
         <div className="hidden lg:flex items-center gap-x-2 mx-6">
           {Object.entries(dropdownLinks).map(([key, links]) => (
-            <Popover
-              key={key}
-              open={activeMenu === key}
-              onOpenChange={(isOpen) => {
-                if (!isOpen) setActiveMenu(null);
-              }}
-            >
+            <Popover key={key} open={activeMenu === key} onOpenChange={(isOpen) => {
+              if (!isOpen) setActiveMenu(null);
+            }}>
               <PopoverTrigger
                 onMouseEnter={() => {
                   clearTimeout(closeTimeout);
@@ -355,12 +351,11 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Right side icons - visible on both mobile and desktop */}
-        <div className="flex items-center gap-4 mr-3">
-          {user && <NotificationIcons />}
-          
-          {/* Mobile menu button */}
-          <div className="lg:hidden">
+        {/* Right side content */}
+        <div className="flex items-center gap-2">
+          {/* Mobile menu button and icons */}
+          <div className="lg:hidden flex items-center gap-2">
+            {user && <NotificationIcons />}
             <button
               onClick={handleMenuToggle}
               className="text-gray-800 shadow-none rounded-none dark:text-gray-300"
@@ -372,27 +367,103 @@ const Navbar = () => {
               )}
             </button>
           </div>
+
+          {/* Desktop auth/user section */}
+          <div className="hidden lg:flex items-center gap-2">
+            {!user ? (
+              <>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="py-1 px-4 bg-white dark:bg-gray-900 dark:text-gray-50 rounded-full hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                >
+                  <Link href="/auth/register" className="text-sm">
+                    Start A Project
+                  </Link>
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="py-1 px-4 bg-orange-400 rounded-full hover:bg-orange-600 text-white transition-colors"
+                >
+                  <Link href="/auth/login" className="text-sm">
+                    Login
+                  </Link>
+                </motion.button>
+              </>
+            ) : (
+              <>
+                <NotificationIcons />
+                <Popover>
+                  <PopoverTrigger>
+                    <div className="cursor-pointer">
+                      <Avatar
+                        name={user.full_name}
+                        size="sm"
+                        imageUrl={
+                          userAccountData?.profile?.avatar?.record?.avatar as string
+                        }
+                      />
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="end"
+                    sideOffset={8}
+                    className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-50 p-2"
+                  >
+                    <div className="cursor-pointer flex items-center">
+                      <Link href="/account">
+                        <Avatar
+                          name={user.full_name}
+                          size="sm"
+                          imageUrl={
+                            userAccountData?.profile?.avatar?.record?.avatar as string
+                          }
+                        />
+                      </Link>
+                      <div className="ml-3 flex flex-col">
+                        <span className="font-semibold">{user.full_name}</span>
+                        <span className="text-gray-600">{user.email}</span>
+                      </div>
+                    </div>
+                    {userAccountData?.admin && (
+                      <Link href="/admin/manage">
+                        <div className="hover:bg-gray-100 dark:hover:bg-gray-700 p-2">
+                          Go to Admin
+                        </div>
+                      </Link>
+                    )}
+                    <Link href="/account">
+                      <div className="hover:bg-gray-100 dark:hover:bg-gray-700 p-2">
+                        Go to Account
+                      </div>
+                    </Link>
+                    <div 
+                      className="hover:bg-gray-100 dark:hover:bg-gray-700 p-2 cursor-pointer"
+                      onClick={logout}
+                    >
+                      Logout
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </>
+            )}
+          </div>
         </div>
 
-        {/*For Mobile*/}
+        {/* Mobile menu */}
         {isMenuOpen && (
           <div className="absolute top-16 left-0 w-full bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-900 lg:hidden">
             <div className="flex flex-col items-start p-4 space-y-4">
               {!user && (
                 <>
                   <div className="w-full">
-                    <Link
-                      href="/auth/register"
-                      className="block focus-visible:outline-none focus:ring-0 hover:outline-none"
-                    >
+                    <Link href="/auth/register" className="block">
                       Start Project
                     </Link>
                   </div>
                   <div className="w-full">
-                    <Link
-                      href="/auth/login"
-                      className="block focus-visible:outline-none focus:ring-0 hover:outline-none"
-                    >
+                    <Link href="/auth/login" className="block">
                       Login
                     </Link>
                   </div>
@@ -417,23 +488,18 @@ const Navbar = () => {
                         <Link
                           href={link.href}
                           key={link.href}
-                          passHref
-                          className="focus-visible:outline-none focus:ring-0 hover:outline-none"
+                          className="w-full flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
                         >
-                          <div className="w-full flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
-                            <div className="flex items-center justify-center rounded-lg !bg-white p-2">
-                              {React.createElement(link.icon, {
-                                className: 'h-5 w-5 text-gray-800',
-                              })}
-                            </div>
-                            <div>
-                              <h6 className="text-sm font-bold text-gray-800 dark:text-gray-50">
-                                {link.label}
-                              </h6>
-                              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                                {link.description}
-                              </p>
-                            </div>
+                          <div className="flex items-center justify-center rounded-lg bg-white p-2">
+                            {React.createElement(link.icon, {
+                              className: 'h-5 w-5 text-gray-800',
+                            })}
+                          </div>
+                          <div>
+                            <h6 className="text-sm font-bold">{link.label}</h6>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {link.description}
+                            </p>
                           </div>
                         </Link>
                       ))}
@@ -443,16 +509,12 @@ const Navbar = () => {
               ))}
               {user && (
                 <div className="flex items-center gap-3 w-full">
-                  <Link
-                    href="/account"
-                    className="focus-visible:outline-none focus:ring-0 hover:outline-none"
-                  >
+                  <Link href="/account">
                     <Avatar
                       name={user.full_name}
                       size="sm"
                       imageUrl={
-                        userAccountData?.profile?.avatar?.record
-                          ?.avatar as string
+                        userAccountData?.profile?.avatar?.record?.avatar as string
                       }
                     />
                   </Link>
@@ -460,8 +522,8 @@ const Navbar = () => {
                     <span className="font-semibold">{user.full_name}</span>
                     <span className="text-gray-600">{user.email}</span>
                   </div>
-                  <div
-                    className="hover:bg-gray-100 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
+                  <div 
+                    className="hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded cursor-pointer"
                     onClick={logout}
                   >
                     Logout
@@ -471,114 +533,6 @@ const Navbar = () => {
             </div>
           </div>
         )}
-
-        {/*For Large Screens*/}
-        <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
-          {!user ? (
-            <>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="py-1 px-4 bg-white dark:bg-gray-900 dark:text-gray-50 rounded-full focus-visible:outline-none focus:ring-0 hover:outline-none hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300"
-              >
-                <Link
-                  href="/auth/register"
-                  className="text-gray-700 text-sm dark:text-gray-50 focus-visible:outline-none focus:ring-0 hover:outline-none"
-                >
-                  Start A Project
-                </Link>
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="py-1 px-4 bg-orange-400 rounded-full dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none hover:bg-orange-600 hover:text-gray-700 hover:scale-105 transition-transform duration-300"
-              >
-                <Link
-                  href="/auth/login"
-                  className="text-gray-50 text-sm dark:text-gray-50 focus-visible:outline-none focus:ring-0 hover:outline-none"
-                >
-                  Login
-                </Link>
-              </motion.button>
-            </>
-          ) : (
-            <div className="flex items-center gap-4">
-              {/* User Avatar */}
-              <Popover>
-                <PopoverTrigger>
-                  <div className="cursor-pointer">
-                    <Avatar
-                      name={user.full_name}
-                      size="sm"
-                      imageUrl={
-                        userAccountData?.profile?.avatar?.record?.avatar as string
-                      }
-                    />
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent
-                  align="end"
-                  sideOffset={8}
-                  className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-50 p-2"
-                >
-                  <div className="cursor-pointer flex items-center focus-visible:outline-none focus:ring-0 hover:outline-none">
-                    <Link
-                      href="/account"
-                      className="focus-visible:outline-none focus:ring-0 hover:outline-none"
-                    >
-                      <Avatar
-                        name={user.full_name}
-                        size="sm"
-                        imageUrl={
-                          userAccountData?.profile?.avatar?.record
-                            ?.avatar as string
-                        }
-                      />
-                    </Link>
-                    <div
-                      className="ml-3 flex flex-col"
-                      onClick={() => router.push('/account')}
-                    >
-                      <span className="font-semibold">{user.full_name}</span>
-                      <span className="text-gray-600">{user.email}</span>
-                    </div>
-                  </div>
-                  {userAccountData &&
-                    (userAccountData?.admin === true ||
-                      userAccountData?.roles.some(
-                        (role) =>
-                          role.name === 'Admin' || role.name === 'Manager',
-                      )) && (
-                      <Link
-                        href="/admin/manage"
-                        passHref
-                        className="focus-visible:outline-none focus:ring-0 hover:outline-none"
-                      >
-                        <div className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2">
-                          Go to Admin
-                        </div>
-                      </Link>
-                    )}
-                  <Link
-                    href="/account"
-                    passHref
-                    className="focus-visible:outline-none focus:ring-0 hover:outline-none"
-                  >
-                    <div className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2">
-                      Go to Account
-                    </div>
-                  </Link>
-                  <div
-                    className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2"
-                    onClick={logout}
-                  >
-                    Logout
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
-          )}
-        </div>
       </div>
     </header>
   );
