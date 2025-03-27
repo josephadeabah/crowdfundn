@@ -23,6 +23,9 @@ import AccountSettings from '@/app/account/settings/AccountSettings';
 import OnboardingModal from '@/app/components/onboarding/OnboardingModal';
 import Favorites from '@/app/account/Favorites';
 import PledgesListPage from '@/app/account/Pledges';
+import { BellIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
+import { NotificationsComponent } from '../components/NotificationsComponent';
+import { MessagesComponent } from '../components/MessagesComponent';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState<string>('');
@@ -89,24 +92,46 @@ const ProfileTabs = () => {
       description:
         'Manage your account and Payment settings here. <p class="text-white bg-red-500 text-xs px-1">IMPORTANT: Please add your bank or mobile money account in this tab after you click Finish or Skip button.</p>',
     },
+    {
+      label: 'notifications',
+      icon: <BellIcon />,
+      component: <NotificationsComponent notifications={[]} />, // You'll need to create this
+      description: 'View your notifications',
+      hidden: true, // Add this to hide from the tab list
+    },
+    {
+      label: 'messages',
+      icon: <EnvelopeIcon />,
+      component: <MessagesComponent messages={[]} />, // You'll need to create this
+      description: 'View your messages',
+      hidden: true, // Add this to hide from the tab list
+    },
   ];
 
   // Navigate to a tab based on hash in URL
   useEffect(() => {
     const savedTab = localStorage.getItem('activeTab');
     const onboardingCompleted = localStorage.getItem('onboardingCompleted');
-    const hashTab = window.location.hash.replace('#', '');
+    const hashTab = window.location.hash.replace('#', '').toLowerCase();
 
-    if (hashTab && tabs.find((tab) => tab.label === hashTab)) {
-      setActiveTab(hashTab); // Set tab from URL hash
+    // Check for hidden tabs first
+    if (hashTab === 'notifications' || hashTab === 'messages') {
+      setActiveTab(hashTab);
+    }
+    // Then check for regular tabs
+    else if (
+      hashTab &&
+      tabs.find((tab) => tab.label.toLowerCase() === hashTab && !tab.hidden)
+    ) {
+      setActiveTab(hashTab);
     } else if (savedTab) {
-      setActiveTab(savedTab); // Set tab from local storage
+      setActiveTab(savedTab);
     } else {
-      setActiveTab(tabs[0].label); // Default to the first tab
+      setActiveTab(tabs[0].label);
     }
 
     if (!onboardingCompleted) {
-      setShowOnboarding(true); // Show onboarding if it's not completed
+      setShowOnboarding(true);
     }
 
     setLoading(false);
