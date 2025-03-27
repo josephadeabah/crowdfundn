@@ -49,6 +49,19 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   let closeTimeout: NodeJS.Timeout;
 
+  // Mock data for notifications and messages
+  const [notifications, setNotifications] = useState([
+    { id: 1, text: 'New donation received', read: false },
+    { id: 2, text: 'Campaign approved', read: true },
+  ]);
+
+  const [messages, setMessages] = useState([
+    { id: 1, text: 'Message from supporter', read: false },
+  ]);
+
+  const unreadNotifications = notifications.filter(n => !n.read).length;
+  const unreadMessages = messages.filter(m => !m.read).length;
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -174,6 +187,89 @@ const Navbar = () => {
     return <NavbarLoader />;
   }
 
+  // Notification and message icons component
+  const NotificationIcons = () => (
+    <div className="flex items-center gap-4">
+      {/* Notification Icon */}
+      <Popover>
+        <PopoverTrigger>
+          <div className="relative cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+            <BellIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+            {unreadNotifications > 0 && (
+              <span className="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 rounded-full bg-orange-500 text-white text-xs">
+                {unreadNotifications}
+              </span>
+            )}
+          </div>
+        </PopoverTrigger>
+        <PopoverContent
+          align="end"
+          sideOffset={8}
+          className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-50 p-2 w-64"
+        >
+          <div className="p-2 text-sm font-medium">Notifications</div>
+          {notifications.length === 0 ? (
+            <div className="p-2 text-sm text-gray-500 dark:text-gray-400">
+              No notifications
+            </div>
+          ) : (
+            <div className="max-h-60 overflow-y-auto">
+              {notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={`p-2 text-sm ${
+                    notification.read ? 'text-gray-500' : 'text-gray-800 font-medium'
+                  } dark:text-gray-300 border-b border-gray-100 dark:border-gray-700`}
+                >
+                  {notification.text}
+                </div>
+              ))}
+            </div>
+          )}
+        </PopoverContent>
+      </Popover>
+
+      {/* Message Icon */}
+      <Popover>
+        <PopoverTrigger>
+          <div className="relative cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+            <EnvelopeIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+            {unreadMessages > 0 && (
+              <span className="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 rounded-full bg-orange-500 text-white text-xs">
+                {unreadMessages}
+              </span>
+            )}
+          </div>
+        </PopoverTrigger>
+        <PopoverContent
+          align="end"
+          sideOffset={8}
+          className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-50 p-2 w-64"
+        >
+          <div className="p-2 text-sm font-medium">Messages</div>
+          {messages.length === 0 ? (
+            <div className="p-2 text-sm text-gray-500 dark:text-gray-400">
+              No messages
+            </div>
+          ) : (
+            <div className="max-h-60 overflow-y-auto">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`p-2 text-sm ${
+                    message.read ? 'text-gray-500' : 'text-gray-800 font-medium'
+                  } dark:text-gray-300 border-b border-gray-100 dark:border-gray-700`}
+                >
+                  {message.text}
+                </div>
+              ))}
+            </div>
+          )}
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+
   return (
     <header
       className={cn(
@@ -259,19 +355,25 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/*For Mobile*/}
-        <div className="lg:hidden mr-3">
-          <button
-            onClick={handleMenuToggle}
-            className="text-gray-800 shadow-none rounded-none dark:text-gray-300"
-          >
-            {isMenuOpen ? (
-              <XMarkIcon className="h-8 w-8" />
-            ) : (
-              <HamburgerMenuIcon className="h-8 w-8" />
-            )}
-          </button>
+        {/* Right side icons - visible on both mobile and desktop */}
+        <div className="flex items-center gap-4 mr-3">
+          {user && <NotificationIcons />}
+          
+          {/* Mobile menu button */}
+          <div className="lg:hidden">
+            <button
+              onClick={handleMenuToggle}
+              className="text-gray-800 shadow-none rounded-none dark:text-gray-300"
+            >
+              {isMenuOpen ? (
+                <XMarkIcon className="h-8 w-8" />
+              ) : (
+                <HamburgerMenuIcon className="h-8 w-8" />
+              )}
+            </button>
+          </div>
         </div>
+
         {/*For Mobile*/}
         {isMenuOpen && (
           <div className="absolute top-16 left-0 w-full bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-900 lg:hidden">
@@ -401,46 +503,6 @@ const Navbar = () => {
             </>
           ) : (
             <div className="flex items-center gap-4">
-              {/* Notification Icon */}
-              <Popover>
-                <PopoverTrigger>
-                  <div className="relative cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-                    <BellIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-                    <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-orange-500"></span>
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent
-                  align="end"
-                  sideOffset={8}
-                  className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-50 p-2 w-64"
-                >
-                  <div className="p-2 text-sm font-medium">Notifications</div>
-                  <div className="p-2 text-sm text-gray-500 dark:text-gray-400">
-                    No new notifications
-                  </div>
-                </PopoverContent>
-              </Popover>
-
-              {/* Message Icon */}
-              <Popover>
-                <PopoverTrigger>
-                  <div className="relative cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-                    <EnvelopeIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-                    <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-orange-500"></span>
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent
-                  align="end"
-                  sideOffset={8}
-                  className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-50 p-2 w-64"
-                >
-                  <div className="p-2 text-sm font-medium">Messages</div>
-                  <div className="p-2 text-sm text-gray-500 dark:text-gray-400">
-                    No new messages
-                  </div>
-                </PopoverContent>
-              </Popover>
-
               {/* User Avatar */}
               <Popover>
                 <PopoverTrigger>
