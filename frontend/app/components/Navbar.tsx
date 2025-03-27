@@ -193,7 +193,7 @@ const Navbar = () => {
       {/* Notification Icon */}
       <Popover>
         <PopoverTrigger>
-          <div className="relative cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+          <div className="relative cursor-pointer p-2 rounded-full bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-800">
             <BellIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
             {unreadNotifications > 0 && (
               <span className="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 rounded-full bg-orange-500 text-white text-xs">
@@ -232,7 +232,7 @@ const Navbar = () => {
       {/* Message Icon */}
       <Popover>
         <PopoverTrigger>
-          <div className="relative cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+          <div className="relative cursor-pointer p-2 rounded-full bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-800">
             <EnvelopeIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
             {unreadMessages > 0 && (
               <span className="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 rounded-full bg-orange-500 text-white text-xs">
