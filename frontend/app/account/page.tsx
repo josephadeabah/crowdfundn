@@ -99,46 +99,62 @@ const ProfileTabs = () => {
     {
       label: 'notifications',
       component: <NotificationsComponent notifications={[]} />,
-      hidden: true,
+      hidden: true
     },
     {
       label: 'messages',
       component: <MessagesComponent messages={[]} />,
-      hidden: true,
-    },
+      hidden: true
+    }
   ];
 
-  // Navigate to a tab based on hash in URL
+  // Combined tabs
   const allTabs = [...visibleTabs, ...hiddenTabs];
 
+  // Navigate to a tab based on hash in URL
   useEffect(() => {
-    const savedTab = localStorage.getItem('activeTab');
-    const onboardingCompleted = localStorage.getItem('onboardingCompleted');
-    const hash = window.location.hash.replace('#', '');
-    const hashTab = hash.toLowerCase();
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      const savedTab = localStorage.getItem('activeTab');
+      const onboardingCompleted = localStorage.getItem('onboardingCompleted');
 
-    // First check for hidden tabs (case insensitive)
-    const hiddenTabMatch = hiddenTabs.find(tab => tab.label.toLowerCase() === hashTab);
-    if (hiddenTabMatch) {
-      setActiveTab(hiddenTabMatch.label); // Use the exact label from hiddenTabs
-      return;
-    }
+      // First check for hidden tabs (case insensitive)
+      const hiddenTabMatch = hiddenTabs.find(tab => 
+        tab.label.toLowerCase() === hash.toLowerCase()
+      );
+      
+      if (hiddenTabMatch) {
+        setActiveTab(hiddenTabMatch.label);
+        return;
+      }
 
-    // Then check for regular tabs
-    const visibleTabMatch = visibleTabs.find(tab => tab.label.toLowerCase() === hashTab);
-    if (visibleTabMatch) {
-      setActiveTab(visibleTabMatch.label);
-    } else if (savedTab) {
-      setActiveTab(savedTab);
-    } else {
-      setActiveTab(visibleTabs[0].label);
-    }
+      // Then check for regular tabs
+      const visibleTabMatch = visibleTabs.find(tab => 
+        tab.label.toLowerCase() === hash.toLowerCase()
+      );
+      
+      if (visibleTabMatch) {
+        setActiveTab(visibleTabMatch.label);
+      } else if (savedTab) {
+        setActiveTab(savedTab);
+      } else {
+        setActiveTab(visibleTabs[0].label);
+      }
 
-    if (!onboardingCompleted) {
-      setShowOnboarding(true);
-    }
+      if (!onboardingCompleted) {
+        setShowOnboarding(true);
+      }
+    };
 
-    setLoading(false);
+    // Initial load
+    handleHashChange();
+
+    // Add hashchange event listener
+    window.addEventListener('hashchange', handleHashChange);
+    
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
   }, []);
 
   // Update URL hash and save the active tab in local storage
@@ -211,14 +227,17 @@ const ProfileTabs = () => {
           </div>
         </div>
 
-        {/* Tab Content */}
+        {/* Tab Content */}         
         <div className="flex-1 flex flex-col bg-gradient-to-tr from-green-50 to-orange-50 dark:from-green-900 dark:to-orange-900 dark:bg-gray-900 px-3 mb-0 overflow-auto h-full md:h-screen">
           <div
             role="tabpanel"
             id={`vertical-tab-${activeTab}`}
             className="flex-1 mb-8"
           >
-            {allTabs.find((tab) => tab.label === activeTab)?.component}
+            {/* Find the exact tab match */}
+            {allTabs.find(tab => tab.label === activeTab)?.component || 
+             (activeTab === 'notifications' && <NotificationsComponent notifications={[]} />) ||
+             (activeTab === 'messages' && <MessagesComponent messages={[]} />)}
           </div>
           <div className="bg-white w-full m-0 text-center py-4 text-gray-600 dark:text-gray-400">
             © 2025 Bantu Hive Ltd
