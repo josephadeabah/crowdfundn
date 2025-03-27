@@ -128,6 +128,8 @@ const Navbar = () => {
             handleDropdownToggle={handleDropdownToggle}
             userAccountData={userAccountData}
             logout={logout}
+            notifications={notifications}
+            messages={messages}
           />
         )}
 

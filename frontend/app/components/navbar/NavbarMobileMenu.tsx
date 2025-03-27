@@ -5,6 +5,8 @@ import { ChevronDownIcon } from '@radix-ui/react-icons';
 import Avatar from '../avatar/Avatar';
 import { DropdownLinks } from '@/app/types/navbar.types';
 import { LoginUserType } from '@/app/types/auth.login.types';
+import { Notification } from '@/app/types/navbar.types';
+import { BellIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 
 interface NavbarMobileMenuProps {
   isMenuOpen: boolean;
@@ -14,6 +16,8 @@ interface NavbarMobileMenuProps {
   handleDropdownToggle: (key: string) => void;
   userAccountData: any;
   logout: () => void;
+  notifications: Notification[];
+  messages: Notification[];
 }
 
 export const NavbarMobileMenu: React.FC<NavbarMobileMenuProps> = ({
@@ -24,6 +28,8 @@ export const NavbarMobileMenu: React.FC<NavbarMobileMenuProps> = ({
   handleDropdownToggle,
   userAccountData,
   logout,
+  notifications,
+  messages,
 }) => {
   if (!isMenuOpen) return null;
 
@@ -94,30 +100,52 @@ export const NavbarMobileMenu: React.FC<NavbarMobileMenuProps> = ({
         ))}
 
         {user && (
-          <div className="flex items-center gap-3 w-full">
-            <Link
-              href="/account"
-              className="focus-visible:outline-none focus:ring-0 hover:outline-none"
-            >
-              <Avatar
-                name={user.full_name}
-                size="sm"
-                imageUrl={
-                  userAccountData?.profile?.avatar?.record?.avatar as string
-                }
-              />
-            </Link>
-            <div className="ml-3 flex flex-col">
-              <span className="font-semibold">{user.full_name}</span>
-              <span className="text-gray-600">{user.email}</span>
+          <>
+            {/* Add notification and message icons */}
+            <div className="flex items-center gap-4 w-full p-2 border-b border-gray-200 dark:border-gray-700">
+              <div className="relative cursor-pointer">
+                <BellIcon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+                {notifications.filter((n) => !n.read).length > 0 && (
+                  <span className="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 rounded-full bg-orange-500 text-white text-xs">
+                    {notifications.filter((n) => !n.read).length}
+                  </span>
+                )}
+              </div>
+              <div className="relative cursor-pointer">
+                <EnvelopeIcon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+                {messages.filter((m) => !m.read).length > 0 && (
+                  <span className="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 rounded-full bg-orange-500 text-white text-xs">
+                    {messages.filter((m) => !m.read).length}
+                  </span>
+                )}
+              </div>
             </div>
-            <div
-              className="hover:bg-gray-100 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
-              onClick={logout}
-            >
-              Logout
+
+            <div className="flex items-center gap-3 w-full">
+              <Link
+                href="/account"
+                className="focus-visible:outline-none focus:ring-0 hover:outline-none"
+              >
+                <Avatar
+                  name={user.full_name}
+                  size="sm"
+                  imageUrl={
+                    userAccountData?.profile?.avatar?.record?.avatar as string
+                  }
+                />
+              </Link>
+              <div className="ml-3 flex flex-col">
+                <span className="font-semibold">{user.full_name}</span>
+                <span className="text-gray-600">{user.email}</span>
+              </div>
+              <div
+                className="hover:bg-gray-100 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
+                onClick={logout}
+              >
+                Logout
+              </div>
             </div>
-          </div>
+          </>
         )}
       </div>
     </div>
