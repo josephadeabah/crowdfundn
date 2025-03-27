@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { BellIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Notification } from '@/app/types/navbar.types';
 
 interface NavbarNotificationIconsProps {
@@ -12,14 +12,20 @@ interface NavbarNotificationIconsProps {
 export const NavbarNotificationIcons: React.FC<
   NavbarNotificationIconsProps
 > = ({ notifications, messages }) => {
+  const router = useRouter();
   const unreadNotifications = notifications.filter((n) => !n.read).length;
   const unreadMessages = messages.filter((m) => !m.read).length;
+
+  const handleNavigation = (hash: string) => {
+    // Force a full page reload to ensure the hash is processed
+    window.location.href = `/account${hash}`;
+  };
 
   return (
     <div className="flex items-center gap-2">
       {/* Notification Icon */}
-      <Link
-        href="/account#notifications"
+      <div
+        onClick={() => handleNavigation('#notifications')}
         className="relative cursor-pointer p-2 rounded-full bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-800"
       >
         <BellIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
@@ -28,11 +34,11 @@ export const NavbarNotificationIcons: React.FC<
             {unreadNotifications}
           </span>
         )}
-      </Link>
+      </div>
 
       {/* Message Icon */}
-      <Link
-        href="/account#messages"
+      <div
+        onClick={() => handleNavigation('#messages')}
         className="relative cursor-pointer p-2 rounded-full bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-800"
       >
         <EnvelopeIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
@@ -41,7 +47,7 @@ export const NavbarNotificationIcons: React.FC<
             {unreadMessages}
           </span>
         )}
-      </Link>
+      </div>
     </div>
   );
 };
