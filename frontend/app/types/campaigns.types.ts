@@ -81,6 +81,7 @@ export interface CampaignShareType {
 
 export interface CampaignState {
   campaigns: CampaignResponseDataType[];
+  userCampaigns: CampaignResponseDataType[] | null;
   currentCampaign: SingleCampaignResponseDataType | null;
   campaignShares: CampaignShareType | null;
   statistics: CampaignStatisticsDataType | null;
@@ -93,6 +94,7 @@ export interface CampaignState {
   addCampaign: (campaign: FormData) => Promise<CampaignResponseDataType>;
   cancelCampaign(id: string): Promise<void>;
   fetchCampaigns: () => Promise<void>;
+  fetchUserCampaigns: () => Promise<void>;
   fetchAllCampaigns: (
     sortBy: string,
     sortOrder: string,

@@ -27,6 +27,9 @@ const nextFetch = async (
 
 export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const [campaigns, setCampaigns] = useState<CampaignResponseDataType[]>([]);
+  const [userCampaigns, setUserCampaigns] = useState<
+    CampaignResponseDataType[] | null
+  >(null);
   const [campaignShares, setCampaignShares] =
     useState<CampaignShareType | null>(null); // Or a more complex structure if needed
   const [currentCampaign, setCurrentCampaign] =
@@ -128,6 +131,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
+  // Fetch campaigns for the logged-in user [legacy]
   const fetchCampaigns = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
@@ -152,6 +156,36 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       setCampaigns(fetchedCampaigns?.campaigns);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error fetching campaigns');
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  // Fetch campaigns for the logged-in user [new]
+  const fetchUserCampaigns = useCallback(async (): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/my_campaigns`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          cache: 'no-store',
+        },
+      );
+
+      if (!response.ok) throw new Error("Couldn't fetch user campaigns");
+
+      const { campaigns } = await response.json();
+      setUserCampaigns(campaigns || []);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Error fetching user campaigns',
+      );
     } finally {
       setLoading(false);
     }
@@ -594,6 +628,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   const contextValue = useMemo(
     () => ({
       campaigns,
+      userCampaigns,
       currentCampaign,
       loading,
       error,
@@ -602,6 +637,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       campaignShares,
       addCampaign,
       fetchCampaigns,
+      fetchUserCampaigns,
       fetchCampaignStatistics,
       fetchAllCampaigns,
       fetchCampaignById,
@@ -616,6 +652,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     }),
     [
       campaigns,
+      userCampaigns,
       currentCampaign,
       loading,
       error,
@@ -624,6 +661,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       campaignShares,
       addCampaign,
       fetchCampaigns,
+      fetchUserCampaigns,
       fetchCampaignStatistics,
       fetchAllCampaigns,
       fetchCampaignById,

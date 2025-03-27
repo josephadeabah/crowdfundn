@@ -5,17 +5,19 @@ import { useCampaignContext } from '../context/account/campaign/CampaignsContext
 import { useTransferContext } from '../context/account/transfers/TransfersContext';
 import ToastComponent from '../components/toast/Toast';
 import TransferCampaignLoader from '../loaders/TransferCampaignLoader';
-import TransferLoader from '../loaders/TransferLoader ';
 import Pagination from '../components/pagination/Pagination';
 import moment from 'moment';
 import ProgressRing from '../components/ring/ProgressRing';
+import { CampaignResponseDataType } from '../types/campaigns.types';
+import TransferLoader from '../loaders/TransferLoader ';
 
 export default function Transfers() {
   const {
-    campaigns,
-    fetchCampaigns,
+    userCampaigns, // Now using user-specific campaigns
+    fetchUserCampaigns, // Using the dedicated user campaigns fetcher
     loading: isLoadingCampaigns,
   } = useCampaignContext();
+
   const {
     fetchTransfers,
     fetchTransfersFromPaystack,
@@ -48,17 +50,20 @@ export default function Transfers() {
     });
   };
 
+  // Fetch user's campaigns on component mount
   useEffect(() => {
-    fetchCampaigns();
-  }, [fetchCampaigns]);
+    fetchUserCampaigns();
+  }, [fetchUserCampaigns]);
 
+  // Fetch transfers from Paystack
   useEffect(() => {
     fetchTransfersFromPaystack();
   }, [fetchTransfersFromPaystack]);
 
+  // Fetch transfers with pagination
   useEffect(() => {
     fetchTransfers(currentPage);
-  }, [, fetchTransfers, currentPage]);
+  }, [fetchTransfers, currentPage]);
 
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
@@ -80,7 +85,6 @@ export default function Transfers() {
             typeof initiateResponse === 'object' &&
             'error' in initiateResponse
           ) {
-            // Show error toast if there's an error from the backend
             showToast(
               'Error',
               (initiateResponse as { error: string }).error,
@@ -91,18 +95,15 @@ export default function Transfers() {
             showToast('Success', 'Transfer initiated successfully', 'success');
             fetchTransfersFromPaystack();
             fetchTransfers(currentPage);
-            fetchCampaigns(); // Refresh the campaigns list
+            fetchUserCampaigns(); // Refresh the user's campaigns list
           }
         } else {
-          // Error toast if the initiateTransfer response is invalid
           showToast('Error', 'Failed to initiate transfer', 'error');
         }
       } else {
-        // Error toast if creating transfer recipient fails
         showToast('Error', 'Please add your account number first', 'error');
       }
     } catch (err) {
-      // Catch any unexpected errors and show an error toast
       showToast('Error', String(err), 'error');
     }
   };
@@ -117,6 +118,7 @@ export default function Transfers() {
         description={toast.description}
         type={toast.type}
       />
+
       {/* Header Section */}
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
         Transfers
@@ -138,12 +140,20 @@ export default function Transfers() {
         Transfers are secure on our platform
       </Button>
 
-      {/* Campaigns Section */}
+      {/* Campaigns Section - Updated to use userCampaigns */}
       <div className="space-y-4">
         {isLoadingCampaigns ? (
           <TransferCampaignLoader />
+        ) : userCampaigns === null ? (
+          <div className="text-center py-4 text-gray-500 dark:text-neutral-400">
+            Loading your campaigns...
+          </div>
+        ) : userCampaigns.length === 0 ? (
+          <div className="text-center py-4 text-gray-500 dark:text-neutral-400">
+            You have no campaigns available for transfer
+          </div>
         ) : (
-          campaigns?.map((campaign) => (
+          userCampaigns.map((campaign: CampaignResponseDataType) => (
             <div
               key={campaign.id}
               className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow w-full"
@@ -248,7 +258,7 @@ export default function Transfers() {
             </thead>
             <tbody>
               {loading ? (
-                <TransferLoader /> // Loader only for the body (without header)
+                <TransferLoader />
               ) : transfers?.length === 0 ? (
                 <tr>
                   <td
