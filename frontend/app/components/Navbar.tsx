@@ -14,6 +14,8 @@ import {
   BanknotesIcon,
   CreditCardIcon,
   UserIcon,
+  BellIcon,
+  EnvelopeIcon,
 } from '@heroicons/react/24/outline';
 import {
   HamburgerMenuIcon,
@@ -52,10 +54,7 @@ const Navbar = () => {
       setIsScrolled(window.scrollY > 10);
     };
 
-    // Add scroll event listener
     window.addEventListener('scroll', handleScroll);
-
-    // Cleanup the event listener
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -79,7 +78,7 @@ const Navbar = () => {
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
-    setOpenDropdown(null); // Reset dropdown state when menu is toggled
+    setOpenDropdown(null);
   };
 
   const handleDropdownToggle = (key: string) => {
@@ -401,78 +400,121 @@ const Navbar = () => {
               </motion.button>
             </>
           ) : (
-            <Popover>
-              <PopoverTrigger>
-                <div className="cursor-pointer">
-                  <Avatar
-                    name={user.full_name}
-                    size="sm"
-                    imageUrl={
-                      userAccountData?.profile?.avatar?.record?.avatar as string
-                    }
-                  />
-                </div>
-              </PopoverTrigger>
-              <PopoverContent
-                align="end"
-                sideOffset={8}
-                className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-50 p-2"
-              >
-                <div className="cursor-pointer flex items-center focus-visible:outline-none focus:ring-0 hover:outline-none">
-                  <Link
-                    href="/account"
-                    className="focus-visible:outline-none focus:ring-0 hover:outline-none"
-                  >
+            <div className="flex items-center gap-4">
+              {/* Notification Icon */}
+              <Popover>
+                <PopoverTrigger>
+                  <div className="relative cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <BellIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+                    <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-orange-500"></span>
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="end"
+                  sideOffset={8}
+                  className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-50 p-2 w-64"
+                >
+                  <div className="p-2 text-sm font-medium">Notifications</div>
+                  <div className="p-2 text-sm text-gray-500 dark:text-gray-400">
+                    No new notifications
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {/* Message Icon */}
+              <Popover>
+                <PopoverTrigger>
+                  <div className="relative cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <EnvelopeIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+                    <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-orange-500"></span>
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="end"
+                  sideOffset={8}
+                  className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-50 p-2 w-64"
+                >
+                  <div className="p-2 text-sm font-medium">Messages</div>
+                  <div className="p-2 text-sm text-gray-500 dark:text-gray-400">
+                    No new messages
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {/* User Avatar */}
+              <Popover>
+                <PopoverTrigger>
+                  <div className="cursor-pointer">
                     <Avatar
                       name={user.full_name}
                       size="sm"
                       imageUrl={
-                        userAccountData?.profile?.avatar?.record
-                          ?.avatar as string
+                        userAccountData?.profile?.avatar?.record?.avatar as string
                       }
                     />
-                  </Link>
-                  <div
-                    className="ml-3 flex flex-col"
-                    onClick={() => router.push('/account')}
-                  >
-                    <span className="font-semibold">{user.full_name}</span>
-                    <span className="text-gray-600">{user.email}</span>
                   </div>
-                </div>
-                {userAccountData &&
-                  (userAccountData?.admin === true ||
-                    userAccountData?.roles.some(
-                      (role) =>
-                        role.name === 'Admin' || role.name === 'Manager',
-                    )) && (
+                </PopoverTrigger>
+                <PopoverContent
+                  align="end"
+                  sideOffset={8}
+                  className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-50 p-2"
+                >
+                  <div className="cursor-pointer flex items-center focus-visible:outline-none focus:ring-0 hover:outline-none">
                     <Link
-                      href="/admin/manage"
-                      passHref
+                      href="/account"
                       className="focus-visible:outline-none focus:ring-0 hover:outline-none"
                     >
-                      <div className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2">
-                        Go to Admin
-                      </div>
+                      <Avatar
+                        name={user.full_name}
+                        size="sm"
+                        imageUrl={
+                          userAccountData?.profile?.avatar?.record
+                            ?.avatar as string
+                        }
+                      />
                     </Link>
-                  )}
-                <Link
-                  href="/account"
-                  passHref
-                  className="focus-visible:outline-none focus:ring-0 hover:outline-none"
-                >
-                  <div className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2">
-                    Go to Account
+                    <div
+                      className="ml-3 flex flex-col"
+                      onClick={() => router.push('/account')}
+                    >
+                      <span className="font-semibold">{user.full_name}</span>
+                      <span className="text-gray-600">{user.email}</span>
+                    </div>
                   </div>
-                </Link>
-                <div
-                  className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2"
-                  onClick={logout}
-                >
-                  Logout
-                </div>
-              </PopoverContent>
-            </Popover>
+                  {userAccountData &&
+                    (userAccountData?.admin === true ||
+                      userAccountData?.roles.some(
+                        (role) =>
+                          role.name === 'Admin' || role.name === 'Manager',
+                      )) && (
+                      <Link
+                        href="/admin/manage"
+                        passHref
+                        className="focus-visible:outline-none focus:ring-0 hover:outline-none"
+                      >
+                        <div className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2">
+                          Go to Admin
+                        </div>
+                      </Link>
+                    )}
+                  <Link
+                    href="/account"
+                    passHref
+                    className="focus-visible:outline-none focus:ring-0 hover:outline-none"
+                  >
+                    <div className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2">
+                      Go to Account
+                    </div>
+                  </Link>
+                  <div
+                    className="hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus:ring-0 hover:outline-none p-2"
+                    onClick={logout}
+                  >
+                    Logout
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
           )}
         </div>
       </div>

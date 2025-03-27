@@ -157,6 +157,10 @@ export default {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.85' },
         },
+        'pulse-light': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.8' }
+				}
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -170,6 +174,9 @@ export default {
         'scale-out': 'scale-out 0.3s ease-out',
         float: 'float 6s ease-in-out infinite',
         'pulse-subtle': 'pulse-subtle 3s ease-in-out infinite',
+        'enter': 'fade-in 0.3s cubic-bezier(0.22, 1, 0.36, 1), scale-in 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
+				'exit': 'fade-out 0.3s cubic-bezier(0.22, 1, 0.36, 1), scale-out 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
+				'pulse-light': 'pulse-light 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
