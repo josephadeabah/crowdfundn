@@ -132,185 +132,181 @@ export const NotificationsComponent: React.FC<NotificationsComponentProps> = ({
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Notifications</h1>
-            <p className="text-muted-foreground">
-              Stay updated with your campaign activities and community
-              interactions
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="icon">
-              <Filter className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon">
-              <Check className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon">
-              <Settings className="h-4 w-4" />
-            </Button>
-          </div>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Notifications</h1>
+          <p className="text-muted-foreground">
+            Stay updated with your campaign activities and community
+            interactions
+          </p>
         </div>
-
-        <div className="flex items-center space-x-2 text-sm pb-2 border-b">
-          <button className="px-3 py-2 font-medium border-b-2 border-video text-gray-900">
-            All
-          </button>
-          <button className="px-3 py-2 text-muted-foreground hover:text-gray-900">
-            Unread
-          </button>
-          <button className="px-3 py-2 text-muted-foreground hover:text-gray-900">
-            Mentions
-          </button>
-          <button className="px-3 py-2 text-muted-foreground hover:text-gray-900">
-            Comments
-          </button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="icon">
+            <Filter className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon">
+            <Check className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon">
+            <Settings className="h-4 w-4" />
+          </Button>
         </div>
+      </div>
 
-        <div className="bg-white rounded-lg border border-border shadow-sm">
-          <div className="divide-y divide-border">
-            {notifications.map((notification) => (
+      <div className="flex items-center space-x-2 text-sm pb-2 border-b">
+        <button className="px-3 py-2 font-medium border-b-2 border-video text-gray-900">
+          All
+        </button>
+        <button className="px-3 py-2 text-muted-foreground hover:text-gray-900">
+          Unread
+        </button>
+        <button className="px-3 py-2 text-muted-foreground hover:text-gray-900">
+          Mentions
+        </button>
+        <button className="px-3 py-2 text-muted-foreground hover:text-gray-900">
+          Comments
+        </button>
+      </div>
+
+      <div className="bg-white rounded-lg border border-border shadow-sm">
+        <div className="divide-y divide-border">
+          {notifications.map((notification) => (
+            <div
+              key={notification.id}
+              className={cn(
+                'p-4 hover:bg-gray-50 transition-colors flex items-start',
+                !notification.read && 'bg-blue-50/30',
+              )}
+            >
               <div
-                key={notification.id}
                 className={cn(
-                  'p-4 hover:bg-gray-50 transition-colors flex items-start',
-                  !notification.read && 'bg-blue-50/30',
+                  'shrink-0 rounded-full p-2 mr-4',
+                  notification.iconBg,
                 )}
               >
-                <div
-                  className={cn(
-                    'shrink-0 rounded-full p-2 mr-4',
-                    notification.iconBg,
-                  )}
-                >
-                  <notification.icon
-                    className={cn('h-5 w-5', notification.iconColor)}
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-x-2">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-x-2">
-                        <h3 className="text-sm font-medium leading-none">
-                          {notification.title}
-                        </h3>
-                        {!notification.read && (
-                          <span className="inline-flex h-2 w-2 rounded-full bg-video"></span>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {notification.message}
-                      </p>
-                      <div className="flex items-center gap-x-2">
-                        {notification.image && (
-                          <img
-                            src={notification.image}
-                            alt=""
-                            className="h-8 w-8 rounded-md object-cover"
-                          />
-                        )}
-                        <span className="text-xs text-gray-500">
-                          {notification.time}
-                        </span>
-                      </div>
+                <notification.icon
+                  className={cn('h-5 w-5', notification.iconColor)}
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-x-2">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-x-2">
+                      <h3 className="text-sm font-medium leading-none">
+                        {notification.title}
+                      </h3>
+                      {!notification.read && (
+                        <span className="inline-flex h-2 w-2 rounded-full bg-video"></span>
+                      )}
                     </div>
-                    <div className="shrink-0">
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="p-4 text-center border-t border-border">
-            <Button variant="ghost">Load More</Button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg border border-border p-5 shadow-sm">
-            <h2 className="text-lg font-semibold mb-3">
-              Notification Highlights
-            </h2>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-x-2">
-                  <Award className="h-5 w-5 text-purple-500" />
-                  <span className="text-sm">New Badges</span>
-                </div>
-                <span className="text-sm font-medium">3</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-x-2">
-                  <Heart className="h-5 w-5 text-red-500" />
-                  <span className="text-sm">New Backers</span>
-                </div>
-                <span className="text-sm font-medium">27</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-x-2">
-                  <MessageSquare className="h-5 w-5 text-blue-500" />
-                  <span className="text-sm">Unread Messages</span>
-                </div>
-                <span className="text-sm font-medium">5</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-x-2">
-                  <Activity className="h-5 w-5 text-orange-500" />
-                  <span className="text-sm">Campaign Updates</span>
-                </div>
-                <span className="text-sm font-medium">2</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="md:col-span-2 bg-white rounded-lg border border-border p-5 shadow-sm">
-            <h2 className="text-lg font-semibold mb-3">
-              Notification Settings
-            </h2>
-            <div className="space-y-4">
-              {[
-                {
-                  title: 'Email Notifications',
-                  description: 'Receive daily digest of important activities',
-                },
-                {
-                  title: 'Push Notifications',
-                  description: 'Get instant alerts on your device',
-                },
-                {
-                  title: 'SMS Notifications',
-                  description: 'Receive text messages for urgent updates',
-                },
-                {
-                  title: 'In-app Notifications',
-                  description: 'Control which notifications appear in the app',
-                },
-              ].map((setting, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between border-b border-gray-100 pb-3"
-                >
-                  <div>
-                    <h3 className="font-medium text-sm">{setting.title}</h3>
-                    <p className="text-xs text-muted-foreground">
-                      {setting.description}
+                    <p className="text-sm text-muted-foreground">
+                      {notification.message}
                     </p>
+                    <div className="flex items-center gap-x-2">
+                      {notification.image && (
+                        <img
+                          src={notification.image}
+                          alt=""
+                          className="h-8 w-8 rounded-md object-cover"
+                        />
+                      )}
+                      <span className="text-xs text-gray-500">
+                        {notification.time}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Switch checked={i < 2} />
-                    <Button variant="ghost" size="sm">
-                      Configure
+                  <div className="shrink-0">
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
+          ))}
+        </div>
+        <div className="p-4 text-center border-t border-border">
+          <Button variant="ghost">Load More</Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-lg border border-border p-5 shadow-sm">
+          <h2 className="text-lg font-semibold mb-3">
+            Notification Highlights
+          </h2>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-x-2">
+                <Award className="h-5 w-5 text-purple-500" />
+                <span className="text-sm">New Badges</span>
+              </div>
+              <span className="text-sm font-medium">3</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-x-2">
+                <Heart className="h-5 w-5 text-red-500" />
+                <span className="text-sm">New Backers</span>
+              </div>
+              <span className="text-sm font-medium">27</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-x-2">
+                <MessageSquare className="h-5 w-5 text-blue-500" />
+                <span className="text-sm">Unread Messages</span>
+              </div>
+              <span className="text-sm font-medium">5</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-x-2">
+                <Activity className="h-5 w-5 text-orange-500" />
+                <span className="text-sm">Campaign Updates</span>
+              </div>
+              <span className="text-sm font-medium">2</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="md:col-span-2 bg-white rounded-lg border border-border p-5 shadow-sm">
+          <h2 className="text-lg font-semibold mb-3">Notification Settings</h2>
+          <div className="space-y-4">
+            {[
+              {
+                title: 'Email Notifications',
+                description: 'Receive daily digest of important activities',
+              },
+              {
+                title: 'Push Notifications',
+                description: 'Get instant alerts on your device',
+              },
+              {
+                title: 'SMS Notifications',
+                description: 'Receive text messages for urgent updates',
+              },
+              {
+                title: 'In-app Notifications',
+                description: 'Control which notifications appear in the app',
+              },
+            ].map((setting, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between border-b border-gray-100 pb-3"
+              >
+                <div>
+                  <h3 className="font-medium text-sm">{setting.title}</h3>
+                  <p className="text-xs text-muted-foreground">
+                    {setting.description}
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch checked={i < 2} />
+                  <Button variant="ghost" size="sm">
+                    Configure
+                  </Button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
