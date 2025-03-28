@@ -18,6 +18,7 @@ export default function MessagesPage() {
 
   return (
     <div className="w-full bg-white dark:bg-gray-800">
+         <span>This page is under construction</span>
       <div className="max-w-7xl mx-auto">
         <MessagesComponent message={messages} />
       </div>
