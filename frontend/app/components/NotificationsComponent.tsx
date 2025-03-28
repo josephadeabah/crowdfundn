@@ -2,7 +2,6 @@
 import { Notification } from '@/app/types/navbar.types';
 import React from 'react';
 import {
-  Bell,
   Settings,
   Filter,
   Check,

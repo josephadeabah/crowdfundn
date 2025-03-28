@@ -4,15 +4,9 @@ import React, { useState } from 'react';
 import {
   Search,
   Edit,
-  ChevronDown,
   Paperclip,
   Send,
   MoreHorizontal,
-  Phone,
-  Video,
-  User,
-  Star,
-  MessageSquare,
   ChevronLeft,
 } from 'lucide-react';
 import { Button } from './ui/button';
@@ -36,7 +30,8 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
       lastMessage: 'Thanks for backing my project!',
       time: '2m ago',
       unread: 3,
-      avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop',
+      avatar:
+        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop',
     },
     {
       id: 2,
@@ -45,7 +40,8 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
       lastMessage: 'When will the rewards be shipped?',
       time: '1h ago',
       unread: 0,
-      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop',
+      avatar:
+        'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop',
     },
     {
       id: 3,
@@ -54,7 +50,8 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
       lastMessage: 'Great progress on your campaign!',
       time: '3h ago',
       unread: 0,
-      avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop',
+      avatar:
+        'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop',
     },
     {
       id: 4,
@@ -63,7 +60,8 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
       lastMessage: 'I just pledged to your new campaign',
       time: '5h ago',
       unread: 2,
-      avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop',
+      avatar:
+        'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop',
     },
     {
       id: 5,
@@ -72,7 +70,8 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
       lastMessage: 'Looking forward to the launch!',
       time: '1d ago',
       unread: 0,
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
+      avatar:
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
     },
   ];
 
@@ -139,7 +138,8 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
     },
   ];
 
-  const activeContact = contacts.find(contact => contact.id === selectedContactId) || contacts[0];
+  const activeContact =
+    contacts.find((contact) => contact.id === selectedContactId) || contacts[0];
 
   return (
     <div className="h-[calc(100vh-8rem)] flex flex-col">
@@ -157,10 +157,12 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
 
       <div className="flex flex-1 border border-border rounded-lg overflow-hidden shadow-sm bg-white">
         {/* Contact List - Hidden on mobile when chat is open */}
-        <div className={cn(
-          "w-full lg:w-1/3 border-r border-border transition-all duration-300",
-          showContactList ? "block" : "hidden lg:block"
-        )}>
+        <div
+          className={cn(
+            'w-full lg:w-1/3 border-r border-border transition-all duration-300',
+            showContactList ? 'block' : 'hidden lg:block',
+          )}
+        >
           <div className="p-3 border-b border-border">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -226,14 +228,16 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
         </div>
 
         {/* Chat Area - Full width on mobile */}
-        <div className={cn(
-          "flex-1 flex flex-col",
-          showContactList ? "hidden lg:flex" : "flex"
-        )}>
+        <div
+          className={cn(
+            'flex-1 flex flex-col',
+            showContactList ? 'hidden lg:flex' : 'flex',
+          )}
+        >
           {/* Chat Header with back button on mobile */}
           <div className="p-3 border-b border-border flex items-center justify-between bg-gray-50">
             <div className="flex items-center">
-              <button 
+              <button
                 className="lg:hidden mr-2"
                 onClick={() => setShowContactList(true)}
               >
