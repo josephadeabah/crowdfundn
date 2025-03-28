@@ -146,7 +146,6 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
     <div className="h-[calc(100vh-8rem)] flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Messages</h1>
           <p className="text-muted-foreground">
             Connect with backers and creators
           </p>

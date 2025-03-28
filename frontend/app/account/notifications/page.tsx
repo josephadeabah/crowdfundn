@@ -21,7 +21,9 @@ export default function NotificationsPage() {
           {/* Left sidebar - can be used for filters or other content */}
           <div className="lg:w-1/4">
             <div className="sticky top-8 space-y-4">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Notifications</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Notifications
+              </h1>
               <div className="space-y-2">
                 <button className="w-full text-left px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white">
                   All Notifications
@@ -29,7 +31,7 @@ export default function NotificationsPage() {
               </div>
             </div>
           </div>
-          
+
           {/* Main notifications content - positioned on the right */}
           <div className="lg:w-3/4">
             <NotificationsComponent notification={notifications} />
