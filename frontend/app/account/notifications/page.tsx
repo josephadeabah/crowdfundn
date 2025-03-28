@@ -38,7 +38,7 @@ export default function NotificationsPage() {
           
           {/* Main notifications content - positioned on the right */}
           <div className="lg:w-3/4">
-            <NotificationsComponent notifications={notifications} />
+            <NotificationsComponent notification={notifications} />
           </div>
         </div>
       </div>
