@@ -17,6 +17,9 @@ export default function NotificationsPage() {
   return (
     <div className="w-full bg-white dark:bg-gray-800 min-h-screen">
       <div className="max-w-6xl w-full px-4 sm:px-6 lg:px-12 py-8 ml-auto">
+        <span className="text-sm text-gray-400">
+          This page is under construction!
+        </span>
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left sidebar - 15% width */}
           <div className="lg:w-[15%]">
