@@ -2,6 +2,7 @@
 import React from 'react';
 import { BellIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 import { Notification } from '@/app/types/navbar.types';
+import Link from 'next/link';
 
 interface NavbarNotificationIconsProps {
   notifications: Notification[];
@@ -17,8 +18,8 @@ export const NavbarNotificationIcons: React.FC<
   return (
     <div className="flex items-center gap-2">
       {/* Notification Icon */}
-      <a
-        href="/account#notifications"
+      <Link
+        href="/account/notifications"
         className="relative cursor-pointer p-2 rounded-full bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-800"
       >
         <BellIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
@@ -27,11 +28,11 @@ export const NavbarNotificationIcons: React.FC<
             {unreadNotifications}
           </span>
         )}
-      </a>
+      </Link>
 
       {/* Message Icon */}
-      <a
-        href="/account#messages"
+      <Link
+        href="/account/messages"
         className="relative cursor-pointer p-2 rounded-full bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-800"
       >
         <EnvelopeIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
@@ -40,7 +41,7 @@ export const NavbarNotificationIcons: React.FC<
             {unreadMessages}
           </span>
         )}
-      </a>
+      </Link>
     </div>
   );
 };
