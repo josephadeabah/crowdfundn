@@ -138,7 +138,7 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
   ];
 
   return (
-    <>
+    <div className="max-w-7xl mx-auto px-4 py-6">
       <div className="h-[calc(100vh-8rem)] flex flex-col">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -319,6 +319,6 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };

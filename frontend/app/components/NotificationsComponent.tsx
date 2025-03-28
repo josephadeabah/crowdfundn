@@ -129,7 +129,7 @@ export const NotificationsComponent: React.FC<NotificationsComponentProps> = ({
   ];
 
   return (
-    <>
+    <div className="max-w-7xl mx-auto px-4 py-6">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -311,7 +311,7 @@ export const NotificationsComponent: React.FC<NotificationsComponentProps> = ({
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
