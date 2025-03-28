@@ -19,7 +19,7 @@ export default function MessagesPage() {
   return (
     <div className="w-full bg-white dark:bg-gray-800">
       <div className="max-w-7xl mx-auto px-4 py-6">
-      <span>This page is under construction</span>
+        <span>This page is under construction</span>
         <MessagesComponent message={messages} />
       </div>
     </div>

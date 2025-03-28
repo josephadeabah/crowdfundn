@@ -8,7 +8,12 @@ interface ParsedCookies {
 }
 
 // Specify protected, admin, and public routes
-const protectedRoutes = ['/account', '/account/dashboard/create', '/account/notifications', '/account/messages'];
+const protectedRoutes = [
+  '/account',
+  '/account/dashboard/create',
+  '/account/notifications',
+  '/account/messages',
+];
 const adminRoutes = ['/admin', '/admin/manage'];
 const publicRoutes = ['/auth/login', '/auth/register', '/'];
 
