@@ -39,7 +39,7 @@ export const NotificationsComponent: React.FC<NotificationsComponentProps> = ({
       icon: Heart,
       iconBg: 'bg-red-100',
       iconColor: 'text-red-500',
-      image: 'https://source.unsplash.com/random/100x100?portrait=1',
+      image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop',
     },
     {
       id: 2,
@@ -52,7 +52,7 @@ export const NotificationsComponent: React.FC<NotificationsComponentProps> = ({
       icon: TrendingUp,
       iconBg: 'bg-green-100',
       iconColor: 'text-green-500',
-      image: 'https://source.unsplash.com/random/100x100?item=1',
+      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
     },
     {
       id: 3,
@@ -64,7 +64,7 @@ export const NotificationsComponent: React.FC<NotificationsComponentProps> = ({
       icon: MessageSquare,
       iconBg: 'bg-blue-100',
       iconColor: 'text-blue-500',
-      image: 'https://source.unsplash.com/random/100x100?portrait=2',
+      image: 'https://images.unsplash.com/photo-1542103749-8ef59b94f47e?w=100&h=100&fit=crop',
     },
     {
       id: 4,

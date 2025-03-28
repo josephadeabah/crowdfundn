@@ -32,7 +32,7 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
       lastMessage: 'Thanks for backing my project!',
       time: '2m ago',
       unread: 3,
-      avatar: 'https://source.unsplash.com/random/100x100?portrait=10',
+      avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop',
     },
     {
       id: 2,
@@ -41,7 +41,7 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
       lastMessage: 'When will the rewards be shipped?',
       time: '1h ago',
       unread: 0,
-      avatar: 'https://source.unsplash.com/random/100x100?portrait=11',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop',
     },
     {
       id: 3,
@@ -50,7 +50,7 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
       lastMessage: 'Great progress on your campaign!',
       time: '3h ago',
       unread: 0,
-      avatar: 'https://source.unsplash.com/random/100x100?portrait=12',
+      avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop',
     },
     {
       id: 4,
@@ -59,7 +59,7 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
       lastMessage: 'I just pledged to your new campaign',
       time: '5h ago',
       unread: 2,
-      avatar: 'https://source.unsplash.com/random/100x100?portrait=13',
+      avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop',
     },
     {
       id: 5,
@@ -68,7 +68,7 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
       lastMessage: 'Looking forward to the launch!',
       time: '1d ago',
       unread: 0,
-      avatar: 'https://source.unsplash.com/random/100x100?portrait=14',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
     },
   ];
 
