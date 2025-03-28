@@ -19,7 +19,7 @@ export default function NotificationsPage() {
   return (
     <div className="w-full bg-white dark:bg-gray-800">
       <div className="max-w-7xl mx-auto">
-        <NotificationsComponent notifications={notifications} />
+        <NotificationsComponent notification={notifications} />
       </div>
     </div>
   );
