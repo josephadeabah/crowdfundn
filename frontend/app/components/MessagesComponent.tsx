@@ -1,6 +1,6 @@
 'use client';
 import { Notification } from '@/app/types/navbar.types';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Search,
   Edit,
@@ -13,6 +13,7 @@ import {
   User,
   Star,
   MessageSquare,
+  ChevronLeft,
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from '../lib/utils';
@@ -24,6 +25,9 @@ interface MessagesComponentProps {
 export const MessagesComponent: React.FC<MessagesComponentProps> = ({
   message,
 }) => {
+  const [selectedContactId, setSelectedContactId] = useState(1);
+  const [showContactList, setShowContactList] = useState(true);
+
   const contacts = [
     {
       id: 1,
@@ -32,8 +36,7 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
       lastMessage: 'Thanks for backing my project!',
       time: '2m ago',
       unread: 3,
-      avatar:
-        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop',
+      avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop',
     },
     {
       id: 2,
@@ -42,8 +45,7 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
       lastMessage: 'When will the rewards be shipped?',
       time: '1h ago',
       unread: 0,
-      avatar:
-        'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop',
     },
     {
       id: 3,
@@ -52,8 +54,7 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
       lastMessage: 'Great progress on your campaign!',
       time: '3h ago',
       unread: 0,
-      avatar:
-        'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop',
+      avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop',
     },
     {
       id: 4,
@@ -62,8 +63,7 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
       lastMessage: 'I just pledged to your new campaign',
       time: '5h ago',
       unread: 2,
-      avatar:
-        'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop',
+      avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop',
     },
     {
       id: 5,
@@ -72,12 +72,9 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
       lastMessage: 'Looking forward to the launch!',
       time: '1d ago',
       unread: 0,
-      avatar:
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
     },
   ];
-
-  const activeContact = contacts[0];
 
   const messages = [
     {
@@ -142,6 +139,8 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
     },
   ];
 
+  const activeContact = contacts.find(contact => contact.id === selectedContactId) || contacts[0];
+
   return (
     <div className="h-[calc(100vh-8rem)] flex flex-col">
       <div className="flex items-center justify-between mb-6">
@@ -157,8 +156,11 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
       </div>
 
       <div className="flex flex-1 border border-border rounded-lg overflow-hidden shadow-sm bg-white">
-        {/* Contact List */}
-        <div className="w-1/3 border-r border-border">
+        {/* Contact List - Hidden on mobile when chat is open */}
+        <div className={cn(
+          "w-full lg:w-1/3 border-r border-border transition-all duration-300",
+          showContactList ? "block" : "hidden lg:block"
+        )}>
           <div className="p-3 border-b border-border">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -176,10 +178,14 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
                 key={contact.id}
                 className={cn(
                   'flex items-center p-3 hover:bg-gray-50 cursor-pointer transition-colors',
-                  contact.id === activeContact.id
+                  contact.id === selectedContactId
                     ? 'bg-gray-50 border-l-2 border-video'
                     : '',
                 )}
+                onClick={() => {
+                  setSelectedContactId(contact.id);
+                  setShowContactList(false);
+                }}
               >
                 <div className="relative mr-3">
                   <img
@@ -219,11 +225,20 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
           </div>
         </div>
 
-        {/* Chat Area */}
-        <div className="flex-1 flex flex-col">
-          {/* Chat Header */}
+        {/* Chat Area - Full width on mobile */}
+        <div className={cn(
+          "flex-1 flex flex-col",
+          showContactList ? "hidden lg:flex" : "flex"
+        )}>
+          {/* Chat Header with back button on mobile */}
           <div className="p-3 border-b border-border flex items-center justify-between bg-gray-50">
             <div className="flex items-center">
+              <button 
+                className="lg:hidden mr-2"
+                onClick={() => setShowContactList(true)}
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
               <img
                 src={activeContact.avatar}
                 alt={activeContact.name}
@@ -247,15 +262,6 @@ export const MessagesComponent: React.FC<MessagesComponentProps> = ({
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="icon">
-                <Phone className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Video className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <User className="h-4 w-4" />
-              </Button>
               <Button variant="ghost" size="icon">
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
