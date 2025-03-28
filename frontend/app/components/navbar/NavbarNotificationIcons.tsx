@@ -14,16 +14,11 @@ export const NavbarNotificationIcons: React.FC<
   const unreadNotifications = notifications.filter((n) => !n.read).length;
   const unreadMessages = messages.filter((m) => !m.read).length;
 
-  const handleNavigation = (hash: string) => {
-    // Use window.location.assign to ensure full page navigation
-    window.location.assign(`/account${hash}`);
-  };
-
   return (
     <div className="flex items-center gap-2">
       {/* Notification Icon */}
-      <div
-        onClick={() => handleNavigation('#notifications')}
+      <a
+        href="/account#notifications"
         className="relative cursor-pointer p-2 rounded-full bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-800"
       >
         <BellIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
@@ -32,11 +27,11 @@ export const NavbarNotificationIcons: React.FC<
             {unreadNotifications}
           </span>
         )}
-      </div>
+      </a>
 
       {/* Message Icon */}
-      <div
-        onClick={() => handleNavigation('#messages')}
+      <a
+        href="/account#messages"
         className="relative cursor-pointer p-2 rounded-full bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-800"
       >
         <EnvelopeIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
@@ -45,7 +40,7 @@ export const NavbarNotificationIcons: React.FC<
             {unreadMessages}
           </span>
         )}
-      </div>
+      </a>
     </div>
   );
 };

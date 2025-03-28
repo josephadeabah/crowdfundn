@@ -23,6 +23,8 @@ import AccountSettings from '@/app/account/settings/AccountSettings';
 import OnboardingModal from '@/app/components/onboarding/OnboardingModal';
 import Favorites from '@/app/account/Favorites';
 import PledgesListPage from '@/app/account/Pledges';
+import { NotificationsComponent } from '../components/NotificationsComponent';
+import { MessagesComponent } from '../components/MessagesComponent';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState<string>('');
@@ -95,24 +97,31 @@ const ProfileTabs = () => {
   useEffect(() => {
     const savedTab = localStorage.getItem('activeTab');
     const onboardingCompleted = localStorage.getItem('onboardingCompleted');
-    const hashTab = window.location.hash.replace('#', '');
+    const hash = window.location.hash.replace('#', '');
 
-    if (hashTab && tabs.find((tab) => tab.label === hashTab)) {
-      setActiveTab(hashTab); // Set tab from URL hash
+    // Handle special views first
+    if (hash === 'notifications' || hash === 'messages') {
+      setActiveTab(hash);
+    }
+    // Then handle regular tabs
+    else if (hash && tabs.find((tab) => tab.label === hash)) {
+      setActiveTab(hash);
     } else if (savedTab) {
-      setActiveTab(savedTab); // Set tab from local storage
+      setActiveTab(savedTab);
     } else {
-      setActiveTab(tabs[0].label); // Default to the first tab
+      setActiveTab(tabs[0].label);
     }
 
     if (!onboardingCompleted) {
-      setShowOnboarding(true); // Show onboarding if it's not completed
+      setShowOnboarding(true);
     }
 
     setLoading(false);
+
+    // Fetch notifications and messages if needed
+    // fetchData();
   }, []);
 
-  // Update URL hash and save the active tab in local storage
   useEffect(() => {
     if (activeTab) {
       window.history.replaceState(null, '', `#${activeTab}`);
@@ -135,6 +144,20 @@ const ProfileTabs = () => {
     setShowOnboarding(false);
   };
 
+  const renderContent = () => {
+    // Handle special views
+    if (activeTab === 'notifications') {
+      return <NotificationsComponent notifications={[]} />;
+    }
+    if (activeTab === 'messages') {
+      return <MessagesComponent messages={[]} />;
+    }
+
+    // Handle regular tabs
+    const currentTab = tabs.find((tab) => tab.label === activeTab);
+    return currentTab?.component || <Dashboard />;
+  };
+
   if (loading) {
     return <ProfileTabsLoader />;
   }
@@ -142,7 +165,7 @@ const ProfileTabs = () => {
   return (
     <div className="w-full bg-white dark:bg-gray-800">
       <div className="max-w-7xl mx-auto flex flex-col mt-0 md:flex-row h-screen">
-        {/* Tabs Menu */}
+        {/* Tabs Menu - Only show regular tabs */}
         <div className="md:w-1/6 border-b h-auto md:h-screen md:border-b-0 md:border-r-2 border-dashed border-orange-200 dark:border-neutral-700">
           <div
             className="flex md:flex-col w-full space-x-2 md:space-x-0 md:space-y-2 !overflow-x-auto md:overflow-visible"
@@ -155,7 +178,7 @@ const ProfileTabs = () => {
               return (
                 <a
                   key={label}
-                  href={`#${label}`} // Anchor link
+                  href={`#${label}`}
                   className={`py-3 px-3 h-full whitespace-nowrap text-sm font-medium md:text-base transform transition-transform duration-300 ${
                     isActive
                       ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-400 dark:text-orange-600'
@@ -166,13 +189,10 @@ const ProfileTabs = () => {
                       : ''
                   }`}
                   onClick={(e) => {
-                    e.preventDefault(); // Prevent default anchor behavior
-                    handleTabClick(label); // Handle tab click
+                    e.preventDefault();
+                    handleTabClick(label);
                   }}
                   aria-selected={isActive}
-                  aria-controls={`vertical-tab-${label}`}
-                  role="tab"
-                  id={`tab-${label}`} // Specific ID for better targeting
                 >
                   <span className="mr-2">{icon}</span>
                   {label}
@@ -183,14 +203,8 @@ const ProfileTabs = () => {
         </div>
 
         {/* Tab Content */}
-        <div className="flex-1 flex flex-col bg-gradient-to-tr from-green-50 to-orange-50 dark:from-green-900 dark:to-orange-900 dark:bg-gray-900 px-3 mb-0 overflow-auto h-full md:h-screen [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
-          <div
-            role="tabpanel"
-            id={`vertical-tab-${activeTab}`}
-            className="flex-1 mb-8"
-          >
-            {tabs.find((tab) => tab.label === activeTab)?.component}
-          </div>
+        <div className="flex-1 flex flex-col bg-gradient-to-tr from-green-50 to-orange-50 dark:from-green-900 dark:to-orange-900 dark:bg-gray-900 px-3 mb-0 overflow-auto h-full md:h-screen">
+          <div className="flex-1 mb-8">{renderContent()}</div>
           <div className="bg-white w-full m-0 text-center py-4 text-gray-600 dark:text-gray-400">
             © 2025 Bantu Hive Ltd
           </div>
