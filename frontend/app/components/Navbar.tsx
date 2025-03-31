@@ -109,6 +109,7 @@ const Navbar = () => {
           <button
             onClick={handleMenuToggle}
             className="text-gray-800 shadow-none rounded-none dark:text-gray-300"
+            aria-label="Toggle menu"
           >
             {isMenuOpen ? (
               <XMarkIcon className="h-8 w-8" />
@@ -117,20 +118,6 @@ const Navbar = () => {
             )}
           </button>
         </div>
-
-        {user && (
-          <NavbarMobileMenu
-            isMenuOpen={isMenuOpen}
-            user={user}
-            dropdownLinks={dropdownLinks}
-            openDropdown={openDropdown}
-            handleDropdownToggle={handleDropdownToggle}
-            userAccountData={userAccountData}
-            logout={logout}
-            notifications={notifications}
-            messages={messages}
-          />
-        )}
 
         <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
           {!user ? (
@@ -150,6 +137,19 @@ const Navbar = () => {
           )}
         </div>
       </div>
+
+      {/* Mobile Menu - moved outside the main container */}
+      <NavbarMobileMenu
+        isMenuOpen={isMenuOpen}
+        user={user}
+        dropdownLinks={dropdownLinks}
+        openDropdown={openDropdown}
+        handleDropdownToggle={handleDropdownToggle}
+        userAccountData={userAccountData}
+        logout={logout}
+        notifications={notifications}
+        messages={messages}
+      />
     </header>
   );
 };
