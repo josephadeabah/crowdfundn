@@ -74,13 +74,14 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
         className="flex overflow-x-auto space-x-4 pb-4 -mx-1 px-1 scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {loading ? (
+        {loading && (
           <div className="flex space-x-4 w-full">
             <div className="snap-start flex-none w-full max-w-full">
               <CampaignCardLoader />
             </div>
           </div>
-        ) : rewards && rewards.length > 0 ? (
+        )}
+        {!loading && rewards && rewards.length > 0 && (
           rewards.map((reward, index) => (
             <div
               key={reward.id}
@@ -95,7 +96,9 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
               />
             </div>
           ))
-        ) : (
+        )}
+        
+        {!loading && rewards && rewards.length === 0 && (
           <div className="w-full text-3xl text-center py-8 text-gray-500">
             No rewards found.
           </div>

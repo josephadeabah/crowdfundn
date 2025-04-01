@@ -81,13 +81,15 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
         className="flex overflow-x-auto space-x-3 pb-3 -mx-1 px-1 scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {loading ? (
+        {loading && (
           <div className="flex space-x-4 w-full">
             <div className="snap-start flex-none w-full max-w-full">
               <CampaignCardLoader />
             </div>
           </div>
-        ) : campaigns && campaigns.length > 0 ? (
+        ) }
+        
+        {!loading && campaigns && campaigns.length > 0 && (
           // Actual campaigns when loaded
           createCampaignPairs(campaigns).map((pair, pairIndex) => (
             <div
@@ -110,7 +112,9 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
               ))}
             </div>
           ))
-        ) : (
+        )} 
+        
+        {!loading && campaigns && campaigns.length === 0 && (
           <div className="w-full text-3xl text-center py-6 text-gray-500">
             No campaigns found.
           </div>
