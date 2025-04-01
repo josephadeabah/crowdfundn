@@ -45,6 +45,42 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
       })),
     );
 
+  // Determine what to show
+  const showContent = () => {
+    if (loading && (!rewards || rewards.length === 0)) {
+      return (
+        <div className="flex space-x-4 w-full">
+          <div className="snap-start flex-none w-full max-w-full">
+            <CampaignCardLoader />
+          </div>
+        </div>
+      );
+    }
+    
+    if (rewards && rewards.length > 0) {
+      return rewards.map((reward, index) => (
+        <div
+          key={reward.id}
+          className="snap-start flex-none w-[280px] md:w-[350px]"
+          style={{ animationDelay: `${index * 100}ms` }}
+        >
+          <RewardCard
+            campaign={reward.campaign}
+            reward={reward}
+            loading={false}
+            error={error}
+          />
+        </div>
+      ));
+    }
+    
+    return (
+      <div className="w-full text-3xl text-center py-8 text-gray-500">
+        No rewards found.
+      </div>
+    );
+  };
+
   return (
     <div className="w-full my-8">
       <div className="flex justify-between items-center mb-4">
@@ -74,35 +110,7 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
         className="flex overflow-x-auto space-x-4 pb-4 -mx-1 px-1 scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {loading && (
-          <div className="flex space-x-4 w-full">
-            <div className="snap-start flex-none w-full max-w-full">
-              <CampaignCardLoader />
-            </div>
-          </div>
-        )}
-        {!loading && rewards && rewards.length > 0 && (
-          rewards.map((reward, index) => (
-            <div
-              key={reward.id}
-              className="snap-start flex-none w-[280px] md:w-[350px]"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <RewardCard
-                campaign={reward.campaign}
-                reward={reward}
-                loading={!loading && rewards.length > 0}
-                error={error}
-              />
-            </div>
-          ))
-        )}
-        
-        {!loading && rewards && rewards.length === 0 && (
-          <div className="w-full text-3xl text-center py-8 text-gray-500">
-            No rewards found.
-          </div>
-        )}
+        {showContent()}
       </div>
     </div>
   );

@@ -52,6 +52,49 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
     return pairs;
   };
 
+  // Determine what to show
+  const showContent = () => {
+    if (loading && (!campaigns || campaigns.length === 0)) {
+      return (
+        <div className="flex space-x-4 w-full">
+          <div className="snap-start flex-none w-full max-w-full">
+            <CampaignCardLoader />
+          </div>
+        </div>
+      );
+    }
+    
+    if (campaigns && campaigns.length > 0) {
+      return createCampaignPairs(campaigns).map((pair, pairIndex) => (
+        <div
+          key={`pair-${pairIndex}`}
+          className="flex-shrink-0 grid grid-rows-2 gap-2 h-full"
+        >
+          {pair.map((campaign) => (
+            <div
+              key={campaign.id}
+              className="snap-start flex-none w-[220px] md:w-[280px]"
+              style={{ animationDelay: `${pairIndex * 100}ms` }}
+            >
+              <CampaignCard
+                campaign={campaign}
+                loading={false}
+                error={error}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          ))}
+        </div>
+      ));
+    }
+    
+    return (
+      <div className="w-full text-3xl text-center py-6 text-gray-500">
+        No campaigns found.
+      </div>
+    );
+  };
+
   return (
     <div className="w-full my-6">
       <div className="flex justify-between items-center mb-3">
@@ -81,44 +124,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
         className="flex overflow-x-auto space-x-3 pb-3 -mx-1 px-1 scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {loading && (
-          <div className="flex space-x-4 w-full">
-            <div className="snap-start flex-none w-full max-w-full">
-              <CampaignCardLoader />
-            </div>
-          </div>
-        ) }
-        
-        {!loading && campaigns && campaigns.length > 0 && (
-          // Actual campaigns when loaded
-          createCampaignPairs(campaigns).map((pair, pairIndex) => (
-            <div
-              key={`pair-${pairIndex}`}
-              className="flex-shrink-0 grid grid-rows-2 gap-2 h-full"
-            >
-              {pair.map((campaign) => (
-                <div
-                  key={campaign.id}
-                  className="snap-start flex-none w-[220px] md:w-[280px]"
-                  style={{ animationDelay: `${pairIndex * 100}ms` }}
-                >
-                  <CampaignCard
-                    campaign={campaign}
-                    loading={!loading && campaigns.length > 0}
-                    error={error}
-                    onPageChange={handlePageChange}
-                  />
-                </div>
-              ))}
-            </div>
-          ))
-        )} 
-        
-        {!loading && campaigns && campaigns.length === 0 && (
-          <div className="w-full text-3xl text-center py-6 text-gray-500">
-            No campaigns found.
-          </div>
-        )}
+        {showContent()}
       </div>
     </div>
   );

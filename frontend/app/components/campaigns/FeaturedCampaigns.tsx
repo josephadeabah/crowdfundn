@@ -45,7 +45,7 @@ const FeaturedCampaigns = () => {
         <RewardCarousel
           title="Featured Rewards"
           campaigns={displayedCampaigns}
-          loading={!loading}
+          loading={loading}
           error={error}
         />
         <div className="flex flex-col md:flex-row md:items-center justify-between">
@@ -56,15 +56,13 @@ const FeaturedCampaigns = () => {
           </div>
         </div>
 
-        {/* Carousel - Only show loader when no campaigns available */}
         <CampaignCarousel
           title="Trending Fundraisers"
           campaigns={displayedCampaigns}
-          loading={!loading}
+          loading={loading}
           error={error}
         />
 
-        {/* Applied CSS without using the style tag with jsx prop */}
         <div className="no-scrollbar"></div>
       </div>
     </div>
