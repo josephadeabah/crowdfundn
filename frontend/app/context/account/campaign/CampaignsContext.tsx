@@ -288,6 +288,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           currentPage: allCampaigns?.current_page || 1,
           totalPages: allCampaigns?.total_pages || 1,
         });
+        setLoading(false);
       } catch (err) {
         console.error('Full fetch error:', err);
         setError(
