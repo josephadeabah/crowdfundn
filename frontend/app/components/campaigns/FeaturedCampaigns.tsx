@@ -25,7 +25,7 @@ const FeaturedCampaigns = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <RewardCarousel
           title="Featured Rewards"
-          campaigns={campaigns}
+          campaigns={displayedCampaigns}
           loading={loading}
           error={error}
         />
@@ -40,7 +40,7 @@ const FeaturedCampaigns = () => {
         {/* Carousel */}
         <CampaignCarousel
           title="Trending Campaigns"
-          campaigns={campaigns}
+          campaigns={displayedCampaigns}
           loading={loading}
           error={error}
         />

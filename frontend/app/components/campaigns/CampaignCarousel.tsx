@@ -82,7 +82,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {loading ? (
-          <div>
+          <div className="w-full h-full">
             <CampaignCardLoader />
           </div>
         ) : campaigns && campaigns.length > 0 ? (
