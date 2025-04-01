@@ -80,7 +80,6 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
             .map((_, index) => (
               <div
                 key={`skeleton-${index}`}
-                className="flex-shrink-0 w-[280px] md:w-[350px]"
               >
                 <CampaignCardLoader />
               </div>

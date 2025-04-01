@@ -83,14 +83,12 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
       >
         {loading ? (
           // Skeleton loaders while loading
-          Array(10)
+          Array(6)
             .fill(0)
             .map((_, index) => (
               <div
                 key={`skeleton-${index}`}
-                className="flex-shrink-0 grid grid-rows-2 gap-3 h-full"
               >
-                <CampaignCardLoader />
                 <CampaignCardLoader />
               </div>
             ))
