@@ -6,11 +6,6 @@ import RewardCarousel from './RewardCarousel';
 
 const FeaturedCampaigns = () => {
   const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
-  // States for sorting and pagination
-  const [sortCriteria, setSortCriteria] = useState<string>('created_at');
-  const [sortOrder, setSortOrder] = useState<string>('desc');
-  const [pageNumber, setPageNumber] = useState<number>(1);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(12);
 
   const isMounted = useRef(true);
 
