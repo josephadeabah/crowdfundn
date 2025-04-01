@@ -241,7 +241,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     ): Promise<void> => {
       setLoading(true);
       setError(null);
-  
+
       try {
         const queryParams = new URLSearchParams({
           sortBy,
@@ -253,30 +253,30 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           location,
           title,
         });
-  
+
         const url = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?${queryParams.toString()}`;
-  
+
         const headers: Record<string, string> = {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json',
         };
-  
+
         if (user) {
           headers['Authorization'] = `Bearer ${token}`;
         }
-  
+
         const response = await fetch(url, {
           method: 'GET',
           headers,
           mode: 'cors',
         });
-          
+
         if (!response.ok) {
           const errorText = await response.text();
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-  
-        const allCampaigns = await response.json();  
+
+        const allCampaigns = await response.json();
         setCampaigns(allCampaigns?.campaigns || []);
         setPagination({
           currentPage: allCampaigns?.current_page || 1,
@@ -285,9 +285,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       } catch (err) {
         setError(
-          err instanceof Error 
-            ? err.message 
-            : 'Error fetching campaigns. Please refresh the page.'
+          err instanceof Error
+            ? err.message
+            : 'Error fetching campaigns. Please refresh the page.',
         );
       } finally {
         setLoading(false);

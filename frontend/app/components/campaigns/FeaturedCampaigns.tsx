@@ -9,17 +9,20 @@ const FeaturedCampaigns = () => {
   const isMounted = useRef(true);
 
   // Memoize params to prevent unnecessary fetches
-  const fetchParams = useMemo(() => ({
-    sortCriteria: 'created_at',
-    sortOrder: 'desc',
-    pageNumber: 1,
-    itemsPerPage: 12
-  }), []);
+  const fetchParams = useMemo(
+    () => ({
+      sortCriteria: 'created_at',
+      sortOrder: 'desc',
+      pageNumber: 1,
+      itemsPerPage: 12,
+    }),
+    [],
+  );
 
   useEffect(() => {
     // Set up mount state
     isMounted.current = true;
-    
+
     const { sortCriteria, sortOrder, pageNumber, itemsPerPage } = fetchParams;
     fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, itemsPerPage);
 
