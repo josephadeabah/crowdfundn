@@ -262,10 +262,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           'Accept': 'application/json',
         };
   
-        if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
-        }
-  
         const response = await fetch(url, {
           method: 'GET',
           headers,
