@@ -75,7 +75,7 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {loading ? (
-          <div className="w-full max-w-7xl mx-auto h-full">
+          <div className="snap-start flex-none w-[280px] md:w-[350px]">
             <CampaignCardLoader />
           </div>
         ) : rewards && rewards.length > 0 ? (

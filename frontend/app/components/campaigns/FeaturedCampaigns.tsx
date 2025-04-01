@@ -39,13 +39,16 @@ const FeaturedCampaigns = () => {
     });
   }, [campaigns]);
 
+  // Only show loader when loading AND there are no campaigns to display
+  const shouldShowLoader = loading && displayedCampaigns.length === 0;
+
   return (
     <div className="py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <RewardCarousel
           title="Featured Rewards"
           campaigns={displayedCampaigns}
-          loading={!loading && displayedCampaigns.length > 0}
+          loading={shouldShowLoader}
           error={error}
         />
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
@@ -56,11 +59,11 @@ const FeaturedCampaigns = () => {
           </div>
         </div>
 
-        {/* Carousel */}
+        {/* Carousel - Only show loader when no campaigns available */}
         <CampaignCarousel
           title="Trending Fundraisers"
           campaigns={displayedCampaigns}
-          loading={!loading && displayedCampaigns.length > 0}
+          loading={shouldShowLoader}
           error={error}
         />
 
