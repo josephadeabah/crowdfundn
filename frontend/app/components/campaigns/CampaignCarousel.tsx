@@ -83,7 +83,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
       >
         {loading ? (
           <div className="flex space-x-4 w-full">
-            <div className="snap-start flex-none w-[280px] md:w-[350px] min-w-[280px] md:min-w-[350px] max-w-full">
+            <div className="snap-start flex-none w-full max-w-full">
               <CampaignCardLoader />
             </div>
           </div>
