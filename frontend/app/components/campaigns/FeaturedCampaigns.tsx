@@ -21,7 +21,6 @@ const FeaturedCampaigns = () => {
     isMounted.current = true;
     
     const { sortCriteria, sortOrder, pageNumber, itemsPerPage } = fetchParams;
-    console.log('Initiating fetch');
     fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, itemsPerPage);
 
     return () => {
@@ -36,11 +35,6 @@ const FeaturedCampaigns = () => {
       return campaign.status !== 'completed' && campaign.permissions.is_public;
     });
   }, [campaigns]);
-
-  // Debugging logs
-  useEffect(() => {
-    console.log('Loading state changed:', loading);
-  }, [loading]);
 
   return (
     <div className="py-20 overflow-hidden">

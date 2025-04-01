@@ -100,7 +100,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
                 >
                   <CampaignCard
                     campaign={campaign}
-                    loading={!loading}
+                    loading={!loading && campaigns.length > 0}
                     error={error}
                     onPageChange={handlePageChange}
                   />

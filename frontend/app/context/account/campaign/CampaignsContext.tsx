@@ -255,7 +255,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         });
   
         const url = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?${queryParams.toString()}`;
-        console.log('Fetching URL:', url); // Log the exact URL being called
   
         const headers: Record<string, string> = {
           'Content-Type': 'application/json',
@@ -271,18 +270,13 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           headers,
           mode: 'cors',
         });
-  
-        console.log('Response status:', response.status); // Log status
-        
+          
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('Error response:', errorText);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
   
-        const allCampaigns = await response.json();
-        console.log('API Response:', allCampaigns); // Log full response
-  
+        const allCampaigns = await response.json();  
         setCampaigns(allCampaigns?.campaigns || []);
         setPagination({
           currentPage: allCampaigns?.current_page || 1,
@@ -290,7 +284,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         });
         setLoading(false);
       } catch (err) {
-        console.error('Full fetch error:', err);
         setError(
           err instanceof Error 
             ? err.message 

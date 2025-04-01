@@ -88,7 +88,7 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
               <RewardCard
                 campaign={reward.campaign}
                 reward={reward}
-                loading={!loading}
+                loading={!loading && rewards.length > 0}
                 error={error}
               />
             </div>
