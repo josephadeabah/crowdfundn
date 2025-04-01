@@ -75,13 +75,11 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {loading ? (
-             <div className="flex space-x-4 w-full">
-                        <div
-                          className="snap-start flex-none w-[280px] md:w-[350px] min-w-[280px] md:min-w-[350px]"
-                        >
-                          <CampaignCardLoader />
-                        </div>
-                    </div>
+          <div className="flex space-x-4 w-full">
+            <div className="snap-start flex-none w-[280px] md:w-[350px] min-w-[280px] md:min-w-[350px]">
+              <CampaignCardLoader />
+            </div>
+          </div>
         ) : rewards && rewards.length > 0 ? (
           rewards.map((reward, index) => (
             <div

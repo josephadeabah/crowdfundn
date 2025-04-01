@@ -51,9 +51,9 @@ const FeaturedCampaigns = () => {
           loading={shouldShowLoader}
           error={error}
         />
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
+        <div className="flex flex-col md:flex-row md:items-center justify-between">
           <div className="animate-fade-up">
-            <span className="inline-block px-3 py-1 text-xs font-semibold bg-orange-500/10 text-orange-500 rounded-full mb-4">
+            <span className="inline-block px-3 py-1 text-xs font-semibold bg-orange-500/10 text-orange-500 rounded-full mb-2">
               Trending Now
             </span>
           </div>
