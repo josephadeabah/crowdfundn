@@ -241,6 +241,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     ): Promise<void> => {
       setLoading(true);
       setError(null);
+      console.log('Fetching campaigns...'); // Add logging
 
       try {
         const headers: Record<string, string> = {
@@ -280,6 +281,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       } catch (err) {
         handleApiError('Error fetching campaigns. Please refresh the page.');
       } finally {
+        console.log('Fetch completed');
         setLoading(false);
       }
     },

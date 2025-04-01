@@ -13,8 +13,24 @@ const FeaturedCampaigns = () => {
   const [itemsPerPage, setItemsPerPage] = useState<number>(12);
 
   useEffect(() => {
-    fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, itemsPerPage);
-  }, [fetchAllCampaigns, sortCriteria, pageNumber, itemsPerPage]);
+    let isMounted = true;
+    
+    const fetchData = async () => {
+      try {
+        await fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, itemsPerPage);
+      } catch (err) {
+        if (isMounted) {
+          // Handle error
+        }
+      }
+    };
+  
+    fetchData();
+  
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchAllCampaigns, sortCriteria, sortOrder, pageNumber, itemsPerPage]);
 
   const displayedCampaigns = campaigns?.filter((campaign) => {
     return campaign.status !== 'completed' && campaign.permissions.is_public;
@@ -39,7 +55,7 @@ const FeaturedCampaigns = () => {
 
         {/* Carousel */}
         <CampaignCarousel
-          title="Trending Campaigns"
+          title="Trending Fundraisers"
           campaigns={displayedCampaigns}
           loading={loading}
           error={error}
