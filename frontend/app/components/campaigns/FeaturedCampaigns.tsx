@@ -48,7 +48,7 @@ const FeaturedCampaigns = () => {
         <RewardCarousel
           title="Featured Rewards"
           campaigns={displayedCampaigns}
-          loading={loading}
+          loading={loading && displayedCampaigns.length === 0}
           error={error}
         />
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-12">
@@ -63,7 +63,7 @@ const FeaturedCampaigns = () => {
         <CampaignCarousel
           title="Trending Fundraisers"
           campaigns={displayedCampaigns}
-          loading={loading}
+          loading={loading && displayedCampaigns.length === 0}
           error={error}
         />
 
