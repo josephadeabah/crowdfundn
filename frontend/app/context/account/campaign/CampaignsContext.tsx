@@ -228,15 +228,17 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  // Utility function outside your component
   const fetchWithTimeout = async (
     url: string,
     options: RequestInit = {},
-    timeout = 8000,
+    timeout = 15000 // Increased to 15 seconds
   ): Promise<Response> => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+      console.log('Request timed out');
+    }, timeout);
+  
     try {
       const response = await fetch(url, {
         ...options,
@@ -246,11 +248,13 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       return response;
     } catch (err) {
       clearTimeout(timeoutId);
+      if (err instanceof Error && err.name === 'AbortError') {
+        console.warn('Request was aborted');
+      }
       throw err;
     }
   };
-
-  // Inside your CampaignProvider component
+  // Utility function outside your component
   const fetchAllCampaigns = useCallback(
     async (
       sortBy: string = 'created_at',
@@ -260,13 +264,17 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       dateRange: string = 'all_time',
       goalRange: string = 'all',
       location: string = 'all',
-      title: string = '',
+      title: string = ''
     ): Promise<void> => {
-      if (loading) return;
-
+      // Skip if already loading
+      if (loading) {
+        console.log('Skipping fetch - already in progress');
+        return;
+      }
+  
       setLoading(true);
       setError(null);
-
+  
       try {
         const queryParams = new URLSearchParams({
           sortBy,
@@ -278,54 +286,58 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           location,
           title,
         });
-
+  
         const headers: HeadersInit = {
           'Content-Type': 'application/json',
         };
-
+  
         if (token) {
           headers['Authorization'] = `Bearer ${token}`;
         }
-
+  
+        console.log('Starting fetch');
         const response = await fetchWithTimeout(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?${queryParams.toString()}`,
           {
             method: 'GET',
             headers,
           },
-          10000, // 10 second timeout
+          15000 // 15 second timeout
         );
-
+  
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-
+  
         const allCampaigns = await response.json();
-
-        // Deep comparison to prevent unnecessary state updates
+        console.log('Fetch completed successfully');
+  
+        // Only update state if component is still mounted
         setCampaigns((prev) => {
           const newCampaigns = allCampaigns?.campaigns || [];
           return JSON.stringify(prev) === JSON.stringify(newCampaigns)
             ? prev
             : newCampaigns;
         });
-
+  
         setPagination({
           currentPage: allCampaigns?.current_page || 1,
           totalPages: allCampaigns?.total_pages || 1,
         });
       } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : 'Failed to fetch campaigns. Please try again.',
-        );
         console.error('Fetch error:', err);
+        if (err instanceof Error && err.name !== 'AbortError') {
+          setError(
+            err instanceof Error
+              ? err.message
+              : 'Failed to fetch campaigns. Please try again.'
+          );
+        }
       } finally {
         setLoading(false);
       }
     },
-    [token, loading], // Dependencies
+    [token, loading]
   );
 
   const fetchCampaignById = useCallback(

@@ -12,25 +12,34 @@ const FeaturedCampaigns = () => {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(12);
 
+  const isMounted = useRef(true);
+
   // Memoize params to prevent unnecessary fetches
-  const fetchParams = useMemo(
-    () => ({
-      sortCriteria: 'created_at',
-      sortOrder: 'desc',
-      pageNumber: 1,
-      itemsPerPage: 12,
-    }),
-    [],
-  ); // Empty array means these never change
+  const fetchParams = useMemo(() => ({
+    sortCriteria: 'created_at',
+    sortOrder: 'desc',
+    pageNumber: 1,
+    itemsPerPage: 12
+  }), []);
 
   useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted.current) return;
+    
     const { sortCriteria, sortOrder, pageNumber, itemsPerPage } = fetchParams;
     fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, itemsPerPage);
-  }, [fetchAllCampaigns, fetchParams]); // Stable dependencies
+  }, [fetchAllCampaigns, fetchParams]);
 
-  const displayedCampaigns = campaigns?.filter((campaign) => {
-    return campaign.status !== 'completed' && campaign.permissions.is_public;
-  });
+  const displayedCampaigns = useMemo(() => {
+    return campaigns?.filter((campaign) => {
+      return campaign.status !== 'completed' && campaign.permissions.is_public;
+    });
+  }, [campaigns]);
 
   return (
     <div className="py-20 overflow-hidden">
