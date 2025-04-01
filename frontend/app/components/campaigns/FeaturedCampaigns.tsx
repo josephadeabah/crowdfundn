@@ -6,6 +6,8 @@ import RewardCarousel from './RewardCarousel';
 
 const FeaturedCampaigns = () => {
   const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
+  const isMounted = useRef(true);
+
   // Memoize params to prevent unnecessary fetches
   const fetchParams = useMemo(() => ({
     sortCriteria: 'created_at',
@@ -14,16 +16,31 @@ const FeaturedCampaigns = () => {
     itemsPerPage: 12
   }), []);
 
-  useEffect(() => {    
+  useEffect(() => {
+    // Set up mount state
+    isMounted.current = true;
+    
     const { sortCriteria, sortOrder, pageNumber, itemsPerPage } = fetchParams;
+    console.log('Initiating fetch');
     fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, itemsPerPage);
+
+    return () => {
+      // Clean up on unmount
+      isMounted.current = false;
+    };
   }, [fetchAllCampaigns, fetchParams]);
 
   const displayedCampaigns = useMemo(() => {
-    return campaigns?.filter((campaign) => {
+    if (!campaigns) return [];
+    return campaigns.filter((campaign) => {
       return campaign.status !== 'completed' && campaign.permissions.is_public;
     });
   }, [campaigns]);
+
+  // Debugging logs
+  useEffect(() => {
+    console.log('Loading state changed:', loading);
+  }, [loading]);
 
   return (
     <div className="py-20 overflow-hidden">
