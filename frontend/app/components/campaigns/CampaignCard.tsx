@@ -247,10 +247,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                   raised
                 </span>
                 <span className="text-muted-foreground">
-                  {((Number(campaign?.transferred_amount) /
-                    Number(campaign?.goal_amount)) *
-                    100)}
-                  % funded
+                 of {Number(campaign?.goal_amount)}
                 </span>
               </div>
 
