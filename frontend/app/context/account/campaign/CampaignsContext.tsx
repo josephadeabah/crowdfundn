@@ -241,16 +241,8 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     ): Promise<void> => {
       setLoading(true);
       setError(null);
-
+  
       try {
-        const headers: Record<string, string> = {
-          'Content-Type': 'application/json',
-        };
-
-        if (user) {
-          headers.Authorization = `Bearer ${token}`;
-        }
-
         const queryParams = new URLSearchParams({
           sortBy,
           sortOrder,
@@ -261,24 +253,48 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           location,
           title,
         });
-
-        const response = await nextFetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?${queryParams.toString()}`,
-          { method: 'GET', headers },
-        );
-
-        if (!response.ok) {
-          throw new Error("Couldn't fetch campaigns. Please refresh the page.");
+  
+        const url = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?${queryParams.toString()}`;
+        console.log('Fetching URL:', url); // Log the exact URL being called
+  
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        };
+  
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
         }
-
+  
+        const response = await fetch(url, {
+          method: 'GET',
+          headers,
+          mode: 'cors',
+        });
+  
+        console.log('Response status:', response.status); // Log status
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+  
         const allCampaigns = await response.json();
+        console.log('API Response:', allCampaigns); // Log full response
+  
         setCampaigns(allCampaigns?.campaigns || []);
         setPagination({
           currentPage: allCampaigns?.current_page || 1,
           totalPages: allCampaigns?.total_pages || 1,
         });
       } catch (err) {
-        handleApiError('Error fetching campaigns. Please refresh the page.');
+        console.error('Full fetch error:', err);
+        setError(
+          err instanceof Error 
+            ? err.message 
+            : 'Error fetching campaigns. Please refresh the page.'
+        );
       } finally {
         setLoading(false);
       }
