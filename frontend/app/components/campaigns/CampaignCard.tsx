@@ -247,7 +247,10 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                   raised
                 </span>
                 <span className="text-muted-foreground">
-                 of {Number(campaign?.goal_amount)}
+                  of{' '}
+                  {campaign?.currency_symbol ||
+                    campaign?.currency?.toUpperCase()}{' '}
+                  {Number(campaign?.goal_amount)}
                 </span>
               </div>
 

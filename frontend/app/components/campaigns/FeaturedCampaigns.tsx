@@ -45,10 +45,10 @@ const FeaturedCampaigns = () => {
         <RewardCarousel
           title="Featured Rewards"
           campaigns={displayedCampaigns}
-          loading={loading && displayedCampaigns.length === 0}
+          loading={!loading && displayedCampaigns.length > 0}
           error={error}
         />
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
           <div className="animate-fade-up">
             <span className="inline-block px-3 py-1 text-xs font-semibold bg-orange-500/10 text-orange-500 rounded-full mb-4">
               Trending Now
@@ -60,7 +60,7 @@ const FeaturedCampaigns = () => {
         <CampaignCarousel
           title="Trending Fundraisers"
           campaigns={displayedCampaigns}
-          loading={loading && displayedCampaigns.length === 0}
+          loading={!loading && displayedCampaigns.length > 0}
           error={error}
         />
 
