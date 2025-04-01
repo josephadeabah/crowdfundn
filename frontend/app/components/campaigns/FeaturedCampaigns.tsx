@@ -6,8 +6,6 @@ import RewardCarousel from './RewardCarousel';
 
 const FeaturedCampaigns = () => {
   const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
-  const [currentFilter, setCurrentFilter] = useState('All');
-  const filters = ['All', 'Tech', 'Creative', 'Community', 'Green'];
   // States for sorting and pagination
   const [sortCriteria, setSortCriteria] = useState<string>('created_at');
   const [sortOrder, setSortOrder] = useState<string>('desc');
@@ -27,7 +25,7 @@ const FeaturedCampaigns = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <RewardCarousel
           title="Featured Rewards"
-          campaigns={displayedCampaigns}
+          campaigns={campaigns}
           loading={loading}
           error={error}
         />
@@ -39,27 +37,10 @@ const FeaturedCampaigns = () => {
           </div>
         </div>
 
-        {/* Filter tabs */}
-        <div className="flex overflow-x-auto pb-4 gap-2 mb-8 animate-fade-up">
-          {filters.map((filter) => (
-            <button
-              key={filter}
-              onClick={() => setCurrentFilter(filter)}
-              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                currentFilter === filter
-                  ? 'bg-orange-500 text-white'
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              }`}
-            >
-              {filter}
-            </button>
-          ))}
-        </div>
-
         {/* Carousel */}
         <CampaignCarousel
           title="Trending Campaigns"
-          campaigns={displayedCampaigns}
+          campaigns={campaigns}
           loading={loading}
           error={error}
         />

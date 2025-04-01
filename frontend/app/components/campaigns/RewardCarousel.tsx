@@ -2,8 +2,8 @@ import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import React, { useRef } from 'react';
 import { Button } from '../ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import CampaignsLoader from '@/app/loaders/CampaignsLoader';
 import RewardCard from './RewardCard';
+import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 
 interface RewardCarouselProps {
   campaigns: CampaignResponseDataType[] | undefined;
@@ -82,7 +82,7 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
                 key={`skeleton-${index}`}
                 className="flex-shrink-0 w-[280px] md:w-[350px]"
               >
-                <CampaignsLoader />
+                <CampaignCardLoader />
               </div>
             ))
         ) : rewards && rewards.length > 0 ? (
