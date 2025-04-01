@@ -6,9 +6,6 @@ import RewardCarousel from './RewardCarousel';
 
 const FeaturedCampaigns = () => {
   const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
-
-  const isMounted = useRef(true);
-
   // Memoize params to prevent unnecessary fetches
   const fetchParams = useMemo(() => ({
     sortCriteria: 'created_at',
@@ -17,15 +14,7 @@ const FeaturedCampaigns = () => {
     itemsPerPage: 12
   }), []);
 
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isMounted.current) return;
-    
+  useEffect(() => {    
     const { sortCriteria, sortOrder, pageNumber, itemsPerPage } = fetchParams;
     fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, itemsPerPage);
   }, [fetchAllCampaigns, fetchParams]);
