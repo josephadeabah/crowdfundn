@@ -239,13 +239,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       location = 'all',
       title = '',
     ): Promise<void> => {
-      // Early return if already loading
-      if (loading) {
-        console.log('Fetch already in progress');
-        return;
-      }
-  
-      console.log('Starting fetch');
       setLoading(true);
       setError(null);
   
@@ -262,7 +255,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         });
   
         const url = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?${queryParams.toString()}`;
-        console.log('Fetching URL:', url);
+        console.log('Fetching URL:', url); // Log the exact URL being called
   
         const headers: Record<string, string> = {
           'Content-Type': 'application/json',
@@ -273,48 +266,40 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           headers['Authorization'] = `Bearer ${token}`;
         }
   
-        const startTime = performance.now();
         const response = await fetch(url, {
           method: 'GET',
           headers,
           mode: 'cors',
         });
   
-        console.log(`Request took ${performance.now() - startTime}ms`);
-  
+        console.log('Response status:', response.status); // Log status
+        
         if (!response.ok) {
           const errorText = await response.text();
-          throw new Error(`HTTP ${response.status}: ${errorText}`);
+          console.error('Error response:', errorText);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
   
-        const data = await response.json();
-        console.log('Received data:', data);
+        const allCampaigns = await response.json();
+        console.log('API Response:', allCampaigns); // Log full response
   
-        // Ensure we have valid campaigns data
-        const receivedCampaigns = data.campaigns || [];
-        if (!Array.isArray(receivedCampaigns)) {
-          throw new Error('Invalid campaigns data format');
-        }
-  
-        setCampaigns(receivedCampaigns);
+        setCampaigns(allCampaigns?.campaigns || []);
         setPagination({
-          currentPage: data.current_page || 1,
-          totalPages: data.total_pages || 1,
+          currentPage: allCampaigns?.current_page || 1,
+          totalPages: allCampaigns?.total_pages || 1,
         });
-  
       } catch (err) {
-        console.error('Fetch error:', err);
+        console.error('Full fetch error:', err);
         setError(
           err instanceof Error 
             ? err.message 
-            : 'Failed to fetch campaigns'
+            : 'Error fetching campaigns. Please refresh the page.'
         );
       } finally {
-        console.log('Fetch completed, setting loading to false');
         setLoading(false);
       }
     },
-    [user, token, loading] // Add loading to dependencies
+    [token, user],
   );
 
   const fetchCampaignById = useCallback(
