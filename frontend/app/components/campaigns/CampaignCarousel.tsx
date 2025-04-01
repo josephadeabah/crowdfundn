@@ -53,9 +53,9 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
   };
 
   return (
-    <div className="w-full my-8">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">{title}</h2>
+    <div className="w-full my-6">
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="text-xl font-bold">{title}</h2>
         <div className="flex space-x-2">
           <Button
             variant="outline"
@@ -78,7 +78,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
 
       <div
         ref={carouselRef}
-        className="flex overflow-x-auto space-x-4 pb-4 -mx-1 px-1 scrollbar-hide"
+        className="flex overflow-x-auto space-x-3 pb-3 -mx-1 px-1 scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {loading ? (
@@ -90,12 +90,12 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
           createCampaignPairs(campaigns).map((pair, pairIndex) => (
             <div
               key={`pair-${pairIndex}`}
-              className="flex-shrink-0 grid grid-rows-2 gap-3 h-full"
+              className="flex-shrink-0 grid grid-rows-2 gap-2 h-full"
             >
               {pair.map((campaign) => (
                 <div
                   key={campaign.id}
-                  className="snap-start flex-none w-[280px] md:w-[350px]"
+                  className="snap-start flex-none w-[220px] md:w-[280px]"
                   style={{ animationDelay: `${pairIndex * 100}ms` }}
                 >
                   <CampaignCard
@@ -109,7 +109,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
             </div>
           ))
         ) : (
-          <div className="w-full text-center py-8 text-gray-500">
+          <div className="w-full text-center py-6 text-gray-500">
             No campaigns found.
           </div>
         )}

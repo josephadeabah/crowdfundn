@@ -50,6 +50,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const [dateRange, setDateRange] = useState<string>('all_time');
   const [goalRange, setGoalRange] = useState<string>('all');
   const [isHovered, setIsHovered] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const [toast, setToast] = useState({
     isOpen: false,
@@ -116,7 +117,13 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       );
       return;
     }
-    await favoriteCampaign(campaignId);
+    try {
+      await favoriteCampaign(campaignId);
+      setIsFavorite(true);
+      showToast('Success', 'Campaign added to favorites', 'success');
+    } catch (error) {
+      showToast('Error', 'Failed to favorite campaign', 'error');
+    }
   };
 
   const handleUnfavorite = async (campaignId: string) => {
@@ -128,7 +135,21 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       );
       return;
     }
-    await unfavoriteCampaign(campaignId);
+    try {
+      await unfavoriteCampaign(campaignId);
+      setIsFavorite(false);
+      showToast('Success', 'Campaign removed from favorites', 'success');
+    } catch (error) {
+      showToast('Error', 'Failed to unfavorite campaign', 'error');
+    }
+  };
+
+  const toggleFavorite = () => {
+    if (isFavorite) {
+      handleUnfavorite(String(campaign.id));
+    } else {
+      handleFavorite(String(campaign.id));
+    }
   };
 
   return (
@@ -141,16 +162,31 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         type={toast.type}
       />
       <div
-        className="group relative overflow-hidden rounded-lg bg-background border border-border hover:border-primary/30 hover:shadow-md transition-all duration-300 animate-fade-up h-full flex flex-col text-sm"
+        className="group relative overflow-hidden rounded-lg bg-background border border-border hover:border-primary/30 hover:shadow-md transition-all duration-300 animate-fade-up h-full flex flex-col text-xs"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
+        <div className="absolute top-2 right-2 z-10">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              toggleFavorite();
+            }}
+            className="p-1.5 rounded-full bg-background/80 backdrop-blur-sm"
+          >
+            {isFavorite ? (
+              <Heart className="h-3.5 w-3.5 fill-red-500 text-red-500" />
+            ) : (
+              <Heart className="h-3.5 w-3.5 text-muted-foreground" />
+            )}
+          </button>
+        </div>
+
         <Link
           href={`/campaign/${campaign.id}?${generateRandomString()}`}
           className="block flex-1"
         >
-          {/* Adjusted image container */}
-          <div className="relative aspect-[4/3] overflow-hidden">
+          <div className="relative aspect-[4/2.5] overflow-hidden">
             <Image
               src={campaign?.media || '/bantuhive.svg'}
               alt={campaign.title}
@@ -163,36 +199,34 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
               )}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
-            <span className="absolute top-3 left-3 px-2 py-1 text-xs font-semibold bg-background/80 text-foreground rounded-md">
+            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[10px] font-semibold bg-background/80 text-foreground rounded-md">
               {deslugify(campaign?.category)}
             </span>
           </div>
 
-          {/* Content adjustments */}
-          <div className="p-4 flex-1 flex flex-col">
-            <div className="mb-2 flex items-center gap-2">
+          <div className="p-3 flex-1 flex flex-col">
+            <div className="mb-1 flex items-center gap-1">
               <Avatar
                 name={campaign?.fundraiser?.profile?.name}
                 size="sm"
                 imageUrl={campaign?.fundraiser?.profile?.avatar}
               />
-              <span className="text-xs text-muted-foreground">
+              <span className="text-[10px] text-muted-foreground">
                 {campaign?.fundraiser?.profile?.name}
               </span>
             </div>
 
             <h3
               className={cn(
-                'text-base font-semibold text-foreground mb-2 line-clamp-2 transition-colors duration-300',
+                'text-sm font-semibold text-foreground mb-1 line-clamp-2 transition-colors duration-300',
                 isHovered ? 'text-primary' : '',
               )}
             >
               {campaign.title}
             </h3>
 
-            {/* Adjusted progress bar */}
             <div className="mt-auto">
-              <div className="w-full text-xs mb-2">
+              <div className="w-full text-[10px] mb-1">
                 <Progress
                   firstProgress={
                     (Number(campaign?.transferred_amount) /
@@ -203,7 +237,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 />
               </div>
 
-              <div className="flex justify-between text-xs mb-3">
+              <div className="flex justify-between text-[10px] mb-2">
                 <span className="text-muted-foreground">
                   {campaign?.currency_symbol ||
                     campaign?.currency?.toUpperCase()}{' '}
@@ -212,11 +246,17 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                   ).toLocaleString()}{' '}
                   raised
                 </span>
+                <span className="text-muted-foreground">
+                  {((Number(campaign?.transferred_amount) /
+                    Number(campaign?.goal_amount)) *
+                    100)}
+                  % funded
+                </span>
               </div>
 
-              <div className="flex justify-between items-center text-xs">
-                <div className="flex items-center gap-1.5">
-                  <Award className="h-3.5 w-3.5 text-primary" />
+              <div className="flex justify-between items-center text-[10px]">
+                <div className="flex items-center gap-1">
+                  <Award className="h-3 w-3 text-primary" />
                   <span className="font-medium">
                     {campaign.total_donors || 0} Backers
                   </span>
