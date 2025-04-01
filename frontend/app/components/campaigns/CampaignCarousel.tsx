@@ -2,8 +2,8 @@ import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import CampaignsLoader from '@/app/loaders/CampaignsLoader';
 import CampaignCard from './CampaignCard';
+import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 
 interface CampaignCarouselProps {
   campaigns: CampaignResponseDataType[] | undefined;
@@ -90,8 +90,8 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
                 key={`skeleton-${index}`}
                 className="flex-shrink-0 grid grid-rows-2 gap-3 h-full"
               >
-                <CampaignsLoader />
-                <CampaignsLoader />
+                <CampaignCardLoader />
+                <CampaignCardLoader />
               </div>
             ))
         ) : campaigns && campaigns.length > 0 ? (

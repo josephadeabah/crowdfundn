@@ -10,7 +10,7 @@ import { deslugify } from '@/app/utils/helpers/categories';
 import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import CampaignsLoader from '@/app/loaders/CampaignsLoader';
+import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 
 interface RewardCardProps {
   campaign: CampaignResponseDataType;
@@ -80,7 +80,7 @@ const RewardCard: React.FC<RewardCardProps> = ({
   };
 
   if (loading) {
-    return <CampaignsLoader />;
+    return <CampaignCardLoader />;
   }
 
   if (error) {
