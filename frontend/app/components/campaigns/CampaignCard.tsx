@@ -162,7 +162,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         type={toast.type}
       />
       <div
-        className="group relative overflow-hidden rounded-lg bg-background border border-border hover:border-primary/30 hover:shadow-md transition-all duration-300 animate-fade-up h-full flex flex-col text-xs"
+        className="group relative overflow-hidden rounded-lg bg-background hover:shadow-md transition-all duration-300 animate-fade-up h-full flex flex-col text-xs"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
