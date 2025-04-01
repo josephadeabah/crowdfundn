@@ -94,7 +94,7 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
             </div>
           ))
         ) : (
-          <div className="w-full text-center py-8 text-gray-500">
+          <div className="w-full text-3xl text-center py-8 text-gray-500">
             No rewards found.
           </div>
         )}
