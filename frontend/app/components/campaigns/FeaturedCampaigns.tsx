@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useCampaignContext } from '../../context/account/campaign/CampaignsContext';
 import CampaignCarousel from './CampaignCarousel';
 import RewardCarousel from './RewardCarousel';
@@ -12,25 +12,21 @@ const FeaturedCampaigns = () => {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(12);
 
+  // Memoize params to prevent unnecessary fetches
+  const fetchParams = useMemo(
+    () => ({
+      sortCriteria: 'created_at',
+      sortOrder: 'desc',
+      pageNumber: 1,
+      itemsPerPage: 12,
+    }),
+    [],
+  ); // Empty array means these never change
+
   useEffect(() => {
-    let isMounted = true;
-    
-    const fetchData = async () => {
-      try {
-        await fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, itemsPerPage);
-      } catch (err) {
-        if (isMounted) {
-          // Handle error
-        }
-      }
-    };
-  
-    fetchData();
-  
-    return () => {
-      isMounted = false;
-    };
-  }, [fetchAllCampaigns, sortCriteria, sortOrder, pageNumber, itemsPerPage]);
+    const { sortCriteria, sortOrder, pageNumber, itemsPerPage } = fetchParams;
+    fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, itemsPerPage);
+  }, [fetchAllCampaigns, fetchParams]); // Stable dependencies
 
   const displayedCampaigns = campaigns?.filter((campaign) => {
     return campaign.status !== 'completed' && campaign.permissions.is_public;

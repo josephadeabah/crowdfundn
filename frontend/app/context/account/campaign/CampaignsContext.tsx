@@ -228,30 +228,46 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
+  // Utility function outside your component
+  const fetchWithTimeout = async (
+    url: string,
+    options: RequestInit = {},
+    timeout = 8000,
+  ): Promise<Response> => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      return response;
+    } catch (err) {
+      clearTimeout(timeoutId);
+      throw err;
+    }
+  };
+
+  // Inside your CampaignProvider component
   const fetchAllCampaigns = useCallback(
     async (
       sortBy: string = 'created_at',
       sortOrder: string = 'desc',
       page: number = 1,
       pageSize: number = 20,
-      dateRange = 'all_time',
-      goalRange = 'all',
-      location = 'all',
-      title = '',
+      dateRange: string = 'all_time',
+      goalRange: string = 'all',
+      location: string = 'all',
+      title: string = '',
     ): Promise<void> => {
+      if (loading) return;
+
       setLoading(true);
       setError(null);
-      console.log('Fetching campaigns...'); // Add logging
 
       try {
-        const headers: Record<string, string> = {
-          'Content-Type': 'application/json',
-        };
-
-        if (user) {
-          headers.Authorization = `Bearer ${token}`;
-        }
-
         const queryParams = new URLSearchParams({
           sortBy,
           sortOrder,
@@ -263,29 +279,53 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           title,
         });
 
-        const response = await nextFetch(
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json',
+        };
+
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetchWithTimeout(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?${queryParams.toString()}`,
-          { method: 'GET', headers },
+          {
+            method: 'GET',
+            headers,
+          },
+          10000, // 10 second timeout
         );
 
         if (!response.ok) {
-          throw new Error("Couldn't fetch campaigns. Please refresh the page.");
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const allCampaigns = await response.json();
-        setCampaigns(allCampaigns?.campaigns || []);
+
+        // Deep comparison to prevent unnecessary state updates
+        setCampaigns((prev) => {
+          const newCampaigns = allCampaigns?.campaigns || [];
+          return JSON.stringify(prev) === JSON.stringify(newCampaigns)
+            ? prev
+            : newCampaigns;
+        });
+
         setPagination({
           currentPage: allCampaigns?.current_page || 1,
           totalPages: allCampaigns?.total_pages || 1,
         });
       } catch (err) {
-        handleApiError('Error fetching campaigns. Please refresh the page.');
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Failed to fetch campaigns. Please try again.',
+        );
+        console.error('Fetch error:', err);
       } finally {
-        console.log('Fetch completed');
         setLoading(false);
       }
     },
-    [token, user],
+    [token, loading], // Dependencies
   );
 
   const fetchCampaignById = useCallback(
