@@ -63,7 +63,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
         </div>
       );
     }
-    
+
     if (campaigns && campaigns.length > 0) {
       return createCampaignPairs(campaigns).map((pair, pairIndex) => (
         <div
@@ -87,7 +87,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
         </div>
       ));
     }
-    
+
     return (
       <div className="w-full text-3xl text-center py-6 text-gray-500">
         No campaigns found.

@@ -56,7 +56,7 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
         </div>
       );
     }
-    
+
     if (rewards && rewards.length > 0) {
       return rewards.map((reward, index) => (
         <div
@@ -73,7 +73,7 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
         </div>
       ));
     }
-    
+
     return (
       <div className="w-full text-3xl text-center py-8 text-gray-500">
         No rewards found.
