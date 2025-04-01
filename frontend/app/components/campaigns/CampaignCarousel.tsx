@@ -82,16 +82,9 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {loading ? (
-          // Skeleton loaders while loading
-          Array(6)
-            .fill(0)
-            .map((_, index) => (
-              <div
-                key={`skeleton-${index}`}
-              >
-                <CampaignCardLoader />
-              </div>
-            ))
+          <div>
+            <CampaignCardLoader />
+          </div>
         ) : campaigns && campaigns.length > 0 ? (
           // Actual campaigns when loaded
           createCampaignPairs(campaigns).map((pair, pairIndex) => (
