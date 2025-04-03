@@ -446,9 +446,9 @@
   "partners": [
     {
       "id": "1",
-      "name": "Tony Elumelu Foundation",
-      "logo": "https://www.tonyelumelufoundation.org/wp-content/uploads/2021/06/TEF-social-banner.jpg",
-      "description": "Empowering African Entrepreneurs"
+      "name": "Unknown",
+      "logo": "https://img.freepik.com/premium-photo/abstract-background-design-hd-olive-green-color_851755-74064.jpg",
+      "description": "Not Available"
     },
     {
       "id": "2",
@@ -476,9 +476,9 @@
     },
     {
       "id": "6",
-      "name": "Unknown",
-      "logo": "https://img.freepik.com/premium-photo/abstract-background-design-hd-olive-green-color_851755-74064.jpg",
-      "description": "Not Available"
+      "name": "Tony Elumelu Foundation",
+      "logo": "https://www.tonyelumelufoundation.org/wp-content/uploads/2021/06/TEF-social-banner.jpg",
+      "description": "Empowering African Entrepreneurs"
     }
   ]
 }
