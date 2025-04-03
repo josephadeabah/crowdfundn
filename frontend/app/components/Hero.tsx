@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/app/lib/utils';
-import { ArrowRight, ArrowDown, Play } from 'lucide-react';
+import { ArrowRight, ArrowDown, Play, Zap, Trophy } from 'lucide-react';
 import { useAuth } from '../context/auth/AuthContext';
 import Link from 'next/link';
 import { useLeaderboardContext } from '../context/leaderboard/LeaderboardContext';
@@ -223,6 +223,38 @@ const Hero = () => {
 
             {/* Right content with video */}
             <div className="w-full lg:w-1/2 relative animate-fade-in">
+              {/* AI Suggestion Card - Top Left */}
+              <div className="absolute top-8 -left-8 bg-white rounded-xl shadow-lg py-2 px-4 max-w-xs rotate-[-6deg] border-0 scale-90 origin-top-left z-10">
+                <div className="flex items-center">
+                  <div className="h-8 w-8 rounded-full bg-fundify-primary flex items-center justify-center mr-2">
+                    <Zap className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500">AI Suggestion</div>
+                    <div className="text-sm font-semibold">
+                      +15% funding with video
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Achievement Card - Bottom Right */}
+              <div className="absolute -bottom-6 -right-6 bg-white rounded-xl shadow-lg p-4 max-w-xs border-0 scale-90 origin-bottom-right z-10">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="bg-fundify-accent/20 text-fundify-accent text-xs font-medium rounded-full px-2 py-1">
+                    <Trophy className="inline-block h-3 w-3 mr-1" /> Achievement
+                  </div>
+                  <div className="text-sm font-semibold">Level 3 Unlocked</div>
+                </div>
+                <h3 className="font-bold mb-1">Smart Watch Campaign</h3>
+                <div className="flex gap-1.5 mb-1">
+                  <div className="w-2 h-2 rounded-full bg-fundify-primary animate-pulse"></div>
+                  <div className="w-2 h-2 rounded-full bg-fundify-primary/80 animate-pulse delay-100"></div>
+                  <div className="w-2 h-2 rounded-full bg-fundify-primary/60 animate-pulse delay-200"></div>
+                </div>
+                <div className="text-xs text-right">5 new backers just now</div>
+              </div>
+
               <div className="relative rounded-xl overflow-hidden shadow-2xl group">
                 {/* Thumbnail image */}
                 <img
