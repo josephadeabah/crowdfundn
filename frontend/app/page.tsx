@@ -5,11 +5,9 @@ import FeaturedCampaigns from './components/campaigns/FeaturedCampaigns';
 import Hero from './components/Hero';
 import React, { useEffect } from 'react';
 import PartnersCarousel from './molecules/PartnersCarousel';
-import partnersData from '../data.json';
-import { Partner } from './types/constant';
+
 
 const HomePage = () => {
-  const mockPartners: Partner[] = partnersData.partners;
   useEffect(() => {
     // Initialize intersection observer for scroll animations
     const observer = new IntersectionObserver(
@@ -92,7 +90,7 @@ const HomePage = () => {
 
       <FeaturedCampaigns />
       <RewardsSection />
-      <PartnersCarousel partners={mockPartners} />
+      <PartnersCarousel />
     </div>
   );
 };

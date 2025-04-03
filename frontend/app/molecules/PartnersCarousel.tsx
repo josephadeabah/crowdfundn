@@ -1,5 +1,6 @@
 import React from 'react';
 import { Partner } from '../types/constant';
+import partnersData from '../../data.json';
 import {
   Tooltip,
   TooltipContent,
@@ -7,11 +8,10 @@ import {
   TooltipTrigger,
 } from '../components/ui/tooltip';
 
-interface PartnersCarouselProps {
-  partners: Partner[] | undefined;
-}
 
-const PartnersCarousel: React.FC<PartnersCarouselProps> = ({ partners }) => {
+const PartnersCarousel = () => {
+      const partners: Partner[] = partnersData.partners;
+    
   return (
     <div className="max-w-7xl mx-auto mt-12">
       <h2 className="text-2xl font-bold mb-6">Our Partners</h2>
