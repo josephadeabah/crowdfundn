@@ -8,10 +8,9 @@ import {
   TooltipTrigger,
 } from '../components/ui/tooltip';
 
-
 const PartnersCarousel = () => {
-      const partners: Partner[] = partnersData.partners;
-    
+  const partners: Partner[] = partnersData.partners;
+
   return (
     <div className="max-w-7xl mx-auto mt-12">
       <h2 className="text-2xl font-bold mb-6">Our Partners</h2>

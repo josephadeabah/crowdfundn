@@ -6,7 +6,6 @@ import Hero from './components/Hero';
 import React, { useEffect } from 'react';
 import PartnersCarousel from './molecules/PartnersCarousel';
 
-
 const HomePage = () => {
   useEffect(() => {
     // Initialize intersection observer for scroll animations
