@@ -68,7 +68,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
       return createCampaignPairs(campaigns).map((pair, pairIndex) => (
         <div
           key={`pair-${pairIndex}`}
-          className="flex-shrink-0 grid grid-rows-2 gap-5 h-full"
+          className="flex-shrink-0 grid grid-rows-2 gap-10 h-full"
         >
           {pair.map((campaign) => (
             <div
