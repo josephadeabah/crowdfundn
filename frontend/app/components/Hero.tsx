@@ -245,7 +245,7 @@ const Hero = () => {
                   </div>
                   <div className="text-sm font-semibold">Level 3 Unlocked</div>
                 </div>
-                <h3 className="font-bold mb-1">Smart Watch Campaign</h3>
+                <h3 className="font-bold mb-1">Make Good Thing Happen</h3>
                 <div className="flex gap-1.5 mb-1">
                   <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse delay-100"></div>
