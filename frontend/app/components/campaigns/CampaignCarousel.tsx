@@ -68,7 +68,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
       return createCampaignPairs(campaigns).map((pair, pairIndex) => (
         <div
           key={`pair-${pairIndex}`}
-          className="flex-shrink-0 grid grid-rows-2 gap-10 h-full"
+          className="flex-shrink-0 grid grid-rows-2 gap-2 h-full"
         >
           {pair.map((campaign) => (
             <div
@@ -121,7 +121,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
 
       <div
         ref={carouselRef}
-        className="flex overflow-x-auto space-x-3 pb-3 -mx-1 px-1 scrollbar-hide"
+        className="flex overflow-x-auto gap-10 pb-3 -mx-1 px-1 scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {showContent()}
