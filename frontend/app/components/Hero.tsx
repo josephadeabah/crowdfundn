@@ -121,9 +121,9 @@ const Hero = () => {
                 </h1>
 
                 <p className="text-lg md:text-xl text-gray-500 mb-8 animate-fade-up animate-delay-200">
-                  Join the reward-based & gamified, AI-powered crowdfunding
-                  platform where backers earn rewards and creators bring their
-                  visions to life.
+                  Join the future of crowdfunding with AI-powered campaigns,
+                  gamified experiences, and exclusive rewards for creators and
+                  backers.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 animate-fade-up animate-delay-300">
