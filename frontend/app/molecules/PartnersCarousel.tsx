@@ -8,17 +8,17 @@ import {
   TooltipTrigger,
 } from '../components/ui/tooltip';
 
-const PartnersCarousel = () => {
-  const partners: Partner[] = partnersData.partners;
 
+const PartnersCarousel = () => {
+      const partners: Partner[] = partnersData.partners;
+    
   return (
     <div className="max-w-7xl mx-auto mt-12">
       <h2 className="text-2xl font-bold mb-6">Our Partners</h2>
 
       {partners && partners.length > 0 ? (
         <div className="relative overflow-hidden py-6">
-          {/* Added padding-bottom to ensure tooltip space */}
-          <div className="flex space-x-16 animate-marquee whitespace-nowrap pb-4">
+          <div className="flex space-x-16 animate-marquee whitespace-nowrap pt-4 mt-4">
             {[...partners, ...partners].map((partner, index) => (
               <TooltipProvider key={`partner-provider-${partner.id}-${index}`}>
                 <Tooltip>
@@ -31,8 +31,7 @@ const PartnersCarousel = () => {
                       />
                     </div>
                   </TooltipTrigger>
-                  {/* Added side="top" and align="center" to control positioning */}
-                  <TooltipContent side="top" align="center" className="mb-2">
+                  <TooltipContent>
                     <p>{partner.name}</p>
                   </TooltipContent>
                 </Tooltip>
