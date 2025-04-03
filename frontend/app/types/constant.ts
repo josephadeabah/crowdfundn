@@ -94,3 +94,10 @@ export const dropdownLinks: DropdownLinks = {
     },
   ],
 } as const;
+
+export interface Partner {
+  id: string;
+  name: string;
+  logo: string;
+  description: string;
+}

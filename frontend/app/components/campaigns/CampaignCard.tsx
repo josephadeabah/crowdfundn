@@ -254,7 +254,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                   of{' '}
                   {campaign?.currency_symbol ||
                     campaign?.currency?.toUpperCase()}{' '}
-                  {Number(campaign?.goal_amount)}
+                  {parseFloat(
+                    campaign?.goal_amount?.toString() || '0',
+                  ).toLocaleString()}
                 </span>
               </div>
 

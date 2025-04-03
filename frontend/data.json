@@ -442,5 +442,43 @@
     { "value": "YE", "label": "Yemen" },
     { "value": "ZM", "label": "Zambia" },
     { "value": "ZW", "label": "Zimbabwe" }
+  ],
+  "partners": [
+    {
+      "id": "1",
+      "name": "TechVentures",
+      "logo": "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+      "description": "Supporting innovative technology startups."
+    },
+    {
+      "id": "2",
+      "name": "GreenGrowth",
+      "logo": "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+      "description": "Funding sustainable environmental initiatives."
+    },
+    {
+      "id": "3",
+      "name": "ArtsAlliance",
+      "logo": "https://images.unsplash.com/photo-1494253109108-2e30c049369b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+      "description": "Promoting creativity and artistic expression."
+    },
+    {
+      "id": "4",
+      "name": "EduInnovate",
+      "logo": "https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+      "description": "Advancing educational opportunities worldwide."
+    },
+    {
+      "id": "5",
+      "name": "HealthFirst",
+      "logo": "https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+      "description": "Investing in healthcare solutions for all."
+    },
+    {
+      "id": "6",
+      "name": "MediaMatters",
+      "logo": "https://images.unsplash.com/photo-1557683311-eac922347aa1?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+      "description": "Supporting independent media projects."
+    }
   ]
 }
