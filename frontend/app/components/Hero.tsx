@@ -241,7 +241,7 @@ const Hero = () => {
               {/* Achievement Card - Bottom Right */}
               <div className="absolute -bottom-6 -right-6 bg-white rounded-xl shadow-lg p-4 max-w-xs border-0 scale-90 origin-bottom-right z-10">
                 <div className="flex items-center space-x-2 mb-2">
-                  <div className="bg-orange-50 text-orange-600 text-xs font-medium rounded-full px-2 py-1">
+                  <div className="bg-orange-100 text-orange-600 text-xs font-medium rounded-full px-2 py-1">
                     <Trophy className="inline-block h-3 w-3 mr-1" /> Achievement
                   </div>
                   <div className="text-sm font-semibold">Level 3 Unlocked</div>
