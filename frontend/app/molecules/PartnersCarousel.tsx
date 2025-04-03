@@ -13,7 +13,7 @@ interface PartnersCarouselProps {
 
 const PartnersCarousel: React.FC<PartnersCarouselProps> = ({ partners }) => {
   return (
-    <div className="max-w-7xl mx-auto my-12">
+    <div className="max-w-7xl mx-auto mt-12">
       <h2 className="text-2xl font-bold mb-6">Our Partners</h2>
 
       {partners && partners.length > 0 ? (
