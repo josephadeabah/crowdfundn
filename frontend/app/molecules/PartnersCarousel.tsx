@@ -6,7 +6,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../components/ui/tooltip';
-import { Skeleton } from '../components/ui/Skeleton';
 
 interface PartnersCarouselProps {
   partners: Partner[] | undefined;
@@ -14,7 +13,7 @@ interface PartnersCarouselProps {
 
 const PartnersCarousel: React.FC<PartnersCarouselProps> = ({ partners }) => {
   return (
-    <section className="my-12">
+    <div className="my-12">
       <h2 className="text-2xl font-bold mb-6">Our Partners</h2>
 
       {partners && partners.length > 0 ? (
@@ -43,7 +42,7 @@ const PartnersCarousel: React.FC<PartnersCarouselProps> = ({ partners }) => {
       ) : (
         <div className="text-center py-8 text-gray-500">No partners found.</div>
       )}
-    </section>
+    </div>
   );
 };
 
