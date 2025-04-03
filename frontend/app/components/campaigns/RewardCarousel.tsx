@@ -107,7 +107,7 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
 
       <div
         ref={carouselRef}
-        className="flex overflow-x-auto space-x-10 pb-4 -mx-1 px-1 scrollbar-hide"
+        className="flex overflow-x-auto space-x-8 pb-4 -mx-1 px-1 scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {showContent()}
