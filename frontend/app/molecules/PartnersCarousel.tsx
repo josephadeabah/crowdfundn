@@ -13,7 +13,7 @@ const PartnersCarousel = () => {
 
   return (
     <div className="max-w-7xl mx-auto mt-12">
-      <h2 className="text-2xl font-bold mb-6">Our Partners</h2>
+      <h2 className="text-2xl font-bold mb-6 px-4">Our Partners</h2>
 
       {partners && partners.length > 0 ? (
         <div className="relative overflow-hidden py-6">
