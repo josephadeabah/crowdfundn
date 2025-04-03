@@ -120,7 +120,7 @@ const Hero = () => {
                   <span className="text-gray-700">Earn Rewards</span>
                 </h1>
 
-                <p className="text-lg md:text-xl text-gray-500 mb-8 animate-fade-up animate-delay-200">
+                <p className="text-lg md:text-xl text-gray-500 mb-8 animate-fade-up delay-200">
                   Crowdfunding with AI-powered campaigns,
                   gamified experiences, and exclusive rewards for creators and
                   backers.
