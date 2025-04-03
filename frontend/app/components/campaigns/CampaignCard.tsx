@@ -203,7 +203,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
-            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[10px] font-semibold bg-background/80 text-purple-600 rounded-md">
+            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[10px] font-semibold bg-emerald-400 text-white rounded-md">
               {deslugify(campaign?.category)}
             </span>
           </div>
