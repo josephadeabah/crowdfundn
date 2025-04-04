@@ -78,7 +78,7 @@ const PartnerProgram = () => {
                 className="opacity-0"
               >
                 <img
-                  src="/placeholder.svg"
+                  src="/bantuhive-hero-img.png"
                   alt="Partner Program"
                   className="w-full h-auto rounded-lg shadow-lg"
                 />
