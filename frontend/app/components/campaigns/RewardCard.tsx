@@ -89,7 +89,7 @@ const RewardCard: React.FC<RewardCardProps> = ({
 
   return (
     <div
-      className="group relative overflow-hidden rounded-xl bg-background hover:bg-gray-50 hover:shadow-md transition-all duration-300 h-full flex flex-col"
+      className="group relative overflow-hidden bg-background hover:bg-gray-50 hover:shadow-md transition-all duration-300 h-full flex flex-col"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
