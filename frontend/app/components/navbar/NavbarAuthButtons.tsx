@@ -2,10 +2,14 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import SearchBar from '../searchbar/SearchBar';
 
 export const NavbarAuthButtons: React.FC = () => {
   return (
     <>
+      <div className="mr-2">
+        <SearchBar />
+      </div>
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}

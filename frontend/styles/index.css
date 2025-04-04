@@ -219,6 +219,30 @@
   .form-label {
     @apply text-sm font-medium mb-1.5 text-foreground/90;
   }
+
+  .partner-card {
+    @apply flex flex-col items-center justify-center bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all border-0;
+  }
+
+  .search-expanded {
+    @apply w-full transition-all duration-300 ease-in-out;
+  }
+
+  .search-collapsed {
+    @apply w-10 transition-all duration-300 ease-in-out;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-fundify-primary to-fundify-accent bg-clip-text text-transparent;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg;
+  }
+
+  .btn-gradient {
+    @apply bg-gradient-to-r from-fundify-primary to-fundify-accent hover:opacity-90 text-white;
+  }
 }
 
 /* Rich text editor content styles */
