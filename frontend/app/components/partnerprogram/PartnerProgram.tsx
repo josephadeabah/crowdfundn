@@ -75,7 +75,7 @@ const PartnerProgram = () => {
                 </div>
               </div>
             </div>
-            <Link href="/partner-program">
+            <a href="/partner-program">
               <Button
                 className="bg-fundify-primary hover:bg-fundify-primary/90 text-white"
                 size="lg"
@@ -83,7 +83,7 @@ const PartnerProgram = () => {
                 Join as a Partner
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-            </Link>
+            </a>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-lg mx-auto md:max-w-none">
@@ -107,7 +107,7 @@ const PartnerProgram = () => {
 
         {partners && partners.length > 4 && (
           <div className="text-center mt-10">
-            <Link href="/partner-program">
+            <a href="/partner-program">
               <Button
                 variant="outline"
                 className="border-fundify-primary text-fundify-primary"
@@ -115,7 +115,7 @@ const PartnerProgram = () => {
                 View All Partners
                 <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
-            </Link>
+            </a>
           </div>
         )}
       </div>
