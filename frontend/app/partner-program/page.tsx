@@ -80,7 +80,7 @@ const PartnerProgram = () => {
                 <img
                   src="/bantuhive-hero-img.png"
                   alt="Partner Program"
-                  className="w-full h-auto rounded-lg shadow-lg"
+                  className="w-full h-auto rounded-lg shadow-none"
                 />
               </div>
             </div>
