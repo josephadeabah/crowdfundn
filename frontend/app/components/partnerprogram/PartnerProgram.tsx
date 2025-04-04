@@ -141,7 +141,7 @@ const PartnerCard = ({
     >
       <CardContent className="p-6">
         <div className="flex items-center space-x-4 mb-4">
-          <div className="h-14 w-14 rounded-full overflow-hidden bg-gray-100 border-2 border-fundify-primary/20">
+          <div className="h-full w-full rounded-full overflow-hidden bg-gray-100 border-2 border-fundify-primary/20">
             <img
               src={partner.logo}
               alt={partner.name}
