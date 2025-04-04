@@ -10,23 +10,19 @@ import { Skeleton } from '../ui/Skeleton';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import { ScrollArea } from '../ui/scroll-area';
 
+
 interface SearchBarProps {
-  onExpandChange?: (expanded: boolean) => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onExpandChange }) => {
-  const [expanded, setExpanded] = useState(false);
+const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState<
-    CampaignResponseDataType[]
-  >([]);
+  const [searchResults, setSearchResults] = useState<CampaignResponseDataType[]>([]);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const isMobile = useIsMobile();
 
-  // Debounce search term and fetch results
   useEffect(() => {
     const timerId = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
@@ -35,55 +31,16 @@ const SearchBar: React.FC<SearchBarProps> = ({ onExpandChange }) => {
     return () => clearTimeout(timerId);
   }, [searchTerm]);
 
-  // Fetch search results when debounced term changes
   useEffect(() => {
-    if (debouncedSearchTerm.length > 0) {
-      setIsLoadingResults(true);
-      //   fetchUserCampaigns(debouncedSearchTerm)
-      //     .then(results => {
-      //       setSearchResults(results);
-      //       setIsLoadingResults(false);
-      //     })
-      //     .catch(() => {
-      //       setIsLoadingResults(false);
-      //     });
-    } else {
-      setSearchResults([]);
+    if (isOpen && inputRef.current) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
-  }, [debouncedSearchTerm]);
+  }, [isOpen]);
 
-  // Focus input when expanded
   useEffect(() => {
-    if (expanded && inputRef.current) {
-      inputRef.current.focus();
-    }
-
-    // Notify parent component about expansion state
-    if (onExpandChange) {
-      onExpandChange(expanded);
-    }
-  }, [expanded, onExpandChange]);
-
-  // Handle click outside to collapse
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        expanded &&
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setExpanded(false);
-        setSearchTerm('');
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [expanded]);
-
-  // Handle body scroll lock when overlay is active
-  useEffect(() => {
-    if (expanded) {
+    if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -91,152 +48,159 @@ const SearchBar: React.FC<SearchBarProps> = ({ onExpandChange }) => {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [expanded]);
+  }, [isOpen]);
 
-  const toggleSearch = () => {
-    setExpanded(!expanded);
-    if (!expanded) {
+  useEffect(() => {
+    if (!isOpen) {
       setSearchTerm('');
+      setSearchResults([]);
     }
-  };
+  }, [isOpen]);
+
+  // Fetch search results when debounced term changes
+  useEffect(() => {
+    if (debouncedSearchTerm.length > 0 && isOpen) {
+      setIsLoadingResults(true);
+    //   searchCampaigns(debouncedSearchTerm)
+    //     .then(results => {
+    //       setSearchResults(results);
+    //       setIsLoadingResults(false);
+    //     })
+    //     .catch(() => {
+    //       setIsLoadingResults(false);
+    //     });
+    } else {
+      setSearchResults([]);
+    }
+  }, [debouncedSearchTerm, isOpen]);
+
+  if (!isOpen) return null;
 
   return (
-    <div className="relative z-50">
-      <div
-        ref={dropdownRef}
-        className={`relative ${isMobile && expanded ? 'w-full' : ''}`}
-      >
-        <div
-          className={`flex items-center transition-all duration-300 ease-in-out ${expanded ? (isMobile ? 'w-full' : 'w-full sm:w-64 md:w-80 lg:w-96') : 'w-10'}`}
-        >
-          {expanded ? (
-            <div className="flex items-center w-full relative">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex flex-col animate-in fade-in duration-200">
+      <div className="w-full bg-white shadow-md">
+        <div className="container mx-auto py-4">
+          <div className="relative max-w-3xl mx-auto w-full">
+            <div className="relative flex items-center">
               <Input
                 ref={inputRef}
                 type="text"
                 placeholder="Search campaigns..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pr-10 border-0 focus-visible:ring-0 bg-fundify-muted"
+                className="pr-10 pl-12 py-6 h-14 rounded-full border-2 border-fundify-primary/70 focus-visible:ring-0 focus-visible:border-fundify-primary shadow-md bg-white text-lg"
               />
+              <div className="absolute left-4">
+                <Search className="h-5 w-5 text-fundify-primary" />
+              </div>
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-0"
-                onClick={toggleSearch}
+                className="absolute right-3"
+                onClick={onClose}
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
               </Button>
             </div>
-          ) : (
-            <Button variant="ghost" size="icon" onClick={toggleSearch}>
-              <Search className="h-5 w-5" />
-            </Button>
-          )}
+          </div>
         </div>
+      </div>
 
-        {/* Search Results Dropdown - positioned on top of the overlay */}
-        {expanded && (
-          <Card className="absolute right-0 left-0 top-full mt-1 max-h-[80vh] z-50 shadow-lg bg-white border-0 animate-in fade-in slide-in-from-top-5 duration-300">
-            <ScrollArea className="max-h-[80vh]">
-              <div className="p-3">
-                {/* Search Results Section */}
+      <div className="flex-1 overflow-hidden">
+        <div className="container mx-auto px-4 py-6">
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden max-h-[calc(100vh-140px)]">
+            <ScrollArea className="h-full max-h-[calc(100vh-140px)]">
+              <div className="p-6">
                 {searchTerm ? (
-                  <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-500 px-2 py-1.5">
-                      {isLoadingResults
-                        ? 'Searching...'
-                        : searchResults?.length
-                          ? `${searchResults.length} results`
+                  <div className="mb-6">
+                    <h4 className="text-sm font-medium text-gray-500 px-2 py-1.5 mb-2">
+                      {isLoadingResults 
+                        ? 'Searching...' 
+                        : searchResults?.length 
+                          ? `${searchResults.length} results for "${searchTerm}"` 
                           : 'No results found'}
                     </h4>
-
+                    
                     <div className="space-y-2">
                       {isLoadingResults ? (
-                        // Show skeletons while loading
-                        Array(3)
-                          .fill(0)
-                          .map((_, i) => (
-                            <div
-                              key={i}
-                              className="flex items-start p-2 hover:bg-gray-50 rounded"
-                            >
-                              <Skeleton className="h-12 w-12 rounded mr-3" />
-                              <div className="flex-1">
-                                <Skeleton className="h-4 w-3/4 mb-1" />
-                                <Skeleton className="h-3 w-1/2" />
-                              </div>
+                        Array(3).fill(0).map((_, i) => (
+                          <div key={i} className="flex items-start p-3 hover:bg-gray-50 rounded">
+                            <Skeleton className="h-16 w-16 rounded mr-4" />
+                            <div className="flex-1">
+                              <Skeleton className="h-5 w-3/4 mb-2" />
+                              <Skeleton className="h-4 w-1/2" />
                             </div>
-                          ))
+                          </div>
+                        ))
                       ) : searchResults?.length ? (
-                        // Show search results
-                        searchResults.map(
-                          (
-                            campaign: CampaignResponseDataType,
-                            index: number,
-                          ) => (
-                            <SearchResultItem
-                              key={campaign.id}
-                              campaign={campaign}
-                              onClick={() => setExpanded(false)}
-                              style={{ animationDelay: `${index * 50}ms` }}
-                            />
-                          ),
-                        )
+                        searchResults.map((campaign: CampaignResponseDataType) => (
+                          <SearchResultItem 
+                            key={campaign.id} 
+                            campaign={campaign} 
+                            onClick={onClose} 
+                          />
+                        ))
                       ) : searchTerm ? (
-                        <div className="px-2 py-4 text-center text-gray-500">
-                          No matching campaigns found
+                        <div className="px-2 py-6 text-center text-gray-500">
+                          No matching campaigns found for "{searchTerm}"
                         </div>
                       ) : null}
                     </div>
-
+                    
                     {searchResults?.length ? (
-                      <div className="mt-2 pt-2 border-t text-center">
-                        <Button variant="link" className="text-xs">
+                      <div className="mt-4 pt-3 border-t text-center">
+                        <Button 
+                          variant="link" 
+                          className="text-fundify-primary"
+                          onClick={onClose}
+                        >
                           View all results
                         </Button>
                       </div>
                     ) : null}
                   </div>
                 ) : (
-                  <div className="px-2 py-4 text-center text-gray-500">
+                  <div className="px-2 py-6 text-center text-gray-500">
                     Start typing to search campaigns
                   </div>
                 )}
               </div>
             </ScrollArea>
-          </Card>
-        )}
+          </div>
+        </div>
       </div>
+      
+      <Button 
+        variant="ghost" 
+        size="icon"
+        className="absolute top-4 right-4 text-white" 
+        onClick={onClose}
+      >
+        <X className="h-6 w-6" />
+      </Button>
     </div>
   );
 };
 
-const SearchResultItem = ({
-  campaign,
-  onClick,
-  style,
-}: {
-  campaign: CampaignResponseDataType;
-  onClick: () => void;
-  style?: React.CSSProperties;
-}) => {
+const SearchResultItem = ({ campaign, onClick }: { campaign: CampaignResponseDataType; onClick: () => void }) => {
   return (
     <Link href={`/campaign/${campaign.id}`} onClick={onClick}>
-      <div
-        className="flex items-start p-2 hover:bg-gray-50 rounded cursor-pointer animate-fade-in"
-        style={style}
-      >
-        <div className="h-12 w-12 rounded overflow-hidden mr-3 bg-gray-100">
-          <img
-            src={campaign.media}
-            alt={campaign.title}
+      <div className="flex items-start p-3 hover:bg-gray-50 rounded-lg cursor-pointer animate-fade-in transition-colors">
+        <div className="h-16 w-16 rounded overflow-hidden mr-4 bg-gray-100 flex-shrink-0">
+          <img 
+            src={campaign.media} 
+            alt={campaign.title} 
             className="h-full w-full object-cover"
           />
         </div>
         <div className="flex-1">
-          <h4 className="text-sm font-medium line-clamp-1">{campaign.title}</h4>
-          <p className="text-xs text-gray-500">{campaign.category}</p>
+          <h4 className="text-base font-medium line-clamp-1">{campaign.title}</h4>
+          <p className="text-sm text-gray-500 mt-1">{campaign.category}</p>
+          <div className="flex items-center mt-1">
+            <div className="bg-fundify-muted text-xs px-2 py-0.5 rounded-full">
+              Campaign
+            </div>
+          </div>
         </div>
       </div>
     </Link>

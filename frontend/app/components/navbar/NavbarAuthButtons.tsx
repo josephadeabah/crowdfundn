@@ -1,14 +1,25 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import SearchBar from '../searchbar/SearchBar';
 
 export const NavbarAuthButtons: React.FC = () => {
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  const handleSearchOpen = () => {
+    setSearchOpen(true);
+  };
+
+  const handleSearchClose = () => {
+    setSearchOpen(false);
+  };
+
+  
   return (
     <>
       <div className="mr-2">
-        <SearchBar />
+        <SearchBar isOpen={searchOpen} onClose={handleSearchClose}/>
       </div>
       <motion.button
         whileHover={{ scale: 1.05 }}
