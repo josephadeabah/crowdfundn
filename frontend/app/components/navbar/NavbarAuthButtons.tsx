@@ -4,9 +4,14 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Button } from '../ui/button';
 import { Search } from 'lucide-react';
+import SearchBar from '../searchbar/SearchBar';
 
 export const NavbarAuthButtons: React.FC = () => {
   const [searchOpen, setSearchOpen] = useState(false);
+  
+    const handleSearchClose = () => {
+      setSearchOpen(false);
+    };
 
   const handleSearchOpen = () => {
     setSearchOpen(true);
@@ -48,6 +53,7 @@ export const NavbarAuthButtons: React.FC = () => {
           Login
         </Link>
       </motion.button>
+      <SearchBar isOpen={searchOpen} onClose={handleSearchClose} />
     </>
   );
 };
