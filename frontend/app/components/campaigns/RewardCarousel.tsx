@@ -75,7 +75,7 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
     }
 
     return (
-      <div className="w-full text-3xl text-center py-8 text-gray-500">
+      <div className="w-full text-xl text-center py-8 text-gray-500">
         No rewards found.
       </div>
     );
@@ -84,7 +84,7 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
   return (
     <div className="w-full my-8">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">{title}</h2>
+        <h2 className="text-xl font-bold">{title}</h2>
         <div className="flex space-x-2">
           <Button
             variant="outline"

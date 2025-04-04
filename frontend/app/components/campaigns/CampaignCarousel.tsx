@@ -89,7 +89,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
     }
 
     return (
-      <div className="w-full text-3xl text-center py-6 text-gray-500">
+      <div className="w-full text-xl text-center py-6 text-gray-500">
         No campaigns found.
       </div>
     );
