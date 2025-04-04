@@ -89,7 +89,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
                 placeholder="Search campaigns..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pr-10 pl-12 py-6 h-14 rounded-full border-2 border-fundify-primary/70 focus-visible:ring-0 focus-visible:border-fundify-primary shadow-md bg-white text-lg"
+                className="pr-10 pl-12 py-6 h-14 rounded-full border-2 border-fundify-primary/70 focus:outline-none focus-visible:border-fundify-primary shadow-md bg-white text-lg"
               />
               <div className="absolute left-4">
                 <Search className="h-5 w-5 text-fundify-primary" />
