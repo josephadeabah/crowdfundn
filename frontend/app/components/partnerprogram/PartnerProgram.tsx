@@ -136,41 +136,34 @@ const PartnerCard = ({
   const successRate = Math.floor(Math.random() * 40) + 60; // 60-100%
 
   return (
-    <Card className="border-0 shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 h-full bg-white">
-      <CardContent className="p-6 flex flex-col h-full">
-        <div className="flex items-center space-x-4 mb-4">
-          <div className="h-14 w-14 rounded-full overflow-hidden bg-gray-100 border-2 border-fundify-primary/20">
-            <img
-              src={partner.logo}
-              alt={partner.name}
-              className="h-full w-full object-cover"
-            />
-          </div>
-          <div>
-            <h3 className="text-lg font-medium">{partner.name}</h3>
-            <div className="flex items-center">
-              <Check className="h-4 w-4 text-fundify-primary mr-1" />
-              <span className="text-sm text-gray-500">Verified Partner</span>
+    <Card className="border-0 shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 h-full bg-white animate-fade-in relative" style={style}>
+      <div className="relative w-full h-48">
+        <img 
+          src={partner.logo} 
+          alt={partner.name} 
+          className="h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
+          <div className="text-white">
+            <div className="flex items-center space-x-2 mb-1">
+              <h3 className="text-lg font-medium">{partner.name}</h3>
+              <Check className="h-4 w-4 text-fundify-primary" />
+            </div>
+            <div className="flex flex-wrap gap-2 text-xs">
+              <div className="flex items-center bg-black/30 backdrop-blur-sm rounded-full px-2 py-1">
+                <Users className="h-3 w-3 mr-1 text-fundify-primary" />
+                <span>{audience.toLocaleString()}</span>
+              </div>
+              <div className="flex items-center bg-black/30 backdrop-blur-sm rounded-full px-2 py-1">
+                <TrendingUp className="h-3 w-3 mr-1 text-fundify-primary" />
+                <span>{successRate}%</span>
+              </div>
             </div>
           </div>
         </div>
-
-        <div className="space-y-2 mb-5 flex-grow">
-          <div className="flex items-center text-sm">
-            <Users className="h-4 w-4 mr-2 text-fundify-primary" />
-            <span>{audience.toLocaleString()} audience reach</span>
-          </div>
-          <div className="flex items-center text-sm">
-            <TrendingUp className="h-4 w-4 mr-2 text-fundify-primary" />
-            <span>{successRate}% campaign success rate</span>
-          </div>
-          <div className="flex items-center text-sm">
-            <Award className="h-4 w-4 mr-2 text-fundify-primary" />
-            <span>Top {Math.floor(Math.random() * 3) + 1}% performer</span>
-          </div>
-        </div>
-
-        <Button className="w-full bg-fundify-accent hover:bg-fundify-accent/90 text-white">
+      </div>
+      <CardContent className="p-3">
+        <Button className="w-full bg-fundify-accent hover:bg-fundify-accent/90 text-white text-sm py-1">
           Apply to Partner
         </Button>
       </CardContent>
