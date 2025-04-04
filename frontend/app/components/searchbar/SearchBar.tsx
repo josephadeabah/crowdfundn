@@ -4,7 +4,7 @@ import { Search, X } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { Card } from '@/app/components/ui/card';
-import Link  from 'next/link';
+import Link from 'next/link';
 import { useIsMobile } from '@/app/hooks/use-mobile';
 import { Skeleton } from '../ui/Skeleton';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
@@ -18,7 +18,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onExpandChange }) => {
   const [expanded, setExpanded] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState<CampaignResponseDataType[]>([]);
+  const [searchResults, setSearchResults] = useState<
+    CampaignResponseDataType[]
+  >([]);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -37,14 +39,14 @@ const SearchBar: React.FC<SearchBarProps> = ({ onExpandChange }) => {
   useEffect(() => {
     if (debouncedSearchTerm.length > 0) {
       setIsLoadingResults(true);
-    //   fetchUserCampaigns(debouncedSearchTerm)
-    //     .then(results => {
-    //       setSearchResults(results);
-    //       setIsLoadingResults(false);
-    //     })
-    //     .catch(() => {
-    //       setIsLoadingResults(false);
-    //     });
+      //   fetchUserCampaigns(debouncedSearchTerm)
+      //     .then(results => {
+      //       setSearchResults(results);
+      //       setIsLoadingResults(false);
+      //     })
+      //     .catch(() => {
+      //       setIsLoadingResults(false);
+      //     });
     } else {
       setSearchResults([]);
     }
@@ -55,7 +57,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onExpandChange }) => {
     if (expanded && inputRef.current) {
       inputRef.current.focus();
     }
-    
+
     // Notify parent component about expansion state
     if (onExpandChange) {
       onExpandChange(expanded);
@@ -66,8 +68,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ onExpandChange }) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        expanded && 
-        dropdownRef.current && 
+        expanded &&
+        dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setExpanded(false);
@@ -100,8 +102,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ onExpandChange }) => {
 
   return (
     <div className="relative z-50">
-      <div ref={dropdownRef} className={`relative ${isMobile && expanded ? 'w-full' : ''}`}>
-        <div className={`flex items-center transition-all duration-300 ease-in-out ${expanded ? (isMobile ? 'w-full' : 'w-full sm:w-64 md:w-80 lg:w-96') : 'w-10'}`}>
+      <div
+        ref={dropdownRef}
+        className={`relative ${isMobile && expanded ? 'w-full' : ''}`}
+      >
+        <div
+          className={`flex items-center transition-all duration-300 ease-in-out ${expanded ? (isMobile ? 'w-full' : 'w-full sm:w-64 md:w-80 lg:w-96') : 'w-10'}`}
+        >
           {expanded ? (
             <div className="flex items-center w-full relative">
               <Input
@@ -137,42 +144,52 @@ const SearchBar: React.FC<SearchBarProps> = ({ onExpandChange }) => {
                 {searchTerm ? (
                   <div className="mb-4">
                     <h4 className="text-sm font-medium text-gray-500 px-2 py-1.5">
-                      {isLoadingResults 
-                        ? 'Searching...' 
-                        : searchResults?.length 
-                          ? `${searchResults.length} results` 
+                      {isLoadingResults
+                        ? 'Searching...'
+                        : searchResults?.length
+                          ? `${searchResults.length} results`
                           : 'No results found'}
                     </h4>
-                    
+
                     <div className="space-y-2">
                       {isLoadingResults ? (
                         // Show skeletons while loading
-                        Array(3).fill(0).map((_, i) => (
-                          <div key={i} className="flex items-start p-2 hover:bg-gray-50 rounded">
-                            <Skeleton className="h-12 w-12 rounded mr-3" />
-                            <div className="flex-1">
-                              <Skeleton className="h-4 w-3/4 mb-1" />
-                              <Skeleton className="h-3 w-1/2" />
+                        Array(3)
+                          .fill(0)
+                          .map((_, i) => (
+                            <div
+                              key={i}
+                              className="flex items-start p-2 hover:bg-gray-50 rounded"
+                            >
+                              <Skeleton className="h-12 w-12 rounded mr-3" />
+                              <div className="flex-1">
+                                <Skeleton className="h-4 w-3/4 mb-1" />
+                                <Skeleton className="h-3 w-1/2" />
+                              </div>
                             </div>
-                          </div>
-                        ))
+                          ))
                       ) : searchResults?.length ? (
                         // Show search results
-                        searchResults.map((campaign: CampaignResponseDataType, index: number) => (
-                          <SearchResultItem 
-                            key={campaign.id} 
-                            campaign={campaign} 
-                            onClick={() => setExpanded(false)} 
-                            style={{ animationDelay: `${index * 50}ms` }}
-                          />
-                        ))
+                        searchResults.map(
+                          (
+                            campaign: CampaignResponseDataType,
+                            index: number,
+                          ) => (
+                            <SearchResultItem
+                              key={campaign.id}
+                              campaign={campaign}
+                              onClick={() => setExpanded(false)}
+                              style={{ animationDelay: `${index * 50}ms` }}
+                            />
+                          ),
+                        )
                       ) : searchTerm ? (
                         <div className="px-2 py-4 text-center text-gray-500">
                           No matching campaigns found
                         </div>
                       ) : null}
                     </div>
-                    
+
                     {searchResults?.length ? (
                       <div className="mt-2 pt-2 border-t text-center">
                         <Button variant="link" className="text-xs">
@@ -195,17 +212,25 @@ const SearchBar: React.FC<SearchBarProps> = ({ onExpandChange }) => {
   );
 };
 
-const SearchResultItem = ({ campaign, onClick, style }: { campaign: CampaignResponseDataType; onClick: () => void; style?: React.CSSProperties }) => {
+const SearchResultItem = ({
+  campaign,
+  onClick,
+  style,
+}: {
+  campaign: CampaignResponseDataType;
+  onClick: () => void;
+  style?: React.CSSProperties;
+}) => {
   return (
     <Link href={`/campaign/${campaign.id}`} onClick={onClick}>
-      <div 
-        className="flex items-start p-2 hover:bg-gray-50 rounded cursor-pointer animate-fade-in" 
+      <div
+        className="flex items-start p-2 hover:bg-gray-50 rounded cursor-pointer animate-fade-in"
         style={style}
       >
         <div className="h-12 w-12 rounded overflow-hidden mr-3 bg-gray-100">
-          <img 
-            src={campaign.media} 
-            alt={campaign.title} 
+          <img
+            src={campaign.media}
+            alt={campaign.title}
             className="h-full w-full object-cover"
           />
         </div>
