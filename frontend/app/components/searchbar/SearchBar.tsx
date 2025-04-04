@@ -98,7 +98,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
                 variant="ghost"
                 size="icon"
                 className="absolute right-3"
-                onClick={onClose}              >
+                onClick={onClose}
+              >
                 <X className="h-5 w-5" />
               </Button>
             </div>

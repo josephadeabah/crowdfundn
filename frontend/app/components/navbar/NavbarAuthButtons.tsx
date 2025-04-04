@@ -8,10 +8,10 @@ import SearchBar from '../searchbar/SearchBar';
 
 export const NavbarAuthButtons: React.FC = () => {
   const [searchOpen, setSearchOpen] = useState(false);
-  
-    const handleSearchClose = () => {
-      setSearchOpen(false);
-    };
+
+  const handleSearchClose = () => {
+    setSearchOpen(false);
+  };
 
   const handleSearchOpen = () => {
     setSearchOpen(true);

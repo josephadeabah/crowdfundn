@@ -216,7 +216,7 @@ const PartnerProgram = () => {
                       <h3 className="text-xl font-medium mb-2">Collaborate</h3>
                       <p className="text-gray-600">
                         Work together to boost campaign success and earn
-                        rewards.
+                        money.
                       </p>
                     </div>
                   </div>

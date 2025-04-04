@@ -14,7 +14,6 @@ import { dropdownLinks } from '../types/constant';
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import { NavbarMobileMenu } from './navbar/NavbarMobileMenu';
 
-
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -26,7 +25,6 @@ const Navbar = () => {
   const [loading, setLoading] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
-
 
   // Mock data for notifications and messages
   const [notifications, setNotifications] = useState([
