@@ -15,11 +15,10 @@ export const NavbarAuthButtons: React.FC = () => {
     setSearchOpen(false);
   };
 
-  
   return (
     <>
       <div className="mr-2">
-        <SearchBar isOpen={searchOpen} onClose={handleSearchClose}/>
+        <SearchBar isOpen={searchOpen} onClose={handleSearchClose} />
       </div>
       <motion.button
         whileHover={{ scale: 1.05 }}

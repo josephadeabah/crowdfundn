@@ -10,7 +10,6 @@ import { Skeleton } from '../ui/Skeleton';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import { ScrollArea } from '../ui/scroll-area';
 
-
 interface SearchBarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -19,7 +18,9 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState<CampaignResponseDataType[]>([]);
+  const [searchResults, setSearchResults] = useState<
+    CampaignResponseDataType[]
+  >([]);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -61,14 +62,14 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (debouncedSearchTerm.length > 0 && isOpen) {
       setIsLoadingResults(true);
-    //   searchCampaigns(debouncedSearchTerm)
-    //     .then(results => {
-    //       setSearchResults(results);
-    //       setIsLoadingResults(false);
-    //     })
-    //     .catch(() => {
-    //       setIsLoadingResults(false);
-    //     });
+      //   searchCampaigns(debouncedSearchTerm)
+      //     .then(results => {
+      //       setSearchResults(results);
+      //       setIsLoadingResults(false);
+      //     })
+      //     .catch(() => {
+      //       setIsLoadingResults(false);
+      //     });
     } else {
       setSearchResults([]);
     }
@@ -114,43 +115,50 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
                 {searchTerm ? (
                   <div className="mb-6">
                     <h4 className="text-sm font-medium text-gray-500 px-2 py-1.5 mb-2">
-                      {isLoadingResults 
-                        ? 'Searching...' 
-                        : searchResults?.length 
-                          ? `${searchResults.length} results for "${searchTerm}"` 
+                      {isLoadingResults
+                        ? 'Searching...'
+                        : searchResults?.length
+                          ? `${searchResults.length} results for "${searchTerm}"`
                           : 'No results found'}
                     </h4>
-                    
+
                     <div className="space-y-2">
                       {isLoadingResults ? (
-                        Array(3).fill(0).map((_, i) => (
-                          <div key={i} className="flex items-start p-3 hover:bg-gray-50 rounded">
-                            <Skeleton className="h-16 w-16 rounded mr-4" />
-                            <div className="flex-1">
-                              <Skeleton className="h-5 w-3/4 mb-2" />
-                              <Skeleton className="h-4 w-1/2" />
+                        Array(3)
+                          .fill(0)
+                          .map((_, i) => (
+                            <div
+                              key={i}
+                              className="flex items-start p-3 hover:bg-gray-50 rounded"
+                            >
+                              <Skeleton className="h-16 w-16 rounded mr-4" />
+                              <div className="flex-1">
+                                <Skeleton className="h-5 w-3/4 mb-2" />
+                                <Skeleton className="h-4 w-1/2" />
+                              </div>
                             </div>
-                          </div>
-                        ))
+                          ))
                       ) : searchResults?.length ? (
-                        searchResults.map((campaign: CampaignResponseDataType) => (
-                          <SearchResultItem 
-                            key={campaign.id} 
-                            campaign={campaign} 
-                            onClick={onClose} 
-                          />
-                        ))
+                        searchResults.map(
+                          (campaign: CampaignResponseDataType) => (
+                            <SearchResultItem
+                              key={campaign.id}
+                              campaign={campaign}
+                              onClick={onClose}
+                            />
+                          ),
+                        )
                       ) : searchTerm ? (
                         <div className="px-2 py-6 text-center text-gray-500">
                           No matching campaigns found for "{searchTerm}"
                         </div>
                       ) : null}
                     </div>
-                    
+
                     {searchResults?.length ? (
                       <div className="mt-4 pt-3 border-t text-center">
-                        <Button 
-                          variant="link" 
+                        <Button
+                          variant="link"
                           className="text-fundify-primary"
                           onClick={onClose}
                         >
@@ -169,11 +177,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
           </div>
         </div>
       </div>
-      
-      <Button 
-        variant="ghost" 
+
+      <Button
+        variant="ghost"
         size="icon"
-        className="absolute top-4 right-4 text-white" 
+        className="absolute top-4 right-4 text-white"
         onClick={onClose}
       >
         <X className="h-6 w-6" />
@@ -182,19 +190,27 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
   );
 };
 
-const SearchResultItem = ({ campaign, onClick }: { campaign: CampaignResponseDataType; onClick: () => void }) => {
+const SearchResultItem = ({
+  campaign,
+  onClick,
+}: {
+  campaign: CampaignResponseDataType;
+  onClick: () => void;
+}) => {
   return (
     <Link href={`/campaign/${campaign.id}`} onClick={onClick}>
       <div className="flex items-start p-3 hover:bg-gray-50 rounded-lg cursor-pointer animate-fade-in transition-colors">
         <div className="h-16 w-16 rounded overflow-hidden mr-4 bg-gray-100 flex-shrink-0">
-          <img 
-            src={campaign.media} 
-            alt={campaign.title} 
+          <img
+            src={campaign.media}
+            alt={campaign.title}
             className="h-full w-full object-cover"
           />
         </div>
         <div className="flex-1">
-          <h4 className="text-base font-medium line-clamp-1">{campaign.title}</h4>
+          <h4 className="text-base font-medium line-clamp-1">
+            {campaign.title}
+          </h4>
           <p className="text-sm text-gray-500 mt-1">{campaign.category}</p>
           <div className="flex items-center mt-1">
             <div className="bg-fundify-muted text-xs px-2 py-0.5 rounded-full">
