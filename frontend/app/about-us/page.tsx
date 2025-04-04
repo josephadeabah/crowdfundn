@@ -21,7 +21,7 @@ const OurStorySection = () => {
     {
       id: 1,
       title: "Founded",
-      date: "January 2023",
+      date: "November 2024",
       description: "BantuHive was founded with a vision to revolutionize crowdfunding in Africa.",
       extendedContent: (
         <div className="mt-4 space-y-4">
@@ -41,14 +41,14 @@ const OurStorySection = () => {
     },
     {
       id: 2,
-      title: "First Campaign",
-      date: "March 2023",
+      title: "Platform Launch",
+      date: "January 2025",
       description: "Launched our first successful campaign, proving the concept works.",
       extendedContent: (
         <div className="mt-4 space-y-4">
           <Image 
             src="/abeansah.png" 
-            alt="First campaign" 
+            alt="Platform aunch" 
             width={400} 
             height={300}
             className="rounded-lg shadow-md"
@@ -62,14 +62,14 @@ const OurStorySection = () => {
     },
     {
       id: 3,
-      title: "Platform Launch",
-      date: "June 2023",
+      title: "First Campaign",
+      date: "February 2025",
       description: "Officially launched our platform to the public with 50+ campaigns.",
       extendedContent: (
         <div className="mt-4 space-y-4">
           <Image 
-            src="/launch-event.jpg" 
-            alt="Platform launch" 
+            src="/undraw_party_k6eg.png" 
+            alt="First Campaign" 
             width={400} 
             height={300}
             className="rounded-lg shadow-md"
@@ -89,7 +89,7 @@ const OurStorySection = () => {
       extendedContent: (
         <div className="mt-4 space-y-4">
           <Image 
-            src="/current-team.jpg" 
+            src="/Team-spirit-bro.svg" 
             alt="Current team" 
             width={400} 
             height={300}
