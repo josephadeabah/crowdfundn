@@ -26,11 +26,11 @@ const Navbar = () => {
   const [loading, setLoading] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
-    const [searchOpen, setSearchOpen] = useState(false);
-  
-    const handleSearchClose = () => {
-      setSearchOpen(false);
-    };
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  const handleSearchClose = () => {
+    setSearchOpen(false);
+  };
 
   // Mock data for notifications and messages
   const [notifications, setNotifications] = useState([
@@ -156,8 +156,7 @@ const Navbar = () => {
         notifications={notifications}
         messages={messages}
       />
-              <SearchBar isOpen={searchOpen} onClose={handleSearchClose} />
-
+      <SearchBar isOpen={searchOpen} onClose={handleSearchClose} />
     </header>
   );
 };

@@ -15,14 +15,14 @@ export const NavbarAuthButtons: React.FC = () => {
   return (
     <>
       <div className="mr-2">
-      <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={handleSearchOpen}
-            aria-label="Search"
-          >
-            <Search className="h-5 w-5" />
-          </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleSearchOpen}
+          aria-label="Search"
+        >
+          <Search className="h-5 w-5" />
+        </Button>
       </div>
       <motion.button
         whileHover={{ scale: 1.05 }}
