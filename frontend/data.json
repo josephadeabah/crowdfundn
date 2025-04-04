@@ -484,31 +484,31 @@
   "partnersprogram": [
     {
       "id": "1",
-      "name": "Partner One",
+      "name": "Sam Eric",
       "logo": "https://images.pexels.com/photos/9050671/pexels-photo-9050671.jpeg",
       "description": "Trusted crowdfunding partner helping campaigns gain visibility and reach their goals."
     },
     {
       "id": "2",
-      "name": "Partner Two",
+      "name": "Gabriel Govenar",
       "logo": "https://images.pexels.com/photos/7433883/pexels-photo-7433883.jpeg",
       "description": "Experienced campaign strategist guiding fundraisers toward successful fundraising."
     },
     {
       "id": "3",
-      "name": "Partner Three",
+      "name": "Aya Nisi",
       "logo": "https://images.unsplash.com/photo-1653762379126-1a4df8ea66bd?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "description": "Connecting fundraisers with supporters through influential networks."
     },
     {
       "id": "4",
-      "name": "Partner Four",
+      "name": "Getrud Mokaya",
       "logo": "https://images.unsplash.com/photo-1532635241-17e820acc59f?q=80&w=1415&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "description": "Building strong partnerships to amplify crowdfunding success."
     },
     {
       "id": "5",
-      "name": "Partner Five",
+      "name": "Sarah Muthoni",
       "logo": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
       "description": "Helping fundraisers maximize engagement and donor trust."
     }
