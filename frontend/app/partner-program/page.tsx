@@ -98,7 +98,7 @@ const PartnerProgram = () => {
                 <img
                   src="/drive1.jpg"
                   alt="Benefits"
-                  className="w-full h-auto rounded-lg shadow-lg"
+                  className="w-full h-auto rounded-lg shadow-none"
                 />
               </div>
 
@@ -229,7 +229,7 @@ const PartnerProgram = () => {
                 <img
                   src="/drive2.jpg"
                   alt="How It Works"
-                  className="w-full h-auto rounded-lg shadow-lg"
+                  className="w-full h-auto rounded-lg shadow-none"
                 />
               </div>
             </div>
