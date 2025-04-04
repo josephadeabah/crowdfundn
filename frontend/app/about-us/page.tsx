@@ -48,7 +48,7 @@ const OurStorySection = () => {
         <div className="mt-4 space-y-4">
           <Image 
             src="/undraw_connected-world_anke.png" 
-            alt="Platform aunch" 
+            alt="Platform launch" 
             width={400} 
             height={300}
             className="rounded-lg shadow-md"
