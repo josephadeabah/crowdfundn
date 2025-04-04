@@ -139,16 +139,9 @@ const PartnerCard = ({
       className="border-0 shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 bg-white animate-fade-in"
       style={style}
     >
-      <div className="relative h-40 w-full bg-gray-100">
-        <img
-          src={partner.logo} // Make sure your partner data has an 'image' field for the full-width image
-          alt={partner.name}
-          className="h-full w-full object-cover"
-        />
-      </div>
       <CardContent className="p-6">
         <div className="flex items-center space-x-4 mb-4">
-          <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-100 border-2 border-fundify-primary/20 flex-shrink-0">
+          <div className="h-full w-full rounded-full overflow-hidden bg-gray-100 border-2 border-fundify-primary/20">
             <img
               src={partner.logo}
               alt={partner.name}
