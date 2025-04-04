@@ -135,16 +135,13 @@ const PartnerCard = ({
   const successRate = Math.floor(Math.random() * 40) + 60; // 60-100%
 
   return (
-    <Card
-      className="border-0 shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 bg-white animate-fade-in"
-      style={style}
-    >
-      <CardContent className="p-6">
+    <Card className="border-0 shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 h-full bg-white">
+      <CardContent className="p-6 flex flex-col h-full">
         <div className="flex items-center space-x-4 mb-4">
-          <div className="h-full w-full rounded-full overflow-hidden bg-gray-100 border-2 border-fundify-primary/20">
-            <img
-              src={partner.logo}
-              alt={partner.name}
+          <div className="h-14 w-14 rounded-full overflow-hidden bg-gray-100 border-2 border-fundify-primary/20">
+            <img 
+              src={partner.logo} 
+              alt={partner.name} 
               className="h-full w-full object-cover"
             />
           </div>
@@ -156,8 +153,8 @@ const PartnerCard = ({
             </div>
           </div>
         </div>
-
-        <div className="space-y-2 mb-5">
+        
+        <div className="space-y-2 mb-5 flex-grow">
           <div className="flex items-center text-sm">
             <Users className="h-4 w-4 mr-2 text-fundify-primary" />
             <span>{audience.toLocaleString()} audience reach</span>
@@ -166,8 +163,12 @@ const PartnerCard = ({
             <TrendingUp className="h-4 w-4 mr-2 text-fundify-primary" />
             <span>{successRate}% campaign success rate</span>
           </div>
+          <div className="flex items-center text-sm">
+            <Award className="h-4 w-4 mr-2 text-fundify-primary" />
+            <span>Top {Math.floor(Math.random() * 3) + 1}% performer</span>
+          </div>
         </div>
-
+        
         <Button className="w-full bg-fundify-accent hover:bg-fundify-accent/90 text-white">
           Apply to Partner
         </Button>
