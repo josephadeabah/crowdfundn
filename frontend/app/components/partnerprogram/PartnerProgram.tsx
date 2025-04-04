@@ -26,7 +26,7 @@ const PartnerProgram = () => {
           <div className="max-w-xl">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 relative">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-fundify-primary to-fundify-accent">
-                Partner Program
+                Partner Drive
               </span>
               <div className="absolute -bottom-3 left-0 w-20 h-1 bg-fundify-primary"></div>
             </h2>
@@ -136,11 +136,14 @@ const PartnerCard = ({
   const successRate = Math.floor(Math.random() * 40) + 60; // 60-100%
 
   return (
-    <Card className="border-0 shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 h-full bg-white animate-fade-in relative" style={style}>
+    <Card
+      className="border-0 shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 h-full bg-white animate-fade-in relative"
+      style={style}
+    >
       <div className="relative w-full h-48">
-        <img 
-          src={partner.logo} 
-          alt={partner.name} 
+        <img
+          src={partner.logo}
+          alt={partner.name}
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
