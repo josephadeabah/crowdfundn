@@ -78,6 +78,15 @@ export default {
           900: '#064e3b',
           950: '#022c22',
         },
+        fundify: {
+          primary: '#22C55E', // Green
+          secondary: '#86EFAC', // Light Green
+          accent: '#F97316', // Orange
+          background: '#FFFFFF',
+          text: '#1A1F2C',
+          muted: '#F1F9F0', // Light Green bg
+          border: '#DCF5E6', // Light Green border
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

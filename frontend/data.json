@@ -480,5 +480,38 @@
       "logo": "https://www.tonyelumelufoundation.org/wp-content/uploads/2021/06/TEF-social-banner.jpg",
       "description": "Empowering African Entrepreneurs"
     }
-  ]
+  ],
+  "partnersprogram": [
+  {
+    "id": "1",
+    "name": "Partner One",
+    "logo": "https://images.pexels.com/photos/9050671/pexels-photo-9050671.jpeg",
+    "description": "Trusted crowdfunding partner helping campaigns gain visibility and reach their goals."
+  },
+  {
+    "id": "2",
+    "name": "Partner Two",
+    "logo": "https://images.pexels.com/photos/7433883/pexels-photo-7433883.jpeg",
+    "description": "Experienced campaign strategist guiding fundraisers toward successful fundraising."
+  },
+  {
+    "id": "3",
+    "name": "Partner Three",
+    "logo": "https://images.unsplash.com/photo-1590658268034-79e84be3dbe7",
+    "description": "Connecting fundraisers with supporters through influential networks."
+  },
+  {
+    "id": "4",
+    "name": "Partner Four",
+    "logo": "https://images.unsplash.com/photo-1585241902426-1c78f4f2d3c7",
+    "description": "Building strong partnerships to amplify crowdfunding success."
+  },
+  {
+    "id": "5",
+    "name": "Partner Five",
+    "logo": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
+    "description": "Helping fundraisers maximize engagement and donor trust."
+  }
+]
+
 }
