@@ -102,10 +102,10 @@ const RewardCard: React.FC<RewardCardProps> = ({
             src={reward?.image || '/bantuhive.svg'}
             alt={reward.title}
             layout="fill"
-            objectFit="contain"
+            objectFit="cover"
             unoptimized
             className={cn(
-              'w-full h-full object-contain transition-transform duration-700',
+              'w-full h-full object-cover transition-transform duration-700',
               isHovered ? 'scale-105' : 'scale-100',
             )}
             onError={(e) => {

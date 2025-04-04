@@ -191,10 +191,10 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
               src={campaign?.media || '/bantuhive.svg'}
               alt={campaign.title}
               layout="fill"
-              objectFit="contain"
+              objectFit="cover"
               unoptimized
               className={cn(
-                'w-full h-full object-contain transition-transform duration-700',
+                'w-full h-full object-cover transition-transform duration-700',
                 isHovered ? 'scale-105' : 'scale-100',
               )}
               onError={(e) => {
@@ -203,7 +203,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
-            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[10px] font-semibold bg-green-600 text-white rounded-full">
+            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[10px] font-semibold bg-background/90 text-green-600 rounded-full">
               {deslugify(campaign?.category)}
             </span>
           </div>
