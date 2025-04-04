@@ -338,7 +338,7 @@ const PartnerCard = ({
         </div>
       </div>
       <CardContent className="p-3">
-        <Button className="w-full bg-fundify-accent hover:bg-fundify-accent/90 text-white text-sm py-1">
+        <Button className="w-full bg-orange-100 hover:bg-fundify-accent/90 text-fundify-accent t-white text-sm py-1">
           Apply to Partner
         </Button>
       </CardContent>
