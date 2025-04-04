@@ -5,6 +5,7 @@ import FeaturedCampaigns from './components/campaigns/FeaturedCampaigns';
 import Hero from './components/Hero';
 import React, { useEffect } from 'react';
 import PartnersCarousel from './molecules/PartnersCarousel';
+import PartnerProgram from './components/partnerprogram/PartnerProgram';
 
 const HomePage = () => {
   useEffect(() => {
@@ -89,6 +90,7 @@ const HomePage = () => {
 
       <FeaturedCampaigns />
       <RewardsSection />
+      <PartnerProgram />
       <PartnersCarousel />
     </div>
   );
