@@ -45,7 +45,7 @@ const PartnerProgram = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="container mx-auto min-h-screen flex flex-col">
       <main className="flex-grow">
         {/* Hero Section */}
         <div className="py-16 md:py-24 bg-gradient-to-br from-fundify-muted to-white">
