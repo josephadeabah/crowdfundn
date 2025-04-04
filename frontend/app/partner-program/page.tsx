@@ -62,8 +62,7 @@ const PartnerProgram = () => {
                 </h1>
                 <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                   Join our exclusive network of influential partners and help
-                  fundraisers achieve their goals while growing your own
-                  audience and impact.
+                  fundraisers achieve their goals while growing your own impact.
                 </p>
                 <Button
                   className="bg-fundify-primary hover:bg-fundify-primary/90 text-white"
