@@ -5,6 +5,7 @@ import Link from 'next/link';
 import partnersData from '../../../data.json';
 import {
   ArrowRight,
+  Award,
   Check,
   ChevronRight,
   TrendingUp,
