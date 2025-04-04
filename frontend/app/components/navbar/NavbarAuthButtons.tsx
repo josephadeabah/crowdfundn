@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import SearchBar from '../searchbar/SearchBar';
+import { Button } from '../ui/button';
+import { Search } from 'lucide-react';
 
 export const NavbarAuthButtons: React.FC = () => {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -11,14 +12,17 @@ export const NavbarAuthButtons: React.FC = () => {
     setSearchOpen(true);
   };
 
-  const handleSearchClose = () => {
-    setSearchOpen(false);
-  };
-
   return (
     <>
       <div className="mr-2">
-        <SearchBar isOpen={searchOpen} onClose={handleSearchClose} />
+      <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleSearchOpen}
+            aria-label="Search"
+          >
+            <Search className="h-5 w-5" />
+          </Button>
       </div>
       <motion.button
         whileHover={{ scale: 1.05 }}
