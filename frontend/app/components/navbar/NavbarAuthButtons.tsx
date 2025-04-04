@@ -19,7 +19,7 @@ export const NavbarAuthButtons: React.FC = () => {
 
   return (
     <>
-      <div className="mr-2">
+      <div className="mr-1">
         <Button
           variant="ghost"
           size="icon"
