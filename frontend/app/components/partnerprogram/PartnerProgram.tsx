@@ -137,7 +137,7 @@ const PartnerCard = ({
 
   return (
     <Card
-      className="border-0 shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 h-full bg-white animate-fade-in relative"
+      className="border-0 shadow-sm overflow-hidden hover:shadow-md transition-all duration-300 h-full bg-white animate-fade-in relative"
       style={style}
     >
       <div className="relative w-full h-48">
@@ -166,7 +166,7 @@ const PartnerCard = ({
         </div>
       </div>
       <CardContent className="p-3">
-        <Button className="w-full bg-orange-100 hover:bg-fundify-accent/90 text-fundify-accent text-sm py-1">
+        <Button className="w-full text-sm text-gray-800 py-1 rounded-full" variant="outline">
           Apply to Partner
         </Button>
       </CardContent>
