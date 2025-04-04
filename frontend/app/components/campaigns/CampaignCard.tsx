@@ -191,10 +191,10 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
               src={campaign?.media || '/bantuhive.svg'}
               alt={campaign.title}
               layout="fill"
-              objectFit="cover"
+              objectFit="contain"
               unoptimized
               className={cn(
-                'w-full h-full object-cover transition-transform duration-700',
+                'w-full h-full object-contain transition-transform duration-700',
                 isHovered ? 'scale-105' : 'scale-100',
               )}
               onError={(e) => {
