@@ -1,6 +1,5 @@
 'use client';
 
-import RewardsSection from './components/RewardsSection';
 import FeaturedCampaigns from './components/campaigns/FeaturedCampaigns';
 import Hero from './components/Hero';
 import React, { useEffect } from 'react';
@@ -89,7 +88,6 @@ const HomePage = () => {
       </div>
 
       <FeaturedCampaigns />
-      <RewardsSection />
       <PartnerProgram />
       <PartnersCarousel />
     </div>
