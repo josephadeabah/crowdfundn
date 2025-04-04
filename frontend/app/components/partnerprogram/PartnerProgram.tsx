@@ -86,7 +86,7 @@ const PartnerProgram = () => {
             </a>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-lg mx-auto md:max-w-none">
+          <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 max-w-lg mx-auto md:max-w-none">
             {partners && partners.length > 0 ? (
               partners
                 .slice(0, 4)

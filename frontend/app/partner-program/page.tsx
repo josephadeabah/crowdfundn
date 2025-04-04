@@ -254,7 +254,7 @@ const PartnerProgram = () => {
 
             <div
               ref={(el) => (sectionsRef.current[7] = el)}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 opacity-0"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 opacity-0"
             >
               {partners && partners.length > 0 ? (
                 partners.map((partner: Partner) => (
