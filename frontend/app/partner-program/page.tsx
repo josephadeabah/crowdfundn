@@ -96,7 +96,7 @@ const PartnerProgram = () => {
                 className="order-2 md:order-1 opacity-0"
               >
                 <img
-                  src="/placeholder.svg"
+                  src="/drive1.jpg"
                   alt="Benefits"
                   className="w-full h-auto rounded-lg shadow-lg"
                 />
@@ -227,7 +227,7 @@ const PartnerProgram = () => {
                 className="opacity-0"
               >
                 <img
-                  src="/placeholder.svg"
+                  src="/drive2.jpg"
                   alt="How It Works"
                   className="w-full h-auto rounded-lg shadow-lg"
                 />
