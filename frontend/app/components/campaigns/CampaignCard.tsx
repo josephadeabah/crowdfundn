@@ -222,8 +222,8 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
 
             <h3
               className={cn(
-                'font-semibold text-foreground mb-1 line-clamp-2 transition-colors duration-300',
-                isHovered ? 'text-primary' : '',
+                'text-base font-semibold text-foreground mb-1 line-clamp-2 transition-colors duration-300',
+                isHovered ? 'text-emerald-500' : '',
               )}
             >
               {campaign.title}
