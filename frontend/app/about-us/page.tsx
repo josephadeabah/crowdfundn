@@ -26,7 +26,7 @@ const OurStorySection = () => {
       extendedContent: (
         <div className="mt-4 space-y-4">
           <Image 
-            src="/Nqoba.JPG" 
+            src="/combined.webp" 
             alt="BantuHive founders" 
             width={400} 
             height={300}
@@ -47,7 +47,7 @@ const OurStorySection = () => {
       extendedContent: (
         <div className="mt-4 space-y-4">
           <Image 
-            src="/abeansah.png" 
+            src="/undraw_connected-world_anke.png" 
             alt="Platform aunch" 
             width={400} 
             height={300}
