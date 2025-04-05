@@ -1,7 +1,31 @@
 import React, { useEffect } from 'react';
-import { Icons } from '@/components/Icons';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/app/components/ui/button';
+import { Card, CardContent } from '@/app/components/ui/card';
+import * as LucideIcons from 'lucide-react';
+
+// Destructure all Lucide icons
+const {
+  ArrowRight,
+  Lightbulb,
+  Rocket,
+  Globe,
+  Handshake,
+  TrendingUp,
+  Zap,
+  // Add any other icons you need here
+  ...remainingIcons
+} = LucideIcons;
+
+// Create an Icons object mapping for type safety
+const Icons = {
+  Lightbulb,
+  Rocket,
+  Globe,
+  Handshake,
+  TrendingUp,
+  Zap,
+  // Add other icons as needed
+};
 
 interface TimelineItemProps {
   year: string;
@@ -50,7 +74,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
               className="border-fundify-primary text-fundify-primary hover:bg-fundify-primary/10"
             >
               Learn More
-              <Icons.ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           )}
         </div>
