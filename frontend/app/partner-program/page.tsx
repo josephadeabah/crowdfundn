@@ -337,7 +337,10 @@ const PartnerCard = ({
         </div>
       </div>
       <CardContent className="p-3">
-        <Button className="w-full text-sm text-fundify-accent py-1 rounded-full" variant="outline">
+        <Button
+          className="w-full text-sm text-fundify-accent py-1 rounded-full"
+          variant="outline"
+        >
           Apply to Partner
         </Button>
       </CardContent>

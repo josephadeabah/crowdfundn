@@ -1,293 +1,371 @@
-'use client';
-
 import React from 'react';
-import { useAuth } from '../context/auth/AuthContext';
+import { Button } from '@/app/components/ui/button';
+import Link from 'next/link';
+import {
+  ArrowRight,
+  Building,
+  Coins,
+  Gift,
+  Globe,
+  Handshake,
+  Heart,
+  Rocket,
+  Users,
+} from 'lucide-react';
 
 const HowItWorks = () => {
-  const { user } = useAuth();
-
   return (
-    <div className="h-full p-6 md:p-12 bg-gray-50 text-gray-800">
-      <div className="max-w-7xl mx-auto h-full py-16">
-        <h1 className="text-4xl font-bold text-center mb-8 text-green-700">
-          How BantuHive Works
-        </h1>
-        <p className="text-lg leading-8 text-center mb-12 px-12 py-4">
-          You’ve got a dream, a cause, or a burning desire to make a difference.
-          Whether it’s for yourself, a loved one, or a community in need,
-          <span className="text-orange-600 font-semibold"> BantuHive </span>
-          is here to turn your vision into reality. Let’s take the first step
-          together!
-        </p>
-
-        {/* Start Your Fundraiser */}
-        <section className="mb-16 p-12">
-          <h2 className="text-3xl font-semibold mb-6 text-green-600">
-            Start Your Fundraiser
-          </h2>
-          <p className="text-lg leading-8 mb-4">
-            The journey begins with a single step: setting up your fundraiser.
-            Don’t worry – we’ve made it super simple and absolutely free to
-            start.
-          </p>
-          <ol className="list-decimal list-inside mb-6 space-y-3">
-            <li>
-              <span className="font-semibold">Set your goal:</span> Decide how
-              much you want to raise. Met your goal early? You can adjust it
-              anytime!
-            </li>
-            <li>
-              <span className="font-semibold">Tell your story:</span> Share why
-              this fundraiser matters to you. Be heartfelt, be authentic – your
-              passion will inspire others.
-            </li>
-            <li>
-              <span className="font-semibold">Add a picture or video:</span> A
-              great image or a captivating video can work wonders in bringing
-              your story to life.
-            </li>
-          </ol>
-        </section>
-
-        {/* Share with Friends */}
-        <section className="mb-16 p-12">
-          <h2 className="text-3xl font-semibold mb-6 text-green-600">
-            Share with Friends
-          </h2>
-          <p className="text-lg leading-8 mb-4">
-            The key to a successful fundraiser? Spreading the word far and wide.
-            Let the world know about your cause – and let them help you make it
-            happen.
-          </p>
-          <ul className="list-disc list-inside mb-6 space-y-3">
-            <li>
-              <span className="font-semibold">Send emails:</span> Share your
-              fundraiser link with family, friends, and coworkers via email.
-              Tell them why their support matters.
-            </li>
-            <li>
-              <span className="font-semibold">Leverage social media:</span> Post
-              regularly on platforms like Instagram, Facebook, and Twitter. Use
-              hashtags and share updates to keep the momentum going.
-            </li>
-            <li>
-              <span className="font-semibold">Get creative:</span> Design
-              posters, add QR codes, or even host a small event to spread the
-              word offline.
-            </li>
-          </ul>
-        </section>
-
-        {/* Manage Donations */}
-        <section className="mb-16 p-12">
-          <h2 className="text-3xl font-semibold mb-6 text-green-600">
-            Manage Donations
-          </h2>
-          <p className="text-lg leading-8 mb-4">
-            Watch as donations start to roll in! BantuHive makes managing your
-            fundraiser a breeze.
-          </p>
-          <ul className="list-disc list-inside mb-6 space-y-3">
-            <li>
-              <span className="font-semibold">Say thank you:</span> Use our
-              built-in tools to send personalized messages of gratitude to your
-              supporters.
-            </li>
-            <li>
-              <span className="font-semibold">Post updates:</span> Keep donors
-              in the loop with updates on your progress, offline events, or
-              milestones reached.
-            </li>
-            <li>
-              <span className="font-semibold">Offer rewards:</span> Reward your
-              backers with exclusive perks or gifts – a heartfelt thank-you goes
-              a long way!
-            </li>
-          </ul>
-        </section>
-
-        {/* Rewards and Recurring Donations */}
-        <section className="mb-16 p-12">
-          <h2 className="text-3xl font-semibold mb-6 text-green-600">
-            Rewards & Recurring Donations
-          </h2>
-          <p className="text-lg leading-8 mb-4">
-            BantuHive goes beyond one-time donations. Fundraisers can offer
-            rewards to their backers – from shoutouts to exclusive items –
-            creating a deeper connection with supporters.
-          </p>
-          <p className="text-lg leading-8">
-            Have a cause that requires ongoing support? No problem! With our
-            <span className="text-orange-600 font-semibold">
-              {' '}
-              recurring donation{' '}
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-b from-fundify-primary/10 to-white pt-16 pb-20">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-fundify-primary to-fundify-accent">
+              How Bantu Hive Works
             </span>
-            feature, your backers can pledge continuous support for as long as
-            your campaign needs.
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-10">
+            We've simplified the fundraising process to help you bring your
+            ideas to life and make a positive impact in your community.
           </p>
-        </section>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link href="/">
+              <Button className="bg-fundify-primary hover:bg-fundify-primary/90 text-white px-8">
+                Start a Campaign
+              </Button>
+            </Link>
+            <Link href="/partner-program">
+              <Button
+                variant="outline"
+                className="border-fundify-primary text-fundify-primary"
+              >
+                Become a Partner
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
 
-        {/* Feature Goals for the Next 3 Years */}
-        <section className="mb-16 p-12">
-          <h2 className="text-3xl font-semibold mb-6 text-green-600">
-            Our Vision: What's Next for BantuHive in five years
-          </h2>
-          <p className="text-lg leading-8 mb-4">
-            At BantuHive, we’re not just about helping you reach your goals
-            today – we’re also building the tools and features that will shape
-            the future of crowdfunding. Here’s a glimpse of where we’re headed
-            in the next five years:
-          </p>
-          <ul className="list-disc list-inside mb-6 space-y-3">
-            <li>
-              <span className="font-semibold">
-                AI-Driven Fundraising Insights:
-              </span>{' '}
-              Personalized strategies and recommendations to optimize your
-              campaign and maximize engagement.
-            </li>
-            <li>
-              <span className="font-semibold">
-                Collaborative Campaign Building:
-              </span>{' '}
-              Create campaigns with your team, with shared dashboards and pooled
-              efforts to amplify success.
-            </li>
-            <li>
-              <span className="font-semibold">
-                Mobile App with Offline Access:
-              </span>{' '}
-              Manage your campaigns and connect with donors anytime, anywhere –
-              even without the internet.
-            </li>
-            <li>
-              <span className="font-semibold">Gamified Challenges:</span> Foster
-              engagement with milestone-based challenges and rewarding donor
-              interactions.
-            </li>
-          </ul>
-          <ul className="list-disc list-inside mb-6 space-y-3">
-            <li>
-              <span className="font-semibold">
-                Incentivized Sharing with Rewards & Gamification:
-              </span>{' '}
-              Earn badges, unlock platform discounts, or receive donation
-              matches for sharing your campaign. Our gamified point system
-              ensures every share counts!
-            </li>
-            <li>
-              <span className="font-semibold">Seamless Sharing Tools:</span>{' '}
-              Share with a single click across social media. Take advantage of
-              our pre-designed templates, auto-generated captions, and
-              storytelling tools to effortlessly spread the word.
-            </li>
-            <li>
-              <span className="font-semibold">
-                Social Proof & Community Engagement:
-              </span>{' '}
-              See who’s sharing and join the excitement! Our crowdfunding
-              leaderboards and sharing challenges create an energetic and
-              supportive community.
-            </li>
-            <li>
-              <span className="font-semibold">
-                Influencer & Ambassador Programs:
-              </span>{' '}
-              Partner with micro-influencers or sign up as an ambassador to
-              champion your cause. Our referral programs reward those who go
-              above and beyond in sharing campaigns.
-            </li>
-            <li>
-              <span className="font-semibold">
-                Progress Tracking & Visibility:
-              </span>{' '}
-              Track your impact with visual sharing progress bars and real-time
-              updates. Celebrate milestones with personalized prompts to keep
-              the momentum alive.
-            </li>
-            <li>
-              <span className="font-semibold">
-                Smart Personalization with AI:
-              </span>{' '}
-              Data-driven insights suggest the best times and platforms for
-              sharing, helping you reach your audience when they’re most
-              engaged.
-            </li>
-            <li>
-              <span className="font-semibold">Crowdfunding Collaboration:</span>{' '}
-              Team up with friends, family, or colleagues to raise funds
-              together. Shared dashboards and team goals make fundraising a
-              collaborative effort.
-            </li>
-            <p className="text-3xl leading-8 font-semibold py-6 text-green-600">
-              Earn an honorable Award for your Impact.
+      {/* Timeline Section */}
+      <div className="py-16 lg:py-24">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-16">
+              The Bantu Hive Journey
+            </h2>
+
+            <div className="relative">
+              {/* Vertical Timeline Line */}
+              <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-fundify-primary to-fundify-accent"></div>
+
+              {/* Timeline Items */}
+              <div className="space-y-24">
+                {/* Step 1 */}
+                <div className="relative">
+                  <div className="flex items-center justify-center absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <div className="w-12 h-12 bg-fundify-primary rounded-full flex items-center justify-center text-white font-bold shadow-lg z-10">
+                      1
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col md:flex-row items-center">
+                    <div className="md:w-1/2 md:pr-12 md:text-right order-2 md:order-1">
+                      <h3 className="text-xl font-bold mb-3">
+                        Create Your Campaign
+                      </h3>
+                      <p className="text-gray-600 mb-4">
+                        Share your story, set your funding goal, and customize
+                        your campaign page with compelling images and videos.
+                      </p>
+                      <div className="flex md:justify-end">
+                        <div className="bg-fundify-muted p-3 rounded-full">
+                          <Rocket className="h-6 w-6 text-fundify-primary" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="md:w-1/2 md:pl-12 mb-6 md:mb-0 order-1 md:order-2">
+                      <img
+                        src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&h=400&q=80"
+                        alt="Person creating a campaign on laptop"
+                        className="rounded-lg shadow-lg object-cover w-full h-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div className="relative">
+                  <div className="flex items-center justify-center absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <div className="w-12 h-12 bg-fundify-primary rounded-full flex items-center justify-center text-white font-bold shadow-lg z-10">
+                      2
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col md:flex-row items-center">
+                    <div className="md:w-1/2 md:pr-12 mb-6 md:mb-0">
+                      <img
+                        src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&h=400&q=80"
+                        alt="Business partners shaking hands"
+                        className="rounded-lg shadow-lg object-cover w-full h-full"
+                      />
+                    </div>
+
+                    <div className="md:w-1/2 md:pl-12">
+                      <h3 className="text-xl font-bold mb-3">
+                        Connect with Partners
+                      </h3>
+                      <p className="text-gray-600 mb-4">
+                        Match with our verified partners who can help amplify
+                        your campaign and reach a wider audience of potential
+                        backers.
+                      </p>
+                      <div className="flex">
+                        <div className="bg-fundify-muted p-3 rounded-full">
+                          <Handshake className="h-6 w-6 text-fundify-primary" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div className="relative">
+                  <div className="flex items-center justify-center absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <div className="w-12 h-12 bg-fundify-primary rounded-full flex items-center justify-center text-white font-bold shadow-lg z-10">
+                      3
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col md:flex-row items-center">
+                    <div className="md:w-1/2 md:pr-12 md:text-right order-2 md:order-1">
+                      <h3 className="text-xl font-bold mb-3">
+                        Engage Your Community
+                      </h3>
+                      <p className="text-gray-600 mb-4">
+                        Utilize our powerful tools to share your campaign with
+                        friends, family, and social networks to build momentum.
+                      </p>
+                      <div className="flex md:justify-end">
+                        <div className="bg-fundify-muted p-3 rounded-full">
+                          <Users className="h-6 w-6 text-fundify-primary" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="md:w-1/2 md:pl-12 mb-6 md:mb-0 order-1 md:order-2">
+                      <img
+                        src="https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&h=400&q=80"
+                        alt="People gathered at community event"
+                        className="rounded-lg shadow-lg object-cover w-full h-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 4 */}
+                <div className="relative">
+                  <div className="flex items-center justify-center absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <div className="w-12 h-12 bg-fundify-primary rounded-full flex items-center justify-center text-white font-bold shadow-lg z-10">
+                      4
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col md:flex-row items-center">
+                    <div className="md:w-1/2 md:pr-12 mb-6 md:mb-0">
+                      <img
+                        src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&h=400&q=80"
+                        alt="Hand holding money and credit card"
+                        className="rounded-lg shadow-lg object-cover w-full h-full"
+                      />
+                    </div>
+
+                    <div className="md:w-1/2 md:pl-12">
+                      <h3 className="text-xl font-bold mb-3">
+                        Track & Receive Funds
+                      </h3>
+                      <p className="text-gray-600 mb-4">
+                        Monitor your campaign progress in real-time and receive
+                        funds directly to your account with our secure payment
+                        processing.
+                      </p>
+                      <div className="flex">
+                        <div className="bg-fundify-muted p-3 rounded-full">
+                          <Coins className="h-6 w-6 text-fundify-primary" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 5 */}
+                <div className="relative">
+                  <div className="flex items-center justify-center absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <div className="w-12 h-12 bg-fundify-primary rounded-full flex items-center justify-center text-white font-bold shadow-lg z-10">
+                      5
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col md:flex-row items-center">
+                    <div className="md:w-1/2 md:pr-12 md:text-right order-2 md:order-1">
+                      <h3 className="text-xl font-bold mb-3">Make an Impact</h3>
+                      <p className="text-gray-600 mb-4">
+                        Implement your project and share updates with backers as
+                        you bring your vision to life and create positive
+                        change.
+                      </p>
+                      <div className="flex md:justify-end">
+                        <div className="bg-fundify-muted p-3 rounded-full">
+                          <Globe className="h-6 w-6 text-fundify-primary" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="md:w-1/2 md:pl-12 mb-6 md:mb-0 order-1 md:order-2">
+                      <img
+                        src="https://images.unsplash.com/photo-1521791055366-0d553872125f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&h=400&q=80"
+                        alt="Volunteers planting trees in community"
+                        className="rounded-lg shadow-lg object-cover w-full h-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Funding Types */}
+      <div className="bg-gray-50 py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">
+              Flexible Funding Options
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Choose the funding model that works best for your project and
+              goals.
             </p>
-            <ul className="mt-2 ml-6 list-disc space-y-2">
-              <li>
-                <span className="font-semibold">
-                  Certificate of Generosity:
-                </span>{' '}
-                Highlights your commitment to spreading kindness and supporting
-                meaningful causes.
-              </li>
-              <li>
-                <span className="font-semibold">
-                  Ambassador of Impact Award:
-                </span>{' '}
-                Celebrates individuals who actively amplify campaigns and drive
-                meaningful change.
-              </li>
-              <li>
-                <span className="font-semibold">
-                  Community Champion Certificate:
-                </span>{' '}
-                Honors those who lead by example in creating a supportive and
-                engaged community.
-              </li>
-              <li>
-                <span className="font-semibold">Honor of Advocacy:</span>{' '}
-                Recognizes passionate individuals advocating for diverse causes
-                through sharing.
-              </li>
-              <li>
-                <span className="font-semibold">Beacon of Hope Award:</span>{' '}
-                Symbolizes your role in bringing hope and visibility to
-                important causes.
-              </li>
-              <li>
-                <span className="font-semibold">
-                  Certificate of Social Impact:
-                </span>{' '}
-                Emphasizes the tangible difference you have made by supporting
-                and sharing campaigns.
-              </li>
-              <li>
-                <span className="font-semibold">
-                  Certificate of Empowerment:
-                </span>{' '}
-                Highlights how you empower others by amplifying their stories
-                and campaigns.
-              </li>
-            </ul>
-          </ul>
-          <p className="text-lg leading-8 font-semibold mb-6 text-green-600">
-            These upcoming features are just the beginning. At BantuHive, we’re
-            committed to evolving with your needs, making crowdfunding smarter,
-            more connected, and more successful for everyone.
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+              <div className="bg-fundify-muted w-14 h-14 rounded-full flex items-center justify-center mb-4">
+                <Gift className="h-7 w-7 text-fundify-primary" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Reward-Based</h3>
+              <p className="text-gray-600 mb-4">
+                Offer tangible rewards or experiences to backers based on their
+                contribution level.
+              </p>
+              <div className="text-sm text-fundify-primary font-medium">
+                Ideal for: Products, Creative Projects, Innovations
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+              <div className="bg-fundify-muted w-14 h-14 rounded-full flex items-center justify-center mb-4">
+                <Heart className="h-7 w-7 text-fundify-primary" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Donation-Based</h3>
+              <p className="text-gray-600 mb-4">
+                Collect donations for charitable causes, community projects, or
+                personal needs.
+              </p>
+              <div className="text-sm text-fundify-primary font-medium">
+                Ideal for: Nonprofits, Community Projects, Personal Causes
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+              <div className="bg-fundify-muted w-14 h-14 rounded-full flex items-center justify-center mb-4">
+                <Building className="h-7 w-7 text-fundify-primary" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Equity-Based</h3>
+              <p className="text-gray-600 mb-4">
+                Offer equity shares in your business to investors who believe in
+                your vision.
+              </p>
+              <div className="text-sm text-fundify-primary font-medium">
+                Ideal for: Startups, Business Expansion, Real Estate
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* FAQ Section */}
+      <div className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Everything you need to know about creating and managing your
+              campaign on Fundify.
+            </p>
+          </div>
+
+          <div className="max-w-3xl mx-auto space-y-6">
+            {[
+              {
+                question: 'How much does it cost to launch a campaign?',
+                answer:
+                  'Fundify charges a 5% platform fee on the total amount raised for successful campaigns, plus payment processing fees of 2.9% + $0.30 per transaction. There are no upfront costs to launch your campaign.',
+              },
+              {
+                question: "What happens if I don't reach my funding goal?",
+                answer:
+                  'It depends on your funding type. With flexible funding, you keep whatever funds you raise, minus our fees. With all-or-nothing funding, funds are only collected if you reach or exceed your goal.',
+              },
+              {
+                question: 'How long can my campaign run?',
+                answer:
+                  'Campaigns can run anywhere from 1 to 60 days, but our data shows that 30-40 day campaigns tend to be most successful.',
+              },
+              {
+                question: 'When do I receive the funds raised?',
+                answer:
+                  'For successful campaigns, funds are typically disbursed 14 business days after your campaign ends, allowing time for payment processing and any potential refunds.',
+              },
+              {
+                question: 'Can I edit my campaign after launching?',
+                answer:
+                  'Yes, you can edit most aspects of your campaign after it launches, including your description, images, and updates. However, your funding goal and type cannot be changed once your campaign is live.',
+              },
+            ].map((faq, index) => (
+              <div
+                key={index}
+                className="bg-white p-6 rounded-lg border shadow-sm"
+              >
+                <h3 className="text-lg font-medium mb-3">{faq.question}</h3>
+                <p className="text-gray-600">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="bg-gradient-to-r from-fundify-primary to-fundify-accent py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-white mb-6">
+            Ready to Make a Difference?
+          </h2>
+          <p className="text-xl text-white/90 max-w-2xl mx-auto mb-10">
+            Join thousands of change-makers who are using Fundify to bring their
+            ideas to life.
           </p>
-          <p className="text-lg leading-8">
-            Together, we’re redefining crowdfunding – empowering you to achieve
-            more, connect deeply, and make a lasting impact.
-          </p>
-        </section>
-        {/* Call to Action */}
-        <div className="text-center mt-12">
-          <a
-            href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
-            className="px-6 py-3 bg-green-600 text-white rounded-lg text-lg font-semibold shadow-lg hover:bg-green-700"
-          >
-            Start Your Fundraiser Today
-          </a>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link href="/">
+              <Button className="bg-white text-fundify-primary hover:bg-white/90 px-8 py-6 h-auto text-lg">
+                Start Your Campaign
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
