@@ -16,8 +16,6 @@ import {
 import { Partner } from '@/app/types/constant';
 import { useRouter } from 'next/navigation';
 
-
-
 const PartnerProgram = () => {
   const router = useRouter();
   // Fetch partners

@@ -355,8 +355,8 @@ const HowItWorks = () => {
             Ready to Make a Difference?
           </h2>
           <p className="text-xl text-white/90 max-w-2xl mx-auto mb-10">
-            Join thousands of change-makers who are using Bantu Hive to bring their
-            ideas to life.
+            Join thousands of change-makers who are using Bantu Hive to bring
+            their ideas to life.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link href="/">
