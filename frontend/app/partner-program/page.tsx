@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import partnersData from '../../data.json';
 import { Partner } from '@/app/types/constant';
+import { useRouter } from 'next/navigation';
 
 const PartnerProgram = () => {
   const partners: Partner[] = partnersData.partnersprogram;
@@ -302,6 +303,7 @@ const PartnerCard = ({
   partner: Partner;
   style?: React.CSSProperties;
 }) => {
+  const router = useRouter();
   // Calculate engagement metrics (this could come from the API in a real scenario)
   const audience = Math.floor(Math.random() * 100000) + 10000;
   const successRate = Math.floor(Math.random() * 40) + 60; // 60-100%
@@ -340,6 +342,7 @@ const PartnerCard = ({
         <Button
           className="w-full text-sm text-fundify-accent py-1 rounded-full"
           variant="outline"
+          onClick={() => router.push('/partner-apply')}
         >
           Apply to Partner
         </Button>
