@@ -117,7 +117,7 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="flex items-center gap-2 lg:hidden">
+        <div className="flex items-center gap-2 lg:hidden mr-2">
           {/* Mobile search button */}
           <Button
             variant="ghost"
@@ -129,19 +129,17 @@ const Navbar = () => {
             <Search className="h-5 w-5" />
           </Button>
 
-        <div className="mr-2">
-          <button
-            onClick={handleMenuToggle}
-            className="text-gray-800 shadow-none rounded-none dark:text-gray-300"
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? (
-              <XMarkIcon className="h-8 w-8" />
-            ) : (
-              <HamburgerMenuIcon className="h-8 w-8" />
-            )}
-          </button>
-        </div>
+            <button
+              onClick={handleMenuToggle}
+              className="text-gray-800 shadow-none rounded-none dark:text-gray-300"
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? (
+                <XMarkIcon className="h-8 w-8" />
+              ) : (
+                <HamburgerMenuIcon className="h-8 w-8" />
+              )}
+            </button>
         </div>
 
         <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
