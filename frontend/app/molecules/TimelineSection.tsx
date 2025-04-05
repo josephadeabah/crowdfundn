@@ -163,7 +163,7 @@ const TimelineSection = () => {
             <TimelineItem
               year="2025"
               title="First Platform Launch"
-              description="After months of development and user testing, we launched the first version of Fundify. Our initial platform focused on community-driven campaigns that addressed local social issues. Within the first month, we facilitated funding for 50 grassroots campaigns across 12 cities."
+              description="After months of development and user testing, we launched the first version of Bantu Hive. Our initial platform focused on community-driven campaigns that addressed local social issues. Within the first month, we facilitated funding for 50 grassroots campaigns across 12 cities."
               icon="Rocket"
               imageUrl="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=1470"
               isLeft={false}

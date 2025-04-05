@@ -189,7 +189,7 @@ const About = () => {
                       />
                     </div>
                     <div>
-                      <h4 className="text-lg font-medium">JJoseph Adeabah</h4>
+                      <h4 className="text-lg font-medium">Joseph Adeabah</h4>
                       <p className="text-gray-500">Co-Founder</p>
                     </div>
                   </div>
@@ -216,7 +216,7 @@ const About = () => {
                 className="opacity-0"
               >
                 <img
-                  src="/combine.webp"
+                  src="/combined.webp"
                   alt="Our Team"
                   className="w-full h-auto rounded-lg shadow-lg"
                 />
@@ -233,7 +233,7 @@ const About = () => {
             >
               <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
               <p className="text-xl text-gray-600 mb-8">
-                Join Fundify today and start turning your ideas into reality.
+                Join Bantu Hive today and start turning your ideas into reality.
               </p>
               <Button
                 size="lg"
