@@ -8,6 +8,7 @@ import { Skeleton } from '../ui/Skeleton';
 import { ScrollArea } from '../ui/scroll-area';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
+import { deslugify } from '@/app/utils/helpers/categories';
 
 interface SearchBarProps {
   isOpen: boolean;
@@ -210,7 +211,7 @@ const SearchResultItem = ({
           <h4 className="text-base font-medium line-clamp-1">
             {campaign.title}
           </h4>
-          <p className="text-sm text-gray-500 mt-1">{campaign.category}</p>
+          <p className="text-sm text-gray-500 mt-1">{deslugify(campaign.category)}</p>
           <div className="flex items-center mt-1">
             <div className="bg-fundify-muted text-xs px-2 py-0.5 rounded-full">
               Campaign

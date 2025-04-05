@@ -171,7 +171,9 @@ const SearchResultCard = ({
         </div>
         <CardContent className="p-4">
           <h3 className="font-medium mb-1 line-clamp-1">{campaign.title}</h3>
-          <p className="text-sm text-gray-500 mb-2">{deslugify(campaign.category)}</p>
+          <p className="text-sm text-gray-500 mb-2">
+            {deslugify(campaign.category)}
+          </p>
 
           <div className="flex items-center justify-between">
             <div className="bg-fundify-muted text-xs px-2 py-0.5 rounded-full">
