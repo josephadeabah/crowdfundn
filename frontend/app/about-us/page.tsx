@@ -45,11 +45,11 @@ const About = () => {
               >
                 <h1 className="text-4xl md:text-5xl font-bold mb-6">
                   <span className="bg-clip-text text-transparent bg-gradient-to-r from-fundify-primary to-fundify-accent">
-                    About Fundify
+                    About Bantu Hive
                   </span>
                 </h1>
                 <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                  Fundify is a crowdfunding platform that connects innovators,
+                  Bantu Hive is a crowdfunding platform that connects innovators,
                   creators, and change-makers with backers who are passionate
                   about bringing ideas to life.
                 </p>
@@ -69,7 +69,7 @@ const About = () => {
               >
                 <img
                   src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
-                  alt="About Fundify"
+                  alt="About Bantu Hive"
                   className="w-full h-auto rounded-lg shadow-lg"
                 />
               </div>
@@ -189,8 +189,8 @@ const About = () => {
                       />
                     </div>
                     <div>
-                      <h4 className="text-lg font-medium">John Doe</h4>
-                      <p className="text-gray-500">CEO</p>
+                      <h4 className="text-lg font-medium">JJoseph Adeabah</h4>
+                      <p className="text-gray-500">Co-Founder</p>
                     </div>
                   </div>
                   <div className="flex items-center">
@@ -202,8 +202,8 @@ const About = () => {
                       />
                     </div>
                     <div>
-                      <h4 className="text-lg font-medium">Jane Smith</h4>
-                      <p className="text-gray-500">CTO</p>
+                      <h4 className="text-lg font-medium">Nqoba Manana</h4>
+                      <p className="text-gray-500">Co-Founder</p>
                     </div>
                   </div>
                 </div>
