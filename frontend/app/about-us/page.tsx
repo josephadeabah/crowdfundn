@@ -68,7 +68,7 @@ const About = () => {
                 className="opacity-0"
               >
                 <img
-                  src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
+                  src="/bantuhive.svg"
                   alt="About Bantu Hive"
                   className="w-full h-auto rounded-lg shadow-lg"
                 />
