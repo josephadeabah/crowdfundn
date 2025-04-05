@@ -19,6 +19,7 @@ import { useRouter } from 'next/navigation';
 
 
 const PartnerProgram = () => {
+  const router = useRouter();
   // Fetch partners
   const partners: Partner[] = partnersData.partnersprogram;
 
@@ -82,6 +83,7 @@ const PartnerProgram = () => {
               <Button
                 className="bg-fundify-primary hover:bg-fundify-primary/90 text-white"
                 size="lg"
+                onClick={() => router.push('/partner-apply')}
               >
                 Join as a Partner
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -134,7 +136,6 @@ const PartnerCard = ({
   partner: Partner;
   style?: React.CSSProperties;
 }) => {
-  const router = useRouter();
   // Calculate engagement metrics (this could come from the API in a real scenario)
   const audience = Math.floor(Math.random() * 100000) + 10000;
   const successRate = Math.floor(Math.random() * 40) + 60; // 60-100%
@@ -173,7 +174,6 @@ const PartnerCard = ({
         <Button
           className="w-full text-sm text-fundify-accent py-1 rounded-full"
           variant="outline"
-          onClick={() => router.push('/partner-apply')}
         >
           Apply to Partner
         </Button>
