@@ -169,7 +169,9 @@ const PartnerCard = ({
         <Button
           className="w-full text-sm text-fundify-accent py-1 rounded-full"
           variant="outline"
-          onClick={()=>{'/partner-apply'}}
+          onClick={() => {
+            '/partner-apply';
+          }}
         >
           Apply to Partner
         </Button>

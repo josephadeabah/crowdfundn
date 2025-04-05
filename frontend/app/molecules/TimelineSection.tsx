@@ -150,9 +150,9 @@ const TimelineSection = () => {
         <div className="mt-16 relative">
           <div className="timeline-item opacity-0 transition-all duration-500">
             <TimelineItem
-              year="2018"
+              year="2024"
               title="Why we started?"
-              description="When you see something that needs to change in your community what do you do? Shout at the tv that 'someone should do something about it'? Rant online about how broken the system is and how people just don't 'get it'? What if instead of doing that, we all put up our hand to do something - big or small. All around the world, there are millions of people who already do just that. We built fundify for them. To make it incredibly simple for them to fundraise. To make it easy for them to find a community of people who wanted to support them. And to give the rest of us a more transparent and effective way of making the world we want to see."
+              description="When you see something that needs to change in your community what do you do? Shout at the tv that 'someone should do something about it'? Rant online about how broken the system is and how people just don't 'get it'? What if instead of doing that, we all put up our hand to do something - big or small. All around the world, there are millions of people who already do just that. We built bantuhive for them. To make it incredibly simple for them to fundraise. To make it easy for them to find a community of people who wanted to support them. And to give the rest of us a more transparent and effective way of making the world we want to see."
               icon="Lightbulb"
               imageUrl="https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=1470"
               learnMoreUrl="/about/mission"
@@ -161,7 +161,7 @@ const TimelineSection = () => {
 
           <div className="timeline-item opacity-0 transition-all duration-500">
             <TimelineItem
-              year="2019"
+              year="2025"
               title="First Platform Launch"
               description="After months of development and user testing, we launched the first version of Fundify. Our initial platform focused on community-driven campaigns that addressed local social issues. Within the first month, we facilitated funding for 50 grassroots campaigns across 12 cities."
               icon="Rocket"
@@ -172,7 +172,7 @@ const TimelineSection = () => {
 
           <div className="timeline-item opacity-0 transition-all duration-500">
             <TimelineItem
-              year="2020"
+              year="2025"
               title="Expanding Our Reach"
               description="During a challenging year globally, we expanded our platform to include virtual fundraising tools. This allowed campaigns to continue despite physical restrictions, resulting in a 300% increase in user engagement and supporting an additional 500 campaigns focused on pandemic relief."
               icon="Globe"
@@ -183,7 +183,7 @@ const TimelineSection = () => {
 
           <div className="timeline-item opacity-0 transition-all duration-500">
             <TimelineItem
-              year="2022"
+              year="2025"
               title="Partnership Program"
               description="We launched our partnership program to bring together corporations, nonprofits, and community organizations. This collaborative approach has created a powerful network of change-makers, with over 100 partner organizations joining in the first year and collectively raising over $10 million for various causes."
               icon="Handshake"
@@ -194,7 +194,7 @@ const TimelineSection = () => {
 
           <div className="timeline-item opacity-0 transition-all duration-500">
             <TimelineItem
-              year="2023"
+              year="2025"
               title="Impact Metrics Introduced"
               description="We developed comprehensive impact metrics to help both campaign creators and funders better understand the real-world effects of their contributions. This transparency feature has increased donor confidence and led to a 40% increase in recurring donations."
               icon="TrendingUp"
@@ -205,9 +205,9 @@ const TimelineSection = () => {
 
           <div className="timeline-item opacity-0 transition-all duration-500">
             <TimelineItem
-              year="2024"
-              title="The Future of Fundify"
-              description="Today, Fundify stands as a leading platform for community-driven change, with over 1 million active users across 50 countries. We're now developing AI-powered tools to better connect campaigns with potential supporters, blockchain integration for enhanced transparency, and mobile solutions to make fundraising possible from anywhere."
+              year="2025"
+              title="The Future of Bantu Hive"
+              description="Today, Bantu Hive stands as a leading platform for community-driven change, with over 1 million active users across 50 countries. We're now developing AI-powered tools to better connect campaigns with potential supporters, blockchain integration for enhanced transparency, and mobile solutions to make fundraising possible from anywhere."
               icon="Zap"
               imageUrl="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1470"
               isLeft={false}

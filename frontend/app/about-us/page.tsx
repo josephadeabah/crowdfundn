@@ -49,9 +49,9 @@ const About = () => {
                   </span>
                 </h1>
                 <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                  Bantu Hive is a crowdfunding platform that connects innovators,
-                  creators, and change-makers with backers who are passionate
-                  about bringing ideas to life.
+                  Bantu Hive is a crowdfunding platform that connects
+                  innovators, creators, and change-makers with backers who are
+                  passionate about bringing ideas to life.
                 </p>
                 <Button
                   className="bg-fundify-primary hover:bg-fundify-primary/90 text-white"
