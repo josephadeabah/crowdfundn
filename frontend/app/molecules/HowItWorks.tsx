@@ -304,7 +304,7 @@ const HowItWorks = () => {
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Everything you need to know about creating and managing your
-              campaign on Fundify.
+              campaign on Bantu Hive.
             </p>
           </div>
 
@@ -313,7 +313,7 @@ const HowItWorks = () => {
               {
                 question: 'How much does it cost to launch a campaign?',
                 answer:
-                  'Fundify charges a 5% platform fee on the total amount raised for successful campaigns, plus payment processing fees of 2.9% + $0.30 per transaction. There are no upfront costs to launch your campaign.',
+                  'Bantu Hive charges a 5% platform fee on the total amount raised for successful campaigns, plus payment processing fees of 2.9% + $0.30 per transaction. There are no upfront costs to launch your campaign.',
               },
               {
                 question: "What happens if I don't reach my funding goal?",
@@ -333,7 +333,7 @@ const HowItWorks = () => {
               {
                 question: 'Can I edit my campaign after launching?',
                 answer:
-                  'Yes, you can edit most aspects of your campaign after it launches, including your description, images, and updates. However, your funding goal and type cannot be changed once your campaign is live.',
+                  'Yes, you can edit most aspects of your campaign after it launches, including your description, images, and updates. However, your funding goal and type can be changed once your campaign is live.',
               },
             ].map((faq, index) => (
               <div
@@ -355,7 +355,7 @@ const HowItWorks = () => {
             Ready to Make a Difference?
           </h2>
           <p className="text-xl text-white/90 max-w-2xl mx-auto mb-10">
-            Join thousands of change-makers who are using Fundify to bring their
+            Join thousands of change-makers who are using Bantu Hive to bring their
             ideas to life.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
