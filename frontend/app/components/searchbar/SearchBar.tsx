@@ -19,26 +19,24 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const [showResults, setShowResults] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { fetchAllCampaigns, campaigns, loading } = useCampaignContext();
   const router = useRouter();
 
-  // Handle Enter key press
+  // Handle Enter key press - navigate to search page
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && searchTerm.trim()) {
       e.preventDefault();
-      setShowResults(true);
-      fetchAllCampaigns(
-        'created_at',
-        'desc',
-        1,
-        20,
-        'all_time',
-        'all',
-        'all',
-        searchTerm,
-      );
+      onClose(); // Close the search modal
+      router.push(`/search?q=${encodeURIComponent(searchTerm)}`);
+    }
+  };
+
+  // Handle search button click
+  const handleSearchClick = () => {
+    if (searchTerm.trim()) {
+      onClose();
+      router.push(`/search?q=${encodeURIComponent(searchTerm)}`);
     }
   };
 
@@ -56,7 +54,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
-      setShowResults(false); // Reset results when reopened
     }
   }, [isOpen]);
 
@@ -76,25 +73,24 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (!isOpen) {
       setSearchTerm('');
-      setShowResults(false);
     }
   }, [isOpen]);
 
-  // Fetch results when debounced term changes (for live search)
+  // Fetch results when debounced term changes (for live search suggestions)
   useEffect(() => {
-    if (debouncedSearchTerm.length > 0 && isOpen && !showResults) {
+    if (debouncedSearchTerm.length > 0 && isOpen) {
       fetchAllCampaigns(
         'created_at',
         'desc',
         1,
-        5,
+        5, // Show fewer results in the dropdown
         'all_time',
         'all',
         'all',
         debouncedSearchTerm,
       );
     }
-  }, [debouncedSearchTerm, isOpen, fetchAllCampaigns, showResults]);
+  }, [debouncedSearchTerm, isOpen, fetchAllCampaigns]);
 
   if (!isOpen) return null;
 
@@ -129,9 +125,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden bg-white">
+      <div className="flex-1 overflow-hidden">
         <div className="container mx-auto px-4 py-6">
-          <div className="rounded-lg overflow-hidden max-h-[calc(100vh-140px)]">
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden max-h-[calc(100vh-140px)]">
             <ScrollArea className="h-full max-h-[calc(100vh-140px)]">
               <div className="p-6">
                 {searchTerm ? (
@@ -140,15 +136,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
                       {loading
                         ? 'Searching...'
                         : campaigns?.length
-                          ? showResults
-                            ? `Showing all results for "${searchTerm}"`
-                            : `${campaigns.length} results for "${searchTerm}"`
+                          ? `Found ${campaigns.length} matching campaigns`
                           : 'No results found'}
                     </h4>
 
                     <div className="space-y-2">
                       {loading ? (
-                        Array(showResults ? 6 : 3)
+                        Array(3)
                           .fill(0)
                           .map((_, i) => (
                             <div
@@ -163,44 +157,31 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
                             </div>
                           ))
                       ) : campaigns?.length ? (
-                        <>
-                          {campaigns.map((campaign: CampaignResponseDataType) => (
-                            <SearchResultItem
-                              key={campaign.id}
-                              campaign={campaign}
-                              onClick={onClose}
-                            />
-                          ))}
-                          {!showResults && (
-                            <div className="mt-4 pt-3 border-t text-center">
-                              <Button
-                                variant="link"
-                                className="text-fundify-primary"
-                                onClick={() => {
-                                  setShowResults(true);
-                                  fetchAllCampaigns(
-                                    'created_at',
-                                    'desc',
-                                    1,
-                                    20,
-                                    'all_time',
-                                    'all',
-                                    'all',
-                                    searchTerm,
-                                  );
-                                }}
-                              >
-                                View all {campaigns.length} results
-                              </Button>
-                            </div>
-                          )}
-                        </>
+                        campaigns.map((campaign: CampaignResponseDataType) => (
+                          <SearchResultItem
+                            key={campaign.id}
+                            campaign={campaign}
+                            onClick={onClose}
+                          />
+                        ))
                       ) : (
                         <div className="px-2 py-6 text-center text-gray-500">
                           No matching campaigns found for "{searchTerm}"
                         </div>
                       )}
                     </div>
+
+                    {campaigns?.length ? (
+                      <div className="mt-4 pt-3 border-t text-center">
+                        <Button
+                          variant="link"
+                          className="text-fundify-primary"
+                          onClick={handleSearchClick}
+                        >
+                          View all results for "{searchTerm}"
+                        </Button>
+                      </div>
+                    ) : null}
                   </div>
                 ) : (
                   <div className="px-2 py-6 text-center text-gray-500">
@@ -246,7 +227,9 @@ const SearchResultItem = ({
           <h4 className="text-base font-medium line-clamp-1">
             {campaign.title}
           </h4>
-          <p className="text-sm text-gray-500 mt-1">{deslugify(campaign.category)}</p>
+          <p className="text-sm text-gray-500 mt-1">
+            {deslugify(campaign.category)}
+          </p>
           <div className="flex items-center mt-1">
             <div className="bg-fundify-muted text-xs px-2 py-0.5 rounded-full">
               Campaign
