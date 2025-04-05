@@ -3,12 +3,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
-import { Card } from '@/app/components/ui/card';
 import Link from 'next/link';
-import { useIsMobile } from '@/app/hooks/use-mobile';
 import { Skeleton } from '../ui/Skeleton';
-import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import { ScrollArea } from '../ui/scroll-area';
+import { CampaignResponseDataType } from '@/app/types/campaigns.types';
+import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 
 interface SearchBarProps {
   isOpen: boolean;
@@ -18,20 +17,18 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState<
-    CampaignResponseDataType[]
-  >([]);
-  const [isLoadingResults, setIsLoadingResults] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { fetchAllCampaigns, campaigns, loading } = useCampaignContext();
 
+  // Debounce search term
   useEffect(() => {
     const timerId = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
     }, 300);
-
     return () => clearTimeout(timerId);
   }, [searchTerm]);
 
+  // Focus input when opened
   useEffect(() => {
     if (isOpen && inputRef.current) {
       setTimeout(() => {
@@ -40,6 +37,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
+  // Prevent body scroll when search is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -51,29 +49,28 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
+  // Clear search when closed
   useEffect(() => {
     if (!isOpen) {
       setSearchTerm('');
-      setSearchResults([]);
     }
   }, [isOpen]);
 
-  // Fetch search results when debounced term changes
+  // Fetch results when debounced term changes
   useEffect(() => {
     if (debouncedSearchTerm.length > 0 && isOpen) {
-      setIsLoadingResults(true);
-      //   searchCampaigns(debouncedSearchTerm)
-      //     .then(results => {
-      //       setSearchResults(results);
-      //       setIsLoadingResults(false);
-      //     })
-      //     .catch(() => {
-      //       setIsLoadingResults(false);
-      //     });
-    } else {
-      setSearchResults([]);
+      fetchAllCampaigns(
+        'created_at',
+        'desc',
+        1,
+        5, // Show fewer results in the dropdown
+        'all_time',
+        'all',
+        'all',
+        debouncedSearchTerm,
+      );
     }
-  }, [debouncedSearchTerm, isOpen]);
+  }, [debouncedSearchTerm, isOpen, fetchAllCampaigns]);
 
   if (!isOpen) return null;
 
@@ -115,15 +112,15 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
                 {searchTerm ? (
                   <div className="mb-6">
                     <h4 className="text-sm font-medium text-gray-500 px-2 py-1.5 mb-2">
-                      {isLoadingResults
+                      {loading
                         ? 'Searching...'
-                        : searchResults?.length
-                          ? `${searchResults.length} results for "${searchTerm}"`
+                        : campaigns?.length
+                          ? `${campaigns.length} results for "${searchTerm}"`
                           : 'No results found'}
                     </h4>
 
                     <div className="space-y-2">
-                      {isLoadingResults ? (
+                      {loading ? (
                         Array(3)
                           .fill(0)
                           .map((_, i) => (
@@ -138,32 +135,34 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
                               </div>
                             </div>
                           ))
-                      ) : searchResults?.length ? (
-                        searchResults.map(
-                          (campaign: CampaignResponseDataType) => (
-                            <SearchResultItem
-                              key={campaign.id}
-                              campaign={campaign}
-                              onClick={onClose}
-                            />
-                          ),
-                        )
-                      ) : searchTerm ? (
+                      ) : campaigns?.length ? (
+                        campaigns.map((campaign: CampaignResponseDataType) => (
+                          <SearchResultItem
+                            key={campaign.id}
+                            campaign={campaign}
+                            onClick={onClose}
+                          />
+                        ))
+                      ) : (
                         <div className="px-2 py-6 text-center text-gray-500">
                           No matching campaigns found for "{searchTerm}"
                         </div>
-                      ) : null}
+                      )}
                     </div>
 
-                    {searchResults?.length ? (
+                    {campaigns?.length ? (
                       <div className="mt-4 pt-3 border-t text-center">
-                        <Button
-                          variant="link"
-                          className="text-fundify-primary"
+                        <Link
+                          href={`/search?q=${encodeURIComponent(searchTerm)}`}
                           onClick={onClose}
                         >
-                          View all results
-                        </Button>
+                          <Button
+                            variant="link"
+                            className="text-fundify-primary"
+                          >
+                            View all {campaigns.length} results
+                          </Button>
+                        </Link>
                       </div>
                     ) : null}
                   </div>
@@ -215,6 +214,12 @@ const SearchResultItem = ({
           <div className="flex items-center mt-1">
             <div className="bg-fundify-muted text-xs px-2 py-0.5 rounded-full">
               Campaign
+            </div>
+            <div className="text-sm font-medium text-fundify-primary ml-auto">
+              $
+              {(
+                campaign.current_amount || campaign.transferred_amount
+              ).toLocaleString()}
             </div>
           </div>
         </div>
