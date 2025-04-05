@@ -70,7 +70,7 @@ const About = () => {
                 <img
                   src="/bantuhive.svg"
                   alt="About Bantu Hive"
-                  className="w-full h-auto rounded-lg shadow-lg"
+                  className="w-full h-auto rounded-lg"
                 />
               </div>
             </div>
