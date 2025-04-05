@@ -8,9 +8,10 @@ import { Button } from '@/app/components/ui/button';
 import { Search } from 'lucide-react';
 import { CampaignResponseDataType } from '../types/campaigns.types';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
-import { Skeleton } from '../components/ui/Skeleton';
 import FullscreenLoader from '../loaders/FullscreenLoader';
 import { deslugify } from '../utils/helpers/categories';
+import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
+
 
 // Wrap the component that uses useSearchParams in Suspense
 const SearchResultsWrapper = () => {
@@ -102,20 +103,7 @@ const SearchResults = () => {
 
         <div className="w-full">
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {Array(6)
-                .fill(0)
-                .map((_, i) => (
-                  <Card key={i} className="overflow-hidden">
-                    <Skeleton className="h-40 w-full" />
-                    <CardContent className="p-4">
-                      <Skeleton className="h-5 w-3/4 mb-2" />
-                      <Skeleton className="h-4 w-1/2 mb-2" />
-                      <Skeleton className="h-3 w-1/4" />
-                    </CardContent>
-                  </Card>
-                ))}
-            </div>
+            <CampaignCardLoader />
           ) : campaigns && campaigns.length > 0 ? (
             <>
               <div className="mb-4 text-sm text-gray-500">
