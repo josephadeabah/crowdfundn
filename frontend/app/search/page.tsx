@@ -75,7 +75,7 @@ const SearchResults = () => {
   };
 
   return (
-    <div className="flex-1 bg-gray-50">
+    <div className="max-w-7xl mx-auto px-4 flex-1 bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Search Results</h1>
