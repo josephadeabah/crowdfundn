@@ -12,7 +12,6 @@ import FullscreenLoader from '../loaders/FullscreenLoader';
 import { deslugify } from '../utils/helpers/categories';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 
-
 // Wrap the component that uses useSearchParams in Suspense
 const SearchResultsWrapper = () => {
   return (
