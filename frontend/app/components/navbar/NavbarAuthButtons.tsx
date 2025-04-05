@@ -19,7 +19,7 @@ export const NavbarAuthButtons: React.FC = () => {
 
   return (
     <>
-      <div className="mr-1">
+      <div className="mr-1 hidden lg:block">
         <Button
           variant="ghost"
           size="icon"

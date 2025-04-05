@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { useUserContext } from '../context/users/UserContext';
 import { cn } from '../lib/utils';
@@ -13,6 +13,9 @@ import { NavbarDropdown } from './navbar/NavbarDropdown';
 import { dropdownLinks } from '../types/constant';
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import { NavbarMobileMenu } from './navbar/NavbarMobileMenu';
+import { Button } from './ui/button';
+import { Search } from 'lucide-react';
+import SearchBar from './searchbar/SearchBar';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -20,11 +23,20 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { user, logout } = useAuth();
   const { userAccountData } = useUserContext();
   const [loading, setLoading] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const handleSearchOpen = () => {
+    setSearchOpen(true);
+  };
+
+  const handleSearchClose = () => {
+    setSearchOpen(false);
+  };
 
   // Mock data for notifications and messages
   const [notifications, setNotifications] = useState([
@@ -105,7 +117,18 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="lg:hidden mr-3">
+        <div className="flex items-center gap-2 lg:hidden">
+          {/* Mobile search button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleSearchOpen}
+            aria-label="Search"
+            className="lg:hidden"
+          >
+            <Search className="h-5 w-5" />
+          </Button>
+
           <button
             onClick={handleMenuToggle}
             className="text-gray-800 shadow-none rounded-none dark:text-gray-300"
@@ -124,6 +147,17 @@ const Navbar = () => {
             <NavbarAuthButtons />
           ) : (
             <div className="flex items-center gap-2">
+              {/* Search button for desktop */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleSearchOpen}
+                aria-label="Search"
+                className="hidden lg:flex"
+              >
+                <Search className="h-5 w-5" />
+              </Button>
+
               <NavbarNotificationIcons
                 notifications={notifications}
                 messages={messages}
@@ -138,7 +172,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu - moved outside the main container */}
+      {/* Mobile Menu */}
       <NavbarMobileMenu
         isMenuOpen={isMenuOpen}
         user={user}
@@ -150,6 +184,7 @@ const Navbar = () => {
         notifications={notifications}
         messages={messages}
       />
+      <SearchBar isOpen={searchOpen} onClose={handleSearchClose} />
     </header>
   );
 };
