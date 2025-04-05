@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent } from '@/app/components/ui/card';
@@ -9,6 +9,17 @@ import { Search } from 'lucide-react';
 import { CampaignResponseDataType } from '../types/campaigns.types';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
 import { Skeleton } from '../components/ui/Skeleton';
+import FullscreenLoader from '../loaders/FullscreenLoader';
+import { deslugify } from '../utils/helpers/categories';
+
+// Wrap the component that uses useSearchParams in Suspense
+const SearchResultsWrapper = () => {
+  return (
+    <Suspense fallback={<FullscreenLoader />}>
+      <SearchResults />
+    </Suspense>
+  );
+};
 
 const SearchResults = () => {
   const searchParams = useSearchParams();
@@ -160,7 +171,7 @@ const SearchResultCard = ({
         </div>
         <CardContent className="p-4">
           <h3 className="font-medium mb-1 line-clamp-1">{campaign.title}</h3>
-          <p className="text-sm text-gray-500 mb-2">{campaign.category}</p>
+          <p className="text-sm text-gray-500 mb-2">{deslugify(campaign.category)}</p>
 
           <div className="flex items-center justify-between">
             <div className="bg-fundify-muted text-xs px-2 py-0.5 rounded-full">
@@ -179,4 +190,4 @@ const SearchResultCard = ({
   );
 };
 
-export default SearchResults;
+export default SearchResultsWrapper;
