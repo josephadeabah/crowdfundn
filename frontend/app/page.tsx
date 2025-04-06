@@ -42,16 +42,20 @@ const HomePage = () => {
         <div className="w-full">
           <GameElements />
         </div>
+        <div className="w-full bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <FeaturedCampaigns />
           </div>
+        </div>
         <AIPoweredSection />
         <div className="w-full">
           <PartnerProgram />
         </div>
+        <div className="w-full">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <PartnersCarousel/>
           </div>
+        </div>
       </main>
     </div>
   );
