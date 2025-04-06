@@ -18,7 +18,7 @@ export const AIFeatureCard = ({
   title: string;
   description: string;
 }) => (
-  <div className="bg-white rounded-xl shadow-xl p-6 border-0 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]">
+  <div className="bg-white rounded-xl shadow-md p-6 border-0 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
     <div className="mb-4 bg-fundify-muted p-3 w-14 h-14 flex items-center justify-center rounded-full">
       {icon}
     </div>
@@ -68,7 +68,7 @@ export const GameElements = () => (
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-md p-6 border border-fundify-border">
+        <div className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center space-x-4 mb-4">
             <div className="bg-fundify-accent/10 p-3 rounded-full">
               <Award className="h-6 w-6 text-fundify-accent" />
@@ -106,7 +106,7 @@ export const GameElements = () => (
               <div className="h-4 w-4 border border-gray-300 rounded-sm"></div>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm">Share update of your fundraising</span>
+              <span className="text-sm">Update your profile</span>
               <Check className="h-4 w-4 text-fundify-primary" />
             </div>
           </div>
