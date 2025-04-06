@@ -101,7 +101,7 @@ const Hero = () => {
           opacity: opacityValue,
         }}
       >
-        <div className="px-4 py-12">
+        <div className="px-4 py-24">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             {/* Left content */}
             <div className="w-full lg:w-1/2 space-y-8 animate-fade-in">
