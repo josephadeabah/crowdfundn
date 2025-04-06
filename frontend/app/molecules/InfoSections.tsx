@@ -43,7 +43,7 @@ export const GameElements = () => (
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-md p-6 border border-fundify-border">
+        <div className="bg-white rounded-xl shadow-sm p-6 ">
           <div className="flex items-center space-x-4 mb-4">
             <div className="bg-fundify-primary/10 p-3 rounded-full">
               <Trophy className="h-6 w-6 text-fundify-primary" />
@@ -85,7 +85,7 @@ export const GameElements = () => (
           <div className="text-right text-sm mt-1">Level 3 (75%)</div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-md p-6 border border-fundify-border">
+        <div className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center space-x-4 mb-4">
             <div className="bg-fundify-primary/10 p-3 rounded-full">
               <Gift className="h-6 w-6 text-fundify-primary" />
