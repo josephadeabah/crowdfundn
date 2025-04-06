@@ -5,6 +5,7 @@ import Hero from './components/Hero';
 import React, { useEffect } from 'react';
 import PartnersCarousel from './molecules/PartnersCarousel';
 import PartnerProgram from './components/partnerprogram/PartnerProgram';
+import { AIPoweredSection, GameElements } from './molecules/InfoSections';
 
 const HomePage = () => {
   useEffect(() => {
@@ -33,63 +34,29 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background rounded-t-3xl">
-      <Hero />
-
-      {/* Platform Benefits */}
-      <div className="py-20 bg-green-50 rounded-t-3xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 animate-on-scroll">
-            <span className="inline-block px-3 py-1 text-xs font-semibold bg-green-200 text-green-600 rounded-full mb-4">
-              Why Choose Us
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Gamified Crowdfunding Experience
-            </h2>
-            <p className="max-w-2xl mx-auto text-muted-foreground">
-              Earn rewards while supporting innovative campaigns and making
-              real-world impact.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: 'Earn Rewards',
-                description:
-                  'Get exclusive rewards and tokens for backing successful campaigns',
-                icon: '🏆',
-              },
-              {
-                title: 'Level Up',
-                description:
-                  'Gain experience points and unlock new supporter tiers',
-                icon: '⭐',
-              },
-              {
-                title: 'Community Voting',
-                description:
-                  'Help decide which projects deserve spotlight features',
-                icon: '🔍',
-              },
-            ].map((feature, index) => (
-              <div
-                key={index}
-                className="p-6 bg-background rounded-xl border border-border hover:border-primary/30 transition-all animate-on-scroll"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="text-3xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
-              </div>
-            ))}
+    <div className="min-h-screen flex flex-col w-full">
+      <main className="flex-grow w-full">
+        <div className="w-full">
+          <Hero />
+        </div>
+        <div className="w-full">
+          <GameElements />
+        </div>
+        <div className="w-full">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <FeaturedCampaigns />
           </div>
         </div>
-      </div>
-
-      <FeaturedCampaigns />
-      <PartnerProgram />
-      <PartnersCarousel />
+        <AIPoweredSection />
+        <div className="w-full">
+          <PartnerProgram />
+        </div>
+        <div className="w-full">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <PartnersCarousel/>
+          </div>
+        </div>
+      </main>
     </div>
   );
 };

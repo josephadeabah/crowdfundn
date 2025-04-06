@@ -129,17 +129,17 @@ const Navbar = () => {
             <Search className="h-5 w-5" />
           </Button>
 
-            <button
-              onClick={handleMenuToggle}
-              className="text-gray-800 shadow-none rounded-none dark:text-gray-300"
-              aria-label="Toggle menu"
-            >
-              {isMenuOpen ? (
-                <XMarkIcon className="h-8 w-8" />
-              ) : (
-                <HamburgerMenuIcon className="h-8 w-8" />
-              )}
-            </button>
+          <button
+            onClick={handleMenuToggle}
+            className="text-gray-800 shadow-none rounded-none dark:text-gray-300"
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? (
+              <XMarkIcon className="h-8 w-8" />
+            ) : (
+              <HamburgerMenuIcon className="h-8 w-8" />
+            )}
+          </button>
         </div>
 
         <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
