@@ -12,6 +12,8 @@ class Campaign < ApplicationRecord
   has_many :favorited_by_users, through: :favorites, source: :user
   has_many :campaign_shares, dependent: :destroy
   has_many :pledges, dependent: :destroy
+  has_many :campaign_partnerships
+  has_many :partners, through: :campaign_partnerships
 
   has_rich_text :description
 
@@ -173,6 +175,10 @@ class Campaign < ApplicationRecord
     end
   
     donations.sort.to_h
+  end
+
+  def partner_commission_rate
+    campaign_partnerships.accepted.first&.commission_rate || 0
   end
 
   private

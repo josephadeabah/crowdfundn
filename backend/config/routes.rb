@@ -144,6 +144,17 @@ Rails.application.routes.draw do
       namespace :pledges do
         resources :pledges, only: [:index, :destroy] # Add this line
       end
+
+      namespace :partners do
+        resources :partners, only: [:index] do
+          collection do
+            post 'apply', to: 'partners#create_application'
+            post 'request_partnership', to: 'partners#request_partnership'
+            get 'dashboard', to: 'partners#dashboard'
+          end
+        end
+      end
+
     end
   end
 
