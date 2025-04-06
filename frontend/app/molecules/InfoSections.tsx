@@ -18,7 +18,7 @@ export const AIFeatureCard = ({
   title: string;
   description: string;
 }) => (
-  <div className="bg-white rounded-xl shadow-md p-6 border-0 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
+  <div className="bg-white rounded-xl shadow-sm p-6 border-0 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
     <div className="mb-4 bg-fundify-muted p-3 w-14 h-14 flex items-center justify-center rounded-full">
       {icon}
     </div>
