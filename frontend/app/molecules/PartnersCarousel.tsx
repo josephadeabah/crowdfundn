@@ -12,7 +12,7 @@ const PartnersCarousel = () => {
   const partners: Partner[] = partnersData.partners;
 
   return (
-    <div className="max-w-7xl mx-auto mt-12">
+    <div className="max-w-7xl mx-auto">
       <h2 className="text-2xl font-bold mb-6 px-4">Our Investors</h2>
 
       {partners && partners.length > 0 ? (
