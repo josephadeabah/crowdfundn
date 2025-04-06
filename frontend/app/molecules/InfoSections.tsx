@@ -28,7 +28,7 @@ export const AIFeatureCard = ({
 );
 
 export const GameElements = () => (
-  <section className="relative py-16 bg-gradient-to-br from-fundify-muted to-white w-full">
+  <div className="relative py-16 bg-gradient-to-br from-fundify-muted to-white w-full">
     <div className="absolute inset-0 bg-grid-white/10 opacity-20"></div>
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
@@ -113,11 +113,11 @@ export const GameElements = () => (
         </div>
       </div>
     </div>
-  </section>
+  </div>
 );
 
 export const AIPoweredSection = () => (
-  <section className="py-16 bg-white w-full">
+  <div className="py-16 bg-white w-full">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
         <div className="inline-block px-3 py-1 mb-4 rounded-full bg-fundify-primary/10 text-fundify-primary text-sm font-medium">
@@ -148,5 +148,5 @@ export const AIPoweredSection = () => (
         />
       </div>
     </div>
-  </section>
+  </div>
 );
