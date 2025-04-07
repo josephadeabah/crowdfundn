@@ -155,7 +155,7 @@ const SingleCampaignPage: React.FC = () => {
   if (loading) return <SingleCampaignLoader />;
 
   return (
-    <div className="min-h-screen flex flex-col w-full bg-white">
+    <div className="min-h-screen w-full bg-white">
     <div
       className="max-w-7xl mx-auto px-2 py-8 mb-12"
       ref={containerRef}
