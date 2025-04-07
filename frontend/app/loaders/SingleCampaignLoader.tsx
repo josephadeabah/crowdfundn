@@ -5,6 +5,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 const SingleCampaignLoader = () => {
   return (
+    <div className="min-h-screen w-full bg-white">
     <div className="max-w-7xl mx-auto px-2 py-8 mb-12">
       <div className="flex flex-col lg:flex-row gap-8 mb-10">
         {/* First Column (Bigger Width) */}
@@ -92,6 +93,7 @@ const SingleCampaignLoader = () => {
         </div>
       </div>
     </div>
+  </div>
   );
 };
 
