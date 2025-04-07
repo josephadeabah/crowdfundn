@@ -6,7 +6,6 @@ import React, { useEffect } from 'react';
 import PartnersCarousel from './molecules/PartnersCarousel';
 import PartnerProgram from './components/partnerprogram/PartnerProgram';
 import { AIPoweredSection, GameElements } from './molecules/InfoSections';
-import BlogPosts from './components/blogs/BlogPosts';
 
 const HomePage = () => {
   useEffect(() => {
@@ -48,7 +47,7 @@ const HomePage = () => {
             <FeaturedCampaigns />
           </div>
         </div>
-        <BlogPosts />
+        <AIPoweredSection />
         <div className="w-full">
           <PartnerProgram />
         </div>
