@@ -36,7 +36,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen flex flex-col w-full">
-      <main className="flex-grow w-full">
+      <main className="w-full">
         <div className="w-full">
           <Hero />
         </div>
@@ -49,7 +49,7 @@ const HomePage = () => {
           </div>
         </div>
         <div className="w-full bg-white">
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <BlogPosts />
           </div>
         </div>

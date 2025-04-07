@@ -17,6 +17,28 @@ const BlogPosts: React.FC = () => {
   if (loading) return <BlogPostLoader />;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
+  // Handle empty articles
+  if (!articles || articles.length === 0) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <h2 className="text-3xl font-bold text-left mb-10">
+          Crowdfunding Tips
+        </h2>
+        <div className="text-center py-12 bg-gray-50 rounded-lg">
+          <p className="text-gray-500 mb-4">
+            No crowdfunding tips available at the moment.
+          </p>
+          <Link
+            href="/articles"
+            className="inline-block px-6 py-3 bg-white text-emerald-600 border border-fundify-primary rounded-md hover:bg-emerald-600 hover:text-white transition-colors"
+          >
+            Browse Articles
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <h2 className="text-3xl font-bold text-left mb-10">Crowdfunding Tips</h2>
