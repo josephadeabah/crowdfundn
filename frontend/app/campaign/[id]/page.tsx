@@ -29,6 +29,7 @@ import Link from 'next/link';
 import moment from 'moment';
 import ContactFundraiserForm from '@/app/components/contactfundraiserform/ContactFundraiserForm';
 import Modal from '@/app/components/modal/Modal';
+import ToastComponent from '@/app/components/toast/Toast';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<
@@ -232,6 +233,13 @@ const SingleCampaignPage: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full bg-white">
+      <ToastComponent
+        isOpen={toast.isOpen}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
+        title={toast.title}
+        description={toast.description}
+        type={toast.type}
+      />
       <div className="max-w-7xl mx-auto px-2 py-8 mb-12" ref={containerRef}>
         <Modal
           isOpen={isContactModalOpen}
