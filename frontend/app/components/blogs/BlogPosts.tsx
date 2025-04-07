@@ -40,7 +40,7 @@ const BlogPosts: React.FC = () => {
               </div>
             )}
             <div className="py-4">
-              <h3 className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors">
+              <h3 className="text-lg font-semibold mb-2 line-clamp-2 text-emerald-600 group-hover:text-fundify-primary transition-colors">
                 {article.title}
               </h3>
               <p className="text-gray-600 text-sm mb-3 line-clamp-3">
