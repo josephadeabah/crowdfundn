@@ -239,7 +239,7 @@ const PartnerProgram = () => {
 
         {/* Partners Grid */}
         <div className="py-16 bg-white">
-          <div className="container mx-auto px-4">
+          <div className="max-w-7xl mx-auto px-4">
             <div
               ref={(el) => (sectionsRef.current[6] = el)}
               className="max-w-3xl mx-auto text-center mb-12 opacity-0"
