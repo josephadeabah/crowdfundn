@@ -155,6 +155,7 @@ const SingleCampaignPage: React.FC = () => {
   if (loading) return <SingleCampaignLoader />;
 
   return (
+    <div className="min-h-screen flex flex-col w-full bg-white">
     <div
       className="max-w-7xl mx-auto px-2 py-8 mb-12"
       ref={containerRef}
@@ -407,10 +408,10 @@ const SingleCampaignPage: React.FC = () => {
         </div>
 
         {/* Second Column (Smaller Width and Sticky) */}
-        <div className="lg:w-1/3 md:shadow-md">
+        <div className="lg:w-1/3 border border-gray-700">
           <div className="sticky top-8">
             {/* Content for the second column */}
-            <div className="bg-white p-4 rounded-lg">
+            <div className="bg-white p-4">
               <h2 className="text-xl font-semibold mb-4">
                 Support This Project
               </h2>
@@ -507,6 +508,7 @@ const SingleCampaignPage: React.FC = () => {
       <SuggestedCampaignsComponent
         currentCategory={currentCampaign?.category}
       />
+    </div>
     </div>
   );
 };
