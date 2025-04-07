@@ -19,12 +19,14 @@ const BlogPosts: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
-      <h2 className="text-3xl font-bold text-center mb-10">
-        Crowdfunding Tips
-      </h2>
+      <h2 className="text-3xl font-bold text-center mb-10">Crowdfunding Tips</h2>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
         {articles.slice(0, 4).map((article) => (
-          <div key={article.id} className="flex flex-col">
+          <Link
+            key={article.id}
+            href={`/articles/${article.slug}`}
+            className="flex flex-col group"
+          >
             {article.featured_image && (
               <div className="relative w-full aspect-[3/4]">
                 <Image
@@ -38,24 +40,23 @@ const BlogPosts: React.FC = () => {
               </div>
             )}
             <div className="py-4">
-              <h3 className="text-lg font-semibold mb-2 line-clamp-2">
+              <h3 className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors">
                 {article.title}
               </h3>
               <p className="text-gray-600 text-sm mb-3 line-clamp-3">
                 {article.meta_description}
               </p>
               <p className="text-gray-400 text-xs">
-                Published on{' '}
-                {moment(article.created_at).format('MMMM Do, YYYY')}
+                Published on {moment(article.created_at).format('MMMM Do, YYYY')}
               </p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
       <div className="text-center">
         <Link
           href="/articles"
-          className="inline-block px-6 py-3 bg-white text-emerald-600 border border-fundify-primary rounded-md hover:bg-primary-dark transition-colors"
+          className="inline-block px-6 py-3 bg-white text-emerald-600 border border-fundify-primary rounded-md hover:bg-emerald-600 hover:text-white transition-colors"
         >
           See More Tips
         </Link>
