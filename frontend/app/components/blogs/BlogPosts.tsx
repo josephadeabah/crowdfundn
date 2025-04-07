@@ -6,6 +6,8 @@ import { useArticlesContext } from '@/app/context/admin/articles/ArticlesContext
 import moment from 'moment';
 import Link from 'next/link';
 import BlogPostLoader from '@/app/loaders/BlogPostLoader';
+import { Button } from '../ui/button';
+import { ChevronRight } from 'lucide-react';
 
 const BlogPosts: React.FC = () => {
   const { articles, fetchArticles, loading, error } = useArticlesContext();
@@ -77,12 +79,15 @@ const BlogPosts: React.FC = () => {
         ))}
       </div>
       <div className="text-center">
-        <Link
-          href="/articles"
-          className="inline-block px-6 py-3 bg-white text-emerald-600 border border-fundify-primary rounded-md hover:bg-emerald-600 hover:text-white transition-colors"
-        >
-          See More Tips
-        </Link>
+        <a href="/articles">
+          <Button
+            variant="outline"
+            className="border-fundify-primary text-emerald-600"
+          >
+            See More Tips
+            <ChevronRight className="ml-2 h-4 w-4" />
+          </Button>
+        </a>
       </div>
     </div>
   );
