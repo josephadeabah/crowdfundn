@@ -156,7 +156,7 @@ const SingleCampaignPage: React.FC = () => {
 
   return (
     <div
-      className="max-w-7xl mx-auto px-2 py-8 mb-12 bg-gradient-to-tr from-green-50 to-white"
+      className="max-w-7xl mx-auto px-2 py-8 mb-12"
       ref={containerRef}
     >
       <Modal
@@ -172,7 +172,7 @@ const SingleCampaignPage: React.FC = () => {
         <div className="lg:w-2/3">
           {/* Content for the first column */}
           <div className="bg-white p-2 md:px-5 rounded-lg">
-            <div className="shadow-md p-5">
+            <div className="p-5">
               <h1 className="text-4xl font-bold mb-4">
                 {currentCampaign?.title}
               </h1>
@@ -407,7 +407,7 @@ const SingleCampaignPage: React.FC = () => {
         </div>
 
         {/* Second Column (Smaller Width and Sticky) */}
-        <div className="lg:w-1/3">
+        <div className="lg:w-1/3 md:shadow-md">
           <div className="sticky top-8">
             {/* Content for the second column */}
             <div className="bg-white p-4 rounded-lg">
