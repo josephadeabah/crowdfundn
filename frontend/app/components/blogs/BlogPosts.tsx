@@ -54,7 +54,7 @@ const BlogPosts: React.FC = () => {
       </div>
       <div className="text-center">
         <Link
-          href="/blog"
+          href="/articles"
           className="inline-block px-6 py-3 bg-white text-emerald-600 border border-fundify-primary rounded-md hover:bg-primary-dark transition-colors"
         >
           See More Tips
