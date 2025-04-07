@@ -173,7 +173,6 @@ const SingleCampaignPage: React.FC = () => {
         <div className="lg:w-2/3">
           {/* Content for the first column */}
           <div className="bg-white p-2 md:px-5 rounded-lg">
-            <div className="p-5">
               <h1 className="text-4xl font-bold mb-4">
                 {currentCampaign?.title}
               </h1>
@@ -199,7 +198,6 @@ const SingleCampaignPage: React.FC = () => {
                   />
                 </div>
               </div>
-            </div>
             <div className="relative">
               <div className="flex items-center mb-6">
                 <button
