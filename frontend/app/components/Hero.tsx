@@ -14,6 +14,7 @@ import { VideoPlayer } from './videoplayer/videoplayar';
 const Hero = () => {
   const [scrollY, setScrollY] = useState(0);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const openVideo = () => {
     setIsVideoOpen(true);
@@ -39,6 +40,13 @@ const Hero = () => {
   }, [fetchLeaderboardData]);
 
   useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
     const handleScroll = () => {
       setScrollY(window.scrollY);
     };
@@ -46,9 +54,11 @@ const Hero = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isMounted]);
 
   useEffect(() => {
+    if (!isMounted) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -67,12 +77,13 @@ const Hero = () => {
     return () => {
       animatedElements.forEach((el) => observer.unobserve(el));
     };
-  }, []);
+  }, [isMounted]);
 
-  const backgroundY = Math.min(scrollY * 0.5, 300);
-  const contentY = Math.min(scrollY * 0.1, 50);
-  const opacityValue = Math.max(1 - scrollY * 0.002, 0);
-  const overlayOpacity = Math.min(0.7 + scrollY * 0.0005, 0.85);
+  // Only apply scroll effects after component is mounted
+  const backgroundY = isMounted ? Math.min(scrollY * 0.5, 300) : 0;
+  const contentY = isMounted ? Math.min(scrollY * 0.1, 50) : 0;
+  const opacityValue = isMounted ? Math.max(1 - scrollY * 0.002, 0) : 1;
+  const overlayOpacity = isMounted ? Math.min(0.7 + scrollY * 0.0005, 0.85) : 0.7;
 
   return (
     <div className="relative w-full overflow-hidden">
@@ -80,12 +91,12 @@ const Hero = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 -z-10"></div>
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMwLTkuOTQtOC4wNi0xOC0xOC0xOFYwYzkuOTQgMCAxOCA4LjA2IDE4IDE4aDEyeiIgZmlsbD0icmdiYSgwLDAsMCwwLjAyKSIvPjwvZz48L3N2Zz4=')] opacity-50 -z-10"></div>
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100 ease-out"
         style={{
           backgroundImage: `url('/Heropage.png')`,
-          transform: `translateY(${backgroundY}px) scale(${1 + scrollY * 0.0002})`,
+          transform: `translateY(${backgroundY}px) scale(${1 + (isMounted ? scrollY * 0.0002 : 0)})`,
           transformOrigin: 'bottom',
-          top: `-${Math.min(scrollY * 0.2, 100)}px`,
+          top: `-${isMounted ? Math.min(scrollY * 0.2, 100) : 0}px`,
         }}
       >
         <div
@@ -95,16 +106,16 @@ const Hero = () => {
       </div>
 
       <div
-        className="relative h-full max-w-7xl mx-auto flex items-center"
+        className="relative h-full max-w-7xl mx-auto flex items-center transition-transform duration-100 ease-out"
         style={{
           transform: `translateY(${contentY}px)`,
           opacity: opacityValue,
         }}
       >
-        <div className="px-4 py-24">
+        <div className="px-4 py-24 w-full">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             {/* Left content */}
-            <div className="w-full lg:w-1/2 space-y-8 animate-fade-in">
+            <div className="w-full lg:w-1/2 space-y-8">
               <div className="max-w-2xl">
                 <div className="inline-flex items-center gap-2 px-3 py-1 mt-2 text-xs font-semibold bg-white text-gray-500 rounded-full mb-4 animate-fade-up">
                   <span className="relative flex h-2 w-2">
@@ -221,7 +232,7 @@ const Hero = () => {
             </div>
 
             {/* Right content with video */}
-            <div className="w-full lg:w-1/2 relative animate-fade-in">
+            <div className="w-full lg:w-1/2 relative">
               {/* AI Suggestion Card - Top Left */}
               <div className="absolute top-8 -left-8 bg-white rounded-xl shadow-lg py-2 px-4 max-w-xs rotate-[-6deg] border-0 scale-90 origin-top-left z-10">
                 <div className="flex items-center">
