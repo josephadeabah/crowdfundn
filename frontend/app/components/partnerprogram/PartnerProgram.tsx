@@ -31,7 +31,7 @@ const PartnerProgram = () => {
                 Partner Drive
               </span>
               <span className="ml-3 bg-yellow-500 text-white px-2 py-1 rounded-full text-sm font-medium align-middle">
-                Coming Soon
+                coming soon
               </span>
               <div className="absolute -bottom-3 left-0 w-20 h-1 bg-fundify-primary"></div>
             </h2>
