@@ -43,7 +43,7 @@ const HomePage = () => {
         <div className="w-full">
           <GameElements />
         </div>
-          <div className="w-full">
+          <div className="w-full bg-white">
             <FeaturedCampaigns />
           </div>
         <div className="w-full bg-white">
