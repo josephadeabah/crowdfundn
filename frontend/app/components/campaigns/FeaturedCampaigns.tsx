@@ -49,27 +49,24 @@ const FeaturedCampaigns = () => {
           loading={loading}
           error={error}
         />
-        </div>
-
-        <div className="bg-gray-50 py-12">
-          <FundingTypes />
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      </div>
+      <div className="bg-gray-50 py-12">
+        <FundingTypes />
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between">
           <div className="animate-fade-up">
-            <span className="inline-block px-3 py-1 text-xs font-semibold bg-orange-500/10 text-orange-500 rounded-full mb-2">
+            <span className="inline-block px-3 py-3 text-xs font-semibold bg-orange-500/10 text-orange-500 rounded-full">
               Trending Now
             </span>
           </div>
         </div>
-
         <CampaignCarousel
           title="Trending Fundraisers"
           campaigns={displayedCampaigns}
           loading={loading}
           error={error}
         />
-
         <div className="no-scrollbar"></div>
       </div>
     </div>
