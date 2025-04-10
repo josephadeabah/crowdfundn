@@ -282,7 +282,12 @@ const HowItWorks = () => {
               <div className="bg-fundify-muted w-14 h-14 rounded-full flex items-center justify-center mb-4">
                 <Building className="h-7 w-7 text-fundify-primary" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Equity-Based</h3>
+              <h3 className="text-xl font-bold mb-3 relative">
+                Equity-Based
+                <span className="ml-3 bg-yellow-500 text-white px-2 py-1 rounded-full text-sm font-medium align-middle">
+                coming soon
+              </span>
+              </h3>
               <p className="text-gray-600 mb-4">
                 Offer equity shares in your business to investors who believe in
                 your vision.
