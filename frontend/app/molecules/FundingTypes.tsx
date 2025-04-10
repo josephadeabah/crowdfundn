@@ -3,7 +3,7 @@ import { Building, Gift, Heart, Rocket } from 'lucide-react';
 
 const FundingTypes = () => {
   return (
-    <div className="max-w-7xl mx-auto px-4">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
         <h2 className="text-3xl font-bold mb-4">Flexible Funding Options</h2>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -11,7 +11,7 @@ const FundingTypes = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
           <div className="bg-fundify-muted w-14 h-14 rounded-full flex items-center justify-center mb-4">
             <Gift className="h-7 w-7 text-fundify-primary" />
