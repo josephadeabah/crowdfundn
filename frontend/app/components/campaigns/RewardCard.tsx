@@ -85,7 +85,11 @@ const RewardCard: React.FC<RewardCardProps> = ({
   }
 
   if (error) {
-    return <ErrorPage />;
+    return (
+      <div className="w-full">
+        <ErrorPage />
+      </div>
+    );
   }
 
   return (

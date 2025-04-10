@@ -66,7 +66,11 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
     }
 
     if (error) {
-      return <ErrorPage />;
+      return (
+        <div className="w-full">
+          <ErrorPage />
+        </div>
+      );
     }
 
     if (campaigns && campaigns.length > 0) {
