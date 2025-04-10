@@ -76,14 +76,14 @@ export default function Dashboard() {
 
         {/* Total Backers Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
-          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
-            <Users className="h-5 w-5 text-purple-500" />
+          <div className="absolute top-2 right-2 bg-emerald-100 p-2 rounded-full">
+            <Users className="h-5 w-5 text-emerald-500" />
           </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Total Backers
             </CardTitle>
-            <CardDescription className="text-purple-500 dark:text-purple-400">
+            <CardDescription className="text-gray-500 dark:text-gray-400">
               {statistics?.total_backers} Backers
             </CardDescription>
           </CardHeader>
@@ -91,14 +91,14 @@ export default function Dashboard() {
 
         {/* Fundraising Goal Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
-          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
+          <div className="absolute top-2 right-2 bg-cyan-100 p-2 rounded-full">
             <Target className="h-5 w-5 text-cyan-500" />
           </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Fundraising Goal
             </CardTitle>
-            <CardDescription className="text-cyan-500 dark:text-cyan-400">
+            <CardDescription className="text-gray-500 dark:text-gray-400">
               {user?.currency?.toUpperCase()}{' '}
               {statistics &&
                 parseFloat(statistics.total_fundraising_goal).toLocaleString()}
@@ -130,7 +130,7 @@ export default function Dashboard() {
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Total Donations
             </CardTitle>
-            <CardDescription className="text-green-500 dark:text-green-400">
+            <CardDescription className="text-gray-500 dark:text-gray-400">
               {user?.currency?.toUpperCase()}{' '}
               {statistics &&
                 parseFloat(
@@ -142,14 +142,14 @@ export default function Dashboard() {
 
         {/* Pending Withdrawals Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
-          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
+          <div className="absolute top-2 right-2 bg-lime-100 p-2 rounded-full">
             <Clock className="h-5 w-5 text-lime-500" />
           </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Pending Withdrawals
             </CardTitle>
-            <CardDescription className="text-lime-500 dark:text-lime-500">
+            <CardDescription className="text-gray-500 dark:text-gray-500">
               {user?.currency?.toUpperCase()}{' '}
               {statistics &&
                 parseFloat(statistics?.total_donated_amount).toLocaleString()}
@@ -159,14 +159,14 @@ export default function Dashboard() {
 
         {/* Recent Activity Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
-          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
+          <div className="absolute top-2 right-2 bg-purple-100 p-2 rounded-full">
             <BarChart2 className="h-5 w-5 text-purple-500" />
           </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Recent Activity
             </CardTitle>
-            <CardDescription className="text-purple-500 dark:text-purple-400">
+            <CardDescription className="text-gray-500 dark:text-gray-400">
               {statistics?.new_donations_this_week &&
                 Object.keys(statistics?.new_donations_this_week).length}{' '}
               new donations this week
@@ -176,14 +176,14 @@ export default function Dashboard() {
 
         {/* Campaign Performance Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
-          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
+          <div className="absolute top-2 right-2 bg-amber-100 p-2 rounded-full">
             <TrendingUp className="h-5 w-5 text-amber-500" />
           </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Performance Across Campaigns
             </CardTitle>
-            <CardDescription className="text-amber-500 dark:text-amber-500">
+            <CardDescription className="text-gray-500 dark:text-gray-500">
               {statistics?.total_performance_percentage}% of goal achieved
             </CardDescription>
           </CardHeader>
@@ -191,15 +191,15 @@ export default function Dashboard() {
 
         {/* Boost Campaign Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
-          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
-            <AlertCircle className="h-5 w-5 text-lime-500" />
+          <div className="absolute top-2 right-2 bg-red-100 p-2 rounded-full">
+            <AlertCircle className="h-5 w-5 text-red-500" />
           </div>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-semibold text-red-600 dark:text-gray-400">
               <AlertCircle className="text-xl" />
               <span>Attention</span>
             </CardTitle>
-            <CardDescription className="text-red-500 dark:text-red-400">
+            <CardDescription className="text-gray-500 dark:text-neutral-400">
               You must withdraw your funds in chunks as you fundraise. Learn
               more{' '}
               <a
