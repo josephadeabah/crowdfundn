@@ -11,7 +11,6 @@ import { generateRandomString } from '@/app/utils/helpers/generate.random-string
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
-import ErrorPage from '../errorpage/ErrorPage';
 
 interface RewardCardProps {
   campaign: CampaignResponseDataType;
@@ -82,14 +81,6 @@ const RewardCard: React.FC<RewardCardProps> = ({
 
   if (loading) {
     return <CampaignCardLoader />;
-  }
-
-  if (error) {
-    return (
-      <div className="w-full">
-        <ErrorPage />
-      </div>
-    );
   }
 
   return (
