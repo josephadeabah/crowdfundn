@@ -17,6 +17,17 @@ import moment from 'moment'; // Import moment
 import DashboardCharts from '../components/charts/DashboardCharts';
 import { FiPlusCircle } from 'react-icons/fi';
 import DonationByCountryCharts from '../components/charts/DonationByCountryChart';
+import {
+  PlusCircle,
+  Users,
+  Target,
+  Activity,
+  DollarSign,
+  Clock,
+  BarChart2,
+  AlertCircle,
+  TrendingUp,
+} from 'lucide-react';
 
 export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
@@ -47,21 +58,27 @@ export default function Dashboard() {
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Add Campaign Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 flex flex-col items-center justify-center">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 flex flex-col items-center justify-center relative">
+          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
+            <PlusCircle className="h-5 w-5 text-fundify-primary" />
+          </div>
           <CardHeader className="text-center"></CardHeader>
           <Link
             href="/account/dashboard/create"
             className="text-lg font-semibold text-gray-600 dark:text-gray-400 cursor-pointer"
           >
             <div className="mt-4 flex flex-col items-center">
-              <FiPlusCircle className="text-4xl text-green-500 dark:text-green-300 mb-2" />
+              <PlusCircle className="text-4xl text-green-500 dark:text-green-300 mb-2" />
               Add Campaign
             </div>
           </Link>
         </Card>
 
         {/* Total Backers Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
+            <Users className="h-5 w-5 text-fundify-primary" />
+          </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Total Backers
@@ -73,7 +90,10 @@ export default function Dashboard() {
         </Card>
 
         {/* Fundraising Goal Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
+            <Target className="h-5 w-5 text-fundify-primary" />
+          </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Fundraising Goal
@@ -87,7 +107,10 @@ export default function Dashboard() {
         </Card>
 
         {/* Active Campaigns Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
+            <Activity className="h-5 w-5 text-fundify-primary" />
+          </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Active Campaigns
@@ -99,7 +122,10 @@ export default function Dashboard() {
         </Card>
 
         {/* Total Donations Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
+            <DollarSign className="h-5 w-5 text-fundify-primary" />
+          </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Total Donations
@@ -115,7 +141,10 @@ export default function Dashboard() {
         </Card>
 
         {/* Pending Withdrawals Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
+            <Clock className="h-5 w-5 text-fundify-primary" />
+          </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Pending Withdrawals
@@ -129,7 +158,10 @@ export default function Dashboard() {
         </Card>
 
         {/* Recent Activity Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
+            <BarChart2 className="h-5 w-5 text-fundify-primary" />
+          </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Recent Activity
@@ -143,7 +175,10 @@ export default function Dashboard() {
         </Card>
 
         {/* Campaign Performance Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
+            <TrendingUp className="h-5 w-5 text-fundify-primary" />
+          </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Performance Across Campaigns
@@ -155,13 +190,15 @@ export default function Dashboard() {
         </Card>
 
         {/* Boost Campaign Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
+            <AlertCircle className="h-5 w-5 text-fundify-primary" />
+          </div>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-semibold text-red-600 dark:text-gray-400">
-              <InfoCircledIcon className="text-xl" />
+              <AlertCircle className="text-xl" />
               <span>Attention</span>
             </CardTitle>
-
             <CardDescription className="text-zinc-500 dark:text-neutral-400">
               You must withdraw your funds in chunks as you fundraise. Learn
               more{' '}
