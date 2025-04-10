@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import CampaignCard from './CampaignCard';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
+import ErrorPage from '../errorpage/ErrorPage';
 
 interface CampaignCarouselProps {
   campaigns: CampaignResponseDataType[] | undefined;
@@ -62,6 +63,10 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
           </div>
         </div>
       );
+    }
+
+    if (error) {
+      return <ErrorPage />;
     }
 
     if (campaigns && campaigns.length > 0) {
