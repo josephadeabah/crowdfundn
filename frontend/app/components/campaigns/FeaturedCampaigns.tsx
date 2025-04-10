@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useCampaignContext } from '../../context/account/campaign/CampaignsContext';
 import CampaignCarousel from './CampaignCarousel';
 import RewardCarousel from './RewardCarousel';
+import FundingTypes from '@/app/molecules/FundingTypes';
 
 const FeaturedCampaigns = () => {
   const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
@@ -48,6 +49,9 @@ const FeaturedCampaigns = () => {
           loading={loading}
           error={error}
         />
+        <div className="bg-gray-50 py-12">
+          <FundingTypes />
+        </div>
         <div className="flex flex-col md:flex-row md:items-center justify-between">
           <div className="animate-fade-up">
             <span className="inline-block px-3 py-1 text-xs font-semibold bg-orange-500/10 text-orange-500 rounded-full mb-2">
