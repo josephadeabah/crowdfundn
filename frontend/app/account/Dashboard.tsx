@@ -142,7 +142,7 @@ export default function Dashboard() {
 
         {/* Pending Withdrawals Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
-          <div className="absolute top-2 right-2 bg-lime-100 p-2 rounded-full">
+          <div className="absolute top-2 right-2 bg-lime-50 p-2 rounded-full">
             <Clock className="h-5 w-5 text-lime-500" />
           </div>
           <CardHeader>
