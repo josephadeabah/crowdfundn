@@ -285,8 +285,8 @@ const HowItWorks = () => {
               <h3 className="text-xl font-bold mb-3 relative">
                 Equity-Based
                 <span className="ml-3 bg-yellow-500 text-white px-2 py-1 rounded-full text-sm font-medium align-middle">
-                coming soon
-              </span>
+                  coming soon
+                </span>
               </h3>
               <p className="text-gray-600 mb-4">
                 Offer equity shares in your business to investors who believe in
