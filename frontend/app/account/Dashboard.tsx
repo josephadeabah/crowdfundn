@@ -68,7 +68,6 @@ export default function Dashboard() {
             className="text-lg font-semibold text-gray-600 dark:text-gray-400 cursor-pointer"
           >
             <div className="mt-4 flex flex-col items-center">
-              <PlusCircle className="text-4xl text-gray-600 dark:text-gray-300 mb-2" />
               Add Campaign
             </div>
           </Link>
