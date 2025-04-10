@@ -22,7 +22,10 @@ const PartnerProgram = () => {
   const partners: Partner[] = partnersData.partnersprogram;
 
   return (
-    <div className="py-16 bg-gradient-to-br from-fundify-muted to-white">
+    <div className="py-16 bg-gradient-to-br from-fundify-muted to-white relative">
+      <div className="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium z-10">
+        Coming Soon
+      </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           <div className="max-w-xl">
