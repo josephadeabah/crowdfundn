@@ -76,7 +76,7 @@ export default function Dashboard() {
 
         {/* Total Backers Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
-          <div className="absolute top-2 right-2 bg-emerald-100 p-2 rounded-full">
+          <div className="absolute top-2 right-2 bg-emerald-50 p-2 rounded-full">
             <Users className="h-5 w-5 text-emerald-500" />
           </div>
           <CardHeader>
@@ -108,7 +108,7 @@ export default function Dashboard() {
 
         {/* Active Campaigns Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
-          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
+          <div className="absolute top-2 right-2 bg-gray-50 p-2 rounded-full">
             <Activity className="h-5 w-5 text-gray-500" />
           </div>
           <CardHeader>
