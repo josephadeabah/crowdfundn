@@ -67,9 +67,7 @@ export default function Dashboard() {
             href="/account/dashboard/create"
             className="text-lg font-semibold text-gray-600 dark:text-gray-400 cursor-pointer"
           >
-            <div className="mt-4 flex flex-col items-center">
-              Add Campaign
-            </div>
+            <div className="mt-4 flex flex-col items-center">Add Campaign</div>
           </Link>
         </Card>
 
