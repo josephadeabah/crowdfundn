@@ -82,7 +82,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
           {pair.map((campaign) => (
             <div
               key={campaign.id}
-              className="snap-start flex-none w-[220px] md:w-[280px] my-5"
+              className="snap-start flex-none w-[220px] md:w-[280px] my-3"
               style={{ animationDelay: `${pairIndex * 100}ms` }}
             >
               <CampaignCard
