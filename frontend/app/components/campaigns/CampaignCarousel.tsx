@@ -77,12 +77,12 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
       return createCampaignPairs(campaigns).map((pair, pairIndex) => (
         <div
           key={`pair-${pairIndex}`}
-          className="flex-shrink-0 grid grid-rows-2 gap-2 h-full px-10"
+          className="flex-shrink-0 grid grid-rows-2 gap-2 h-full"
         >
           {pair.map((campaign) => (
             <div
               key={campaign.id}
-              className="snap-start flex-none w-[220px] md:w-[280px]"
+              className="snap-start flex-none w-[220px] md:w-[280px] my-5"
               style={{ animationDelay: `${pairIndex * 100}ms` }}
             >
               <CampaignCard
@@ -130,7 +130,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
 
       <div
         ref={carouselRef}
-        className="grid auto-cols-[minmax(280px,1fr)] grid-flow-col gap-x-20 overflow-x-auto pb-3 -mx-1 px-1 scrollbar-hide"
+        className="flex overflow-x-auto space-x-10 pb-3 -mx-1 px-1 scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {showContent()}
