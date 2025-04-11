@@ -34,13 +34,13 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
 
   const scrollLeft = () => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+      carouselRef.current.scrollBy({ left: -400, behavior: 'smooth' });
     }
   };
 
   const scrollRight = () => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+      carouselRef.current.scrollBy({ left: 400, behavior: 'smooth' });
     }
   };
 
@@ -77,7 +77,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
       return createCampaignPairs(campaigns).map((pair, pairIndex) => (
         <div
           key={`pair-${pairIndex}`}
-          className="flex-shrink-0 grid grid-rows-2 gap-2 h-full"
+          className="flex-shrink-0 grid grid-rows-2 gap-2 h-full px-10"
         >
           {pair.map((campaign) => (
             <div
@@ -130,7 +130,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
 
       <div
         ref={carouselRef}
-        className="flex overflow-x-auto space-x-10 space-y-6 pb-3 -mx-1 px-1 scrollbar-hide"
+        className="grid auto-cols-[minmax(280px,1fr)] grid-flow-col gap-x-20 overflow-x-auto pb-3 -mx-1 px-1 scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {showContent()}
