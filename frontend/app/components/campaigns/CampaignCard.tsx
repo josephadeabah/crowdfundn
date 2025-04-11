@@ -215,7 +215,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 size="sm"
                 imageUrl={campaign?.fundraiser?.profile?.avatar}
               />
-              <span className="text-sm text-gray-700">
+              <span className="text-xs text-gray-800">
                 {campaign?.fundraiser?.profile?.name}
               </span>
             </div>
