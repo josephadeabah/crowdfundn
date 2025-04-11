@@ -130,7 +130,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
 
       <div
         ref={carouselRef}
-        className="flex overflow-x-auto space-x-10 pb-3 -mx-1 px-1 scrollbar-hide"
+        className="flex overflow-x-auto space-x-10 space-y-6 pb-3 -mx-1 px-1 scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {showContent()}
