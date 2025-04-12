@@ -55,7 +55,7 @@ const HomePage = () => {
         <div className="w-full">
           <PartnerProgram />
         </div>
-        <section className="mt-16">
+        <section className="mt-1">
           <BrandIdentity />
         </section>
         <div className="w-full bg-white">
