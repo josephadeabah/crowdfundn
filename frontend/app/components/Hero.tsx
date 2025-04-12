@@ -139,18 +139,18 @@ const Hero = () => {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 animate-fade-up animate-delay-300 w-full">
-  <button className="group px-4 sm:px-6 py-3 whitespace-nowrap bg-green-600 text-primary-foreground rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2 w-full sm:w-auto">
-    <Link
-      href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
-    >
-      Fundraise Now for Free
-    </Link>
-    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-  </button>
-  <button className="px-4 sm:px-6 py-3 whitespace-nowrap bg-transparent border border-border text-foreground rounded-md hover:bg-muted transition-colors w-full sm:w-auto">
-    <Link href="/how-it-works">How It Works</Link>
-  </button>
-</div>
+                  <button className="group px-4 sm:px-6 py-3 whitespace-nowrap bg-green-600 text-primary-foreground rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2 w-full sm:w-auto">
+                    <Link
+                      href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
+                    >
+                      Fundraise Now for Free
+                    </Link>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                  <button className="px-4 sm:px-6 py-3 whitespace-nowrap bg-transparent border border-border text-foreground rounded-md hover:bg-muted transition-colors w-full sm:w-auto">
+                    <Link href="/how-it-works">How It Works</Link>
+                  </button>
+                </div>
 
                 <div className="mt-12 flex flex-col sm:flex-row items-center gap-4 animate-fade-up animate-delay-400">
                   <div className="flex -space-x-3">
