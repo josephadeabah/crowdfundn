@@ -114,7 +114,7 @@ const Hero = () => {
           opacity: opacityValue,
         }}
       >
-        <div className="px-4 py-24 w-full">
+        <div className="px-4 py-12 w-full">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             {/* Left content */}
             <div className="w-full lg:w-1/2 space-y-8">
@@ -129,10 +129,10 @@ const Hero = () => {
                   people. Purpose. Momentum.
                 </div>
 
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
-                  <span className="text-green-500">Fund,</span>{' '}
-                  <span className="text-orange-500">Play,</span>{' '}
-                  <span className="text-gray-700">Earn Rewards</span>
+                <h1 className="text-2xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
+                  <span className="text-green-500">We’re Powered By People,</span>{' '}
+                  <span className="text-orange-500">Driven By Purpose,</span>{' '}
+                  <span className="text-gray-700">Rewarded With Impact</span>
                 </h1>
 
                 <p className="text-lg md:text-xl text-gray-500 mb-8 animate-fade-up delay-200">
