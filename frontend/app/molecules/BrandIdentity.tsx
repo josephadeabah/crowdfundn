@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  BrickWall,
-  Sparkles,
-  UserPlus,
-  Zap,
-  Handshake,
-} from 'lucide-react';
+import { BrickWall, Sparkles, UserPlus, Zap, Handshake } from 'lucide-react';
 
 const BrandIdentity = () => {
   return (
@@ -19,8 +13,9 @@ const BrandIdentity = () => {
               We're not waiting for saviors.
             </span>
             <span className="block text-gray-700">
-              We are building with the people who believe, invest, and rise
-              together.
+              We're where Africans and the diaspora unite to power progress. To
+              reward belief. To co-fund impact. To fuel a future we can all be
+              proud of.
             </span>
           </p>
         </div>
