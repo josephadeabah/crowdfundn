@@ -114,7 +114,7 @@ const Hero = () => {
           opacity: opacityValue,
         }}
       >
-        <div className="px-4 py-12 w-full">
+        <div className="px-4 py-24 w-full">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             {/* Left content */}
             <div className="w-full lg:w-1/2 space-y-8">
@@ -129,7 +129,7 @@ const Hero = () => {
 
                 <h1 className="text-2xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
                   <span className="text-green-500">Impact</span>{' '}
-                  <span className="text-orange-500">Accleration</span>{' '}
+                  <span className="text-orange-500">Acceleration</span>{' '}
                   <span className="text-gray-700">Platform</span>
                 </h1>
 
@@ -144,7 +144,7 @@ const Hero = () => {
                     <Link
                       href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
                     >
-                      Fundraise Now for Free
+                      Grow Now for Free
                     </Link>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </button>
