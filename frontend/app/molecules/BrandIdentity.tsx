@@ -24,7 +24,7 @@ const BrandIdentity = () => {
         <div className="py-6 border-y border-gray-200">
           <p className="text-xl font-medium text-gray-600 tracking-wide">
             <span className="flex flex-wrap gap-x-2">
-              <span>From Accra to Nairobi,</span>
+              <span>From Accra to Cape Town,</span>
               <span>London to Atlanta —</span>
             </span>
             <span className="block text-fundify-primary font-semibold mt-3 text-2xl">
