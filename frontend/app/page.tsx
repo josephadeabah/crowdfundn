@@ -7,6 +7,7 @@ import PartnersCarousel from './molecules/PartnersCarousel';
 import PartnerProgram from './components/partnerprogram/PartnerProgram';
 import { AIPoweredSection, GameElements } from './molecules/InfoSections';
 import BlogPosts from './components/blogs/BlogPosts';
+import BrandIdentity from './molecules/BrandIdentity';
 
 const HomePage = () => {
   useEffect(() => {
@@ -54,6 +55,9 @@ const HomePage = () => {
         <div className="w-full">
           <PartnerProgram />
         </div>
+        <section className="mt-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <BrandIdentity/>
+        </section>
         <div className="w-full bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <PartnersCarousel />

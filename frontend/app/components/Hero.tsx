@@ -124,7 +124,8 @@ const Hero = () => {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-600 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600"></span>
                   </span>
-                  We’re Powered By People, Driven By Purpose, Rewarded With Impact
+                  We’re Powered By People, Driven By Purpose, Rewarded With
+                  Impact
                 </div>
 
                 <h1 className="text-2xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
@@ -134,7 +135,7 @@ const Hero = () => {
                 </h1>
 
                 <p className="text-lg md:text-xl text-gray-500 mb-8 animate-fade-up delay-200">
-                Across cities, villages, streets, and screens, dreams are
+                  Across cities, villages, streets, and screens, dreams are
                   burning bright. But dreams don’t fund themselves. They need
                   people. Purpose. Momentum.
                 </p>
