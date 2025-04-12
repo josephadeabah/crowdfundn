@@ -24,7 +24,7 @@ const BlogPosts: React.FC = () => {
     return (
       <div className="max-w-7xl mx-auto px-4 py-12">
         <h2 className="text-3xl font-bold text-left mb-10">
-          Crowdfunding Tips
+          Hive Builder Tips
         </h2>
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <p className="text-gray-500 mb-4">

@@ -3,11 +3,11 @@ import { BrickWall, Sparkles, UserPlus, Zap, Handshake } from 'lucide-react';
 
 const BrandIdentity = () => {
   return (
-    <div className="flex flex-col lg:flex-row gap-12 items-start">
+    <div className="flex flex-col lg:flex-row gap-12 items-start py-8">
       {/* Left Container - Mission and Identity */}
       <div className="lg:w-1/2 space-y-8">
         {/* Mission statement */}
-        <div className="space-y-4">
+        <div className="space-y-4 py-6">
           <p className="text-2xl font-light">
             <span className="block font-medium text-gray-900">
               We're not waiting for saviors.
