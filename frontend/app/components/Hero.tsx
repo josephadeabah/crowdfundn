@@ -138,20 +138,19 @@ const Hero = () => {
                   and exclusive rewards for creators and backers.
                 </p>
 
-                <div className="flex flex-col sm:flex-row gap-4 animate-fade-up animate-delay-300">
-  {/* Fundraise Now Button - Left aligned on mobile */}
-  <button className="group px-4 sm:px-6 py-3 bg-green-600 text-primary-foreground rounded-md hover:bg-green-400 transition-colors flex items-center justify-start sm:justify-center gap-2 w-full sm:w-auto">
-    <Link href={`${user ? '/account/dashboard/create' : '/auth/register'}`}>
-      Fundraise Now for Free
-    </Link>
-    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-  </button>
-
-  {/* How It Works Button - Right aligned on mobile */}
-  <button className="px-4 sm:px-6 py-3 bg-transparent border border-border text-foreground rounded-md hover:bg-muted transition-colors flex justify-end sm:justify-center w-full sm:w-auto">
-    <Link href="/how-it-works">How It Works</Link>
-  </button>
-</div>
+                <div className="flex flex-row gap-4 animate-fade-up animate-delay-300">
+                  <button className="group px-6 py-3 bg-green-600 text-primary-foreground rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2">
+                    <Link
+                      href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
+                    >
+                      Fundraise Now for Free
+                    </Link>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                  <button className="px-6 py-3 bg-transparent border border-border text-foreground rounded-md hover:bg-muted transition-colors">
+                    <Link href="/how-it-works">How It Works</Link>
+                  </button>
+                </div>
 
                 <div className="mt-12 flex flex-col sm:flex-row items-center gap-4 animate-fade-up animate-delay-400">
                   <div className="flex -space-x-3">
