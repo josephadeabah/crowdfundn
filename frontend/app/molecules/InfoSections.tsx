@@ -4,9 +4,13 @@ import {
   Check,
   Gift,
   Lightbulb,
+  BrickWall,
+  Sparkles,
   TrendingUp,
   Trophy,
+  UserPlus,
   Users,
+  Zap,
 } from 'lucide-react';
 
 export const AIFeatureCard = ({
@@ -55,7 +59,7 @@ export const GameElements = () => (
             We believe funding is not charity — it's collaborative power
           </p>
           <div className="flex space-x-2 mt-4">
-            {['Collaborative', 'Empowering', 'Transformative'].map(
+            {['Imapct Maker', 'Founding Supporter', 'Hive Builder'].map(
               (badge, i) => (
                 <div
                   key={i}
@@ -111,26 +115,64 @@ export const GameElements = () => (
         </div>
       </div>
 
-      <div className="mt-16 text-center max-w-4xl mx-auto">
-        <p className="text-lg mb-6">
-          We're not waiting for saviors.
-          <br />
-          We are building with the people who believe, invest, and rise
-          together.
-        </p>
-        <p className="text-xl font-medium mb-8">
-          We are Bantu Hive —<br />
-          Africa's Launchpad. The Diaspora's Bridge. Your Impact Engine.
-        </p>
-        <button className="px-8 py-3 bg-fundify-primary text-white rounded-md hover:bg-fundify-primary/90 transition-colors">
-          Join the movement
-        </button>
-        <p className="mt-6 text-gray-600">
-          Build what matters.
-          <br />
-          Let's raise more than funds — let's raise a generation.
-        </p>
-      </div>
+      <div className="mt-16 max-w-3xl mx-auto space-y-8">
+  {/* Mission statement with flex emphasis */}
+  <div className="flex flex-col items-center text-center space-y-4">
+    <p className="text-2xl font-light">
+      <span className="block font-medium text-gray-900">We're not waiting for saviors.</span>
+      <span className="block text-gray-700">We are building with the people who believe, invest, and rise together.</span>
+    </p>
+  </div>
+
+  {/* Geographic connection with flex alignment */}
+  <div className="flex justify-center py-4 border-y border-gray-200">
+    <p className="text-lg font-medium text-gray-600 tracking-wide">
+      <span className="flex flex-wrap justify-center gap-x-2">
+        <span>From Accra to Nairobi,</span>
+        <span>London to Atlanta —</span>
+      </span>
+      <span className="block text-fundify-primary font-semibold mt-2">we are the Hive.</span>
+    </p>
+  </div>
+
+  {/* Core identity with responsive flex layout */}
+  <div className="flex flex-col items-center space-y-3">
+    <h3 className="text-3xl font-bold text-gray-900">
+      We are <span className="text-fundify-primary">Bantu Hive</span>
+    </h3>
+    <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-lg font-medium text-gray-700">
+      <span className="flex items-center">
+        <Sparkles className="h-5 w-5 mr-1 text-fundify-accent" />
+        Africa's Launchpad
+      </span>
+      <span className="flex items-center">
+        <BrickWall className="h-5 w-5 mr-1 text-fundify-accent" />
+        The Diaspora's Bridge
+      </span>
+      <span className="flex items-center">
+        <Zap className="h-5 w-5 mr-1 text-fundify-accent" />
+        Your Impact Engine
+      </span>
+    </div>
+  </div>
+
+  {/* Call to action with flex center */}
+  <div className="flex justify-center pt-4">
+    <button className="flex items-center px-10 py-4 bg-fundify-primary text-white text-lg font-medium rounded-lg hover:bg-fundify-primary/90 transition-all shadow-md hover:shadow-lg gap-2">
+      <UserPlus className="h-5 w-5" />
+      Join the movement
+    </button>
+  </div>
+
+  {/* Closing statement with flex column */}
+  <div className="flex flex-col items-center pt-6 space-y-2">
+    <p className="text-xl font-medium text-gray-800">Build what matters.</p>
+    <p className="flex flex-wrap justify-center text-lg text-gray-600 gap-x-1">
+      <span>Let's raise more than funds —</span>
+      <span className="font-medium text-fundify-accent">let's raise a generation.</span>
+    </p>
+  </div>
+</div>
     </div>
   </div>
 );
