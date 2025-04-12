@@ -124,22 +124,19 @@ const Hero = () => {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-600 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600"></span>
                   </span>
-                  Across cities, villages, streets, and screens, dreams are
-                  burning bright. But dreams don’t fund themselves. They need
-                  people. Purpose. Momentum.
+                  We’re Powered By People, Driven By Purpose, Rewarded With Impact
                 </div>
 
                 <h1 className="text-2xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
-                  <span className="text-green-500">We’re Powered By People,</span>{' '}
-                  <span className="text-orange-500">Driven By Purpose,</span>{' '}
-                  <span className="text-gray-700">Rewarded With Impact</span>
+                  <span className="text-green-500">Impact</span>{' '}
+                  <span className="text-orange-500">Accleration</span>{' '}
+                  <span className="text-gray-700">Platform</span>
                 </h1>
 
                 <p className="text-lg md:text-xl text-gray-500 mb-8 animate-fade-up delay-200">
-                  Bantu Hive is not a crowdfunding site. We’re where bold
-                  African ideas get their wings — powered by people, driven by
-                  purpose, and rewarded with impact. We’re not here to help you
-                  raise money. We’re here to enable you raise movements.
+                Across cities, villages, streets, and screens, dreams are
+                  burning bright. But dreams don’t fund themselves. They need
+                  people. Purpose. Momentum.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 animate-fade-up animate-delay-300">
