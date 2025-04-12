@@ -88,7 +88,7 @@ const SuggestedCampaignsComponent = ({
 
   if (loading)
     return (
-      <div className="w-full max-w-7xl mx-auto mb-8">
+      <div className="w-full max-w-7xl mx-auto mb-1">
         <CampaignCardLoader />
       </div>
     );
@@ -101,7 +101,7 @@ const SuggestedCampaignsComponent = ({
     );
 
   return (
-    <div className="w-full max-w-7xl mx-auto bg-white md:p-4 mb-8 rounded-lg">
+    <div className="w-full max-w-7xl mx-auto bg-white md:p-4 mb-1 rounded-lg">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
