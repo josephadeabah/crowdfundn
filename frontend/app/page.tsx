@@ -55,7 +55,7 @@ const HomePage = () => {
         <div className="w-full">
           <PartnerProgram />
         </div>
-        <section className="mt-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="mt-16 px-4 sm:px-6 lg:px-8">
           <BrandIdentity />
         </section>
         <div className="w-full bg-white">
