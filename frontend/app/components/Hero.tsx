@@ -138,7 +138,7 @@ const Hero = () => {
                   and exclusive rewards for creators and backers.
                 </p>
 
-                <div className="flex sm:flex-col md:flex-row gap-4 animate-fade-up animate-delay-300">
+                <div className="flex sm:flex-col md:flex-row md:gap-4 sm:gap-2 animate-fade-up animate-delay-300">
                   <button className="group px-6 py-3 whitespace-nowrap flex-shrink-0 bg-green-600 text-primary-foreground rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2">
                     <Link
                       href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
