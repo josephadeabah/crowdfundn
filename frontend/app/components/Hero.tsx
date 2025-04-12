@@ -139,20 +139,18 @@ const Hero = () => {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 animate-fade-up animate-delay-300">
-                  <div className="flex justify-between w-full sm:w-auto">
-                    <button className="group px-6 py-3 bg-green-600 text-primary-foreground rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2 sm:mr-0 mr-auto">
-                      <Link
-                        href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
-                      >
-                        Fundraise Now for Free
-                      </Link>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                    <button className="px-6 py-3 bg-transparent border border-border text-foreground rounded-md hover:bg-muted transition-colors sm:ml-0 ml-auto">
-                      <Link href="/how-it-works">How It Works</Link>
-                    </button>
-                  </div>
-                </div>
+  <button className="group px-6 py-3 bg-green-600 text-primary-foreground rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2 sm:mr-auto">
+    <Link
+      href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
+    >
+      Fundraise Now for Free
+    </Link>
+    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+  </button>
+  <button className="px-6 py-3 bg-transparent border border-border text-foreground rounded-md hover:bg-muted transition-colors sm:ml-auto">
+    <Link href="/how-it-works">How It Works</Link>
+  </button>
+</div>
 
                 <div className="mt-12 flex flex-col sm:flex-row items-center gap-4 animate-fade-up animate-delay-400">
                   <div className="flex -space-x-3">
