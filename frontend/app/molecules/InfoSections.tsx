@@ -6,6 +6,7 @@ import {
   Lightbulb,
   TrendingUp,
   Trophy,
+  DollarSign,
   Users,
 } from 'lucide-react';
 
@@ -44,7 +45,7 @@ export const GameElements = () => (
         <div className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center space-x-4 mb-4">
             <div className="bg-fundify-primary/10 p-3 rounded-full">
-              <Trophy className="h-6 w-6 text-fundify-primary" />
+              <DollarSign className="h-6 w-6 text-fundify-primary" />
             </div>
             <h3 className="font-bold text-xl">Our Funding Principle</h3>
           </div>
@@ -84,7 +85,7 @@ export const GameElements = () => (
         <div className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center space-x-4 mb-4">
             <div className="bg-fundify-primary/10 p-3 rounded-full">
-              <Gift className="h-6 w-6 text-fundify-primary" />
+              <Users className="h-6 w-6 text-fundify-primary" />
             </div>
             <h3 className="font-bold text-xl">Our Community Vision</h3>
           </div>
