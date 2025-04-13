@@ -3,8 +3,11 @@ import React, { useEffect, useRef } from 'react';
 import { Button } from '@/app/components/ui/button';
 import TimelineSection from '@/app/molecules/TimelineSection';
 import { ArrowRight, Heart, Lightbulb, TrendingUp } from 'lucide-react';
+import { useAuth } from '../context/auth/AuthContext';
+import { motion } from 'framer-motion';
 
 const About = () => {
+  const { user } = useAuth();
   const sectionsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
@@ -235,13 +238,19 @@ const About = () => {
               <p className="text-xl text-gray-600 mb-8">
                 Join Bantu Hive today and start turning your ideas into reality.
               </p>
-              <Button
-                size="lg"
-                className="bg-fundify-primary hover:bg-fundify-primary/90 text-white"
-              >
-                Start a Campaign
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+              <div className="text-center">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300 "
+                >
+                  <a
+                    href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
+                  >
+                    Start Fundraising Now
+                  </a>
+                </motion.button>
+              </div>
             </div>
           </div>
         </section>
