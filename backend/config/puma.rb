@@ -15,11 +15,12 @@ threads min_threads_count, max_threads_count
 if ENV['RAILS_ENV'] == 'production'
   require 'concurrent-ruby'
   # worker_count = Integer(ENV.fetch('WEB_CONCURRENCY') { Concurrent.physical_processor_count })
-  worker_count = Integer(ENV.fetch('WEB_CONCURRENCY', 1)) # force 1 worker on small plans
-  workers worker_count if worker_count > 1
+  # worker_count = Integer(ENV.fetch('WEB_CONCURRENCY', 1)) # force 1 worker on small plans
+  # workers worker_count if worker_count > 1
+  workers 0 # Disable workers (run single-mode)
 
   # Increase worker timeout for production
-  worker_timeout 120 # Set timeout to 120 seconds (adjust as needed)
+  # worker_timeout 120 # Set timeout to 120 seconds (adjust as needed)
 end
 
 # Specifies the `worker_timeout` threshold that Puma will use to wait before
