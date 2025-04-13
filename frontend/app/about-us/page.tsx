@@ -52,9 +52,9 @@ const About = () => {
                   </span>
                 </h1>
                 <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                  Bantu Hive is a crowdfunding platform that connects
-                  innovators, creators, and change-makers with backers who are
-                  passionate about bringing ideas to life.
+                  Bantu Hive is an impact acceleration platform that connects
+                  innovators, creators, and change-makers with impact makers who
+                  are passionate about bringing ideas to life.
                 </p>
                 <Button
                   className="bg-fundify-primary hover:bg-fundify-primary/90 text-white"
@@ -110,9 +110,10 @@ const About = () => {
                   <div className="absolute -bottom-3 left-0 w-20 h-1 bg-fundify-primary"></div>
                 </h2>
                 <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                  Our mission is to provide an accessible, transparent, and engaging platform for
-                  funding initiatives that drive positive change across Africa. We believe in the potential of every idea and
-                  strive to provide a platform that fosters innovation,
+                  Our mission is to provide an accessible, transparent, and
+                  engaging platform for funding initiatives that drive positive
+                  change across Africa. We believe in the potential of every
+                  idea and strive to provide a platform that fosters innovation,
                   collaboration, and positive change.
                 </p>
                 <div className="space-y-6">
@@ -139,8 +140,8 @@ const About = () => {
                         Building Communities
                       </h3>
                       <p className="text-gray-600">
-                        We connect creators with passionate backers who share
-                        their vision.
+                        We connect creators with passionate impact makers who
+                        share their vision.
                       </p>
                     </div>
                   </div>
@@ -241,7 +242,7 @@ const About = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-white text-gray-700 dark:bg-gray-950 dark:text-gray-50 px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300 "
+                  className="bg-fundify-primary text-white dark:bg-gray-950 dark:text-gray-50 px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-100 hover:text-gray-700 hover:scale-105 transition-transform duration-300 "
                 >
                   <a
                     href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
