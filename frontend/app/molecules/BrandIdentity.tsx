@@ -1,7 +1,10 @@
 import React from 'react';
 import { BrickWall, Sparkles, UserPlus, Zap, Handshake } from 'lucide-react';
+import { useAuth } from '../context/auth/AuthContext';
+import Link from 'next/link';
 
 const BrandIdentity = () => {
+  const { user } = useAuth();
   return (
     <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 items-start py-8 px-4 sm:px-6 lg:px-8">
       {/* Left Container - Mission and Identity */}
@@ -81,7 +84,11 @@ const BrandIdentity = () => {
             </p>
             <button className="w-full max-w-xs mx-auto flex items-center justify-center px-8 py-4 bg-fundify-primary text-white text-lg font-medium rounded-lg hover:bg-fundify-primary/90 transition-all shadow-md hover:shadow-lg gap-3">
               <UserPlus className="h-5 w-5" />
-              Join the movement
+              <Link
+                href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
+              >
+                Join the movement
+              </Link>
             </button>
           </div>
 
