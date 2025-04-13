@@ -65,12 +65,12 @@ export const dropdownLinks: DropdownLinks = {
       description: 'Reach out to our Eswatini office.',
     },
   ],
-  Donate: [
+  Fund: [
     {
       label: 'By Category',
       href: '/explore/category',
       icon: SquaresPlusIcon,
-      description: 'Donate to campaigns by category.',
+      description: 'Fund campaigns by category.',
     },
     {
       label: 'By Advance Filtering',
@@ -81,16 +81,16 @@ export const dropdownLinks: DropdownLinks = {
   ],
   Leaderboard: [
     {
-      label: 'Backers',
+      label: 'Impact Makers',
       href: '/leaderboard/backers',
       icon: UserGroupIcon,
-      description: 'See the top backers on our platform.',
+      description: 'See the top impact makers on our platform.',
     },
     {
-      label: 'Fundraisers',
+      label: 'Hive Builders',
       href: '/leaderboard/fundraisers',
       icon: UserGroupIcon,
-      description: 'See the top fundraisers on our platform.',
+      description: 'See the top hive builders on our platform.',
     },
   ],
 } as const;

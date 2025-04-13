@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useCampaignContext } from '../../context/account/campaign/CampaignsContext';
 import CampaignCarousel from './CampaignCarousel';
 import RewardCarousel from './RewardCarousel';
+import FundingTypes from '@/app/molecules/FundingTypes';
 
 const FeaturedCampaigns = () => {
   const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
@@ -48,21 +49,24 @@ const FeaturedCampaigns = () => {
           loading={loading}
           error={error}
         />
+      </div>
+      <div className="bg-gray-50 py-12">
+        <FundingTypes />
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between">
           <div className="animate-fade-up">
-            <span className="inline-block px-3 py-1 text-xs font-semibold bg-orange-500/10 text-orange-500 rounded-full mb-2">
+            <span className="inline-block px-3 py-1 mt-3 text-xs font-semibold bg-orange-500/10 text-orange-500 rounded-full">
               Trending Now
             </span>
           </div>
         </div>
-
         <CampaignCarousel
-          title="Trending Fundraisers"
+          title="Trending Hive Builders"
           campaigns={displayedCampaigns}
           loading={loading}
           error={error}
         />
-
         <div className="no-scrollbar"></div>
       </div>
     </div>

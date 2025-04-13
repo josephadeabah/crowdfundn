@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import CampaignCard from './CampaignCard';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
+import ErrorPage from '../errorpage/ErrorPage';
 
 interface CampaignCarouselProps {
   campaigns: CampaignResponseDataType[] | undefined;
@@ -33,13 +34,13 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
 
   const scrollLeft = () => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+      carouselRef.current.scrollBy({ left: -400, behavior: 'smooth' });
     }
   };
 
   const scrollRight = () => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+      carouselRef.current.scrollBy({ left: 400, behavior: 'smooth' });
     }
   };
 
@@ -64,6 +65,14 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
       );
     }
 
+    if (error) {
+      return (
+        <div className="w-full">
+          <ErrorPage />
+        </div>
+      );
+    }
+
     if (campaigns && campaigns.length > 0) {
       return createCampaignPairs(campaigns).map((pair, pairIndex) => (
         <div
@@ -73,7 +82,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
           {pair.map((campaign) => (
             <div
               key={campaign.id}
-              className="snap-start flex-none w-[220px] md:w-[280px]"
+              className="snap-start flex-none w-[220px] md:w-[280px] my-3"
               style={{ animationDelay: `${pairIndex * 100}ms` }}
             >
               <CampaignCard

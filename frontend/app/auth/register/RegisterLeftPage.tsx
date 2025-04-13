@@ -6,7 +6,7 @@ export default function RegisterLeftPage() {
       <div className="mx-auto flex flex-col items-center gap-y-16 px-6 py-32">
         <div className="mx-auto text-center">
           <h2 className="mb-3 text-3xl font-bold lg:text-4xl">
-            Explore Africa's leading Crowdfunding platform
+            Explore Africa's leading Impact Acceleration Platform
           </h2>
           <p className="text-base">
             Our platform provides you with the tools you need to raise funds. We

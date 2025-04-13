@@ -83,10 +83,6 @@ const RewardCard: React.FC<RewardCardProps> = ({
     return <CampaignCardLoader />;
   }
 
-  if (error) {
-    return <div className="text-red-500">{error}</div>;
-  }
-
   return (
     <div
       className="group relative overflow-hidden bg-background hover:bg-gray-50 hover:shadow-md transition-all duration-300 h-full flex flex-col"

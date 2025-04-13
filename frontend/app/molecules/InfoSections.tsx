@@ -6,6 +6,7 @@ import {
   Lightbulb,
   TrendingUp,
   Trophy,
+  DollarSign,
   Users,
 } from 'lucide-react';
 
@@ -33,29 +34,26 @@ export const GameElements = () => (
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
         <div className="inline-block px-3 py-1 mb-4 rounded-full bg-fundify-accent/10 text-fundify-accent text-sm font-medium">
-          Gamified Experience
+          Our Philosophy
         </div>
-        <h2 className="text-3xl font-bold mb-4">Level Up Your Crowdfunding</h2>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          Earn rewards, unlock achievements, and compete with others while
-          funding projects you love
-        </p>
+        <h2 className="text-3xl font-bold mb-4">
+          We're a Community-Driven Growth Engine
+        </h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-sm p-6 ">
+        <div className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center space-x-4 mb-4">
             <div className="bg-fundify-primary/10 p-3 rounded-full">
-              <Trophy className="h-6 w-6 text-fundify-primary" />
+              <DollarSign className="h-6 w-6 text-fundify-primary" />
             </div>
-            <h3 className="font-bold text-xl">Backer Achievements</h3>
+            <h3 className="font-bold text-xl">Our Funding Principle</h3>
           </div>
           <p className="text-gray-600 mb-4">
-            Unlock special badges and rewards as you back more projects and help
-            creators succeed.
+            We believe funding is not charity — it's collaborative power
           </p>
           <div className="flex space-x-2 mt-4">
-            {['Silver Supporter', 'Early Bird', 'First Funder'].map(
+            {['Impact Maker', 'Founding Supporter', 'Hive Builder'].map(
               (badge, i) => (
                 <div
                   key={i}
@@ -73,40 +71,38 @@ export const GameElements = () => (
             <div className="bg-fundify-accent/10 p-3 rounded-full">
               <Award className="h-6 w-6 text-fundify-accent" />
             </div>
-            <h3 className="font-bold text-xl">Creator Levels</h3>
+            <h3 className="font-bold text-xl">Our Reward Ethos</h3>
           </div>
           <p className="text-gray-600 mb-4">
-            Gain experience points and level up your creator profile to unlock
-            premium features and greater visibility.
+            We believe rewards are not transactions — they're thank-you legacies
           </p>
           <div className="w-full bg-gray-200 h-2 rounded-full mt-4">
-            <div className="bg-fundify-accent h-2 rounded-full w-3/4"></div>
+            <div className="bg-fundify-accent h-2 rounded-full w-full"></div>
           </div>
-          <div className="text-right text-sm mt-1">Level 3 (75%)</div>
+          <div className="text-right text-sm mt-1">Legacy Building (100%)</div>
         </div>
 
         <div className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center space-x-4 mb-4">
             <div className="bg-fundify-primary/10 p-3 rounded-full">
-              <Gift className="h-6 w-6 text-fundify-primary" />
+              <Users className="h-6 w-6 text-fundify-primary" />
             </div>
-            <h3 className="font-bold text-xl">Daily Quests</h3>
+            <h3 className="font-bold text-xl">Our Community Vision</h3>
           </div>
           <p className="text-gray-600 mb-4">
-            Complete daily challenges to earn bonus rewards and special perks
-            for your campaigns.
+            We believe community is not just support — it's co-creation
           </p>
           <div className="mt-4 space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm">Share a campaign</span>
+              <span className="text-sm">From Accra to Nairobi</span>
               <Check className="h-4 w-4 text-fundify-primary" />
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm">Back a new project</span>
-              <div className="h-4 w-4 border border-gray-300 rounded-sm"></div>
+              <span className="text-sm">London to Atlanta</span>
+              <Check className="h-4 w-4 text-fundify-primary" />
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm">Update your profile</span>
+              <span className="text-sm">We are the Hive</span>
               <Check className="h-4 w-4 text-fundify-primary" />
             </div>
           </div>

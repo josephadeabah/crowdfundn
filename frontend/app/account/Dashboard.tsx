@@ -17,6 +17,17 @@ import moment from 'moment'; // Import moment
 import DashboardCharts from '../components/charts/DashboardCharts';
 import { FiPlusCircle } from 'react-icons/fi';
 import DonationByCountryCharts from '../components/charts/DonationByCountryChart';
+import {
+  PlusCircle,
+  Users,
+  Target,
+  Activity,
+  DollarSign,
+  Clock,
+  BarChart2,
+  AlertCircle,
+  TrendingUp,
+} from 'lucide-react';
 
 export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
@@ -47,38 +58,44 @@ export default function Dashboard() {
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Add Campaign Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 flex flex-col items-center justify-center">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 flex flex-col items-center justify-center relative">
+          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
+            <PlusCircle className="h-5 w-5 text-fundify-primary" />
+          </div>
           <CardHeader className="text-center"></CardHeader>
           <Link
             href="/account/dashboard/create"
             className="text-lg font-semibold text-gray-600 dark:text-gray-400 cursor-pointer"
           >
-            <div className="mt-4 flex flex-col items-center">
-              <FiPlusCircle className="text-4xl text-green-500 dark:text-green-300 mb-2" />
-              Add Campaign
-            </div>
+            <div className="mt-4 flex flex-col items-center">Add Campaign</div>
           </Link>
         </Card>
 
         {/* Total Backers Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-emerald-50 p-2 rounded-full">
+            <Users className="h-5 w-5 text-emerald-500" />
+          </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Total Backers
             </CardTitle>
-            <CardDescription className="text-purple-500 dark:text-purple-400">
+            <CardDescription className="text-gray-500 dark:text-gray-400">
               {statistics?.total_backers} Backers
             </CardDescription>
           </CardHeader>
         </Card>
 
         {/* Fundraising Goal Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-orange-50 p-2 rounded-full">
+            <Target className="h-5 w-5 text-orange-500" />
+          </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Fundraising Goal
             </CardTitle>
-            <CardDescription className="text-cyan-500 dark:text-cyan-400">
+            <CardDescription className="text-gray-500 dark:text-gray-400">
               {user?.currency?.toUpperCase()}{' '}
               {statistics &&
                 parseFloat(statistics.total_fundraising_goal).toLocaleString()}
@@ -87,7 +104,10 @@ export default function Dashboard() {
         </Card>
 
         {/* Active Campaigns Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-gray-50 p-2 rounded-full">
+            <Activity className="h-5 w-5 text-gray-500" />
+          </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Active Campaigns
@@ -99,12 +119,15 @@ export default function Dashboard() {
         </Card>
 
         {/* Total Donations Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
+            <DollarSign className="h-5 w-5 text-fundify-primary" />
+          </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Total Donations
             </CardTitle>
-            <CardDescription className="text-green-500 dark:text-green-400">
+            <CardDescription className="text-gray-500 dark:text-gray-400">
               {user?.currency?.toUpperCase()}{' '}
               {statistics &&
                 parseFloat(
@@ -115,12 +138,15 @@ export default function Dashboard() {
         </Card>
 
         {/* Pending Withdrawals Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-lime-50 p-2 rounded-full">
+            <Clock className="h-5 w-5 text-lime-500" />
+          </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Pending Withdrawals
             </CardTitle>
-            <CardDescription className="text-brown-500 dark:text-brown-300">
+            <CardDescription className="text-gray-500 dark:text-gray-500">
               {user?.currency?.toUpperCase()}{' '}
               {statistics &&
                 parseFloat(statistics?.total_donated_amount).toLocaleString()}
@@ -129,12 +155,15 @@ export default function Dashboard() {
         </Card>
 
         {/* Recent Activity Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-purple-50 p-2 rounded-full">
+            <BarChart2 className="h-5 w-5 text-purple-500" />
+          </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Recent Activity
             </CardTitle>
-            <CardDescription className="text-purple-500 dark:text-purple-400">
+            <CardDescription className="text-gray-500 dark:text-gray-400">
               {statistics?.new_donations_this_week &&
                 Object.keys(statistics?.new_donations_this_week).length}{' '}
               new donations this week
@@ -143,26 +172,31 @@ export default function Dashboard() {
         </Card>
 
         {/* Campaign Performance Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-amber-50 p-2 rounded-full">
+            <TrendingUp className="h-5 w-5 text-amber-500" />
+          </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
               Performance Across Campaigns
             </CardTitle>
-            <CardDescription className="text-green-500 dark:text-green-400">
+            <CardDescription className="text-gray-500 dark:text-gray-500">
               {statistics?.total_performance_percentage}% of goal achieved
             </CardDescription>
           </CardHeader>
         </Card>
 
         {/* Boost Campaign Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200">
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-red-50 p-2 rounded-full">
+            <AlertCircle className="h-5 w-5 text-red-500" />
+          </div>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-semibold text-red-600 dark:text-gray-400">
-              <InfoCircledIcon className="text-xl" />
+              <AlertCircle className="text-xl" />
               <span>Attention</span>
             </CardTitle>
-
-            <CardDescription className="text-zinc-500 dark:text-neutral-400">
+            <CardDescription className="text-gray-500 dark:text-neutral-400">
               You must withdraw your funds in chunks as you fundraise. Learn
               more{' '}
               <a

@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import RewardCard from './RewardCard';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
+import ErrorPage from '../errorpage/ErrorPage';
 
 interface RewardCarouselProps {
   campaigns: CampaignResponseDataType[] | undefined;
@@ -47,6 +48,14 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
 
   // Determine what to show
   const showContent = () => {
+    if (error) {
+      return (
+        <div className="w-full">
+          <ErrorPage />
+        </div>
+      );
+    }
+
     if (loading && (!rewards || rewards.length === 0)) {
       return (
         <div className="flex space-x-4 w-full">
