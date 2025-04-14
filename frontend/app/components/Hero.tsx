@@ -120,9 +120,9 @@ const Hero = () => {
             <div className="w-full lg:w-1/2 space-y-8">
               <div className="max-w-2xl">
                 <div className="inline-flex items-center gap-2 px-3 py-1 mt-2 text-base font-semibold bg-white text-gray-500 rounded-full mb-4 animate-fade-up">
-                  <span className="relative flex h-4 w-4">
+                  <span className="relative flex h-5 w-5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-600 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-4 w-4 bg-orange-600"></span>
+                    <span className="relative inline-flex rounded-full h-5 w-5 bg-orange-600"></span>
                   </span>
                   Help → Hope, Raise → Achieve, Fund → Build, Invest → Grow
                 </div>
