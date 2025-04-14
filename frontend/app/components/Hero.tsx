@@ -127,7 +127,7 @@ const Hero = () => {
                   Help → Hope, Raise → Achieve, Fund → Build, Invest → Grow
                 </div>
 
-                <h1 className="text-xl md:text-3xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
+                <h1 className="text-lg md:text-3xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
                   <span className="text-gray-700">Africa's #1</span>{' '}
                   <span className="text-orange-500">Impact</span>{' '}
                   <span className="text-green-500">Acceleration</span>{' '}
