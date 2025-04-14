@@ -128,10 +128,11 @@ const Hero = () => {
                   Impact
                 </div>
 
-                <h1 className="text-2xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
-                  <span className="text-green-500">Impact</span>{' '}
-                  <span className="text-orange-500">Acceleration</span>{' '}
-                  <span className="text-gray-700">Platform</span>
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
+                  <span className="text-gray-700">Africa's #1</span>{' '}
+                  <span className="text-orange-500">Impact</span>{' '}
+                  <span className="text-green-500">Acceleration</span>{' '}
+                  <span className="text-emerald-700">Platform</span>
                 </h1>
 
                 <p className="text-lg md:text-xl text-gray-500 mb-8 animate-fade-up delay-200">
