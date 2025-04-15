@@ -247,7 +247,7 @@ const MyInvestmentsView = () => {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-      <div className="p-6">
+      <div className="p-4">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold">My Investments</h2>
           <div className="flex space-x-2">
