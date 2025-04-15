@@ -65,9 +65,10 @@ module Api
         private
 
         def set_campaign
-          @campaign = EquityCampaign.find(params[:campaign_id] || params[:id])
-        rescue ActiveRecord::RecordNotFound
-          render json: { error: 'Campaign not found' }, status: :not_found
+          @campaign = Campaign.find(params[:campaign_id] || params[:id])
+          unless @campaign.type == "EquityCampaign"
+            render json: { error: 'Not an equity campaign' }, status: :unprocessable_entity
+          end
         end
 
         def validate_investor
@@ -93,12 +94,12 @@ module Api
             status: investment.status,
             payment_reference: investment.payment_reference,
             campaign: {
-              id: investment.equity_campaign.id,
-              title: investment.equity_campaign.title,
-              valuation: investment.equity_campaign.valuation,
-              equity_offered: investment.equity_campaign.equity_offered,
-              status: investment.equity_campaign.status,
-              end_date: investment.equity_campaign.end_date
+              id: investment.campaign.id,
+              title: investment.campaign.title,
+              valuation: investment.campaign.valuation,
+              equity_offered: investment.campaign.equity_offered,
+              status: investment.campaign.status,
+              end_date: investment.campaign.end_date
             },
             investor: {
               id: investment.user.id,
@@ -119,10 +120,10 @@ module Api
             percentage_ownership: calculate_ownership_percentage(investment),
             invested_at: investment.created_at,
             campaign: {
-              id: investment.equity_campaign.id,
-              title: investment.equity_campaign.title,
-              valuation: investment.equity_campaign.valuation,
-              status: investment.equity_campaign.status,
+              id: investment.campaign.id,
+              title: investment.campaign.title,
+              valuation: investment.campaign.valuation,
+              status: investment.campaign.status,
               end_date: investment.equity_campaign.end_date
             },
             certificate: {
@@ -147,7 +148,7 @@ module Api
         end
 
         def calculate_ownership_percentage(investment)
-          (investment.share_count / (investment.equity_campaign.valuation / investment.equity_campaign.equity_offered * 100)) * 100
+          (investment.share_count / (investment.campaign.valuation / investment.campaign.equity_offered * 100)) * 100
         end
 
         def calculate_portfolio_value(investments)
