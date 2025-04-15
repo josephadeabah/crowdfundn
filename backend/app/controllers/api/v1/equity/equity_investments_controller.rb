@@ -124,7 +124,7 @@ module Api
               title: investment.campaign.title,
               valuation: investment.campaign.valuation,
               status: investment.campaign.status,
-              end_date: investment.equity_campaign.end_date
+              end_date: investment.campaign.end_date
             },
             certificate: {
               id: investment.share_certificate&.id,
@@ -153,7 +153,7 @@ module Api
 
         def calculate_portfolio_value(investments)
           investments.sum do |inv|
-            campaign = inv.equity_campaign
+            campaign = inv.campaign
             (inv.share_count / (campaign.valuation / campaign.equity_offered * 100)) * campaign.valuation
           end
         end
