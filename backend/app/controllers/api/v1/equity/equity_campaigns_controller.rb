@@ -59,7 +59,7 @@ module Api
         end
 
         def my_campaigns
-          @campaigns = @current_user.equity_campaigns.order(created_at: :desc)
+          @campaigns = @current_user.campaigns.order(created_at: :desc)
                                     .page(params[:page]).per(params[:pageSize] || 12)
 
           render json: {
@@ -71,7 +71,7 @@ module Api
         end
 
         def create
-          @campaign = @current_user.equity_campaigns.new(campaign_params)
+          @campaign = @current_user.campaigns.new(campaign_params)
           @campaign.media.attach(params[:media]) if params[:media].present?
 
           if @campaign.save
