@@ -3,12 +3,16 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 const EquityInvestments = () => {
-  const [activeView, setActiveView] = useState<'portfolio' | 'my_investments'>('portfolio');
+  const [activeView, setActiveView] = useState<'portfolio' | 'my_investments'>(
+    'portfolio',
+  );
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Equity Investments</h1>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+          Equity Investments
+        </h1>
         <div className="flex space-x-4">
           <Link href="/equity">
             <button className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition">
@@ -33,11 +37,7 @@ const EquityInvestments = () => {
         </button>
       </div>
 
-      {activeView === 'portfolio' ? (
-        <PortfolioView />
-      ) : (
-        <MyInvestmentsView />
-      )}
+      {activeView === 'portfolio' ? <PortfolioView /> : <MyInvestmentsView />}
     </div>
   );
 };
@@ -58,7 +58,7 @@ const PortfolioView = () => {
         currentValue: 7500,
         return: 2500,
         returnPercentage: 50,
-        status: 'active'
+        status: 'active',
       },
       {
         id: 2,
@@ -68,26 +68,39 @@ const PortfolioView = () => {
         currentValue: 5000,
         return: 1500,
         returnPercentage: 42.86,
-        status: 'active'
-      }
-    ]
+        status: 'active',
+      },
+    ],
   };
 
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-gray-500 dark:text-gray-400 mb-2">Total Portfolio Value</h3>
-          <p className="text-3xl font-bold text-green-600 dark:text-green-400">${portfolioData.totalValue.toLocaleString()}</p>
+          <h3 className="text-gray-500 dark:text-gray-400 mb-2">
+            Total Portfolio Value
+          </h3>
+          <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+            ${portfolioData.totalValue.toLocaleString()}
+          </p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-gray-500 dark:text-gray-400 mb-2">Total Invested</h3>
-          <p className="text-3xl font-bold">${portfolioData.totalInvested.toLocaleString()}</p>
+          <h3 className="text-gray-500 dark:text-gray-400 mb-2">
+            Total Invested
+          </h3>
+          <p className="text-3xl font-bold">
+            ${portfolioData.totalInvested.toLocaleString()}
+          </p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-gray-500 dark:text-gray-400 mb-2">Total Return</h3>
-          <p className={`text-3xl font-bold ${portfolioData.totalReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-            ${portfolioData.totalReturn.toLocaleString()} ({portfolioData.returnPercentage}%)
+          <h3 className="text-gray-500 dark:text-gray-400 mb-2">
+            Total Return
+          </h3>
+          <p
+            className={`text-3xl font-bold ${portfolioData.totalReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
+          >
+            ${portfolioData.totalReturn.toLocaleString()} (
+            {portfolioData.returnPercentage}%)
           </p>
         </div>
       </div>
@@ -99,29 +112,56 @@ const PortfolioView = () => {
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Campaign</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Invested</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Shares</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Current Value</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Return</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Campaign
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Invested
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Shares
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Current Value
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Return
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {portfolioData.investments.map((investment) => (
                   <tr key={investment.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium text-gray-900 dark:text-white">{investment.campaign}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">${investment.amount.toLocaleString()}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{investment.shares.toLocaleString()}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">${investment.currentValue.toLocaleString()}</td>
-                    <td className={`px-6 py-4 whitespace-nowrap ${investment.return >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                      ${investment.return.toLocaleString()} ({investment.returnPercentage}%)
+                      <div className="font-medium text-gray-900 dark:text-white">
+                        {investment.campaign}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${investment.status === 'active' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'}`}>
+                      ${investment.amount.toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {investment.shares.toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      ${investment.currentValue.toLocaleString()}
+                    </td>
+                    <td
+                      className={`px-6 py-4 whitespace-nowrap ${investment.return >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
+                    >
+                      ${investment.return.toLocaleString()} (
+                      {investment.returnPercentage}%)
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${investment.status === 'active' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'}`}
+                      >
                         {investment.status}
                       </span>
                     </td>
@@ -145,16 +185,25 @@ const PortfolioView = () => {
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">Performance Chart</h3>
           <div className="h-64 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center">
-            <p className="text-gray-500 dark:text-gray-400">Chart visualization would appear here</p>
+            <p className="text-gray-500 dark:text-gray-400">
+              Chart visualization would appear here
+            </p>
           </div>
         </div>
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
           <div className="space-y-4">
             {[1, 2, 3].map((item) => (
-              <div key={item} className="border-b border-gray-200 dark:border-gray-700 pb-4">
-                <p className="text-sm text-gray-600 dark:text-gray-400">Invested $500 in Solar Tech Startup</p>
-                <p className="text-xs text-gray-500 dark:text-gray-500">2 days ago</p>
+              <div
+                key={item}
+                className="border-b border-gray-200 dark:border-gray-700 pb-4"
+              >
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Invested $500 in Solar Tech Startup
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-500">
+                  2 days ago
+                </p>
               </div>
             ))}
           </div>
@@ -174,7 +223,7 @@ const MyInvestmentsView = () => {
       shares: 1000,
       date: '2023-06-15',
       status: 'completed',
-      campaignStatus: 'live'
+      campaignStatus: 'live',
     },
     {
       id: 2,
@@ -183,7 +232,7 @@ const MyInvestmentsView = () => {
       shares: 700,
       date: '2023-05-20',
       status: 'completed',
-      campaignStatus: 'live'
+      campaignStatus: 'live',
     },
     {
       id: 3,
@@ -192,8 +241,8 @@ const MyInvestmentsView = () => {
       shares: 500,
       date: '2023-04-10',
       status: 'pending',
-      campaignStatus: 'closed'
-    }
+      campaignStatus: 'closed',
+    },
   ];
 
   return (
@@ -215,46 +264,72 @@ const MyInvestmentsView = () => {
             </select>
           </div>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Campaign</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Shares</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Campaign Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Campaign
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Amount
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Shares
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Campaign Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {investments.map((investment) => (
                 <tr key={investment.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-medium text-gray-900 dark:text-white">{investment.campaign}</div>
+                    <div className="font-medium text-gray-900 dark:text-white">
+                      {investment.campaign}
+                    </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">${investment.amount.toLocaleString()}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{investment.shares.toLocaleString()}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{investment.date}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      investment.status === 'completed' 
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                        : investment.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                          : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                    }`}>
+                    ${investment.amount.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {investment.shares.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {investment.date}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        investment.status === 'completed'
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                          : investment.status === 'pending'
+                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                      }`}
+                    >
                       {investment.status}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      investment.campaignStatus === 'live' 
-                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 
-                        : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-                    }`}>
+                    <span
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        investment.campaignStatus === 'live'
+                          ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                          : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                      }`}
+                    >
                       {investment.campaignStatus}
                     </span>
                   </td>
