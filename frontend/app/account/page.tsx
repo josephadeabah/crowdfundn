@@ -23,6 +23,8 @@ import AccountSettings from '@/app/account/settings/AccountSettings';
 import OnboardingModal from '@/app/components/onboarding/OnboardingModal';
 import Favorites from '@/app/account/Favorites';
 import PledgesListPage from '@/app/account/Pledges';
+import EquityInvestments from './EquityInvestments';
+import { FaChartLine } from 'react-icons/fa';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState<string>('');
@@ -38,6 +40,12 @@ const ProfileTabs = () => {
       component: <Dashboard />,
       description:
         'Your overall dashboard where you can see an overview of activities and analytics.',
+    },
+    {
+      label: 'Investments',
+      icon: <FaChartLine />,
+      component: <EquityInvestments />,
+      description: 'Manage your equity investments and portfolio.',
     },
     {
       label: 'Donations',
