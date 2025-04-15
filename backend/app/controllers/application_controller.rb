@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
   include Authenticable
+  include ActionController::MimeResponds
   before_action :set_default_response_format
 
   def not_found
