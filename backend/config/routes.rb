@@ -144,6 +144,28 @@ Rails.application.routes.draw do
       namespace :pledges do
         resources :pledges, only: [:index, :destroy] # Add this line
       end
+      # Add the equity namespace here, alongside members and fundraisers
+      namespace :equity do
+        resources :campaigns do
+          member do
+            post :launch
+            post :close
+          end
+          
+          resources :campaign_team_members, only: [:index, :create, :update, :destroy]
+          resources :equity_investments, only: [:create] do
+            collection do
+              get :callback
+            end
+          end
+          resources :share_certificates, only: [:index, :show]
+        end
+
+        # Portfolio and investments routes
+        get 'investments/portfolio', to: 'equity_investments#portfolio'
+        get 'investments/my_investments', to: 'equity_investments#my_investments'
+      end
+      
     end
   end
 

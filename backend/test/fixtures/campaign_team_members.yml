@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  equity_campaign: one
+  user: one
+  role: MyString
+  equity_percentage: 9.99
+  title: MyString
+
+two:
+  equity_campaign: two
+  user: two
+  role: MyString
+  equity_percentage: 9.99
+  title: MyString

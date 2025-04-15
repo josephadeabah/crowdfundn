@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_03_05_225348) do
+ActiveRecord::Schema[7.1].define(version: 2025_04_15_214728) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -85,6 +85,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_05_225348) do
     t.index ["user_id"], name: "index_campaign_shares_on_user_id"
   end
 
+  create_table "campaign_team_members", force: :cascade do |t|
+    t.bigint "campaign_id", null: false
+    t.bigint "user_id", null: false
+    t.string "role"
+    t.decimal "equity_percentage"
+    t.string "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id"], name: "index_campaign_team_members_on_campaign_id"
+    t.index ["user_id"], name: "index_campaign_team_members_on_user_id"
+  end
+
   create_table "campaigns", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -115,7 +127,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_05_225348) do
     t.integer "promotion_duration"
     t.decimal "transferred_amount", default: "0.0", null: false
     t.decimal "total_successful_donations", precision: 15, scale: 2, default: "0.0", null: false
+    t.string "type", default: "Campaign"
+    t.decimal "valuation", precision: 15, scale: 2
+    t.decimal "equity_offered", precision: 5, scale: 2
+    t.decimal "minimum_investment", precision: 15, scale: 2
     t.index ["fundraiser_id"], name: "index_campaigns_on_fundraiser_id"
+    t.index ["type"], name: "index_campaigns_on_type"
   end
 
   create_table "comments", force: :cascade do |t|
@@ -156,6 +173,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_05_225348) do
     t.index ["user_id"], name: "index_donations_on_user_id"
   end
 
+  create_table "equity_investments", force: :cascade do |t|
+    t.bigint "campaign_id", null: false
+    t.bigint "user_id", null: false
+    t.decimal "amount", precision: 15, scale: 2
+    t.decimal "share_count", precision: 15, scale: 2
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id"], name: "index_equity_investments_on_campaign_id"
+    t.index ["user_id"], name: "index_equity_investments_on_user_id"
+  end
+
   create_table "event_processeds", force: :cascade do |t|
     t.string "event_id", null: false
     t.datetime "created_at", null: false
@@ -188,6 +217,14 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_05_225348) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_fundraisers_on_user_id"
+  end
+
+  create_table "investor_documents", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "document_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_investor_documents_on_user_id"
   end
 
   create_table "leaderboard_entries", force: :cascade do |t|
@@ -387,6 +424,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_05_225348) do
     t.integer "sign_in_count", default: 0
     t.datetime "last_sign_in_at"
     t.string "status", default: "active"
+    t.decimal "net_worth", precision: 15, scale: 2, default: "0.0"
+    t.decimal "annual_income", precision: 15, scale: 2, default: "0.0"
+    t.string "tax_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["subaccount_id"], name: "index_users_on_subaccount_id"
   end
@@ -396,15 +436,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_05_225348) do
   add_foreign_key "backer_rewards", "users"
   add_foreign_key "campaign_shares", "campaigns"
   add_foreign_key "campaign_shares", "users"
+  add_foreign_key "campaign_team_members", "campaigns"
+  add_foreign_key "campaign_team_members", "users"
   add_foreign_key "campaigns", "users", column: "fundraiser_id"
   add_foreign_key "comments", "campaigns"
   add_foreign_key "comments", "users"
   add_foreign_key "donations", "campaigns"
   add_foreign_key "donations", "users"
+  add_foreign_key "equity_investments", "campaigns"
+  add_foreign_key "equity_investments", "users"
   add_foreign_key "favorites", "campaigns"
   add_foreign_key "favorites", "users"
   add_foreign_key "fundraiser_leaderboard_entries", "users"
   add_foreign_key "fundraisers", "users"
+  add_foreign_key "investor_documents", "users"
   add_foreign_key "leaderboard_entries", "users"
   add_foreign_key "pledges", "campaigns"
   add_foreign_key "pledges", "donations"

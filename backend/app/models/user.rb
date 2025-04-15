@@ -12,6 +12,10 @@ class User < ApplicationRecord
   has_many :backer_rewards, dependent: :destroy
   has_many :campaign_shares, dependent: :destroy
   has_many :pledges, dependent: :destroy
+  # Add these associations for equity investment
+  has_many :equity_investments, dependent: :destroy
+  has_many :invested_campaigns, through: :equity_investments, source: :campaign
+  has_many :investor_documents, dependent: :destroy
 
   validates :status, inclusion: { in: STATUSES }
   validates :email, presence: true, uniqueness: true
@@ -19,6 +23,8 @@ class User < ApplicationRecord
   validates :phone_code, presence: true
   validates :full_name, :phone_number, :country, :payment_method, :currency, :birth_date, :category, :target_amount,
             :national_id, presence: true
+  # Add this validation for equity investment
+  validates :tax_id, format: { with: /\A[A-Z0-9]+\z/ }, if: :investor?
   has_one :profile, dependent: :destroy
   has_many :campaigns, foreign_key: 'fundraiser_id', dependent: :destroy
   has_many :donations
@@ -84,6 +90,18 @@ class User < ApplicationRecord
 
   def campaign_share_count
     campaign_shares.count - 0.75
+  end
+
+  # Add investor status check
+  def investor?
+    equity_investments.any? || invested_campaigns.any?
+  end
+
+  # Update accredited investor check with proper decimal handling
+  def accredited_investor?
+    return false unless net_worth.present? && annual_income.present?
+    
+    net_worth >= 1_000_000 || annual_income >= 200_000
   end
 
   private
