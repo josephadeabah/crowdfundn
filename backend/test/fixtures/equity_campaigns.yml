@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  valuation: 9.99
+  equity_offered: 9.99
+  minimum_investment: 9.99
+  campaign_type: MyString
+
+two:
+  valuation: 9.99
+  equity_offered: 9.99
+  minimum_investment: 9.99
+  campaign_type: MyString

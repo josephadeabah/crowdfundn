@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  equity_campaign: one
+  user: one
+  amount: 9.99
+  share_count: 1
+  status: MyString
+
+two:
+  equity_campaign: two
+  user: two
+  amount: 9.99
+  share_count: 1
+  status: MyString

@@ -20,6 +20,8 @@ class Campaign < ApplicationRecord
   validates :current_amount, numericality: { greater_than_or_equal_to: 0 }
 
   enum status: { active: 0, completed: 1, canceled: 2 }
+  # Add this to distinguish campaign types
+  enum campaign_type: { donation: 0, equity: 1 }, _prefix: :type
 
   # Permissions settings
   attribute :accept_donations, :boolean, default: true
@@ -43,6 +45,7 @@ class Campaign < ApplicationRecord
   # Automatically call `update_status_based_on_date` after update
   after_update :update_status_based_on_date, if: -> { remaining_days.zero? && active? }
 
+  self.inheritance_column = :type  # Enable STI (Single Table Inheritance)
   # New cancel method
   def cancel
     update!(status: :canceled)
@@ -79,6 +82,7 @@ class Campaign < ApplicationRecord
       description: description.as_json,
       total_shares: total_shares,
       donations_over_time: donations_over_time,
+      campaign_type: campaign_type
       permissions: {
         accept_donations: accept_donations,
         leave_words_of_support: leave_words_of_support,
