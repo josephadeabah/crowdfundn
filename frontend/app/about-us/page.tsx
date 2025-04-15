@@ -110,11 +110,12 @@ const About = () => {
                   <div className="absolute -bottom-3 left-0 w-20 h-1 bg-fundify-primary"></div>
                 </h2>
                 <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                  Our mission is to provide an accessible, transparent, and
-                  engaging platform for funding initiatives that drive positive
-                  change across Africa. We believe in the potential of every
-                  idea and strive to provide a platform that fosters innovation,
-                  collaboration, and positive change.
+                  Our mission is to empower Africans and the diaspora to fund
+                  dreams, drive impact, and build legacies through an
+                  accessible, transparent, and engaging impact acceleration
+                  platform. We believe in the potential of every idea and strive
+                  to provide a platform that fosters innovation, collaboration,
+                  and positive change.
                 </p>
                 <div className="space-y-6">
                   <div className="flex items-start">

@@ -26,8 +26,9 @@ const Footer = () => {
               <BantuHiveLogoIcon className="w-40 h-auto" />
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-              To provide an accessible, transparent, and engaging platform for
-              funding initiatives that drive positive change across Africa.
+              To empower Africans and the diaspora to fund dreams, drive impact,
+              and build legacies through an accessible, transparent, and
+              engaging impact acceleration platform.
             </p>
             <div className="flex space-x-4">
               <a
