@@ -89,11 +89,14 @@ module Api
         @campaign.fundraiser = @current_user
         @campaign.media.attach(params[:media]) if params[:media].present?
         
-        # Set default equity_status for EquityCampaign if it's not provided
-        if @campaign.is_a?(EquityCampaign) && @campaign.equity_status.blank?
-          @campaign.equity_status = :draft
+        # Set defaults for equity campaigns
+        if @campaign.is_a?(EquityCampaign)
+          @campaign.equity_status ||= :draft
+          @campaign.valuation ||= 0
+          @campaign.equity_offered ||= 0
+          @campaign.minimum_investment ||= 0
         end
-
+      
         if @campaign.save
           render json: {
             message: "#{campaign_type} campaign created successfully",
@@ -219,13 +222,15 @@ module Api
       def campaign_json(campaign)
         json = campaign.as_json(user: @current_user)
         
-        # Add equity-specific fields if this is an equity campaign
         if campaign.is_a?(EquityCampaign)
           json.merge!(
             shares_available: campaign.shares_available,
             percentage_raised: campaign.percentage_raised,
             total_investors: campaign.equity_investments.count,
-            equity_status: campaign.equity_status
+            equity_status: campaign.equity_status,
+            valuation: campaign.valuation || 0,
+            equity_offered: campaign.equity_offered || 0,
+            minimum_investment: campaign.minimum_investment || 0
           )
         end
         

@@ -5,7 +5,10 @@ class EquityCampaign < Campaign
   has_many :campaign_team_members, dependent: :destroy
   has_many :founders, through: :campaign_team_members, source: :user
   
-  validates :valuation, :equity_offered, :minimum_investment, presence: true
+  # app/models/equity_campaign.rb
+  validates :valuation, :equity_offered, :minimum_investment, 
+  presence: true, 
+  numericality: { greater_than: 0 }
   validates :valuation, :minimum_investment, numericality: { greater_than: 0 }
   validates :equity_offered, numericality: { greater_than: 0, less_than_or_equal_to: 100 }
   validate :founders_equity_allocation
@@ -23,11 +26,14 @@ class EquityCampaign < Campaign
     closed: 5
   }
   
+  # app/models/equity_campaign.rb
   def shares_available
+    return 0 if equity_offered.nil? || valuation.nil? || equity_offered <= 0 || valuation <= 0
     (equity_offered * valuation / 100) - equity_investments.sum(:amount)
   end
-  
+
   def percentage_raised
+    return 0 if equity_offered.nil? || valuation.nil? || equity_offered <= 0 || valuation <= 0
     equity_investments.sum(:amount) / (equity_offered * valuation / 100).to_f * 100
   end
   
