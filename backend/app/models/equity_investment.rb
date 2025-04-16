@@ -1,6 +1,6 @@
 # app/models/equity_investment.rb
 class EquityInvestment < ApplicationRecord
-  belongs_to :campaign  
+  belongs_to :campaign, class_name: 'EquityCampaign'
   belongs_to :user
   
   STATUSES = %w[pending completed canceled refunded].freeze

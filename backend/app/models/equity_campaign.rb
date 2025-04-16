@@ -1,6 +1,6 @@
 # app/models/equity_campaign.rb
 class EquityCampaign < Campaign
-  has_many :equity_investments, dependent: :destroy
+  has_many :equity_investments, foreign_key: 'campaign_id', dependent: :destroy
   has_many :investors, through: :equity_investments, source: :user
   has_many :campaign_team_members, dependent: :destroy
   has_many :founders, through: :campaign_team_members, source: :user
