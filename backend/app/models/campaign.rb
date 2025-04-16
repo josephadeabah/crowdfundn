@@ -108,9 +108,6 @@ class Campaign < ApplicationRecord
         promotion_frequency: promotion_frequency,
         promotion_duration: promotion_duration
       },
-      rewards: rewards,
-      updates: updates,
-      comments: comments,
       fundraiser: {
         id: fundraiser.id,
         name: fundraiser.full_name,
@@ -118,8 +115,6 @@ class Campaign < ApplicationRecord
         currency_symbol: fundraiser.currency_symbol,
         profile: fundraiser.profile
       },
-      total_days: total_days,
-      remaining_days: remaining_days,
       favorited: options[:user] ? options[:user].favorited_campaigns.include?(self) : false
     )
     end

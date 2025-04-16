@@ -220,17 +220,25 @@ module Api
 
       # app/controllers/api/v1/base_campaigns_controller.rb
       def campaign_json(campaign)
-        json = campaign.as_json(user: @current_user)
+        json = campaign.as_json({
+          include: [
+            { rewards: {} }, # Always include rewards, even if empty
+            :updates, 
+            :comments, 
+            { fundraiser: { include: :profile } }
+          ]
+        }).merge(
+          type: campaign.class.name,
+          media: campaign.media_url,
+          total_donors: campaign.total_donors
+        )
         
         if campaign.is_a?(EquityCampaign)
           json.merge!(
             shares_available: campaign.shares_available,
             percentage_raised: campaign.percentage_raised,
             total_investors: campaign.equity_investments.count,
-            equity_status: campaign.equity_status,
-            valuation: campaign.valuation || 0,
-            equity_offered: campaign.equity_offered || 0,
-            minimum_investment: campaign.minimum_investment || 0
+            equity_status: campaign.equity_status
           )
         end
         
