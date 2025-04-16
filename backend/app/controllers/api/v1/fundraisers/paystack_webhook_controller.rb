@@ -11,7 +11,7 @@ module Api
             begin
               event = JSON.parse(payload, symbolize_names: true)
               handle_event(event)
-              head :ok # Respond with 200 OK after handling the event
+              head :ok
             rescue JSON::ParserError => e
               Rails.logger.error "Invalid JSON payload: #{e.message}"
               render json: { error: 'Invalid JSON payload' }, status: :unprocessable_entity
@@ -29,17 +29,28 @@ module Api
 
         def handle_event(event)
           event_id = event[:data][:id]
+          return if EventProcessed.exists?(event_id: event_id)
 
-          # Check if the event has already been processed (deduplication)
-          if EventProcessed.exists?(event_id: event_id)
-            Rails.logger.info "Event already processed: #{event_id}"
-            return # Ignore duplicate events
-          end
-
-          # Log the received event for debugging purposes
           Rails.logger.info "Received Paystack event: #{event[:event]}"
 
-          # Process different event types
+          # FIRST check if this is clearly an equity transaction
+          if clearly_equity_event?(event)
+            handle_equity_event(event)
+          else
+            # Default to regular donation processing
+            handle_regular_event(event)
+          end
+
+          EventProcessed.create(event_id: event_id)
+        end
+
+        def clearly_equity_event?(event)
+          metadata = event.dig(:data, :metadata) || {}
+          # Only treat as equity if there's an explicit investment_id
+          metadata[:investment_id].present?
+        end
+
+        def handle_regular_event(event)
           case event[:event]
           when 'charge.success'
             PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
@@ -59,11 +70,18 @@ module Api
             PaystackWebhook::SubscriptionChargeFailedHandler.new(event[:data]).call
           else
             Rails.logger.warn "Unhandled event type: #{event[:event]}"
-            render json: { error: 'Unhandled event type' }, status: :unprocessable_entity
           end
+        end
 
-          # Mark the event as processed to prevent future duplicates
-          EventProcessed.create(event_id: event_id)
+        def handle_equity_event(event)
+          case event[:event]
+          when 'charge.success'
+            PaystackEquity::WebhookHandler.new(event[:data]).handle_charge_success
+          when 'transfer.success'
+            PaystackEquity::WebhookHandler.new(event[:data]).handle_transfer_success
+          else
+            Rails.logger.warn "Unhandled equity event: #{event[:event]}"
+          end
         end
       end
     end
