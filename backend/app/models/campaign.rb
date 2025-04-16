@@ -43,7 +43,14 @@ class Campaign < ApplicationRecord
   # Automatically call `update_status_based_on_date` after update
   after_update :update_status_based_on_date, if: -> { remaining_days.zero? && active? }
 
-  self.inheritance_column = :type  # Enable STI (Single Table Inheritance)
+  # STI Configuration (replace the line 45 declaration with this)
+  def self.inheritance_column
+    'type'
+  end
+  
+  def self.descendants
+    [EquityCampaign] # Add other subclasses as needed
+  end
   # New cancel method
   def cancel
     update!(status: :canceled)
@@ -175,14 +182,6 @@ class Campaign < ApplicationRecord
     end
   
     donations.sort.to_h
-  end
-
-  def self.inheritance_column
-    'type'
-  end
-  
-  def self.descendants
-    [EquityCampaign] # Add other subclasses if they exist
   end
 
   private
