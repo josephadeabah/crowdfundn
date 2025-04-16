@@ -115,6 +115,8 @@ class Campaign < ApplicationRecord
         currency_symbol: fundraiser.currency_symbol,
         profile: fundraiser.profile
       },
+      total_days: total_days,
+      remaining_days: remaining_days,
       favorited: options[:user] ? options[:user].favorited_campaigns.include?(self) : false
     )
     end
