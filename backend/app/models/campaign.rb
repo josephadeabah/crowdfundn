@@ -177,6 +177,14 @@ class Campaign < ApplicationRecord
     donations.sort.to_h
   end
 
+  def self.inheritance_column
+    'type'
+  end
+  
+  def self.descendants
+    [EquityCampaign] # Add other subclasses if they exist
+  end
+
   private
 
   def set_default_status

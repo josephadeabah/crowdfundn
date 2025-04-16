@@ -59,7 +59,7 @@ module Api
         end
 
         def my_campaigns
-          @campaigns = @current_user.campaigns.order(created_at: :desc)
+          @campaigns = @current_user.campaigns.where(type: 'EquityCampaign').order(created_at: :desc)
                                     .page(params[:page]).per(params[:pageSize] || 12)
 
           render json: {
@@ -71,9 +71,11 @@ module Api
         end
 
         def create
-          @campaign = @current_user.campaigns.new(campaign_params)
+          @campaign = @current_user.campaigns.new(
+            campaign_params.merge(type: 'EquityCampaign') # Explicitly set type
+          )
           @campaign.media.attach(params[:media]) if params[:media].present?
-
+        
           if @campaign.save
             render json: {
               message: 'Equity campaign created successfully',
@@ -138,6 +140,7 @@ module Api
           campaign.as_json(
             include: [:rewards, :updates, :comments, fundraiser: :profile]
           ).merge(
+            type: campaign.class.name, # This will show 'EquityCampaign'
             media: campaign.media_url,
             shares_available: campaign.shares_available,
             percentage_raised: campaign.percentage_raised,
