@@ -29,10 +29,16 @@ module Api
 
         def campaign_params
           params.require(:equity_campaign).permit(
-            :title, :description, :goal_amount, :current_amount, :start_date, :end_date, 
-            :category, :location, :currency, :valuation, :equity_offered, :minimum_investment,
-            :media, :equity_status
-          )
+            :title, :media, :description, :goal_amount, 
+            :start_date, :end_date, :category, :location,
+            :current_amount, :currency, :valuation, 
+            :equity_offered, :minimum_investment
+          ).tap do |whitelisted|
+            # Convert string numbers to floats
+            whitelisted[:valuation] = whitelisted[:valuation].to_f if whitelisted[:valuation]
+            whitelisted[:equity_offered] = whitelisted[:equity_offered].to_f if whitelisted[:equity_offered]
+            whitelisted[:minimum_investment] = whitelisted[:minimum_investment].to_f if whitelisted[:minimum_investment]
+          end
         end
       end
     end
