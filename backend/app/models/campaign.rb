@@ -78,14 +78,17 @@ class Campaign < ApplicationRecord
 
   # app/models/campaign.rb
     def as_json(options = {})
-    super(options.merge(
+    json = super({
       only: %i[
         id title goal_amount current_amount transferred_amount start_date end_date
         category location currency currency_code currency_symbol status
         fundraiser_id created_at updated_at valuation equity_offered minimum_investment
       ],
       methods: %i[media_url media_filename total_days remaining_days]
-    )).merge(
+    }.merge(options))
+
+    # Add additional fields
+    json.merge!(
       type: self.class.name,
       description: description.as_json,
       total_shares: total_shares,
