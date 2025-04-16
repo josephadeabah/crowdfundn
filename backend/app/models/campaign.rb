@@ -108,6 +108,9 @@ class Campaign < ApplicationRecord
         promotion_frequency: promotion_frequency,
         promotion_duration: promotion_duration
       },
+      rewards: rewards,
+      updates: updates,
+      comments: comments,
       fundraiser: {
         id: fundraiser.id,
         name: fundraiser.full_name,

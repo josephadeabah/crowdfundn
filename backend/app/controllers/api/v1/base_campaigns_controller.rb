@@ -220,14 +220,20 @@ module Api
 
       # app/controllers/api/v1/base_campaigns_controller.rb
       def campaign_json(campaign)
-        json = campaign.as_json({
-          include: [
-            { rewards => campaign.rewards }, # Always include rewards, even if empty
-            :updates => campaign.updates, 
-            :comments => campaign.comments, 
-            { fundraiser: { include: :profile } }
-          ]
-        }).merge(
+        json = campaign.as_json(
+          only: %i[
+            id title goal_amount current_amount transferred_amount start_date end_date
+            category location currency currency_code currency_symbol status
+            fundraiser_id created_at updated_at valuation equity_offered minimum_investment
+          ],
+          methods: %i[media_url media_filename total_days remaining_days],
+          include: {
+            rewards: {},
+            updates: {},
+            comments: {},
+            fundraiser: { include: :profile }
+          }
+        ).merge(
           type: campaign.class.name,
           media: campaign.media_url,
           total_donors: campaign.total_donors
