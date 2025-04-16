@@ -75,6 +75,7 @@ class Campaign < ApplicationRecord
       category location currency currency_code currency_symbol status
       fundraiser_id created_at updated_at
     ]).merge(
+      type: self.class.name,
       media: media_url,
       media_filename: media_filename,
       description: description.as_json,
