@@ -80,7 +80,6 @@ class Campaign < ApplicationRecord
       description: description.as_json,
       total_shares: total_shares,
       donations_over_time: donations_over_time,
-      campaign_type: campaign_type,
       permissions: {
         accept_donations: accept_donations,
         leave_words_of_support: leave_words_of_support,
