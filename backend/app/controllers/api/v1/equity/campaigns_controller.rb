@@ -2,7 +2,7 @@
 module Api
   module V1
     module Equity
-      class EquityCampaignsController < ApplicationController
+      class CampaignsController < ApplicationController
         before_action :authenticate_request, only: %i[index create update destroy launch close my_campaigns]
         before_action :set_campaign, only: %i[show update destroy launch close]
         before_action :authorize_campaign_user!, only: %i[update destroy launch close]
