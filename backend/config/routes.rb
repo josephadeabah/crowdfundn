@@ -152,7 +152,7 @@ Rails.application.routes.draw do
             post :close
           end
           
-          resources :campaign_team_members, only: [:index, :create, :update, :destroy]
+          resources :campaign_team_members, only: [:index, :create, :update, :destroy], controller: 'api/v1/equity/campaign_team_members'
           resources :equity_investments, only: [:create] do
             collection do
               get :callback
