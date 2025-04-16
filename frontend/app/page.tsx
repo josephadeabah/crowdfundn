@@ -52,9 +52,9 @@ const HomePage = () => {
             <BlogPosts />
           </div>
         </div>
-        <div className="w-full">
+        {/* <div className="w-full">
           <PartnerProgram />
-        </div>
+        </div> */}
         <section className="">
           <BrandIdentity />
         </section>
