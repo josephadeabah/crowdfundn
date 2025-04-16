@@ -76,15 +76,17 @@ class Campaign < ApplicationRecord
     media.attached? ? media.filename.to_s : nil
   end
 
-  def as_json(options = {})
-    super(only: %i[
-      id title goal_amount current_amount transferred_amount start_date end_date
-      category location currency currency_code currency_symbol status
-      fundraiser_id created_at updated_at
-    ]).merge(
+  # app/models/campaign.rb
+    def as_json(options = {})
+    super(options.merge(
+      only: %i[
+        id title goal_amount current_amount transferred_amount start_date end_date
+        category location currency currency_code currency_symbol status
+        fundraiser_id created_at updated_at valuation equity_offered minimum_investment
+      ],
+      methods: %i[media_url media_filename total_days remaining_days]
+    )).merge(
       type: self.class.name,
-      media: media_url,
-      media_filename: media_filename,
       description: description.as_json,
       total_shares: total_shares,
       donations_over_time: donations_over_time,
@@ -103,9 +105,6 @@ class Campaign < ApplicationRecord
         promotion_frequency: promotion_frequency,
         promotion_duration: promotion_duration
       },
-      rewards: rewards,
-      updates: updates,
-      comments: comments,
       fundraiser: {
         id: fundraiser.id,
         name: fundraiser.full_name,
@@ -113,8 +112,6 @@ class Campaign < ApplicationRecord
         currency_symbol: fundraiser.currency_symbol,
         profile: fundraiser.profile
       },
-      total_days: total_days,
-      remaining_days: remaining_days,
       favorited: options[:user] ? options[:user].favorited_campaigns.include?(self) : false
     )
     end

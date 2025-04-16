@@ -11,6 +11,8 @@ class EquityCampaign < Campaign
   validate :founders_equity_allocation
 
   attribute :equity_status, :integer, default: 0
+  # Make sure these attributes are accessible
+  attr_accessor :valuation, :equity_offered, :minimum_investment, :equity_status
   
   enum equity_status: {
     draft: 0,

@@ -215,14 +215,30 @@ module Api
         campaign_class.name
       end
 
+      # app/controllers/api/v1/base_campaigns_controller.rb
       def campaign_json(campaign)
-        campaign.as_json(
+        json_data = campaign.as_json(
           include: [:rewards, :updates, :comments, fundraiser: :profile]
         ).merge(
           type: campaign.class.name,
           media: campaign.media_url,
           total_donors: campaign.total_donors
         )
+
+        # Add equity-specific fields if this is an equity campaign
+        if campaign.is_a?(EquityCampaign)
+          json_data.merge!(
+            shares_available: campaign.shares_available,
+            percentage_raised: campaign.percentage_raised,
+            total_investors: campaign.equity_investments.count,
+            equity_status: campaign.equity_status,
+            valuation: campaign.valuation,
+            equity_offered: campaign.equity_offered,
+            minimum_investment: campaign.minimum_investment
+          )
+        end
+
+        json_data
       end
 
       def calculate_date_range(range)

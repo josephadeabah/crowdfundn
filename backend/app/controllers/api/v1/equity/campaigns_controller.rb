@@ -34,15 +34,6 @@ module Api
             :media, :equity_status
           )
         end
-
-        def campaign_json(campaign)
-          super.merge(
-            shares_available: campaign.shares_available,
-            percentage_raised: campaign.percentage_raised,
-            total_investors: campaign.equity_investments.count,
-            equity_status: campaign.equity_status
-          )
-        end
       end
     end
   end
