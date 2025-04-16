@@ -10,7 +10,7 @@ class EquityCampaign < Campaign
   validates :equity_offered, numericality: { greater_than: 0, less_than_or_equal_to: 100 }
   validate :founders_equity_allocation
   
-  enum status: {
+  enum equity_status: {
     draft: 0,
     pending_approval: 1,
     live: 2,
