@@ -128,7 +128,7 @@ module Api
 
         def campaign_params
           params.require(:equity_campaign).permit(
-            :title, :description, :goal_amount, :start_date, :end_date, :category, 
+            :title, :description, :goal_amount, :current_amount, :start_date, :end_date, :category, 
             :location, :currency, :valuation, :equity_offered, :minimum_investment,
             :media
           )
