@@ -222,9 +222,9 @@ module Api
       def campaign_json(campaign)
         json = campaign.as_json({
           include: [
-            { rewards: {} }, # Always include rewards, even if empty
-            :updates, 
-            :comments, 
+            { rewards => campaign.rewards }, # Always include rewards, even if empty
+            :updates => campaign.updates, 
+            :comments => campaign.comments, 
             { fundraiser: { include: :profile } }
           ]
         }).merge(
