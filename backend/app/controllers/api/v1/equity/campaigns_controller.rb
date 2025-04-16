@@ -7,7 +7,10 @@ module Api
           if @campaign.may_launch? && @campaign.launch!
             render json: campaign_json(@campaign), status: :ok
           else
-            render json: { error: "Cannot launch campaign" }, status: :unprocessable_entity
+            render json: { 
+              error: "Cannot launch campaign",
+              errors: @campaign.errors.full_messages
+            }, status: :unprocessable_entity
           end
         end
 
@@ -15,7 +18,10 @@ module Api
           if @campaign.may_close? && @campaign.close!
             render json: campaign_json(@campaign), status: :ok
           else
-            render json: { error: "Cannot close campaign" }, status: :unprocessable_entity
+            render json: { 
+              error: "Cannot close campaign",
+              errors: @campaign.errors.full_messages
+            }, status: :unprocessable_entity
           end
         end
 
@@ -25,7 +31,7 @@ module Api
           params.require(:equity_campaign).permit(
             :title, :description, :goal_amount, :current_amount, :start_date, :end_date, 
             :category, :location, :currency, :valuation, :equity_offered, :minimum_investment,
-            :media
+            :media, :equity_status
           )
         end
 
@@ -33,7 +39,8 @@ module Api
           super.merge(
             shares_available: campaign.shares_available,
             percentage_raised: campaign.percentage_raised,
-            total_investors: campaign.equity_investments.count
+            total_investors: campaign.equity_investments.count,
+            equity_status: campaign.equity_status
           )
         end
       end

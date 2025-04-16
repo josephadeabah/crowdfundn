@@ -83,10 +83,16 @@ module Api
         }, status: :ok
       end
 
+      
       def create
         @campaign = campaign_class.new(campaign_params)
         @campaign.fundraiser = @current_user
         @campaign.media.attach(params[:media]) if params[:media].present?
+        
+        # Set default equity_status for EquityCampaign if it's not provided
+        if @campaign.is_a?(EquityCampaign) && @campaign.equity_status.blank?
+          @campaign.equity_status = :draft
+        end
 
         if @campaign.save
           render json: {

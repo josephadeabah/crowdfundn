@@ -9,6 +9,8 @@ class EquityCampaign < Campaign
   validates :valuation, :minimum_investment, numericality: { greater_than: 0 }
   validates :equity_offered, numericality: { greater_than: 0, less_than_or_equal_to: 100 }
   validate :founders_equity_allocation
+
+  attribute :equity_status, :integer, default: 0
   
   enum equity_status: {
     draft: 0,
