@@ -82,7 +82,7 @@ class Campaign < ApplicationRecord
       description: description.as_json,
       total_shares: total_shares,
       donations_over_time: donations_over_time,
-      campaign_type: campaign_type
+      campaign_type: campaign_type,
       permissions: {
         accept_donations: accept_donations,
         leave_words_of_support: leave_words_of_support,
@@ -112,7 +112,7 @@ class Campaign < ApplicationRecord
       remaining_days: remaining_days,
       favorited: options[:user] ? options[:user].favorited_campaigns.include?(self) : false
     )
-  end
+    end
 
   def total_days
     return 0 unless start_date && end_date
