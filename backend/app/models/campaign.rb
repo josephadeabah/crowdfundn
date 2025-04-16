@@ -20,8 +20,6 @@ class Campaign < ApplicationRecord
   validates :current_amount, numericality: { greater_than_or_equal_to: 0 }
 
   enum status: { active: 0, completed: 1, canceled: 2 }
-  # Add this to distinguish campaign types
-  enum campaign_type: { donation: 0, equity: 1 }, _prefix: :type
 
   # Permissions settings
   attribute :accept_donations, :boolean, default: true
