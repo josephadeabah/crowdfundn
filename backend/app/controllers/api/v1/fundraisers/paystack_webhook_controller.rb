@@ -1,10 +1,7 @@
-# app/controllers/api/v1/fundraisers/paystack_webhook_controller.rb
 module Api
   module V1
     module Fundraisers
       class PaystackWebhookController < ApplicationController
-        # skip_before_action :verify_authenticity_token
-        
         def receive
           payload = request.body.read
           signature = request.headers['X-Paystack-Signature']
@@ -36,15 +33,21 @@ module Api
 
           Rails.logger.info "Received Paystack event: #{event[:event]}"
 
-          # Check metadata to determine if this is an equity investment
-          metadata = event.dig(:data, :metadata)
-          if metadata && (metadata[:investment_id] || metadata[:campaign_id])
+          # FIRST check if this is clearly an equity transaction
+          if clearly_equity_event?(event)
             handle_equity_event(event)
           else
+            # Default to regular donation processing
             handle_regular_event(event)
           end
 
           EventProcessed.create(event_id: event_id)
+        end
+
+        def clearly_equity_event?(event)
+          metadata = event.dig(:data, :metadata) || {}
+          # Only treat as equity if there's an explicit investment_id
+          metadata[:investment_id].present?
         end
 
         def handle_regular_event(event)
