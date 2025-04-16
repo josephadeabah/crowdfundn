@@ -10,12 +10,16 @@ class CampaignTeamMember < ApplicationRecord
   
   # Ensure founder equity doesn't exceed available equity
   validate :founder_equity_limit
+
+  def equity_campaign
+    campaign.is_a?(EquityCampaign) ? campaign : nil
+  end
   
   private
   
   def founder_equity_limit
     if role == 'founder' && equity_percentage.present? && equity_campaign.present?
-      available_equity = 100 - equity_campaign.equity_offered
+      available_equity = 100 - equity_campaign.equity_offered.to_f
       if equity_percentage > available_equity
         errors.add(:equity_percentage, "cannot exceed #{available_equity}% for founders")
       end

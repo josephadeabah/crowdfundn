@@ -1,8 +1,9 @@
 class EquityCampaign < Campaign
   has_many :equity_investments, foreign_key: 'campaign_id', dependent: :destroy
   has_many :investors, through: :equity_investments, source: :user
-  has_many :campaign_team_members, dependent: :destroy
-  has_many :founders, through: :campaign_team_members, source: :user
+  has_many :campaign_team_members, foreign_key: 'campaign_id', dependent: :destroy
+  has_many :founders, -> { where(campaign_team_members: { role: 'founder' }) }, 
+           through: :campaign_team_members, source: :user
   
   validates :valuation, :equity_offered, :minimum_investment, presence: true, numericality: { greater_than: 0 }
   validates :equity_offered, numericality: { less_than_or_equal_to: 100 }
