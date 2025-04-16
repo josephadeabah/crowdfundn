@@ -8,7 +8,7 @@ const EquityInvestments = () => {
   );
 
   return (
-    <div className="p-6">
+    <div className="px-2 py-4">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
           Equity Investments
@@ -106,7 +106,7 @@ const PortfolioView = () => {
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-8">
-        <div className="p-6">
+        <div className="px-2 py-4">
           <h2 className="text-xl font-semibold mb-4">Your Investments</h2>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
