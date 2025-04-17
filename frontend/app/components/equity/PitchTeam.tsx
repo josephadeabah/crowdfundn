@@ -246,7 +246,7 @@ const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
               <Button variant="outline" onClick={resetForm}>
                 Cancel
               </Button>
-              <Button onClick={handleAddMember} variant="outline" className="bg-fundify-primary">
+              <Button onClick={handleAddMember} variant="ghost" className="bg-fundify-primary">
                 {editingIndex !== null ? 'Update Member' : 'Add Member'}
               </Button>
             </div>
