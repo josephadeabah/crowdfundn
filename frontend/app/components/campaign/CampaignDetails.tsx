@@ -204,8 +204,8 @@ const CampaignDetails = ({
           </div>
 
           {!showEquitySections && (
-            <div className="w-full mb-2 border border-gray-200 rounded-md p-4">
-              <span className="text-sm font-semibold mb-4 text-emerald-900">
+            <div className="w-full mb-2 border border-gray-200 rounded-md">
+              <span className="text-sm font-semibold mb-4 text-gray-500 p-4 italics">
                 Only use the below if you're raising to give out equity to
                 investors otherwise continue to content
               </span>
