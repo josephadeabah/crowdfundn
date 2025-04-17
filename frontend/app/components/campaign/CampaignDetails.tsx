@@ -200,10 +200,10 @@ const CampaignDetails = ({
                 investors otherwise continue to content
               </span>
               <Accordion type="multiple" className="w-full space-y-2">
-                {/* Part 1: The Pitch */}
+                {/* Part 1: The Company Intro */}
                 <AccordionItemWrapper value="pitch">
                   <AccordionTriggerWrapper>
-                    <span className="font-medium">The Pitch</span>
+                    <span className="font-medium">Company Intro</span>
                   </AccordionTriggerWrapper>
                   <AccordionContentWrapper>
                     <div className="space-y-6">
