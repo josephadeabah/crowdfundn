@@ -9,7 +9,7 @@ const FundraiserPage = () => {
   const [error, setError] = useState('');
 
   // Define the tabs
-  const tabs = ['Create New Campaign', 'Team Fundraising'];
+  const tabs = ['Create New Campaign', ''];
 
   // Handle tab click
   const handleTabClick = (tab: string) => {
@@ -22,15 +22,8 @@ const FundraiserPage = () => {
     switch (activeTab) {
       case 'Create New Campaign':
         return <CampaignCreator />;
-      case 'Team Fundraising':
-        return (
-          <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
-            <h2 className="text-2xl font-bold mb-4">Team Fundraising</h2>
-            <p className="text-gray-700 dark:text-gray-400">
-              Team Fundraising is coming soon!
-            </p>
-          </div>
-        );
+      case '':
+        return null;
       default:
         return <CampaignCreator />;
     }

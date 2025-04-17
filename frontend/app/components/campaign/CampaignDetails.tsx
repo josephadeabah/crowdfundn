@@ -204,81 +204,87 @@ const CampaignDetails = ({
           </div>
 
           {!showEquitySections && (
-            <Accordion type="multiple" className="w-full space-y-2">
-              {/* Part 1: The Pitch */}
-              <AccordionItemWrapper value="pitch">
-                <AccordionTriggerWrapper>
-                  <span className="font-medium">The Pitch</span>
-                </AccordionTriggerWrapper>
-                <AccordionContentWrapper>
-                  <div className="space-y-6">
-                    <PitchBasics
-                      title={title}
-                      setTitle={setTitle}
-                      category={category}
-                      setCategory={setCategory}
-                      location={location}
-                      setLocation={setLocation}
-                      currencyCode={currencyCode}
-                      setCurrencyCode={setCurrencyCode}
-                      goalAmount={goalAmount}
-                      setGoalAmount={setGoalAmount}
-                      startDate={startDate}
-                      setStartDate={setStartDate}
-                      endDate={endDate}
-                      setEndDate={setEndDate}
-                      currencies={currencies}
-                      categories={categories}
-                    />
-                    <PitchHighlights
-                      highlights={highlights}
-                      setHighlights={setHighlights}
-                    />
-                    <PitchTeam
-                      teamMembers={teamMembers}
-                      setTeamMembers={setTeamMembers}
-                    />
-                    <PitchContent content={content} setContent={setContent} />
-                    <PitchInvestors
-                      featuredInvestors={featuredInvestors}
-                      setFeaturedInvestors={setFeaturedInvestors}
-                    />
-                  </div>
-                </AccordionContentWrapper>
-              </AccordionItemWrapper>
+            <div className="w-full mb-2 border border-gray-200 rounded-md">
+              <span className="text-lg font-semibold mb-4 text-emerald-900">
+                Only use the below if you're raising to give out equity to
+                investors otherwise continue to content
+              </span>
+              <Accordion type="multiple" className="w-full space-y-2">
+                {/* Part 1: The Pitch */}
+                <AccordionItemWrapper value="pitch">
+                  <AccordionTriggerWrapper>
+                    <span className="font-medium">The Pitch</span>
+                  </AccordionTriggerWrapper>
+                  <AccordionContentWrapper>
+                    <div className="space-y-6">
+                      <PitchBasics
+                        title={title}
+                        setTitle={setTitle}
+                        category={category}
+                        setCategory={setCategory}
+                        location={location}
+                        setLocation={setLocation}
+                        currencyCode={currencyCode}
+                        setCurrencyCode={setCurrencyCode}
+                        goalAmount={goalAmount}
+                        setGoalAmount={setGoalAmount}
+                        startDate={startDate}
+                        setStartDate={setStartDate}
+                        endDate={endDate}
+                        setEndDate={setEndDate}
+                        currencies={currencies}
+                        categories={categories}
+                      />
+                      <PitchHighlights
+                        highlights={highlights}
+                        setHighlights={setHighlights}
+                      />
+                      <PitchTeam
+                        teamMembers={teamMembers}
+                        setTeamMembers={setTeamMembers}
+                      />
+                      <PitchContent content={content} setContent={setContent} />
+                      <PitchInvestors
+                        featuredInvestors={featuredInvestors}
+                        setFeaturedInvestors={setFeaturedInvestors}
+                      />
+                    </div>
+                  </AccordionContentWrapper>
+                </AccordionItemWrapper>
 
-              {/* Part 2: The Terms */}
-              <AccordionItemWrapper value="terms">
-                <AccordionTriggerWrapper>
-                  <span className="font-medium">The Terms</span>
-                </AccordionTriggerWrapper>
-                <AccordionContentWrapper>
-                  <div className="space-y-6">
-                    <TermsContract
-                      contractTerms={contractTerms}
-                      setContractTerms={setContractTerms}
-                    />
-                    <TermsPerks perks={perks} setPerks={setPerks} />
-                  </div>
-                </AccordionContentWrapper>
-              </AccordionItemWrapper>
+                {/* Part 2: The Terms */}
+                <AccordionItemWrapper value="terms">
+                  <AccordionTriggerWrapper>
+                    <span className="font-medium">The Terms</span>
+                  </AccordionTriggerWrapper>
+                  <AccordionContentWrapper>
+                    <div className="space-y-6">
+                      <TermsContract
+                        contractTerms={contractTerms}
+                        setContractTerms={setContractTerms}
+                      />
+                      <TermsPerks perks={perks} setPerks={setPerks} />
+                    </div>
+                  </AccordionContentWrapper>
+                </AccordionItemWrapper>
 
-              {/* Part 3: The Raise */}
-              <AccordionItemWrapper value="raise">
-                <AccordionTriggerWrapper>
-                  <span className="font-medium">The Raise</span>
-                </AccordionTriggerWrapper>
-                <AccordionContentWrapper>
-                  <div className="space-y-6">
-                    <RaiseDiscoverability
-                      discoverabilitySettings={discoverabilitySettings}
-                      setDiscoverabilitySettings={setDiscoverabilitySettings}
-                    />
-                    <RaiseExtras extras={extras} setExtras={setExtras} />
-                  </div>
-                </AccordionContentWrapper>
-              </AccordionItemWrapper>
-            </Accordion>
+                {/* Part 3: The Raise */}
+                <AccordionItemWrapper value="raise">
+                  <AccordionTriggerWrapper>
+                    <span className="font-medium">The Raise</span>
+                  </AccordionTriggerWrapper>
+                  <AccordionContentWrapper>
+                    <div className="space-y-6">
+                      <RaiseDiscoverability
+                        discoverabilitySettings={discoverabilitySettings}
+                        setDiscoverabilitySettings={setDiscoverabilitySettings}
+                      />
+                      <RaiseExtras extras={extras} setExtras={setExtras} />
+                    </div>
+                  </AccordionContentWrapper>
+                </AccordionItemWrapper>
+              </Accordion>
+            </div>
           )}
 
           <div className="flex justify-end mt-6">
