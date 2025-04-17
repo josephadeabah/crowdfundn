@@ -177,22 +177,6 @@ const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  User ID
-                </label>
-                <Input
-                  type="number"
-                  value={newMember.user_id}
-                  onChange={(e) =>
-                    setNewMember((prev) => ({
-                      ...prev,
-                      user_id: Number(e.target.value),
-                    }))
-                  }
-                  placeholder="User ID"
-                />
-              </div>
-              <div>
                 <label className="block text-sm font-medium mb-1">Role*</label>
                 <Select
                   value={newMember.role}
@@ -262,7 +246,7 @@ const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
               <Button variant="outline" onClick={resetForm}>
                 Cancel
               </Button>
-              <Button onClick={handleAddMember}>
+              <Button onClick={handleAddMember} variant="outline" className="bg-fundify-primary">
                 {editingIndex !== null ? 'Update Member' : 'Add Member'}
               </Button>
             </div>
