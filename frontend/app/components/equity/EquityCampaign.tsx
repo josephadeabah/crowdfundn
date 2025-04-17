@@ -21,7 +21,7 @@ import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { FaCheck, FaExclamationTriangle } from 'react-icons/fa';
 import { categories } from '@/app/utils/helpers/categories';
 import { useDropzone } from 'react-dropzone';
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from 'next/navigation';
 
 const CURRENCIES = [
   { code: 'USD', symbol: '$' },
@@ -41,6 +41,36 @@ const CURRENCIES = [
   { code: 'ZAR', symbol: 'R' },
 ];
 
+interface TeamMember {
+  name: string;
+  role: string;
+  bio: string;
+  photo?: File | string;
+}
+
+interface FeaturedInvestor {
+  name: string;
+  logo?: File | string;
+  description: string;
+}
+
+interface Perk {
+  title: string;
+  description: string;
+  minimumInvestment: number;
+}
+
+interface DiscoverabilitySettings {
+  featured: boolean;
+  promoted: boolean;
+  seoOptimized: boolean;
+}
+
+interface Extras {
+  videoPitch?: File | string;
+  faq: Array<{ question: string; answer: string }>;
+}
+
 interface CampaignData {
   title: string;
   content: string;
@@ -54,6 +84,14 @@ interface CampaignData {
   currencyCode: string;
   location: string;
   image: string;
+  // Equity-specific fields
+  highlights: string;
+  teamMembers: TeamMember[];
+  featuredInvestors: FeaturedInvestor[];
+  contractTerms: string;
+  perks: Perk[];
+  discoverabilitySettings: DiscoverabilitySettings;
+  extras: Extras;
 }
 
 export interface FormErrors {
@@ -66,6 +104,8 @@ export interface FormErrors {
   currencyCode: string;
   location: string;
   image: string;
+  highlights?: string;
+  contractTerms?: string;
 }
 
 const EquityCampaign = () => {
@@ -81,10 +121,23 @@ const EquityCampaign = () => {
     currencyCode: '',
     location: '',
     image: '',
+    highlights: '',
+    teamMembers: [],
+    featuredInvestors: [],
+    contractTerms: '',
+    perks: [],
+    discoverabilitySettings: {
+      featured: false,
+      promoted: false,
+      seoOptimized: true,
+    },
+    extras: {
+      faq: [],
+    },
   };
 
   const [campaignData, setCampaignData] = useLocalStorage<CampaignData>(
-    'campaign-draft',
+    'equity-campaign-draft',
     initialCampaignData,
   );
   const [error, setError] = useState<FormErrors>({
@@ -97,6 +150,8 @@ const EquityCampaign = () => {
     currencyCode: '',
     location: '',
     image: '',
+    highlights: '',
+    contractTerms: '',
   });
   const { addCampaign, loading } = useCampaignContext();
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
@@ -104,7 +159,7 @@ const EquityCampaign = () => {
   const [alertTitle, setAlertTitle] = useState<string>('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [currentAmount, setCurrentAmount] = useState('0');
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -112,6 +167,7 @@ const EquityCampaign = () => {
     }
   }, []);
 
+  // General setters
   const setTitle = (value: string) =>
     setCampaignData({ ...campaignData, title: value });
   const setContent = (value: string) =>
@@ -135,6 +191,22 @@ const EquityCampaign = () => {
   const setLocation = (value: string) =>
     setCampaignData({ ...campaignData, location: value });
 
+  // Equity-specific setters
+  const setHighlights = (value: string) =>
+    setCampaignData({ ...campaignData, highlights: value });
+  const setTeamMembers = (value: TeamMember[]) =>
+    setCampaignData({ ...campaignData, teamMembers: value });
+  const setFeaturedInvestors = (value: FeaturedInvestor[]) =>
+    setCampaignData({ ...campaignData, featuredInvestors: value });
+  const setContractTerms = (value: string) =>
+    setCampaignData({ ...campaignData, contractTerms: value });
+  const setPerks = (value: Perk[]) =>
+    setCampaignData({ ...campaignData, perks: value });
+  const setDiscoverabilitySettings = (value: DiscoverabilitySettings) =>
+    setCampaignData({ ...campaignData, discoverabilitySettings: value });
+  const setExtras = (value: Extras) =>
+    setCampaignData({ ...campaignData, extras: value });
+
   useEffect(() => {
     const hasSavedData = Object.values(campaignData).some(
       (value) =>
@@ -144,7 +216,7 @@ const EquityCampaign = () => {
     );
 
     if (hasSavedData && campaignData !== initialCampaignData) {
-      toast.info('Your draft campaign has been restored', {
+      toast.info('Your draft equity campaign has been restored', {
         description: 'Continue where you left off',
         duration: 3000,
       });
@@ -165,7 +237,7 @@ const EquityCampaign = () => {
       }));
     }
     setCurrentAmount('0');
-  }, [userAccountData]);
+  }, [userAccountData, setCampaignData]);
 
   const validateForm = (): boolean => {
     const formErrors: FormErrors = {
@@ -178,6 +250,8 @@ const EquityCampaign = () => {
       currencyCode: '',
       location: '',
       image: '',
+      highlights: '',
+      contractTerms: '',
     };
 
     if (!campaignData.title.trim()) formErrors.title = 'Title is required';
@@ -192,9 +266,14 @@ const EquityCampaign = () => {
     if (!campaignData.currencyCode)
       formErrors.currencyCode = 'Currency is required';
     if (!campaignData.location) formErrors.location = 'Location is required';
-    // Add validation for the image
     if (!selectedImage) {
       formErrors.image = 'An image is required for the campaign';
+    }
+    if (!campaignData.highlights.trim()) {
+      formErrors.highlights = 'Highlights are required';
+    }
+    if (!campaignData.contractTerms.trim()) {
+      formErrors.contractTerms = 'Contract terms are required';
     }
 
     if (
@@ -230,6 +309,7 @@ const EquityCampaign = () => {
     }
 
     const formData = new FormData();
+    // Basic campaign data
     formData.append('campaign[title]', campaignData.title);
     formData.append('campaign[description]', campaignData.content);
     formData.append(
@@ -242,22 +322,41 @@ const EquityCampaign = () => {
     formData.append('campaign[category]', campaignData.category);
     formData.append('campaign[location]', campaignData.location);
     formData.append('campaign[currency]', campaignData.currencyCode);
+
+    // Equity-specific data
+    formData.append('campaign[highlights]', campaignData.highlights);
+    formData.append('campaign[contract_terms]', campaignData.contractTerms);
+    formData.append(
+      'campaign[discoverability_settings]',
+      JSON.stringify(campaignData.discoverabilitySettings),
+    );
+    formData.append(
+      'campaign[team_members]',
+      JSON.stringify(campaignData.teamMembers),
+    );
+    formData.append(
+      'campaign[featured_investors]',
+      JSON.stringify(campaignData.featuredInvestors),
+    );
+    formData.append('campaign[perks]', JSON.stringify(campaignData.perks));
+    formData.append('campaign[extras]', JSON.stringify(campaignData.extras));
+
     if (selectedImage) {
       formData.append('campaign[media]', selectedImage);
     }
 
     try {
       const createdCampaign = await addCampaign(formData);
-      setAlertTitle('Campaign created successfully');
+      setAlertTitle('Equity campaign created successfully');
       setAlertMessage(
         <a href="/account#Campaigns" className="text-gray-700 underline">
           View created campaign in the "Campaigns" tab
         </a>,
       );
       setCampaignData(initialCampaignData);
-      localStorage.removeItem('campaign-draft');
+      localStorage.removeItem('equity-campaign-draft');
     } catch (err) {
-      setAlertTitle('Failed to create campaign');
+      setAlertTitle('Failed to create equity campaign');
       setAlertMessage(
         <div>
           {Object.values(error).map((errMsg, index) => (
@@ -320,9 +419,29 @@ const EquityCampaign = () => {
                       setStartDate={setStartDate}
                       endDate={campaignData.endDate}
                       setEndDate={setEndDate}
+                      content={campaignData.content}
+                      setContent={setContent}
                       onContinue={() => setActiveTab('content')}
                       currencies={CURRENCIES}
                       categories={categories}
+                      // Equity-specific props
+                      highlights={campaignData.highlights}
+                      setHighlights={setHighlights}
+                      teamMembers={campaignData.teamMembers}
+                      setTeamMembers={setTeamMembers}
+                      featuredInvestors={campaignData.featuredInvestors}
+                      setFeaturedInvestors={setFeaturedInvestors}
+                      contractTerms={campaignData.contractTerms}
+                      setContractTerms={setContractTerms}
+                      perks={campaignData.perks}
+                      setPerks={setPerks}
+                      discoverabilitySettings={
+                        campaignData.discoverabilitySettings
+                      }
+                      setDiscoverabilitySettings={setDiscoverabilitySettings}
+                      extras={campaignData.extras}
+                      setExtras={setExtras}
+                      showEquitySections={true}
                     />
                   </div>
 
@@ -396,7 +515,7 @@ const EquityCampaign = () => {
         setIsOpen={setAlertOpen}
         onConfirm={onConfirmAction}
         icon={
-          alertTitle === 'Campaign created successfully' ? (
+          alertTitle === 'Equity campaign created successfully' ? (
             <FaCheck className="w-6 h-6 text-green-600" />
           ) : (
             <FaExclamationTriangle className="w-6 h-6 text-red-600" />

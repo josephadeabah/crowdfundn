@@ -10,6 +10,21 @@ import {
 import { Button } from '@/app/components/ui/button';
 import DateRangePicker from '@/app/components/ui/DateRangePicker';
 import { Category } from '@/app/utils/helpers/categories';
+import {
+  Accordion,
+  AccordionContentWrapper,
+  AccordionItemWrapper,
+  AccordionTriggerWrapper,
+} from '../accordion/Accordion';
+import PitchBasics from '../equity/PitchBasics';
+import PitchHighlights from '../equity/PitchHighlights';
+import PitchContent from '../equity/PitchContent';
+import PitchTeam from '../equity/PitchTeam';
+import PitchInvestors from '../equity/PitchInvestors';
+import TermsContract from '../equity/TermsContract';
+import TermsPerks from '../equity/TermsPerks';
+import RaiseDiscoverability from '../equity/RaiseDiscoverability';
+import RaiseExtras from '../equity/RaiseExtras';
 
 interface CampaignDetailsProps {
   title: string;
@@ -29,6 +44,26 @@ interface CampaignDetailsProps {
   onContinue: () => void;
   currencies: Array<{ code: string; symbol: string }>;
   categories: Category[];
+  // Pitch section props
+  highlights?: string;
+  setHighlights?: (value: string) => void;
+  teamMembers?: Array<any>;
+  setTeamMembers?: (value: Array<any>) => void;
+  featuredInvestors?: Array<any>;
+  setFeaturedInvestors?: (value: Array<any>) => void;
+  content?: string;
+  setContent?: (value: string) => void;
+  // Terms section props
+  contractTerms?: string;
+  setContractTerms?: (value: string) => void;
+  perks?: Array<any>;
+  setPerks?: (value: Array<any>) => void;
+  // Raise section props
+  discoverabilitySettings?: any;
+  setDiscoverabilitySettings?: (value: any) => void;
+  extras?: any;
+  setExtras?: (value: any) => void;
+  showEquitySections?: boolean;
 }
 
 const CampaignDetails = ({
@@ -49,6 +84,26 @@ const CampaignDetails = ({
   onContinue,
   currencies,
   categories,
+  // Pitch section
+  highlights = '',
+  setHighlights = () => {},
+  teamMembers = [],
+  setTeamMembers = () => {},
+  featuredInvestors = [],
+  setFeaturedInvestors = () => {},
+  content = '',
+  setContent = () => {},
+  // Terms section
+  contractTerms = '',
+  setContractTerms = () => {},
+  perks = [],
+  setPerks = () => {},
+  // Raise section
+  discoverabilitySettings = {},
+  setDiscoverabilitySettings = () => {},
+  extras = {},
+  setExtras = () => {},
+  showEquitySections = false,
 }: CampaignDetailsProps) => {
   const getCurrencySymbol = (code: string) => {
     const currency = currencies.find((c) => c.code === code);
@@ -147,6 +202,84 @@ const CampaignDetails = ({
               onEndDateChange={setEndDate}
             />
           </div>
+
+          {showEquitySections && (
+            <Accordion type="multiple" className="w-full space-y-2">
+              {/* Part 1: The Pitch */}
+              <AccordionItemWrapper value="pitch">
+                <AccordionTriggerWrapper>
+                  <span className="font-medium">The Pitch</span>
+                </AccordionTriggerWrapper>
+                <AccordionContentWrapper>
+                  <div className="space-y-6">
+                    <PitchBasics
+                      title={title}
+                      setTitle={setTitle}
+                      category={category}
+                      setCategory={setCategory}
+                      location={location}
+                      setLocation={setLocation}
+                      currencyCode={currencyCode}
+                      setCurrencyCode={setCurrencyCode}
+                      goalAmount={goalAmount}
+                      setGoalAmount={setGoalAmount}
+                      startDate={startDate}
+                      setStartDate={setStartDate}
+                      endDate={endDate}
+                      setEndDate={setEndDate}
+                      currencies={currencies}
+                      categories={categories}
+                    />
+                    <PitchHighlights
+                      highlights={highlights}
+                      setHighlights={setHighlights}
+                    />
+                    <PitchTeam
+                      teamMembers={teamMembers}
+                      setTeamMembers={setTeamMembers}
+                    />
+                    <PitchContent content={content} setContent={setContent} />
+                    <PitchInvestors
+                      featuredInvestors={featuredInvestors}
+                      setFeaturedInvestors={setFeaturedInvestors}
+                    />
+                  </div>
+                </AccordionContentWrapper>
+              </AccordionItemWrapper>
+
+              {/* Part 2: The Terms */}
+              <AccordionItemWrapper value="terms">
+                <AccordionTriggerWrapper>
+                  <span className="font-medium">The Terms</span>
+                </AccordionTriggerWrapper>
+                <AccordionContentWrapper>
+                  <div className="space-y-6">
+                    <TermsContract
+                      contractTerms={contractTerms}
+                      setContractTerms={setContractTerms}
+                    />
+                    <TermsPerks perks={perks} setPerks={setPerks} />
+                  </div>
+                </AccordionContentWrapper>
+              </AccordionItemWrapper>
+
+              {/* Part 3: The Raise */}
+              <AccordionItemWrapper value="raise">
+                <AccordionTriggerWrapper>
+                  <span className="font-medium">The Raise</span>
+                </AccordionTriggerWrapper>
+                <AccordionContentWrapper>
+                  <div className="space-y-6">
+                    <RaiseDiscoverability
+                      discoverabilitySettings={discoverabilitySettings}
+                      setDiscoverabilitySettings={setDiscoverabilitySettings}
+                    />
+                    <RaiseExtras extras={extras} setExtras={setExtras} />
+                  </div>
+                </AccordionContentWrapper>
+              </AccordionItemWrapper>
+            </Accordion>
+          )}
 
           <div className="flex justify-end mt-6">
             <Button
