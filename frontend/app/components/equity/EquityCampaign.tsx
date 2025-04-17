@@ -214,14 +214,14 @@ const EquityCampaign = () => {
         value !== '' &&
         !(value instanceof Object && Object.keys(value).length === 0),
     );
-
-    if (hasSavedData && campaignData !== initialCampaignData) {
+  
+    if (hasSavedData && JSON.stringify(campaignData) !== JSON.stringify(initialCampaignData)) {
       toast.info('Your draft equity campaign has been restored', {
         description: 'Continue where you left off',
         duration: 3000,
       });
     }
-  }, [campaignData, initialCampaignData]);
+  }, [campaignData]);
 
   useEffect(() => {
     if (userAccountData) {
