@@ -336,23 +336,26 @@ const CampaignCreator = () => {
                         website: string;
                       }): void {
                         throw new Error('Function not implemented.');
-                      }}
+                      } }
                       onFileUpload={function (file: File): void {
                         throw new Error('Function not implemented.');
-                      }}
+                      } }
                       contractType={''}
                       setContractType={function (value: string): void {
                         throw new Error('Function not implemented.');
-                      }}
+                      } }
                       minRaise={''}
                       setMinRaise={function (value: string): void {
                         throw new Error('Function not implemented.');
-                      }}
+                      } }
                       maxRaise={''}
                       setMaxRaise={function (value: string): void {
                         throw new Error('Function not implemented.');
-                      }}
-                    />
+                      } } 
+                      teamMembers={[]} 
+                      setTeamMembers={function (value: Array<any>): void {
+                        throw new Error('Function not implemented.');
+                      } }                    />
                   </div>
 
                   <div

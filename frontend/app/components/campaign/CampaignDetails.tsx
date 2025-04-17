@@ -40,8 +40,8 @@ interface CampaignDetailsProps {
   currencies: Array<{ code: string; symbol: string }>;
   categories: Category[];
   // Pitch section props
-  teamMembers?: Array<any>;
-  setTeamMembers?: (value: Array<any>) => void;
+  teamMembers: Array<any>;
+  setTeamMembers: (value: Array<any>) => void;
   companyInfo: {
     name: string;
     description: string;
