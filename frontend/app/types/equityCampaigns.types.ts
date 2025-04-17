@@ -26,6 +26,7 @@ export interface CampaignTeamMember {
   email: string;
   role: 'founder' | 'advisor' | 'employee';
   title: string;
+  description?: string;
   equity_percentage: number;
   avatar_url?: string;
   created_at: string;
