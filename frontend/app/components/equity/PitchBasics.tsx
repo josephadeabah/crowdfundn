@@ -75,7 +75,7 @@ const PitchBasics = ({
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((cat) => (
+                  {categories?.map((cat) => (
                     <SelectItem key={cat.value} value={cat.value}>
                       {cat.label}
                     </SelectItem>
@@ -104,7 +104,7 @@ const PitchBasics = ({
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
                 <SelectContent>
-                  {currencies.map((currency) => (
+                  {currencies?.map((currency) => (
                     <SelectItem key={currency.code} value={currency.code}>
                       {currency.code} ({currency.symbol})
                     </SelectItem>
