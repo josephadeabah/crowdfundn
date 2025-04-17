@@ -226,9 +226,7 @@ const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
                 />
               </div>
               <div>
-              <label className="block text-sm font-medium mb-1">
-                  Bio
-                </label>
+                <label className="block text-sm font-medium mb-1">Bio</label>
                 <Input
                   value={newMember.description || ''}
                   onChange={(e) =>
@@ -246,7 +244,11 @@ const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
               <Button variant="outline" onClick={resetForm}>
                 Cancel
               </Button>
-              <Button onClick={handleAddMember} variant="ghost" className="bg-fundify-primary text-white hover:text-gray-700">
+              <Button
+                onClick={handleAddMember}
+                variant="ghost"
+                className="bg-fundify-primary text-white hover:text-gray-700"
+              >
                 {editingIndex !== null ? 'Update Member' : 'Add Member'}
               </Button>
             </div>
