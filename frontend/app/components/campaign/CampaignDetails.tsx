@@ -203,7 +203,7 @@ const CampaignDetails = ({
             />
           </div>
 
-          {showEquitySections && (
+          {!showEquitySections && (
             <Accordion type="multiple" className="w-full space-y-2">
               {/* Part 1: The Pitch */}
               <AccordionItemWrapper value="pitch">
