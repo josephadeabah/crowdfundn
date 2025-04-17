@@ -46,7 +46,7 @@ const FundraiserPage = () => {
 
       <div className="mb-6">
         <nav className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-          {tabs.map((tab) => (
+          {tabs?.map((tab) => (
             <button
               key={tab}
               onClick={() => handleTabClick(tab)}
