@@ -5,6 +5,7 @@ import { UserProfileProvider } from './users/UserContext';
 import { DonationsProvider } from './account/donations/DonationsContext';
 import { RewardProvider } from './account/rewards/RewardsContext';
 import { CampaignProvider } from './account/campaign/CampaignsContext';
+import { EquityCampaignProvider } from './account/campaign/EquityCampaignContext';
 import { CampaignUpdatesProvider } from './account/updates/CampaignUpdatesContext';
 import { TransferProvider } from './account/transfers/TransfersContext';
 import { AuthProvider } from './auth/AuthContext';
@@ -29,23 +30,25 @@ export const GlobalContextProvider = ({
           <DonationsProvider>
             <RewardProvider>
               <CampaignProvider>
-                <CampaignUpdatesProvider>
-                  <TransferProvider>
-                    <CampaignCommentsProvider>
-                      <CategoryProvider>
-                        <MetricsProvider>
-                          <ArticlesProvider>
-                            <LeaderboardProvider>
-                              <PointRewardProvider>
-                                <PledgesProvider>{children}</PledgesProvider>
-                              </PointRewardProvider>
-                            </LeaderboardProvider>
-                          </ArticlesProvider>
-                        </MetricsProvider>
-                      </CategoryProvider>
-                    </CampaignCommentsProvider>
-                  </TransferProvider>
-                </CampaignUpdatesProvider>
+                <EquityCampaignProvider>
+                  <CampaignUpdatesProvider>
+                    <TransferProvider>
+                      <CampaignCommentsProvider>
+                        <CategoryProvider>
+                          <MetricsProvider>
+                            <ArticlesProvider>
+                              <LeaderboardProvider>
+                                <PointRewardProvider>
+                                  <PledgesProvider>{children}</PledgesProvider>
+                                </PointRewardProvider>
+                              </LeaderboardProvider>
+                            </ArticlesProvider>
+                          </MetricsProvider>
+                        </CategoryProvider>
+                      </CampaignCommentsProvider>
+                    </TransferProvider>
+                  </CampaignUpdatesProvider>
+                </EquityCampaignProvider>
               </CampaignProvider>
             </RewardProvider>
           </DonationsProvider>
