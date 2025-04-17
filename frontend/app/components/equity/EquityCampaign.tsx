@@ -425,21 +425,21 @@ const EquityCampaign = () => {
                       currencies={CURRENCIES}
                       categories={categories}
                       // Equity-specific props
-                      highlights={campaignData.highlights}
+                      highlights={campaignData?.highlights}
                       setHighlights={setHighlights}
-                      teamMembers={campaignData.teamMembers}
+                      teamMembers={campaignData?.teamMembers}
                       setTeamMembers={setTeamMembers}
-                      featuredInvestors={campaignData.featuredInvestors}
+                      featuredInvestors={campaignData?.featuredInvestors}
                       setFeaturedInvestors={setFeaturedInvestors}
-                      contractTerms={campaignData.contractTerms}
+                      contractTerms={campaignData?.contractTerms}
                       setContractTerms={setContractTerms}
-                      perks={campaignData.perks}
+                      perks={campaignData?.perks}
                       setPerks={setPerks}
                       discoverabilitySettings={
-                        campaignData.discoverabilitySettings
+                        campaignData?.discoverabilitySettings
                       }
                       setDiscoverabilitySettings={setDiscoverabilitySettings}
-                      extras={campaignData.extras}
+                      extras={campaignData?.extras}
                       setExtras={setExtras}
                       showEquitySections={true}
                     />
