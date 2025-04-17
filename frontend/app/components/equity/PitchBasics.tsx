@@ -48,7 +48,7 @@ const PitchBasics = ({
   categories,
 }: PitchBasicsProps) => {
   const getCurrencySymbol = (code: string) => {
-    const currency = currencies.find((c) => c.code === code);
+    const currency = currencies?.find((c) => c.code === code);
     return currency ? currency.symbol : '₵';
   };
 
@@ -76,7 +76,7 @@ const PitchBasics = ({
                 </SelectTrigger>
                 <SelectContent>
                   {categories?.map((cat) => (
-                    <SelectItem key={cat.value} value={cat.value}>
+                    <SelectItem key={cat?.value} value={cat?.value}>
                       {cat.label}
                     </SelectItem>
                   ))}
@@ -105,8 +105,8 @@ const PitchBasics = ({
                 </SelectTrigger>
                 <SelectContent>
                   {currencies?.map((currency) => (
-                    <SelectItem key={currency.code} value={currency.code}>
-                      {currency.code} ({currency.symbol})
+                    <SelectItem key={currency?.code} value={currency?.code}>
+                      {currency?.code} ({currency?.symbol})
                     </SelectItem>
                   ))}
                 </SelectContent>

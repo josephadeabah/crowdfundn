@@ -45,9 +45,9 @@ const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
             <div key={index} className="border p-3 rounded-md">
               <div className="flex justify-between items-start">
                 <div>
-                  <h4 className="font-medium">{member.name}</h4>
-                  <p className="text-sm text-gray-600">{member.role}</p>
-                  {member.bio && <p className="mt-2 text-sm">{member.bio}</p>}
+                  <h4 className="font-medium">{member?.name}</h4>
+                  <p className="text-sm text-gray-600">{member?.role}</p>
+                  {member.bio && <p className="mt-2 text-sm">{member?.bio}</p>}
                 </div>
                 <Button
                   variant="ghost"

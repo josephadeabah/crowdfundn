@@ -21,9 +21,9 @@ const FundraiserPage = () => {
   // Render the content for the active tab
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'Donation Campaign':
+      case 'Create Donation Campaign':
         return <CampaignCreator />;
-      case 'Equity Campaign':
+      case 'Create Equity Campaign':
         return <EquityCampaign />;
       default:
         return <CampaignCreator />;

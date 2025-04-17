@@ -80,12 +80,12 @@ const RaiseExtras = ({ extras, setExtras }: RaiseExtrasProps) => {
           <div>
             <h4 className="font-medium mb-2">FAQ</h4>
             <div className="space-y-3">
-              {(extras.faq || [])?.map((item, index) => (
+              {(extras?.faq || [])?.map((item, index) => (
                 <div key={index} className="border p-3 rounded-md">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h5 className="font-medium">{item.question}</h5>
-                      <p className="text-sm mt-1">{item.answer}</p>
+                      <h5 className="font-medium">{item?.question}</h5>
+                      <p className="text-sm mt-1">{item?.answer}</p>
                     </div>
                     <Button
                       variant="ghost"

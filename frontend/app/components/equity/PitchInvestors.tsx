@@ -47,7 +47,7 @@ const PitchInvestors = ({
               <div className="flex justify-between items-start">
                 <div>
                   <h4 className="font-medium">{investor.name}</h4>
-                  {investor.description && (
+                  {investor?.description && (
                     <p className="mt-1 text-sm">{investor.description}</p>
                   )}
                 </div>
