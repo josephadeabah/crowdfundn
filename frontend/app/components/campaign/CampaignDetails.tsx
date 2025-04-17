@@ -17,10 +17,8 @@ import {
   AccordionTriggerWrapper,
 } from '../accordion/Accordion';
 import PitchBasics from '../equity/PitchBasics';
-import PitchHighlights from '../equity/PitchHighlights';
 import PitchContent from '../equity/PitchContent';
 import PitchTeam from '../equity/PitchTeam';
-import PitchInvestors from '../equity/PitchInvestors';
 import TermsContract from '../equity/TermsContract';
 import TermsPerks from '../equity/TermsPerks';
 import RaiseDiscoverability from '../equity/RaiseDiscoverability';
@@ -45,12 +43,8 @@ interface CampaignDetailsProps {
   currencies: Array<{ code: string; symbol: string }>;
   categories: Category[];
   // Pitch section props
-  highlights?: string;
-  setHighlights?: (value: string) => void;
   teamMembers?: Array<any>;
   setTeamMembers?: (value: Array<any>) => void;
-  featuredInvestors?: Array<any>;
-  setFeaturedInvestors?: (value: Array<any>) => void;
   content?: string;
   setContent?: (value: string) => void;
   companyInfo: {
@@ -62,8 +56,8 @@ interface CampaignDetailsProps {
   onCompanyInfoChange: (info: CampaignDetailsProps['companyInfo']) => void;
   onFileUpload: (file: File) => void;
   // Terms section props
-  contractTerms?: string;
-  setContractTerms?: (value: string) => void;
+  contractType: string;
+  setContractType: (value: string) => void;
   perks?: Array<any>;
   setPerks?: (value: Array<any>) => void;
   // Raise section props
@@ -93,20 +87,16 @@ const CampaignDetails = ({
   currencies,
   categories,
   // Pitch section
-  highlights = '',
-  setHighlights = () => {},
   teamMembers = [],
   setTeamMembers = () => {},
-  featuredInvestors = [],
-  setFeaturedInvestors = () => {},
   content = '',
   setContent = () => {},
   companyInfo,
   onCompanyInfoChange,
   onFileUpload,
   // Terms section
-  contractTerms = '',
-  setContractTerms = () => {},
+  contractType = '',
+  setContractType = () => {},
   perks = [],
   setPerks = () => {},
   // Raise section
@@ -233,19 +223,11 @@ const CampaignDetails = ({
                         onCompanyInfoChange={onCompanyInfoChange}
                         onFileUpload={onFileUpload}
                       />
-                      <PitchHighlights
-                        highlights={highlights}
-                        setHighlights={setHighlights}
-                      />
                       <PitchTeam
                         teamMembers={teamMembers}
                         setTeamMembers={setTeamMembers}
                       />
                       <PitchContent content={content} setContent={setContent} />
-                      <PitchInvestors
-                        featuredInvestors={featuredInvestors}
-                        setFeaturedInvestors={setFeaturedInvestors}
-                      />
                     </div>
                   </AccordionContentWrapper>
                 </AccordionItemWrapper>
@@ -258,8 +240,8 @@ const CampaignDetails = ({
                   <AccordionContentWrapper>
                     <div className="space-y-6">
                       <TermsContract
-                        contractTerms={contractTerms}
-                        setContractTerms={setContractTerms}
+                         contractType={contractType}
+                         setContractType={setContractType}
                       />
                       <TermsPerks perks={perks} setPerks={setPerks} />
                     </div>
