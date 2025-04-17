@@ -322,8 +322,20 @@ const CampaignCreator = () => {
                       setEndDate={setEndDate}
                       onContinue={() => setActiveTab('content')}
                       currencies={CURRENCIES}
-                      categories={categories}
-                    />
+                      categories={categories} 
+                      companyInfo={{
+                        name: '',
+                        description: '',
+                        headquarters: '',
+                        website: ''
+                      }} 
+                      onCompanyInfoChange={function (info: { name: string; description: string; headquarters: string; website: string; }): void {
+                        throw new Error('Function not implemented.');
+                      } } 
+                      onFileUpload={function (file: File): void {
+                        throw new Error('Function not implemented.');
+                      } }                    
+                      />
                   </div>
 
                   <div

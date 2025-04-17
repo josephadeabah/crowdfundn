@@ -53,6 +53,14 @@ interface CampaignDetailsProps {
   setFeaturedInvestors?: (value: Array<any>) => void;
   content?: string;
   setContent?: (value: string) => void;
+  companyInfo: {
+    name: string;
+    description: string;
+    headquarters: string;
+    website: string;
+  };
+  onCompanyInfoChange: (info: CampaignDetailsProps['companyInfo']) => void;
+  onFileUpload: (file: File) => void;
   // Terms section props
   contractTerms?: string;
   setContractTerms?: (value: string) => void;
@@ -93,6 +101,9 @@ const CampaignDetails = ({
   setFeaturedInvestors = () => {},
   content = '',
   setContent = () => {},
+  companyInfo,
+  onCompanyInfoChange,
+  onFileUpload,
   // Terms section
   contractTerms = '',
   setContractTerms = () => {},
@@ -217,23 +228,10 @@ const CampaignDetails = ({
                   </AccordionTriggerWrapper>
                   <AccordionContentWrapper>
                     <div className="space-y-6">
-                      <PitchBasics
-                        title={title}
-                        setTitle={setTitle}
-                        category={category}
-                        setCategory={setCategory}
-                        location={location}
-                        setLocation={setLocation}
-                        currencyCode={currencyCode}
-                        setCurrencyCode={setCurrencyCode}
-                        goalAmount={goalAmount}
-                        setGoalAmount={setGoalAmount}
-                        startDate={startDate}
-                        setStartDate={setStartDate}
-                        endDate={endDate}
-                        setEndDate={setEndDate}
-                        currencies={currencies}
-                        categories={categories}
+                    <PitchBasics
+                        companyInfo={companyInfo}
+                        onCompanyInfoChange={onCompanyInfoChange}
+                        onFileUpload={onFileUpload}
                       />
                       <PitchHighlights
                         highlights={highlights}
