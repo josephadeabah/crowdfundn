@@ -32,7 +32,7 @@ const FundraiserPage = () => {
           </div>
         );
       default:
-        return null;
+        return <CampaignCreator />;
     }
   };
 
