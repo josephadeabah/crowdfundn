@@ -26,7 +26,7 @@ const FundraiserPage = () => {
       case 'Equity Campaign':
         return <EquityCampaign />;
       default:
-        return null;
+        return <CampaignCreator />;
     }
   };
 
