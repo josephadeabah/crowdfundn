@@ -324,22 +324,22 @@ const EquityCampaign = () => {
     formData.append('campaign[currency]', campaignData.currencyCode);
 
     // Equity-specific data
-    formData.append('campaign[highlights]', campaignData.highlights);
-    formData.append('campaign[contract_terms]', campaignData.contractTerms);
+    formData.append('campaign[highlights]', campaignData?.highlights);
+    formData.append('campaign[contract_terms]', campaignData?.contractTerms);
     formData.append(
       'campaign[discoverability_settings]',
-      JSON.stringify(campaignData.discoverabilitySettings),
+      JSON.stringify(campaignData?.discoverabilitySettings),
     );
     formData.append(
       'campaign[team_members]',
-      JSON.stringify(campaignData.teamMembers),
+      JSON.stringify(campaignData?.teamMembers),
     );
     formData.append(
       'campaign[featured_investors]',
-      JSON.stringify(campaignData.featuredInvestors),
+      JSON.stringify(campaignData?.featuredInvestors),
     );
-    formData.append('campaign[perks]', JSON.stringify(campaignData.perks));
-    formData.append('campaign[extras]', JSON.stringify(campaignData.extras));
+    formData.append('campaign[perks]', JSON.stringify(campaignData?.perks));
+    formData.append('campaign[extras]', JSON.stringify(campaignData?.extras));
 
     if (selectedImage) {
       formData.append('campaign[media]', selectedImage);
