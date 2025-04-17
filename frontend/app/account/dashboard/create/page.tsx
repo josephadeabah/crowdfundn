@@ -3,14 +3,13 @@
 import React, { useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import CampaignCreator from '@/app/components/campaign/CampaignCreator';
-import EquityCampaign from '@/app/components/equity/EquityCampaign';
 
 const FundraiserPage = () => {
   const [activeTab, setActiveTab] = useState('Create New Campaign');
   const [error, setError] = useState('');
 
   // Define the tabs
-  const tabs = ['Create Donation Campaign', 'Create Equity Campaign'];
+  const tabs = ['Create New Campaign', 'Team Fundraising'];
 
   // Handle tab click
   const handleTabClick = (tab: string) => {
@@ -21,12 +20,19 @@ const FundraiserPage = () => {
   // Render the content for the active tab
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'Create Donation Campaign':
+      case 'Create New Campaign':
         return <CampaignCreator />;
-      case 'Create Equity Campaign':
-        return <EquityCampaign />;
+      case 'Team Fundraising':
+        return (
+          <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
+            <h2 className="text-2xl font-bold mb-4">Team Fundraising</h2>
+            <p className="text-gray-700 dark:text-gray-400">
+              Team Fundraising is coming soon!
+            </p>
+          </div>
+        );
       default:
-        return <CampaignCreator />;
+        return null;
     }
   };
 
@@ -46,7 +52,7 @@ const FundraiserPage = () => {
 
       <div className="mb-6">
         <nav className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-          {tabs?.map((tab) => (
+          {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => handleTabClick(tab)}
