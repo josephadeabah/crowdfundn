@@ -428,23 +428,23 @@ const EquityCampaign = () => {
                       currencies={CURRENCIES}
                       categories={categories}
                       // Equity-specific props
-                      highlights={campaignData?.highlights}
-                      setHighlights={setHighlights}
-                      teamMembers={campaignData?.teamMembers}
-                      setTeamMembers={setTeamMembers}
-                      featuredInvestors={campaignData?.featuredInvestors}
-                      setFeaturedInvestors={setFeaturedInvestors}
-                      contractTerms={campaignData?.contractTerms}
-                      setContractTerms={setContractTerms}
-                      perks={campaignData?.perks}
-                      setPerks={setPerks}
-                      discoverabilitySettings={
-                        campaignData?.discoverabilitySettings
-                      }
-                      setDiscoverabilitySettings={setDiscoverabilitySettings}
-                      extras={campaignData?.extras}
-                      setExtras={setExtras}
-                      showEquitySections={true}
+                      // highlights={campaignData?.highlights}
+                      // setHighlights={setHighlights}
+                      // teamMembers={campaignData?.teamMembers}
+                      // setTeamMembers={setTeamMembers}
+                      // featuredInvestors={campaignData?.featuredInvestors}
+                      // setFeaturedInvestors={setFeaturedInvestors}
+                      // contractTerms={campaignData?.contractTerms}
+                      // setContractTerms={setContractTerms}
+                      // perks={campaignData?.perks}
+                      // setPerks={setPerks}
+                      // discoverabilitySettings={
+                      //   campaignData?.discoverabilitySettings
+                      // }
+                      // setDiscoverabilitySettings={setDiscoverabilitySettings}
+                      // extras={campaignData?.extras}
+                      // setExtras={setExtras}
+                      // showEquitySections={true}
                     />
                   </div>
 
