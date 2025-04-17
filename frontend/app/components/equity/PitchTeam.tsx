@@ -177,6 +177,21 @@ const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
                 />
               </div>
               <div>
+              <label className="block text-sm font-medium mb-1">
+                  Bio
+                </label>
+                <Input
+                  value={newMember.description || ''}
+                  onChange={(e) =>
+                    setNewMember((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
+                  placeholder="Brief description of their role and background..."
+                />
+              </div>
+              <div>
                 <label className="block text-sm font-medium mb-1">Role*</label>
                 <Select
                   value={newMember.role}
@@ -223,21 +238,6 @@ const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
                     }))
                   }
                   placeholder="0"
-                />
-              </div>
-              <div className="col-span-2">
-                <label className="block text-sm font-medium mb-1">
-                  Bio/Description
-                </label>
-                <Input
-                  value={newMember.description || ''}
-                  onChange={(e) =>
-                    setNewMember((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                  placeholder="Brief description of their role and background..."
                 />
               </div>
             </div>
