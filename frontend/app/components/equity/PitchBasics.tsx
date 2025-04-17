@@ -38,7 +38,9 @@ const PitchBasics = ({
         <h3 className="font-semibold mb-3">Company Information</h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Company Name</label>
+            <label className="block text-sm font-medium mb-1">
+              Company Name
+            </label>
             <input
               type="text"
               value={companyInfo.name}
@@ -66,7 +68,9 @@ const PitchBasics = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Headquarters</label>
+            <label className="block text-sm font-medium mb-1">
+              Headquarters
+            </label>
             <input
               type="text"
               value={companyInfo.headquarters}
@@ -77,7 +81,9 @@ const PitchBasics = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Website (optional)</label>
+            <label className="block text-sm font-medium mb-1">
+              Website (optional)
+            </label>
             <input
               type="url"
               value={companyInfo.website}
@@ -88,14 +94,18 @@ const PitchBasics = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Attachments (PDF)</label>
+            <label className="block text-sm font-medium mb-1">
+              Attachments (PDF)
+            </label>
             <input
               type="file"
               accept=".pdf"
               onChange={handleFileChange}
               className="w-full px-3 py-2 border rounded-md"
             />
-            <p className="text-xs text-gray-500 mt-1">Upload PDF documents only</p>
+            <p className="text-xs text-gray-500 mt-1">
+              Upload PDF documents only
+            </p>
           </div>
         </div>
       </CardContent>

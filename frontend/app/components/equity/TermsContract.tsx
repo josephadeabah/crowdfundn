@@ -10,7 +10,7 @@ const CONTRACT_OPTIONS = [
   { id: 'equity-revenue', label: 'Future Equity + Revenue Share' },
   { id: 'simple-loan', label: 'Simple Loan' },
   { id: 'preferred-stock', label: 'Preferred Stock' },
-  { id: 'other', label: 'Other/I don\'t know yet' },
+  { id: 'other', label: "Other/I don't know yet" },
 ];
 
 interface TermsContractProps {
@@ -25,9 +25,11 @@ const TermsContract = ({
   return (
     <Card>
       <CardContent className="p-4">
-        <h3 className="font-semibold mb-3">Choose an investment contract structure</h3>
-        <RadioGroup 
-          value={contractType} 
+        <h3 className="font-semibold mb-3">
+          Choose an investment contract structure
+        </h3>
+        <RadioGroup
+          value={contractType}
           onValueChange={setContractType}
           className="space-y-3"
         >

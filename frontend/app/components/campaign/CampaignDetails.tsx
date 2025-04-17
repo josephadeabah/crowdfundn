@@ -17,12 +17,9 @@ import {
   AccordionTriggerWrapper,
 } from '../accordion/Accordion';
 import PitchBasics from '../equity/PitchBasics';
-import PitchContent from '../equity/PitchContent';
 import PitchTeam from '../equity/PitchTeam';
 import TermsContract from '../equity/TermsContract';
-import TermsPerks from '../equity/TermsPerks';
-import RaiseDiscoverability from '../equity/RaiseDiscoverability';
-import RaiseExtras from '../equity/RaiseExtras';
+import FundingGoals from '../equity/FundingGoals';
 
 interface CampaignDetailsProps {
   title: string;
@@ -45,8 +42,6 @@ interface CampaignDetailsProps {
   // Pitch section props
   teamMembers?: Array<any>;
   setTeamMembers?: (value: Array<any>) => void;
-  content?: string;
-  setContent?: (value: string) => void;
   companyInfo: {
     name: string;
     description: string;
@@ -58,13 +53,11 @@ interface CampaignDetailsProps {
   // Terms section props
   contractType: string;
   setContractType: (value: string) => void;
-  perks?: Array<any>;
-  setPerks?: (value: Array<any>) => void;
   // Raise section props
-  discoverabilitySettings?: any;
-  setDiscoverabilitySettings?: (value: any) => void;
-  extras?: any;
-  setExtras?: (value: any) => void;
+  minRaise: string;
+  setMinRaise: (value: string) => void;
+  maxRaise: string;
+  setMaxRaise: (value: string) => void;
   showEquitySections?: boolean;
 }
 
@@ -89,21 +82,17 @@ const CampaignDetails = ({
   // Pitch section
   teamMembers = [],
   setTeamMembers = () => {},
-  content = '',
-  setContent = () => {},
   companyInfo,
   onCompanyInfoChange,
   onFileUpload,
   // Terms section
   contractType = '',
   setContractType = () => {},
-  perks = [],
-  setPerks = () => {},
-  // Raise section
-  discoverabilitySettings = {},
-  setDiscoverabilitySettings = () => {},
-  extras = {},
-  setExtras = () => {},
+  // Funding Goals
+  minRaise,
+  setMinRaise,
+  maxRaise,
+  setMaxRaise,
   showEquitySections = false,
 }: CampaignDetailsProps) => {
   const getCurrencySymbol = (code: string) => {
@@ -218,7 +207,7 @@ const CampaignDetails = ({
                   </AccordionTriggerWrapper>
                   <AccordionContentWrapper>
                     <div className="space-y-6">
-                    <PitchBasics
+                      <PitchBasics
                         companyInfo={companyInfo}
                         onCompanyInfoChange={onCompanyInfoChange}
                         onFileUpload={onFileUpload}
@@ -227,7 +216,6 @@ const CampaignDetails = ({
                         teamMembers={teamMembers}
                         setTeamMembers={setTeamMembers}
                       />
-                      <PitchContent content={content} setContent={setContent} />
                     </div>
                   </AccordionContentWrapper>
                 </AccordionItemWrapper>
@@ -240,10 +228,9 @@ const CampaignDetails = ({
                   <AccordionContentWrapper>
                     <div className="space-y-6">
                       <TermsContract
-                         contractType={contractType}
-                         setContractType={setContractType}
+                        contractType={contractType}
+                        setContractType={setContractType}
                       />
-                      <TermsPerks perks={perks} setPerks={setPerks} />
                     </div>
                   </AccordionContentWrapper>
                 </AccordionItemWrapper>
@@ -255,11 +242,12 @@ const CampaignDetails = ({
                   </AccordionTriggerWrapper>
                   <AccordionContentWrapper>
                     <div className="space-y-6">
-                      <RaiseDiscoverability
-                        discoverabilitySettings={discoverabilitySettings}
-                        setDiscoverabilitySettings={setDiscoverabilitySettings}
+                      <FundingGoals
+                        minRaise={minRaise}
+                        setMinRaise={setMinRaise}
+                        maxRaise={maxRaise}
+                        setMaxRaise={setMaxRaise}
                       />
-                      <RaiseExtras extras={extras} setExtras={setExtras} />
                     </div>
                   </AccordionContentWrapper>
                 </AccordionItemWrapper>

@@ -327,18 +327,32 @@ const CampaignCreator = () => {
                         name: '',
                         description: '',
                         headquarters: '',
-                        website: ''
+                        website: '',
                       }}
-                      onCompanyInfoChange={function (info: { name: string; description: string; headquarters: string; website: string; }): void {
+                      onCompanyInfoChange={function (info: {
+                        name: string;
+                        description: string;
+                        headquarters: string;
+                        website: string;
+                      }): void {
                         throw new Error('Function not implemented.');
-                      } }
+                      }}
                       onFileUpload={function (file: File): void {
                         throw new Error('Function not implemented.');
-                      } } 
-                      contractType={''} 
+                      }}
+                      contractType={''}
                       setContractType={function (value: string): void {
                         throw new Error('Function not implemented.');
-                      } }                      />
+                      }}
+                      minRaise={''}
+                      setMinRaise={function (value: string): void {
+                        throw new Error('Function not implemented.');
+                      }}
+                      maxRaise={''}
+                      setMaxRaise={function (value: string): void {
+                        throw new Error('Function not implemented.');
+                      }}
+                    />
                   </div>
 
                   <div
