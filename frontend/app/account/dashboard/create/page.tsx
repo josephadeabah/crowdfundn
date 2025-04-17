@@ -10,7 +10,7 @@ const FundraiserPage = () => {
   const [error, setError] = useState('');
 
   // Define the tabs
-  const tabs = ['Donation Campaign', 'Equity Campaign'];
+  const tabs = ['Create Donation Campaign', 'Create Equity Campaign'];
 
   // Handle tab click
   const handleTabClick = (tab: string) => {
