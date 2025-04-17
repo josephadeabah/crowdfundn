@@ -33,7 +33,7 @@ const PitchInvestors = ({
 
   const handleRemoveInvestor = (index: number) => {
     const updatedInvestors = [...featuredInvestors];
-    updatedInvestors.splice(index, 1);
+    updatedInvestors?.splice(index, 1);
     setFeaturedInvestors(updatedInvestors);
   };
 
@@ -42,7 +42,7 @@ const PitchInvestors = ({
       <CardContent className="p-4">
         <h3 className="font-semibold mb-3">Featured Investors</h3>
         <div className="space-y-4">
-          {featuredInvestors.map((investor, index) => (
+          {featuredInvestors?.map((investor, index) => (
             <div key={index} className="border p-3 rounded-md">
               <div className="flex justify-between items-start">
                 <div>

@@ -31,7 +31,7 @@ const TermsPerks = ({ perks, setPerks }: TermsPerksProps) => {
 
   const handleRemovePerk = (index: number) => {
     const updatedPerks = [...perks];
-    updatedPerks.splice(index, 1);
+    updatedPerks?.splice(index, 1);
     setPerks(updatedPerks);
   };
 
@@ -40,7 +40,7 @@ const TermsPerks = ({ perks, setPerks }: TermsPerksProps) => {
       <CardContent className="p-4">
         <h3 className="font-semibold mb-3">Investor Perks</h3>
         <div className="space-y-4">
-          {perks.map((perk, index) => (
+          {perks?.map((perk, index) => (
             <div key={index} className="border p-3 rounded-md">
               <div className="flex justify-between items-start">
                 <div>

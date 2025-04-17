@@ -32,7 +32,7 @@ const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
 
   const handleRemoveMember = (index: number) => {
     const updatedMembers = [...teamMembers];
-    updatedMembers.splice(index, 1);
+    updatedMembers?.splice(index, 1);
     setTeamMembers(updatedMembers);
   };
 
@@ -41,7 +41,7 @@ const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
       <CardContent className="p-4">
         <h3 className="font-semibold mb-3">Team</h3>
         <div className="space-y-4">
-          {teamMembers.map((member, index) => (
+          {teamMembers?.map((member, index) => (
             <div key={index} className="border p-3 rounded-md">
               <div className="flex justify-between items-start">
                 <div>

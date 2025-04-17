@@ -50,7 +50,7 @@ const RaiseExtras = ({ extras, setExtras }: RaiseExtrasProps) => {
 
   const handleRemoveFAQ = (index: number) => {
     const updatedFAQ = [...(extras.faq || [])];
-    updatedFAQ.splice(index, 1);
+    updatedFAQ?.splice(index, 1);
     setExtras({ ...extras, faq: updatedFAQ });
   };
 
@@ -80,7 +80,7 @@ const RaiseExtras = ({ extras, setExtras }: RaiseExtrasProps) => {
           <div>
             <h4 className="font-medium mb-2">FAQ</h4>
             <div className="space-y-3">
-              {(extras.faq || []).map((item, index) => (
+              {(extras.faq || [])?.map((item, index) => (
                 <div key={index} className="border p-3 rounded-md">
                   <div className="flex justify-between items-start">
                     <div>
