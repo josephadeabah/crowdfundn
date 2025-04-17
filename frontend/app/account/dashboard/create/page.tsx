@@ -3,13 +3,14 @@
 import React, { useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import CampaignCreator from '@/app/components/campaign/CampaignCreator';
+import EquityCampaign from '@/app/components/equity/EquityCampaign';
 
 const FundraiserPage = () => {
   const [activeTab, setActiveTab] = useState('Create New Campaign');
   const [error, setError] = useState('');
 
   // Define the tabs
-  const tabs = ['Create New Campaign', 'Team Fundraising'];
+  const tabs = ['Create New Campaign', 'Create Your Pitch'];
 
   // Handle tab click
   const handleTabClick = (tab: string) => {
@@ -22,14 +23,9 @@ const FundraiserPage = () => {
     switch (activeTab) {
       case 'Create New Campaign':
         return <CampaignCreator />;
-      case 'Team Fundraising':
+      case 'Create Your Pitch':
         return (
-          <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
-            <h2 className="text-2xl font-bold mb-4">Team Fundraising</h2>
-            <p className="text-gray-700 dark:text-gray-400">
-              Team Fundraising is coming soon!
-            </p>
-          </div>
+          <EquityCampaign />
         );
       default:
         return null;
