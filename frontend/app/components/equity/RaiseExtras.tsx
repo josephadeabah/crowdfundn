@@ -66,7 +66,7 @@ const RaiseExtras = ({ extras, setExtras }: RaiseExtrasProps) => {
               className="border-2 border-dashed rounded-md p-4 text-center cursor-pointer hover:bg-gray-50"
             >
               <input {...getInputProps()} />
-              {extras.videoPitch ? (
+              {extras?.videoPitch ? (
                 <div className="flex items-center justify-center">
                   <Video className="h-5 w-5 mr-2" />
                   <span>{videoFile?.name || 'Video uploaded'}</span>

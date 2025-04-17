@@ -40,28 +40,32 @@ const TermsPerks = ({ perks, setPerks }: TermsPerksProps) => {
       <CardContent className="p-4">
         <h3 className="font-semibold mb-3">Investor Perks</h3>
         <div className="space-y-4">
-          {perks?.map((perk, index) => (
-            <div key={index} className="border p-3 rounded-md">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="font-medium">{perk.title}</h4>
-                  <p className="text-sm text-gray-600">
-                    Minimum: ${perk.minimumInvestment}
-                  </p>
-                  {perk.description && (
-                    <p className="mt-1 text-sm">{perk.description}</p>
-                  )}
+          {Array.isArray(perks) && perks.length > 0 ? (
+            perks.map((perk, index) => (
+              <div key={index} className="border p-3 rounded-md">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-medium">{perk.title}</h4>
+                    <p className="text-sm text-gray-600">
+                      Minimum: ${perk.minimumInvestment}
+                    </p>
+                    {perk.description && (
+                      <p className="mt-1 text-sm">{perk.description}</p>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleRemovePerk(index)}
+                  >
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemovePerk(index)}
-                >
-                  <Trash2 className="h-4 w-4 text-red-500" />
-                </Button>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p>No perks added yet</p>
+          )}
 
           <div className="space-y-3">
             <Input

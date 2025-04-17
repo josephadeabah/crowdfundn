@@ -41,24 +41,30 @@ const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
       <CardContent className="p-4">
         <h3 className="font-semibold mb-3">Team</h3>
         <div className="space-y-4">
-          {teamMembers?.map((member, index) => (
-            <div key={index} className="border p-3 rounded-md">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="font-medium">{member?.name}</h4>
-                  <p className="text-sm text-gray-600">{member?.role}</p>
-                  {member.bio && <p className="mt-2 text-sm">{member?.bio}</p>}
+          {Array.isArray(teamMembers) && teamMembers.length > 0 ? (
+            teamMembers.map((member, index) => (
+              <div key={index} className="border p-3 rounded-md">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-medium">{member?.name}</h4>
+                    <p className="text-sm text-gray-600">{member?.role}</p>
+                    {member.bio && (
+                      <p className="mt-2 text-sm">{member?.bio}</p>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleRemoveMember(index)}
+                  >
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemoveMember(index)}
-                >
-                  <Trash2 className="h-4 w-4 text-red-500" />
-                </Button>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p>No team members added yet</p>
+          )}
 
           <div className="space-y-3">
             <Input

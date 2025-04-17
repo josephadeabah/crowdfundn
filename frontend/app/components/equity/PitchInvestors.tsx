@@ -42,25 +42,29 @@ const PitchInvestors = ({
       <CardContent className="p-4">
         <h3 className="font-semibold mb-3">Featured Investors</h3>
         <div className="space-y-4">
-          {featuredInvestors?.map((investor, index) => (
-            <div key={index} className="border p-3 rounded-md">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="font-medium">{investor.name}</h4>
-                  {investor?.description && (
-                    <p className="mt-1 text-sm">{investor.description}</p>
-                  )}
+          {Array.isArray(featuredInvestors) && featuredInvestors.length > 0 ? (
+            featuredInvestors.map((investor, index) => (
+              <div key={index} className="border p-3 rounded-md">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-medium">{investor.name}</h4>
+                    {investor?.description && (
+                      <p className="mt-1 text-sm">{investor.description}</p>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleRemoveInvestor(index)}
+                  >
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemoveInvestor(index)}
-                >
-                  <Trash2 className="h-4 w-4 text-red-500" />
-                </Button>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p>No featured investors added yet</p>
+          )}
 
           <div className="space-y-3">
             <Input
