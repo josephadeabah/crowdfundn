@@ -8,6 +8,10 @@ interface FundingGoalsProps {
   setMinRaise: (value: string) => void;
   maxRaise: string;
   setMaxRaise: (value: string) => void;
+  valuation: string;
+  setValuation: (value: string) => void;
+  equityOffered: string;
+  setEquityOffered: (value: string) => void;
 }
 
 const FundingGoals = ({
@@ -15,6 +19,10 @@ const FundingGoals = ({
   setMinRaise,
   maxRaise,
   setMaxRaise,
+  valuation,
+  setValuation,
+  equityOffered,
+  setEquityOffered,
 }: FundingGoalsProps) => {
   return (
     <Card>
@@ -62,6 +70,33 @@ const FundingGoals = ({
                 onChange={(e) => setMaxRaise(e.target.value)}
                 className="w-full pl-7"
                 placeholder="250,000"
+              />
+            </div>
+
+            <div className="relative mt-2">
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                $
+              </span>
+              <Input
+                id="valuation"
+                type="number"
+                value={valuation}
+                onChange={(e) => setValuation(e.target.value)}
+                className="w-full pl-7"
+                placeholder="Valuation"
+              />
+            </div>
+            <div className="relative mt-2">
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                %
+              </span>
+              <Input
+                id="equity-offered"
+                type="number"
+                value={equityOffered}
+                onChange={(e) => setEquityOffered(e.target.value)}
+                className="w-full pl-7"
+                placeholder="Equity Offered"
               />
             </div>
           </div>

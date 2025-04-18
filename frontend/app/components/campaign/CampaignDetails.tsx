@@ -60,6 +60,10 @@ interface CampaignDetailsProps {
   setMinRaise?: (value: string) => void;
   maxRaise?: string;
   setMaxRaise?: (value: string) => void;
+  valuation: string;
+  setValuation: (value: string) => void;
+  equityOffered: string;
+  setEquityOffered: (value: string) => void;
   showEquitySections?: boolean;
 }
 
@@ -102,6 +106,10 @@ const CampaignDetails = ({
   setMinRaise = () => {},
   maxRaise = '',
   setMaxRaise = () => {},
+  valuation,
+  setValuation = () => {},
+  equityOffered,
+  setEquityOffered = () => {},
   showEquitySections = false,
 }: CampaignDetailsProps) => {
   const getCurrencySymbol = (code: string) => {
@@ -259,6 +267,10 @@ const CampaignDetails = ({
                         setMinRaise={setMinRaise}
                         maxRaise={maxRaise}
                         setMaxRaise={setMaxRaise}
+                        valuation={valuation}
+                        setValuation={setValuation}
+                        equityOffered={equityOffered}
+                        setEquityOffered={setEquityOffered}
                       />
                     </div>
                   </AccordionContentWrapper>

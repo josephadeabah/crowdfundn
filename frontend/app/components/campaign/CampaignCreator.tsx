@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   Tabs,
@@ -67,6 +67,8 @@ interface CampaignData {
   contractType: string;
   minRaise: string;
   maxRaise: string;
+  valuation: string;
+  equityOffered: string;
   pitchDocuments: File[];
   contractDocuments: File[];
 }
@@ -81,6 +83,16 @@ export interface FormErrors {
   currencyCode: string;
   location: string;
   image: string;
+  valuation?: string;
+  equityOffered?: string;
+  companyName?: string;
+  companyDescription?: string;
+  minRaise?: string;
+  maxRaise?: string;
+  contractType?: string;
+  pitchDocuments?: string;
+  contractDocuments?: string;
+  teamMembers?: string;
 }
 
 const CampaignCreator = () => {
@@ -107,6 +119,8 @@ const CampaignCreator = () => {
     contractType: '',
     minRaise: '',
     maxRaise: '',
+    valuation: '', // Add this
+    equityOffered: '', // Add this
     pitchDocuments: [],
     contractDocuments: [],
   };
@@ -176,6 +190,10 @@ const CampaignCreator = () => {
     setCampaignData({ ...campaignData, minRaise: value });
   const setMaxRaise = (value: string) =>
     setCampaignData({ ...campaignData, maxRaise: value });
+  const setValuation = (value: string) =>
+    setCampaignData({ ...campaignData, valuation: value });
+  const setEquityOffered = (value: string) =>
+    setCampaignData({ ...campaignData, equityOffered: value });
 
   const handlePitchFilesUpload = (files: File[]) => {
     setCampaignData({ ...campaignData, pitchDocuments: files });
@@ -228,6 +246,16 @@ const CampaignCreator = () => {
       currencyCode: '',
       location: '',
       image: '',
+      valuation: '',
+      equityOffered: '',
+      companyName: '',
+      companyDescription: '',
+      minRaise: '',
+      maxRaise: '',
+      contractType: '',
+      pitchDocuments: '',
+      contractDocuments: '',
+      teamMembers: '',
     };
 
     if (!campaignData.title.trim()) formErrors.title = 'Title is required';
@@ -254,6 +282,65 @@ const CampaignCreator = () => {
       formErrors.endDate = 'End date must be after start date';
     }
 
+    const isEquityCampaign =
+      campaignData.companyInfo.name ||
+      campaignData.minRaise ||
+      campaignData.maxRaise ||
+      campaignData.valuation ||
+      campaignData.equityOffered ||
+      campaignData.contractType ||
+      campaignData.contractDocuments.length > 0 ||
+      campaignData.pitchDocuments.length > 0 ||
+      campaignData.teamMembers.length > 0;
+    if (isEquityCampaign) {
+      // Company info validation
+      if (!campaignData.companyInfo.name.trim()) {
+        formErrors.companyName = 'Company name is required';
+      }
+      if (!campaignData.companyInfo.description.trim()) {
+        formErrors.companyDescription = 'Company description is required';
+      }
+
+      // Investment range validation
+      if (campaignData.minRaise && campaignData.maxRaise) {
+        const min = parseFloat(campaignData.minRaise);
+        const max = parseFloat(campaignData.maxRaise);
+        if (min > max) {
+          formErrors.maxRaise = 'Maximum must be greater than minimum';
+        }
+      }
+
+      // Contract type validation
+      if (!campaignData.contractType) {
+        formErrors.contractType = 'Contract type is required';
+      }
+
+      // Team members validation
+      if (campaignData.teamMembers.length === 0) {
+        formErrors.teamMembers = 'At least one team member is required';
+      }
+
+      // Documents validation
+      if (campaignData.pitchDocuments.length === 0) {
+        formErrors.pitchDocuments = 'At least one pitch document is required';
+      }
+      if (campaignData.contractDocuments.length === 0) {
+        formErrors.contractDocuments =
+          'At least one contract document is required';
+      }
+      if (!campaignData.valuation || parseFloat(campaignData.valuation) <= 0) {
+        formErrors.valuation = 'Valuation must be greater than 0';
+      }
+      if (
+        !campaignData.equityOffered ||
+        parseFloat(campaignData.equityOffered) <= 0
+      ) {
+        formErrors.equityOffered = 'Equity offered must be greater than 0%';
+      } else if (parseFloat(campaignData.equityOffered) > 100) {
+        formErrors.equityOffered = 'Equity offered cannot exceed 100%';
+      }
+    }
+
     setError(formErrors);
     return Object.values(formErrors).every((err) => !err);
   };
@@ -277,98 +364,133 @@ const CampaignCreator = () => {
       toast.error('Please fix the errors in the form');
       return;
     }
-  
+
     const formData = new FormData();
-    const isEquityCampaign = campaignData.companyInfo.name || 
-                           campaignData.minRaise || 
-                           campaignData.maxRaise ||
-                           campaignData.teamMembers.length > 0;
-  
+    const isEquityCampaign =
+      campaignData.companyInfo.name ||
+      campaignData.minRaise ||
+      campaignData.maxRaise ||
+      campaignData.valuation ||
+      campaignData.equityOffered ||
+      campaignData.contractType ||
+      campaignData.contractDocuments.length > 0 ||
+      campaignData.pitchDocuments.length > 0 ||
+      campaignData.teamMembers.length > 0;
+
     const rootKey = isEquityCampaign ? 'equity_campaign' : 'campaign';
-  
+
     // Common fields
     formData.append(`${rootKey}[title]`, campaignData.title);
     formData.append(`${rootKey}[description]`, campaignData.content);
-    formData.append(`${rootKey}[current_amount]`, parseFloat(currentAmount).toString());
+    formData.append(
+      `${rootKey}[current_amount]`,
+      parseFloat(currentAmount).toString(),
+    );
     formData.append(`${rootKey}[goal_amount]`, campaignData.goalAmount);
     formData.append(`${rootKey}[start_date]`, campaignData.startDate as string);
     formData.append(`${rootKey}[end_date]`, campaignData.endDate as string);
     formData.append(`${rootKey}[category]`, campaignData.category);
     formData.append(`${rootKey}[location]`, campaignData.location);
     formData.append(`${rootKey}[currency]`, campaignData.currencyCode);
-  
+
     if (selectedImage) {
       formData.append(`${rootKey}[media]`, selectedImage);
     }
-  
+
     // Equity-specific fields (excluding team members and documents)
     if (isEquityCampaign) {
       if (campaignData.companyInfo.name) {
-        formData.append(`${rootKey}[company_name]`, campaignData.companyInfo.name);
-        formData.append(`${rootKey}[company_description]`, campaignData.companyInfo.description);
-        formData.append(`${rootKey}[company_headquarters]`, campaignData.companyInfo.headquarters);
-        formData.append(`${rootKey}[company_website]`, campaignData.companyInfo.website);
+        formData.append(
+          `${rootKey}[company_name]`,
+          campaignData.companyInfo.name,
+        );
+        formData.append(
+          `${rootKey}[company_description]`,
+          campaignData.companyInfo.description,
+        );
+        formData.append(
+          `${rootKey}[company_headquarters]`,
+          campaignData.companyInfo.headquarters,
+        );
+        formData.append(
+          `${rootKey}[company_website]`,
+          campaignData.companyInfo.website,
+        );
         if (campaignData.companyInfo.contract_term) {
-          formData.append(`${rootKey}[contract_term]`, campaignData.companyInfo.contract_term);
+          formData.append(
+            `${rootKey}[contract_term]`,
+            campaignData.companyInfo.contract_term,
+          );
         }
       }
-      
-      if (campaignData.minRaise) {
-        formData.append(`${rootKey}[minimum_investment]`, campaignData.minRaise);
+
+      if (campaignData.valuation) {
+        formData.append(`${rootKey}[valuation]`, campaignData.valuation);
       }
-      
+      if (campaignData.equityOffered) {
+        formData.append(
+          `${rootKey}[equity_offered]`,
+          campaignData.equityOffered,
+        );
+      }
+
+      if (campaignData.minRaise) {
+        formData.append(
+          `${rootKey}[minimum_investment]`,
+          campaignData.minRaise,
+        );
+      }
+
       if (campaignData.maxRaise) {
-        formData.append(`${rootKey}[maximum_investment]`, campaignData.maxRaise);
+        formData.append(
+          `${rootKey}[maximum_investment]`,
+          campaignData.maxRaise,
+        );
       }
     }
 
-      // Log the form data for debugging
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
-  
     try {
       // First create the campaign
       const createdCampaign = await addCampaign(formData);
-      
+
       // If equity campaign, handle team members and documents separately
       if (isEquityCampaign && createdCampaign.id) {
         const campaignId = createdCampaign.id;
-  
+
         // Add team members
         if (campaignData.teamMembers.length > 0) {
           await Promise.all(
-            campaignData.teamMembers.map(member => 
+            campaignData.teamMembers.map((member) =>
               addTeamMember(campaignId.toString(), {
                 role: member.role,
                 equity_percentage: member.equityPercentage,
                 title: member.title || '',
                 name: member.name || '',
                 email: member.email || '',
-              })
-            )
+              }),
+            ),
           );
         }
-  
+
         // Upload pitch documents
         if (campaignData.pitchDocuments.length > 0) {
           await createDocument(
             campaignId.toString(),
             'pitch',
-            campaignData.pitchDocuments
+            campaignData.pitchDocuments,
           );
         }
-  
+
         // Upload contract documents
         if (campaignData.contractDocuments.length > 0) {
           await createDocument(
             campaignId.toString(),
             'contract',
-            campaignData.contractDocuments
+            campaignData.contractDocuments,
           );
         }
       }
-  
+
       setAlertTitle('Campaign created successfully');
       setAlertMessage(
         <a href="/account#Campaigns" className="text-gray-700 underline">
@@ -426,7 +548,7 @@ const CampaignCreator = () => {
               <TabsContent value="details" className="animate-fade-in">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                   <div className="lg:col-span-8 space-y-6 animate-slide-up">
-                  <CampaignDetails
+                    <CampaignDetails
                       title={campaignData.title}
                       setTitle={setTitle}
                       category={campaignData.category}
@@ -444,7 +566,10 @@ const CampaignCreator = () => {
                       onContinue={() => setActiveTab('content')}
                       currencies={CURRENCIES}
                       categories={categories}
-                      companyInfo={campaignData.companyInfo || initialCampaignData.companyInfo}
+                      companyInfo={
+                        campaignData.companyInfo ||
+                        initialCampaignData.companyInfo
+                      }
                       onCompanyInfoChange={setCompanyInfo}
                       contractType={campaignData.contractType}
                       setContractType={setContractType}
@@ -452,6 +577,10 @@ const CampaignCreator = () => {
                       setMinRaise={setMinRaise}
                       maxRaise={campaignData.maxRaise}
                       setMaxRaise={setMaxRaise}
+                      valuation={campaignData.valuation}
+                      setValuation={setValuation}
+                      equityOffered={campaignData.equityOffered}
+                      setEquityOffered={setEquityOffered}
                       teamMembers={campaignData.teamMembers}
                       setTeamMembers={setTeamMembers}
                       onContractFilesUpload={handleContractFilesUpload}
