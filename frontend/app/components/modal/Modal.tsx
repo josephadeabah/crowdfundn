@@ -69,7 +69,7 @@ const Modal: React.FC<ModalProps> = ({
     xlarge: 'max-w-xl',
     xxlarge: 'max-w-2xl',
     xxxlarge: 'max-w-3xl',
-    full: 'max-w-full mx-8 px-8',
+    full: 'max-w-full mx-6',
   };
 
   return (
