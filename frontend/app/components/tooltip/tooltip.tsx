@@ -21,13 +21,14 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
     <>
       <FaInfoCircle
         data-tooltip-id={id}
-        data-tooltip-content={content}
+        data-tooltip-html={content} // Changed from data-tooltip-content to data-tooltip-html
         className={className}
         size={iconSize}
       />
       <Tooltip
         id={id}
         className="max-w-xs bg-gray-800 text-white text-sm p-2 rounded z-50"
+        place="right"
       />
     </>
   );
