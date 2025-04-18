@@ -295,7 +295,8 @@ const CampaignCreator = () => {
     formData.append(`${rootKey}[category]`, campaignData.category);
     formData.append(`${rootKey}[location]`, campaignData.location);
     formData.append(`${rootKey}[currency]`, campaignData.currencyCode);
-    formData.append(`${rootKey}[current_amount]`, parseFloat(currentAmount).toString() || '0');
+    const currentAmountValue = parseFloat(currentAmount) || 0;
+    formData.append(`${rootKey}[current_amount]`, currentAmountValue.toString());
   
     if (selectedImage) {
       formData.append(`${rootKey}[media]`, selectedImage);
