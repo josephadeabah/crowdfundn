@@ -222,7 +222,7 @@ const CampaignDetails = ({
                 {/* Part 2: The Terms */}
                 <AccordionItemWrapper value="terms">
                   <AccordionTriggerWrapper>
-                    <span className="font-medium">The Terms</span>
+                    <span className="font-medium">Terms & Documents</span>
                   </AccordionTriggerWrapper>
                   <AccordionContentWrapper>
                     <div className="space-y-6">
