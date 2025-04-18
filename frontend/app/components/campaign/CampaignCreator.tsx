@@ -21,7 +21,7 @@ import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { FaCheck, FaExclamationTriangle } from 'react-icons/fa';
 import { categories } from '@/app/utils/helpers/categories';
 import { useDropzone } from 'react-dropzone';
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from 'next/navigation';
 
 const CURRENCIES = [
   { code: 'USD', symbol: '$' },
@@ -54,6 +54,20 @@ interface CampaignData {
   currencyCode: string;
   location: string;
   image: string;
+  // Equity fields
+  teamMembers: any[];
+  companyInfo: {
+    name: string;
+    description: string;
+    headquarters: string;
+    website: string;
+    contract_term?: string;
+  };
+  contractType: string;
+  minRaise: string;
+  maxRaise: string;
+  pitchDocuments: File[];
+  contractDocuments: File[];
 }
 
 export interface FormErrors {
@@ -81,6 +95,18 @@ const CampaignCreator = () => {
     currencyCode: '',
     location: '',
     image: '',
+    teamMembers: [],
+    companyInfo: {
+      name: '',
+      description: '',
+      headquarters: '',
+      website: '',
+    },
+    contractType: '',
+    minRaise: '',
+    maxRaise: '',
+    pitchDocuments: [],
+    contractDocuments: [],
   };
 
   const [campaignData, setCampaignData] = useLocalStorage<CampaignData>(
@@ -104,7 +130,7 @@ const CampaignCreator = () => {
   const [alertTitle, setAlertTitle] = useState<string>('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [currentAmount, setCurrentAmount] = useState('0');
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -134,6 +160,24 @@ const CampaignCreator = () => {
     setCampaignData({ ...campaignData, currencyCode: value });
   const setLocation = (value: string) =>
     setCampaignData({ ...campaignData, location: value });
+  const setTeamMembers = (value: any[]) =>
+    setCampaignData({ ...campaignData, teamMembers: value });
+  const setCompanyInfo = (value: CampaignData['companyInfo']) =>
+    setCampaignData({ ...campaignData, companyInfo: value });
+  const setContractType = (value: string) =>
+    setCampaignData({ ...campaignData, contractType: value });
+  const setMinRaise = (value: string) =>
+    setCampaignData({ ...campaignData, minRaise: value });
+  const setMaxRaise = (value: string) =>
+    setCampaignData({ ...campaignData, maxRaise: value });
+
+  const handlePitchFilesUpload = (files: File[]) => {
+    setCampaignData({ ...campaignData, pitchDocuments: files });
+  };
+
+  const handleContractFilesUpload = (files: File[]) => {
+    setCampaignData({ ...campaignData, contractDocuments: files });
+  };
 
   useEffect(() => {
     const hasSavedData = Object.values(campaignData).some(
@@ -192,7 +236,6 @@ const CampaignCreator = () => {
     if (!campaignData.currencyCode)
       formErrors.currencyCode = 'Currency is required';
     if (!campaignData.location) formErrors.location = 'Location is required';
-    // Add validation for the image
     if (!selectedImage) {
       formErrors.image = 'An image is required for the campaign';
     }
@@ -230,20 +273,119 @@ const CampaignCreator = () => {
     }
 
     const formData = new FormData();
-    formData.append('campaign[title]', campaignData.title);
-    formData.append('campaign[description]', campaignData.content);
-    formData.append(
-      'campaign[current_amount]',
-      parseFloat(currentAmount).toString(),
-    );
-    formData.append('campaign[goal_amount]', campaignData.goalAmount);
-    formData.append('campaign[start_date]', campaignData.startDate as string);
-    formData.append('campaign[end_date]', campaignData.endDate as string);
-    formData.append('campaign[category]', campaignData.category);
-    formData.append('campaign[location]', campaignData.location);
-    formData.append('campaign[currency]', campaignData.currencyCode);
+
+    // Determine if this is an equity campaign based on the presence of equity fields
+    const isEquityCampaign =
+      campaignData.companyInfo.name ||
+      campaignData.minRaise ||
+      campaignData.maxRaise ||
+      campaignData.teamMembers.length > 0;
+
+    // Use the appropriate root key based on campaign type
+    const rootKey = isEquityCampaign ? 'equity_campaign' : 'campaign';
+
+    // Common fields for both campaign types
+    formData.append(`${rootKey}[title]`, campaignData.title);
+    formData.append(`${rootKey}[description]`, campaignData.content);
+    formData.append(`${rootKey}[goal_amount]`, campaignData.goalAmount);
+    formData.append(`${rootKey}[start_date]`, campaignData.startDate as string);
+    formData.append(`${rootKey}[end_date]`, campaignData.endDate as string);
+    formData.append(`${rootKey}[category]`, campaignData.category);
+    formData.append(`${rootKey}[location]`, campaignData.location);
+    formData.append(`${rootKey}[currency]`, campaignData.currencyCode);
+
+    // Add current amount for regular campaigns
+    if (!isEquityCampaign) {
+      formData.append(
+        `${rootKey}[current_amount]`,
+        parseFloat(currentAmount).toString(),
+      );
+    }
+
+    // Add media if present
     if (selectedImage) {
-      formData.append('campaign[media]', selectedImage);
+      formData.append(`${rootKey}[media]`, selectedImage);
+    }
+
+    // Add equity-specific fields if this is an equity campaign
+    if (isEquityCampaign) {
+      // Company info
+      if (campaignData.companyInfo.name) {
+        formData.append(
+          `${rootKey}[company_name]`,
+          campaignData.companyInfo.name,
+        );
+        formData.append(
+          `${rootKey}[company_description]`,
+          campaignData.companyInfo.description,
+        );
+        formData.append(
+          `${rootKey}[company_headquarters]`,
+          campaignData.companyInfo.headquarters,
+        );
+        formData.append(
+          `${rootKey}[company_website]`,
+          campaignData.companyInfo.website,
+        );
+        if (campaignData.companyInfo.contract_term) {
+          formData.append(
+            `${rootKey}[contract_term]`,
+            campaignData.companyInfo.contract_term,
+          );
+        }
+      }
+
+      // Investment amounts
+      if (campaignData.minRaise) {
+        formData.append(
+          `${rootKey}[minimum_investment]`,
+          campaignData.minRaise,
+        );
+      }
+
+      if (campaignData.maxRaise) {
+        formData.append(
+          `${rootKey}[maximum_investment]`,
+          campaignData.maxRaise,
+        );
+      }
+
+      // Team members
+      if (campaignData.teamMembers.length > 0) {
+        formData.append(
+          `${rootKey}[team_members_attributes]`,
+          JSON.stringify(
+            campaignData.teamMembers.map((member) => ({
+              user_id: member.userId,
+              role: member.role,
+              equity_percentage: member.equityPercentage,
+            })),
+          ),
+        );
+      }
+
+      // Documents
+      campaignData.pitchDocuments.forEach((file, index) => {
+        formData.append(
+          `${rootKey}[pitch_documents_attributes][${index}][document]`,
+          file,
+        );
+        formData.append(
+          `${rootKey}[pitch_documents_attributes][${index}][document_type]`,
+          'pitch',
+        );
+      });
+
+      campaignData.contractDocuments.forEach((file, index) => {
+        formData.append(
+          `${rootKey}[contract_documents_attributes][${index}][document]`,
+          file,
+        );
+        formData.append(
+          `${rootKey}[contract_documents_attributes][${index}][document_type]`,
+          'contract',
+        );
+      });
     }
 
     try {
@@ -323,42 +465,18 @@ const CampaignCreator = () => {
                       onContinue={() => setActiveTab('content')}
                       currencies={CURRENCIES}
                       categories={categories}
-                      companyInfo={{
-                        name: '',
-                        description: '',
-                        headquarters: '',
-                        website: '',
-                      }}
-                      onCompanyInfoChange={function (info: {
-                        name: string;
-                        description: string;
-                        headquarters: string;
-                        website: string;
-                      }): void {
-                        throw new Error('Function not implemented.');
-                      }}
-                      contractType={''}
-                      setContractType={function (value: string): void {
-                        throw new Error('Function not implemented.');
-                      }}
-                      minRaise={''}
-                      setMinRaise={function (value: string): void {
-                        throw new Error('Function not implemented.');
-                      }}
-                      maxRaise={''}
-                      setMaxRaise={function (value: string): void {
-                        throw new Error('Function not implemented.');
-                      }}
-                      teamMembers={[]}
-                      setTeamMembers={function (value: Array<any>): void {
-                        throw new Error('Function not implemented.');
-                      }}
-                      onContractFilesUpload={function (files: File[]): void {
-                        throw new Error('Function not implemented.');
-                      }}
-                      onPitchFilesUpload={function (files: File[]): void {
-                        throw new Error('Function not implemented.');
-                      }}
+                      companyInfo={campaignData.companyInfo}
+                      onCompanyInfoChange={setCompanyInfo}
+                      contractType={campaignData.contractType}
+                      setContractType={setContractType}
+                      minRaise={campaignData.minRaise}
+                      setMinRaise={setMinRaise}
+                      maxRaise={campaignData.maxRaise}
+                      setMaxRaise={setMaxRaise}
+                      teamMembers={campaignData.teamMembers}
+                      setTeamMembers={setTeamMembers}
+                      onContractFilesUpload={handleContractFilesUpload}
+                      onPitchFilesUpload={handlePitchFilesUpload}
                     />
                   </div>
 
