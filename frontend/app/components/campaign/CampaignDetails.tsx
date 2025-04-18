@@ -199,7 +199,7 @@ const CampaignDetails = ({
             <div className="w-full mb-2 border border-gray-200 rounded-md my-8">
               <span className="text-sm font-semibold mb-4 text-gray-500 p-4 italic">
                 Only use the below if you're raising to give out equity to
-                investors otherwise skip the below
+                investors otherwise skip the below and click Continue to Content
               </span>
               <Accordion type="multiple" className="w-full space-y-2">
                 {/* Part 1: The Company Intro */}
