@@ -8,13 +8,14 @@ import React, {
   useCallback,
 } from 'react';
 import { useAuth } from '../../auth/AuthContext';
+import { useCampaignContext } from './CampaignsContext';
 import {
   EquityCampaignResponseDataType,
   CampaignTeamMember,
   EquityInvestment,
   EquityCampaignState,
+  InvestorDocument,
 } from '@/app/types/equityCampaigns.types';
-import { useCampaignContext } from './CampaignsContext';
 
 const EquityCampaignContext = createContext<EquityCampaignState | undefined>(
   undefined,
@@ -28,7 +29,7 @@ export const EquityCampaignProvider = ({
   const { token, user } = useAuth();
   const campaignContext = useCampaignContext();
 
-  // Equity-specific state
+  // State
   const [equityCampaigns, setEquityCampaigns] = useState<
     EquityCampaignResponseDataType[]
   >([]);
@@ -39,12 +40,208 @@ export const EquityCampaignProvider = ({
     useState<EquityCampaignResponseDataType | null>(null);
   const [teamMembers, setTeamMembers] = useState<CampaignTeamMember[]>([]);
   const [investments, setInvestments] = useState<EquityInvestment[]>([]);
+  const [documents, setDocuments] = useState<InvestorDocument[]>([]);
+  const [currentDocument, setCurrentDocument] =
+    useState<InvestorDocument | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleApiError = (errorText: string) => {
     setError(errorText);
   };
+
+  // Document Management
+  const fetchDocuments = useCallback(
+    async (campaignId: string): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/documents/investor_documents`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          handleApiError("Couldn't fetch documents. Please try again.");
+          return;
+        }
+
+        const data = await response.json();
+        setDocuments(data.documents || []);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error fetching documents',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
+
+  const getDocument = useCallback(
+    async (campaignId: string, documentId: number): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/documents/investor_documents/${documentId}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          handleApiError("Couldn't fetch document. Please try again.");
+          return;
+        }
+
+        const data = await response.json();
+        setCurrentDocument(data);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error fetching document',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
+
+  const createDocument = useCallback(
+    async (
+      campaignId: string,
+      documentType: string,
+      files: File[],
+    ): Promise<InvestorDocument | null> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const formData = new FormData();
+        formData.append('document_type', documentType);
+        files.forEach((file) => formData.append('files[]', file));
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/documents/investor_documents`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+          },
+        );
+
+        if (!response.ok) {
+          handleApiError("Couldn't create document. Please try again.");
+          return null;
+        }
+
+        const newDocument = await response.json();
+        setDocuments((prev) => [...prev, newDocument]);
+        return newDocument;
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error creating document',
+        );
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
+
+  const updateDocument = useCallback(
+    async (
+      campaignId: string,
+      documentId: number,
+      documentType: string,
+      files: File[],
+    ): Promise<InvestorDocument | null> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const formData = new FormData();
+        formData.append('document_type', documentType);
+        files.forEach((file) => formData.append('files[]', file));
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/documents/investor_documents/${documentId}`,
+          {
+            method: 'PUT',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+          },
+        );
+
+        if (!response.ok) {
+          handleApiError("Couldn't update document. Please try again.");
+          return null;
+        }
+
+        const updatedDocument = await response.json();
+        setDocuments((prev) =>
+          prev.map((doc) => (doc.id === documentId ? updatedDocument : doc)),
+        );
+        return updatedDocument;
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error updating document',
+        );
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
+
+  const deleteDocument = useCallback(
+    async (campaignId: string, documentId: number): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/documents/investor_documents/${documentId}`,
+          {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          handleApiError("Couldn't delete document. Please try again.");
+          return;
+        }
+
+        setDocuments((prev) => prev.filter((doc) => doc.id !== documentId));
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error deleting document',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
 
   // Equity Campaign Special Actions
   const launchCampaign = useCallback(
@@ -461,27 +658,45 @@ export const EquityCampaignProvider = ({
       ...campaignContext,
       teamMembers,
       investments,
+      documents,
+      currentDocument,
       loading,
       error,
+
+      // Campaign actions
       launchCampaign,
       closeCampaign,
+
+      // Team member actions
       addTeamMember,
       updateTeamMember,
       removeTeamMember,
-      createInvestment,
       fetchTeamMembers,
+
+      // Investment actions
+      createInvestment,
+
+      // Document actions
+      fetchDocuments,
+      getDocument,
+      createDocument,
+      updateDocument,
+      deleteDocument,
+
+      // Portfolio actions
       fetchPortfolio,
       fetchMyInvestments,
+
+      // Share certificate actions
       fetchShareCertificates,
       fetchShareCertificateById,
     }),
     [
       campaignContext,
-      equityCampaigns,
-      userEquityCampaigns,
-      currentEquityCampaign,
       teamMembers,
       investments,
+      documents,
+      currentDocument,
       loading,
       error,
       launchCampaign,
@@ -489,12 +704,13 @@ export const EquityCampaignProvider = ({
       addTeamMember,
       updateTeamMember,
       removeTeamMember,
-      createInvestment,
       fetchTeamMembers,
-      addTeamMember,
-      updateTeamMember,
-      removeTeamMember,
       createInvestment,
+      fetchDocuments,
+      getDocument,
+      createDocument,
+      updateDocument,
+      deleteDocument,
       fetchPortfolio,
       fetchMyInvestments,
       fetchShareCertificates,
