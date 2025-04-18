@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from '@/app/lib/utils';
 import React from 'react';
 import { FaInfoCircle } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
@@ -14,7 +15,7 @@ interface InfoTooltipProps {
 const InfoTooltip: React.FC<InfoTooltipProps> = ({
   id,
   content,
-  className = 'text-gray-400 text-sm cursor-pointer mr-2',
+  className = 'text-gray-400 text-sm cursor-pointer mr-2 bg-gray-500',
   iconSize = 16,
 }) => {
   return (
@@ -25,7 +26,7 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
         data-tooltip-place="right"
         data-tooltip-delay-show={300}
         data-tooltip-delay-hide={200}
-        className={className}
+        className={cn(className)}
         size={iconSize}
       />
       <Tooltip
