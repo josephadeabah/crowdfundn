@@ -473,7 +473,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                   <FiFileText className="mx-auto text-3xl mb-2" />
                   <p>Click to upload files or drag and drop</p>
                   <p className="text-sm text-gray-500 mt-1">
-                    PDF, DOCX, PPTX (Max 10MB each)
+                    PDF (Max 10MB each)
                   </p>
                 </label>
               </div>
@@ -550,7 +550,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                   <FiFile className="mx-auto text-3xl mb-2" />
                   <p>Click to upload files or drag and drop</p>
                   <p className="text-sm text-gray-500 mt-1">
-                    PDF, DOCX (Max 10MB each)
+                    PDF (Max 10MB each)
                   </p>
                 </label>
               </div>

@@ -102,13 +102,14 @@ const Campaigns: React.FC = () => {
           Campaigns
         </h2>
         <div className="flex gap-2">
-          <button
+          <Button
             onClick={() => setIsTeamDocumentsModalOpen(true)}
-            className="flex items-center px-3 py-2 bg-fundify-primary text-white rounded-lg"
+            className="flex items-center px-3 py-2 text-white rounded-lg"
+            variant="outline"
           >
             <FiPlusCircle className="mr-2" />
             Team & Documents
-          </button>
+          </Button>
           <button
             onClick={() => router.push('/account/dashboard/create')}
             className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg"
