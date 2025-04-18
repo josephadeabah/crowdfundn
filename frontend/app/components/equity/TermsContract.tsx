@@ -19,7 +19,7 @@ const TOOLTIP_CONTENT = `
 📄 Contracts Documents for Investors:
 • Form C or equivalent
 • Any Required Agreement document neccessary for the investment
-• Investors will have to keep a copy of these documents for their records
+• We'll show these documents to Investors to have and keep a copy of these documents for their records
 `;
 
 interface TermsContractProps {
