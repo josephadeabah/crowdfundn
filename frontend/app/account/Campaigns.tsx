@@ -328,7 +328,7 @@ const Campaigns: React.FC = () => {
       <Modal
         isOpen={isTeamDocumentsModalOpen}
         onClose={() => setIsTeamDocumentsModalOpen(false)}
-        size="xxxlarge"
+        size="full"
         closeOnBackdropClick={true}
       >
         <div className="p-4">
