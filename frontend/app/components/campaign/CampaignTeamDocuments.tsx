@@ -180,7 +180,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
             </h3>
             <button
               onClick={() => setActiveModal('team')}
-              className="flex items-center px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="flex items-center px-3 py-1 bg-fundify-primary text-white rounded-md hover:bg-fundify-primary"
             >
               <FiPlus className="mr-1" /> Add
             </button>
@@ -231,7 +231,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
             </h3>
             <button
               onClick={() => setActiveModal('pitch')}
-              className="flex items-center px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="flex items-center px-3 py-1 bg-fundify-primary text-white rounded-md hover:bg-fundify-primary"
             >
               <FiPlus className="mr-1" /> Upload
             </button>
@@ -281,7 +281,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
             </h3>
             <button
               onClick={() => setActiveModal('contract')}
-              className="flex items-center px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="flex items-center px-3 py-1 bg-fundify-primary text-white rounded-md hover:bg-fundify-primary"
             >
               <FiPlus className="mr-1" /> Upload
             </button>
@@ -432,7 +432,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                 </button>
                 <button
                   onClick={handleAddTeamMember}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="px-4 py-2 bg-fundify-primary text-white rounded-lg hover:bg-fundify-primary"
                 >
                   Add Member
                 </button>
@@ -504,7 +504,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                 <button
                   onClick={handleUploadPitchDocuments}
                   disabled={pitchFiles.length === 0}
-                  className={`px-4 py-2 rounded-lg ${pitchFiles.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+                  className={`px-4 py-2 rounded-lg ${pitchFiles.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-fundify-primary text-white hover:bg-fundify-primary'}`}
                 >
                   Upload Documents
                 </button>
@@ -581,7 +581,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                 <button
                   onClick={handleUploadContractDocuments}
                   disabled={contractFiles.length === 0}
-                  className={`px-4 py-2 rounded-lg ${contractFiles.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+                  className={`px-4 py-2 rounded-lg ${contractFiles.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-fundify-primary text-white hover:bg-fundify-primary'}`}
                 >
                   Upload Documents
                 </button>

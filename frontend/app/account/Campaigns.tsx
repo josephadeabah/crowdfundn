@@ -104,7 +104,7 @@ const Campaigns: React.FC = () => {
         <div className="flex gap-2">
           <button
             onClick={() => setIsTeamDocumentsModalOpen(true)}
-            className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg"
+            className="flex items-center px-3 py-2 bg-fundify-primary text-white rounded-lg"
           >
             <FiPlusCircle className="mr-2" />
             Team & Documents
