@@ -76,6 +76,7 @@ export interface CampaignResponseDataType {
   fundraiser: FundraiserDetailsType;
   team_members?: CampaignTeamMember[];
   documents?: InvestorDocument[];
+  type?: string;
   company_info?: {
     name: string;
     description: string;
