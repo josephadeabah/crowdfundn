@@ -44,7 +44,7 @@ const PitchBasics = ({
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Company Tagline/Description (max 100 chars)
+              Company Tagline (max 100 chars)
             </label>
             <input
               type="text"
