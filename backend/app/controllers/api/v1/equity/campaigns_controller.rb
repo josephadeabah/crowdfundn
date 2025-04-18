@@ -32,12 +32,14 @@ module Api
             :title, :media, :description, :goal_amount, 
             :start_date, :end_date, :category, :location,
             :current_amount, :currency, :valuation, 
-            :equity_offered, :minimum_investment
+            :equity_offered, :minimum_investment, :maximum_investment,
+            :company_name, :company_description, 
+            :company_headquarters, :company_website, :contract_term
           ).tap do |whitelisted|
-            # Convert string numbers to floats
             whitelisted[:valuation] = whitelisted[:valuation].to_f if whitelisted[:valuation]
             whitelisted[:equity_offered] = whitelisted[:equity_offered].to_f if whitelisted[:equity_offered]
             whitelisted[:minimum_investment] = whitelisted[:minimum_investment].to_f if whitelisted[:minimum_investment]
+            whitelisted[:maximum_investment] = whitelisted[:maximum_investment].to_f if whitelisted[:maximum_investment]
           end
         end
       end

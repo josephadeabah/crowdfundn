@@ -224,7 +224,7 @@ module Api
           only: %i[
             id title goal_amount current_amount transferred_amount start_date end_date
             category location currency currency_code currency_symbol status
-            fundraiser_id created_at updated_at valuation equity_offered minimum_investment
+            fundraiser_id created_at updated_at valuation equity_offered minimum_investment maximum_investment
           ],
           methods: %i[media_url media_filename total_days remaining_days],
           include: {
@@ -236,7 +236,14 @@ module Api
         ).merge(
           type: campaign.class.name,
           media: campaign.media_url,
-          total_donors: campaign.total_donors
+          total_donors: campaign.total_donors,
+          company_info: {
+            name: campaign.company_name,
+            description: campaign.company_description,
+            headquarters: campaign.company_headquarters,
+            website: campaign.company_website,
+            contract_term: campaign.contract_term,
+          }
         )
         
         if campaign.is_a?(EquityCampaign)
@@ -244,7 +251,11 @@ module Api
             shares_available: campaign.shares_available,
             percentage_raised: campaign.percentage_raised,
             total_investors: campaign.equity_investments.count,
-            equity_status: campaign.equity_status
+            equity_status: campaign.equity_status,
+            investment_range: {
+              minimum: campaign.minimum_investment,
+              maximum: campaign.maximum_investment
+            }
           )
         end
         

@@ -5,13 +5,13 @@ class EquityCampaign < Campaign
   has_many :founders, -> { where(campaign_team_members: { role: 'founder' }) }, 
            through: :campaign_team_members, source: :user
   
-  validates :valuation, :equity_offered, :minimum_investment, presence: true, numericality: { greater_than: 0 }
+  validates :valuation, :equity_offered, :minimum_investment, :maximum_investment, 
+            presence: true, numericality: { greater_than: 0 }
   validates :equity_offered, numericality: { less_than_or_equal_to: 100 }
   validate :founders_equity_allocation
+  validate :maximum_greater_than_minimum
 
   attribute :equity_status, :integer, default: 0
-    # Make sure these attributes are accessible
-  # attr_accessor :valuation, :equity_offered, :minimum_investment, :equity_status
   
   enum equity_status: {
     draft: 0,
@@ -35,12 +35,34 @@ class EquityCampaign < Campaign
   def founder_equity_percentage
     campaign_team_members.sum(:equity_percentage).to_f
   end
+
+  def as_json(options = {})
+    super(options).merge(
+      company_info: {
+        name: company_name,
+        description: company_description,
+        headquarters: company_headquarters,
+        website: company_website,
+        contract_term: contract_term,
+      },
+      shares_available: shares_available,
+      percentage_raised: percentage_raised,
+      equity_status: equity_status,
+      maximum_investment: maximum_investment
+    )
+  end
   
   private
   
   def founders_equity_allocation
     if founder_equity_percentage > (100 - equity_offered.to_f)
       errors.add(:base, "Founders' combined equity cannot exceed #{100 - equity_offered.to_f}%")
+    end
+  end
+
+  def maximum_greater_than_minimum
+    if maximum_investment.present? && minimum_investment.present? && maximum_investment <= minimum_investment
+      errors.add(:maximum_investment, "must be greater than minimum investment")
     end
   end
 end
