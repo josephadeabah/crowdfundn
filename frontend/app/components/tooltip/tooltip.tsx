@@ -15,7 +15,7 @@ interface InfoTooltipProps {
 const InfoTooltip: React.FC<InfoTooltipProps> = ({
   id,
   content,
-  className = 'text-gray-400 text-sm cursor-pointer mr-2 bg-gray-500',
+  className,
   iconSize = 16,
 }) => {
   return (
@@ -26,7 +26,7 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
         data-tooltip-place="right"
         data-tooltip-delay-show={300}
         data-tooltip-delay-hide={200}
-        className={cn(className)}
+        className={cn(className, 'text-gray-400 text-sm cursor-pointer mr-2')}
         size={iconSize}
       />
       <Tooltip
