@@ -42,7 +42,7 @@ interface CampaignDetailsProps {
   // Pitch section props
   teamMembers?: Array<any>;
   setTeamMembers?: (value: Array<any>) => void;
-  companyInfo?: {
+  companyInfo: {
     name: string;
     description: string;
     headquarters: string;

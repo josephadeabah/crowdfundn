@@ -132,17 +132,6 @@ const PitchBasics = ({
             />
           </div>
 
-          <div>
-            <Label htmlFor="contract-term">Contract Term</Label>
-            <Input
-              id="contract-term"
-              type="text"
-              value={companyInfo.contract_term || ''}
-              onChange={(e) => handleChange('contract_term', e.target.value)}
-              placeholder="e.g., 5 years"
-            />
-          </div>
-
           <div className="mt-6">
             <div className="flex items-center">
               <Label>Company Documents</Label>

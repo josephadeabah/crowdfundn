@@ -23,6 +23,7 @@ import { FaCheck, FaExclamationTriangle } from 'react-icons/fa';
 import { categories } from '@/app/utils/helpers/categories';
 import { useDropzone } from 'react-dropzone';
 import { useRouter } from 'next/navigation';
+import { CampaignTeamMember } from '@/app/types/equityCampaigns.types';
 
 const CURRENCIES = [
   { code: 'USD', symbol: '$' },
@@ -41,37 +42,6 @@ const CURRENCIES = [
   { code: 'SZL', symbol: 'E' },
   { code: 'ZAR', symbol: 'R' },
 ];
-
-interface CampaignData {
-  title: string;
-  content: string;
-  startDate?: Date | string;
-  endDate?: Date | string;
-  activeTab: string;
-  selectedTemplate: CampaignTemplate | null;
-  editorActiveTab: string;
-  goalAmount: string;
-  category: string;
-  currencyCode: string;
-  location: string;
-  image: string;
-  // Equity fields
-  teamMembers: any[];
-  companyInfo: {
-    name: string;
-    description: string;
-    headquarters: string;
-    website: string;
-    contract_term?: string;
-  };
-  contractType: string;
-  minRaise: string;
-  maxRaise: string;
-  valuation: string;
-  equityOffered: string;
-  pitchDocuments: File[];
-  contractDocuments: File[];
-}
 
 export interface FormErrors {
   title: string;
@@ -93,6 +63,38 @@ export interface FormErrors {
   pitchDocuments?: string;
   contractDocuments?: string;
   teamMembers?: string;
+}
+
+interface CompanyInfo {
+  name: string;
+  description: string;
+  headquarters: string;
+  website: string;
+  contract_term?: string;
+}
+
+interface CampaignData {
+  title: string;
+  content: string;
+  activeTab: string;
+  selectedTemplate: CampaignTemplate | null;
+  editorActiveTab: string;
+  goalAmount: string;
+  category: string;
+  currencyCode: string;
+  location: string;
+  image: string;
+  startDate?: string | Date;
+  endDate?: string | Date;
+  teamMembers: Omit<CampaignTeamMember, 'id' | 'created_at' | 'updated_at'>[];
+  companyInfo: CompanyInfo;
+  contractType: string;
+  minRaise: string;
+  maxRaise: string;
+  valuation: string;
+  equityOffered: string;
+  pitchDocuments: File[];
+  contractDocuments: File[];
 }
 
 const CampaignCreator = () => {
@@ -119,8 +121,8 @@ const CampaignCreator = () => {
     contractType: '',
     minRaise: '',
     maxRaise: '',
-    valuation: '', // Add this
-    equityOffered: '', // Add this
+    valuation: '',
+    equityOffered: '',
     pitchDocuments: [],
     contractDocuments: [],
   };
@@ -177,12 +179,11 @@ const CampaignCreator = () => {
     setCampaignData({ ...campaignData, currencyCode: value });
   const setLocation = (value: string) =>
     setCampaignData({ ...campaignData, location: value });
-  const setTeamMembers = (value: any[]) =>
-    setCampaignData({ ...campaignData, teamMembers: value });
-  const setCompanyInfo = (value: CampaignData['companyInfo'] | undefined) => {
-    if (value) {
-      setCampaignData({ ...campaignData, companyInfo: value });
-    }
+  const setTeamMembers = (
+    value: Omit<CampaignTeamMember, 'id' | 'created_at' | 'updated_at'>[],
+  ) => setCampaignData({ ...campaignData, teamMembers: value });
+  const setCompanyInfo = (value: CompanyInfo) => {
+    setCampaignData({ ...campaignData, companyInfo: value });
   };
   const setContractType = (value: string) =>
     setCampaignData({ ...campaignData, contractType: value });
@@ -454,7 +455,7 @@ const CampaignCreator = () => {
           await createDocument(
             campaignId,
             'pitch',
-            campaignData.pitchDocuments, // Directly pass the File array
+            campaignData.pitchDocuments,
           );
         }
 
@@ -463,7 +464,7 @@ const CampaignCreator = () => {
           await createDocument(
             campaignId,
             'contract',
-            campaignData.contractDocuments, // Directly pass the File array
+            campaignData.contractDocuments,
           );
         }
       }
