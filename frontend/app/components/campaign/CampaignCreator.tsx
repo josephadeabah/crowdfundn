@@ -289,14 +289,13 @@ const CampaignCreator = () => {
     // Common fields
     formData.append(`${rootKey}[title]`, campaignData.title);
     formData.append(`${rootKey}[description]`, campaignData.content);
+    formData.append(`${rootKey}[current_amount]`, parseFloat(currentAmount).toString());
     formData.append(`${rootKey}[goal_amount]`, campaignData.goalAmount);
     formData.append(`${rootKey}[start_date]`, campaignData.startDate as string);
     formData.append(`${rootKey}[end_date]`, campaignData.endDate as string);
     formData.append(`${rootKey}[category]`, campaignData.category);
     formData.append(`${rootKey}[location]`, campaignData.location);
     formData.append(`${rootKey}[currency]`, campaignData.currencyCode);
-    const currentAmountValue = isEquityCampaign ? '0' : (parseFloat(currentAmount) || 0).toString();
-    formData.append(`${rootKey}[current_amount]`, currentAmountValue);
   
     if (selectedImage) {
       formData.append(`${rootKey}[media]`, selectedImage);
