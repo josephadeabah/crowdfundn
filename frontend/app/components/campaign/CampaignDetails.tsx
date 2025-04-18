@@ -52,7 +52,8 @@ interface CampaignDetailsProps {
   // Terms section props
   contractType: string;
   setContractType: (value: string) => void;
-  onFilesUpload: (files: File[]) => void;
+  onContractFilesUpload: (files: File[]) => void;
+  onPitchFilesUpload: (files: File[]) => void;
   // Raise section props
   minRaise: string;
   setMinRaise: (value: string) => void;
@@ -87,7 +88,8 @@ const CampaignDetails = ({
   // Terms section
   contractType = '',
   setContractType = () => {},
-  onFilesUpload,
+  onContractFilesUpload,
+  onPitchFilesUpload,
   // Funding Goals
   minRaise,
   setMinRaise,
@@ -210,6 +212,7 @@ const CampaignDetails = ({
                       <PitchBasics
                         companyInfo={companyInfo}
                         onCompanyInfoChange={onCompanyInfoChange}
+                        onFilesUpload={onPitchFilesUpload}
                       />
                       <PitchTeam
                         teamMembers={teamMembers}
@@ -222,14 +225,16 @@ const CampaignDetails = ({
                 {/* Part 2: The Terms */}
                 <AccordionItemWrapper value="terms">
                   <AccordionTriggerWrapper>
-                    <span className="font-medium">Terms & Documents</span>
+                    <span className="font-medium">
+                      Terms & Contract Documents
+                    </span>
                   </AccordionTriggerWrapper>
                   <AccordionContentWrapper>
                     <div className="space-y-6">
                       <TermsContract
                         contractType={contractType}
                         setContractType={setContractType}
-                        onFilesUpload={onFilesUpload}
+                        onFilesUpload={onContractFilesUpload}
                       />
                     </div>
                   </AccordionContentWrapper>

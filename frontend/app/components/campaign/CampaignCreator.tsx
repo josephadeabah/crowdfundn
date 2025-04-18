@@ -337,9 +337,6 @@ const CampaignCreator = () => {
                       }): void {
                         throw new Error('Function not implemented.');
                       }}
-                      onFilesUpload={function (files: File[]): void {
-                        throw new Error('Function not implemented.');
-                      }}
                       contractType={''}
                       setContractType={function (value: string): void {
                         throw new Error('Function not implemented.');
@@ -354,6 +351,12 @@ const CampaignCreator = () => {
                       }}
                       teamMembers={[]}
                       setTeamMembers={function (value: Array<any>): void {
+                        throw new Error('Function not implemented.');
+                      }}
+                      onContractFilesUpload={function (files: File[]): void {
+                        throw new Error('Function not implemented.');
+                      }}
+                      onPitchFilesUpload={function (files: File[]): void {
                         throw new Error('Function not implemented.');
                       }}
                     />

@@ -16,17 +16,10 @@ const CONTRACT_OPTIONS = [
 ];
 
 const TOOLTIP_CONTENT = `
-📄 Company Documents for Fundraising:
-• Certificate of Incorporation
-• Business Registration Documents
-• TIN or Tax Certificate
-• Company Constitution / Articles of Incorporation
-• Director & Shareholder Information
-• Pitch Deck / Business Plan
-• Bank Account Details
-• Proof of Address
-• Founder's/CEO's ID Documents
-• Any Required Licenses or Permits
+📄 Contracts Documents for Investors:
+• Form C or equivalent
+• Any Required Agreement document neccessary for the investment
+• Investors will have to keep a copy of these documents for their records
 `;
 
 interface TermsContractProps {
@@ -110,9 +103,7 @@ const TermsContract = ({
               <div className="text-sm text-gray-600 mb-2">
                 Drag & drop files here or click to browse
               </div>
-              <div className="text-xs text-gray-500">
-                (PDF only accepted)
-              </div>
+              <div className="text-xs text-gray-500">(PDF only accepted)</div>
             </label>
           </div>
 
