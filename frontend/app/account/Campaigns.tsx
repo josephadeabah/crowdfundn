@@ -113,6 +113,7 @@ const Campaigns: React.FC = () => {
           <Button
             onClick={() => router.push('/account/dashboard/create')}
             className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg"
+            variant="ghost"
           >
             <FiPlusCircle className="mr-2" />
             Add Campaign
