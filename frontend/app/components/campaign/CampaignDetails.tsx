@@ -49,10 +49,10 @@ interface CampaignDetailsProps {
     website: string;
   };
   onCompanyInfoChange: (info: CampaignDetailsProps['companyInfo']) => void;
-  onFileUpload: (file: File) => void;
   // Terms section props
   contractType: string;
   setContractType: (value: string) => void;
+  onFilesUpload: (files: File[]) => void;
   // Raise section props
   minRaise: string;
   setMinRaise: (value: string) => void;
@@ -84,10 +84,10 @@ const CampaignDetails = ({
   setTeamMembers = () => {},
   companyInfo,
   onCompanyInfoChange,
-  onFileUpload,
   // Terms section
   contractType = '',
   setContractType = () => {},
+  onFilesUpload,
   // Funding Goals
   minRaise,
   setMinRaise,
@@ -210,7 +210,6 @@ const CampaignDetails = ({
                       <PitchBasics
                         companyInfo={companyInfo}
                         onCompanyInfoChange={onCompanyInfoChange}
-                        onFileUpload={onFileUpload}
                       />
                       <PitchTeam
                         teamMembers={teamMembers}
@@ -230,6 +229,7 @@ const CampaignDetails = ({
                       <TermsContract
                         contractType={contractType}
                         setContractType={setContractType}
+                        onFilesUpload={onFilesUpload}
                       />
                     </div>
                   </AccordionContentWrapper>

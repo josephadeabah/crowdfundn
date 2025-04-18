@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Label } from '@/app/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/app/components/ui/radio-group';
+import { FaTimes } from 'react-icons/fa';
+import InfoTooltip from '@/app/components/tooltip/tooltip';
 
 const CONTRACT_OPTIONS = [
   { id: 'safe', label: 'Future Equity (SAFE)' },
@@ -13,15 +15,54 @@ const CONTRACT_OPTIONS = [
   { id: 'other', label: "Other/I don't know yet" },
 ];
 
+const TOOLTIP_CONTENT = `
+📄 Company Documents for Fundraising:
+• Certificate of Incorporation
+• Business Registration Documents
+• TIN or Tax Certificate
+• Company Constitution / Articles of Incorporation
+• Director & Shareholder Information
+• Pitch Deck / Business Plan
+• Bank Account Details
+• Proof of Address
+• Founder's/CEO's ID Documents
+• Any Required Licenses or Permits
+`;
+
 interface TermsContractProps {
   contractType: string;
   setContractType: (value: string) => void;
+  onFilesUpload: (files: File[]) => void;
 }
 
 const TermsContract = ({
   contractType,
   setContractType,
+  onFilesUpload,
 }: TermsContractProps) => {
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files.length > 0) {
+        const newFiles = Array.from(e.target.files);
+        setSelectedFiles((prev) => [...prev, ...newFiles]);
+        onFilesUpload([...selectedFiles, ...newFiles]);
+      }
+    },
+    [selectedFiles, onFilesUpload],
+  );
+
+  const handleRemoveFile = useCallback(
+    (index: number) => {
+      const updatedFiles = [...selectedFiles];
+      updatedFiles.splice(index, 1);
+      setSelectedFiles(updatedFiles);
+      onFilesUpload(updatedFiles);
+    },
+    [selectedFiles, onFilesUpload],
+  );
+
   return (
     <Card>
       <CardContent className="p-4">
@@ -40,6 +81,66 @@ const TermsContract = ({
             </div>
           ))}
         </RadioGroup>
+
+        <div className="mt-6">
+          <div className="flex items-center">
+            <Label className="block text-sm font-medium mb-1">
+              Required Documents
+            </Label>
+            <InfoTooltip
+              id="documents-tooltip"
+              content={TOOLTIP_CONTENT}
+              className="ml-2"
+            />
+          </div>
+
+          <div className="border-2 border-dashed border-gray-300 rounded-md p-4">
+            <input
+              type="file"
+              multiple
+              accept=".pdf"
+              onChange={handleFileChange}
+              className="hidden"
+              id="file-upload"
+            />
+            <label
+              htmlFor="file-upload"
+              className="cursor-pointer flex flex-col items-center justify-center py-4"
+            >
+              <div className="text-sm text-gray-600 mb-2">
+                Drag & drop files here or click to browse
+              </div>
+              <div className="text-xs text-gray-500">
+                (PDF only accepted)
+              </div>
+            </label>
+          </div>
+
+          {selectedFiles.length > 0 && (
+            <div className="mt-4 space-y-2">
+              <h4 className="text-sm font-medium">Selected Files:</h4>
+              <ul className="space-y-2">
+                {selectedFiles.map((file, index) => (
+                  <li
+                    key={index}
+                    className="flex items-center justify-between bg-gray-50 p-2 rounded"
+                  >
+                    <span className="text-sm truncate max-w-xs">
+                      {file.name}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveFile(index)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <FaTimes size={14} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
