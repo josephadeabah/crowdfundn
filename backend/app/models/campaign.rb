@@ -19,7 +19,7 @@ class Campaign < ApplicationRecord
 
   validates :title, :description, :goal_amount, :start_date, :end_date, :currency, presence: true
   validates :goal_amount, numericality: { greater_than: 0 }
-  validates :current_amount, numericality: { greater_than_or_equal_to: 0 }
+  # validates :current_amount, numericality: { greater_than_or_equal_to: 0 }
 
   enum status: { active: 0, completed: 1, canceled: 2 }
 
