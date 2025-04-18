@@ -207,11 +207,20 @@ module Api
       protected
 
       def campaign_scope
-        campaign_class.all
+        # This will automatically scope to the correct class based on the controller namespace
+        if self.class.name.include?('Equity')
+          EquityCampaign.all
+        else
+          Campaign.all
+        end
       end
 
       def campaign_class
-        self.class.name.include?('Equity') ? EquityCampaign : Campaign
+        if self.class.name.include?('Equity')
+          EquityCampaign
+        else
+          Campaign
+        end
       end
 
       def campaign_type
