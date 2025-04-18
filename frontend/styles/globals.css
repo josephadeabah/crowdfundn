@@ -292,3 +292,7 @@ img[src*='#markdown-transferspage'] {
     background-position: -100% 0;
   }
 }
+
+.react-tooltip {
+  pointer-events: auto !important;
+}

@@ -243,6 +243,9 @@
   .btn-gradient {
     @apply bg-gradient-to-r from-fundify-primary to-fundify-accent hover:opacity-90 text-white;
   }
+  .react-tooltip {
+    @apply pointer-events-auto;
+  }
 }
 
 /* Rich text editor content styles */
