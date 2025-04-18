@@ -95,11 +95,27 @@ const Campaigns: React.FC = () => {
     setActionType(null);
   };
 
+  const getStatusDisplay = (campaign: CampaignResponseDataType) => {
+    if (campaign.equity_status === 'draft') {
+      return { text: 'Draft', color: 'text-blue-500' };
+    }
+    switch (campaign.status) {
+      case 'active':
+        return { text: 'Active', color: 'text-green-500' };
+      case 'completed':
+        return { text: 'Completed', color: 'text-red-500' };
+      case 'canceled':
+        return { text: 'Canceled', color: 'text-orange-300' };
+      default:
+        return { text: 'Unknown', color: '' };
+    }
+  };
+
   return (
     <div className="px-2 py-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
-          Campaigns
+          My Campaigns
         </h2>
         <div className="flex gap-2">
           <Button
@@ -121,148 +137,139 @@ const Campaigns: React.FC = () => {
         </div>
       </div>
       <p className="text-gray-500 dark:text-neutral-400 mb-4">
-        Manage your active and past campaigns.
+        Manage all your campaigns including drafts.
       </p>
+      
       {userCampaigns && userCampaigns.length === 0 ? (
         <p className="text-gray-500 dark:text-neutral-400">
-          You have no active campaigns.
+          You have no campaigns yet.
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {userCampaigns?.map((campaign) => (
-            <div
-              key={campaign.id}
-              className="relative p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 dark:hover:bg-neutral-700 flex flex-col justify-between"
-            >
-              {/* Title and Dots Vertical Icon */}
-              <div className="flex justify-between items-start">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex-1 pr-4">
-                  {campaign.title}
-                </h3>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button className="text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-200">
-                      <DotsVerticalIcon className="h-6 w-6" />
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-fit">
-                    <ul className="space-y-2">
-                      <li>
-                        <button
-                          className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
-                          onClick={() =>
-                            handleEditCampaign(String(campaign.id))
-                          }
-                        >
-                          Edit Campaign
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
-                          onClick={() => handleAction(campaign, 'delete')}
-                        >
-                          Delete Campaign
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
-                          onClick={() => handleAction(campaign, 'cancel')}
-                          disabled={
-                            campaign.status === 'canceled' ||
-                            campaign.status === 'completed'
-                          }
-                          style={{
-                            cursor:
-                              campaign.status === 'canceled' ||
-                              campaign.status === 'completed'
-                                ? 'not-allowed'
-                                : 'pointer',
-                          }}
-                        >
-                          Cancel Campaign
-                        </button>
-                      </li>
-                    </ul>
-                  </PopoverContent>
-                </Popover>
-              </div>
+          {userCampaigns?.map((campaign) => {
+            const status = getStatusDisplay(campaign);
+            return (
+              <div
+                key={campaign.id}
+                className="relative p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 dark:hover:bg-neutral-700 flex flex-col justify-between"
+              >
+                {/* Title and Dots Vertical Icon */}
+                <div className="flex justify-between items-start">
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex-1 pr-4">
+                    {campaign.title}
+                  </h3>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button className="text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-200">
+                        <DotsVerticalIcon className="h-6 w-6" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-fit">
+                      <ul className="space-y-2">
+                        <li>
+                          <button
+                            className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+                            onClick={() =>
+                              handleEditCampaign(String(campaign.id))
+                            }
+                          >
+                            Edit Campaign
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+                            onClick={() => handleAction(campaign, 'delete')}
+                          >
+                            Delete Campaign
+                          </button>
+                        </li>
+                        {campaign.equity_status !== 'draft' && (
+                          <li>
+                            <button
+                              className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+                              onClick={() => handleAction(campaign, 'cancel')}
+                              disabled={
+                                campaign.status === 'canceled' ||
+                                campaign.status === 'completed'
+                              }
+                              style={{
+                                cursor:
+                                  campaign.status === 'canceled' ||
+                                  campaign.status === 'completed'
+                                    ? 'not-allowed'
+                                    : 'pointer',
+                              }}
+                            >
+                              Cancel Campaign
+                            </button>
+                          </li>
+                        )}
+                      </ul>
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
-              {/* Campaign Details */}
-              <div className="text-gray-500 dark:text-neutral-400 flex justify-between items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <div className="font-normal">Goal:</div>
-                  <div className="font-medium">
-                    {campaign?.currency?.toUpperCase()}{' '}
-                    {parseFloat(campaign.goal_amount).toLocaleString()}
+                {/* Campaign Details */}
+                <div className="text-gray-500 dark:text-neutral-400 flex justify-between items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="font-normal">Goal:</div>
+                    <div className="font-medium">
+                      {campaign?.currency?.toUpperCase()}{' '}
+                      {parseFloat(campaign.goal_amount).toLocaleString()}
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="font-normal">Raised:</div>
+                    <div className="font-medium">
+                      {campaign?.currency?.toUpperCase()}{' '}
+                      {parseFloat(campaign.transferred_amount).toLocaleString()}
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <div className="font-normal">Raised:</div>
-                  <div className="font-medium">
-                    {campaign?.currency?.toUpperCase()}{' '}
-                    {parseFloat(campaign.transferred_amount).toLocaleString()}
+                <div className="mt-4 flex justify-between items-center">
+                  <div className="flex gap-3 items-center">
+                    <Button
+                      className={`px-4 py-2 rounded-full ${status.color}`}
+                      variant="ghost"
+                      size="default"
+                    >
+                      {status.text}
+                    </Button>
+                    <div className="flex items-center gap-1">
+                      <span
+                        className={`w-2 h-2 rounded-full 
+                        ${campaign.permissions.is_public ? 'bg-green-500' : 'bg-gray-500'}`}
+                      ></span>
+                      <span className="text-gray-500 font-semibold text-xs">
+                        {campaign.permissions.is_public ? 'Public' : 'Private'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <Button
+                      className="px-4 py-2 text-gray-500 rounded-full"
+                      variant="secondary"
+                      size="default"
+                      onClick={() =>
+                        handleViewCampaignDetails(String(campaign.id))
+                      }
+                    >
+                      View
+                    </Button>
+                    <Button
+                      className="px-4 py-2 text-gray-700 dark:text-gray-300 rounded-full"
+                      variant="secondary"
+                      size="default"
+                      onClick={() => handleOpenModal(campaign)}
+                    >
+                      Preview
+                    </Button>
                   </div>
                 </div>
               </div>
-              <div className="mt-4 flex justify-between items-center">
-                <div className="flex gap-3 items-center">
-                  <Button
-                    className={`px-4 py-2 rounded-full 
-    ${
-      campaign.status === 'active'
-        ? 'text-green-500'
-        : campaign.status === 'completed'
-          ? 'text-red-500'
-          : campaign.status === 'canceled'
-            ? 'text-orange-300'
-            : ''
-    }`}
-                    variant="ghost"
-                    size="default"
-                  >
-                    {campaign.status === 'active'
-                      ? 'Active'
-                      : campaign.status === 'completed'
-                        ? 'Completed'
-                        : campaign.status === 'canceled'
-                          ? 'Canceled'
-                          : 'Unknown'}
-                  </Button>
-                  <div className="flex items-center gap-1">
-                    <span
-                      className={`w-2 h-2 rounded-full 
-        ${campaign.permissions.is_public ? 'bg-green-500' : 'bg-gray-500'}`}
-                    ></span>
-                    <span className="text-gray-500 font-semibold text-xs">
-                      {campaign.permissions.is_public ? 'Public' : 'Private'}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <Button
-                    className="px-4 py-2 text-gray-500 rounded-full"
-                    variant="secondary"
-                    size="default"
-                    onClick={() =>
-                      handleViewCampaignDetails(String(campaign.id))
-                    }
-                  >
-                    View
-                  </Button>
-                  <Button
-                    className="px-4 py-2 text-gray-700 dark:text-gray-300 rounded-full"
-                    variant="secondary"
-                    size="default"
-                    onClick={() => handleOpenModal(campaign)}
-                  >
-                    Preview
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
