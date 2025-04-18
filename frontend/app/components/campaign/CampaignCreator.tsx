@@ -295,8 +295,8 @@ const CampaignCreator = () => {
     formData.append(`${rootKey}[category]`, campaignData.category);
     formData.append(`${rootKey}[location]`, campaignData.location);
     formData.append(`${rootKey}[currency]`, campaignData.currencyCode);
-    const currentAmountValue = parseFloat(currentAmount) || 0;
-    formData.append(`${rootKey}[current_amount]`, currentAmountValue.toString());
+    const currentAmountValue = isEquityCampaign ? '0' : (parseFloat(currentAmount) || 0).toString();
+    formData.append(`${rootKey}[current_amount]`, currentAmountValue);
   
     if (selectedImage) {
       formData.append(`${rootKey}[media]`, selectedImage);
@@ -321,6 +321,11 @@ const CampaignCreator = () => {
       if (campaignData.maxRaise) {
         formData.append(`${rootKey}[maximum_investment]`, campaignData.maxRaise);
       }
+    }
+
+      // Log the form data for debugging
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
     }
   
     try {
