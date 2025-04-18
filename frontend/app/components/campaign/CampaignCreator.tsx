@@ -382,10 +382,7 @@ const CampaignCreator = () => {
     // Common fields
     formData.append(`${rootKey}[title]`, campaignData.title);
     formData.append(`${rootKey}[description]`, campaignData.content);
-    formData.append(
-      `${rootKey}[current_amount]`,
-      parseFloat(currentAmount).toString(),
-    );
+    formData.append(`${rootKey}[current_amount]`, currentAmount);
     formData.append(`${rootKey}[goal_amount]`, campaignData.goalAmount);
     formData.append(`${rootKey}[start_date]`, campaignData.startDate as string);
     formData.append(`${rootKey}[end_date]`, campaignData.endDate as string);
@@ -397,56 +394,36 @@ const CampaignCreator = () => {
       formData.append(`${rootKey}[media]`, selectedImage);
     }
 
-    // Equity-specific fields (excluding team members and documents)
+    // Equity-specific fields
     if (isEquityCampaign) {
-      if (campaignData.companyInfo.name) {
+      formData.append(
+        `${rootKey}[company_name]`,
+        campaignData.companyInfo.name,
+      );
+      formData.append(
+        `${rootKey}[company_description]`,
+        campaignData.companyInfo.description,
+      );
+      formData.append(
+        `${rootKey}[company_headquarters]`,
+        campaignData.companyInfo.headquarters,
+      );
+      formData.append(
+        `${rootKey}[company_website]`,
+        campaignData.companyInfo.website,
+      );
+      if (campaignData.companyInfo.contract_term) {
         formData.append(
-          `${rootKey}[company_name]`,
-          campaignData.companyInfo.name,
-        );
-        formData.append(
-          `${rootKey}[company_description]`,
-          campaignData.companyInfo.description,
-        );
-        formData.append(
-          `${rootKey}[company_headquarters]`,
-          campaignData.companyInfo.headquarters,
-        );
-        formData.append(
-          `${rootKey}[company_website]`,
-          campaignData.companyInfo.website,
-        );
-        if (campaignData.companyInfo.contract_term) {
-          formData.append(
-            `${rootKey}[contract_term]`,
-            campaignData.companyInfo.contract_term,
-          );
-        }
-      }
-
-      if (campaignData.valuation) {
-        formData.append(`${rootKey}[valuation]`, campaignData.valuation);
-      }
-      if (campaignData.equityOffered) {
-        formData.append(
-          `${rootKey}[equity_offered]`,
-          campaignData.equityOffered,
+          `${rootKey}[contract_term]`,
+          campaignData.companyInfo.contract_term,
         );
       }
 
-      if (campaignData.minRaise) {
-        formData.append(
-          `${rootKey}[minimum_investment]`,
-          campaignData.minRaise,
-        );
-      }
-
-      if (campaignData.maxRaise) {
-        formData.append(
-          `${rootKey}[maximum_investment]`,
-          campaignData.maxRaise,
-        );
-      }
+      formData.append(`${rootKey}[valuation]`, campaignData.valuation);
+      formData.append(`${rootKey}[equity_offered]`, campaignData.equityOffered);
+      formData.append(`${rootKey}[contract_type]`, campaignData.contractType);
+      formData.append(`${rootKey}[minimum_investment]`, campaignData.minRaise);
+      formData.append(`${rootKey}[maximum_investment]`, campaignData.maxRaise);
     }
 
     try {
@@ -455,38 +432,38 @@ const CampaignCreator = () => {
 
       // If equity campaign, handle team members and documents separately
       if (isEquityCampaign && createdCampaign.id) {
-        const campaignId = createdCampaign.id;
+        const campaignId = createdCampaign.id.toString();
 
         // Add team members
         if (campaignData.teamMembers.length > 0) {
           await Promise.all(
             campaignData.teamMembers.map((member) =>
-              addTeamMember(campaignId.toString(), {
+              addTeamMember(campaignId, {
                 role: member.role,
-                equity_percentage: member.equityPercentage,
-                title: member.title || '',
-                name: member.name || '',
-                email: member.email || '',
+                equity_percentage: member.equity_percentage,
+                title: member.title,
+                name: member.name,
+                email: member.email,
               }),
             ),
           );
         }
 
-        // Upload pitch documents
+        // Upload pitch documents if they exist
         if (campaignData.pitchDocuments.length > 0) {
           await createDocument(
-            campaignId.toString(),
+            campaignId,
             'pitch',
-            campaignData.pitchDocuments,
+            campaignData.pitchDocuments, // Directly pass the File array
           );
         }
 
-        // Upload contract documents
+        // Upload contract documents if they exist
         if (campaignData.contractDocuments.length > 0) {
           await createDocument(
-            campaignId.toString(),
+            campaignId,
             'contract',
-            campaignData.contractDocuments,
+            campaignData.contractDocuments, // Directly pass the File array
           );
         }
       }

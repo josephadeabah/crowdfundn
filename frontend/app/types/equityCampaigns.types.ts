@@ -21,7 +21,7 @@ export interface InvestorDocument {
 }
 
 export interface CampaignTeamMember {
-  id: number;
+  id?: number;
   user_id?: number;
   name: string;
   email: string;
@@ -33,7 +33,6 @@ export interface CampaignTeamMember {
   created_at?: string;
   updated_at?: string;
 }
-
 export interface EquityCampaignResponseDataType
   extends CampaignResponseDataType {
   valuation: number;
