@@ -32,7 +32,6 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
         id={id}
         className="max-w-xs bg-gray-600 text-white text-sm p-2 rounded z-50"
         clickable
-        noArrow
         delayShow={300}
         delayHide={200}
         style={{
