@@ -1,4 +1,3 @@
-# app/controllers/api/v1/fundraisers/campaigns_controller.rb
 module Api
   module V1
     module Fundraisers
@@ -22,6 +21,9 @@ module Api
             :company_name, :company_description, :company_headquarters, 
             :company_website, :contract_term
           ).tap do |whitelisted|
+            # Set the type based on params key
+            whitelisted[:type] = params_key == :equity_campaign ? 'EquityCampaign' : 'Campaign'
+            
             # Convert numeric fields
             [:valuation, :equity_offered, :minimum_investment, :maximum_investment].each do |field|
               whitelisted[field] = whitelisted[field].to_f if whitelisted[field]

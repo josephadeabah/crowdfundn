@@ -38,6 +38,7 @@ class EquityCampaign < Campaign
 
   def as_json(options = {})
     super(options).merge(
+      type: 'EquityCampaign',
       company_info: {
         name: company_name,
         description: company_description,

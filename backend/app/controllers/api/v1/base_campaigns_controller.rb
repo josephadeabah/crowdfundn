@@ -1,4 +1,3 @@
-# app/controllers/api/v1/base_campaigns_controller.rb
 module Api
   module V1
     class BaseCampaignsController < ApplicationController
@@ -57,37 +56,13 @@ module Api
         }, status: :ok
       end
 
-      def group_by_category
-        page = params[:page] || 1
-        page_size = params[:page_size] || 12
-        
-        grouped_campaigns = campaign_scope.active.order(created_at: :desc).group_by do |campaign|
-          campaign.category.downcase.gsub(/\s+/, '-')
-        end
-        
-        grouped_paginated_campaigns = grouped_campaigns.transform_values do |campaigns|
-          Kaminari.paginate_array(campaigns).page(page).per(page_size)
-        end
-        
-        response_data = grouped_paginated_campaigns.each_with_object({}) do |(category, campaigns), result|
-          result[category] = {
-            campaigns: campaigns.map { |c| campaign_json(c) },
-            current_page: campaigns.current_page,
-            total_pages: campaigns.total_pages,
-            total_count: campaigns.total_count
-          }
-        end
-        
-        render json: {
-          grouped_campaigns: response_data
-        }, status: :ok
-      end
-
-      
       def create
         @campaign = campaign_class.new(campaign_params)
         @campaign.fundraiser = @current_user
         @campaign.media.attach(params[:media]) if params[:media].present?
+        
+        # Explicitly set type from params if present
+        @campaign.type = campaign_params[:type] if campaign_params[:type]
         
         # Set defaults for equity campaigns
         if @campaign.is_a?(EquityCampaign)
@@ -95,11 +70,12 @@ module Api
           @campaign.valuation ||= 0
           @campaign.equity_offered ||= 0
           @campaign.minimum_investment ||= 0
+          @campaign.maximum_investment ||= 0
         end
       
         if @campaign.save
           render json: {
-            message: "#{campaign_type} campaign created successfully",
+            message: "#{@campaign.class.name} campaign created successfully",
             campaign: campaign_json(@campaign)
           }, status: :created
         else
