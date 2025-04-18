@@ -53,39 +53,14 @@ const TOOLTIP_CONTENT = `
 interface TermsContractProps {
   contractType: string;
   setContractType: (value: string) => void;
-  onFilesUpload: (files: File[]) => void;
   documentType?: string;
 }
 
 const TermsContract = ({
   contractType,
   setContractType,
-  onFilesUpload,
   documentType = 'contract_documents',
 }: TermsContractProps) => {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
-  const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files && e.target.files.length > 0) {
-        const newFiles = Array.from(e.target.files);
-        setSelectedFiles((prev) => [...prev, ...newFiles]);
-        onFilesUpload([...selectedFiles, ...newFiles]);
-      }
-    },
-    [selectedFiles, onFilesUpload],
-  );
-
-  const handleRemoveFile = useCallback(
-    (index: number) => {
-      const updatedFiles = [...selectedFiles];
-      updatedFiles.splice(index, 1);
-      setSelectedFiles(updatedFiles);
-      onFilesUpload(updatedFiles);
-    },
-    [selectedFiles, onFilesUpload],
-  );
-
   return (
     <Card>
       <CardContent className="p-4">
@@ -109,64 +84,6 @@ const TermsContract = ({
             </div>
           ))}
         </RadioGroup>
-
-        <div className="mt-6">
-          <div className="flex items-center">
-            <Label className="block text-sm font-medium mb-1">
-              Required Documents
-            </Label>
-            <InfoTooltip
-              id="documents-tooltip"
-              content={TOOLTIP_CONTENT}
-              className="ml-2"
-            />
-          </div>
-
-          <div className="border-2 border-dashed border-gray-300 rounded-md p-4">
-            <input
-              type="file"
-              multiple
-              accept=".pdf"
-              onChange={handleFileChange}
-              className="hidden"
-              id={`${documentType}-file-upload`}
-            />
-            <label
-              htmlFor={`${documentType}-file-upload`}
-              className="cursor-pointer flex flex-col items-center justify-center py-4"
-            >
-              <div className="text-sm text-gray-600 mb-2">
-                Drag & drop files here or click to browse
-              </div>
-              <div className="text-xs text-gray-500">(PDF only accepted)</div>
-            </label>
-          </div>
-
-          {selectedFiles.length > 0 && (
-            <div className="mt-4 space-y-2">
-              <h4 className="text-sm font-medium">Selected Files:</h4>
-              <ul className="space-y-2">
-                {selectedFiles.map((file, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center justify-between bg-gray-50 p-2 rounded"
-                  >
-                    <span className="text-sm truncate max-w-xs">
-                      {file.name}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveFile(index)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <FaTimes size={14} />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
       </CardContent>
     </Card>
   );

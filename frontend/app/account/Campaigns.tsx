@@ -16,13 +16,14 @@ import { CampaignResponseDataType } from '../types/campaigns.types';
 import { generateRandomString } from '../utils/helpers/generate.random-string';
 import ErrorPage from '../components/errorpage/ErrorPage';
 import { FiPlus, FiPlusCircle } from 'react-icons/fi';
+import CampaignTeamDocuments from '@/app/components/campaign/CampaignTeamDocuments';
 
 const Campaigns: React.FC = () => {
   const {
-    userCampaigns, // Changed from campaigns
+    userCampaigns,
     loading,
     error,
-    fetchUserCampaigns, // Changed from fetchCampaigns
+    fetchUserCampaigns,
     deleteCampaign,
     cancelCampaign,
   } = useCampaignContext();
@@ -30,6 +31,7 @@ const Campaigns: React.FC = () => {
   const [selectedCampaign, setSelectedCampaign] =
     useState<CampaignResponseDataType | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isTeamDocumentsModalOpen, setIsTeamDocumentsModalOpen] = useState(false);
   const [alertPopupOpen, setAlertPopupOpen] = useState(false);
   const [campaignToActOn, setCampaignToActOn] =
     useState<CampaignResponseDataType | null>(null);
@@ -40,7 +42,7 @@ const Campaigns: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    fetchUserCampaigns(); // Changed from fetchCampaigns
+    fetchUserCampaigns();
   }, [fetchUserCampaigns]);
 
   if (loading) return <CampaignsLoader />;
@@ -87,7 +89,7 @@ const Campaigns: React.FC = () => {
       await cancelCampaign(String(campaignToActOn.id));
     }
 
-    await fetchUserCampaigns(); // Changed from fetchCampaigns
+    await fetchUserCampaigns();
     setAlertPopupOpen(false);
     setCampaignToActOn(null);
     setActionType(null);
@@ -99,107 +101,113 @@ const Campaigns: React.FC = () => {
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
           Campaigns
         </h2>
-        <button
-          onClick={() => router.push('/account/dashboard/create')}
-          className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg"
-        >
-          <FiPlusCircle className="mr-2" />
-          Add Campaign
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setIsTeamDocumentsModalOpen(true)}
+            className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg"
+          >
+            <FiPlusCircle className="mr-2" />
+            Team & Documents
+          </button>
+          <button
+            onClick={() => router.push('/account/dashboard/create')}
+            className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg"
+          >
+            <FiPlusCircle className="mr-2" />
+            Add Campaign
+          </button>
+        </div>
       </div>
       <p className="text-gray-500 dark:text-neutral-400 mb-4">
         Manage your active and past campaigns.
       </p>
-      {userCampaigns && userCampaigns.length === 0 ? ( // Changed from campaigns
+      {userCampaigns && userCampaigns.length === 0 ? (
         <p className="text-gray-500 dark:text-neutral-400">
           You have no active campaigns.
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {userCampaigns?.map(
-            (
-              campaign, // Changed from campaigns
-            ) => (
-              <div
-                key={campaign.id}
-                className="relative p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 dark:hover:bg-neutral-700 flex flex-col justify-between"
-              >
-                {/* Title and Dots Vertical Icon */}
-                <div className="flex justify-between items-start">
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex-1 pr-4">
-                    {campaign.title}
-                  </h3>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button className="text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-200">
-                        <DotsVerticalIcon className="h-6 w-6" />
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-fit">
-                      <ul className="space-y-2">
-                        <li>
-                          <button
-                            className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
-                            onClick={() =>
-                              handleEditCampaign(String(campaign.id))
-                            }
-                          >
-                            Edit Campaign
-                          </button>
-                        </li>
-                        <li>
-                          <button
-                            className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
-                            onClick={() => handleAction(campaign, 'delete')}
-                          >
-                            Delete Campaign
-                          </button>
-                        </li>
-                        <li>
-                          <button
-                            className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
-                            onClick={() => handleAction(campaign, 'cancel')}
-                            disabled={
+          {userCampaigns?.map((campaign) => (
+            <div
+              key={campaign.id}
+              className="relative p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 dark:hover:bg-neutral-700 flex flex-col justify-between"
+            >
+              {/* Title and Dots Vertical Icon */}
+              <div className="flex justify-between items-start">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex-1 pr-4">
+                  {campaign.title}
+                </h3>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-200">
+                      <DotsVerticalIcon className="h-6 w-6" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-fit">
+                    <ul className="space-y-2">
+                      <li>
+                        <button
+                          className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+                          onClick={() =>
+                            handleEditCampaign(String(campaign.id))
+                          }
+                        >
+                          Edit Campaign
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+                          onClick={() => handleAction(campaign, 'delete')}
+                        >
+                          Delete Campaign
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+                          onClick={() => handleAction(campaign, 'cancel')}
+                          disabled={
+                            campaign.status === 'canceled' ||
+                            campaign.status === 'completed'
+                          }
+                          style={{
+                            cursor:
                               campaign.status === 'canceled' ||
                               campaign.status === 'completed'
-                            }
-                            style={{
-                              cursor:
-                                campaign.status === 'canceled' ||
-                                campaign.status === 'completed'
-                                  ? 'not-allowed'
-                                  : 'pointer',
-                            }}
-                          >
-                            Cancel Campaign
-                          </button>
-                        </li>
-                      </ul>
-                    </PopoverContent>
-                  </Popover>
-                </div>
+                                ? 'not-allowed'
+                                : 'pointer',
+                          }}
+                        >
+                          Cancel Campaign
+                        </button>
+                      </li>
+                    </ul>
+                  </PopoverContent>
+                </Popover>
+              </div>
 
-                {/* Campaign Details */}
-                <div className="text-gray-500 dark:text-neutral-400 flex justify-between items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <div className="font-normal">Goal:</div>
-                    <div className="font-medium">
-                      {campaign?.currency?.toUpperCase()}{' '}
-                      {parseFloat(campaign.goal_amount).toLocaleString()}
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="font-normal">Raised:</div>
-                    <div className="font-medium">
-                      {campaign?.currency?.toUpperCase()}{' '}
-                      {parseFloat(campaign.transferred_amount).toLocaleString()}
-                    </div>
+              {/* Campaign Details */}
+              <div className="text-gray-500 dark:text-neutral-400 flex justify-between items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <div className="font-normal">Goal:</div>
+                  <div className="font-medium">
+                    {campaign?.currency?.toUpperCase()}{' '}
+                    {parseFloat(campaign.goal_amount).toLocaleString()}
                   </div>
                 </div>
-                <div className="mt-4 flex justify-between items-center">
-                  <div className="flex gap-3 items-center">
-                    <Button
-                      className={`px-4 py-2 rounded-full 
+                <div className="flex items-center space-x-2">
+                  <div className="font-normal">Raised:</div>
+                  <div className="font-medium">
+                    {campaign?.currency?.toUpperCase()}{' '}
+                    {parseFloat(campaign.transferred_amount).toLocaleString()}
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 flex justify-between items-center">
+                <div className="flex gap-3 items-center">
+                  <Button
+                    className={`px-4 py-2 rounded-full 
     ${
       campaign.status === 'active'
         ? 'text-green-500'
@@ -209,51 +217,50 @@ const Campaigns: React.FC = () => {
             ? 'text-orange-300'
             : ''
     }`}
-                      variant="ghost"
-                      size="default"
-                    >
-                      {campaign.status === 'active'
-                        ? 'Active'
-                        : campaign.status === 'completed'
-                          ? 'Completed'
-                          : campaign.status === 'canceled'
-                            ? 'Canceled'
-                            : 'Unknown'}
-                    </Button>
-                    <div className="flex items-center gap-1">
-                      <span
-                        className={`w-2 h-2 rounded-full 
+                    variant="ghost"
+                    size="default"
+                  >
+                    {campaign.status === 'active'
+                      ? 'Active'
+                      : campaign.status === 'completed'
+                        ? 'Completed'
+                        : campaign.status === 'canceled'
+                          ? 'Canceled'
+                          : 'Unknown'}
+                  </Button>
+                  <div className="flex items-center gap-1">
+                    <span
+                      className={`w-2 h-2 rounded-full 
         ${campaign.permissions.is_public ? 'bg-green-500' : 'bg-gray-500'}`}
-                      ></span>
-                      <span className="text-gray-500 font-semibold text-xs">
-                        {campaign.permissions.is_public ? 'Public' : 'Private'}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    <Button
-                      className="px-4 py-2 text-gray-500 rounded-full"
-                      variant="secondary"
-                      size="default"
-                      onClick={() =>
-                        handleViewCampaignDetails(String(campaign.id))
-                      }
-                    >
-                      View
-                    </Button>
-                    <Button
-                      className="px-4 py-2 text-gray-700 dark:text-gray-300 rounded-full"
-                      variant="secondary"
-                      size="default"
-                      onClick={() => handleOpenModal(campaign)}
-                    >
-                      Preview
-                    </Button>
+                    ></span>
+                    <span className="text-gray-500 font-semibold text-xs">
+                      {campaign.permissions.is_public ? 'Public' : 'Private'}
+                    </span>
                   </div>
                 </div>
+                <div className="flex gap-2 items-center">
+                  <Button
+                    className="px-4 py-2 text-gray-500 rounded-full"
+                    variant="secondary"
+                    size="default"
+                    onClick={() =>
+                      handleViewCampaignDetails(String(campaign.id))
+                    }
+                  >
+                    View
+                  </Button>
+                  <Button
+                    className="px-4 py-2 text-gray-700 dark:text-gray-300 rounded-full"
+                    variant="secondary"
+                    size="default"
+                    onClick={() => handleOpenModal(campaign)}
+                  >
+                    Preview
+                  </Button>
+                </div>
               </div>
-            ),
-          )}
+            </div>
+          ))}
         </div>
       )}
 
@@ -316,6 +323,45 @@ const Campaigns: React.FC = () => {
           </div>
         </Modal>
       )}
+
+      {/* Team & Documents Modal */}
+      <Modal
+        isOpen={isTeamDocumentsModalOpen}
+        onClose={() => setIsTeamDocumentsModalOpen(false)}
+        size="xlarge"
+        closeOnBackdropClick={true}
+      >
+        <div className="p-4">
+          <h2 className="text-xl font-semibold mb-4">Manage Team & Documents</h2>
+          {userCampaigns && userCampaigns.length > 0 ? (
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">
+                Select Campaign
+              </label>
+              <select
+                className="w-full p-2 border rounded"
+                onChange={(e) => setSelectedCampaign(
+                  userCampaigns.find(c => c.id === Number(e.target.value)) || null
+                )}
+              >
+                <option value="">Select a campaign</option>
+                {userCampaigns.map(campaign => (
+                  <option key={campaign.id} value={campaign.id}>
+                    {campaign.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <p className="text-gray-500">No campaigns available</p>
+          )}
+          
+          {selectedCampaign && (
+            <CampaignTeamDocuments campaignId={String(selectedCampaign.id)} />
+          )}
+        </div>
+      </Modal>
+
       {/* Space Below the Page */}
       <div className="h-20"></div>
     </div>

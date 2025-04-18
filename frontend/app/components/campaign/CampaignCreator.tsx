@@ -86,15 +86,12 @@ interface CampaignData {
   image: string;
   startDate?: string | Date;
   endDate?: string | Date;
-  teamMembers: Omit<CampaignTeamMember, 'id' | 'created_at' | 'updated_at'>[];
   companyInfo: CompanyInfo;
   contractType: string;
   minRaise: string;
   maxRaise: string;
   valuation: string;
   equityOffered: string;
-  pitchDocuments: File[];
-  contractDocuments: File[];
 }
 
 const CampaignCreator = () => {
@@ -110,7 +107,6 @@ const CampaignCreator = () => {
     currencyCode: '',
     location: '',
     image: '',
-    teamMembers: [],
     companyInfo: {
       name: '',
       description: '',
@@ -123,8 +119,6 @@ const CampaignCreator = () => {
     maxRaise: '',
     valuation: '',
     equityOffered: '',
-    pitchDocuments: [],
-    contractDocuments: [],
   };
 
   const [campaignData, setCampaignData] = useLocalStorage<CampaignData>(
@@ -143,7 +137,6 @@ const CampaignCreator = () => {
     image: '',
   });
   const { addCampaign, loading } = useCampaignContext();
-  const { addTeamMember, createDocument } = useEquityCampaignContext();
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<React.ReactNode>('');
   const [alertTitle, setAlertTitle] = useState<string>('');
@@ -179,9 +172,6 @@ const CampaignCreator = () => {
     setCampaignData({ ...campaignData, currencyCode: value });
   const setLocation = (value: string) =>
     setCampaignData({ ...campaignData, location: value });
-  const setTeamMembers = (
-    value: Omit<CampaignTeamMember, 'id' | 'created_at' | 'updated_at'>[],
-  ) => setCampaignData({ ...campaignData, teamMembers: value });
   const setCompanyInfo = (value: CompanyInfo) => {
     setCampaignData({ ...campaignData, companyInfo: value });
   };
@@ -195,14 +185,6 @@ const CampaignCreator = () => {
     setCampaignData({ ...campaignData, valuation: value });
   const setEquityOffered = (value: string) =>
     setCampaignData({ ...campaignData, equityOffered: value });
-
-  const handlePitchFilesUpload = (files: File[]) => {
-    setCampaignData({ ...campaignData, pitchDocuments: files });
-  };
-
-  const handleContractFilesUpload = (files: File[]) => {
-    setCampaignData({ ...campaignData, contractDocuments: files });
-  };
 
   useEffect(() => {
     const hasSavedData = Object.values(campaignData).some(
@@ -289,10 +271,7 @@ const CampaignCreator = () => {
       campaignData.maxRaise ||
       campaignData.valuation ||
       campaignData.equityOffered ||
-      campaignData.contractType ||
-      campaignData.contractDocuments.length > 0 ||
-      campaignData.pitchDocuments.length > 0 ||
-      campaignData.teamMembers.length > 0;
+      campaignData.contractType;
     if (isEquityCampaign) {
       // Company info validation
       if (!campaignData.companyInfo.name.trim()) {
@@ -317,18 +296,6 @@ const CampaignCreator = () => {
       }
 
       // Team members validation
-      if (campaignData.teamMembers.length === 0) {
-        formErrors.teamMembers = 'At least one team member is required';
-      }
-
-      // Documents validation
-      if (campaignData.pitchDocuments.length === 0) {
-        formErrors.pitchDocuments = 'At least one pitch document is required';
-      }
-      if (campaignData.contractDocuments.length === 0) {
-        formErrors.contractDocuments =
-          'At least one contract document is required';
-      }
       if (!campaignData.valuation || parseFloat(campaignData.valuation) <= 0) {
         formErrors.valuation = 'Valuation must be greater than 0';
       }
@@ -373,10 +340,7 @@ const CampaignCreator = () => {
       campaignData.maxRaise ||
       campaignData.valuation ||
       campaignData.equityOffered ||
-      campaignData.contractType ||
-      campaignData.contractDocuments.length > 0 ||
-      campaignData.pitchDocuments.length > 0 ||
-      campaignData.teamMembers.length > 0;
+      campaignData.contractType;
 
     const rootKey = isEquityCampaign ? 'equity_campaign' : 'campaign';
 
@@ -430,44 +394,6 @@ const CampaignCreator = () => {
     try {
       // First create the campaign
       const createdCampaign = await addCampaign(formData);
-
-      // If equity campaign, handle team members and documents separately
-      if (isEquityCampaign && createdCampaign.id) {
-        const campaignId = createdCampaign.id.toString();
-
-        // Add team members
-        if (campaignData.teamMembers.length > 0) {
-          await Promise.all(
-            campaignData.teamMembers.map((member) =>
-              addTeamMember(campaignId, {
-                role: member.role,
-                equity_percentage: member.equity_percentage,
-                title: member.title,
-                name: member.name,
-                email: member.email,
-              }),
-            ),
-          );
-        }
-
-        // Upload pitch documents if they exist
-        if (campaignData.pitchDocuments.length > 0) {
-          await createDocument(
-            campaignId,
-            'pitch',
-            campaignData.pitchDocuments,
-          );
-        }
-
-        // Upload contract documents if they exist
-        if (campaignData.contractDocuments.length > 0) {
-          await createDocument(
-            campaignId,
-            'contract',
-            campaignData.contractDocuments,
-          );
-        }
-      }
 
       setAlertTitle('Campaign created successfully');
       setAlertMessage(
@@ -559,10 +485,6 @@ const CampaignCreator = () => {
                       setValuation={setValuation}
                       equityOffered={campaignData.equityOffered}
                       setEquityOffered={setEquityOffered}
-                      teamMembers={campaignData.teamMembers}
-                      setTeamMembers={setTeamMembers}
-                      onContractFilesUpload={handleContractFilesUpload}
-                      onPitchFilesUpload={handlePitchFilesUpload}
                     />
                   </div>
 
