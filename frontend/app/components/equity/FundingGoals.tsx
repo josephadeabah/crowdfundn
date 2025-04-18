@@ -72,7 +72,13 @@ const FundingGoals = ({
                 placeholder="250,000"
               />
             </div>
+          </div>
 
+          <div>
+            <Label htmlFor="valuation">Valuation</Label>
+            <p className="text-xs text-gray-500 mt-1">
+              The total valuation of your company for this funding round.
+            </p>
             <div className="relative mt-2">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
                 $
@@ -83,9 +89,16 @@ const FundingGoals = ({
                 value={valuation}
                 onChange={(e) => setValuation(e.target.value)}
                 className="w-full pl-7"
-                placeholder="Valuation"
+                placeholder="1,000,000"
               />
             </div>
+          </div>
+
+          <div>
+            <Label htmlFor="equity-offered">Equity Offered</Label>
+            <p className="text-xs text-gray-500 mt-1">
+              The percentage of equity you're offering in this round.
+            </p>
             <div className="relative mt-2">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
                 %
@@ -96,7 +109,9 @@ const FundingGoals = ({
                 value={equityOffered}
                 onChange={(e) => setEquityOffered(e.target.value)}
                 className="w-full pl-7"
-                placeholder="Equity Offered"
+                placeholder="10"
+                min="0"
+                max="100"
               />
             </div>
           </div>
