@@ -21,13 +21,17 @@ import { CampaignTeamMember } from '@/app/types/equityCampaigns.types';
 interface PitchTeamProps {
   teamMembers: CampaignTeamMember[];
   setTeamMembers: (members: CampaignTeamMember[]) => void;
+  onFilesUpload?: (files: File[]) => void;
 }
 
-const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
+const PitchTeam = ({
+  teamMembers,
+  setTeamMembers,
+  onFilesUpload,
+}: PitchTeamProps) => {
   const [newMember, setNewMember] = useState<
     Omit<CampaignTeamMember, 'id' | 'created_at'>
   >({
-    user_id: 0, // Initialize with default value
     name: '',
     email: '',
     role: 'employee',
@@ -35,7 +39,7 @@ const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
     description: '',
     equity_percentage: 0,
     avatar_url: undefined,
-  });
+  } as Omit<CampaignTeamMember, 'id' | 'created_at'>);
 
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [isAdding, setIsAdding] = useState(false);
@@ -50,6 +54,9 @@ const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
         const file = acceptedFiles[0];
         const url = URL.createObjectURL(file);
         setNewMember((prev) => ({ ...prev, avatar_url: url }));
+        if (onFilesUpload) {
+          onFilesUpload(acceptedFiles);
+        }
       }
     },
   });
@@ -62,7 +69,7 @@ const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
         updatedMembers[editingIndex] = {
           ...updatedMembers[editingIndex],
           ...newMember,
-          id: teamMembers[editingIndex].id, // Preserve the ID
+          id: teamMembers[editingIndex].id,
         };
         setTeamMembers(updatedMembers);
         setEditingIndex(null);
@@ -95,7 +102,6 @@ const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
 
   const resetForm = () => {
     setNewMember({
-      user_id: 0,
       name: '',
       email: '',
       role: 'employee',
@@ -103,7 +109,7 @@ const PitchTeam = ({ teamMembers, setTeamMembers }: PitchTeamProps) => {
       description: '',
       equity_percentage: 0,
       avatar_url: undefined,
-    });
+    } as Omit<CampaignTeamMember, 'id' | 'created_at'>);
     setIsAdding(false);
     setEditingIndex(null);
   };

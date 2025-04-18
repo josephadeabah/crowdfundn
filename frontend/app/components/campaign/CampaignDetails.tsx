@@ -47,6 +47,7 @@ interface CampaignDetailsProps {
     description: string;
     headquarters: string;
     website: string;
+    contract_term?: string;
   };
   onCompanyInfoChange: (info: CampaignDetailsProps['companyInfo']) => void;
   // Terms section props
@@ -217,6 +218,7 @@ const CampaignDetails = ({
                       <PitchTeam
                         teamMembers={teamMembers}
                         setTeamMembers={setTeamMembers}
+                        onFilesUpload={onPitchFilesUpload}
                       />
                     </div>
                   </AccordionContentWrapper>

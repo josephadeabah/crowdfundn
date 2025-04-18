@@ -54,12 +54,14 @@ interface TermsContractProps {
   contractType: string;
   setContractType: (value: string) => void;
   onFilesUpload: (files: File[]) => void;
+  documentType?: string;
 }
 
 const TermsContract = ({
   contractType,
   setContractType,
   onFilesUpload,
+  documentType = 'contract_documents',
 }: TermsContractProps) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
@@ -127,10 +129,10 @@ const TermsContract = ({
               accept=".pdf"
               onChange={handleFileChange}
               className="hidden"
-              id="file-upload"
+              id={`${documentType}-file-upload`}
             />
             <label
-              htmlFor="file-upload"
+              htmlFor={`${documentType}-file-upload`}
               className="cursor-pointer flex flex-col items-center justify-center py-4"
             >
               <div className="text-sm text-gray-600 mb-2">

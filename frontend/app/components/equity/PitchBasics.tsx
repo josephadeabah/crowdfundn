@@ -24,18 +24,21 @@ interface CompanyInfo {
   description: string;
   headquarters: string;
   website: string;
+  contract_term?: string;
 }
 
 interface PitchBasicsProps {
   companyInfo: CompanyInfo;
   onCompanyInfoChange: (info: CompanyInfo) => void;
   onFilesUpload: (files: File[]) => void;
+  documentType?: string;
 }
 
 const PitchBasics = ({
   companyInfo,
   onCompanyInfoChange,
   onFilesUpload,
+  documentType = 'pitch_documents',
 }: PitchBasicsProps) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
@@ -128,6 +131,21 @@ const PitchBasics = ({
             />
           </div>
 
+          {companyInfo.contract_term && (
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Contract Term
+              </label>
+              <input
+                type="text"
+                value={companyInfo.contract_term}
+                onChange={(e) => handleChange('contract_term', e.target.value)}
+                className="w-full px-3 py-2 border rounded-md"
+                placeholder="e.g., 5 years"
+              />
+            </div>
+          )}
+
           <div className="mt-6">
             <div className="flex items-center">
               <Label className="block text-sm font-medium mb-1">
@@ -147,10 +165,10 @@ const PitchBasics = ({
                 accept=".pdf"
                 onChange={handleFileChange}
                 className="hidden"
-                id="pitch-file-upload"
+                id={`${documentType}-file-upload`}
               />
               <label
-                htmlFor="pitch-file-upload"
+                htmlFor={`${documentType}-file-upload`}
                 className="cursor-pointer flex flex-col items-center justify-center py-4"
               >
                 <div className="text-sm text-gray-600 mb-2">

@@ -22,7 +22,7 @@ export interface InvestorDocument {
 
 export interface CampaignTeamMember {
   id: number;
-  user_id: number;
+  user_id?: number;
   name: string;
   email: string;
   role: 'founder' | 'advisor' | 'employee';
