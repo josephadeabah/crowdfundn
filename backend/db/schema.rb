@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_04_16_231326) do
+ActiveRecord::Schema[7.1].define(version: 2025_04_18_095203) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -226,6 +226,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_16_231326) do
     t.string "document_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "campaign_id", null: false
+    t.index ["campaign_id"], name: "index_investor_documents_on_campaign_id"
+    t.index ["user_id", "campaign_id", "document_type"], name: "index_investor_docs_on_user_campaign_and_type"
     t.index ["user_id"], name: "index_investor_documents_on_user_id"
   end
 
@@ -451,6 +454,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_16_231326) do
   add_foreign_key "favorites", "users"
   add_foreign_key "fundraiser_leaderboard_entries", "users"
   add_foreign_key "fundraisers", "users"
+  add_foreign_key "investor_documents", "campaigns"
   add_foreign_key "investor_documents", "users"
   add_foreign_key "leaderboard_entries", "users"
   add_foreign_key "pledges", "campaigns"

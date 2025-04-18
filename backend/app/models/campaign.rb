@@ -12,6 +12,8 @@ class Campaign < ApplicationRecord
   has_many :favorited_by_users, through: :favorites, source: :user
   has_many :campaign_shares, dependent: :destroy
   has_many :pledges, dependent: :destroy
+  has_many :investor_documents, dependent: :destroy
+  has_many :campaign_team_members, foreign_key: 'campaign_id', dependent: :destroy
 
   has_rich_text :description
 
@@ -75,7 +77,7 @@ class Campaign < ApplicationRecord
   def media_filename
     media.attached? ? media.filename.to_s : nil
   end
-
+  
   # app/models/campaign.rb
     def as_json(options = {})
     json = super({
@@ -111,6 +113,7 @@ class Campaign < ApplicationRecord
       rewards: rewards,
       updates: updates,
       comments: comments,
+      required_documents: required_documents.map(&:as_json),
       fundraiser: {
         id: fundraiser.id,
         name: fundraiser.full_name,
@@ -187,6 +190,10 @@ class Campaign < ApplicationRecord
     end
   
     donations.sort.to_h
+  end
+
+  def required_documents
+    investor_documents.required
   end
 
   private

@@ -91,6 +91,9 @@ Rails.application.routes.draw do
           resources :comments, only: %i[create index destroy]
           resources :rewards, only: %i[index show create update destroy]
           resources :donations, only: [:create]
+          namespace :documents do
+            resources :investor_documents, only: [:index, :show, :create, :update, :destroy]
+          end
         end
       end
 
