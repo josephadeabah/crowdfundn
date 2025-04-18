@@ -17,6 +17,7 @@ import {
 } from '@/app/components/ui/avatar';
 import { useDropzone } from 'react-dropzone';
 import { CampaignTeamMember } from '@/app/types/equityCampaigns.types';
+import { Label } from '../ui/label';
 
 interface PitchTeamProps {
   teamMembers: CampaignTeamMember[];
@@ -39,7 +40,7 @@ const PitchTeam = ({
     description: '',
     equity_percentage: 0,
     avatar_url: undefined,
-  } as Omit<CampaignTeamMember, 'id' | 'created_at'>);
+  });
 
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [isAdding, setIsAdding] = useState(false);
@@ -109,7 +110,7 @@ const PitchTeam = ({
       description: '',
       equity_percentage: 0,
       avatar_url: undefined,
-    } as Omit<CampaignTeamMember, 'id' | 'created_at'>);
+    });
     setIsAdding(false);
     setEditingIndex(null);
   };
@@ -160,10 +161,9 @@ const PitchTeam = ({
 
               {/* Basic Info */}
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Full Name*
-                </label>
+                <Label htmlFor="member-name">Full Name*</Label>
                 <Input
+                  id="member-name"
                   value={newMember.name}
                   onChange={(e) =>
                     setNewMember((prev) => ({ ...prev, name: e.target.value }))
@@ -172,8 +172,9 @@ const PitchTeam = ({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Email*</label>
+                <Label htmlFor="member-email">Email*</Label>
                 <Input
+                  id="member-email"
                   type="email"
                   value={newMember.email}
                   onChange={(e) =>
@@ -183,7 +184,7 @@ const PitchTeam = ({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Role*</label>
+                <Label htmlFor="member-role">Role*</Label>
                 <Select
                   value={newMember.role}
                   onValueChange={(value) =>
@@ -204,8 +205,9 @@ const PitchTeam = ({
                 </Select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Title*</label>
+                <Label htmlFor="member-title">Title*</Label>
                 <Input
+                  id="member-title"
                   value={newMember.title}
                   onChange={(e) =>
                     setNewMember((prev) => ({ ...prev, title: e.target.value }))
@@ -214,10 +216,9 @@ const PitchTeam = ({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Equity %
-                </label>
+                <Label htmlFor="member-equity">Equity %</Label>
                 <Input
+                  id="member-equity"
                   type="number"
                   min="0"
                   max="100"
@@ -232,8 +233,9 @@ const PitchTeam = ({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Bio</label>
+                <Label htmlFor="member-bio">Bio</Label>
                 <Input
+                  id="member-bio"
                   value={newMember.description || ''}
                   onChange={(e) =>
                     setNewMember((prev) => ({

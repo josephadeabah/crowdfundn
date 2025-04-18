@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/app/components/ui/card';
 import { FaTimes } from 'react-icons/fa';
 import InfoTooltip from '@/app/components/tooltip/tooltip';
 import { Label } from '../ui/label';
+import { Input } from '../ui/input';
 
 const PITCH_DOCS_TOOLTIP = `
 📄 Pitch Documents for Fundraising:
@@ -28,16 +29,22 @@ interface CompanyInfo {
 }
 
 interface PitchBasicsProps {
-  companyInfo: CompanyInfo;
-  onCompanyInfoChange: (info: CompanyInfo) => void;
-  onFilesUpload: (files: File[]) => void;
+  companyInfo?: CompanyInfo;
+  onCompanyInfoChange?: (info: CompanyInfo) => void;
+  onFilesUpload?: (files: File[]) => void;
   documentType?: string;
 }
 
 const PitchBasics = ({
-  companyInfo,
-  onCompanyInfoChange,
-  onFilesUpload,
+  companyInfo = {
+    name: '',
+    description: '',
+    headquarters: '',
+    website: '',
+    contract_term: '',
+  },
+  onCompanyInfoChange = () => {},
+  onFilesUpload = () => {},
   documentType = 'pitch_documents',
 }: PitchBasicsProps) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -76,28 +83,26 @@ const PitchBasics = ({
         <h3 className="font-semibold mb-3">Company Information</h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Company Name
-            </label>
-            <input
+            <Label htmlFor="company-name">Company Name</Label>
+            <Input
+              id="company-name"
               type="text"
-              value={companyInfo.name}
+              value={companyInfo?.name || ''}
               onChange={(e) => handleChange('name', e.target.value)}
-              className="w-full px-3 py-2 border rounded-md"
               placeholder="Enter company name"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <Label htmlFor="company-description">
               Company Tagline (max 100 chars)
-            </label>
-            <input
+            </Label>
+            <Input
+              id="company-description"
               type="text"
               value={companyInfo.description}
               onChange={(e) => handleChange('description', e.target.value)}
               maxLength={100}
-              className="w-full px-3 py-2 border rounded-md"
               placeholder="Brief description of your company"
             />
             <p className="text-xs text-gray-500 mt-1">
@@ -106,41 +111,35 @@ const PitchBasics = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Headquarters
-            </label>
-            <input
+            <Label htmlFor="headquarters">Headquarters</Label>
+            <Input
+              id="headquarters"
               type="text"
               value={companyInfo.headquarters}
               onChange={(e) => handleChange('headquarters', e.target.value)}
-              className="w-full px-3 py-2 border rounded-md"
               placeholder="Company headquarters location"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Website (optional)
-            </label>
-            <input
+            <Label htmlFor="website">Website (optional)</Label>
+            <Input
+              id="website"
               type="url"
               value={companyInfo.website}
               onChange={(e) => handleChange('website', e.target.value)}
-              className="w-full px-3 py-2 border rounded-md"
               placeholder="https://example.com"
             />
           </div>
 
           {companyInfo.contract_term && (
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Contract Term
-              </label>
-              <input
+              <Label htmlFor="contract-term">Contract Term</Label>
+              <Input
+                id="contract-term"
                 type="text"
                 value={companyInfo.contract_term}
                 onChange={(e) => handleChange('contract_term', e.target.value)}
-                className="w-full px-3 py-2 border rounded-md"
                 placeholder="e.g., 5 years"
               />
             </div>
@@ -148,9 +147,7 @@ const PitchBasics = ({
 
           <div className="mt-6">
             <div className="flex items-center">
-              <Label className="block text-sm font-medium mb-1">
-                Company Documents
-              </Label>
+              <Label>Company Documents</Label>
               <InfoTooltip
                 id="pitch-docs-tooltip"
                 content={PITCH_DOCS_TOOLTIP}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Input } from '@/app/components/ui/input';
+import { Label } from '../ui/label';
 
 interface FundingGoalsProps {
   minRaise: string;
@@ -26,17 +27,16 @@ const FundingGoals = ({
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Minimum Raise
-              <span className="text-xs text-gray-500 block mt-1">
-                The minimum you'd be willing to accept in this raise.
-              </span>
-            </label>
-            <div className="relative">
+            <Label htmlFor="min-raise">Minimum Raise</Label>
+            <p className="text-xs text-gray-500 mt-1">
+              The minimum you'd be willing to accept in this raise.
+            </p>
+            <div className="relative mt-2">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
                 $
               </span>
               <Input
+                id="min-raise"
                 type="number"
                 value={minRaise}
                 onChange={(e) => setMinRaise(e.target.value)}
@@ -47,17 +47,16 @@ const FundingGoals = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Maximum Raise
-              <span className="text-xs text-gray-500 block mt-1">
-                The maximum you'd be willing to accept in this raise.
-              </span>
-            </label>
-            <div className="relative">
+            <Label htmlFor="max-raise">Maximum Raise</Label>
+            <p className="text-xs text-gray-500 mt-1">
+              The maximum you'd be willing to accept in this raise.
+            </p>
+            <div className="relative mt-2">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
                 $
               </span>
               <Input
+                id="max-raise"
                 type="number"
                 value={maxRaise}
                 onChange={(e) => setMaxRaise(e.target.value)}

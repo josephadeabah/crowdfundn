@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   Tabs,
@@ -16,6 +16,7 @@ import CampaignTips from '@/app/components/campaign/CampaignTips';
 import CampaignEditor from '@/app/components/campaign/CampaignEditor';
 import CampaignSidebar from '@/app/components/campaign/CampaignSidebar';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
+import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
 import { useUserContext } from '@/app/context/users/UserContext';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { FaCheck, FaExclamationTriangle } from 'react-icons/fa';
@@ -101,6 +102,7 @@ const CampaignCreator = () => {
       description: '',
       headquarters: '',
       website: '',
+      contract_term: '',
     },
     contractType: '',
     minRaise: '',
@@ -125,6 +127,7 @@ const CampaignCreator = () => {
     image: '',
   });
   const { addCampaign, loading } = useCampaignContext();
+  const { addTeamMember, createDocument } = useEquityCampaignContext();
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<React.ReactNode>('');
   const [alertTitle, setAlertTitle] = useState<string>('');
@@ -162,8 +165,11 @@ const CampaignCreator = () => {
     setCampaignData({ ...campaignData, location: value });
   const setTeamMembers = (value: any[]) =>
     setCampaignData({ ...campaignData, teamMembers: value });
-  const setCompanyInfo = (value: CampaignData['companyInfo']) =>
-    setCampaignData({ ...campaignData, companyInfo: value });
+  const setCompanyInfo = (value: CampaignData['companyInfo'] | undefined) => {
+    if (value) {
+      setCampaignData({ ...campaignData, companyInfo: value });
+    }
+  };
   const setContractType = (value: string) =>
     setCampaignData({ ...campaignData, contractType: value });
   const setMinRaise = (value: string) =>
@@ -271,20 +277,16 @@ const CampaignCreator = () => {
       toast.error('Please fix the errors in the form');
       return;
     }
-
+  
     const formData = new FormData();
-
-    // Determine if this is an equity campaign based on the presence of equity fields
-    const isEquityCampaign =
-      campaignData.companyInfo.name ||
-      campaignData.minRaise ||
-      campaignData.maxRaise ||
-      campaignData.teamMembers.length > 0;
-
-    // Use the appropriate root key based on campaign type
+    const isEquityCampaign = campaignData.companyInfo.name || 
+                           campaignData.minRaise || 
+                           campaignData.maxRaise ||
+                           campaignData.teamMembers.length > 0;
+  
     const rootKey = isEquityCampaign ? 'equity_campaign' : 'campaign';
-
-    // Common fields for both campaign types
+  
+    // Common fields
     formData.append(`${rootKey}[title]`, campaignData.title);
     formData.append(`${rootKey}[description]`, campaignData.content);
     formData.append(`${rootKey}[goal_amount]`, campaignData.goalAmount);
@@ -293,103 +295,78 @@ const CampaignCreator = () => {
     formData.append(`${rootKey}[category]`, campaignData.category);
     formData.append(`${rootKey}[location]`, campaignData.location);
     formData.append(`${rootKey}[currency]`, campaignData.currencyCode);
-
-    // Add current amount for regular campaigns
+    
     if (!isEquityCampaign) {
-      formData.append(
-        `${rootKey}[current_amount]`,
-        parseFloat(currentAmount).toString(),
-      );
+      formData.append(`${rootKey}[current_amount]`, parseFloat(currentAmount).toString());
     }
-
-    // Add media if present
+  
     if (selectedImage) {
       formData.append(`${rootKey}[media]`, selectedImage);
     }
-
-    // Add equity-specific fields if this is an equity campaign
+  
+    // Equity-specific fields (excluding team members and documents)
     if (isEquityCampaign) {
-      // Company info
       if (campaignData.companyInfo.name) {
-        formData.append(
-          `${rootKey}[company_name]`,
-          campaignData.companyInfo.name,
-        );
-        formData.append(
-          `${rootKey}[company_description]`,
-          campaignData.companyInfo.description,
-        );
-        formData.append(
-          `${rootKey}[company_headquarters]`,
-          campaignData.companyInfo.headquarters,
-        );
-        formData.append(
-          `${rootKey}[company_website]`,
-          campaignData.companyInfo.website,
-        );
+        formData.append(`${rootKey}[company_name]`, campaignData.companyInfo.name);
+        formData.append(`${rootKey}[company_description]`, campaignData.companyInfo.description);
+        formData.append(`${rootKey}[company_headquarters]`, campaignData.companyInfo.headquarters);
+        formData.append(`${rootKey}[company_website]`, campaignData.companyInfo.website);
         if (campaignData.companyInfo.contract_term) {
-          formData.append(
-            `${rootKey}[contract_term]`,
-            campaignData.companyInfo.contract_term,
+          formData.append(`${rootKey}[contract_term]`, campaignData.companyInfo.contract_term);
+        }
+      }
+      
+      if (campaignData.minRaise) {
+        formData.append(`${rootKey}[minimum_investment]`, campaignData.minRaise);
+      }
+      
+      if (campaignData.maxRaise) {
+        formData.append(`${rootKey}[maximum_investment]`, campaignData.maxRaise);
+      }
+    }
+  
+    try {
+      // First create the campaign
+      const createdCampaign = await addCampaign(formData);
+      
+      // If equity campaign, handle team members and documents separately
+      if (isEquityCampaign && createdCampaign.id) {
+        const campaignId = createdCampaign.id;
+  
+        // Add team members
+        if (campaignData.teamMembers.length > 0) {
+          await Promise.all(
+            campaignData.teamMembers.map(member => 
+              addTeamMember(campaignId.toString(), {
+                role: member.role,
+                equity_percentage: member.equityPercentage,
+                title: member.title || '',
+                name: member.name || '',
+                email: member.email || '',
+              })
+            )
+          );
+        }
+  
+        // Upload pitch documents
+        if (campaignData.pitchDocuments.length > 0) {
+          await createDocument(
+            campaignId.toString(),
+            'pitch',
+            campaignData.pitchDocuments
+          );
+        }
+  
+        // Upload contract documents
+        if (campaignData.contractDocuments.length > 0) {
+          await createDocument(
+            campaignId.toString(),
+            'contract',
+            campaignData.contractDocuments
           );
         }
       }
-
-      // Investment amounts
-      if (campaignData.minRaise) {
-        formData.append(
-          `${rootKey}[minimum_investment]`,
-          campaignData.minRaise,
-        );
-      }
-
-      if (campaignData.maxRaise) {
-        formData.append(
-          `${rootKey}[maximum_investment]`,
-          campaignData.maxRaise,
-        );
-      }
-
-      // Team members
-      if (campaignData.teamMembers.length > 0) {
-        formData.append(
-          `${rootKey}[team_members_attributes]`,
-          JSON.stringify(
-            campaignData.teamMembers.map((member) => ({
-              user_id: member.userId,
-              role: member.role,
-              equity_percentage: member.equityPercentage,
-            })),
-          ),
-        );
-      }
-
-      // Documents
-      campaignData.pitchDocuments.forEach((file, index) => {
-        formData.append(
-          `${rootKey}[pitch_documents_attributes][${index}][document]`,
-          file,
-        );
-        formData.append(
-          `${rootKey}[pitch_documents_attributes][${index}][document_type]`,
-          'pitch',
-        );
-      });
-
-      campaignData.contractDocuments.forEach((file, index) => {
-        formData.append(
-          `${rootKey}[contract_documents_attributes][${index}][document]`,
-          file,
-        );
-        formData.append(
-          `${rootKey}[contract_documents_attributes][${index}][document_type]`,
-          'contract',
-        );
-      });
-    }
-
-    try {
-      const createdCampaign = await addCampaign(formData);
+  
       setAlertTitle('Campaign created successfully');
       setAlertMessage(
         <a href="/account#Campaigns" className="text-gray-700 underline">
@@ -447,7 +424,7 @@ const CampaignCreator = () => {
               <TabsContent value="details" className="animate-fade-in">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                   <div className="lg:col-span-8 space-y-6 animate-slide-up">
-                    <CampaignDetails
+                  <CampaignDetails
                       title={campaignData.title}
                       setTitle={setTitle}
                       category={campaignData.category}
@@ -465,7 +442,7 @@ const CampaignCreator = () => {
                       onContinue={() => setActiveTab('content')}
                       currencies={CURRENCIES}
                       categories={categories}
-                      companyInfo={campaignData.companyInfo}
+                      companyInfo={campaignData.companyInfo || initialCampaignData.companyInfo}
                       onCompanyInfoChange={setCompanyInfo}
                       contractType={campaignData.contractType}
                       setContractType={setContractType}

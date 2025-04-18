@@ -40,9 +40,9 @@ interface CampaignDetailsProps {
   currencies: Array<{ code: string; symbol: string }>;
   categories: Category[];
   // Pitch section props
-  teamMembers: Array<any>;
-  setTeamMembers: (value: Array<any>) => void;
-  companyInfo: {
+  teamMembers?: Array<any>;
+  setTeamMembers?: (value: Array<any>) => void;
+  companyInfo?: {
     name: string;
     description: string;
     headquarters: string;
@@ -51,15 +51,15 @@ interface CampaignDetailsProps {
   };
   onCompanyInfoChange: (info: CampaignDetailsProps['companyInfo']) => void;
   // Terms section props
-  contractType: string;
-  setContractType: (value: string) => void;
-  onContractFilesUpload: (files: File[]) => void;
-  onPitchFilesUpload: (files: File[]) => void;
+  contractType?: string;
+  setContractType?: (value: string) => void;
+  onContractFilesUpload?: (files: File[]) => void;
+  onPitchFilesUpload?: (files: File[]) => void;
   // Raise section props
-  minRaise: string;
-  setMinRaise: (value: string) => void;
-  maxRaise: string;
-  setMaxRaise: (value: string) => void;
+  minRaise?: string;
+  setMinRaise?: (value: string) => void;
+  maxRaise?: string;
+  setMaxRaise?: (value: string) => void;
   showEquitySections?: boolean;
 }
 
@@ -84,25 +84,30 @@ const CampaignDetails = ({
   // Pitch section
   teamMembers = [],
   setTeamMembers = () => {},
-  companyInfo,
-  onCompanyInfoChange,
+  companyInfo = {
+    name: '',
+    description: '',
+    headquarters: '',
+    website: '',
+    contract_term: '',
+  },
+  onCompanyInfoChange = () => {},
   // Terms section
   contractType = '',
   setContractType = () => {},
-  onContractFilesUpload,
-  onPitchFilesUpload,
+  onContractFilesUpload = () => {},
+  onPitchFilesUpload = () => {},
   // Funding Goals
-  minRaise,
-  setMinRaise,
-  maxRaise,
-  setMaxRaise,
+  minRaise = '',
+  setMinRaise = () => {},
+  maxRaise = '',
+  setMaxRaise = () => {},
   showEquitySections = false,
 }: CampaignDetailsProps) => {
   const getCurrencySymbol = (code: string) => {
     const currency = currencies.find((c) => c.code === code);
     return currency ? currency.symbol : '₵';
   };
-
   return (
     <Card className="glass-card">
       <CardContent className="p-5">
