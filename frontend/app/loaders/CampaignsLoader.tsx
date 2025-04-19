@@ -8,10 +8,16 @@ const CampaignsLoader = () => {
     <div className="max-w-7xl mx-auto px-2 py-8">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800">Campaigns</h1>
-        <button className="flex items-center px-4 py-2 bg-gray-300 text-white rounded-lg">
-          <FiPlusCircle className="mr-2" />
-          Add Campaign
-        </button>
+        <div className="flex gap-2">
+          <button className="flex items-center px-4 py-2 bg-gray-300 text-white rounded-lg">
+            <FiPlusCircle className="mr-2" />
+            Manage Team & Documents
+          </button>
+          <button className="flex items-center px-4 py-2 bg-gray-300 text-white rounded-lg">
+            <FiPlusCircle className="mr-2" />
+            Add Campaign
+          </button>
+        </div>
       </div>
       <p className="text-gray-500 dark:text-neutral-400 mb-4">
         Manage your active and past campaigns.

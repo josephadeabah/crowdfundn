@@ -54,12 +54,6 @@ const Campaigns: React.FC = () => {
     fetchUserCampaigns();
   }, [fetchUserCampaigns]);
 
-  if (loading) return <CampaignsLoader />;
-
-  if (error) {
-    return <ErrorPage />;
-  }
-
   const handleEditCampaign = (campaignId: string) => {
     router.push(
       `/account/dashboard/edit/${campaignId}?${generateRandomString()}`,
@@ -123,6 +117,12 @@ const Campaigns: React.FC = () => {
     }
   };
 
+  if (loading) return <CampaignsLoader />;
+
+  if (error) {
+    return <ErrorPage />;
+  }
+
   return (
     <div className="px-2 py-4">
       <div className="flex justify-between items-center">
@@ -136,7 +136,7 @@ const Campaigns: React.FC = () => {
             variant="outline"
           >
             <FiPlusCircle className="mr-2" />
-            Team & Documents
+            Manage Team & Documents
           </Button>
           <Button
             onClick={() => router.push('/account/dashboard/create')}
