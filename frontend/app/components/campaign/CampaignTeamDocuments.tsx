@@ -57,6 +57,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
     role: 'founder',
     title: '',
     equity_percentage: 0,
+    description: '',
   });
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [pitchFiles, setPitchFiles] = useState<File[]>([]);
@@ -120,7 +121,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
         setIsAlertOpen(true);
         return;
       }
-
+  
       const formData = new FormData();
       formData.append('campaign_team_member[name]', teamMember.name);
       formData.append('campaign_team_member[email]', teamMember.email);
@@ -130,13 +131,14 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
         'campaign_team_member[equity_percentage]',
         teamMember.equity_percentage.toString(),
       );
+      formData.append('campaign_team_member[description]', teamMember.description || ''); // Add this line
       if (teamMember.avatar) {
         formData.append('campaign_team_member[avatar]', teamMember.avatar);
       }
-
+  
       await addTeamMember(campaignId, formData);
       await fetchTeamMembers(campaignId);
-
+  
       // Reset form
       setActiveModal(null);
       setTeamMember({
@@ -145,6 +147,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
         role: 'founder',
         title: '',
         equity_percentage: 0,
+        description: '', // Add this line
       });
       setAvatarPreview(null);
     } catch (error) {
@@ -539,6 +542,20 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                     max="100"
                   />
                 </div>
+                {/* Add this section below the equity percentage field */}
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={teamMember.description}
+                  onChange={(e) =>
+                    setTeamMember({ ...teamMember, description: e.target.value })
+                  }
+                  className="w-full p-2 border rounded"
+                  rows={3}
+                />
+              </div>
               </div>
 
               <div className="flex justify-end space-x-3 mt-6">
