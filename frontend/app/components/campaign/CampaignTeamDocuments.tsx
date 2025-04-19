@@ -364,6 +364,17 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                         {doc.files.length} file
                         {doc.files.length !== 1 ? 's' : ''}
                       </p>
+                      <p>
+                        {doc.files.map((file) => (
+                          <div
+                            key={file.uploaded_at}
+                            className="text-sm text-gray-400 flex gap-2"
+                          >
+                           <span>{file.human_size}</span> 
+                           <span>{file.filename}</span>
+                          </div>
+                        ))}
+                      </p>
                     </div>
                     <FiTrash2
                       className="cursor-pointer text-red-600"
