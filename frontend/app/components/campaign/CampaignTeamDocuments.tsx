@@ -175,6 +175,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
       if (pitchFiles.length > 0) {
         await createDocument(campaignId, 'pitch', pitchFiles);
         await fetchDocuments(campaignId);
+        await fetchUserCampaigns();
         setActiveModal(null);
         setPitchFiles([]);
       }
@@ -195,6 +196,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
       if (contractFiles.length > 0) {
         await createDocument(campaignId, 'contract', contractFiles);
         await fetchDocuments(campaignId);
+        await fetchUserCampaigns();
         setActiveModal(null);
         setContractFiles([]);
       }
