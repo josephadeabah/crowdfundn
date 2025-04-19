@@ -370,9 +370,9 @@ export const EquityCampaignProvider = ({
             headers: {
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ campaign_team_member: formData }),
+            body: formData,
           },
-        );
+        );        
 
         if (!response.ok) {
           handleApiError("Couldn't add team member. Please try again.");
