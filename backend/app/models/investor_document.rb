@@ -13,7 +13,8 @@ class InvestorDocument < ApplicationRecord
     tin_certificate
     company_constitution
     director_shareholder_info
-    pitch_deck
+    pitch
+    contract
     bank_account_details
     proof_of_address
     founders_id
@@ -36,12 +37,13 @@ class InvestorDocument < ApplicationRecord
       'tin_certificate' => 'TIN Certificate',
       'company_constitution' => 'Company Constitution',
       'director_shareholder_info' => 'Director & Shareholder Info',
-      'pitch_deck' => 'Pitch Deck',
+      'pitch' => 'Pitch Deck',
+      'contract' => 'Contract',
       'bank_account_details' => 'Bank Account Details',
       'proof_of_address' => 'Proof of Address',
       'founders_id' => "Founder's ID",
       'licenses_permits' => 'Licenses & Permits'
-    }[document_type]
+    }[document_type] || document_type.titleize
   end
 
   scope :required, -> { where(document_type: ['accreditation_form', 'id_proof', 'tax_document', 'agreement']) }
