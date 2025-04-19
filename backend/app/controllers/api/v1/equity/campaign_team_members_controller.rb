@@ -10,7 +10,20 @@ module Api
 
         def index
           @team_members = @campaign.campaign_team_members.includes(:user)
-          render json: team_members_json(@team_members), status: :ok
+          render json: {
+            team_members: @team_members.map { |tm| 
+              {
+                id: tm.id,
+                name: tm.name,
+                email: tm.email,
+                role: tm.role,
+                title: tm.title,
+                equity_percentage: tm.equity_percentage,
+                description: tm.description,
+                avatar_url: tm.avatar.attached? ? url_for(tm.avatar_url) : nil
+              }
+            }
+          }, status: :ok
         end
 
         def create
