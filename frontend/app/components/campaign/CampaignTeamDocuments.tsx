@@ -122,16 +122,16 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
       }
 
       const formData = new FormData();
-      formData.append('name', teamMember.name);
-      formData.append('email', teamMember.email);
-      formData.append('role', teamMember.role);
-      formData.append('title', teamMember.title);
+      formData.append('campaign_team_member[name]', teamMember.name);
+      formData.append('campaign_team_member[email]', teamMember.email);
+      formData.append('campaign_team_member[role]', teamMember.role);
+      formData.append('campaign_team_member[title]', teamMember.title);
       formData.append(
-        'equity_percentage',
+        'campaign_team_member[equity_percentage]',
         teamMember.equity_percentage.toString(),
       );
       if (teamMember.avatar) {
-        formData.append('avatar', teamMember.avatar);
+        formData.append('campaign_team_member[avatar]', teamMember.avatar);
       }
 
       await addTeamMember(campaignId, formData);
