@@ -372,7 +372,7 @@ export const EquityCampaignProvider = ({
             },
             body: formData,
           },
-        );        
+        );
 
         if (!response.ok) {
           handleApiError("Couldn't add team member. Please try again.");

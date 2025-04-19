@@ -418,10 +418,11 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
       </div>
 
       {/* Team Member Modal */}
-      <Modal isOpen={activeModal === 'team'} onClose={closeModal} size="medium">
+      <Modal isOpen={activeModal === 'team'} onClose={closeModal} size="xlarge">
         <h3 className="text-xl font-bold mb-4">Add Team Member</h3>
         <div className="space-y-4">
-          <div>
+          {/* Avatar Upload - Full width */}
+          <div className="col-span-2">
             <label className="block text-sm font-medium mb-1">Avatar</label>
             <input
               type="file"
@@ -455,81 +456,93 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Name*</label>
-            <input
-              type="text"
-              value={teamMember.name}
-              onChange={(e) =>
-                setTeamMember({ ...teamMember, name: e.target.value })
-              }
-              className="w-full p-2 border rounded"
-              required
-            />
+          {/* Grid for form fields */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Name - Left column */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Name*</label>
+              <input
+                type="text"
+                value={teamMember.name}
+                onChange={(e) =>
+                  setTeamMember({ ...teamMember, name: e.target.value })
+                }
+                className="w-full p-2 border rounded"
+                required
+              />
+            </div>
+
+            {/* Email - Right column */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Email</label>
+              <input
+                type="email"
+                value={teamMember.email}
+                onChange={(e) =>
+                  setTeamMember({ ...teamMember, email: e.target.value })
+                }
+                className="w-full p-2 border rounded"
+              />
+            </div>
+
+            {/* Role - Left column */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Role</label>
+              <select
+                value={teamMember.role}
+                onChange={(e) =>
+                  setTeamMember({
+                    ...teamMember,
+                    role: e.target.value as any,
+                  })
+                }
+                className="w-full p-2 border rounded"
+              >
+                <option value="founder">Founder</option>
+                <option value="advisor">Advisor</option>
+                <option value="employee">Employee</option>
+              </select>
+            </div>
+
+            {/* Title - Right column */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Title</label>
+              <input
+                type="text"
+                value={teamMember.title}
+                onChange={(e) =>
+                  setTeamMember({ ...teamMember, title: e.target.value })
+                }
+                className="w-full p-2 border rounded"
+              />
+            </div>
+
+            {/* Equity Percentage - Left column */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Equity Percentage
+              </label>
+              <input
+                type="number"
+                value={teamMember.equity_percentage}
+                onChange={(e) =>
+                  setTeamMember({
+                    ...teamMember,
+                    equity_percentage: Number(e.target.value),
+                  })
+                }
+                className="w-full p-2 border rounded"
+                min="0"
+                max="100"
+              />
+            </div>
+
+            {/* Empty cell to maintain grid alignment */}
+            <div></div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <input
-              type="email"
-              value={teamMember.email}
-              onChange={(e) =>
-                setTeamMember({ ...teamMember, email: e.target.value })
-              }
-              className="w-full p-2 border rounded"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Role</label>
-            <select
-              value={teamMember.role}
-              onChange={(e) =>
-                setTeamMember({
-                  ...teamMember,
-                  role: e.target.value as any,
-                })
-              }
-              className="w-full p-2 border rounded"
-            >
-              <option value="founder">Founder</option>
-              <option value="advisor">Advisor</option>
-              <option value="employee">Employee</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Title</label>
-            <input
-              type="text"
-              value={teamMember.title}
-              onChange={(e) =>
-                setTeamMember({ ...teamMember, title: e.target.value })
-              }
-              className="w-full p-2 border rounded"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Equity Percentage
-            </label>
-            <input
-              type="number"
-              value={teamMember.equity_percentage}
-              onChange={(e) =>
-                setTeamMember({
-                  ...teamMember,
-                  equity_percentage: Number(e.target.value),
-                })
-              }
-              className="w-full p-2 border rounded"
-              min="0"
-              max="100"
-            />
-          </div>
-
-          <div>
+          {/* Description - Full width below the grid */}
+          <div className="col-span-2">
             <label className="block text-sm font-medium mb-1">
               Description
             </label>
@@ -547,6 +560,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
           </div>
         </div>
 
+        {/* Action buttons - Full width */}
         <div className="flex justify-end space-x-3 mt-6">
           <button onClick={closeModal} className="px-4 py-2 border rounded-lg">
             Cancel
