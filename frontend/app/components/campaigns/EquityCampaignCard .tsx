@@ -10,6 +10,7 @@ import { generateRandomString } from '@/app/utils/helpers/generate.random-string
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
+import InfoTooltip from '../tooltip/tooltip';
 
 interface EquityCardProps {
   campaign: CampaignResponseDataType;
@@ -140,19 +141,31 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-muted-foreground">Amount Raised</span>
             <span className="text-sm font-semibold">
-              ${campaign.transferred_amount?.toLocaleString()}
+              ${campaign.transferred_amount?.toLocaleString()} from {campaign.total_investors} investors
             </span>
           </div>
 
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-muted-foreground">Investors</span>
-            <span className="text-sm font-semibold">
-              {campaign.total_investors}
+            <div className="flex items-center">
+              <span className="text-sm text-muted-foreground">Minimum Investment</span>
+              <InfoTooltip 
+                id={`tooltip-${campaign.id}`}
+                content="This offering is hosted by BantuHive LLC"
+              />
+            </div>
+            <span className="text-sm font-semibold bg-red-100 text-red-800 px-2 py-1 rounded">
+              ${campaign.minimum_investment?.toLocaleString()}
             </span>
           </div>
 
           <div className="flex justify-between items-center">
+            <span className="text-sm text-muted-foreground">Investors</span>
             <span className="text-sm text-muted-foreground">Days Left</span>
+          </div>
+          <div className="flex justify-between items-center mt-1">
+            <span className="text-sm font-semibold">
+              {campaign.total_investors}
+            </span>
             <span className="text-sm font-semibold">
               {campaign.remaining_days}
             </span>
