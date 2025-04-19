@@ -133,7 +133,7 @@ class Campaign < ApplicationRecord
             }
           } : nil
         }
-      end
+      end,
       fundraiser: {
         id: fundraiser.id,
         name: fundraiser.full_name,

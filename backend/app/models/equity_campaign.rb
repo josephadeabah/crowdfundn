@@ -50,7 +50,6 @@ class EquityCampaign < Campaign
     percentage_raised: percentage_raised,
     equity_status: equity_status,
     maximum_investment: maximum_investment,
-    # Add team members to the response
     team_members: campaign_team_members.includes(:user).map do |member|
       {
         id: member.id,
