@@ -6,7 +6,7 @@ import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import ErrorPage from '../errorpage/ErrorPage';
 import Link from 'next/link';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
-import EquityCampaignCard from './EquityCampaignCard';
+import EquityCampaignCard from './EquityCampaignCard ';
 
 interface EquityCarouselProps {
   campaigns: CampaignResponseDataType[] | undefined;
