@@ -155,7 +155,11 @@ Rails.application.routes.draw do
             post :close
           end
           
-          resources :campaign_team_members, only: [:index, :create, :update, :destroy]
+          resources :campaign_team_members, only: [:index, :create, :update, :destroy] do
+            member do
+              post :convert_to_user # Convert team member to user
+            end
+          end
           resources :equity_investments, only: [:create] do
             collection do
               get :callback

@@ -15,10 +15,26 @@ module Api
 
         def create
           @team_member = @campaign.campaign_team_members.new(team_member_params)
-          @team_member.avatar.attach(params[:avatar]) if params[:avatar].present?
-
+          
+          # Make avatar required
+          unless params[:avatar].present?
+            return render json: { errors: ["Avatar is required"] }, status: :unprocessable_entity
+          end
+          
+          @team_member.avatar.attach(params[:avatar])
+        
           if @team_member.save
             render json: team_member_json(@team_member), status: :created
+          else
+            render json: { errors: @team_member.errors.full_messages }, status: :unprocessable_entity
+          end
+        end
+
+        def convert_to_user
+          @team_member = CampaignTeamMember.find(params[:id])
+          
+          if @team_member.convert_to_user
+            render json: { message: 'Successfully converted to user' }
           else
             render json: { errors: @team_member.errors.full_messages }, status: :unprocessable_entity
           end
@@ -54,24 +70,31 @@ module Api
 
         def team_member_params
           params.require(:campaign_team_member).permit(
-            :user_id, 
+            :name,
+            :email,
             :role, 
             :title, 
             :equity_percentage,
-            :description
+            :description,
+            :user_id # Still optional
           )
         end
 
         def team_member_json(team_member)
-          team_member.as_json(
-            only: %i[id user_id role title equity_percentage description created_at updated_at],
+          json = team_member.as_json(
+            only: %i[id role title equity_percentage description created_at updated_at name email],
             methods: [:avatar_url]
-          ).merge(
-            user: team_member.user.as_json(
-              only: %i[id email],
-              include: { profile: { only: %i[first_name last_name] } }
-            )
           )
+          
+          if team_member.user
+            json.merge!(
+              user: team_member.user.as_json(
+                only: %i[id email],
+                include: { profile: { only: %i[first_name last_name] } }
+              )
+            )
+          end
+          json
         end
 
         def team_members_json(team_members)
