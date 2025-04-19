@@ -1,6 +1,6 @@
 // app/components/campaign/CampaignTeamDocuments.tsx
 'use client';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   FiPlus,
   FiUsers,
@@ -50,6 +50,12 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
     type: 'team' | 'pitch' | 'contract';
     id: string;
   } | null>(null);
+
+  useEffect(() => {
+    if (campaignId) {
+      fetchTeamMembers(campaignId);
+    }
+  }, [campaignId, fetchTeamMembers]);
 
   // Form states
   const [teamMember, setTeamMember] = useState<
