@@ -516,31 +516,29 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                 className="w-full p-2 border rounded"
               />
             </div>
-
-            {/* Equity Percentage - Left column */}
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Equity Percentage
-              </label>
-              <input
-                type="number"
-                value={teamMember.equity_percentage}
-                onChange={(e) =>
-                  setTeamMember({
-                    ...teamMember,
-                    equity_percentage: Number(e.target.value),
-                  })
-                }
-                className="w-full p-2 border rounded"
-                min="0"
-                max="100"
-              />
-            </div>
-
             {/* Empty cell to maintain grid alignment */}
             <div></div>
           </div>
 
+          {/* Equity Percentage - Left column */}
+          <div className="col-span-2">
+            <label className="block text-sm font-medium mb-1">
+              Equity Percentage
+            </label>
+            <input
+              type="number"
+              value={teamMember.equity_percentage}
+              onChange={(e) =>
+                setTeamMember({
+                  ...teamMember,
+                  equity_percentage: Number(e.target.value),
+                })
+              }
+              className="w-full p-2 border rounded"
+              min="0"
+              max="100"
+            />
+          </div>
           {/* Description - Full width below the grid */}
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-1">
