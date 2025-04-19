@@ -44,9 +44,7 @@ module Api
       end
 
       def my_campaigns
-        @campaigns = @current_user.campaigns.where(type: campaign_type)
-                                 .order(created_at: :desc)
-                                 .page(params[:page]).per(params[:pageSize] || 12)
+        @campaigns = @current_user.campaigns.order(created_at: :desc).page(params[:page]).per(params[:pageSize] || 12)
 
         render json: {
           campaigns: @campaigns.map { |c| campaign_json(c) },
