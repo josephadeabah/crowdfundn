@@ -134,13 +134,16 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-muted-foreground">Valuation</span>
             <span className="text-sm font-semibold">
-              ${campaign.valuation?.toLocaleString()}
+              {campaign?.currency_symbol || campaign?.currency?.toUpperCase()}{' '}
+              {parseFloat(
+                (campaign.valuation ?? 0).toString(),
+              )?.toLocaleString()}
             </span>
           </div>
 
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-semibold">
-              $
+              {campaign?.currency_symbol || campaign?.currency?.toUpperCase()}{' '}
               {parseFloat(
                 campaign.transferred_amount.toString(),
               )?.toLocaleString()}
@@ -157,7 +160,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
               </span>
             </div>
             <span className="text-sm font-semibold bg-red-100 text-red-800 px-2 py-1 rounded">
-              $
+              {campaign?.currency_symbol || campaign?.currency?.toUpperCase()}{' '}
               {parseFloat(
                 (campaign.minimum_investment ?? '0.0').toString(),
               ).toLocaleString()}
