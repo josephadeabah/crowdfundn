@@ -1,8 +1,9 @@
 # app/controllers/api/v1/documents/investor_documents_controller.rb
 module Api
   module V1
-    module Documents
-      class InvestorDocumentsController < ApplicationController
+    module Fundraisers
+      module Documents
+        class InvestorDocumentsController < ApplicationController
         before_action :authenticate_request
         before_action :set_campaign
         before_action :authorize_fundraiser!, except: [:index, :show]
