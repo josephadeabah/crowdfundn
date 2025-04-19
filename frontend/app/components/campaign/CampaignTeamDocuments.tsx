@@ -223,19 +223,30 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
           if (type === 'team') {
             await removeTeamMember(campaignId, Number(id));
             await fetchTeamMembers(campaignId);
+            // Show success message
+            setAlertConfig({
+              title: 'Success',
+              message: 'Team member removed successfully',
+              onConfirm: () => setIsAlertOpen(false),
+              onCancel: () => setIsAlertOpen(false),
+            });
           } else {
             await deleteDocument(campaignId, Number(id));
             await fetchDocuments(campaignId);
           }
-          setIsAlertOpen(false);
-          setItemToDelete(null);
         } catch (error) {
           setAlertConfig({
             title: 'Deletion Failed',
-            message: 'There was an error deleting the item. Please try again.',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'There was an error deleting the item.',
             onConfirm: () => setIsAlertOpen(false),
             onCancel: () => setIsAlertOpen(false),
           });
+        } finally {
+          setIsAlertOpen(true);
+          setItemToDelete(null);
         }
       },
       onCancel: () => {
