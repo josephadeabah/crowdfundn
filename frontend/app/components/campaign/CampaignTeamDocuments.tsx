@@ -599,7 +599,12 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
 
         {/* Action buttons - Full width */}
         <div className="flex justify-end space-x-3 mt-6">
-          <Button onClick={closeModal} className="px-4 py-2 border rounded-lg" variant="outline" size="lg">
+          <Button
+            onClick={closeModal}
+            className="px-4 py-2 border rounded-lg"
+            variant="outline"
+            size="lg"
+          >
             Cancel
           </Button>
           <Button
@@ -664,7 +669,12 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
         )}
 
         <div className="flex justify-end space-x-3 mt-6">
-          <Button onClick={closeModal} className="px-4 py-2 border rounded-lg" variant="outline" size="lg">
+          <Button
+            onClick={closeModal}
+            className="px-4 py-2 border rounded-lg"
+            variant="outline"
+            size="lg"
+          >
             Cancel
           </Button>
           <Button
@@ -729,7 +739,12 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
         )}
 
         <div className="flex justify-end space-x-3 mt-6">
-          <Button onClick={closeModal} className="px-4 py-2 border rounded-lg" variant="outline" size="lg">
+          <Button
+            onClick={closeModal}
+            className="px-4 py-2 border rounded-lg"
+            variant="outline"
+            size="lg"
+          >
             Cancel
           </Button>
           <Button

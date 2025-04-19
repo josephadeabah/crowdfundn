@@ -4,6 +4,7 @@ import { useCampaignContext } from '../../context/account/campaign/CampaignsCont
 import CampaignCarousel from './CampaignCarousel';
 import RewardCarousel from './RewardCarousel';
 import FundingTypes from '@/app/molecules/FundingTypes';
+import EquityCampaignCarousel from './EquityCampaignCarousel ';
 
 const FeaturedCampaigns = () => {
   const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
@@ -45,6 +46,14 @@ const FeaturedCampaigns = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <RewardCarousel
           title="Featured Rewards"
+          campaigns={displayedCampaigns}
+          loading={loading}
+          error={error}
+        />
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <EquityCampaignCarousel
+          title="Investment Opportunities"
           campaigns={displayedCampaigns}
           loading={loading}
           error={error}
