@@ -5,6 +5,13 @@ import { useCampaignContext } from '../context/account/campaign/CampaignsContext
 import CampaignsLoader from '../loaders/CampaignsLoader';
 import { Button } from '../components/button/Button';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/app/components/ui/select';
+import {
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -350,23 +357,24 @@ const Campaigns: React.FC = () => {
               <label className="block text-sm font-medium mb-2">
                 Select Campaign
               </label>
-              <select
-                className="w-full p-2 border rounded"
-                onChange={(e) =>
+              <Select
+                onValueChange={(value) =>
                   setSelectedCampaign(
-                    userCampaigns.find(
-                      (c) => c.id === Number(e.target.value),
-                    ) || null,
+                    userCampaigns.find((c) => c.id === Number(value)) || null,
                   )
                 }
               >
-                <option value="">Select a campaign</option>
-                {userCampaigns.map((campaign) => (
-                  <option key={campaign.id} value={campaign.id}>
-                    {campaign.title}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a campaign" />
+                </SelectTrigger>
+                <SelectContent>
+                  {userCampaigns.map((campaign) => (
+                    <SelectItem key={campaign.id} value={String(campaign.id)}>
+                      {campaign.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           ) : (
             <p className="text-gray-500">No campaigns available</p>
@@ -377,7 +385,6 @@ const Campaigns: React.FC = () => {
           )}
         </div>
       </Modal>
-
       {/* Space Below the Page */}
       <div className="h-20"></div>
     </div>
