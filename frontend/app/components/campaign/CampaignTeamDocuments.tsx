@@ -599,11 +599,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
 
         {/* Action buttons - Full width */}
         <div className="flex justify-end space-x-3 mt-6">
-          <Button
-            onClick={closeModal}
-            className="px-4 py-2 border rounded-lg"
-            variant=""
-          >
+          <Button onClick={closeModal} className="px-4 py-2 border rounded-lg" variant="outline" size="lg">
             Cancel
           </Button>
           <Button
@@ -614,6 +610,8 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                 ? 'bg-gray-300 cursor-not-allowed'
                 : 'bg-fundify-primary text-white hover:bg-fundify-primary'
             }`}
+            variant="secondary"
+            size="lg"
           >
             {loading ? (
               <>
@@ -666,7 +664,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
         )}
 
         <div className="flex justify-end space-x-3 mt-6">
-          <Button onClick={closeModal} className="px-4 py-2 border rounded-lg">
+          <Button onClick={closeModal} className="px-4 py-2 border rounded-lg" variant="outline" size="lg">
             Cancel
           </Button>
           <Button
@@ -677,6 +675,8 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                 ? 'bg-gray-300 cursor-not-allowed'
                 : 'bg-fundify-primary text-white hover:bg-fundify-primary'
             }`}
+            variant="secondary"
+            size="lg"
           >
             {loading ? (
               <>
@@ -729,10 +729,10 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
         )}
 
         <div className="flex justify-end space-x-3 mt-6">
-          <button onClick={closeModal} className="px-4 py-2 border rounded-lg">
+          <Button onClick={closeModal} className="px-4 py-2 border rounded-lg" variant="outline" size="lg">
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleUploadContractDocuments}
             disabled={contractFiles.length === 0}
             className={`px-4 py-2 rounded-lg ${
@@ -740,6 +740,8 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                 ? 'bg-gray-300 cursor-not-allowed'
                 : 'bg-fundify-primary text-white hover:bg-fundify-primary'
             }`}
+            variant="secondary"
+            size="lg"
           >
             {loading ? (
               <>
@@ -749,7 +751,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
             ) : (
               'Upload Documents'
             )}
-          </button>
+          </Button>
         </div>
       </Modal>
     </div>
