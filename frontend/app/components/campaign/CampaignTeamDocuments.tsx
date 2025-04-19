@@ -1,6 +1,6 @@
 // app/components/campaign/CampaignTeamDocuments.tsx
 'use client';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   FiPlus,
   FiUsers,
@@ -8,6 +8,7 @@ import {
   FiFile,
   FiTrash2,
   FiAlertCircle,
+  FiImage,
 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
@@ -48,20 +49,95 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
   } | null>(null);
 
   // Form states
-  const [teamMember, setTeamMember] = useState<Omit<CampaignTeamMember, 'id'>>({
+  const [teamMember, setTeamMember] = useState<
+    Omit<CampaignTeamMember, 'id'> & { avatar?: File }
+  >({
     name: '',
     email: '',
     role: 'founder',
     title: '',
     equity_percentage: 0,
   });
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [pitchFiles, setPitchFiles] = useState<File[]>([]);
   const [contractFiles, setContractFiles] = useState<File[]>([]);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate image type
+      if (!file.type.match('image.*')) {
+        setAlertConfig({
+          title: 'Invalid File Type',
+          message: 'Please upload an image file (JPEG, PNG, GIF)',
+          onConfirm: () => setIsAlertOpen(false),
+          onCancel: () => setIsAlertOpen(false),
+        });
+        setIsAlertOpen(true);
+        return;
+      }
+
+      // Validate file size (e.g., 5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        setAlertConfig({
+          title: 'File Too Large',
+          message: 'Please upload an image smaller than 5MB',
+          onConfirm: () => setIsAlertOpen(false),
+          onCancel: () => setIsAlertOpen(false),
+        });
+        setIsAlertOpen(true);
+        return;
+      }
+
+      setTeamMember({ ...teamMember, avatar: file });
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const triggerAvatarInput = () => {
+    avatarInputRef.current?.click();
+  };
 
   const handleAddTeamMember = async () => {
     try {
-      await addTeamMember(campaignId, teamMember);
+      // Validate required fields
+      if (!teamMember.name || !teamMember.avatar) {
+        setAlertConfig({
+          title: 'Missing Information',
+          message: teamMember.avatar
+            ? 'Name is required'
+            : 'Avatar is required',
+          onConfirm: () => setIsAlertOpen(false),
+          onCancel: () => setIsAlertOpen(false),
+        });
+        setIsAlertOpen(true);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('name', teamMember.name);
+      formData.append('email', teamMember.email);
+      formData.append('role', teamMember.role);
+      formData.append('title', teamMember.title);
+      formData.append(
+        'equity_percentage',
+        teamMember.equity_percentage.toString(),
+      );
+      if (teamMember.avatar) {
+        formData.append('avatar', teamMember.avatar);
+      }
+
+      await addTeamMember(campaignId, formData);
       await fetchTeamMembers(campaignId);
+
+      // Reset form
       setActiveModal(null);
       setTeamMember({
         name: '',
@@ -70,6 +146,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
         title: '',
         equity_percentage: 0,
       });
+      setAvatarPreview(null);
     } catch (error) {
       setAlertConfig({
         title: 'Failed to add team member',
@@ -345,8 +422,48 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
               <h3 className="text-xl font-bold mb-4">Add Team Member</h3>
 
               <div className="space-y-4">
+                {/* Avatar Upload */}
                 <div>
-                  <label className="block text-sm font-medium mb-1">Name</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Avatar
+                  </label>
+                  <input
+                    type="file"
+                    ref={avatarInputRef}
+                    onChange={handleAvatarChange}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <div className="flex items-center space-x-4">
+                    <div
+                      onClick={triggerAvatarInput}
+                      className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer overflow-hidden"
+                    >
+                      {avatarPreview ? (
+                        <img
+                          src={avatarPreview}
+                          alt="Avatar preview"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <FiImage className="text-gray-400 text-xl" />
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={triggerAvatarInput}
+                      className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm"
+                    >
+                      {avatarPreview ? 'Change' : 'Upload'} Avatar
+                    </button>
+                  </div>
+                </div>
+
+                {/* Name Field */}
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Name*
+                  </label>
                   <input
                     type="text"
                     value={teamMember.name}
@@ -354,6 +471,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                       setTeamMember({ ...teamMember, name: e.target.value })
                     }
                     className="w-full p-2 border rounded"
+                    required
                   />
                 </div>
 
@@ -432,7 +550,12 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                 </button>
                 <button
                   onClick={handleAddTeamMember}
-                  className="px-4 py-2 bg-fundify-primary text-white rounded-lg hover:bg-fundify-primary"
+                  disabled={!teamMember.name || !teamMember.avatar}
+                  className={`px-4 py-2 rounded-lg ${
+                    !teamMember.name || !teamMember.avatar
+                      ? 'bg-gray-300 cursor-not-allowed'
+                      : 'bg-fundify-primary text-white hover:bg-fundify-primary'
+                  }`}
                 >
                   Add Member
                 </button>

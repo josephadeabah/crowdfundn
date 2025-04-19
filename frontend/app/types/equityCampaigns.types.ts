@@ -87,7 +87,7 @@ export interface EquityCampaignState extends CampaignState {
   // Team member actions
   addTeamMember: (
     campaignId: string,
-    member: Omit<CampaignTeamMember, 'id' | 'created_at'>,
+    formData: FormData,
   ) => Promise<CampaignTeamMember | null>;
   updateTeamMember: (
     campaignId: string,

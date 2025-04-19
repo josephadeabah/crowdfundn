@@ -31,7 +31,8 @@ const Campaigns: React.FC = () => {
   const [selectedCampaign, setSelectedCampaign] =
     useState<CampaignResponseDataType | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [isTeamDocumentsModalOpen, setIsTeamDocumentsModalOpen] = useState(false);
+  const [isTeamDocumentsModalOpen, setIsTeamDocumentsModalOpen] =
+    useState(false);
   const [alertPopupOpen, setAlertPopupOpen] = useState(false);
   const [campaignToActOn, setCampaignToActOn] =
     useState<CampaignResponseDataType | null>(null);
@@ -139,7 +140,7 @@ const Campaigns: React.FC = () => {
       <p className="text-gray-500 dark:text-neutral-400 mb-4">
         Manage all your campaigns including drafts.
       </p>
-      
+
       {userCampaigns && userCampaigns.length === 0 ? (
         <p className="text-gray-500 dark:text-neutral-400">
           You have no campaigns yet.
@@ -341,7 +342,9 @@ const Campaigns: React.FC = () => {
         closeOnBackdropClick={true}
       >
         <div className="p-4">
-          <h2 className="text-xl font-semibold mb-4">Manage Team & Documents</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            Manage Team & Documents
+          </h2>
           {userCampaigns && userCampaigns.length > 0 ? (
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
@@ -349,12 +352,16 @@ const Campaigns: React.FC = () => {
               </label>
               <select
                 className="w-full p-2 border rounded"
-                onChange={(e) => setSelectedCampaign(
-                  userCampaigns.find(c => c.id === Number(e.target.value)) || null
-                )}
+                onChange={(e) =>
+                  setSelectedCampaign(
+                    userCampaigns.find(
+                      (c) => c.id === Number(e.target.value),
+                    ) || null,
+                  )
+                }
               >
                 <option value="">Select a campaign</option>
-                {userCampaigns.map(campaign => (
+                {userCampaigns.map((campaign) => (
                   <option key={campaign.id} value={campaign.id}>
                     {campaign.title}
                   </option>
@@ -364,7 +371,7 @@ const Campaigns: React.FC = () => {
           ) : (
             <p className="text-gray-500">No campaigns available</p>
           )}
-          
+
           {selectedCampaign && (
             <CampaignTeamDocuments campaignId={String(selectedCampaign.id)} />
           )}
