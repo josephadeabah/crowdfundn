@@ -396,7 +396,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
           </div>
 
           <div className="space-y-2">
-          {documents?.length ? (
+            {documents?.length ? (
               documents
                 .filter((doc) => doc.document_type === 'contract')
                 .map((doc) => (
@@ -409,6 +409,17 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         {doc.files.length} file
                         {doc.files.length !== 1 ? 's' : ''}
+                      </p>
+                      <p>
+                        {doc.files.map((file) => (
+                          <div
+                            key={file.uploaded_at}
+                            className="text-sm text-gray-400 flex gap-2"
+                          >
+                           <span>{file.human_size}</span> 
+                           <span>{file.filename}</span>
+                          </div>
+                        ))}
                       </p>
                     </div>
                     <FiTrash2
