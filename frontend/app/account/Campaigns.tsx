@@ -440,7 +440,6 @@ const Campaigns: React.FC = () => {
       )}
 
       {/* Team & Documents Modal */}
-      {/* Team & Documents Modal */}
       <Modal
         isOpen={isTeamDocumentsModalOpen}
         onClose={() => setIsTeamDocumentsModalOpen(false)}

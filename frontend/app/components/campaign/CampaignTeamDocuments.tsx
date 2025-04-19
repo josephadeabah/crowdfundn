@@ -32,6 +32,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
     removeTeamMember,
     deleteDocument,
   } = useEquityCampaignContext();
+  const { fetchUserCampaigns } = useCampaignContext();
 
   const [activeModal, setActiveModal] = useState<
     'team' | 'pitch' | 'contract' | null
@@ -137,6 +138,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
 
       await addTeamMember(campaignId, formData);
       await fetchTeamMembers(campaignId);
+      await fetchUserCampaigns();
 
       setActiveModal(null);
       setTeamMember({
