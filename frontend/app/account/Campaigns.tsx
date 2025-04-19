@@ -440,6 +440,7 @@ const Campaigns: React.FC = () => {
       )}
 
       {/* Team & Documents Modal */}
+      {/* Team & Documents Modal */}
       <Modal
         isOpen={isTeamDocumentsModalOpen}
         onClose={() => setIsTeamDocumentsModalOpen(false)}
@@ -463,22 +464,41 @@ const Campaigns: React.FC = () => {
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a campaign" />
+                  <SelectValue placeholder="Select an equity campaign" />
                 </SelectTrigger>
                 <SelectContent>
                   {userCampaigns.map((campaign) => (
-                    <SelectItem key={campaign.id} value={String(campaign.id)}>
-                      {campaign.title}
+                    <SelectItem
+                      key={campaign.id}
+                      value={String(campaign.id)}
+                      disabled={campaign.type !== 'EquityCampaign'}
+                      className={
+                        campaign.type !== 'EquityCampaign'
+                          ? 'opacity-50 cursor-not-allowed'
+                          : ''
+                      }
+                    >
+                      <div className="flex items-center">
+                        {campaign.title}
+                        {campaign.type !== 'EquityCampaign' && (
+                          <span className="ml-2 text-xs text-gray-400">
+                            (Regular Campaign)
+                          </span>
+                        )}
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              <p className="mt-1 text-xs text-gray-500">
+                Only equity campaigns can have team members
+              </p>
             </div>
           ) : (
             <p className="text-gray-500">No campaigns available</p>
           )}
 
-          {selectedCampaign && (
+          {selectedCampaign && selectedCampaign.type === 'EquityCampaign' && (
             <CampaignTeamDocuments campaignId={String(selectedCampaign.id)} />
           )}
         </div>
