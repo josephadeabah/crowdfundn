@@ -38,7 +38,9 @@ const EquityCampaignCarousel: React.FC<EquityCarouselProps> = ({
   // Filter campaigns based on status and permissions
   const equityCampaigns = campaigns?.filter(
     (campaign) =>
-      campaign.status !== 'completed' && campaign.type === 'EquityCampaign' && campaign.permissions.is_public,
+      campaign.status !== 'completed' &&
+      campaign.type === 'EquityCampaign' &&
+      campaign.permissions.is_public,
   );
 
   // Determine what to show
@@ -89,6 +91,14 @@ const EquityCampaignCarousel: React.FC<EquityCarouselProps> = ({
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">{title}</h2>
         <div className="flex space-x-2">
+         <Link href="/invest" passHref>
+            <Button
+              variant="outline"
+              className="rounded-full text-sm px-4 py-2"
+            >
+              View More Opportunities
+            </Button>
+          </Link>
           <Button
             variant="outline"
             size="icon"
@@ -105,14 +115,6 @@ const EquityCampaignCarousel: React.FC<EquityCarouselProps> = ({
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
-          <Link href="/invest" passHref>
-            <Button
-              variant="outline"
-              className="rounded-full text-sm px-4 py-2"
-            >
-              View More Opportunities
-            </Button>
-          </Link>
         </div>
       </div>
 
