@@ -16,14 +16,11 @@ module Api
         def create
           @team_member = @campaign.campaign_team_members.new(team_member_params)
           
-          # Make avatar required
-          unless params[:avatar].present?
+          # Updated avatar validation to check the nested param
+          unless params.dig(:campaign_team_member, :avatar).present?
             return render json: { errors: ["Avatar is required"] }, status: :unprocessable_entity
           end
           
-          # @team_member.avatar.attach(params[:avatar])
-          @team_member.avatar.attach(params.dig(:campaign_team_member, :avatar))
-        
           if @team_member.save
             render json: team_member_json(@team_member), status: :created
           else
