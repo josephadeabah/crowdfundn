@@ -10,11 +10,11 @@ import {
   FiAlertCircle,
   FiImage,
 } from 'react-icons/fi';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { CampaignTeamMember } from '@/app/types/equityCampaigns.types';
+import Modal from '@/app/components/modal/Modal';
 
 interface TeamDocumentsProps {
   campaignId: string;
@@ -67,7 +67,6 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate image type
       if (!file.type.match('image.*')) {
         setAlertConfig({
           title: 'Invalid File Type',
@@ -79,7 +78,6 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
         return;
       }
 
-      // Validate file size (e.g., 5MB max)
       if (file.size > 5 * 1024 * 1024) {
         setAlertConfig({
           title: 'File Too Large',
@@ -93,7 +91,6 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
 
       setTeamMember({ ...teamMember, avatar: file });
 
-      // Create preview
       const reader = new FileReader();
       reader.onload = () => {
         setAvatarPreview(reader.result as string);
@@ -108,7 +105,6 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
 
   const handleAddTeamMember = async () => {
     try {
-      // Validate required fields
       if (!teamMember.name || !teamMember.avatar) {
         setAlertConfig({
           title: 'Missing Information',
@@ -134,7 +130,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
       formData.append(
         'campaign_team_member[description]',
         teamMember.description || '',
-      ); 
+      );
       if (teamMember.avatar) {
         formData.append('campaign_team_member[avatar]', teamMember.avatar);
       }
@@ -142,7 +138,6 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
       await addTeamMember(campaignId, formData);
       await fetchTeamMembers(campaignId);
 
-      // Reset form
       setActiveModal(null);
       setTeamMember({
         name: '',
@@ -150,7 +145,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
         role: 'founder',
         title: '',
         equity_percentage: 0,
-        description: '', // Add this line
+        description: '',
       });
       setAvatarPreview(null);
     } catch (error) {
@@ -239,6 +234,21 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
       },
     });
     setIsAlertOpen(true);
+  };
+
+  const closeModal = () => {
+    setActiveModal(null);
+    setTeamMember({
+      name: '',
+      email: '',
+      role: 'founder',
+      title: '',
+      equity_percentage: 0,
+      description: '',
+    });
+    setAvatarPreview(null);
+    setPitchFiles([]);
+    setContractFiles([]);
   };
 
   return (
@@ -407,335 +417,265 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
         </div>
       </div>
 
-      {/* Modals */}
-      <AnimatePresence>
-        {/* Team Member Modal */}
-        {activeModal === 'team' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-            onClick={() => setActiveModal(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-md"
-              onClick={(e) => e.stopPropagation()}
+      {/* Team Member Modal */}
+      <Modal isOpen={activeModal === 'team'} onClose={closeModal} size="medium">
+        <h3 className="text-xl font-bold mb-4">Add Team Member</h3>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Avatar</label>
+            <input
+              type="file"
+              ref={avatarInputRef}
+              onChange={handleAvatarChange}
+              accept="image/*"
+              className="hidden"
+            />
+            <div className="flex items-center space-x-4">
+              <div
+                onClick={triggerAvatarInput}
+                className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer overflow-hidden"
+              >
+                {avatarPreview ? (
+                  <img
+                    src={avatarPreview}
+                    alt="Avatar preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <FiImage className="text-gray-400 text-xl" />
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={triggerAvatarInput}
+                className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm"
+              >
+                {avatarPreview ? 'Change' : 'Upload'} Avatar
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Name*</label>
+            <input
+              type="text"
+              value={teamMember.name}
+              onChange={(e) =>
+                setTeamMember({ ...teamMember, name: e.target.value })
+              }
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Email</label>
+            <input
+              type="email"
+              value={teamMember.email}
+              onChange={(e) =>
+                setTeamMember({ ...teamMember, email: e.target.value })
+              }
+              className="w-full p-2 border rounded"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Role</label>
+            <select
+              value={teamMember.role}
+              onChange={(e) =>
+                setTeamMember({
+                  ...teamMember,
+                  role: e.target.value as any,
+                })
+              }
+              className="w-full p-2 border rounded"
             >
-              <h3 className="text-xl font-bold mb-4">Add Team Member</h3>
+              <option value="founder">Founder</option>
+              <option value="advisor">Advisor</option>
+              <option value="employee">Employee</option>
+            </select>
+          </div>
 
-              <div className="space-y-4">
-                {/* Avatar Upload */}
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Avatar
-                  </label>
-                  <input
-                    type="file"
-                    ref={avatarInputRef}
-                    onChange={handleAvatarChange}
-                    accept="image/*"
-                    className="hidden"
-                  />
-                  <div className="flex items-center space-x-4">
-                    <div
-                      onClick={triggerAvatarInput}
-                      className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer overflow-hidden"
-                    >
-                      {avatarPreview ? (
-                        <img
-                          src={avatarPreview}
-                          alt="Avatar preview"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <FiImage className="text-gray-400 text-xl" />
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={triggerAvatarInput}
-                      className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm"
-                    >
-                      {avatarPreview ? 'Change' : 'Upload'} Avatar
-                    </button>
-                  </div>
-                </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Title</label>
+            <input
+              type="text"
+              value={teamMember.title}
+              onChange={(e) =>
+                setTeamMember({ ...teamMember, title: e.target.value })
+              }
+              className="w-full p-2 border rounded"
+            />
+          </div>
 
-                {/* Name Field */}
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Name*
-                  </label>
-                  <input
-                    type="text"
-                    value={teamMember.name}
-                    onChange={(e) =>
-                      setTeamMember({ ...teamMember, name: e.target.value })
-                    }
-                    className="w-full p-2 border rounded"
-                    required
-                  />
-                </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Equity Percentage
+            </label>
+            <input
+              type="number"
+              value={teamMember.equity_percentage}
+              onChange={(e) =>
+                setTeamMember({
+                  ...teamMember,
+                  equity_percentage: Number(e.target.value),
+                })
+              }
+              className="w-full p-2 border rounded"
+              min="0"
+              max="100"
+            />
+          </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={teamMember.email}
-                    onChange={(e) =>
-                      setTeamMember({ ...teamMember, email: e.target.value })
-                    }
-                    className="w-full p-2 border rounded"
-                  />
-                </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Description
+            </label>
+            <textarea
+              value={teamMember.description}
+              onChange={(e) =>
+                setTeamMember({
+                  ...teamMember,
+                  description: e.target.value,
+                })
+              }
+              className="w-full p-2 border rounded"
+              rows={3}
+            />
+          </div>
+        </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-1">Role</label>
-                  <select
-                    value={teamMember.role}
-                    onChange={(e) =>
-                      setTeamMember({
-                        ...teamMember,
-                        role: e.target.value as any,
-                      })
-                    }
-                    className="w-full p-2 border rounded"
-                  >
-                    <option value="founder">Founder</option>
-                    <option value="advisor">Advisor</option>
-                    <option value="employee">Employee</option>
-                  </select>
-                </div>
+        <div className="flex justify-end space-x-3 mt-6">
+          <button onClick={closeModal} className="px-4 py-2 border rounded-lg">
+            Cancel
+          </button>
+          <button
+            onClick={handleAddTeamMember}
+            disabled={!teamMember.name || !teamMember.avatar}
+            className={`px-4 py-2 rounded-lg ${
+              !teamMember.name || !teamMember.avatar
+                ? 'bg-gray-300 cursor-not-allowed'
+                : 'bg-fundify-primary text-white hover:bg-fundify-primary'
+            }`}
+          >
+            Add Member
+          </button>
+        </div>
+      </Modal>
 
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Title
-                  </label>
-                  <input
-                    type="text"
-                    value={teamMember.title}
-                    onChange={(e) =>
-                      setTeamMember({ ...teamMember, title: e.target.value })
-                    }
-                    className="w-full p-2 border rounded"
-                  />
-                </div>
+      {/* Pitch Documents Modal */}
+      <Modal
+        isOpen={activeModal === 'pitch'}
+        onClose={closeModal}
+        size="medium"
+      >
+        <h3 className="text-xl font-bold mb-4">Upload Pitch Documents</h3>
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+          <input
+            type="file"
+            multiple
+            onChange={(e) => setPitchFiles(Array.from(e.target.files || []))}
+            className="hidden"
+            id="pitch-upload"
+          />
+          <label htmlFor="pitch-upload" className="cursor-pointer block">
+            <FiFileText className="mx-auto text-3xl mb-2" />
+            <p>Click to upload files or drag and drop</p>
+            <p className="text-sm text-gray-500 mt-1">PDF (Max 10MB each)</p>
+          </label>
+        </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Equity Percentage
-                  </label>
-                  <input
-                    type="number"
-                    value={teamMember.equity_percentage}
-                    onChange={(e) =>
-                      setTeamMember({
-                        ...teamMember,
-                        equity_percentage: Number(e.target.value),
-                      })
-                    }
-                    className="w-full p-2 border rounded"
-                    min="0"
-                    max="100"
-                  />
-                </div>
-                {/* Add this section below the equity percentage field */}
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Description
-                  </label>
-                  <textarea
-                    value={teamMember.description}
-                    onChange={(e) =>
-                      setTeamMember({
-                        ...teamMember,
-                        description: e.target.value,
-                      })
-                    }
-                    className="w-full p-2 border rounded"
-                    rows={3}
-                  />
-                </div>
+        {pitchFiles.length > 0 && (
+          <div className="mt-4 space-y-2">
+            {pitchFiles.map((file, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-2 bg-gray-100 rounded"
+              >
+                <span>{file.name}</span>
+                <span className="text-sm text-gray-500">
+                  {(file.size / 1024 / 1024).toFixed(2)}MB
+                </span>
               </div>
-
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  onClick={() => setActiveModal(null)}
-                  className="px-4 py-2 border rounded-lg"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleAddTeamMember}
-                  disabled={!teamMember.name || !teamMember.avatar}
-                  className={`px-4 py-2 rounded-lg ${
-                    !teamMember.name || !teamMember.avatar
-                      ? 'bg-gray-300 cursor-not-allowed'
-                      : 'bg-fundify-primary text-white hover:bg-fundify-primary'
-                  }`}
-                >
-                  Add Member
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
+            ))}
+          </div>
         )}
 
-        {/* Pitch Documents Modal */}
-        {activeModal === 'pitch' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-            onClick={() => setActiveModal(null)}
+        <div className="flex justify-end space-x-3 mt-6">
+          <button onClick={closeModal} className="px-4 py-2 border rounded-lg">
+            Cancel
+          </button>
+          <button
+            onClick={handleUploadPitchDocuments}
+            disabled={pitchFiles.length === 0}
+            className={`px-4 py-2 rounded-lg ${
+              pitchFiles.length === 0
+                ? 'bg-gray-300 cursor-not-allowed'
+                : 'bg-fundify-primary text-white hover:bg-fundify-primary'
+            }`}
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-md"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="text-xl font-bold mb-4">Upload Pitch Documents</h3>
+            Upload Documents
+          </button>
+        </div>
+      </Modal>
 
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <input
-                  type="file"
-                  multiple
-                  onChange={(e) =>
-                    setPitchFiles(Array.from(e.target.files || []))
-                  }
-                  className="hidden"
-                  id="pitch-upload"
-                />
-                <label htmlFor="pitch-upload" className="cursor-pointer block">
-                  <FiFileText className="mx-auto text-3xl mb-2" />
-                  <p>Click to upload files or drag and drop</p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    PDF (Max 10MB each)
-                  </p>
-                </label>
+      {/* Contract Documents Modal */}
+      <Modal
+        isOpen={activeModal === 'contract'}
+        onClose={closeModal}
+        size="medium"
+      >
+        <h3 className="text-xl font-bold mb-4">Upload Contract Documents</h3>
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+          <input
+            type="file"
+            multiple
+            onChange={(e) => setContractFiles(Array.from(e.target.files || []))}
+            className="hidden"
+            id="contract-upload"
+          />
+          <label htmlFor="contract-upload" className="cursor-pointer block">
+            <FiFile className="mx-auto text-3xl mb-2" />
+            <p>Click to upload files or drag and drop</p>
+            <p className="text-sm text-gray-500 mt-1">PDF (Max 10MB each)</p>
+          </label>
+        </div>
+
+        {contractFiles.length > 0 && (
+          <div className="mt-4 space-y-2">
+            {contractFiles.map((file, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-2 bg-gray-100 rounded"
+              >
+                <span>{file.name}</span>
+                <span className="text-sm text-gray-500">
+                  {(file.size / 1024 / 1024).toFixed(2)}MB
+                </span>
               </div>
-
-              {pitchFiles.length > 0 && (
-                <div className="mt-4 space-y-2">
-                  {pitchFiles.map((file, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-2 bg-gray-100 rounded"
-                    >
-                      <span>{file.name}</span>
-                      <span className="text-sm text-gray-500">
-                        {(file.size / 1024 / 1024).toFixed(2)}MB
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  onClick={() => setActiveModal(null)}
-                  className="px-4 py-2 border rounded-lg"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleUploadPitchDocuments}
-                  disabled={pitchFiles.length === 0}
-                  className={`px-4 py-2 rounded-lg ${pitchFiles.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-fundify-primary text-white hover:bg-fundify-primary'}`}
-                >
-                  Upload Documents
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
+            ))}
+          </div>
         )}
 
-        {/* Contract Documents Modal */}
-        {activeModal === 'contract' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-            onClick={() => setActiveModal(null)}
+        <div className="flex justify-end space-x-3 mt-6">
+          <button onClick={closeModal} className="px-4 py-2 border rounded-lg">
+            Cancel
+          </button>
+          <button
+            onClick={handleUploadContractDocuments}
+            disabled={contractFiles.length === 0}
+            className={`px-4 py-2 rounded-lg ${
+              contractFiles.length === 0
+                ? 'bg-gray-300 cursor-not-allowed'
+                : 'bg-fundify-primary text-white hover:bg-fundify-primary'
+            }`}
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-md"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="text-xl font-bold mb-4">
-                Upload Contract Documents
-              </h3>
-
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <input
-                  type="file"
-                  multiple
-                  onChange={(e) =>
-                    setContractFiles(Array.from(e.target.files || []))
-                  }
-                  className="hidden"
-                  id="contract-upload"
-                />
-                <label
-                  htmlFor="contract-upload"
-                  className="cursor-pointer block"
-                >
-                  <FiFile className="mx-auto text-3xl mb-2" />
-                  <p>Click to upload files or drag and drop</p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    PDF (Max 10MB each)
-                  </p>
-                </label>
-              </div>
-
-              {contractFiles.length > 0 && (
-                <div className="mt-4 space-y-2">
-                  {contractFiles.map((file, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-2 bg-gray-100 rounded"
-                    >
-                      <span>{file.name}</span>
-                      <span className="text-sm text-gray-500">
-                        {(file.size / 1024 / 1024).toFixed(2)}MB
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  onClick={() => setActiveModal(null)}
-                  className="px-4 py-2 border rounded-lg"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleUploadContractDocuments}
-                  disabled={contractFiles.length === 0}
-                  className={`px-4 py-2 rounded-lg ${contractFiles.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-fundify-primary text-white hover:bg-fundify-primary'}`}
-                >
-                  Upload Documents
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            Upload Documents
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 };
