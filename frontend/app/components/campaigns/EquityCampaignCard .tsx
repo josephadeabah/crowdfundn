@@ -139,7 +139,6 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
           </div>
 
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-muted-foreground">Amount Raised</span>
             <span className="text-sm font-semibold">
               ${campaign.transferred_amount?.toLocaleString()} from {campaign.total_investors} investors
             </span>
