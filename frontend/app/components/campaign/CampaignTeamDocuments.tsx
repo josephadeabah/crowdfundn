@@ -25,6 +25,8 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
 }) => {
   const { campaigns } = useCampaignContext();
   const {
+    teamMembers,
+    documents,
     addTeamMember,
     createDocument,
     fetchTeamMembers,
@@ -282,34 +284,31 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
           </div>
 
           <div className="space-y-2">
-            {campaigns.find((c) => c.id === Number(campaignId))?.team_members
-              ?.length ? (
-              campaigns
-                .find((c) => c.id === Number(campaignId))
-                ?.team_members?.map((member) => (
-                  <div
-                    key={member.id}
-                    className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded"
-                  >
-                    <div>
-                      <p className="font-medium">{member.name}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {member.role}
-                      </p>
-                    </div>
-                    <div className="flex items-center">
-                      <span className="text-sm mr-2">
-                        {member.equity_percentage}%
-                      </span>
-                      <FiTrash2
-                        className="cursor-pointer text-red-600"
-                        onClick={() =>
-                          openDeleteConfirmation('team', String(member.id))
-                        }
-                      />
-                    </div>
+            {teamMembers?.length ? (
+              teamMembers.map((member) => (
+                <div
+                  key={member.id}
+                  className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded"
+                >
+                  <div>
+                    <p className="font-medium">{member.name}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {member.role}
+                    </p>
                   </div>
-                ))
+                  <div className="flex items-center">
+                    <span className="text-sm mr-2">
+                      {member.equity_percentage}%
+                    </span>
+                    <FiTrash2
+                      className="cursor-pointer text-red-600"
+                      onClick={() =>
+                        openDeleteConfirmation('team', String(member.id))
+                      }
+                    />
+                  </div>
+                </div>
+              ))
             ) : (
               <p className="text-gray-500 dark:text-gray-400 text-sm">
                 No team members added yet
