@@ -350,8 +350,10 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
           </div>
 
           <div className="space-y-2">
-             {documents?.length ? (
-              documents.filter((doc) => doc.document_type === 'pitch').map((doc) => (
+            {documents?.length ? (
+              documents
+                .filter((doc) => doc.document_type === 'pitch')
+                .map((doc) => (
                   <div
                     key={doc.id}
                     className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded"
@@ -394,13 +396,9 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
           </div>
 
           <div className="space-y-2">
-            {campaigns
-              .find((c) => c.id === Number(campaignId))
-              ?.documents?.filter((doc) => doc.document_type === 'contract')
-              .length ? (
-              campaigns
-                .find((c) => c.id === Number(campaignId))
-                ?.documents?.filter((doc) => doc.document_type === 'contract')
+          {documents?.length ? (
+              documents
+                .filter((doc) => doc.document_type === 'contract')
                 .map((doc) => (
                   <div
                     key={doc.id}
