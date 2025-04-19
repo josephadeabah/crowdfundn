@@ -37,7 +37,9 @@ const EquityCampaignCarousel: React.FC<EquityCarouselProps> = ({
   // Filter campaigns based on status and permissions
   const equityCampaigns = campaigns?.filter(
     (campaign) =>
-      campaign.status !== 'completed' && campaign.type === 'EquityCampaign' && campaign.permissions.is_public,
+      campaign.status !== 'completed' &&
+      campaign.type === 'EquityCampaign' &&
+      campaign.permissions.is_public,
   );
 
   // Determine what to show

@@ -139,7 +139,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
           </div>
 
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-semibold">${campaign.transferred_amount?.toLocaleString()}</span>
+            <span className="text-sm font-semibold">${parseFloat(campaign.transferred_amount.toString())?.toLocaleString()}</span>
             <span className="text-sm text-muted-foreground">
                from {campaign.total_investors} investors
             </span>
@@ -150,22 +150,22 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
               <span className="text-sm text-muted-foreground">Minimum Investment</span>
             </div>
             <span className="text-sm font-semibold bg-red-100 text-red-800 px-2 py-1 rounded">
-              ${campaign.minimum_investment?.toLocaleString()}
+              ${parseFloat((campaign.minimum_investment ?? '0.0').toString()).toLocaleString()}
             </span>
           </div>
 
           <div className="flex justify-between items-center">
-            <span className="text-sm font-semibold bg-emerald-100 text-emerald-800 px-2 py-1 rounded">Invest</span>
             <span className="text-sm text-muted-foreground">Days Left</span>
-          </div>
-          <div className="flex justify-between items-center mt-1">
-          <InfoTooltip 
-                id={`tooltip-${campaign.id}`}
-                content="This offering is hosted by BantuHive LLC"
-              />
             <span className="text-sm font-semibold">
               {campaign.remaining_days}
             </span>
+          </div>
+          <div className="flex justify-between items-center mt-1">
+          <span className="text-sm font-semibold bg-emerald-100 text-emerald-800 px-2 py-1 rounded">Invest</span>
+            <InfoTooltip 
+                id={`tooltip-${campaign.id}`}
+                content="This offering is hosted by BantuHive LLC"
+              />
           </div>
         </div>
       </Link>
