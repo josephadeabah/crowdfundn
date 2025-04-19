@@ -149,13 +149,13 @@ Rails.application.routes.draw do
       end
       # Add the equity namespace here, alongside members and fundraisers
       namespace :equity do
-        resources :campaigns, controller: 'api/v1/base_campaigns_controller' do
+        resources :campaigns, controller: 'base_campaigns_controller' do
           member do
             post :launch
             post :close
           end
           
-          resources :campaign_team_members, only: [:index, :create, :update, :destroy], controller: 'api/v1/equity/campaign_team_members'
+          resources :campaign_team_members, only: [:index, :create, :update, :destroy]
           resources :equity_investments, only: [:create] do
             collection do
               get :callback
@@ -163,7 +163,7 @@ Rails.application.routes.draw do
           end
           resources :share_certificates, only: [:index, :show]
         end
-
+      
         # Portfolio and investments routes
         get 'investments/portfolio', to: 'equity_investments#portfolio'
         get 'investments/my_investments', to: 'equity_investments#my_investments'
