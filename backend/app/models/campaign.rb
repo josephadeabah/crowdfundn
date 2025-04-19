@@ -114,7 +114,7 @@ class Campaign < ApplicationRecord
       updates: updates,
       comments: comments,
       required_documents: required_documents.map(&:as_json),
-      team_members: campaign.campaign_team_members.includes(:user).map do |member|
+      team_members: campaign_team_members.includes(:user).map do |member|
         {
           id: member.id,
           name: member.name,
