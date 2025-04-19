@@ -114,6 +114,26 @@ class Campaign < ApplicationRecord
       updates: updates,
       comments: comments,
       required_documents: required_documents.map(&:as_json),
+      team_members: campaign.campaign_team_members.includes(:user).map do |member|
+        {
+          id: member.id,
+          name: member.name,
+          email: member.email,
+          role: member.role,
+          title: member.title,
+          equity_percentage: member.equity_percentage,
+          description: member.description,
+          avatar_url: member.avatar_url,
+          user: member.user ? {
+            id: member.user.id,
+            email: member.user.email,
+            profile: {
+              first_name: member.user.profile&.first_name,
+              last_name: member.user.profile&.last_name
+            }
+          } : nil
+        }
+      end
       fundraiser: {
         id: fundraiser.id,
         name: fundraiser.full_name,

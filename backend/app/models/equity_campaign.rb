@@ -37,21 +37,42 @@ class EquityCampaign < Campaign
   end
 
   def as_json(options = {})
-    super(options).merge(
-      type: 'EquityCampaign',
-      company_info: {
-        name: company_name,
-        description: company_description,
-        headquarters: company_headquarters,
-        website: company_website,
-        contract_term: contract_term,
-      },
-      shares_available: shares_available,
-      percentage_raised: percentage_raised,
-      equity_status: equity_status,
-      maximum_investment: maximum_investment
-    )
-  end
+  super(options).merge(
+    type: 'EquityCampaign',
+    company_info: {
+      name: company_name,
+      description: company_description,
+      headquarters: company_headquarters,
+      website: company_website,
+      contract_term: contract_term,
+    },
+    shares_available: shares_available,
+    percentage_raised: percentage_raised,
+    equity_status: equity_status,
+    maximum_investment: maximum_investment,
+    # Add team members to the response
+    team_members: campaign_team_members.includes(:user).map do |member|
+      {
+        id: member.id,
+        name: member.name,
+        email: member.email,
+        role: member.role,
+        title: member.title,
+        equity_percentage: member.equity_percentage,
+        description: member.description,
+        avatar_url: member.avatar_url,
+        user: member.user ? {
+          id: member.user.id,
+          email: member.user.email,
+          profile: {
+            first_name: member.user.profile&.first_name,
+            last_name: member.user.profile&.last_name
+          }
+        } : nil
+      }
+    end
+  )
+end
   
   private
   
