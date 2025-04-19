@@ -356,7 +356,10 @@ export const EquityCampaignProvider = ({
   );
 
   const addTeamMember = useCallback(
-    async (campaignId: string, formData: FormData): Promise<CampaignTeamMember | null> => {
+    async (
+      campaignId: string,
+      formData: FormData,
+    ): Promise<CampaignTeamMember | null> => {
       setLoading(true);
       setError(null);
       try {
