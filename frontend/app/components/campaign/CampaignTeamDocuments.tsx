@@ -54,8 +54,9 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
   useEffect(() => {
     if (campaignId) {
       fetchTeamMembers(campaignId);
+      fetchDocuments(campaignId);
     }
-  }, [campaignId, fetchTeamMembers]);
+  }, [campaignId, fetchTeamMembers, fetchDocuments]);
 
   // Form states
   const [teamMember, setTeamMember] = useState<
