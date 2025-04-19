@@ -6,7 +6,7 @@ import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import ErrorPage from '../errorpage/ErrorPage';
 import Link from 'next/link';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
-import EquityCampaignCard from './EquityCampaignCard ';
+import EquityCampaignCard from './EquityCampaignCard';
 
 interface EquityCarouselProps {
   campaigns: CampaignResponseDataType[] | undefined;
@@ -35,7 +35,7 @@ const EquityCampaignCarousel: React.FC<EquityCarouselProps> = ({
     }
   };
 
-  // Filter campaigns based on status and permissions
+  // Filter campaigns based on status, type and permissions
   const equityCampaigns = campaigns?.filter(
     (campaign) =>
       campaign.status !== 'completed' &&
@@ -88,33 +88,35 @@ const EquityCampaignCarousel: React.FC<EquityCarouselProps> = ({
 
   return (
     <div className="w-full my-8">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-2">
         <h2 className="text-xl font-bold">{title}</h2>
-        <div className="flex space-x-2">
-         <Link href="/invest" passHref>
+        <div className="flex items-center gap-2">
+          <Link href="/invest" passHref>
             <Button
               variant="outline"
-              className="rounded-full text-sm px-4 py-2"
+              className="rounded-full text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 whitespace-nowrap"
             >
-              View More Opportunities
+              View More
             </Button>
           </Link>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={scrollLeft}
-            className="rounded-full"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={scrollRight}
-            className="rounded-full"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+          <div className="flex gap-1">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={scrollLeft}
+              className="rounded-full h-8 w-8 md:h-10 md:w-10"
+            >
+              <ChevronLeft className="h-3 w-3 md:h-4 md:w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={scrollRight}
+              className="rounded-full h-8 w-8 md:h-10 md:w-10"
+            >
+              <ChevronRight className="h-3 w-3 md:h-4 md:w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
