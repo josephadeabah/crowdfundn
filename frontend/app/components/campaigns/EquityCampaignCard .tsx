@@ -155,7 +155,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
           </div>
 
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground"></span>
+            <span className="text-sm font-semibold bg-emerald-100 text-emerald-800 px-2 py-1 rounded">Invest</span>
             <span className="text-sm text-muted-foreground">Days Left</span>
           </div>
           <div className="flex justify-between items-center mt-1">
