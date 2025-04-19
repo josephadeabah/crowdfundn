@@ -356,10 +356,7 @@ export const EquityCampaignProvider = ({
   );
 
   const addTeamMember = useCallback(
-    async (
-      campaignId: string,
-      formData: FormData,
-    ): Promise<CampaignTeamMember | null> => {
+    async (campaignId: string, formData: FormData): Promise<CampaignTeamMember | null> => {
       setLoading(true);
       setError(null);
       try {
@@ -368,7 +365,6 @@ export const EquityCampaignProvider = ({
           {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({ campaign_team_member: formData }),
