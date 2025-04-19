@@ -139,18 +139,28 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
           </div>
 
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-semibold">${parseFloat(campaign.transferred_amount.toString())?.toLocaleString()}</span>
+            <span className="text-sm font-semibold">
+              $
+              {parseFloat(
+                campaign.transferred_amount.toString(),
+              )?.toLocaleString()}
+            </span>
             <span className="text-sm text-muted-foreground">
-               from {campaign.total_investors} investors
+              from {campaign.total_investors} investors
             </span>
           </div>
 
           <div className="flex justify-between items-center mb-2">
             <div className="flex items-center">
-              <span className="text-sm text-muted-foreground">Minimum Investment</span>
+              <span className="text-sm text-muted-foreground">
+                Minimum Investment
+              </span>
             </div>
             <span className="text-sm font-semibold bg-red-100 text-red-800 px-2 py-1 rounded">
-              ${parseFloat((campaign.minimum_investment ?? '0.0').toString()).toLocaleString()}
+              $
+              {parseFloat(
+                (campaign.minimum_investment ?? '0.0').toString(),
+              ).toLocaleString()}
             </span>
           </div>
 
@@ -161,11 +171,13 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             </span>
           </div>
           <div className="flex justify-between items-center mt-1">
-          <span className="text-sm font-semibold bg-emerald-100 text-emerald-800 px-2 py-1 rounded">Invest</span>
-            <InfoTooltip 
-                id={`tooltip-${campaign.id}`}
-                content="This offering is hosted by BantuHive LLC"
-              />
+            <span className="text-sm font-semibold bg-emerald-100 text-emerald-800 px-2 py-1 rounded">
+              Invest
+            </span>
+            <InfoTooltip
+              id={`tooltip-${campaign.id}`}
+              content="This offering is hosted by BantuHive LLC"
+            />
           </div>
         </div>
       </Link>
