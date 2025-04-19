@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import ErrorPage from '../errorpage/ErrorPage';
+import Link from 'next/link';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import EquityCampaignCard from './EquityCampaignCard ';
 
@@ -37,9 +38,7 @@ const EquityCampaignCarousel: React.FC<EquityCarouselProps> = ({
   // Filter campaigns based on status and permissions
   const equityCampaigns = campaigns?.filter(
     (campaign) =>
-      campaign.status !== 'completed' &&
-      campaign.type === 'EquityCampaign' &&
-      campaign.permissions.is_public,
+      campaign.status !== 'completed' && campaign.type === 'EquityCampaign' && campaign.permissions.is_public,
   );
 
   // Determine what to show
@@ -106,6 +105,14 @@ const EquityCampaignCarousel: React.FC<EquityCarouselProps> = ({
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
+          <Link href="/invest" passHref>
+            <Button
+              variant="outline"
+              className="rounded-full text-sm px-4 py-2"
+            >
+              View More Opportunities
+            </Button>
+          </Link>
         </div>
       </div>
 
