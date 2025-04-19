@@ -58,8 +58,14 @@ module Api
         end
 
         def destroy
-          @team_member.destroy
-          head :no_content
+          if @team_member.destroy
+            render json: { success: true, message: 'Team member removed successfully' }, status: :ok
+          else
+            render json: { 
+              success: false, 
+              errors: @team_member.errors.full_messages 
+            }, status: :unprocessable_entity
+          end
         end
 
         private
