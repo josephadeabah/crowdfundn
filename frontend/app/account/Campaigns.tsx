@@ -24,6 +24,7 @@ import { generateRandomString } from '../utils/helpers/generate.random-string';
 import ErrorPage from '../components/errorpage/ErrorPage';
 import { FiPlus, FiPlusCircle } from 'react-icons/fi';
 import CampaignTeamDocuments from '@/app/components/campaign/CampaignTeamDocuments';
+import Avatar from '../components/avatar/Avatar'; // Import Avatar component
 
 const Campaigns: React.FC = () => {
   const {
@@ -104,7 +105,10 @@ const Campaigns: React.FC = () => {
   };
 
   const getStatusDisplay = (campaign: CampaignResponseDataType) => {
-    if (campaign.equity_status === 'draft') {
+    if (
+      campaign.type === 'EquityCampaign' &&
+      campaign.equity_status === 'draft'
+    ) {
       return { text: 'Draft', color: 'text-blue-500' };
     }
     switch (campaign.status) {
@@ -192,7 +196,7 @@ const Campaigns: React.FC = () => {
                             Delete Campaign
                           </button>
                         </li>
-                        {campaign.equity_status !== 'draft' && (
+                        {campaign.type !== 'EquityCampaign' && (
                           <li>
                             <button
                               className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
@@ -235,6 +239,100 @@ const Campaigns: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Team Members for Equity Campaigns */}
+                {campaign.type === 'EquityCampaign' &&
+                  campaign.team_members &&
+                  campaign.team_members.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-sm text-gray-500 dark:text-neutral-400 mb-2">
+                        Team Members
+                      </p>
+                      <div className="flex -space-x-3">
+                        {campaign.team_members
+                          .slice(0, 5)
+                          .map((member, index) => (
+                            <Popover key={index}>
+                              <PopoverTrigger asChild>
+                                <div
+                                  className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
+                                  style={{
+                                    zIndex:
+                                      (campaign.team_members?.length ?? 0) -
+                                      index,
+                                  }}
+                                >
+                                  <Avatar
+                                    name={member.name}
+                                    size="sm"
+                                    imageUrl={member.avatar_url}
+                                  />
+                                </div>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-96">
+                                <div className="space-y-4 p-4">
+                                  <div className="flex items-center space-x-4">
+                                    <Avatar
+                                      name={member.name}
+                                      size="xl"
+                                      imageUrl={member.avatar_url}
+                                    />
+                                    <div>
+                                      <div className="flex items-center gap-1">
+                                        <h4 className="font-semibold text-lg text-gray-800">
+                                          {member.name}
+                                        </h4>
+                                      </div>
+                                      <p className="text-sm text-gray-500">
+                                        {member.role}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-semibold">
+                                      Role
+                                    </p>
+                                    <p className="text-sm text-gray-700">
+                                      {member.role}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-semibold">
+                                      Title
+                                    </p>
+                                    <p className="text-sm text-gray-700">
+                                      {member.title}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-semibold">
+                                      Equity
+                                    </p>
+                                    <p className="text-sm text-gray-700">
+                                      {member.equity_percentage}%
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-semibold">
+                                      Description
+                                    </p>
+                                    <p className="text-sm text-gray-700">
+                                      {member.description}
+                                    </p>
+                                  </div>
+                                </div>
+                              </PopoverContent>
+                            </Popover>
+                          ))}
+                        {campaign.team_members.length > 5 && (
+                          <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
+                            +{campaign.team_members.length - 5}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                 <div className="mt-4 flex justify-between items-center">
                   <div className="flex gap-3 items-center">
                     <Button
