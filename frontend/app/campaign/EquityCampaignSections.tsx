@@ -167,7 +167,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
               {contractDocuments.map((document) => (
                 <div
                   key={document.id}
-                  className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+                  className="bg-white dark:bg-gray-800 p-4 shadow-sm"
                 >
                   {document.files.map((file) => (
                     <div
@@ -189,7 +189,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
                         href={file.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
+                        className="px-4 py-2 bg-white hover:bg-white text-gray-700 rounded-full border border-gray-200 transition-colors"
                       >
                         View Document
                       </a>
