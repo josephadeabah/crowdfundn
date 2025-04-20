@@ -35,7 +35,7 @@ const InvestLayout = ({ children }: InvestLayoutProps) => {
   const activeTab = tabs.find(tab => pathname.startsWith(tab.href))?.value || 'campaigns';
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-white">
       <Tabs defaultValue={activeTab} value={activeTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           {tabs.map((tab) => (
