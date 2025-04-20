@@ -9,6 +9,7 @@ import {
   RocketIcon,
   ChatBubbleIcon,
   StarIcon,
+  CubeIcon
 } from '@radix-ui/react-icons';
 import { HiOutlineTruck } from 'react-icons/hi';
 import { BiTransfer } from 'react-icons/bi';
@@ -43,7 +44,7 @@ const ProfileTabs = () => {
     },
     {
       label: 'Capital',
-      icon: <FaChartLine />,
+      icon: <CubeIcon />,
       component: <EquityInvestments />,
       description: 'Manage your equity investments and portfolio.',
     },
