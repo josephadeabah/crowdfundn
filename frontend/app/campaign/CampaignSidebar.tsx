@@ -29,12 +29,12 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
               <Link
                 href="/learn/equity-fundraising"
                 target="_blank"
-                className="text-gray-500 hover:underline"
+                className="text-gray-500 underline text-sm"
               >
                 Learn more about equity fundraisers
               </Link>
             </p>
-            <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-lg transition-colors">
+            <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-full transition-colors">
               Invest
             </Button>
           </>
