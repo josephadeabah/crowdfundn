@@ -4,7 +4,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/app/components/ui/tabs'; // Adjust the import path as needed
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from '@/app/components/ui/tabs'; // Adjust the import path as needed
 
 interface InvestLayoutProps {
   children: React.ReactNode;
