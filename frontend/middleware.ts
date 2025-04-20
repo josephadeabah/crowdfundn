@@ -19,9 +19,9 @@ const publicRoutes = [
   '/auth/login',
   '/auth/register',
   '/',
-  '/invest',
-  '/invest/funds',
-  '/invest/investors',
+  // '/invest',
+  // '/invest/funds',
+  // '/invest/investors',
 ];
 
 // Helper function to parse cookies from the request header
