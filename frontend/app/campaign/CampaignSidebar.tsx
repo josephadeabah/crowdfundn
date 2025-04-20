@@ -23,7 +23,7 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
         {isEquityCampaign ? (
           <>
             <h2 className="text-xl font-semibold mb-4">
-              Invest in this Company
+              Invest in this company
             </h2>
             <p className="text-gray-700 mb-4">
               <Link
