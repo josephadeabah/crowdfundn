@@ -488,7 +488,7 @@ const SingleCampaignPage: React.FC = () => {
                               key={member.id}
                               className="bg-white dark:bg-gray-800 p-6 shadow-sm"
                             >
-                              <div className="flex items-start space-x-4 gap-2">
+                              <div className="flex items-start space-x-4 gap-3">
                                 {/* Avatar with fixed size and no shrink */}
                                 <div className="w-16 h-16 flex-shrink-0">
                                   <Avatar
