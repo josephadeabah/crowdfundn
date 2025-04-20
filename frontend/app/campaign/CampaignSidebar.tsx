@@ -29,7 +29,7 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
               <Link
                 href="/learn/equity-fundraising"
                 target="_blank"
-                className="text-blue-600 hover:underline"
+                className="text-gray-500 hover:underline"
               >
                 Learn more about equity fundraisers
               </Link>
