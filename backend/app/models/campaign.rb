@@ -113,6 +113,7 @@ class Campaign < ApplicationRecord
       rewards: rewards,
       updates: updates,
       comments: comments,
+      investor_documents: investor_documents.map(&:as_json),
       required_documents: required_documents.map(&:as_json),
       team_members: campaign_team_members.includes(:user).map do |member|
         {

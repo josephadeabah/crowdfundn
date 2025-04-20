@@ -205,7 +205,8 @@ module Api
             rewards: {},
             updates: {},
             comments: {},
-            fundraiser: { include: :profile }
+            fundraiser: { include: :profile },
+            investor_documents: {}
           }
         ).merge(
           type: campaign.class.name,
@@ -254,7 +255,7 @@ module Api
 
       def set_campaign
         campaign_id = params[:id] || JSON.parse(request.body.read)['campaign_id']
-        @campaign = campaign_scope.includes(:rewards, :updates, :comments, fundraiser: :profile).find(campaign_id)
+        @campaign = campaign_scope.includes(:rewards, :updates, :comments, :investor_documents, fundraiser: :profile).find(campaign_id)
       rescue ActiveRecord::RecordNotFound
         render json: { error: 'Campaign not found' }, status: :not_found
       end
