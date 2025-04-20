@@ -42,22 +42,24 @@ const InvestLayout = ({ children }: InvestLayoutProps) => {
 
   return (
     <div className="w-full bg-white">
-      <Tabs defaultValue={activeTab} value={activeTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          {tabs.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value} asChild>
-              <Link href={tab.href}>{tab.name}</Link>
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Tabs defaultValue={activeTab} value={activeTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            {tabs.map((tab) => (
+              <TabsTrigger key={tab.value} value={tab.value} asChild>
+                <Link href={tab.href}>{tab.name}</Link>
+              </TabsTrigger>
+            ))}
+          </TabsList>
 
-        {/* Only render the content for the active tab */}
-        {tabs.map((tab) => (
-          <TabsContent key={tab.value} value={tab.value}>
-            {pathname.startsWith(tab.href) && children}
-          </TabsContent>
-        ))}
-      </Tabs>
+          {/* Only render the content for the active tab */}
+          {tabs.map((tab) => (
+            <TabsContent key={tab.value} value={tab.value}>
+              {pathname.startsWith(tab.href) && children}
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
     </div>
   );
 };
