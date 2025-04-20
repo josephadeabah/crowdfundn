@@ -482,7 +482,7 @@ const SingleCampaignPage: React.FC = () => {
                           <FaUsers className="mr-2 text-purple-600" />
                           Team Members
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1">
                           {currentCampaign?.team_members?.map((member) => (
                             <div
                               key={member.id}
