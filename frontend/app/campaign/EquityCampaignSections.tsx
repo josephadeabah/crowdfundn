@@ -135,7 +135,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
                 href={campaign.company_info.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 dark:text-blue-400 hover:underline flex items-center"
+                className="text-gray-600 dark:text-gray-400 hover:underline flex items-center"
               >
                 <FaLink className="mr-1" />
                 {campaign.company_info.website}
