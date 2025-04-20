@@ -1,13 +1,13 @@
 // app/invest/funds/page.tsx
 const FundsPage = () => {
-  return (
-    <div className="py-8 md:py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl font-bold mb-6">VC Funds</h2>
-        {/* Add your VC Funds content here */}
+    return (
+      <div className="py-8 md:py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl font-bold mb-6">VC Funds</h2>
+          {/* VC Funds content here */}
+        </div>
       </div>
-    </div>
-  );
-};
-
-export default FundsPage;
+    );
+  };
+  
+  export default FundsPage;

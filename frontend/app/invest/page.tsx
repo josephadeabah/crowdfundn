@@ -1,5 +1,6 @@
 // app/invest/page.tsx
 'use client';
+
 import React from 'react';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useEffect, useMemo } from 'react';

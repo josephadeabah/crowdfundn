@@ -2,14 +2,9 @@
 'use client';
 
 import React from 'react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/app/components/ui/tabs';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from '@/app/components/ui/tabs'; // Adjust the import path as needed
 
 interface InvestLayoutProps {
   children: React.ReactNode;
@@ -22,44 +17,40 @@ const InvestLayout = ({ children }: InvestLayoutProps) => {
     {
       name: 'Campaigns',
       href: '/invest',
-      current: pathname === '/invest',
+      value: 'campaigns',
     },
     {
       name: 'VC Funds',
       href: '/invest/funds',
-      current: pathname === '/invest/funds',
+      value: 'funds',
     },
     {
       name: 'Top Investors',
       href: '/invest/investors',
-      current: pathname === '/invest/investors',
+      value: 'investors',
     },
   ];
 
-  // Get the default tab value based on current route
-  const defaultValue = tabs.find((tab) => tab.current)?.href || '/invest';
+  // Get active tab based on current route
+  const activeTab = tabs.find(tab => pathname.startsWith(tab.href))?.value || 'campaigns';
 
   return (
     <div className="w-full">
-      <Tabs defaultValue={defaultValue} className="w-full">
+      <Tabs defaultValue={activeTab} value={activeTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           {tabs.map((tab) => (
-            <Link href={tab.href} key={tab.href} passHref legacyBehavior>
-              <TabsTrigger value={tab.href} asChild>
-                <a className="w-full">{tab.name}</a>
-              </TabsTrigger>
-            </Link>
+            <TabsTrigger key={tab.value} value={tab.value} asChild>
+              <Link href={tab.href}>{tab.name}</Link>
+            </TabsTrigger>
           ))}
         </TabsList>
-        <TabsContent value="/invest">
-          {pathname === '/invest' && children}
-        </TabsContent>
-        <TabsContent value="/invest/funds">
-          {pathname === '/invest/funds' && children}
-        </TabsContent>
-        <TabsContent value="/invest/investors">
-          {pathname === '/invest/investors' && children}
-        </TabsContent>
+        
+        {/* Only render the content for the active tab */}
+        {tabs.map((tab) => (
+          <TabsContent key={tab.value} value={tab.value}>
+            {pathname.startsWith(tab.href) && children}
+          </TabsContent>
+        ))}
       </Tabs>
     </div>
   );
