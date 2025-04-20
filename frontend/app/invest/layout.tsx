@@ -15,12 +15,12 @@ const InvestLayout = ({ children }: InvestLayoutProps) => {
 
   const tabs = [
     {
-      name: 'Campaigns',
+      name: 'Founders',
       href: '/invest',
       value: 'campaigns',
     },
     {
-      name: 'VC Funds',
+      name: 'Venture Funds',
       href: '/invest/funds',
       value: 'funds',
     },
