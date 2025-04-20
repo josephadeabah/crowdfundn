@@ -67,6 +67,12 @@ export const dropdownLinks: DropdownLinks = {
   ],
   Fund: [
     {
+      label: 'Invest in Founders',
+      href: '/invest',
+      icon: BanknotesIcon,
+      description: 'Invest in founders and companies for equity.',
+    },
+    {
       label: 'By Category',
       href: '/explore/category',
       icon: SquaresPlusIcon,
