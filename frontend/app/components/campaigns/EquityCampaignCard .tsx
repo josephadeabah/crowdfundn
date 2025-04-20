@@ -143,11 +143,12 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
           </div>
         </div>
 
-        <div className="p-4 pt-2"> {/* Reduced top padding to account for overlapping avatar */}
+        <div className="p-4 pt-2">
+          {' '}
+          {/* Reduced top padding to account for overlapping avatar */}
           <h3 className="text-lg font-semibold text-foreground mb-2">
             {campaign.title}
           </h3>
-
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-muted-foreground">Valuation</span>
             <span className="text-sm font-semibold">
@@ -157,7 +158,6 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
               )?.toLocaleString()}
             </span>
           </div>
-
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-semibold">
               {campaign?.currency_symbol || campaign?.currency?.toUpperCase()}{' '}
@@ -169,7 +169,6 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
               from {campaign.total_investors} investors
             </span>
           </div>
-
           <div className="flex justify-between items-center mb-2">
             <div className="flex items-center">
               <span className="text-sm text-muted-foreground">
@@ -183,7 +182,6 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
               ).toLocaleString()}
             </span>
           </div>
-
           <div className="flex justify-between items-center">
             <span className="text-sm text-muted-foreground">Days Left</span>
             <span className="text-sm font-semibold">

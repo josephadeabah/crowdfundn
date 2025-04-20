@@ -9,7 +9,7 @@ import {
   RocketIcon,
   ChatBubbleIcon,
   StarIcon,
-  MaskOffIcon
+  MaskOffIcon,
 } from '@radix-ui/react-icons';
 import { HiOutlineTruck } from 'react-icons/hi';
 import { BiTransfer } from 'react-icons/bi';
