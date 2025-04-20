@@ -11,7 +11,7 @@ import { useAuth } from '@/app/context/auth/AuthContext';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import InfoTooltip from '../tooltip/tooltip';
-import Avatar from '../Avatar'; // Make sure to import your Avatar component
+import Avatar from '../avatar/Avatar';
 
 interface EquityCardProps {
   campaign: CampaignResponseDataType;
