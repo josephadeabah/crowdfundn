@@ -46,7 +46,7 @@ const InvestLayout = ({ children }: InvestLayoutProps) => {
       {/* Added pt-12 for top padding */}
       <Tabs defaultValue={activeTab} value={activeTab} className="w-full">
         <div className="max-w-7xl mx-auto px-4">
-          <TabsList className="grid w-full grid-cols-3 py-6 px-8 gap-4">
+          <TabsList className="grid w-full grid-cols-3 px-4 py-2 md:py-6 md:px-8 gap-4">
             {' '}
             {/* Added gap-4 */}
             {tabs.map((tab) => (
@@ -54,7 +54,7 @@ const InvestLayout = ({ children }: InvestLayoutProps) => {
                 key={tab.value}
                 value={tab.value}
                 asChild
-                className="py-6 px-8 text-lg font-medium" // Bigger padding and font
+                className="px-4 py-2 md:py-6 md:px-8 text-sm md:text-lg font-medium" // Bigger padding and font
               >
                 <Link
                   href={tab.href}
