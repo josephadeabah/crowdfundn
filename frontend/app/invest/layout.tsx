@@ -13,7 +13,7 @@ const InvestLayout = ({ children }: InvestLayoutProps) => {
 
   const tabs = [
     {
-      name: 'Campaigns',
+      name: 'Founders',
       href: '/invest',
       current: pathname === '/invest',
     },
