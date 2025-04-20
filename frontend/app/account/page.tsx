@@ -25,7 +25,7 @@ import OnboardingModal from '@/app/components/onboarding/OnboardingModal';
 import Favorites from '@/app/account/Favorites';
 import PledgesListPage from '@/app/account/Pledges';
 import EquityInvestments from './EquityInvestments';
-import { FaChartLine, FaMoneyBill } from 'react-icons/fa';
+import { FaChartLine, FaMoneyBillAlt } from 'react-icons/fa';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState<string>('');
@@ -44,7 +44,7 @@ const ProfileTabs = () => {
     },
     {
       label: 'Capital',
-      icon: <FaMoneyBill />,
+      icon: <FaMoneyBillAlt />,
       component: <EquityInvestments />,
       description: 'Manage your equity investments and portfolio.',
     },
