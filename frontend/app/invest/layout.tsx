@@ -42,7 +42,7 @@ const InvestLayout = ({ children }: InvestLayoutProps) => {
 
   return (
     <div className="w-full bg-white">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto">
         <Tabs defaultValue={activeTab} value={activeTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             {tabs.map((tab) => (
