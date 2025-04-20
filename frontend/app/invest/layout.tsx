@@ -41,32 +41,41 @@ const InvestLayout = ({ children }: InvestLayoutProps) => {
     tabs.find((tab) => pathname.startsWith(tab.href))?.value || 'campaigns';
 
   return (
-    <div className="w-full bg-white pt-12"> {/* Added pt-12 for top padding */}
-      <div className="max-w-7xl mx-auto px-4">
-        <Tabs defaultValue={activeTab} value={activeTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 gap-4"> {/* Added gap-4 */}
+    <div className="w-full bg-white pt-12">
+      {' '}
+      {/* Added pt-12 for top padding */}
+      <Tabs defaultValue={activeTab} value={activeTab} className="w-full">
+        <div className="max-w-7xl mx-auto px-4">
+          <TabsList className="grid w-full grid-cols-3 gap-4">
+            {' '}
+            {/* Added gap-4 */}
             {tabs.map((tab) => (
-              <TabsTrigger 
-                key={tab.value} 
-                value={tab.value} 
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
                 asChild
                 className="py-6 px-8 text-lg font-medium" // Bigger padding and font
               >
-                <Link href={tab.href} className="w-full h-full flex items-center justify-center">
+                <Link
+                  href={tab.href}
+                  className="w-full h-full flex items-center justify-center"
+                >
                   {tab.name}
                 </Link>
               </TabsTrigger>
             ))}
           </TabsList>
+        </div>
 
-          {/* Only render the content for the active tab */}
-          {tabs.map((tab) => (
+        {/* Only render the content for the active tab */}
+        {tabs.map((tab) => (
+          <div className="max-w-7xl mx-auto px-4">
             <TabsContent key={tab.value} value={tab.value}>
               {pathname.startsWith(tab.href) && children}
             </TabsContent>
-          ))}
-        </Tabs>
-      </div>
+          </div>
+        ))}
+      </Tabs>
     </div>
   );
 };
