@@ -92,6 +92,17 @@ export interface CampaignResponseDataType {
   shares_available?: number;
   percentage_raised?: number;
   total_investors?: number;
+  investor_documents?: {
+    id: string;
+    document_type: string;
+    display_name: string;
+    files: {
+      filename: string;
+      human_size: string;
+      content_type: string;
+      url: string;
+    }[];
+  }[];
 }
 
 export interface CampaignShareType {
@@ -236,6 +247,17 @@ export interface SingleCampaignResponseDataType {
   shares_available?: number;
   percentage_raised?: number;
   total_investors?: number;
+  investor_documents?: {
+    id: string;
+    document_type: string;
+    display_name: string;
+    files: {
+      filename: string;
+      human_size: string;
+      content_type: string;
+      url: string;
+    }[];
+  }[];
 }
 
 export interface CampaignPerformance {

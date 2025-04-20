@@ -7,6 +7,7 @@ import {
   FaUsers,
   FaBuilding,
   FaLink,
+  FaFileContract,
 } from 'react-icons/fa';
 import Avatar from '@/app/components/avatar/Avatar';
 import { SingleCampaignResponseDataType } from '../types/campaigns.types';
@@ -21,6 +22,12 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
   const fundraiserCurrency =
     campaign?.fundraiser?.currency_symbol ||
     campaign?.fundraiser?.currency?.toUpperCase();
+
+  // Filter only contract documents
+  const contractDocuments =
+    campaign?.investor_documents?.filter(
+      (doc) => doc.document_type === 'contract',
+    ) || [];
 
   return (
     <div className="mb-10">
@@ -144,6 +151,56 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
           )}
         </div>
       </div>
+
+      {/* Investment Documents Section */}
+      {contractDocuments.length > 0 && (
+        <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+            <FaFileContract className="mr-2 text-orange-500" />
+            Contract Documents
+          </h2>
+          <div className="space-y-4">
+            <p className="text-gray-700 dark:text-gray-300">
+              Review the legal documents for this investment opportunity:
+            </p>
+            <div className="grid grid-cols-1 gap-4">
+              {contractDocuments.map((document) => (
+                <div
+                  key={document.id}
+                  className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+                >
+                  {document.files.map((file) => (
+                    <div
+                      key={file.filename}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="flex items-center">
+                        <FaFileContract className="text-orange-500 mr-3" />
+                        <div>
+                          <h3 className="font-medium text-gray-900 dark:text-white">
+                            {document.display_name}
+                          </h3>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            {file.human_size} • {file.content_type}
+                          </p>
+                        </div>
+                      </div>
+                      <a
+                        href={file.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
+                      >
+                        View Document
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Team Members Section */}
       <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 mb-8">
