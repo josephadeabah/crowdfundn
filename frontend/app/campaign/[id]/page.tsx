@@ -482,11 +482,11 @@ const SingleCampaignPage: React.FC = () => {
                           <FaUsers className="mr-2 text-purple-600" />
                           Team Members
                         </h2>
-                        <div className="grid grid-cols-1">
+                        <div className="grid grid-cols-1 gap-2">
                           {currentCampaign?.team_members?.map((member) => (
                             <div
                               key={member.id}
-                              className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+                              className="bg-white dark:bg-gray-800 p-6 shadow-sm"
                             >
                               <div className="flex items-start space-x-4">
                                 <Avatar
