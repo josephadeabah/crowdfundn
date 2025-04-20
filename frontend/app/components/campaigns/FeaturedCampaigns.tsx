@@ -60,7 +60,9 @@ const FeaturedCampaigns = () => {
           loading={loading}
           error={error}
         />
-        <Link href="/invest" passHref>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-6">
+      <Link href="/invest" passHref>
           <Button
             variant="outline"
             size="lg"
