@@ -102,7 +102,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
-          <span className="absolute top-4 left-4 px-2 py-1 text-xs font-semibold bg-background/90 text-orange-600 rounded-full">
+          <span className="absolute top-4 left-4 px-2 py-1 text-xs font-semibold bg-background/90 text-fuchsia-600 rounded-full">
             {deslugify(campaign?.category)}
           </span>
 
