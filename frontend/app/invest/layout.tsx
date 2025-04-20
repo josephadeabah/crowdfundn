@@ -46,7 +46,7 @@ const InvestLayout = ({ children }: InvestLayoutProps) => {
       {/* Added pt-12 for top padding */}
       <Tabs defaultValue={activeTab} value={activeTab} className="w-full">
         <div className="max-w-7xl mx-auto px-4">
-          <TabsList className="grid w-full grid-cols-3 gap-4">
+          <TabsList className="grid w-full grid-cols-3 py-6 px-8 gap-4">
             {' '}
             {/* Added gap-4 */}
             {tabs.map((tab) => (
