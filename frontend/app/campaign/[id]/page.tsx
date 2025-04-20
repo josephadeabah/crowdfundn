@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import DonationButton from '@/app/components/donate/DonationButton';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import { useParams, useSearchParams } from 'next/navigation'; // Import useSearchParams
+import { useParams, useSearchParams } from 'next/navigation';
 import {
   FaShare,
   FaChevronLeft,
@@ -10,6 +10,13 @@ import {
   FaFlag,
   FaBookmark,
   FaRegBookmark,
+  FaBuilding,
+  FaUsers,
+  FaChartLine,
+  FaMoneyBillWave,
+  FaPercentage,
+  FaHandHoldingUsd,
+  FaLink,
 } from 'react-icons/fa';
 import { Button } from '@/app/components/button/Button';
 import SingleCampaignLoader from '@/app/loaders/SingleCampaignLoader';
@@ -47,8 +54,8 @@ const SingleCampaignPage: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { id } = useParams() as { id: string };
-  const searchParams = useSearchParams(); // Get search params
-  const tabParam = searchParams.get('tab'); // Get the 'tab' query parameter
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
 
   const {
     currentCampaign,
@@ -82,7 +89,6 @@ const SingleCampaignPage: React.FC = () => {
     });
   };
 
-  // Set the selected tab based on the query parameter
   useEffect(() => {
     if (tabParam === 'donate') {
       setSelectedTab('donate');
@@ -122,7 +128,7 @@ const SingleCampaignPage: React.FC = () => {
     const rawDescription = currentCampaign?.description?.body
       ? stripHtmlTags(currentCampaign.description.body)
       : '';
-    const campaignDescription = truncateText(rawDescription, 100); // Limit to 100 characters
+    const campaignDescription = truncateText(rawDescription, 100);
 
     if (navigator.share) {
       return navigator
@@ -132,13 +138,9 @@ const SingleCampaignPage: React.FC = () => {
           url: currentUrl,
         })
         .then(() => {
-          // Call the backend to record the share
           shareCampaign(String(currentCampaign?.id))
-            .then((response) => {
-              // Handle success (e.g., update UI with new share count)
-            })
+            .then((response) => {})
             .catch((error) => {
-              // Handle error - display error message from API
               alert(error.error);
             });
         })
@@ -270,8 +272,8 @@ const SingleCampaignPage: React.FC = () => {
                     objectFit="cover"
                     unoptimized
                     className="absolute top-0 left-0 w-full h-full rounded-t"
-                    quality={100} // Ensures maximum image quality
-                    priority // Ensures the image is prioritized for loading
+                    quality={100}
+                    priority
                     onError={(e) => {
                       console.error('Image failed to load:', e);
                       e.currentTarget.src = '/bantuhive.svg';
@@ -298,7 +300,7 @@ const SingleCampaignPage: React.FC = () => {
                       'comments',
                       'backers',
                     ].map((tab) => {
-                      let count = 0; // Default to 0 for tabs that don't require counts
+                      let count = 0;
                       if (tab === 'updates') {
                         count = currentCampaign?.updates?.length || 0;
                       } else if (tab === 'comments') {
@@ -307,7 +309,6 @@ const SingleCampaignPage: React.FC = () => {
                         count = currentCampaign?.total_donors || 0;
                       }
 
-                      // Disable "donate" tab if donations are not allowed
                       const isDonateTabDisabled =
                         tab === 'donate' &&
                         !currentCampaign?.permissions?.accept_donations;
@@ -321,7 +322,7 @@ const SingleCampaignPage: React.FC = () => {
                               setSelectedTab(tab as any);
                             }
                           }}
-                          disabled={isDonateTabDisabled} // Disable the button if the "donate" tab is disabled
+                          disabled={isDonateTabDisabled}
                         >
                           {tab.charAt(0).toUpperCase() + tab.slice(1)}{' '}
                           {count > 0 && (
@@ -344,6 +345,181 @@ const SingleCampaignPage: React.FC = () => {
               {/* Tab Content */}
               {selectedTab === 'details' && (
                 <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
+                  {/* Equity Campaign Specific Content */}
+                  {currentCampaign?.type === 'EquityCampaign' && (
+                    <div className="mb-10">
+                      {/* Investment Details Section */}
+                      <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 mb-8">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+                          <FaChartLine className="mr-2 text-green-600" />
+                          Investment Details
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center mb-2">
+                              <div className="p-2 bg-green-100 dark:bg-green-900 rounded-full mr-3">
+                                <FaMoneyBillWave className="text-green-600 dark:text-green-300" />
+                              </div>
+                              <h3 className="font-medium text-gray-500 dark:text-gray-400">
+                                Valuation
+                              </h3>
+                            </div>
+                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                              {fundraiserCurrency}
+                              {parseFloat(
+                                String(currentCampaign?.valuation || '0'),
+                              ).toLocaleString()}
+                            </p>
+                          </div>
+
+                          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center mb-2">
+                              <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-full mr-3">
+                                <FaPercentage className="text-blue-600 dark:text-blue-300" />
+                              </div>
+                              <h3 className="font-medium text-gray-500 dark:text-gray-400">
+                                Equity Offered
+                              </h3>
+                            </div>
+                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                              {currentCampaign?.equity_offered}%
+                            </p>
+                          </div>
+
+                          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center mb-2">
+                              <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full mr-3">
+                                <FaHandHoldingUsd className="text-purple-600 dark:text-purple-300" />
+                              </div>
+                              <h3 className="font-medium text-gray-500 dark:text-gray-400">
+                                Minimum Investment
+                              </h3>
+                            </div>
+                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                              {fundraiserCurrency}
+                              {parseFloat(
+                                String(
+                                  currentCampaign?.minimum_investment || '0',
+                                ),
+                              ).toLocaleString()}
+                            </p>
+                          </div>
+
+                          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center mb-2">
+                              <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-full mr-3">
+                                <FaUsers className="text-yellow-600 dark:text-yellow-300" />
+                              </div>
+                              <h3 className="font-medium text-gray-500 dark:text-gray-400">
+                                Shares Available
+                              </h3>
+                            </div>
+                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                              {parseFloat(
+                                currentCampaign?.shares_available?.toString() ||
+                                  '0',
+                              ).toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Company Information Section */}
+                      <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 mb-8">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+                          <FaBuilding className="mr-2 text-blue-600" />
+                          Company Information
+                        </h2>
+                        <div className="space-y-4">
+                          <div>
+                            <h3 className="font-semibold text-gray-700 dark:text-gray-300">
+                              Name
+                            </h3>
+                            <p className="text-gray-900 dark:text-white">
+                              {currentCampaign?.company_info?.name || 'N/A'}
+                            </p>
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-gray-700 dark:text-gray-300">
+                              Description
+                            </h3>
+                            <p className="text-gray-900 dark:text-white">
+                              {currentCampaign?.company_info?.description ||
+                                'No description provided'}
+                            </p>
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-gray-700 dark:text-gray-300">
+                              Headquarters
+                            </h3>
+                            <p className="text-gray-900 dark:text-white">
+                              {currentCampaign?.company_info?.headquarters ||
+                                'N/A'}
+                            </p>
+                          </div>
+                          {currentCampaign?.company_info?.website && (
+                            <div>
+                              <h3 className="font-semibold text-gray-700 dark:text-gray-300">
+                                Website
+                              </h3>
+                              <a
+                                href={currentCampaign.company_info.website}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 dark:text-blue-400 hover:underline flex items-center"
+                              >
+                                <FaLink className="mr-1" />
+                                {currentCampaign.company_info.website}
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Team Members Section */}
+                      <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 mb-8">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+                          <FaUsers className="mr-2 text-purple-600" />
+                          Team Members
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {currentCampaign?.team_members?.map((member) => (
+                            <div
+                              key={member.id}
+                              className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+                            >
+                              <div className="flex items-start space-x-4">
+                                <Avatar
+                                  name={member.name}
+                                  size="xl"
+                                  imageUrl={member.avatar_url}
+                                />
+                                <div>
+                                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                                    {member.name}
+                                  </h3>
+                                  <p className="text-gray-600 dark:text-gray-300 font-medium">
+                                    {member.title}
+                                  </p>
+                                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                                    {member.description}
+                                  </p>
+                                  {member.equity_percentage && (
+                                    <div className="mt-3">
+                                      <span className="inline-block bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs px-2 py-1 rounded-full">
+                                        {member.equity_percentage}% Equity
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Campaign Description */}
                   <div
                     className="prose dark:prose-dark max-w-none"
@@ -351,6 +527,7 @@ const SingleCampaignPage: React.FC = () => {
                       __html: currentCampaign?.description?.body || '',
                     }}
                   />
+
                   {/* Combined Share and Fundraiser Info Container */}
                   <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-8">
                     {/* Share Section */}
@@ -473,18 +650,15 @@ const SingleCampaignPage: React.FC = () => {
                   />
                 </div>
               )}
-              <hr className="border-t-1 my-2" /> {/* Top line */}
+              <hr className="border-t-1 my-2" />
               <div className="w-full px-1 flex items-center">
-                {' '}
-                {/* Flexbox container */}
                 <span>Created</span>
                 <span className="ml-2">
                   {currentCampaign?.created_at
                     ? moment(currentCampaign.created_at).format('D MMMM YYYY')
                     : 'Unknown Date'}
                 </span>
-                {/* Small dot */}
-                <div className="w-1 h-1 bg-gray-500 rounded-full mx-2" />{' '}
+                <div className="w-1 h-1 bg-gray-500 rounded-full mx-2" />
                 <Link href="/explore/category">
                   <span className="text-gray-500 font-semibold underline ml-1">
                     {currentCampaign?.category
@@ -493,8 +667,7 @@ const SingleCampaignPage: React.FC = () => {
                   </span>
                 </Link>
               </div>
-              <hr className="border-t-1 border-gray-300 my-2" />{' '}
-              {/* Report Fundraiser section */}
+              <hr className="border-t-1 border-gray-300 my-2" />
               <div className="flex items-center justify-between mt-4">
                 <Link href="/report-fundraiser">
                   <a className="flex items-center px-4 py-2 text-gray-600 bg-white rounded-lg hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300 ease-in-out">
@@ -592,7 +765,7 @@ const SingleCampaignPage: React.FC = () => {
                             Number(currentCampaign?.goal_amount || 1)) *
                             100,
                         )}
-                        size={150} // Using relative size
+                        size={150}
                         strokeWidth={10}
                         color="#22c55e"
                       />

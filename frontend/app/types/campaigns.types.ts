@@ -218,6 +218,24 @@ export interface SingleCampaignResponseDataType {
   updates: Update[];
   comments: Comment[];
   fundraiser: FundraiserDetailsType;
+  team_members?: CampaignTeamMember[];
+  documents?: InvestorDocument[];
+  type?: string;
+  company_info?: {
+    name: string;
+    description: string;
+    headquarters: string;
+    website: string;
+    contract_term: string;
+  };
+  valuation?: number;
+  equity_offered?: number;
+  minimum_investment?: number;
+  maximum_investment?: number;
+  equity_status?: string;
+  shares_available?: number;
+  percentage_raised?: number;
+  total_investors?: number;
 }
 
 export interface CampaignPerformance {
