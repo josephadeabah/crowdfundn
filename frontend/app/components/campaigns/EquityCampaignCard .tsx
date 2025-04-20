@@ -11,6 +11,7 @@ import { useAuth } from '@/app/context/auth/AuthContext';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import InfoTooltip from '../tooltip/tooltip';
+import Avatar from '../Avatar'; // Make sure to import your Avatar component
 
 interface EquityCardProps {
   campaign: CampaignResponseDataType;
@@ -126,7 +127,23 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
           </button>
         </div>
 
-        <div className="p-4">
+        {/* Fundraiser profile positioned to overlap */}
+        <div className="relative px-4 -mt-6 z-10 flex items-end justify-end">
+          <div className="flex flex-col items-end">
+            <div className="bg-white rounded-full p-1 shadow-md">
+              <Avatar
+                name={campaign?.fundraiser?.profile?.name}
+                size="sm"
+                imageUrl={campaign?.fundraiser?.profile?.avatar}
+              />
+            </div>
+            <span className="mt-1 text-xs font-medium text-gray-700 bg-white/90 px-2 py-0.5 rounded-full shadow-sm">
+              {campaign?.fundraiser?.profile?.name}
+            </span>
+          </div>
+        </div>
+
+        <div className="p-4 pt-2"> {/* Reduced top padding to account for overlapping avatar */}
           <h3 className="text-lg font-semibold text-foreground mb-2">
             {campaign.title}
           </h3>
