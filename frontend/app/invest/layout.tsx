@@ -2,7 +2,12 @@
 'use client';
 
 import React from 'react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/app/components/ui/tabs';
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from '@/app/components/ui/tabs';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -32,7 +37,8 @@ const InvestLayout = ({ children }: InvestLayoutProps) => {
   ];
 
   // Get active tab based on current route
-  const activeTab = tabs.find(tab => pathname.startsWith(tab.href))?.value || 'campaigns';
+  const activeTab =
+    tabs.find((tab) => pathname.startsWith(tab.href))?.value || 'campaigns';
 
   return (
     <div className="w-full bg-white">
@@ -44,7 +50,7 @@ const InvestLayout = ({ children }: InvestLayoutProps) => {
             </TabsTrigger>
           ))}
         </TabsList>
-        
+
         {/* Only render the content for the active tab */}
         {tabs.map((tab) => (
           <TabsContent key={tab.value} value={tab.value}>

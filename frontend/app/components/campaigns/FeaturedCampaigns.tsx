@@ -5,6 +5,8 @@ import CampaignCarousel from './CampaignCarousel';
 import RewardCarousel from './RewardCarousel';
 import FundingTypes from '@/app/molecules/FundingTypes';
 import EquityCampaignCarousel from './EquityCampaignCarousel ';
+import Link from 'next/link';
+import { Button } from '../ui/button';
 
 const FeaturedCampaigns = () => {
   const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
@@ -58,6 +60,15 @@ const FeaturedCampaigns = () => {
           loading={loading}
           error={error}
         />
+        <Link href="/invest" passHref>
+          <Button
+            variant="outline"
+            size="lg"
+            className="rounded-full text-sm md:text-lg  whitespace-nowrap"
+          >
+            View More Investment Opportunities
+          </Button>
+        </Link>
       </div>
       <div className="bg-gray-50 py-12">
         <FundingTypes />

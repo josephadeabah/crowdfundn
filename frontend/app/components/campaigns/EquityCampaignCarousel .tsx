@@ -4,7 +4,6 @@ import { Button } from '../ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import ErrorPage from '../errorpage/ErrorPage';
-import Link from 'next/link';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import EquityCampaignCard from './EquityCampaignCard ';
 
@@ -90,33 +89,23 @@ const EquityCampaignCarousel: React.FC<EquityCarouselProps> = ({
     <div className="w-full my-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-2">
         <h2 className="text-xl font-bold">{title}</h2>
-        <div className="flex items-center gap-2">
-          <Link href="/invest" passHref>
-            <Button
-              variant="outline"
-              className="rounded-full text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 whitespace-nowrap"
-            >
-              View More
-            </Button>
-          </Link>
-          <div className="flex gap-1">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={scrollLeft}
-              className="rounded-full h-8 w-8 md:h-10 md:w-10"
-            >
-              <ChevronLeft className="h-3 w-3 md:h-4 md:w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={scrollRight}
-              className="rounded-full h-8 w-8 md:h-10 md:w-10"
-            >
-              <ChevronRight className="h-3 w-3 md:h-4 md:w-4" />
-            </Button>
-          </div>
+        <div className="flex gap-1">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={scrollLeft}
+            className="rounded-full h-8 w-8 md:h-10 md:w-10"
+          >
+            <ChevronLeft className="h-3 w-3 md:h-4 md:w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={scrollRight}
+            className="rounded-full h-8 w-8 md:h-10 md:w-10"
+          >
+            <ChevronRight className="h-3 w-3 md:h-4 md:w-4" />
+          </Button>
         </div>
       </div>
 
