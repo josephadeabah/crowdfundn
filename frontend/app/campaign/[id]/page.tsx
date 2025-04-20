@@ -477,46 +477,52 @@ const SingleCampaignPage: React.FC = () => {
                       </div>
 
                       {/* Team Members Section */}
-                      <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 mb-8">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
-                          <FaUsers className="mr-2 text-purple-600" />
-                          Team Members
-                        </h2>
-                        <div className="grid grid-cols-1 gap-2">
-                          {currentCampaign?.team_members?.map((member) => (
-                            <div
-                              key={member.id}
-                              className="bg-white dark:bg-gray-800 p-6 shadow-sm"
-                            >
-                              <div className="flex items-start space-x-4">
-                                <Avatar
-                                  name={member.name}
-                                  size="xl"
-                                  imageUrl={member.avatar_url}
-                                />
-                                <div>
-                                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                                    {member.name}
-                                  </h3>
-                                  <p className="text-gray-600 dark:text-gray-300 font-medium">
-                                    {member.title}
-                                  </p>
-                                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                                    {member.description}
-                                  </p>
-                                  {member.equity_percentage && (
-                                    <div className="mt-3">
-                                      <span className="inline-block bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs px-2 py-1 rounded-full">
-                                        {member.equity_percentage}% Equity
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+<div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 mb-8">
+  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+    <FaUsers className="mr-2 text-purple-600" />
+    Team Members
+  </h2>
+  <div className="grid grid-cols-1 gap-2">
+    {currentCampaign?.team_members?.map((member) => (
+      <div
+        key={member.id}
+        className="bg-white dark:bg-gray-800 p-6 shadow-sm"
+      >
+        <div className="flex items-start space-x-4">
+          {/* Avatar with fixed size and no shrink */}
+          <div className="w-16 h-16 flex-shrink-0">
+            <Avatar
+              name={member.name}
+              size="xl"
+              imageUrl={member.avatar_url}
+            />
+          </div>
+
+          {/* Member details */}
+          <div>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+              {member.name}
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300 font-medium">
+              {member.title}
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              {member.description}
+            </p>
+            {member.equity_percentage && (
+              <div className="mt-3">
+                <span className="inline-block bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs px-2 py-1 rounded-full">
+                  {member.equity_percentage}% Equity
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
                     </div>
                   )}
 
