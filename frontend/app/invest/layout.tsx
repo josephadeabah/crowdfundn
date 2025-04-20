@@ -41,13 +41,20 @@ const InvestLayout = ({ children }: InvestLayoutProps) => {
     tabs.find((tab) => pathname.startsWith(tab.href))?.value || 'campaigns';
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-white pt-12"> {/* Added pt-12 for top padding */}
       <div className="max-w-7xl mx-auto px-4">
-        <Tabs defaultValue={activeTab} value={activeTab} className="w-full mt-3">
-          <TabsList className="grid w-full grid-cols-3 p-8">
+        <Tabs defaultValue={activeTab} value={activeTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 gap-4"> {/* Added gap-4 */}
             {tabs.map((tab) => (
-              <TabsTrigger key={tab.value} value={tab.value} asChild>
-                <Link href={tab.href}>{tab.name}</Link>
+              <TabsTrigger 
+                key={tab.value} 
+                value={tab.value} 
+                asChild
+                className="py-6 px-8 text-lg font-medium" // Bigger padding and font
+              >
+                <Link href={tab.href} className="w-full h-full flex items-center justify-center">
+                  {tab.name}
+                </Link>
               </TabsTrigger>
             ))}
           </TabsList>
