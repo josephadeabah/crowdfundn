@@ -53,7 +53,7 @@ const FeaturedCampaigns = () => {
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <EquityCampaignCarousel
-          title="Investment Opportunities"
+          title="Invest Now"
           campaigns={displayedCampaigns}
           loading={loading}
           error={error}
