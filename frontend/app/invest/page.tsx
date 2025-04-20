@@ -27,7 +27,11 @@ const InvestPage = () => {
   const displayedCampaigns = useMemo(() => {
     if (!campaigns) return [];
     return campaigns.filter((campaign) => {
-      return campaign.status !== 'completed' && campaign.type === "EquityCampaign" && campaign.permissions.is_public;
+      return (
+        campaign.status !== 'completed' &&
+        campaign.type === 'EquityCampaign' &&
+        campaign.permissions.is_public
+      );
     });
   }, [campaigns]);
 
