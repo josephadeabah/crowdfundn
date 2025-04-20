@@ -3,6 +3,9 @@ import DonationButton from '@/app/components/donate/DonationButton';
 import ProgressRing from '@/app/components/ring/ProgressRing';
 import { SingleCampaignResponseDataType } from '../types/campaigns.types';
 import DonationsChart from './DonationsChart';
+import Link from 'next/link';
+import { Button } from '@/app/components/button/Button';
+
 interface CampaignSidebarProps {
   campaign: SingleCampaignResponseDataType | null;
 }
@@ -12,23 +15,48 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
     campaign?.fundraiser?.currency_symbol ||
     campaign?.fundraiser?.currency?.toUpperCase();
 
+  const isEquityCampaign = campaign?.type === 'EquityCampaign';
+
   return (
     <div className="sticky top-8">
       <div className="bg-white p-4">
-        <h2 className="text-xl font-semibold mb-4">Support This Project</h2>
-        <p className="text-gray-700 mb-4">
-          Help us reach our goal by contributing to this project.
-        </p>
-        <DonationButton
-          selectedTier={null}
-          pledgeAmount="0"
-          billingFrequency="once"
-          fundraiserDetails={{
-            id: String(campaign?.fundraiser_id),
-            campaignId: String(campaign?.id),
-            campaignTitle: campaign?.title,
-          }}
-        />
+        {isEquityCampaign ? (
+          <>
+            <h2 className="text-xl font-semibold mb-4">
+              Invest in this Company
+            </h2>
+            <p className="text-gray-700 mb-4">
+              <Link
+                href="/learn/equity-fundraising"
+                target="_blank"
+                className="text-blue-600 hover:underline"
+              >
+                Learn more about equity fundraisers
+              </Link>
+            </p>
+            <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-lg transition-colors">
+              Invest
+            </Button>
+          </>
+        ) : (
+          <>
+            <h2 className="text-xl font-semibold mb-4">Support This Project</h2>
+            <p className="text-gray-700 mb-4">
+              Help us reach our goal by contributing to this project.
+            </p>
+            <DonationButton
+              selectedTier={null}
+              pledgeAmount="0"
+              billingFrequency="once"
+              fundraiserDetails={{
+                id: String(campaign?.fundraiser_id),
+                campaignId: String(campaign?.id),
+                campaignTitle: campaign?.title,
+              }}
+            />
+          </>
+        )}
+
         <div className="mt-6">
           <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
             Campaign Progress
@@ -70,7 +98,8 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
                 </div>
               </div>
               <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                <strong>{campaign?.total_donors || 0}</strong> Backers
+                <strong>{campaign?.total_donors || 0}</strong>{' '}
+                {isEquityCampaign ? 'Investors' : 'Backers'}
               </p>
               <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                 <strong>{campaign?.remaining_days || 0}</strong> days left
