@@ -34,9 +34,12 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
                 Learn more about equity fundraisers
               </Link>
             </p>
-            <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-full transition-colors">
+            <button
+              className="w-full px-6 py-3 text-white font-semibold rounded-full bg-gradient-to-r from-orange-500 to-orange-800 hover:from-orange-800 hover:to-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transform hover:scale-105 transition-all duration-200 shadow"
+              aria-label="Invest"
+            >
               Invest
-            </Button>
+            </button>
           </>
         ) : (
           <>
