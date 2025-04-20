@@ -142,7 +142,7 @@ const CampaignShareSection: React.FC<CampaignShareSectionProps> = ({
             ) : (
               <FaRegBookmark className="mr-2" />
             )}
-            Save For Later
+            Watch For Updates
           </Button>
         </div>
         {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
