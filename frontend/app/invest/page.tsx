@@ -39,7 +39,7 @@ const InvestPage = () => {
   return (
     <div className="py-8 md:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h3>Invest in founders building the future</h3>
+        <h1>Invest in founders building the future</h1>
         <EquityCampaignCarousel
           title="Featured Investment Opportunities"
           campaigns={displayedCampaigns}
