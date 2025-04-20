@@ -44,7 +44,7 @@ const InvestLayout = ({ children }: InvestLayoutProps) => {
     <div className="w-full">
       <div className="max-w-7xl mx-auto px-4">
         <Tabs defaultValue={activeTab} value={activeTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-3 p-8">
             {tabs.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value} asChild>
                 <Link href={tab.href}>{tab.name}</Link>
