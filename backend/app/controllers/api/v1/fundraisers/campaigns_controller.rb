@@ -22,7 +22,9 @@ module Api
             :company_website, :contract_term
           ).tap do |whitelisted|
             # Set the type based on params key
-            whitelisted[:type] = params_key == :equity_campaign ? 'EquityCampaign' : 'Campaign'
+            if action_name == 'create' || params[params_key][:type]
+              whitelisted[:type] = params_key == :equity_campaign ? 'EquityCampaign' : 'Campaign'
+            end
             
             # Convert numeric fields
             [:valuation, :equity_offered, :minimum_investment, :maximum_investment].each do |field|
