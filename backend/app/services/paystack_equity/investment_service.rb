@@ -90,9 +90,21 @@ module PaystackEquity
 
     private
 
+    price_per_share = @campaign.valuation / @campaign.total_shares
+
+    number_of_shares = amount / price_per_share
+
+
     def calculate_shares(amount)
-      (amount / (@campaign.valuation / @campaign.equity_offered * 100)).round(2)
+      price_per_share = @campaign.valuation / @campaign.total_shares.to_f
+      (amount / price_per_share).round(2)
     end
+
+    def calculate_equity_percentage(amount)
+      ((amount.to_f / @campaign.valuation) * 100).round(2)
+    end
+    
+    
 
     def generate_reference
       "EQUITY-#{@campaign.id}-#{SecureRandom.hex(4)}-#{Time.now.to_i}"
