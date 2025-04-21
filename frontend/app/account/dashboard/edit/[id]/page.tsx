@@ -20,7 +20,7 @@ const EditCampaign = () => {
     editCampaign,
     fetchCampaignById,
     currentCampaign,
-    fetchCampaigns,
+    fetchUserCampaigns,
   } = useCampaignContext();
   const { id } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -106,7 +106,7 @@ const EditCampaign = () => {
 
     await editCampaign(id, updatedData);
     await fetchCampaignById(String(id));
-    await fetchCampaigns();
+    await fetchUserCampaigns();
     setIsModalOpen(false);
   };
 
