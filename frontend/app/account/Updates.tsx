@@ -14,7 +14,7 @@ interface FormData {
 }
 
 const CampaignUpdates: React.FC = () => {
-  const { campaigns, fetchCampaigns, loading, error } = useCampaignContext();
+  const { campaigns, fetchUserCampaigns, loading, error } = useCampaignContext();
   const {
     createUpdate,
     deleteUpdate,
@@ -30,8 +30,8 @@ const CampaignUpdates: React.FC = () => {
   const [updateToDelete, setUpdateToDelete] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchCampaigns();
-  }, [fetchCampaigns]);
+    fetchUserCampaigns();
+  }, [fetchUserCampaigns]);
 
   const handleCampaignSelect = (campaignId: string) => {
     setSelectedCampaign(campaignId);
@@ -51,7 +51,7 @@ const CampaignUpdates: React.FC = () => {
     if (validateForm() && selectedCampaign) {
       try {
         await createUpdate(selectedCampaign, formData.content);
-        await fetchCampaigns();
+        await fetchUserCampaigns();
         setFormData({ content: '' });
         setIsModalOpen(false);
       } catch (err) {
@@ -82,7 +82,7 @@ const CampaignUpdates: React.FC = () => {
         await deleteUpdate(selectedCampaign, updateToDelete);
         setUpdateToDelete(null);
         setIsAlertOpen(false);
-        fetchCampaigns();
+        fetchUserCampaigns();
       } catch (err) {
         console.error('Failed to delete update:', err);
       }

@@ -42,7 +42,7 @@ const ProfileTabs = () => {
         'Your overall dashboard where you can see an overview of activities and analytics.',
     },
     {
-      label: 'Capital',
+      label: 'Investments',
       icon: <MaskOffIcon />,
       component: <EquityInvestments />,
       description: 'Manage your equity investments and portfolio.',
