@@ -143,7 +143,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
               <InfoTooltip
                 id={`contract-term-tooltip`}
                 content={CONTRACT_TERM}
-                className="ml-2"
+                className="ml-1"
               />
             </h3>
             <p className="text-gray-900 dark:text-white">
