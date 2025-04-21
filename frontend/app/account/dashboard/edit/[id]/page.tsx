@@ -68,7 +68,7 @@ const EditCampaign = () => {
         })
         .catch(() => setFetchError('Error fetching campaign details.'));
     }
-  }, [id, fetchCampaignById, fetchCampaigns]);
+  }, [id, fetchCampaignById, fetchUserCampaigns]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
