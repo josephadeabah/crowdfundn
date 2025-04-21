@@ -32,13 +32,13 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
   return (
     <div className="mb-10">
       {/* Investment Details Section */}
-      <div className="bg-gray-50 dark:bg-gray-700 rounded-xl py-6 mb-8">
+      <div className="bg-gray-50 dark:bg-gray-700 py-6 px-1 mb-8">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
           <FaChartLine className="mr-2 text-green-600" />
           Investment Details
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
             <div className="flex items-center mb-2">
               <div className="p-2 bg-green-100 dark:bg-green-900 rounded-full mr-3">
                 <FaMoneyBillWave className="text-green-600 dark:text-green-300" />
@@ -53,7 +53,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
             </p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
             <div className="flex items-center mb-2">
               <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-full mr-3">
                 <FaPercentage className="text-blue-600 dark:text-blue-300" />
@@ -67,7 +67,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
             </p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
             <div className="flex items-center mb-2">
               <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full mr-3">
                 <FaHandHoldingUsd className="text-purple-600 dark:text-purple-300" />
@@ -84,7 +84,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
             </p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
             <div className="flex items-center mb-2">
               <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-full mr-3">
                 <FaUsers className="text-yellow-600 dark:text-yellow-300" />
@@ -103,7 +103,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
       </div>
 
       {/* Company Information Section */}
-      <div className="bg-gray-50 dark:bg-gray-700 rounded-xl py-6 mb-8">
+      <div className="bg-gray-50 dark:bg-gray-700 py-6 px-1 mb-8">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
           <FaBuilding className="mr-2 text-blue-600" />
           Company Information
@@ -154,7 +154,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
 
       {/* Investment Documents Section */}
       {contractDocuments.length > 0 && (
-        <div className="bg-gray-50 dark:bg-gray-700 rounded-xl py-6 mb-8">
+        <div className="bg-gray-50 dark:bg-gray-700 px-1 py-6 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
             <FaFileContract className="mr-2 text-orange-500" />
             Contract Documents
@@ -172,7 +172,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
                   {document.files.map((file) => (
                     <div
                       key={file.filename}
-                      className="flex items-center justify-between"
+                      className="flex items-center justify-between gap-2"
                     >
                       <div className="flex items-center">
                         <FaFileContract className="text-orange-500 mr-3" />
@@ -189,7 +189,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
                         href={file.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-4 py-2 bg-white hover:bg-white text-gray-700 rounded-full border border-gray-200 transition-colors"
+                        className="px-2 py-1.5 bg-white hover:bg-white text-gray-700 rounded-full border border-gray-200 transition-colors"
                       >
                         View Document
                       </a>
@@ -203,7 +203,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
       )}
 
       {/* Team Members Section */}
-      <div className="bg-gray-50 dark:bg-gray-700 rounded-xl py-6 mb-8">
+      <div className="bg-gray-50 dark:bg-gray-700 px-1 py-6 mb-8">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
           <FaUsers className="mr-2 text-purple-600" />
           Team Members
