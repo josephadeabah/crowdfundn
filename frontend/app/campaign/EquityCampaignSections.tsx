@@ -32,7 +32,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
   return (
     <div className="mb-10">
       {/* Investment Details Section */}
-      <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 mb-8">
+      <div className="bg-gray-50 dark:bg-gray-700 rounded-xl py-6 mb-8">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
           <FaChartLine className="mr-2 text-green-600" />
           Investment Details
@@ -103,7 +103,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
       </div>
 
       {/* Company Information Section */}
-      <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 mb-8">
+      <div className="bg-gray-50 dark:bg-gray-700 rounded-xl py-6 mb-8">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
           <FaBuilding className="mr-2 text-blue-600" />
           Company Information
@@ -154,7 +154,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
 
       {/* Investment Documents Section */}
       {contractDocuments.length > 0 && (
-        <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 mb-8">
+        <div className="bg-gray-50 dark:bg-gray-700 rounded-xl py-6 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
             <FaFileContract className="mr-2 text-orange-500" />
             Contract Documents
@@ -203,7 +203,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
       )}
 
       {/* Team Members Section */}
-      <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 mb-8">
+      <div className="bg-gray-50 dark:bg-gray-700 rounded-xl py-6 mb-8">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
           <FaUsers className="mr-2 text-purple-600" />
           Team Members
