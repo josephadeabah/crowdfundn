@@ -16,14 +16,12 @@ import CampaignTips from '@/app/components/campaign/CampaignTips';
 import CampaignEditor from '@/app/components/campaign/CampaignEditor';
 import CampaignSidebar from '@/app/components/campaign/CampaignSidebar';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
 import { useUserContext } from '@/app/context/users/UserContext';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { FaCheck, FaExclamationTriangle } from 'react-icons/fa';
 import { categories } from '@/app/utils/helpers/categories';
 import { useDropzone } from 'react-dropzone';
 import { useRouter } from 'next/navigation';
-import { CampaignTeamMember } from '@/app/types/equityCampaigns.types';
 
 const CURRENCIES = [
   { code: 'USD', symbol: '$' },
@@ -386,7 +384,7 @@ const CampaignCreator = () => {
 
       formData.append(`${rootKey}[valuation]`, campaignData.valuation);
       formData.append(`${rootKey}[equity_offered]`, campaignData.equityOffered);
-      formData.append(`${rootKey}[contract_type]`, campaignData.contractType);
+      formData.append(`${rootKey}[contract_term]`, campaignData.contractType);
       formData.append(`${rootKey}[minimum_investment]`, campaignData.minRaise);
       formData.append(`${rootKey}[maximum_investment]`, campaignData.maxRaise);
     }

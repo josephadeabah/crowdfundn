@@ -53,13 +53,11 @@ const TOOLTIP_CONTENT = `
 interface TermsContractProps {
   contractType: string;
   setContractType: (value: string) => void;
-  documentType?: string;
 }
 
 const TermsContract = ({
   contractType,
   setContractType,
-  documentType = 'contract_documents',
 }: TermsContractProps) => {
   return (
     <Card>
