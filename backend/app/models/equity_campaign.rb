@@ -23,10 +23,29 @@ class EquityCampaign < Campaign
     closed: 5
   }
   
+  # This method is used to determine the number of shares in money available for investment.
   def shares_available
     return 0 if equity_offered.nil? || valuation.nil? || equity_offered <= 0 || valuation <= 0
     (equity_offered.to_f * valuation.to_f / 100) - equity_investments.sum(:amount)
   end
+
+  # This method calculates the number of shares available for investment.
+  def shares_available_count
+    return 0 if equity_offered.nil? || valuation.nil? || total_shares.nil? || equity_offered <= 0 || valuation <= 0
+  
+    # 1. Total value of equity being offered (e.g. 10% of 100m = 10m)
+    total_equity_value = (equity_offered.to_f * valuation.to_f / 100)
+  
+    # 2. Remaining amount that hasn't been invested yet
+    remaining_amount = total_equity_value - equity_investments.sum(:amount)
+  
+    # 3. Price per share based on total valuation and shares
+    price_per_share = valuation.to_f / total_shares.to_f
+  
+    # 4. Return the number of shares still available to investors
+    (remaining_amount / price_per_share).round(2)
+  end
+  
 
   def percentage_raised
     return 0 if equity_offered.nil? || valuation.nil? || equity_offered <= 0 || valuation <= 0
