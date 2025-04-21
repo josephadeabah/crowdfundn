@@ -10,6 +10,7 @@ class EquityCampaign < Campaign
   validates :equity_offered, numericality: { less_than_or_equal_to: 100 }
   validate :founders_equity_allocation
   validate :maximum_greater_than_minimum
+  validate :type_cannot_change, on: :update
 
   attribute :equity_status, :integer, default: 0
   
@@ -37,43 +38,49 @@ class EquityCampaign < Campaign
   end
 
   def as_json(options = {})
-  super(options).merge(
-    type: 'EquityCampaign',
-    company_info: {
-      name: company_name,
-      description: company_description,
-      headquarters: company_headquarters,
-      website: company_website,
-      contract_term: contract_term,
-    },
-    shares_available: shares_available,
-    percentage_raised: percentage_raised,
-    equity_status: equity_status,
-    maximum_investment: maximum_investment,
-    team_members: campaign_team_members.includes(:user).map do |member|
-      {
-        id: member.id,
-        name: member.name,
-        email: member.email,
-        role: member.role,
-        title: member.title,
-        equity_percentage: member.equity_percentage,
-        description: member.description,
-        avatar_url: member.avatar_url,
-        user: member.user ? {
-          id: member.user.id,
-          email: member.user.email,
-          profile: {
-            first_name: member.user.profile&.first_name,
-            last_name: member.user.profile&.last_name
-          }
-        } : nil
-      }
-    end
-  )
-end
+    super(options).merge(
+      type: 'EquityCampaign',
+      company_info: {
+        name: company_name,
+        description: company_description,
+        headquarters: company_headquarters,
+        website: company_website,
+        contract_term: contract_term,
+      },
+      shares_available: shares_available,
+      percentage_raised: percentage_raised,
+      equity_status: equity_status,
+      maximum_investment: maximum_investment,
+      team_members: campaign_team_members.includes(:user).map do |member|
+        {
+          id: member.id,
+          name: member.name,
+          email: member.email,
+          role: member.role,
+          title: member.title,
+          equity_percentage: member.equity_percentage,
+          description: member.description,
+          avatar_url: member.avatar_url,
+          user: member.user ? {
+            id: member.user.id,
+            email: member.user.email,
+            profile: {
+              first_name: member.user.profile&.first_name,
+              last_name: member.user.profile&.last_name
+                }
+              } : nil
+            }
+          end
+        )
+  end
   
   private
+
+  def type_cannot_change
+    if type_changed? && persisted?
+      errors.add(:type, "cannot be changed once created")
+    end
+  end
   
   def founders_equity_allocation
     if founder_equity_percentage > (100 - equity_offered.to_f)
