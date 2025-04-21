@@ -12,6 +12,7 @@ import {
 import Avatar from '@/app/components/avatar/Avatar';
 import { SingleCampaignResponseDataType } from '../types/campaigns.types';
 import InfoTooltip from '../components/tooltip/tooltip';
+import { deslugify } from '../utils/helpers/categories';
 
 interface EquityCampaignSectionsProps {
   campaign: SingleCampaignResponseDataType | null;
@@ -146,7 +147,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
               />
             </h3>
             <p className="text-gray-900 dark:text-white">
-              {campaign?.company_info?.contract_term || 'N/A'}
+              {deslugify(campaign?.company_info?.contract_term || 'N/A')}
             </p>
           </div>
           {campaign?.company_info?.website && (
