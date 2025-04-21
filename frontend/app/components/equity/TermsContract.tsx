@@ -43,13 +43,6 @@ const CONTRACT_OPTIONS = [
   },
 ];
 
-const TOOLTIP_CONTENT = `
-📄 Contracts Documents for Investors:
-• Form C or equivalent
-• Any Required Agreement document necessary for the investment
-• We'll show these to investors to have and keep a copy of these documents for their records
-`;
-
 interface TermsContractProps {
   contractType: string;
   setContractType: (value: string) => void;

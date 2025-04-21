@@ -11,6 +11,7 @@ import {
 } from 'react-icons/fa';
 import Avatar from '@/app/components/avatar/Avatar';
 import { SingleCampaignResponseDataType } from '../types/campaigns.types';
+import InfoTooltip from '../components/tooltip/tooltip';
 
 interface EquityCampaignSectionsProps {
   campaign: SingleCampaignResponseDataType | null;
@@ -28,6 +29,8 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
     campaign?.investor_documents?.filter(
       (doc) => doc.document_type === 'contract',
     ) || [];
+
+  const CONTRACT_TERM = `The contract term for this investment opportunity will depend on the structure you choose.\n\nBantu Hive supports a variety of investment contracts including SAFE (Simple Agreement for Future Equity), Convertible Notes, Revenue Share agreements, Preferred Stock, and simple Loans. You may also use a custom structure provided by your legal team.\n\nWhile we don’t provide default legal documents, we can work with the agreements your lawyer prepares or help you adapt existing templates like the Series Seed documents.\n\n<a href="/learn/preferred-stock" target="_blank" class="text-blue-400 hover:underline">Learn more about investment contracts</a>`;
 
   return (
     <div className="mb-10">
@@ -131,6 +134,19 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
             </h3>
             <p className="text-gray-900 dark:text-white">
               {campaign?.company_info?.headquarters || 'N/A'}
+            </p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-gray-700 dark:text-gray-300">
+              Contract Term{' '}
+              <InfoTooltip
+                id={`contract-term-tooltip`}
+                content={CONTRACT_TERM}
+                className="ml-2"
+              />
+            </h3>
+            <p className="text-gray-900 dark:text-white">
+              {campaign?.company_info?.contract_term || 'N/A'}
             </p>
           </div>
           {campaign?.company_info?.website && (
