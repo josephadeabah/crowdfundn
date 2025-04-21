@@ -33,7 +33,7 @@ interface Errors {
 }
 
 const RewardsPage: React.FC = () => {
-  const { campaigns, fetchCampaigns, loading } = useCampaignContext();
+  const { campaigns, fetchUserCampaigns, loading } = useCampaignContext();
   const {
     addReward,
     deleteReward,
@@ -84,8 +84,8 @@ const RewardsPage: React.FC = () => {
   const [rewardToDelete, setRewardToDelete] = useState<number | null>(null);
 
   useEffect(() => {
-    fetchCampaigns();
-  }, [fetchCampaigns]);
+    fetchUserCampaigns();
+  }, [fetchUserCampaigns]);
 
   const validateForm = (): boolean => {
     const newErrors: Errors = {};
@@ -126,7 +126,7 @@ const RewardsPage: React.FC = () => {
       setShowModal(false);
       setSelectedCampaignId(null);
 
-      fetchCampaigns();
+      fetchUserCampaigns();
     }
   };
 
@@ -170,7 +170,7 @@ const RewardsPage: React.FC = () => {
       await deleteReward(selectedCampaignId!, rewardToDelete.toString());
       setShowDeletePopup(false);
       setRewardToDelete(null);
-      fetchCampaigns();
+      fetchUserCampaigns();
     }
   };
 
