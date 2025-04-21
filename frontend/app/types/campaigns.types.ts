@@ -76,7 +76,7 @@ export interface CampaignResponseDataType {
   fundraiser: FundraiserDetailsType;
   team_members?: CampaignTeamMember[];
   documents?: InvestorDocument[];
-  type?: string;
+  type?: 'Campaign' | 'EquityCampaign';
   company_info?: {
     name: string;
     description: string;
@@ -124,7 +124,6 @@ export interface CampaignState {
   error: string | null;
   addCampaign: (campaign: FormData) => Promise<CampaignResponseDataType>;
   cancelCampaign(id: string): Promise<void>;
-  fetchCampaigns: () => Promise<void>;
   fetchUserCampaigns: () => Promise<void>;
   fetchAllCampaigns: (
     sortBy: string,
@@ -231,7 +230,7 @@ export interface SingleCampaignResponseDataType {
   fundraiser: FundraiserDetailsType;
   team_members?: CampaignTeamMember[];
   documents?: InvestorDocument[];
-  type?: string;
+  type?: 'Campaign' | 'EquityCampaign';
   company_info?: {
     name: string;
     description: string;

@@ -131,36 +131,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  // Fetch campaigns for the logged-in user [legacy]
-  const fetchCampaigns = useCallback(async (): Promise<void> => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await nextFetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/my_campaigns`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (!response.ok) {
-        handleApiError("Couldn't fetch campaigns. Please refresh the page.");
-        return;
-      }
-
-      const fetchedCampaigns = await response.json();
-      setCampaigns(fetchedCampaigns?.campaigns);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error fetching campaigns');
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
-
   // Fetch campaigns for the logged-in user [new]
   const fetchUserCampaigns = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -646,7 +616,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       pagination,
       campaignShares,
       addCampaign,
-      fetchCampaigns,
       fetchUserCampaigns,
       fetchCampaignStatistics,
       fetchAllCampaigns,
@@ -670,7 +639,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       pagination,
       campaignShares,
       addCampaign,
-      fetchCampaigns,
       fetchUserCampaigns,
       fetchCampaignStatistics,
       fetchAllCampaigns,

@@ -92,11 +92,16 @@ const EditCampaign = () => {
   const handleSave = async (newValue: string) => {
     if (!currentCampaign) return;
 
+    // Determine the root key based on campaign type
+    const rootKey =
+      currentCampaign.type === 'EquityCampaign'
+        ? 'equity_campaign'
+        : 'campaign';
     const updatedData = new FormData();
-    updatedData.append(`campaign[${editMode.field}]`, newValue);
+    updatedData.append(`${rootKey}[${editMode.field}]`, newValue);
 
     if (selectedImageFile && editMode.field === 'image') {
-      updatedData.append('campaign[media]', selectedImageFile);
+      updatedData.append(`${rootKey}[media]`, selectedImageFile);
     }
 
     await editCampaign(id, updatedData);
