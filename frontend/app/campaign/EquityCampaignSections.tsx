@@ -139,12 +139,13 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
           </div>
           <div>
             <h3 className="font-semibold text-gray-700 dark:text-gray-300">
-              Contract Term{' '}
-              <InfoTooltip
-                id={`contract-term-tooltip`}
-                content={CONTRACT_TERM}
-                className="ml-1"
-              />
+              <span className="flex gap-2 items-center">
+                Contract Term
+                <InfoTooltip
+                  id={`contract-term-tooltip`}
+                  content={CONTRACT_TERM}
+                />
+              </span>
             </h3>
             <p className="text-gray-900 dark:text-white">
               {deslugify(campaign?.company_info?.contract_term || 'N/A')}
