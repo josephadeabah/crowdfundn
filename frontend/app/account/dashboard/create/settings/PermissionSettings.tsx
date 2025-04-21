@@ -26,7 +26,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
   const {
     updateCampaignSettings,
     fetchCampaignById,
-    fetchCampaigns,
+    fetchUserCampaigns,
     currentCampaign,
     loading,
   } = useCampaignContext();
@@ -141,7 +141,7 @@ const CampaignPermissionSetting: React.FC<CampaignPermissionSettingProps> = ({
     try {
       await updateCampaignSettings(campaignId, updatedSettings);
       await fetchCampaignById(campaignId); // Refresh currentCampaign
-      await fetchCampaigns(); // Refresh campaigns list
+      await fetchUserCampaigns(); // Refresh campaigns list
       showToast(
         'Success',
         'Campaign settings updated successfully!',
