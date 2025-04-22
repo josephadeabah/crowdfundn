@@ -4,7 +4,6 @@ import ProgressRing from '@/app/components/ring/ProgressRing';
 import { SingleCampaignResponseDataType } from '../types/campaigns.types';
 import DonationsChart from './DonationsChart';
 import Link from 'next/link';
-import { Button } from '@/app/components/button/Button';
 
 interface CampaignSidebarProps {
   campaign: SingleCampaignResponseDataType | null;
@@ -34,12 +33,17 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
                 Learn more about equity fundraisers
               </Link>
             </p>
-            <button
-              className="w-full px-6 py-3 text-white font-semibold rounded-full bg-gradient-to-r from-orange-500 to-orange-800 hover:from-orange-800 hover:to-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transform hover:scale-105 transition-all duration-200 shadow"
-              aria-label="Invest"
-            >
-              Invest
-            </button>
+            <DonationButton
+              selectedTier={null}
+              pledgeAmount="0"
+              isEquityCampaign={true}
+              billingFrequency="once"
+              fundraiserDetails={{
+                id: String(campaign?.fundraiser_id),
+                campaignId: String(campaign?.id),
+                campaignTitle: campaign?.title,
+              }}
+            />
           </>
         ) : (
           <>
@@ -50,6 +54,7 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
             <DonationButton
               selectedTier={null}
               pledgeAmount="0"
+              isEquityCampaign={false}
               billingFrequency="once"
               fundraiserDetails={{
                 id: String(campaign?.fundraiser_id),

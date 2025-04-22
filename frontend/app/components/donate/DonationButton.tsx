@@ -6,11 +6,13 @@ import PaystackIcon from '@/app/components/icons/PaystackIcon';
 import ProcessingPayment from '@/app/components/donate/ProcessingPayment';
 import { Button } from '../button/Button';
 import { useUserContext } from '@/app/context/users/UserContext';
+import { cn } from '@/app/lib/utils';
 
 interface DonationButtonProps {
   selectedTier: number | null;
   pledgeAmount: string;
   billingFrequency: string;
+  isEquityCampaign?: boolean;
   fundraiserDetails: {
     id: string;
     campaignId: string;
@@ -22,6 +24,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
   selectedTier,
   pledgeAmount,
   billingFrequency,
+  isEquityCampaign,
   fundraiserDetails,
 }) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -124,10 +127,15 @@ const DonationButton: React.FC<DonationButtonProps> = ({
     <div className="flex items-center max-w-full">
       <button
         onClick={handleDonateClick}
-        className="w-full px-6 py-3 text-white font-semibold rounded-full bg-gradient-to-r from-green-500 to-green-800 hover:from-green-800 hover:to-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transform hover:scale-105 transition-all duration-200 shadow"
-        aria-label="Donate Now"
+        className={cn(
+          'w-full px-6 py-3 text-white font-semibold rounded-full bg-gradient-to-r focus:outline-none focus:ring-2 transform hover:scale-105 transition-all duration-200 shadow',
+          isEquityCampaign
+            ? 'from-orange-500 to-orange-800 hover:from-orange-800 hover:to-orange-600 focus:ring-orange-500'
+            : 'from-green-500 to-green-800 hover:from-green-800 hover:to-green-600 focus:ring-green-500 focus:ring-opacity-50',
+        )}
+        aria-label="Fund Now"
       >
-        Support Now
+        {isEquityCampaign ? 'Invest' : 'Support Now'}
       </button>
 
       <Modal

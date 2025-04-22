@@ -14,7 +14,8 @@ interface FormData {
 }
 
 const CampaignUpdates: React.FC = () => {
-  const { campaigns, fetchUserCampaigns, loading, error } = useCampaignContext();
+  const { campaigns, fetchUserCampaigns, loading, error } =
+    useCampaignContext();
   const {
     createUpdate,
     deleteUpdate,
