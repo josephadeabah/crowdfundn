@@ -61,7 +61,7 @@ const DonationByCountryCharts = ({
     <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none my-4">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-          See Where You're Getting Donations From
+          See Where You're Getting Funding From
         </CardTitle>
         {/* Dropdown for Month and Year */}
         <div className="mt-2 flex gap-2">
@@ -112,7 +112,7 @@ const DonationByCountryCharts = ({
               tick={{ fontSize: 12 }}
               tickFormatter={(value) => `${value}`}
             />
-            <Tooltip formatter={(value) => `${value} Donations`} />
+            <Tooltip formatter={(value) => `${value} Funding`} />
             <Legend />
             <Bar dataKey="donations" fill="#E9762B" />
           </BarChart>

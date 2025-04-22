@@ -125,7 +125,7 @@ export default function Dashboard() {
           </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Total Donations
+              Total Funding
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-gray-400">
               {user?.currency?.toUpperCase()}{' '}
@@ -166,7 +166,7 @@ export default function Dashboard() {
             <CardDescription className="text-gray-500 dark:text-gray-400">
               {statistics?.new_donations_this_week &&
                 Object.keys(statistics?.new_donations_this_week).length}{' '}
-              new donations this week
+              new funding this week
             </CardDescription>
           </CardHeader>
         </Card>

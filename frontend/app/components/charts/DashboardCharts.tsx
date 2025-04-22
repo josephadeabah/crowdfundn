@@ -173,11 +173,11 @@ export default function DashboardCharts({
         </ResponsiveContainer>
       </Card>
 
-      {/* Donations Over Time Chart */}
+      {/* Funding Over Time Chart */}
       <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none my-4">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-            Donations Over Time
+            Funding Over Time
           </CardTitle>
           {/* Dropdown for Month and Year */}
           <div className="mt-2 flex gap-2">
