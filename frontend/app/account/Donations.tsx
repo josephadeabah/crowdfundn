@@ -190,10 +190,10 @@ export default function Donations() {
     <div className="px-2 py-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
-          Donations
+          Backer List
           <p className="text-gray-500 dark:text-neutral-400 text-xs font-medium">
             {' '}
-            Send Thank You to your Donors{' '}
+            Send Thank You to your Backers{' '}
           </p>
         </h2>
         <Popover>
