@@ -204,7 +204,7 @@ export default function Donations() {
           </PopoverTrigger>
           <PopoverContent className="w-fit">
             <div className="p-4">
-              <p className="mb-2 font-semibold">Filter Donors:</p>
+              <p className="mb-2 font-semibold">Filter Backers:</p>
               <RadioGroup
                 className="flex flex-col gap-2"
                 value={filter}
@@ -229,7 +229,7 @@ export default function Donations() {
       {/* Check if donations is empty */}
       {donations.length === 0 ? (
         <div className="text-center text-lg text-gray-600 dark:text-neutral-400">
-          You have not received any donations yet.
+          You have not received any funding yet.
         </div>
       ) : (
         <>
@@ -241,7 +241,7 @@ export default function Donations() {
                   {filter === 'specific' && (
                     <th className="py-3 px-4">Select</th>
                   )}
-                  <th className="py-3 px-4">Donor Name</th>
+                  <th className="py-3 px-4">Backer Name</th>
                   <th className="py-3 px-4">Amount</th>
                   <th className="py-3 px-4">Date</th>
                   <th className="py-3 px-4">Campaign Title</th>
