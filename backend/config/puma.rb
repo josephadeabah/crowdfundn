@@ -1,53 +1,38 @@
-# config/puma.rb
-# The optimal configuration for production cluster mode
+# This configuration file will be evaluated by Puma. The top-level methods that
+# are invoked here are part of Puma's configuration DSL. For more information
+# about methods provided by the DSL, see https://puma.io/puma/Puma/DSL.html.
 
-# Thread settings - adjust based on your database connection pool
-max_threads_count = ENV.fetch('RAILS_MAX_THREADS', 5).to_i
-min_threads_count = ENV.fetch('RAILS_MIN_THREADS', max_threads_count).to_i
+# Puma can serve each request in a thread from an internal thread pool.
+# The `threads` method setting takes two numbers: a minimum and maximum.
+# Any libraries that use thread pools should be configured to match
+# the maximum value specified for Puma. Default is set to 5 threads for minimum
+# and maximum; this matches the default thread size of Active Record.
+max_threads_count = ENV.fetch('RAILS_MAX_THREADS') { 5 }
+min_threads_count = ENV.fetch('RAILS_MIN_THREADS') { max_threads_count }
 threads min_threads_count, max_threads_count
 
-# Worker configuration for cluster mode
+# Specifies that the worker count should equal the number of processors in production.
 if ENV['RAILS_ENV'] == 'production'
-  # Use all available CPU cores by default
-  worker_count = ENV.fetch('WEB_CONCURRENCY') { Concurrent.physical_processor_count }.to_i
-  
-  # Ensure at least 1 worker if physical processor count returns 0
-  worker_count = 1 if worker_count < 1
-  
-  workers worker_count
-  
-  # Important cluster mode settings
-  preload_app!  # Preload the application before forking workers
-  worker_timeout 60  # Default is 30, increase if you have long-running requests
-  
-  # Recommended for deployments with zero-downtime restarts
-  fork_worker do
-    if defined?(ActiveRecord::Base)
-      ActiveRecord::Base.connection.disconnect!
-    end
-  end
-  
-  on_worker_boot do
-    if defined?(ActiveRecord::Base)
-      ActiveRecord::Base.establish_connection
-    end
-  end
+  require 'concurrent-ruby'
+  worker_count = Integer(ENV.fetch('WEB_CONCURRENCY') { Concurrent.physical_processor_count })
+  workers worker_count if worker_count > 1
+
+  # Increase worker timeout for production
+  worker_timeout 120 # Set timeout to 120 seconds (adjust as needed)
 end
 
-# Basic settings
-port ENV.fetch('PORT', 3000)
-environment ENV.fetch('RAILS_ENV', 'development')
-pidfile ENV.fetch('PIDFILE', 'tmp/pids/server.pid')
+# Specifies the `worker_timeout` threshold that Puma will use to wait before
+# terminating a worker in development environments.
+worker_timeout 3600 if ENV.fetch('RAILS_ENV', 'development') == 'development'
 
-# Allow for zero-downtime restarts
+# Specifies the `port` that Puma will listen on to receive requests; default is 3000.
+port ENV.fetch('PORT') { 3000 }
+
+# Specifies the `environment` that Puma will run in.
+environment ENV.fetch('RAILS_ENV') { 'development' }
+
+# Specifies the `pidfile` that Puma will use.
+pidfile ENV.fetch('PIDFILE') { 'tmp/pids/server.pid' }
+
+# Allow Puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
-
-# Optimize for Kubernetes/container environments
-bind 'tcp://0.0.0.0:3000'
-
-# For better performance with reverse proxies
-persistent_timeout 20  # Default is 20 seconds
-wait_for_less_busy_worker 0.01  # Helps balance load between workers
-
-
-
