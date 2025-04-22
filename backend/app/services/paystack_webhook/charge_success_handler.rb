@@ -45,7 +45,7 @@ class PaystackWebhook::ChargeSuccessHandler
       gross_amount = response.dig(:data, :amount).to_f / 100.0 # Gross amount from Paystack
 
       # Step 1: Calculate the net amount (93% of the gross amount)
-      net_amount = (gross_amount * 0.93).round(2)
+      net_amount = gross_amount * 0.93
 
       # Step 2: Calculate the platform fee (7% of the gross amount)
       platform_fee = gross_amount * 0.07
