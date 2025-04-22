@@ -48,11 +48,11 @@ const ProfileTabs = () => {
       description: 'Manage your equity investments and portfolio.',
     },
     {
-      label: 'Donations',
+      label: 'Funding',
       icon: <HandIcon />,
       component: <Donations />,
       description:
-        'Manage your donations and send thank you to your backers here.',
+        'Manage your funding and send thank you to your backers here.',
     },
     {
       label: 'Transfers',
@@ -70,7 +70,7 @@ const ProfileTabs = () => {
       label: 'Rewards',
       icon: <IconJarLogoIcon />,
       component: <Rewards />,
-      description: 'Receive and give rewards to your donors here.',
+      description: 'Receive and give rewards to your backers here.',
     },
     {
       label: 'Campaigns',
