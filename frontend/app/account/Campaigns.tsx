@@ -149,7 +149,7 @@ const Campaigns: React.FC = () => {
         </div>
       </div>
       <p className="text-gray-500 dark:text-neutral-400 mb-4">
-        Manage all your campaigns including drafts.
+        Manage your active and past campaigns.
       </p>
 
       {userCampaigns && userCampaigns.length === 0 ? (

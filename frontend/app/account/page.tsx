@@ -51,8 +51,7 @@ const ProfileTabs = () => {
       label: 'Backers',
       icon: <HandIcon />,
       component: <Donations />,
-      description:
-        'Manage your backers and send thank you to them here.',
+      description: 'Manage your backers and send thank you to them here.',
     },
     {
       label: 'Transfers',
