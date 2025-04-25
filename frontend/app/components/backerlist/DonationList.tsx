@@ -12,21 +12,19 @@ interface Donation {
 }
 
 interface DonationListProps {
-  donations: Donation[];
   fundraiserCurrency?: string;
   campaignId: string;
 }
 
 const DonationList: React.FC<DonationListProps> = ({
-  donations,
   fundraiserCurrency,
   campaignId,
 }) => {
-  const { pagination, fetchPublicDonations } = useDonationsContext();
+  const { pagination, donations, fetchPublicDonations } = useDonationsContext();
 
   // Handle page changes
   useEffect(() => {
-    fetchPublicDonations(campaignId, 1, 10); // Replace 'campaignId' with the actual campaign ID
+    fetchPublicDonations(campaignId, 1, 10); 
   }, []);
 
   // Handle page changes
