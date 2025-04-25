@@ -21,7 +21,7 @@ const CampaignBackers: React.FC<CampaignBackersProps> = ({
         {isEquityCampaign ? 'Investors' : 'Backers'}
       </h3>
       <DonationList
-        donations={[]}
+        donations={campaign?.backers || []}
         fundraiserCurrency={fundraiserCurrency}
         campaignId={String(campaign?.id)}
       />
