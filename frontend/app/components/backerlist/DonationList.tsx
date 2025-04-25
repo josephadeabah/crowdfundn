@@ -24,7 +24,7 @@ const DonationList: React.FC<DonationListProps> = ({
 
   // Handle page changes
   useEffect(() => {
-    fetchPublicDonations(campaignId, 1, 10); 
+    fetchPublicDonations(campaignId, 1, 10);
   }, []);
 
   // Handle page changes
