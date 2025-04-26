@@ -16,7 +16,7 @@ export default function InvestmentCalculatorColorfulTable({
 
   // Calculate share price
   const calculatedSharePrice =
-    (preMoneyValuation * (equityOffered / 100)) / (preMoneyValuation / 0.0465);
+    (preMoneyValuation * (equityOffered / 100)) / (preMoneyValuation / customSharePrice);
   const sharePrice = manualSharePrice ? customSharePrice : calculatedSharePrice;
 
   const sharesBought = investment / sharePrice;
