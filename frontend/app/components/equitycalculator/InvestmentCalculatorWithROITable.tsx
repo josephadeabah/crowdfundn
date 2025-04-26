@@ -64,8 +64,8 @@ export default function InvestmentCalculatorColorfulTable({
               return (
                 <tr key={fv} className={`border-t ${rowClass}`}>
                   <td className="p-2">{fv}M</td>
-                  <td className="p-2">£{futureSharePrice.toFixed(4)}</td>
-                  <td className="p-2">£{potentialFutureValue.toFixed(2)}</td>
+                  <td className="p-2">${futureSharePrice.toFixed(4)}</td>
+                  <td className="p-2">${potentialFutureValue.toFixed(2)}</td>
                   <td className="p-2">{roiMultiple.toFixed(2)}x</td>
                 </tr>
               );
