@@ -1,6 +1,7 @@
 // app/account/EquityInvestments.tsx
 import { useState } from 'react';
 import Link from 'next/link';
+import { Button } from '../components/ui/button';
 
 const EquityInvestments = () => {
   const [activeView, setActiveView] = useState<'portfolio' | 'my_investments'>(
@@ -15,9 +16,9 @@ const EquityInvestments = () => {
         </h1>
         <div className="flex space-x-4">
           <Link href="/invest">
-            <button className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition">
+            <Button variant="outline" size="lg" className="text-gray-700 rounded-lg">
               Browse Founders
-            </button>
+            </Button>
           </Link>
         </div>
       </div>
