@@ -16,13 +16,14 @@ export default function InvestmentCalculatorColorfulTable({
 
   // Calculate share price
   const calculatedSharePrice =
-    (preMoneyValuation * (equityOffered / 100)) / (preMoneyValuation / customSharePrice);
+    (preMoneyValuation * (equityOffered / 100)) /
+    (preMoneyValuation / customSharePrice);
   const sharePrice = manualSharePrice ? customSharePrice : calculatedSharePrice;
 
   const sharesBought = investment / sharePrice;
   const totalSharesBeforeFunding = preMoneyValuation / sharePrice;
 
-  // Pick a "default dream" future valuation for Live ROI Preview (e.g., $3M)
+  // Pick a "default dream" future valuation for Live ROI Preview (e.g., $1M)
   const dreamValuation = 1; // 1 million dollars
   const futureSharePrice =
     (dreamValuation * 1_000_000) / totalSharesBeforeFunding;
@@ -188,6 +189,14 @@ export default function InvestmentCalculatorColorfulTable({
             })}
           </tbody>
         </table>
+
+        <div className="mt-8 p-4 bg-red-100 text-red-800 text-sm rounded-xl shadow-sm">
+          ⚠️ <strong>Disclaimer:</strong> This is a simplified ROI calculator
+          for educational and illustration purposes only. Actual results may
+          vary depending on future fundraising, dilution, company performance,
+          taxes, and other factors. Investing in startups involves significant
+          risks, including the potential loss of your investment.
+        </div>
       </div>
     </div>
   );
