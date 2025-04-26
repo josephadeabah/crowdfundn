@@ -43,7 +43,7 @@ export default function RegisterLeftPage() {
               1K+
             </h4>
             <p className="text-base font-medium text-gray-950 dark:text-gray-50">
-              Happy Donors
+              Happy Backers
             </p>
           </div>
         </div>
