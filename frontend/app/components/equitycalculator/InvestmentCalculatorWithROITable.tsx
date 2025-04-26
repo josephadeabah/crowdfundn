@@ -50,7 +50,7 @@ export default function InvestmentCalculatorColorfulTable({
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-2xl space-y-6">
+    <div className="max-w-4xl mx-auto p-6 bg-white shadow-sm rounded-2xl space-y-6">
       <h1 className="text-3xl font-bold text-center">
         Startup Investment Calculator
       </h1>
