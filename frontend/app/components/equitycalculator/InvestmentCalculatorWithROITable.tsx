@@ -6,48 +6,73 @@ interface InvestmentCalculatorProps {
 }
 
 export default function InvestmentCalculatorColorfulTable({
-  futureValuations,
+  futureValuations, // Default valuation scenarios
 }: InvestmentCalculatorProps) {
-  const [investment, setInvestment] = useState<number>(0);
+  // Input states
+  const [investment, setInvestment] = useState<number>(1000); // $1,000 default
   const [preMoneyValuation, setPreMoneyValuation] = useState<number>(5_000_000); // $5M
   const [equityOffered, setEquityOffered] = useState<number>(3.58); // 3.58%
-  const [manualSharePrice, setManualSharePrice] = useState<boolean>(false);
-  const [customSharePrice, setCustomSharePrice] = useState<number>(0.0465); // default
+  const [totalSharesExisting, setTotalSharesExisting] =
+    useState<number>(10_000_000); // 10M shares
+  const [dilutionFactor, setDilutionFactor] = useState<number>(0.7); // 30% future dilution
 
-  // Calculate share price
-  const calculatedSharePrice =
-    (preMoneyValuation * (equityOffered / 100)) /
-    (preMoneyValuation / customSharePrice);
-  const sharePrice = manualSharePrice ? customSharePrice : calculatedSharePrice;
+  // Derived calculations
+  const postMoneyValuation =
+    preMoneyValuation + preMoneyValuation * (equityOffered / 100);
+  const sharePrice =
+    ((preMoneyValuation * (equityOffered / 100)) /
+      (postMoneyValuation - preMoneyValuation)) *
+    totalSharesExisting;
+  const sharesPurchased = investment / sharePrice;
+  const investorOwnership =
+    sharesPurchased / (totalSharesExisting + sharesPurchased);
 
-  const sharesBought = investment / sharePrice;
-  const totalSharesBeforeFunding = preMoneyValuation / sharePrice;
+  // ROI calculation with dilution
+  const calculateROI = (futureValuation: number) => {
+    const futureValue =
+      futureValuation * 1_000_000 * investorOwnership * dilutionFactor;
+    return {
+      futureValue,
+      roiMultiple: investment > 0 ? futureValue / investment : 0,
+      futureSharePrice:
+        (futureValuation * 1_000_000) /
+        (totalSharesExisting * (1 + (1 - dilutionFactor))),
+    };
+  };
 
-  // Pick a "default dream" future valuation for Live ROI Preview (e.g., $1M)
-  const dreamValuation = 1; // 1 million dollars
-  const futureSharePrice =
-    (dreamValuation * 1_000_000) / totalSharesBeforeFunding;
-  const potentialFutureValue = sharesBought * futureSharePrice;
-  const roiMultiple = investment > 0 ? potentialFutureValue / investment : 0;
+  // Current investment summary
+  const currentSummary = {
+    sharePrice,
+    sharesPurchased,
+    ownershipPercentage: investorOwnership * 100,
+    postMoneyValuation,
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-2xl space-y-6">
-      {/* 🎯 Live ROI Preview */}
+      <h1 className="text-3xl font-bold text-center">
+        Startup Investment Calculator
+      </h1>
+
+      {/* Live ROI Preview */}
       {investment > 0 && (
-        <div className="p-4 bg-yellow-100 text-yellow-800 rounded-xl text-center text-lg font-semibold shadow-sm">
-          ✨ If the company reaches <strong>${dreamValuation}M</strong>{' '}
-          valuation, your ${investment} investment could be worth{' '}
-          <strong>${potentialFutureValue.toFixed(2)}</strong>(
-          <strong>{roiMultiple.toFixed(2)}x</strong> return)!
+        <div className="p-4 bg-blue-50 text-blue-800 rounded-xl text-center text-lg font-semibold shadow-sm">
+          ✨ At ${preMoneyValuation / 1_000_000}M valuation, your ${investment}{' '}
+          buys{' '}
+          <strong>
+            {sharesPurchased.toLocaleString(undefined, {
+              maximumFractionDigits: 0,
+            })}{' '}
+            shares
+          </strong>{' '}
+          (<strong>{currentSummary.ownershipPercentage.toFixed(2)}%</strong>{' '}
+          ownership)
         </div>
       )}
 
-      <h2 className="text-2xl font-bold text-center">🚀 Dream ROI Table</h2>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Left Side: Inputs */}
+        {/* Input Section */}
         <div className="space-y-5">
-          {/* Investment Amount */}
           <div className="space-y-2">
             <label className="block text-sm font-medium">
               Investment Amount ($)
@@ -55,13 +80,13 @@ export default function InvestmentCalculatorColorfulTable({
             <input
               type="number"
               className="w-full p-3 border rounded-xl"
-              placeholder="Enter investment amount"
               value={investment}
-              onChange={(e) => setInvestment(parseFloat(e.target.value) || 0)}
+              onChange={(e) =>
+                setInvestment(Math.max(0, parseFloat(e.target.value) || 0))
+              }
             />
           </div>
 
-          {/* Pre-Money Valuation */}
           <div className="space-y-2">
             <label className="block text-sm font-medium">
               Pre-Money Valuation ($M)
@@ -69,7 +94,6 @@ export default function InvestmentCalculatorColorfulTable({
             <input
               type="number"
               className="w-full p-3 border rounded-xl"
-              placeholder="Enter pre-money valuation"
               value={preMoneyValuation / 1_000_000}
               onChange={(e) =>
                 setPreMoneyValuation(
@@ -79,7 +103,6 @@ export default function InvestmentCalculatorColorfulTable({
             />
           </div>
 
-          {/* Equity Offered */}
           <div className="space-y-2">
             <label className="block text-sm font-medium">
               Equity Offered (%)
@@ -87,116 +110,144 @@ export default function InvestmentCalculatorColorfulTable({
             <input
               type="number"
               className="w-full p-3 border rounded-xl"
-              placeholder="Enter equity offered"
               value={equityOffered}
               onChange={(e) =>
-                setEquityOffered(parseFloat(e.target.value) || 0)
+                setEquityOffered(
+                  Math.min(100, Math.max(0, parseFloat(e.target.value) || 0)),
+                )
               }
             />
           </div>
 
-          {/* Manual Share Price Toggle */}
-          <div className="flex items-center space-x-3">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">Existing Shares</label>
             <input
-              type="checkbox"
-              checked={manualSharePrice}
-              onChange={(e) => setManualSharePrice(e.target.checked)}
-              className="h-5 w-5"
+              type="number"
+              className="w-full p-3 border rounded-xl"
+              value={totalSharesExisting}
+              onChange={(e) =>
+                setTotalSharesExisting(
+                  Math.max(1, parseFloat(e.target.value) || 1),
+                )
+              }
             />
-            <label className="text-sm font-medium">
-              Use Manual Share Price
-            </label>
           </div>
 
-          {/* Custom Share Price Input */}
-          {manualSharePrice && (
-            <div className="space-y-2">
-              <label className="block text-sm font-medium">
-                Manual Share Price ($)
-              </label>
-              <input
-                type="number"
-                className="w-full p-3 border rounded-xl"
-                placeholder="Enter share price"
-                value={customSharePrice}
-                onChange={(e) =>
-                  setCustomSharePrice(parseFloat(e.target.value) || 0)
-                }
-              />
-            </div>
-          )}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">
+              Future Dilution (%)
+            </label>
+            <input
+              type="number"
+              className="w-full p-3 border rounded-xl"
+              value={(1 - dilutionFactor) * 100}
+              onChange={(e) =>
+                setDilutionFactor(
+                  1 -
+                    Math.min(
+                      100,
+                      Math.max(0, parseFloat(e.target.value) || 0),
+                    ) /
+                      100,
+                )
+              }
+            />
+          </div>
         </div>
 
-        {/* Right Side: Live Summary */}
-        <div className="p-4 bg-gray-100 rounded-xl space-y-4">
-          <h3 className="text-lg font-semibold">📈 Investment Snapshot</h3>
-
-          <div className="text-sm space-y-2">
+        {/* Current Investment Summary */}
+        <div className="p-4 bg-gray-50 rounded-xl space-y-4">
+          <h3 className="text-lg font-semibold">📊 Current Investment Terms</h3>
+          <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span>Share Price:</span>
-              <span>${sharePrice.toFixed(4)}</span>
+              <span>${currentSummary.sharePrice.toFixed(4)}</span>
             </div>
-
             <div className="flex justify-between">
-              <span>Total Shares Before Funding:</span>
+              <span>Shares Purchased:</span>
               <span>
-                {Math.round(totalSharesBeforeFunding).toLocaleString()}
+                {currentSummary.sharesPurchased.toLocaleString(undefined, {
+                  maximumFractionDigits: 0,
+                })}
               </span>
             </div>
-
             <div className="flex justify-between">
-              <span>Your Shares Owned:</span>
-              <span>{Math.round(sharesBought).toLocaleString()}</span>
+              <span>Ownership %:</span>
+              <span>{currentSummary.ownershipPercentage.toFixed(4)}%</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Post-Money Valuation:</span>
+              <span>
+                ${(currentSummary.postMoneyValuation / 1_000_000).toFixed(2)}M
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ROI Table */}
-      <div className="overflow-x-auto mt-6">
-        <table className="min-w-full text-sm text-left">
-          <thead>
-            <tr>
-              <th className="p-2 font-semibold">Future Valuation ($M)</th>
-              <th className="p-2 font-semibold">Future Share Price ($)</th>
-              <th className="p-2 font-semibold">Your Investment Value ($)</th>
-              <th className="p-2 font-semibold">ROI Multiple</th>
-            </tr>
-          </thead>
-          <tbody>
-            {futureValuations.map((fv) => {
-              const futureSharePrice =
-                (fv * 1_000_000) / totalSharesBeforeFunding;
-              const potentialFutureValue = sharesBought * futureSharePrice;
-              const roiMultiple =
-                investment > 0 ? potentialFutureValue / investment : 0;
+      {/* ROI Projections Table */}
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-4">
+          📈 Potential Return Scenarios
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="p-3 text-left">Future Valuation</th>
+                <th className="p-3 text-left">Share Price</th>
+                <th className="p-3 text-left">Your Stake Value</th>
+                <th className="p-3 text-left">ROI Multiple</th>
+              </tr>
+            </thead>
+            <tbody>
+              {futureValuations.map((valuation) => {
+                const { futureValue, roiMultiple, futureSharePrice } =
+                  calculateROI(valuation);
+                const rowClass =
+                  roiMultiple > 10
+                    ? 'bg-green-50'
+                    : roiMultiple > 3
+                      ? 'bg-blue-50'
+                      : '';
 
-              let rowClass = '';
-              if (roiMultiple > 5) {
-                rowClass = 'bg-yellow-100';
-              } else if (roiMultiple > 3) {
-                rowClass = 'bg-green-100';
-              }
-
-              return (
-                <tr key={fv} className={`border-t ${rowClass}`}>
-                  <td className="p-2">{fv}M</td>
-                  <td className="p-2">${futureSharePrice.toFixed(4)}</td>
-                  <td className="p-2">${potentialFutureValue.toFixed(2)}</td>
-                  <td className="p-2">{roiMultiple.toFixed(2)}x</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-
-        <div className="mt-8 p-4 bg-red-100 text-red-800 text-sm rounded-xl shadow-sm">
-          ⚠️ <strong>Disclaimer:</strong> This is a simplified ROI calculator
-          for educational and illustration purposes only. Actual results may
-          vary depending on future fundraising, dilution, company performance,
-          taxes, and other factors. Investing in startups involves significant
-          risks, including the potential loss of your investment.
+                return (
+                  <tr key={valuation} className={`border-t ${rowClass}`}>
+                    <td className="p-3">${valuation}M</td>
+                    <td className="p-3">${futureSharePrice.toFixed(4)}</td>
+                    <td className="p-3">
+                      $
+                      {futureValue.toLocaleString(undefined, {
+                        maximumFractionDigits: 2,
+                      })}
+                    </td>
+                    <td className="p-3 font-medium">
+                      {roiMultiple.toFixed(2)}x
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
+      </div>
+
+      {/* Disclaimer */}
+      <div className="mt-6 p-4 bg-red-50 text-red-700 text-sm rounded-lg">
+        <p>
+          <strong>⚠️ Important Disclaimer:</strong> This calculator provides
+          illustrative projections only. Actual returns will vary based on:
+        </p>
+        <ul className="list-disc pl-5 mt-2 space-y-1">
+          <li>Future funding rounds and dilution</li>
+          <li>Liquidation preferences (typically 1-2x for investors)</li>
+          <li>Company performance and exit scenarios</li>
+          <li>Tax implications and fees</li>
+        </ul>
+        <p className="mt-2">
+          Startup investing carries high risk of total loss. Consult a financial
+          advisor before making investment decisions.
+        </p>
       </div>
     </div>
   );
