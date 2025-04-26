@@ -30,9 +30,7 @@ const Favorites = () => {
 
   if (error) {
     return (
-      <div className="p-4 text-red-500">
-        Error loading favorites: {error}
-      </div>
+      <div className="p-4 text-red-500">Error loading favorites: {error}</div>
     );
   }
 
@@ -44,7 +42,7 @@ const Favorites = () => {
       <p className="text-gray-500 dark:text-neutral-400 mb-4">
         Keep track of your saved campaigns and monitor their performance.
       </p>
-      
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {favoritedCampaigns.length === 0 ? (
           <div className="col-span-full text-center p-4 text-gray-500">
@@ -82,7 +80,7 @@ const Favorites = () => {
                   </div>
                 </div>
               </Link>
-              
+
               <button
                 className="absolute top-2 right-2 p-2 bg-white/80 rounded-full shadow-md hover:bg-gray-100 transition-colors"
                 onClick={(e) => {
@@ -90,7 +88,11 @@ const Favorites = () => {
                   unfavoriteCampaign(campaign.id.toString());
                   fetchFavoritedCampaigns();
                 }}
-                aria-label={campaign.favorited ? 'Remove from favorites' : 'Add to favorites'}
+                aria-label={
+                  campaign.favorited
+                    ? 'Remove from favorites'
+                    : 'Add to favorites'
+                }
               >
                 <FaBookmark className="text-orange-500" />
               </button>
