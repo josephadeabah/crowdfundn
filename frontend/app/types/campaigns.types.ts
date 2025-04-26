@@ -112,6 +112,7 @@ export interface CampaignShareType {
 
 export interface CampaignState {
   campaigns: CampaignResponseDataType[];
+  favoritedCampaigns: CampaignResponseDataType[];
   userCampaigns: CampaignResponseDataType[] | null;
   currentCampaign: SingleCampaignResponseDataType | null;
   campaignShares: CampaignShareType | null;
