@@ -50,7 +50,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const [dateRange, setDateRange] = useState<string>('all_time');
   const [goalRange, setGoalRange] = useState<string>('all');
   const [isHovered, setIsHovered] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
 
   const [toast, setToast] = useState({
     isOpen: false,
@@ -108,7 +107,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     debouncedSearchTerm,
   ]);
 
-  const handleFavorite = async (campaignId: string) => {
+  const handleFavoriteClick = async (
+    e: React.MouseEvent,
+    campaignId: string,
+  ) => {
+    e.preventDefault();
+
     if (!user) {
       showToast(
         'Error',
@@ -117,38 +121,28 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       );
       return;
     }
-    try {
-      await favoriteCampaign(campaignId);
-      setIsFavorite(true);
-      showToast('Success', 'Campaign added to favorites', 'success');
-    } catch (error) {
-      showToast('Error', 'Failed to favorite campaign', 'error');
-    }
-  };
 
-  const handleUnfavorite = async (campaignId: string) => {
-    if (!user) {
-      showToast(
-        'Error',
-        'You must log in first to add to your favorite and track campaign progress.',
-        'error',
+    try {
+      if (campaign.favorited) {
+        await unfavoriteCampaign(campaignId);
+        showToast('Success', 'Campaign removed from favorites', 'success');
+      } else {
+        await favoriteCampaign(campaignId);
+        showToast('Success', 'Campaign added to favorites', 'success');
+      }
+      // Optionally refresh the campaigns list to reflect the change
+      fetchAllCampaigns(
+        sortBy,
+        sortOrder,
+        page,
+        pageSize,
+        dateRange,
+        goalRange,
+        location,
+        debouncedSearchTerm,
       );
-      return;
-    }
-    try {
-      await unfavoriteCampaign(campaignId);
-      setIsFavorite(false);
-      showToast('Success', 'Campaign removed from favorites', 'success');
     } catch (error) {
-      showToast('Error', 'Failed to unfavorite campaign', 'error');
-    }
-  };
-
-  const toggleFavorite = () => {
-    if (isFavorite) {
-      handleUnfavorite(String(campaign.id));
-    } else {
-      handleFavorite(String(campaign.id));
+      showToast('Error', 'Failed to update favorite status', 'error');
     }
   };
 
@@ -168,13 +162,10 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       >
         <div className="absolute top-2 right-2 z-10">
           <button
-            onClick={(e) => {
-              e.preventDefault();
-              toggleFavorite();
-            }}
+            onClick={(e) => handleFavoriteClick(e, String(campaign.id))}
             className="p-1.5 rounded-full bg-background/80 backdrop-blur-sm"
           >
-            {isFavorite ? (
+            {campaign.favorited ? (
               <Heart className="h-3.5 w-3.5 fill-red-500 text-red-500" />
             ) : (
               <Heart className="h-3.5 w-3.5 text-muted-foreground" />
