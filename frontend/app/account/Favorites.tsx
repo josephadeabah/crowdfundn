@@ -88,6 +88,7 @@ const Favorites = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   unfavoriteCampaign(campaign.id.toString());
+                  fetchFavoritedCampaigns();
                 }}
                 aria-label={campaign.favorited ? 'Remove from favorites' : 'Add to favorites'}
               >

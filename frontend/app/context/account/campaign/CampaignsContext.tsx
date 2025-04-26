@@ -435,10 +435,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     },
     [token],
   );
-
-  
-  // ... your existing state ...
-
+  // Fetch favorited campaigns
   const fetchFavoritedCampaigns = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
