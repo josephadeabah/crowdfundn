@@ -12,7 +12,6 @@ const Favorites = () => {
     loading,
     error,
     fetchFavoritedCampaigns,
-    favoriteCampaign,
     unfavoriteCampaign,
   } = useCampaignContext();
 
