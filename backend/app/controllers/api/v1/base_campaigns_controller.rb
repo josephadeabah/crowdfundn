@@ -156,9 +156,16 @@ module Api
       end
 
       def favorites
-        @campaigns = @current_user.favorited_campaigns.includes(:rewards, :updates, :comments, fundraiser: :profile)
+        @campaigns = @current_user.favorited_campaigns
+          .includes(:rewards, :updates, :comments, fundraiser: :profile)
+          .page(params[:page])
+          .per(params[:pageSize] || 20)
+      
         render json: {
-          campaigns: @campaigns.map { |c| campaign_json(c) }
+          campaigns: @campaigns.map { |c| campaign_json(c) },
+          current_page: @campaigns.current_page,
+          total_pages: @campaigns.total_pages,
+          total_count: @campaigns.total_count
         }, status: :ok
       end
 
