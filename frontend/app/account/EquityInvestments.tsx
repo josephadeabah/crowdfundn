@@ -16,7 +16,10 @@ const EquityInvestments = () => {
         </h1>
         <div className="flex space-x-4">
           <Link href="/invest">
-            <Button variant="outline" className="text-gray-700 rounded-full shadow-sm">
+            <Button
+              variant="outline"
+              className="text-gray-700 rounded-full shadow-sm"
+            >
               Browse Founders
             </Button>
           </Link>
