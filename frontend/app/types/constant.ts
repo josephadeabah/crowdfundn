@@ -50,6 +50,12 @@ export const dropdownLinks: DropdownLinks = {
       icon: BanknotesIcon,
       description: 'Understand our pricing structure.',
     },
+    {
+      label: 'Investment Calculator',
+      href: '/investment-calculator',
+      icon: BanknotesIcon,
+      description: 'Calculate your potential returns on investment.',
+    },
   ],
   Contact: [
     {
