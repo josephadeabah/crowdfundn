@@ -22,8 +22,8 @@ export default function InvestmentCalculatorColorfulTable({
   const sharesBought = investment / sharePrice;
   const totalSharesBeforeFunding = preMoneyValuation / sharePrice;
 
-  // Pick a "default dream" future valuation for Live ROI Preview (e.g., $50M)
-  const dreamValuation = 50; // 50 million dollars
+  // Pick a "default dream" future valuation for Live ROI Preview (e.g., $3M)
+  const dreamValuation = 1; // 1 million dollars
   const futureSharePrice =
     (dreamValuation * 1_000_000) / totalSharesBeforeFunding;
   const potentialFutureValue = sharesBought * futureSharePrice;
