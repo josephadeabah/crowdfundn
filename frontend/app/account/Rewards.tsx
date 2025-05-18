@@ -60,12 +60,14 @@ const RewardsPage: React.FC = () => {
     fetchUserReward();
     fetchUserPoints();
     fetchFundraiserRank();
+    fetchUserCampaigns();
   }, [
     fetchUserRank,
     fetchRewards,
     fetchUserReward,
     fetchUserPoints,
     fetchFundraiserRank,
+    fetchUserCampaigns
   ]);
 
   const [showModal, setShowModal] = useState<boolean>(false);
