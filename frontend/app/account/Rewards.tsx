@@ -33,7 +33,7 @@ interface Errors {
 }
 
 const RewardsPage: React.FC = () => {
-  const { campaigns, userCampaigns, fetchUserCampaigns, loading } = useCampaignContext();
+  const { userCampaigns, fetchUserCampaigns, loading } = useCampaignContext();
   const {
     addReward,
     deleteReward,
@@ -442,22 +442,28 @@ const RewardsPage: React.FC = () => {
                     Select Campaign
                   </label>
                   <select
-                    id="campaignId"
-                    name="campaignId"
-                    value={selectedCampaignId || ''}
-                    onChange={(e) => setSelectedCampaignId(e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.campaignId ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
-                    aria-invalid={errors.campaignId ? 'true' : 'false'}
-                  >
-                    <option value="" disabled>
-                      Select a campaign
-                    </option>
-                    {userCampaigns.map((campaign: CampaignResponseDataType) => (
+                  id="campaignId"
+                  name="campaignId"
+                  value={selectedCampaignId || ''}
+                  onChange={(e) => setSelectedCampaignId(e.target.value)}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.campaignId ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
+                  aria-invalid={errors.campaignId ? 'true' : 'false'}
+                >
+                  <option value="" disabled>
+                    {loading ? 'Loading campaigns...' : 'Select a campaign'}
+                  </option>
+                  {userCampaigns.length > 0 ? (
+                    userCampaigns.map((campaign: CampaignResponseDataType) => (
                       <option key={campaign.id} value={campaign.id}>
                         {truncateTitle(campaign.title, 60)}
                       </option>
-                    ))}
-                  </select>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      No campaigns available
+                    </option>
+                  )}
+                </select>
                   {errors.campaignId && (
                     <p className="text-red-500 text-sm mt-1">
                       {errors.campaignId}
