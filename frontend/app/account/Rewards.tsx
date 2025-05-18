@@ -61,6 +61,7 @@ const RewardsPage: React.FC = () => {
     fetchUserPoints();
     fetchFundraiserRank();
     fetchUserCampaigns();
+    console.log('Fetching data...');
   }, [
     fetchUserRank,
     fetchRewards,
