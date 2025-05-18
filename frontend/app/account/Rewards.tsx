@@ -33,7 +33,7 @@ interface Errors {
 }
 
 const RewardsPage: React.FC = () => {
-  const { campaigns, fetchUserCampaigns, loading } = useCampaignContext();
+  const { campaigns, userCampaigns, fetchUserCampaigns, loading } = useCampaignContext();
   const {
     addReward,
     deleteReward,
@@ -84,10 +84,6 @@ const RewardsPage: React.FC = () => {
   );
   const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
   const [rewardToDelete, setRewardToDelete] = useState<number | null>(null);
-
-  useEffect(() => {
-    fetchUserCampaigns();
-  }, [fetchUserCampaigns]);
 
   const validateForm = (): boolean => {
     const newErrors: Errors = {};
@@ -456,7 +452,7 @@ const RewardsPage: React.FC = () => {
                     <option value="" disabled>
                       Select a campaign
                     </option>
-                    {campaigns.map((campaign: CampaignResponseDataType) => (
+                    {userCampaigns.map((campaign: CampaignResponseDataType) => (
                       <option key={campaign.id} value={campaign.id}>
                         {truncateTitle(campaign.title, 60)}
                       </option>
