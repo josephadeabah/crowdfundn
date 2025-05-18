@@ -462,24 +462,24 @@ console.log('Loading state:', loading);
                         className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.campaignId ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
                         aria-invalid={errors.campaignId ? 'true' : 'false'}
                       >
-                        <option value="" disabled>
-                          {loading
-                            ? 'Loading campaigns...'
-                            : 'Select a campaign'}
-                        </option>
-                        {userCampaigns.length > 0 ? (
-                          userCampaigns?.map(
-                            (campaign: CampaignResponseDataType) => (
-                              <option key={campaign.id} value={campaign.id}>
-                                {truncateTitle(campaign.title, 60)}
-                              </option>
-                            ),
-                          )
-                        ) : (
-                          <option value="" disabled>
-                            No campaigns available
+                       <option value="" disabled>
+                        {userCampaigns && userCampaigns.length > 0
+                          ? 'Select a campaign'
+                          : 'No campaigns available'}
+                      </option>
+
+                      {userCampaigns && userCampaigns.length > 0 ? (
+                        userCampaigns.map((campaign: CampaignResponseDataType) => (
+                          <option key={campaign.id} value={campaign.id}>
+                            {truncateTitle(campaign.title, 60)}
                           </option>
-                        )}
+                        ))
+                      ) : (
+                        <option value="" disabled>
+                          No campaigns available
+                        </option>
+                      )}
+
                       </select>
                       {errors.campaignId && (
                         <p className="text-red-500 text-sm mt-1">
