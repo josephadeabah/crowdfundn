@@ -67,7 +67,7 @@ const RewardsPage: React.FC = () => {
     fetchUserReward,
     fetchUserPoints,
     fetchFundraiserRank,
-    fetchUserCampaigns
+    fetchUserCampaigns,
   ]);
 
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -399,7 +399,9 @@ const RewardsPage: React.FC = () => {
             <RewardsLoader />
           ) : (
             <>
-              {userCampaigns.every((campaign) => campaign.rewards.length === 0) ? (
+              {userCampaigns.every(
+                (campaign) => campaign.rewards.length === 0,
+              ) ? (
                 <p className="text-gray-500 text-sm">
                   The Gifts You create will appear here!
                 </p>
@@ -429,143 +431,161 @@ const RewardsPage: React.FC = () => {
               <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
                 Add New Gift
               </h2>
-              <p className="text-gray-500 text-sm">
-                Create low-priced items or gifts to reward backers who donate as
-                specified.
-              </p>
-              <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                  <label
-                    htmlFor="campaignId"
-                    className="block text-gray-700 dark:text-gray-300 mb-2"
-                  >
-                    Select Campaign
-                  </label>
-                  <select
-                  id="campaignId"
-                  name="campaignId"
-                  value={selectedCampaignId || ''}
-                  onChange={(e) => setSelectedCampaignId(e.target.value)}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.campaignId ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
-                  aria-invalid={errors.campaignId ? 'true' : 'false'}
-                >
-                  <option value="" disabled>
-                    {loading ? 'Loading campaigns...' : 'Select a campaign'}
-                  </option>
-                  {userCampaigns.length > 0 ? (
-                    userCampaigns.map((campaign: CampaignResponseDataType) => (
-                      <option key={campaign.id} value={campaign.id}>
-                        {truncateTitle(campaign.title, 60)}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      No campaigns available
-                    </option>
-                  )}
-                </select>
-                  {errors.campaignId && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors.campaignId}
-                    </p>
-                  )}
+              {loading ? (
+                <div className="flex justify-center items-center h-32">
+                  <p>Loading campaigns...</p>
                 </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="title"
-                    className="block text-gray-700 dark:text-gray-300 mb-2"
-                  >
-                    Title
-                  </label>
-                  <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.title ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
-                    aria-invalid={errors.title ? 'true' : 'false'}
-                  />
-                  {errors.title && (
-                    <p className="text-red-500 text-sm mt-1">{errors.title}</p>
-                  )}
-                </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="description"
-                    className="block text-gray-700 dark:text-gray-300 mb-2"
-                  >
-                    Description
-                  </label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.description ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
-                    aria-invalid={errors.description ? 'true' : 'false'}
-                  />
-                  {errors.description && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors.description}
-                    </p>
-                  )}
-                </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="amount"
-                    className="block text-gray-700 dark:text-gray-300 mb-2"
-                  >
-                    Amount
-                  </label>
-                  <input
-                    type="text"
-                    id="amount"
-                    name="amount"
-                    value={formData.amount}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.amount ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
-                    aria-invalid={errors.amount ? 'true' : 'false'}
-                  />
-                  {errors.amount && (
-                    <p className="text-red-500 text-sm mt-1">{errors.amount}</p>
-                  )}
-                </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="image"
-                    className="block text-gray-700 dark:text-gray-300 mb-2"
-                  >
-                    Image
-                  </label>
-                  <input
-                    type="file"
-                    id="image"
-                    name="image"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className={`w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.image ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
-                    aria-invalid={errors.image ? 'true' : 'false'}
-                  />
-                  {errors.image && (
-                    <p className="text-red-500 text-sm mt-1">{errors.image}</p>
-                  )}
-                  {previewImage && (
-                    <img
-                      src={previewImage}
-                      alt="Preview"
-                      className="mt-2 h-32 w-32 object-cover rounded-lg"
-                    />
-                  )}
-                </div>
-                <button
-                  type="submit"
-                  className={`w-full px-4 py-2 rounded-lg transition-colors ${loadingReward ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} text-white`}
-                  disabled={loadingReward}
-                >
-                  {loadingReward ? 'Adding...' : 'Add Gift'}
-                </button>
-              </form>
+              ) : (
+                <>
+                  <p className="text-gray-500 text-sm">
+                    Create low-priced items or gifts to reward backers who
+                    donate as specified.
+                  </p>
+                  <form onSubmit={handleSubmit}>
+                    <div className="mb-4">
+                      <label
+                        htmlFor="campaignId"
+                        className="block text-gray-700 dark:text-gray-300 mb-2"
+                      >
+                        Select Campaign
+                      </label>
+                      <select
+                        id="campaignId"
+                        name="campaignId"
+                        value={selectedCampaignId || ''}
+                        onChange={(e) => setSelectedCampaignId(e.target.value)}
+                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.campaignId ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
+                        aria-invalid={errors.campaignId ? 'true' : 'false'}
+                      >
+                        <option value="" disabled>
+                          {loading
+                            ? 'Loading campaigns...'
+                            : 'Select a campaign'}
+                        </option>
+                        {userCampaigns.length > 0 ? (
+                          userCampaigns.map(
+                            (campaign: CampaignResponseDataType) => (
+                              <option key={campaign.id} value={campaign.id}>
+                                {truncateTitle(campaign.title, 60)}
+                              </option>
+                            ),
+                          )
+                        ) : (
+                          <option value="" disabled>
+                            No campaigns available
+                          </option>
+                        )}
+                      </select>
+                      {errors.campaignId && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.campaignId}
+                        </p>
+                      )}
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        htmlFor="title"
+                        className="block text-gray-700 dark:text-gray-300 mb-2"
+                      >
+                        Title
+                      </label>
+                      <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        value={formData.title}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.title ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
+                        aria-invalid={errors.title ? 'true' : 'false'}
+                      />
+                      {errors.title && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.title}
+                        </p>
+                      )}
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        htmlFor="description"
+                        className="block text-gray-700 dark:text-gray-300 mb-2"
+                      >
+                        Description
+                      </label>
+                      <textarea
+                        id="description"
+                        name="description"
+                        value={formData.description}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.description ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
+                        aria-invalid={errors.description ? 'true' : 'false'}
+                      />
+                      {errors.description && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.description}
+                        </p>
+                      )}
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        htmlFor="amount"
+                        className="block text-gray-700 dark:text-gray-300 mb-2"
+                      >
+                        Amount
+                      </label>
+                      <input
+                        type="text"
+                        id="amount"
+                        name="amount"
+                        value={formData.amount}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.amount ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
+                        aria-invalid={errors.amount ? 'true' : 'false'}
+                      />
+                      {errors.amount && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.amount}
+                        </p>
+                      )}
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        htmlFor="image"
+                        className="block text-gray-700 dark:text-gray-300 mb-2"
+                      >
+                        Image
+                      </label>
+                      <input
+                        type="file"
+                        id="image"
+                        name="image"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className={`w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.image ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
+                        aria-invalid={errors.image ? 'true' : 'false'}
+                      />
+                      {errors.image && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.image}
+                        </p>
+                      )}
+                      {previewImage && (
+                        <img
+                          src={previewImage}
+                          alt="Preview"
+                          className="mt-2 h-32 w-32 object-cover rounded-lg"
+                        />
+                      )}
+                    </div>
+                    <button
+                      type="submit"
+                      className={`w-full px-4 py-2 rounded-lg transition-colors ${loadingReward ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} text-white`}
+                      disabled={loadingReward}
+                    >
+                      {loadingReward ? 'Adding...' : 'Add Gift'}
+                    </button>
+                  </form>
+                </>
+              )}
             </div>
           </Modal>
         </div>
