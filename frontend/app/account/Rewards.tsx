@@ -405,7 +405,7 @@ const RewardsPage: React.FC = () => {
                 </p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {campaigns.map((campaign) =>
+                  {userCampaigns.map((campaign) =>
                     campaign.rewards.map((reward) => (
                       <RewardCard
                         key={reward.id}
