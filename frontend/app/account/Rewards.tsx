@@ -404,7 +404,7 @@ console.log('Loading state:', loading);
             <RewardsLoader />
           ) : (
             <>
-              {userCampaigns.every(
+              {userCampaigns?.every(
                 (campaign) => campaign.rewards.length === 0,
               ) ? (
                 <p className="text-gray-500 text-sm">
@@ -412,7 +412,7 @@ console.log('Loading state:', loading);
                 </p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {userCampaigns.map((campaign) =>
+                  {userCampaigns?.map((campaign) =>
                     campaign.rewards.map((reward) => (
                       <RewardCard
                         key={reward.id}
@@ -467,8 +467,8 @@ console.log('Loading state:', loading);
                             ? 'Loading campaigns...'
                             : 'Select a campaign'}
                         </option>
-                        {userCampaigns.length > 0 ? (
-                          userCampaigns.map(
+                        {userCampaigns?.length > 0 ? (
+                          userCampaigns?.map(
                             (campaign: CampaignResponseDataType) => (
                               <option key={campaign.id} value={campaign.id}>
                                 {truncateTitle(campaign.title, 60)}
