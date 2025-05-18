@@ -55,13 +55,13 @@ const RewardsPage: React.FC = () => {
   } = usePointRewardContext();
 
   useEffect(() => {
+    console.log('Fetching data...');
     fetchUserRank();
     fetchRewards();
     fetchUserReward();
     fetchUserPoints();
     fetchFundraiserRank();
     fetchUserCampaigns();
-    console.log('Fetching data...');
   }, [
     fetchUserRank,
     fetchRewards,
@@ -70,6 +70,10 @@ const RewardsPage: React.FC = () => {
     fetchFundraiserRank,
     fetchUserCampaigns,
   ]);
+
+  // Add this to check the campaigns data
+console.log('User Campaigns:', userCampaigns);
+console.log('Loading state:', loading);
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
