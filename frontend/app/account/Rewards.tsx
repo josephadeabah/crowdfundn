@@ -467,7 +467,7 @@ console.log('Loading state:', loading);
                             ? 'Loading campaigns...'
                             : 'Select a campaign'}
                         </option>
-                        {userCampaigns?.length > 0 ? (
+                        {userCampaigns.length > 0 ? (
                           userCampaigns?.map(
                             (campaign: CampaignResponseDataType) => (
                               <option key={campaign.id} value={campaign.id}>
