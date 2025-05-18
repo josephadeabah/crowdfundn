@@ -399,7 +399,7 @@ const RewardsPage: React.FC = () => {
             <RewardsLoader />
           ) : (
             <>
-              {campaigns.every((campaign) => campaign.rewards.length === 0) ? (
+              {userCampaigns.every((campaign) => campaign.rewards.length === 0) ? (
                 <p className="text-gray-500 text-sm">
                   The Gifts You create will appear here!
                 </p>
