@@ -29,6 +29,9 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import BlurredChartContainer from '@/app/components/premiumplaceholder/BlurredChartContainer ';
+import { CampaignsByCategoryChart } from '../components/charts/CampaignsByCategoryChart';
+import { FundingOverTimeChart } from '../components/charts/FundingOverTimeChart';
+import { CampaignPerformanceChart } from '../components/charts/CampaignPerformanceChart';
 
 export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
@@ -270,23 +273,22 @@ export default function Dashboard() {
             </div>
           </CardDescription>
         </Card>
-        {/* Premium Charts Section */}
-        {hasPremiumAccess ? (
-          <DashboardCharts
-            statistics={statistics}
-            user={user}
-            fetchCampaignStatistics={fetchCampaignStatistics}
-          />
-        ) : (
-          <BlurredChartContainer>
-            <DashboardCharts
-              statistics={statistics}
-              user={user}
-              fetchCampaignStatistics={fetchCampaignStatistics}
-            />
-          </BlurredChartContainer>
-        )}
+        <CampaignsByCategoryChart
+          statistics={statistics}
+          user={user}
+          fetchCampaignStatistics={fetchCampaignStatistics}
+        />
       </div>
+      <FundingOverTimeChart
+        statistics={statistics}
+        user={user}
+        fetchCampaignStatistics={fetchCampaignStatistics}
+      />
+      <CampaignPerformanceChart
+        statistics={statistics}
+        user={user}
+        fetchCampaignStatistics={fetchCampaignStatistics}
+      />
       {/* Donations by Country Chart - also behind paywall */}
       {hasPremiumAccess ? (
         <DonationByCountryCharts
