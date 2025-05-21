@@ -28,7 +28,7 @@ import {
   AlertCircle,
   TrendingUp,
 } from 'lucide-react';
-import PremiumChartPlaceholder from '@/app/components/premiumplaceholder/PremiumChartPlaceholder';
+import BlurredChartContainer from '@/app/components/premiumplaceholder/BlurredChartContainer ';
 
 export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
@@ -270,7 +270,7 @@ export default function Dashboard() {
             </div>
           </CardDescription>
         </Card>
-         {/* Premium Charts Section */}
+        {/* Premium Charts Section */}
         {hasPremiumAccess ? (
           <DashboardCharts
             statistics={statistics}
@@ -278,17 +278,28 @@ export default function Dashboard() {
             fetchCampaignStatistics={fetchCampaignStatistics}
           />
         ) : (
-          <PremiumChartPlaceholder />
+          <BlurredChartContainer>
+            <DashboardCharts
+              statistics={statistics}
+              user={user}
+              fetchCampaignStatistics={fetchCampaignStatistics}
+            />
+          </BlurredChartContainer>
         )}
       </div>
-       {/* Donations by Country Chart - also behind paywall */}
+      {/* Donations by Country Chart - also behind paywall */}
       {hasPremiumAccess ? (
         <DonationByCountryCharts
           statistics={statistics}
           fetchCampaignStatistics={fetchCampaignStatistics}
         />
       ) : (
-        <PremiumChartPlaceholder />
+        <BlurredChartContainer>
+          <DonationByCountryCharts
+            statistics={statistics}
+            fetchCampaignStatistics={fetchCampaignStatistics}
+          />
+        </BlurredChartContainer>
       )}
     </div>
   );
