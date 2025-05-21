@@ -8,7 +8,7 @@ import CTASection from '@/app/account/upgrade/CTASection';
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-white">
       <main className="flex-grow">
         <div className="py-16 md:py-24">
           <PricingHeader />
