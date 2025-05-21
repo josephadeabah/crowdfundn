@@ -196,7 +196,7 @@ const ProfileTabs = () => {
             {/* Upgrade Button - Fixed at the bottom */}
             <div className="sticky bottom-0 bg-white dark:bg-gray-800 pt-2 pb-4 px-3 border-t border-dashed border-orange-200 dark:border-neutral-700">
               <Link
-                href="/account/upgrade"
+                href="/upgrade"
                 className="w-full py-2 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg flex items-center justify-center hover:from-green-600 hover:to-green-700 transition-colors duration-300 shadow-sm"
               >
                 <FaArrowUp className="mr-2" />
