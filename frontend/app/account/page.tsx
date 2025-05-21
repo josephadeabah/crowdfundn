@@ -32,7 +32,7 @@ const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
-  const [currentStep, setCurrentStep] = useState<number>(0); // To track the onboarding step
+  const [currentStep, setCurrentStep] = useState<number>(0);
 
   // Tab titles and icons
   const tabs = [
@@ -48,7 +48,7 @@ const ProfileTabs = () => {
       icon: <MaskOffIcon />,
       component: <EquityInvestments />,
       description: 'Manage your equity investments and portfolio.',
-      isNew: true, // Mark Investments as new
+      isNew: true,
     },
     {
       label: 'Backers',
@@ -63,8 +63,8 @@ const ProfileTabs = () => {
       description: 'View and manage your transfers.',
     },
     {
-      label: 'Pledges', // New Pledges tab
-      icon: <HiOutlineTruck />, // Use an appropriate icon
+      label: 'Pledges',
+      icon: <HiOutlineTruck />,
       component: <PledgesListPage />,
       description: 'View and manage your pledges here.',
     },
@@ -101,28 +101,26 @@ const ProfileTabs = () => {
     },
   ];
 
-  // Navigate to a tab based on hash in URL
   useEffect(() => {
     const savedTab = localStorage.getItem('activeTab');
     const onboardingCompleted = localStorage.getItem('onboardingCompleted');
     const hashTab = window.location.hash.replace('#', '');
 
     if (hashTab && tabs.find((tab) => tab.label === hashTab)) {
-      setActiveTab(hashTab); // Set tab from URL hash
+      setActiveTab(hashTab);
     } else if (savedTab) {
-      setActiveTab(savedTab); // Set tab from local storage
+      setActiveTab(savedTab);
     } else {
-      setActiveTab(tabs[0].label); // Default to the first tab
+      setActiveTab(tabs[0].label);
     }
 
     if (!onboardingCompleted) {
-      setShowOnboarding(true); // Show onboarding if it's not completed
+      setShowOnboarding(true);
     }
 
     setLoading(false);
   }, []);
 
-  // Update URL hash and save the active tab in local storage
   useEffect(() => {
     if (activeTab) {
       window.history.replaceState(null, '', `#${activeTab}`);
@@ -130,16 +128,14 @@ const ProfileTabs = () => {
     }
   }, [activeTab]);
 
-  // Handle tab click and loading state
   const handleTabClick = (tab: string) => {
     setLoading(true);
     setActiveTab(tab);
     setTimeout(() => {
       setLoading(false);
-    }, 500); // Simulate loading
+    }, 500);
   };
 
-  // Mark onboarding as completed
   const completeOnboarding = () => {
     localStorage.setItem('onboardingCompleted', 'true');
     setShowOnboarding(false);
@@ -152,58 +148,62 @@ const ProfileTabs = () => {
   return (
     <div className="w-full bg-white dark:bg-gray-800">
       <div className="max-w-7xl mx-auto flex flex-col mt-0 md:flex-row h-screen">
-        {/* Tabs Menu */}
-        <div className="md:w-1/6 border-b h-auto md:h-screen md:border-b-0 md:border-r-2 border-dashed border-orange-200 dark:border-neutral-700 flex flex-col">
-          <div
-            className="flex md:flex-col w-full space-x-2 md:space-x-0 md:space-y-2 !overflow-x-auto md:overflow-visible flex-grow"
-            aria-label="Tabs"
-          >
-            {tabs.map(({ label, icon, isNew }, index) => {
-              const isActive = activeTab === label;
-              const isOnboarding = showOnboarding && currentStep === index;
+        {/* Tabs Menu - Now with sticky positioning */}
+        <div className="md:w-1/6 border-b h-auto md:h-screen md:border-b-0 md:border-r-2 border-dashed border-orange-200 dark:border-neutral-700 flex flex-col sticky top-0">
+          <div className="flex flex-col h-full">
+            <div
+              className="flex md:flex-col w-full space-x-2 md:space-x-0 md:space-y-2 !overflow-x-auto md:overflow-visible flex-grow"
+              aria-label="Tabs"
+            >
+              {tabs.map(({ label, icon, isNew }, index) => {
+                const isActive = activeTab === label;
+                const isOnboarding = showOnboarding && currentStep === index;
 
-              return (
-                <a
-                  key={label}
-                  href={`#${label}`} // Anchor link
-                  className={`py-3 px-3 h-full whitespace-nowrap text-sm font-medium md:text-base transform transition-transform duration-300 ${
-                    isActive
-                      ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-400 dark:text-orange-600'
-                      : 'border-transparent text-gray-600 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-gray-950'
-                  } flex items-center focus:outline-none ${
-                    isOnboarding
-                      ? 'bg-green-600 text-white dark:bg-orange-700'
-                      : ''
-                  }`}
-                  onClick={(e) => {
-                    e.preventDefault(); // Prevent default anchor behavior
-                    handleTabClick(label); // Handle tab click
-                  }}
-                  aria-selected={isActive}
-                  aria-controls={`vertical-tab-${label}`}
-                  role="tab"
-                  id={`tab-${label}`} // Specific ID for better targeting
-                >
-                  <span className="mr-2">{icon}</span>
-                  {label}
-                  {isNew && (
-                    <span className="ml-2 relative">
-                      <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-blue-500"></span>
-                    </span>
-                  )}
-                </a>
-              );
-            })}
+                return (
+                  <a
+                    key={label}
+                    href={`#${label}`}
+                    className={`py-3 px-3 h-full whitespace-nowrap text-sm font-medium md:text-base transform transition-transform duration-300 ${
+                      isActive
+                        ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-400 dark:text-orange-600'
+                        : 'border-transparent text-gray-600 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-gray-950'
+                    } flex items-center focus:outline-none ${
+                      isOnboarding
+                        ? 'bg-green-600 text-white dark:bg-orange-700'
+                        : ''
+                    }`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleTabClick(label);
+                    }}
+                    aria-selected={isActive}
+                    aria-controls={`vertical-tab-${label}`}
+                    role="tab"
+                    id={`tab-${label}`}
+                  >
+                    <span className="mr-2">{icon}</span>
+                    {label}
+                    {isNew && (
+                      <span className="ml-2 relative">
+                        <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-blue-500"></span>
+                      </span>
+                    )}
+                  </a>
+                );
+              })}
+            </div>
+
+            {/* Upgrade Button - Fixed at the bottom */}
+            <div className="sticky bottom-0 bg-white dark:bg-gray-800 pt-2 pb-4 px-3 border-t border-dashed border-orange-200 dark:border-neutral-700">
+              <Link
+                href="/account/upgrade"
+                className="w-full py-2 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg flex items-center justify-center hover:from-green-600 hover:to-green-700 transition-colors duration-300 shadow-sm"
+              >
+                <FaArrowUp className="mr-2" />
+                Upgrade
+              </Link>
+            </div>
           </div>
-
-          {/* Upgrade Button - Added below the tabs */}
-          <Link
-            href="/account/upgrade"
-            className="mt-2 mb-4 mx-3 py-2 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg flex items-center justify-center hover:from-green-600 hover:to-green-700 transition-colors duration-300 shadow-sm"
-          >
-            <FaArrowUp className="mr-2" />
-            Upgrade
-          </Link>
         </div>
 
         {/* Tab Content */}
