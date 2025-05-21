@@ -189,7 +189,6 @@ const ProfileTabs = () => {
                   {isNew && (
                     <span className="ml-2 relative">
                       <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-blue-500"></span>
-                      <span className="text-xs ml-1 text-blue-500">Coming Soon</span>
                     </span>
                   )}
                 </a>
@@ -200,7 +199,7 @@ const ProfileTabs = () => {
           {/* Upgrade Button - Added below the tabs */}
           <Link
             href="/account/upgrade"
-            className="mt-2 mb-4 mx-3 py-2 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg flex items-center justify-center hover:from-blue-600 hover:to-blue-700 transition-colors duration-300 shadow-sm"
+            className="mt-2 mb-4 mx-3 py-2 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg flex items-center justify-center hover:from-green-600 hover:to-green-700 transition-colors duration-300 shadow-sm"
           >
             <FaArrowUp className="mr-2" />
             Upgrade

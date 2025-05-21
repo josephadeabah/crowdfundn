@@ -91,6 +91,26 @@
   * {
     @apply border-border;
   }
+
+  .pricing-card {
+    @apply relative overflow-hidden rounded-2xl border p-6 shadow-sm transition-all hover:shadow-md;
+  }
+
+  .pricing-card.popular {
+    @apply border-bantu-green border-2;
+  }
+
+  .pricing-card .card-highlight {
+    @apply absolute -right-12 top-6 rotate-45 bg-bantu-green px-10 py-1 text-sm text-white;
+  }
+
+  .pricing-feature-list {
+    @apply space-y-3 text-sm text-muted-foreground;
+  }
+
+  .pricing-feature-item {
+    @apply flex items-start gap-2;
+  }
 }
 
 @layer utilities {
