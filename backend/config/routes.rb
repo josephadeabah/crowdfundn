@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       namespace :members do
+        resources :premium_subscriptions, only: [:create, :show]
         resources :profiles, only: [:update]
         resources :roles, only: [:create]
         post 'auth/signup', to: 'auth#signup'

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_04_19_131943) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_21_170758) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -278,6 +278,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_19_131943) do
     t.index ["user_id"], name: "index_points_on_user_id"
   end
 
+  create_table "premium_subscriptions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.decimal "amount", precision: 15, scale: 2, null: false
+    t.string "transaction_reference", null: false
+    t.string "plan_name"
+    t.datetime "expires_at"
+    t.string "status", default: "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["transaction_reference"], name: "index_premium_subscriptions_on_transaction_reference", unique: true
+    t.index ["user_id"], name: "index_premium_subscriptions_on_user_id"
+  end
+
   create_table "profiles", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "name"
@@ -440,6 +453,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_19_131943) do
     t.decimal "net_worth", precision: 15, scale: 2, default: "0.0"
     t.decimal "annual_income", precision: 15, scale: 2, default: "0.0"
     t.string "tax_id"
+    t.boolean "premium_access", default: false
+    t.datetime "premium_expires_at"
+    t.string "premium_plan"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["subaccount_id"], name: "index_users_on_subaccount_id"
   end
@@ -470,6 +486,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_19_131943) do
   add_foreign_key "pledges", "rewards"
   add_foreign_key "points", "donations"
   add_foreign_key "points", "users"
+  add_foreign_key "premium_subscriptions", "users"
   add_foreign_key "profiles", "users"
   add_foreign_key "rewards", "campaigns"
   add_foreign_key "subaccounts", "campaigns"

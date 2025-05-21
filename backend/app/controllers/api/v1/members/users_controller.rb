@@ -21,8 +21,34 @@ module Api
           }, status: :ok
         end
 
+        # In your subscriptions_controller or payment processor
+        def create
+          # Process payment...
+          if payment_successful?
+            subscription = @current_user.subscriptions.create!(
+              plan_id: params[:plan_id],
+              starts_at: Time.current,
+              expires_at: 1.month.from_now,
+              status: 'active'
+            )
+            
+            # Update user's premium access
+            @current_user.update(premium_access: true)
+            
+            render json: { success: true, subscription: subscription }
+          else
+            render json: { success: false, error: 'Payment failed' }, status: :unprocessable_entity
+          end
+        end
+
         def show
-          render json: @current_user.as_json(include: %i[profile roles]), status: :ok
+          render json: {
+            user: @current_user.as_json(include: %i[profile roles]),
+            subscription_status: {
+              premium_access: @current_user.premium_access?,
+              expires_at: @current_user.premium_expires_at
+            }
+          }, status: :ok
         end
 
         def show_by_id

@@ -16,6 +16,7 @@ class User < ApplicationRecord
   has_many :equity_investments, dependent: :destroy
   has_many :invested_campaigns, through: :equity_investments, source: :campaign
   has_many :investor_documents, dependent: :destroy
+  has_many :premium_subscriptions, dependent: :destroy
 
   validates :status, inclusion: { in: STATUSES }
   validates :email, presence: true, uniqueness: true
@@ -102,6 +103,21 @@ class User < ApplicationRecord
     return false unless net_worth.present? && annual_income.present?
     
     net_worth >= 1_000_000 || annual_income >= 200_000
+  end
+
+  def has_premium_access?
+    # Check if user has an active subscription
+    subscriptions.where("expires_at > ?", Time.current).exists? ||
+      # Or if they have a lifetime access flag
+      premium_access
+  end
+
+  def premium_access?
+    premium_access && (premium_expires_at.nil? || premium_expires_at > Time.current)
+  end
+
+  def active_premium_subscription
+    premium_subscriptions.active.last
   end
 
   private
