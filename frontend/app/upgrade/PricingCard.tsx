@@ -86,6 +86,19 @@ const PricingCard = ({
             <span className={cn(gradient && 'text-white')}>{feature}</span>
           </li>
         ))}
+        {/* Add analytics-specific features */}
+        <li className="flex items-start">
+          <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+          <span className="ml-2">Advanced Funding Analytics</span>
+        </li>
+        <li className="flex items-start">
+          <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+          <span className="ml-2">Performance Metrics</span>
+        </li>
+        <li className="flex items-start">
+          <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+          <span className="ml-2">Geographic Funding Insights</span>
+        </li>
       </ul>
     </div>
   );

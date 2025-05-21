@@ -24,6 +24,10 @@ export interface LoginUserType {
   target_amount: string;
   duration_in_days: number;
   national_id: string;
+  subscription?: {
+  isActive: boolean;
+  // add other subscription properties if needed
+};
 }
 
 export interface LoginUserResponseSuccess {

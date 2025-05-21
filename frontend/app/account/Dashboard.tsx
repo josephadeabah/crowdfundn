@@ -28,11 +28,18 @@ import {
   AlertCircle,
   TrendingUp,
 } from 'lucide-react';
+import PremiumChartPlaceholder from '@/app/components/premiumplaceholder/PremiumChartPlaceholder';
 
 export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
     useCampaignContext();
   const { user } = useAuth();
+  const [hasPremiumAccess, setHasPremiumAccess] = useState(false);
+
+  useEffect(() => {
+    // Check if user has premium access (you'll need to implement this logic)
+    setHasPremiumAccess(user?.subscription?.isActive || false);
+  }, [user]);
   // Fetch statistics data when the component mounts or month/year changes
   useEffect(() => {
     fetchCampaignStatistics();
@@ -263,18 +270,26 @@ export default function Dashboard() {
             </div>
           </CardDescription>
         </Card>
-        {/* Charts Section */}
-        <DashboardCharts
+         {/* Premium Charts Section */}
+        {hasPremiumAccess ? (
+          <DashboardCharts
+            statistics={statistics}
+            user={user}
+            fetchCampaignStatistics={fetchCampaignStatistics}
+          />
+        ) : (
+          <PremiumChartPlaceholder />
+        )}
+      </div>
+       {/* Donations by Country Chart - also behind paywall */}
+      {hasPremiumAccess ? (
+        <DonationByCountryCharts
           statistics={statistics}
-          user={user}
           fetchCampaignStatistics={fetchCampaignStatistics}
         />
-      </div>
-      {/* Donations by Country Chart */}
-      <DonationByCountryCharts
-        statistics={statistics}
-        fetchCampaignStatistics={fetchCampaignStatistics}
-      />
+      ) : (
+        <PremiumChartPlaceholder />
+      )}
     </div>
   );
 }
