@@ -279,16 +279,40 @@ export default function Dashboard() {
           fetchCampaignStatistics={fetchCampaignStatistics}
         />
       </div>
-      <FundingOverTimeChart
-        statistics={statistics}
-        user={user}
-        fetchCampaignStatistics={fetchCampaignStatistics}
-      />
-      <CampaignPerformanceChart
-        statistics={statistics}
-        user={user}
-        fetchCampaignStatistics={fetchCampaignStatistics}
-      />
+      {/* Charts Section for Funding over time */}
+      {hasPremiumAccess ? (
+        <FundingOverTimeChart
+          statistics={statistics}
+          user={user}
+          fetchCampaignStatistics={fetchCampaignStatistics}
+        />
+      ) : (
+        <BlurredChartContainer>
+          <FundingOverTimeChart
+            statistics={statistics}
+            user={user}
+            fetchCampaignStatistics={fetchCampaignStatistics}
+          />
+        </BlurredChartContainer>
+      )}
+
+      {/* Campaign Performance Chart - also behind paywall */}
+      {hasPremiumAccess ? (
+        <CampaignPerformanceChart
+          statistics={statistics}
+          user={user}
+          fetchCampaignStatistics={fetchCampaignStatistics}
+        />
+      ) : (
+        <BlurredChartContainer>
+          <CampaignPerformanceChart
+            statistics={statistics}
+            user={user}
+            fetchCampaignStatistics={fetchCampaignStatistics}
+          />
+        </BlurredChartContainer>
+      )}
+
       {/* Donations by Country Chart - also behind paywall */}
       {hasPremiumAccess ? (
         <DonationByCountryCharts
