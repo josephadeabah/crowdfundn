@@ -25,6 +25,8 @@ import OnboardingModal from '@/app/components/onboarding/OnboardingModal';
 import Favorites from '@/app/account/Favorites';
 import PledgesListPage from '@/app/account/Pledges';
 import EquityInvestments from './EquityInvestments';
+import Link from 'next/link';
+import { FaArrowUp } from 'react-icons/fa';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState<string>('');
@@ -46,6 +48,7 @@ const ProfileTabs = () => {
       icon: <MaskOffIcon />,
       component: <EquityInvestments />,
       description: 'Manage your equity investments and portfolio.',
+      isNew: true, // Mark Investments as new
     },
     {
       label: 'Backers',
@@ -150,12 +153,12 @@ const ProfileTabs = () => {
     <div className="w-full bg-white dark:bg-gray-800">
       <div className="max-w-7xl mx-auto flex flex-col mt-0 md:flex-row h-screen">
         {/* Tabs Menu */}
-        <div className="md:w-1/6 border-b h-auto md:h-screen md:border-b-0 md:border-r-2 border-dashed border-orange-200 dark:border-neutral-700">
+        <div className="md:w-1/6 border-b h-auto md:h-screen md:border-b-0 md:border-r-2 border-dashed border-orange-200 dark:border-neutral-700 flex flex-col">
           <div
-            className="flex md:flex-col w-full space-x-2 md:space-x-0 md:space-y-2 !overflow-x-auto md:overflow-visible"
+            className="flex md:flex-col w-full space-x-2 md:space-x-0 md:space-y-2 !overflow-x-auto md:overflow-visible flex-grow"
             aria-label="Tabs"
           >
-            {tabs.map(({ label, icon }, index) => {
+            {tabs.map(({ label, icon, isNew }, index) => {
               const isActive = activeTab === label;
               const isOnboarding = showOnboarding && currentStep === index;
 
@@ -183,10 +186,25 @@ const ProfileTabs = () => {
                 >
                   <span className="mr-2">{icon}</span>
                   {label}
+                  {isNew && (
+                    <span className="ml-2 relative">
+                      <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-blue-500"></span>
+                      <span className="text-xs ml-1 text-blue-500">Coming Soon</span>
+                    </span>
+                  )}
                 </a>
               );
             })}
           </div>
+
+          {/* Upgrade Button - Added below the tabs */}
+          <Link
+            href="/account/upgrade"
+            className="mt-2 mb-4 mx-3 py-2 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg flex items-center justify-center hover:from-blue-600 hover:to-blue-700 transition-colors duration-300 shadow-sm"
+          >
+            <FaArrowUp className="mr-2" />
+            Upgrade
+          </Link>
         </div>
 
         {/* Tab Content */}

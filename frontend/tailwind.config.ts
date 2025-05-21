@@ -87,6 +87,13 @@ export default {
           muted: '#F1F9F0', // Light Green bg
           border: '#DCF5E6', // Light Green border
         },
+        bantu: {
+          green: '#4CAF50',
+          orange: '#F97316',
+          'light-green': '#E8F5E9',
+          'dark-green': '#2E7D32',
+          'soft-orange': '#FEC6A1',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
