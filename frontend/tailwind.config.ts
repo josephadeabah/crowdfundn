@@ -203,6 +203,8 @@ export default {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'hero-pattern': 'linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)',
+				'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+				'pricing-gradient': 'linear-gradient(90deg, hsla(108, 41%, 80%, 1) 0%, hsla(24, 93%, 55%, 1) 100%)',
       },
       boxShadow: {
         glass: '0 4px 30px rgba(0, 0, 0, 0.1)',
