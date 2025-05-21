@@ -26,7 +26,7 @@ import Favorites from '@/app/account/Favorites';
 import PledgesListPage from '@/app/account/Pledges';
 import EquityInvestments from './EquityInvestments';
 import Link from 'next/link';
-import { FaArrowUp } from 'react-icons/fa';
+import { FaCashRegister } from 'react-icons/fa';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState<string>('');
@@ -199,8 +199,8 @@ const ProfileTabs = () => {
                 href="/upgrade"
                 className="w-full py-2 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg flex items-center justify-center hover:from-green-600 hover:to-green-700 transition-colors duration-300 shadow-sm"
               >
-                <FaArrowUp className="mr-2" />
-                Upgrade
+                <FaCashRegister className="mr-2" />
+                Upgrade plan
               </Link>
             </div>
           </div>
