@@ -65,9 +65,7 @@ const Footer = () => {
           {/* Navigation Links */}
           <div className="grid grid-cols-2 md:grid-cols-3 col-span-1 md:col-span-2 gap-8">
             <div>
-              <h3 className="font-semibold mb-4 dark:text-gray-100">
-                Learn More
-              </h3>
+              <h3 className="font-semibold mb-4 dark:text-gray-100">Product</h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <a
@@ -79,10 +77,10 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/upgrade"
                     className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
                   >
-                    Success Stories
+                    Enterprise Support
                   </a>
                 </li>
                 <li>
