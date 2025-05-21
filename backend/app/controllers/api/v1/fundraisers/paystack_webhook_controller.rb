@@ -42,7 +42,12 @@ module Api
           # Process different event types
           case event[:event]
           when 'charge.success'
-            PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
+            metadata = event[:data][:metadata] || {}
+            if metadata[:premium_access] # Check for premium subscription
+              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
+            else
+              PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
+            end
           when 'charge.failed'
             PaystackWebhook::ChargeFailedHandler.new(event[:data]).call
           when 'transfer.success'
