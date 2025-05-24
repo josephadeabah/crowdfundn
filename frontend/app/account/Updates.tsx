@@ -14,7 +14,7 @@ interface FormData {
 }
 
 const CampaignUpdates: React.FC = () => {
-  const { campaigns, fetchUserCampaigns, loading, error } =
+  const { userCampaigns, fetchUserCampaigns, loading, error } =
     useCampaignContext();
   const {
     createUpdate,
@@ -159,7 +159,7 @@ const CampaignUpdates: React.FC = () => {
                     aria-label="Select campaign"
                   >
                     <option value="">Choose a campaign</option>
-                    {campaigns.map((campaign) => (
+                    {userCampaigns?.map((campaign) => (
                       <option key={campaign.id} value={campaign.id}>
                         {truncateTitle(campaign.title, 60)}
                       </option>
@@ -216,13 +216,13 @@ const CampaignUpdates: React.FC = () => {
 
       {/* Updates Display */}
       <div>
-        {campaigns.every((campaign) => campaign.updates.length === 0) ? (
+        {userCampaigns?.every((campaign) => campaign.updates.length === 0) ? (
           <p className="text-gray-500 dark:text-gray-400 text-lg">
             You have not created any updates yet!
           </p>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {campaigns.map((campaign) => (
+            {userCampaigns?.map((campaign) => (
               <motion.div
                 key={campaign.id}
                 initial={{ opacity: 0, y: 20 }}
