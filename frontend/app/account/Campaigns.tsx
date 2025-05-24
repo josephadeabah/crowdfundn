@@ -229,7 +229,9 @@ const Campaigns: React.FC = () => {
                   <div className="flex items-center space-x-2">
                     <div className="font-normal">Goal:</div>
                     <div className="font-medium">
-                      {campaign?.currency?.toUpperCase()}{' '}
+                      {campaign?.currency
+                        ? campaign.currency.toUpperCase()
+                        : ''}{' '}
                       {parseFloat(campaign.goal_amount).toLocaleString()}
                     </div>
                   </div>
