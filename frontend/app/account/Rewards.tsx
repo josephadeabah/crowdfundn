@@ -313,7 +313,7 @@ const RewardsPage: React.FC = () => {
                     Contributions
                   </p>
                   <p className="text-xl font-extrabold text-green-600">
-                    {userRank?.currency ? userRank.currency.toUpperCase() : ''}{' '}
+                    {userRank?.currency ? userRank?.currency?.toUpperCase() : ''}{' '}
                     {Number(userRank?.total_donations || 0).toFixed(2) || 'N/A'}
                   </p>
                 </div>
