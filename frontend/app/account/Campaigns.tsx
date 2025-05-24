@@ -125,39 +125,41 @@ const Campaigns: React.FC = () => {
 
   return (
     <div className="px-2 py-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
-          My Campaigns
-        </h2>
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
+            My Campaigns
+          </h2>
+          <p className="text-gray-500 dark:text-neutral-400">
+            Manage your active and past campaigns.
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Button
             onClick={() => setIsTeamDocumentsModalOpen(true)}
-            className="flex items-center px-3 py-2 text-gray-700 rounded-lg"
+            className="flex items-center justify-center px-3 py-2 text-gray-700 rounded-lg w-full sm:w-auto"
             variant="outline"
           >
             <FiPlusCircle className="mr-2" />
-            Manage Team & Documents
+            <span className="whitespace-nowrap">Manage Team & Documents</span>
           </Button>
           <Button
             onClick={() => router.push('/account/dashboard/create')}
-            className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg"
+            className="flex items-center justify-center px-3 py-2 bg-green-600 text-white rounded-lg w-full sm:w-auto"
             variant="ghost"
           >
             <FiPlusCircle className="mr-2" />
-            Add Campaign
+            <span className="whitespace-nowrap">Add Campaign</span>
           </Button>
         </div>
       </div>
-      <p className="text-gray-500 dark:text-neutral-400 mb-4">
-        Manage your active and past campaigns.
-      </p>
 
       {userCampaigns && userCampaigns.length === 0 ? (
-        <p className="text-gray-500 dark:text-neutral-400">
+        <p className="text-gray-500 dark:text-neutral-400 mt-4">
           You have no campaigns yet.
         </p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
           {userCampaigns?.map((campaign) => {
             const status = getStatusDisplay(campaign);
             return (
