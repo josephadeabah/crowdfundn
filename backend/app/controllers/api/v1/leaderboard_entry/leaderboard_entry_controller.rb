@@ -20,7 +20,7 @@ module Api
               rank: entry.ranking,
               profile_picture: entry.user.profile.avatar_url, # Changed to avatar_url
               category_interest: entry.user.category,
-              currency: entry.user.currency,
+              currency: entry.user.currency.upcase,
               country: entry.user.country,
               bio: entry.user.profile.description,
               level: level.to_s.capitalize # Add the level
@@ -43,7 +43,7 @@ module Api
               rank: entry.ranking,
               profile_picture: entry.user.profile.avatar_url, # Changed to avatar_url
               category_interest: entry.user.category,
-              currency: entry.user.currency,
+              currency: entry.user.currency.upcase,
               country: entry.user.country,
               bio: entry.user.profile.description,
               level: level.to_s.capitalize
@@ -64,7 +64,7 @@ module Api
               rank: entry.ranking,
               profile_picture: entry.user.profile.avatar_url, # Changed to avatar_url
               category_interest: entry.user.category,
-              currency: entry.user.currency,
+              currency: entry.user.currency.upcase,
               country: entry.user.country,
               bio: entry.user.profile.description
             }, status: :ok
@@ -82,7 +82,7 @@ module Api
               user_id: entry.user.id,
               username: entry.user.full_name,
               total_donations: entry.user.donations.sum(:amount),
-              currency: entry.user.currency,
+              currency: entry.user.currency.upcase,
               score: entry.points,
               rank: entry.ranking,
               profile_picture: entry.user.profile.avatar_url # Changed to avatar_url
