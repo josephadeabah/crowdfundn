@@ -42,13 +42,7 @@ module Api
         end
 
         def show
-          render json: {
-            user: @current_user.as_json(include: %i[profile roles]),
-            subscription_status: {
-              premium_access: @current_user.premium_access?,
-              expires_at: @current_user.premium_expires_at
-            }
-          }, status: :ok
+          render json: @current_user.as_json(include: %i[profile roles]), status: :ok
         end
 
         def show_by_id
