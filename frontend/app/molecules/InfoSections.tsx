@@ -96,32 +96,6 @@ export const GameElements = () => {
             </div>
           ))}
         </div>
-
-        <div className="mt-16 bg-white rounded-2xl p-8">
-          <div className="text-center">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              Ready to Get Started?
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Join thousands of successful campaigners who have raised over $5K
-              across all funding types
-            </p>
-            <div className="flex justify-center space-x-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-red-600">$3K</div>
-                <div className="text-sm text-gray-600">Donations Raised</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">$1K</div>
-                <div className="text-sm text-gray-600">Rewards Funded</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">$0.1K</div>
-                <div className="text-sm text-gray-600">Equity Invested</div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
