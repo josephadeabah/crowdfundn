@@ -124,12 +124,12 @@ const Hero = () => {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-600 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-5 w-5 bg-orange-600"></span>
                   </span>
-                  <div className="flex flex-wrap gap-4 text-sm">
+                  <div className="flex flex-wrap gap-4 text-xs">
                     <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full font-semibold">
-                      💝 Donation-Based Projects
+                      💝 Donation-Based
                     </div>
                     <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-semibold">
-                      🎁 Reward-Based Projects
+                      🎁 Reward-Based
                     </div>
                     <div className="bg-purple-100 text-purple-800 px-4 py-2 rounded-full font-semibold">
                       📈 Equity Investment
