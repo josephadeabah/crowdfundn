@@ -137,11 +137,11 @@ const Hero = () => {
                   </div>
                 </div>
 
-                <h1 className="text-base md:text-3xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
+                <h1 className="text-sm md:text-base font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
                   <span className="text-gray-700">The</span>{' '}
                   <span className="text-orange-500">All-in-One</span>{' '}
                   <span className="text-green-500">Fundraiser</span>{' '}
-                  <span className="text-green-500">Management</span>{' '}
+                  <span className="text-indigo-500">Management</span>{' '}
                   <span className="text-emerald-700">Solution</span>
                 </h1>
 
