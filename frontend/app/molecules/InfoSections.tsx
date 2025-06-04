@@ -78,9 +78,6 @@ export const GameElements = () => {
           {steps.map((step, index) => (
             <div key={index} className="relative">
               <div className="bg-white rounded-2xl p-8 shadow-sm text-center h-full">
-                <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-orange-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6">
-                  {step.step}
-                </div>
                 <div className="text-4xl mb-4">{step.icon}</div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">
                   {step.title}
