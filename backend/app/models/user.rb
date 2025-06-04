@@ -125,6 +125,6 @@ class User < ApplicationRecord
 
   def set_default_status
     self.status ||= 'active'
-    self.user_type ||= 'individual'
+    self.user_type = 'individual' if new_record? && user_type.blank?
   end
 end

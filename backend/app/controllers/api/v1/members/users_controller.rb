@@ -352,7 +352,7 @@ module Api
             :birth_date,
             :category,
             :target_amount,
-            :national_id,
+            :user_type,
             profile_attributes: %i[
               name
               description
