@@ -146,7 +146,7 @@ const Hero = () => {
 
                 <p className="text-lg md:text-xl text-gray-500 mb-8 animate-fade-up delay-200">
                   Whether you're raising donations for a cause, offering rewards
-                  to backers, or seeking equity investment - CrowdSpark supports
+                  to backers, or seeking equity investment - Bantuhive supports
                   every type of crowdfunding campaign on one unified platform.
                 </p>
 
