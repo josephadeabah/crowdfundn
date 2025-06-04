@@ -475,7 +475,7 @@ const RegisterForm: React.FC = () => {
                   className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors.userType ? 'border-red-500' : 'border-gray-300'}`}
                   required
                 >
-                  <option value="">Select User Type</option>
+                  <option value="">I am A/An</option>
                   {userTypes.map((type) => (
                     <option key={type.value} value={type.value}>
                       {type.label}
