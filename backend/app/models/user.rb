@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   has_secure_password
   STATUSES = %w[active blocked].freeze
+  USER_TYPES = %w[ngo business_owner entrepreneur investor individual].freeze
 
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
@@ -19,11 +20,11 @@ class User < ApplicationRecord
   has_many :premium_subscriptions, dependent: :destroy
 
   validates :status, inclusion: { in: STATUSES }
+  validates :user_type, inclusion: { in: USER_TYPES }
   validates :email, presence: true, uniqueness: true
   validates :currency_symbol, presence: true
   validates :phone_code, presence: true
-  validates :full_name, :phone_number, :country, :payment_method, :currency, :birth_date, :category, :target_amount,
-            :national_id, presence: true
+  validates :full_name, :phone_number, :country, :payment_method, :currency, :birth_date, :category, :target_amount, presence: true
   # Add this validation for equity investment
   validates :tax_id, format: { with: /\A[A-Z0-9]+\z/ }, if: :investor?
   has_one :profile, dependent: :destroy
@@ -124,5 +125,6 @@ class User < ApplicationRecord
 
   def set_default_status
     self.status ||= 'active'
+    self.user_type ||= 'individual'
   end
 end
