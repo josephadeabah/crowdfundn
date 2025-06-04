@@ -124,20 +124,30 @@ const Hero = () => {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-600 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-5 w-5 bg-orange-600"></span>
                   </span>
-                  Help → Hope, Raise → Achieve, Fund → Build, Invest → Grow
+                  <div className="flex flex-wrap gap-4 text-sm">
+                    <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full font-semibold">
+                      💝 Donation-Based Projects
+                    </div>
+                    <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-semibold">
+                      🎁 Reward-Based Projects
+                    </div>
+                    <div className="bg-purple-100 text-purple-800 px-4 py-2 rounded-full font-semibold">
+                      📈 Equity Investment
+                    </div>
+                  </div>
                 </div>
 
                 <h1 className="text-lg md:text-3xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
-                  <span className="text-gray-700">Africa's #1</span>{' '}
-                  <span className="text-orange-500">Impact</span>{' '}
-                  <span className="text-green-500">Acceleration</span>{' '}
+                  <span className="text-gray-700">The</span>{' '}
+                  <span className="text-orange-500">All-in-One</span>{' '}
+                  <span className="text-green-500">Crowdfunding</span>{' '}
                   <span className="text-emerald-700">Platform</span>
                 </h1>
 
                 <p className="text-lg md:text-xl text-gray-500 mb-8 animate-fade-up delay-200">
-                  Across cities, villages, streets, and screens, dreams are
-                  burning bright. But dreams don’t fund themselves. They need
-                  people. Purpose. Momentum.
+                  Whether you're raising donations for a cause, offering rewards
+                  to backers, or seeking equity investment - CrowdSpark supports
+                  every type of crowdfunding campaign on one unified platform.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 animate-fade-up animate-delay-300">
