@@ -2,7 +2,7 @@ module Api
   module V1
     class BaseCampaignsController < ApplicationController
       before_action :authenticate_request, only: %i[index create update destroy my_campaigns statistics favorite unfavorite favorites]
-      before_action :set_campaign, only: %i[show update destroy webhook_status_update favorite unfavorite cancel_campaign]
+      before_action :set_campaign, only: %i[show update destroy webhook_status_update favorite unfavorite cancel_campaign contact_fundraiser]
       before_action :authorize_campaign_user!, only: %i[update destroy]
 
       def index
@@ -197,21 +197,31 @@ module Api
       end
 
       def contact_fundraiser
-        fundraiser_email = @campaign.fundraiser.email
-        fundraiser_name = @campaign.fundraiser.full_name
-        campaign_name = @campaign.title
+        # Ensure campaign and fundraiser exist
+        unless @campaign&.fundraiser
+          return render json: { error: 'Fundraiser not found for this campaign' }, status: :not_found
+        end
 
-        user_name = params[:full_name]
-        user_email = params[:email]
-        message = params[:message]
+        # Validate required parameters
+        required_params = [:full_name, :email, :message]
+        missing_params = required_params.select { |p| params[p].blank? }
+        if missing_params.any?
+          return render json: { error: "Missing required fields: #{missing_params.join(', ')}" }, status: :unprocessable_entity
+        end
 
+        # Validate email format
+        unless params[:email] =~ /\A[^@\s]+@[^@\s]+\z/
+          return render json: { error: 'Invalid email format' }, status: :unprocessable_entity
+        end
+
+        # Send email
         FundraiserContactEmailService.send_contact_email(
-          fundraiser_email,
-          fundraiser_name,
-          campaign_name,
-          user_name,
-          user_email,
-          message
+          @campaign.fundraiser.email,
+          @campaign.fundraiser.full_name,
+          @campaign.title,
+          params[:full_name],
+          params[:email],
+          params[:message]
         )
 
         render json: { message: 'Your message has been sent to the fundraiser.' }, status: :ok
