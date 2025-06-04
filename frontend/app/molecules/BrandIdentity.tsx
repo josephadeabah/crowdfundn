@@ -6,8 +6,8 @@ import Link from 'next/link';
 const BrandIdentity = () => {
   const stats = [
     {
-      label: 'Success Rate',
-      value: '87%',
+      label: 'Success Rate with AI recommendations',
+      value: '93%',
       icon: '📈',
       description: 'Across all campaign types',
     },
