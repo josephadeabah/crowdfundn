@@ -14,7 +14,7 @@ export interface UserRegistrationData {
   birth_date: string;
   category: string | null;
   target_amount: number;
-  national_id: string;
+  user_type: string;
 }
 
 interface Role {

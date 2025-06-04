@@ -18,7 +18,7 @@ type FormData = {
   birthDate: string;
   phoneNumber: string;
   targetAmount: string;
-  nationalId: string;
+  userType: string;
   country: string;
   paymentMethod: string;
   mobileMoneyProvider: string;
@@ -40,7 +40,7 @@ const RegisterForm: React.FC = () => {
     birthDate: '',
     phoneNumber: '',
     targetAmount: '',
-    nationalId: '',
+    userType: '',
     country: '',
     paymentMethod: '',
     mobileMoneyProvider: '',
@@ -65,14 +65,15 @@ const RegisterForm: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
   const { signup } = useAuth();
 
-  const paymentMethods = [
-    'Credit Card',
-    'Mobile Money',
-    // 'PayStack',
-    // 'FlutterWave',
-    // 'Bank Transfer',
-  ];
+  const paymentMethods = ['Credit Card', 'Mobile Money'];
   const mobileProviders = ['MTN', 'MPesa', 'Telecel', 'AirtelTigo'];
+  const userTypes = [
+    { value: 'individual', label: 'Individual' },
+    { value: 'ngo', label: 'NGO' },
+    { value: 'business_owner', label: 'Business Owner' },
+    { value: 'entrepreneur', label: 'Entrepreneur' },
+    { value: 'investor', label: 'Investor' },
+  ];
 
   const isStepValid = (): boolean => {
     const fieldsToValidate: Record<number, (keyof FormData)[]> = {
@@ -84,7 +85,7 @@ const RegisterForm: React.FC = () => {
         'phoneNumber',
         'birthDate',
       ],
-      2: ['category', 'targetAmount', 'nationalId'],
+      2: ['category', 'targetAmount', 'userType'],
       3: [
         'country',
         'paymentMethod',
@@ -158,15 +159,13 @@ const RegisterForm: React.FC = () => {
         break;
       }
       case 'paymentMethod':
-        // General check for payment method
         error = value.trim() === '' ? 'Payment method is required' : '';
         break;
       case 'mobileMoneyProvider':
-        // Validate mobile money provider only if payment method is 'Mobile Money'
         if (formData.paymentMethod === 'Mobile Money' && value.trim() === '') {
           error = 'Mobile Money Provider is required';
         } else if (formData.paymentMethod !== 'Mobile Money') {
-          error = ''; // Clear error if not relevant
+          error = '';
         }
         break;
       default:
@@ -227,7 +226,7 @@ const RegisterForm: React.FC = () => {
         birth_date: formData.birthDate,
         category: formData.category,
         target_amount: parseInt(formData.targetAmount, 10),
-        national_id: formData.nationalId,
+        user_type: formData.userType,
       };
 
       const response: ApiResponse = await registerUser(registrationData);
@@ -246,7 +245,6 @@ const RegisterForm: React.FC = () => {
           'Registration successful! Please check your email to confirm your account.',
         );
         setShowToast(true);
-        // Redirect to /auth/signin after success
         setTimeout(() => router.push('/auth/login'), 2000);
       }
     } catch (error) {
@@ -468,19 +466,24 @@ const RegisterForm: React.FC = () => {
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  National ID <span className="text-red-500">*</span>
+                  User Type <span className="text-red-500">*</span>
                 </label>
-                <input
-                  name="nationalId"
-                  value={formData.nationalId}
+                <select
+                  name="userType"
+                  value={formData.userType}
                   onChange={handleChange}
-                  className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors.nationalId ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors.userType ? 'border-red-500' : 'border-gray-300'}`}
                   required
-                />
-                {errors.nationalId && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.nationalId}
-                  </p>
+                >
+                  <option value="">Select User Type</option>
+                  {userTypes.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+                {errors.userType && (
+                  <p className="mt-1 text-sm text-red-500">{errors.userType}</p>
                 )}
               </div>
             </div>
