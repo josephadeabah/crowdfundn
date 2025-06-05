@@ -78,7 +78,7 @@ const SingleCampaignPage: React.FC = () => {
         description={toast.description}
         type={toast.type}
       />
-      <div className="max-w-7xl mx-auto px-2 py-8 mb-12">
+      <div className="max-w-7xl mx-auto px-2 py-8">
         <Modal
           isOpen={isContactModalOpen}
           onClose={() => setIsContactModalOpen(false)}
