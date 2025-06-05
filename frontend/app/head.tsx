@@ -6,13 +6,13 @@ export default function Head() {
       <title>Fundraising Made Easy for Africa & Diaspora</title>
       <meta
         name="description"
-        content="BantuHive operates as a premier reward-based and gamified crowdfunding platform focused on facilitating fundraising efforts across Africa and the Diaspora."
+        content="The All-in-One Fundraiser Management Software Platform"
       />
       <meta
         name="keywords"
         content="fundraising, Africa, diaspora, charity, donations, nonprofit, crowdfunding africawerise africarising startup crowdfundingstartup fintech"
       />
-      <meta
+      {/* <meta
         property="og:title"
         content="Fundraising Made Easy for Africa & Diaspora"
       />
@@ -43,12 +43,12 @@ export default function Head() {
       <meta
         name="twitter:title"
         content="Fundraising Made Easy for Africa & Diaspora"
-      />
+      /> */}
       <link rel="canonical" href="https://bantuhive.com" />
       <link rel="icon" href="/bantuhive.ico" type="image/x-icon" />
       <link rel="icon" href="/bantuhive.svg" type="image/svg+xml" />
       <link rel="apple-touch-icon" href="/bantuhive.png" />
-      <script
+      {/* <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
@@ -86,7 +86,7 @@ export default function Head() {
             ],
           }),
         }}
-      />
+      /> */}
       {/* Google Tag */}
       <script
         async
