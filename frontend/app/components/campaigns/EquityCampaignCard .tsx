@@ -82,7 +82,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <Link
-        href={`/campaign/${campaign.id}?tab=invest&${generateRandomString()}`}
+        href={`/campaign/${campaign.slug || campaign.id}?tab=invest&${generateRandomString()}`}
         className="block flex-1"
       >
         <div className="relative aspect-[3/2] overflow-hidden">

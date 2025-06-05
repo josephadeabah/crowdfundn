@@ -270,12 +270,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const fetchCampaignById = useCallback(
-    async (id: string) => {
+    async (identifier: string) => {
       setLoading(true);
       setError(null);
       try {
         const response = await nextFetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${identifier}`,
           { method: 'GET' },
         );
 

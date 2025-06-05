@@ -25,6 +25,7 @@ export interface Comment {
 export interface CampaignResponseDataType {
   id: number;
   title: string;
+  slug: string;
   message: string;
   description: {
     id: number;
@@ -141,7 +142,7 @@ export interface CampaignState {
     id: string | string[] | undefined,
     campaign: FormData,
   ) => Promise<SingleCampaignResponseDataType>;
-  fetchCampaignById: (id: string) => Promise<SingleCampaignResponseDataType>;
+  fetchCampaignById: (slug: string) => Promise<SingleCampaignResponseDataType>;
   fetchCampaignStatistics: (month?: number, year?: number) => Promise<void>;
   updateCampaignSettings: (
     campaignId: string,
@@ -202,6 +203,7 @@ export interface CampaignPromotions {
 export interface SingleCampaignResponseDataType {
   id: number;
   title: string;
+  slug: string;
   goal_amount: string;
   current_amount: string;
   transferred_amount: string;

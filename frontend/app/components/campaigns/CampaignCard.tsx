@@ -174,7 +174,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         </div>
 
         <Link
-          href={`/campaign/${campaign.id}?${generateRandomString()}`}
+          href={`/campaign/${campaign.slug || campaign.id}?${generateRandomString()}`}
           className="block flex-1"
         >
           <div className="relative aspect-[4/2.5] overflow-hidden">

@@ -90,7 +90,7 @@ const RewardCard: React.FC<RewardCardProps> = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <Link
-        href={`/campaign/${campaign.id}?tab=donate&${generateRandomString()}`}
+        href={`/campaign/${campaign.slug || campaign.id}?tab=donate&${generateRandomString()}`}
         className="block flex-1"
       >
         <div className="relative aspect-[3/2] overflow-hidden">

@@ -31,7 +31,7 @@ const SingleCampaignPage: React.FC = () => {
   });
 
   const tabsRef = useRef<HTMLDivElement>(null);
-  const { id } = useParams() as { id: string };
+  const { slugOrId } = useParams() as { slugOrId: string };
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
 
@@ -59,11 +59,11 @@ const SingleCampaignPage: React.FC = () => {
   }, [tabParam]);
 
   useEffect(() => {
-    if (id) {
-      fetchCampaignById(id);
-      fetchPublicDonations(id, 1, 10);
+    if (slugOrId) {
+      fetchCampaignById(slugOrId);
+      fetchPublicDonations(slugOrId, 1, 10);
     }
-  }, [id, fetchCampaignById, fetchPublicDonations]);
+  }, [slugOrId, fetchCampaignById, fetchPublicDonations]);
 
   if (loading) return <SingleCampaignLoader />;
 
@@ -85,7 +85,7 @@ const SingleCampaignPage: React.FC = () => {
           size="medium"
           closeOnBackdropClick={false}
         >
-          <ContactFundraiserForm campaignId={id} />
+          <ContactFundraiserForm campaignId={slugOrId} />
         </Modal>
         <div className="flex flex-col lg:flex-row gap-8 mb-10">
           {/* Main Content Column */}
