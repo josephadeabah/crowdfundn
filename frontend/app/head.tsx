@@ -4,7 +4,6 @@ export default function Head() {
       <meta charSet="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>Fundraising Made Easy for Africa & Diaspora</title>
-      <h1>The All-in-One Fundraiser Management Software</h1>
       <meta
         name="description"
         content="BantuHive operates as a premier reward-based and gamified crowdfunding platform focused on facilitating fundraising efforts across Africa and the Diaspora."
