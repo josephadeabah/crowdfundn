@@ -19,7 +19,7 @@ class Campaign < ApplicationRecord
 
   validates :title, :description, :goal_amount, :start_date, :end_date, :currency, presence: true
   validates :goal_amount, numericality: { greater_than: 0 }
-  # validates :current_amount, numericality: { greater_than_or_equal_to: 0 }
+  validates :slug, uniqueness: true, presence: true
 
   enum status: { active: 0, completed: 1, canceled: 2 }
 
@@ -40,11 +40,15 @@ class Campaign < ApplicationRecord
   # Attachments for images or videos
   has_one_attached :media # Use `has_many_attached` if there are multiple files
 
+  before_validation :generate_slug, if: -> { slug.blank? && title.present? }
   after_initialize :set_default_status, if: :new_record?
   after_update :send_status_update_webhook, if: :status_changed?
   # Automatically call `update_status_based_on_date` after update
   after_update :update_status_based_on_date, if: -> { remaining_days.zero? && active? }
 
+  def to_param
+    slug
+  end
   # STI Configuration (replace the line 45 declaration with this)
   def self.inheritance_column
     'type'
@@ -218,6 +222,16 @@ class Campaign < ApplicationRecord
   end
 
   private
+
+  def generate_slug
+    self.slug = title.parameterize
+    # Handle duplicate slugs
+    counter = 1
+    while Campaign.exists?(slug: slug) && (self.new_record? || Campaign.where.not(id: id).exists?(slug: slug))
+      self.slug = "#{title.parameterize}-#{counter}"
+      counter += 1
+    end
+  end
 
   def set_default_status
     self.status ||= :active

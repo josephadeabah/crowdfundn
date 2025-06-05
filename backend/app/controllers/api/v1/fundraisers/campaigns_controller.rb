@@ -8,8 +8,8 @@ module Api
           params_key = params[:equity_campaign] ? :equity_campaign : :campaign
           
           params.require(params_key).permit(
-            # Common fields
-            :title, :description, :goal_amount, :current_amount, :start_date, :end_date,
+            # Add slug to common fields
+            :title, :slug, :description, :goal_amount, :current_amount, :start_date, :end_date,
             :category, :location, :currency, :currency_code, :currency_symbol, :status, :media,
             :accept_donations, :leave_words_of_support, :appear_in_search_results,
             :suggested_fundraiser_lists, :receive_donation_email, :receive_daily_summary,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_21_170758) do
+ActiveRecord::Schema[7.1].define(version: 2025_06_05_101218) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -141,7 +141,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_21_170758) do
     t.string "company_website"
     t.string "contract_term"
     t.decimal "maximum_investment"
+    t.string "slug", null: false
     t.index ["fundraiser_id"], name: "index_campaigns_on_fundraiser_id"
+    t.index ["slug"], name: "index_campaigns_on_slug", unique: true
     t.index ["type"], name: "index_campaigns_on_type"
   end
 
@@ -439,7 +441,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_21_170758) do
     t.date "birth_date"
     t.string "category"
     t.decimal "target_amount"
-    t.string "national_id"
     t.string "currency_symbol"
     t.string "phone_code"
     t.boolean "email_confirmed", default: false
@@ -456,6 +457,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_21_170758) do
     t.boolean "premium_access", default: false
     t.datetime "premium_expires_at"
     t.string "premium_plan"
+    t.string "user_type", default: "individual"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["subaccount_id"], name: "index_users_on_subaccount_id"
   end

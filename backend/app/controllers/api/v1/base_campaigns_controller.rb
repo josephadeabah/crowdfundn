@@ -88,6 +88,8 @@ module Api
         @campaign.fundraiser = @current_user
         @campaign.media.attach(params[:media]) if params[:media].present?
         
+        # Ensure slug is generated from title if not provided
+        @campaign.slug ||= @campaign.title.parameterize if @campaign.title.present?
         # Explicitly set type from params if present
         @campaign.type = campaign_params[:type] if campaign_params[:type]
         
@@ -232,8 +234,14 @@ module Api
       protected
 
       def campaign_scope
-        campaign_class.all
-      end
+      campaign_class.includes(
+        :rewards, 
+        :updates, 
+        :comments, 
+        :investor_documents, 
+        fundraiser: :profile,
+      )
+    end
 
       def campaign_class
         self.class.name.include?('Equity') ? EquityCampaign : Campaign
@@ -247,7 +255,7 @@ module Api
       def campaign_json(campaign)
         json = campaign.as_json(
           only: %i[
-            id title goal_amount current_amount transferred_amount start_date end_date
+            id title slug goal_amount current_amount transferred_amount start_date end_date
             category location currency currency_code currency_symbol status
             fundraiser_id created_at updated_at valuation equity_offered minimum_investment maximum_investment
           ],
@@ -306,7 +314,11 @@ module Api
 
       def set_campaign
         campaign_id = params[:id] || JSON.parse(request.body.read)['campaign_id']
-        @campaign = campaign_scope.includes(:rewards, :updates, :comments, :investor_documents, fundraiser: :profile).find(campaign_id)
+        @campaign = if campaign_id.match?(/\A\d+\z/)
+                      campaign_scope.find_by!(id: campaign_id)
+                    else
+                      campaign_scope.find_by!(slug: campaign_id)
+                    end
       rescue ActiveRecord::RecordNotFound
         render json: { error: 'Campaign not found' }, status: :not_found
       end

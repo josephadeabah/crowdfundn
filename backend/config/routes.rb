@@ -72,7 +72,7 @@ Rails.application.routes.draw do
           end
         end
 
-        resources :campaigns do
+        resources :campaigns, constraints: { id: /[0-9]+|[a-zA-Z0-9\-]+/ } do
           resources :campaign_shares, only: [:create]
           collection do
             get :favorites
