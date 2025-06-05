@@ -24,7 +24,7 @@ export default function Head() {
         property="og:image"
         content="https://bantuhive.com/marketing7.png"
       />
-      <meta property="og:url" content="https://bantuhive.com" />
+      <meta property="og:url" content="The All-in-One Fundraiser Management Software Platform" />
       <meta property="og:type" content="website" />
       <meta
         property="og:site_name"
