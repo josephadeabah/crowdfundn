@@ -54,14 +54,16 @@ const Campaigns: React.FC = () => {
     fetchUserCampaigns();
   }, [fetchUserCampaigns]);
 
-  const handleEditCampaign = (campaignId: string) => {
+  const handleEditCampaign = (campaign: CampaignResponseDataType) => {
+    const identifier = campaign.slug || campaign.id;
     router.push(
-      `/account/dashboard/edit/${campaignId}?${generateRandomString()}`,
+      `/account/dashboard/edit/${identifier}?${generateRandomString()}`,
     );
   };
 
-  const handleViewCampaignDetails = (campaignId: string) => {
-    router.push(`/campaign/${campaignId}?${generateRandomString()}`);
+  const handleViewCampaignDetails = (campaign: CampaignResponseDataType) => {
+    const identifier = campaign.slug || campaign.id;
+    router.push(`/campaign/${identifier}?${generateRandomString()}`);
   };
 
   const handleOpenModal = (campaign: CampaignResponseDataType) => {
@@ -183,9 +185,7 @@ const Campaigns: React.FC = () => {
                         <li>
                           <button
                             className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
-                            onClick={() =>
-                              handleEditCampaign(String(campaign.id))
-                            }
+                            onClick={() => handleEditCampaign(campaign)}
                           >
                             Edit Campaign
                           </button>
@@ -359,9 +359,7 @@ const Campaigns: React.FC = () => {
                       className="px-4 py-2 text-gray-500 rounded-full"
                       variant="secondary"
                       size="default"
-                      onClick={() =>
-                        handleViewCampaignDetails(String(campaign.id))
-                      }
+                      onClick={() => handleViewCampaignDetails(campaign)}
                     >
                       View
                     </Button>
