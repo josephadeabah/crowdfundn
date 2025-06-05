@@ -2,4 +2,5 @@ web: bundle exec rails server -p $PORT -e ${RAILS_ENV:-production}
 clock: bundle exec clockwork config/clock.rb
 # worker: bundle exec sidekiq -C config/sidekiq.yml
 # release: bundle exec rails db:migrate
+# Below are the commands to run auto migrations in the container in the DigitalOcean App Platform (Build Commands)
 # bin/rails db:prepare && bundle exec rails db:migrate || echo "Migrations failed - proceeding anyway"
