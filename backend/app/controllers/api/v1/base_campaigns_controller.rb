@@ -314,13 +314,15 @@ module Api
 
       def set_campaign
         campaign_id = params[:id] || JSON.parse(request.body.read)['campaign_id']
-        @campaign = if campaign_id.match?(/\A\d+\z/)
+        @campaign = if campaign_id.to_s.match?(/\A\d+\z/)  # Convert to string before matching
                       campaign_scope.find_by!(id: campaign_id)
                     else
                       campaign_scope.find_by!(slug: campaign_id)
                     end
       rescue ActiveRecord::RecordNotFound
         render json: { error: 'Campaign not found' }, status: :not_found
+      rescue JSON::ParserError
+        render json: { error: 'Invalid JSON payload' }, status: :bad_request
       end
 
       def authorize_campaign_user!
