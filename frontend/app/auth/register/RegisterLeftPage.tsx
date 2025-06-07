@@ -9,10 +9,8 @@ export default function RegisterLeftPage() {
             The Best All-in-One Fundraiser Management Software Platform
           </h2>
           <p className="text-base">
-            Empower your fundraising with Africa’s smartest all-in-one platform
-            · Launch and manage campaigns, engage supporters, and track impact —
-            all in one integrated system · Simplify funding, boost engagement,
-            and grow your cause faster
+            All-in-one fundraising made simple · Manage campaigns, engage
+            supporters, and track impact effortlessly
           </p>
         </div>
         <div className="flex w-full flex-col items-center gap-12 rounded-lg bg-gray-50 px-6 py-12 dark:bg-gray-900 lg:flex-row lg:justify-center lg:gap-6 lg:px-12">
