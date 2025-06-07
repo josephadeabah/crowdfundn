@@ -6,11 +6,13 @@ export default function RegisterLeftPage() {
       <div className="mx-auto flex flex-col items-center gap-y-16 px-6 py-32">
         <div className="mx-auto text-center">
           <h2 className="mb-3 text-3xl font-bold lg:text-4xl">
-            Explore Africa's leading Impact Acceleration Platform
+            The Best All-in-One Fundraiser Management Software Platform
           </h2>
           <p className="text-base">
-            Our platform provides you with the tools you need to raise funds. We
-            have helped over 1,000 people to achieve their goals.
+            Empower your fundraising with Africa’s smartest all-in-one platform
+            · Launch and manage campaigns, engage supporters, and track impact —
+            all in one integrated system · Simplify funding, boost engagement,
+            and grow your cause faster
           </p>
         </div>
         <div className="flex w-full flex-col items-center gap-12 rounded-lg bg-gray-50 px-6 py-12 dark:bg-gray-900 lg:flex-row lg:justify-center lg:gap-6 lg:px-12">

@@ -3,7 +3,9 @@ export default function Head() {
     <head>
       <meta charSet="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Bantuhive | The Best All-in-One Fundraiser Management Software Platform</title>
+      <title>
+        Bantuhive | The Best All-in-One Fundraiser Management Software Platform
+      </title>
       <meta
         name="description"
         content="The All-in-One Fundraiser Management Software Platform"
