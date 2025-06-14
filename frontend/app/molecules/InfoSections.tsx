@@ -48,7 +48,7 @@ export const GameElements = () => {
       step: '3',
       title: 'Launch & Promote',
       description:
-        'Go live with your campaign and leverage our marketing tools to reach your target audience across all funding types.',
+        'Go live with your campaign and leverage our marketing tools & support to reach your target audience across all funding types.',
       icon: '🚀',
     },
     {
