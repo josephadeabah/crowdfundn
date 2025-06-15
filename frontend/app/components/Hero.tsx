@@ -142,7 +142,7 @@ const Hero = () => {
                   <span className="text-orange-500">All-in-One</span>{' '}
                   <span className="text-green-500">Fundraiser</span>{' '}
                   <span className="text-indigo-500">Management</span>{' '}
-                  <span className="text-emerald-700">Software</span>
+                  <span className="text-emerald-700">Software</span>{' '}
                   <span className="text-blue-500">Platform</span>
                 </h1>
 
