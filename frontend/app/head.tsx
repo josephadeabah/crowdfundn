@@ -4,7 +4,7 @@ export default function Head() {
       <meta charSet="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>
-        The Best Fundraiser Management Software Platform
+        Fund Or Invest In The Best Startups And Projects In Ghana
       </title>
       <meta
         name="description"
