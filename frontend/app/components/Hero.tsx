@@ -126,7 +126,7 @@ const Hero = () => {
                   </span>
                   <div className="flex flex-wrap gap-4 text-xs">
                     <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full font-semibold">
-                      💝 Donation-Based
+                      💝 Donation|Grant-Based
                     </div>
                     <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-semibold">
                       🎁 Reward-Based
