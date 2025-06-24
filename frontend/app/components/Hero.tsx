@@ -262,7 +262,7 @@ const Hero = () => {
                   </div>
                   <div>
                     <div className="text-xs text-gray-500">Fund A Dream Today!</div>
-                    <div className="text-sm font-semibold">
+                    <div className="text-xs font-semibold">
                       Invest In Africa's Bright Minds w/ As Little As $100
                     </div>
                   </div>
