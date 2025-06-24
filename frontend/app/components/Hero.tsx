@@ -147,9 +147,12 @@ const Hero = () => {
                 </h1>
 
                 <p className="text-lg md:text-xl text-gray-500 mb-8 animate-fade-up delay-200">
-                  Whether you're raising donations for a cause, offering rewards
-                  to backers in support of your project, or seeking equity investment for your business - Bantuhive supports
-                  every type of crowdfunding campaign on one unified platform.
+                  BantuHive is an all-in-one, gamified investment crowdfunding
+                  platform empowering individuals, organizations, and
+                  communities across Africa and its global diaspora. We tackle
+                  the unique challenges facing Africans by giving people
+                  equitable access to funding, helping them launch innovative
+                  businesses that drive economic growth and transformation.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 animate-fade-up animate-delay-300">
