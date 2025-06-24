@@ -259,9 +259,9 @@ const Hero = () => {
                     <Zap className="h-4 w-4 text-white" />
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500">AI Suggestion</div>
+                    <div className="text-xs text-gray-500">Fund A Dream Today!</div>
                     <div className="text-sm font-semibold">
-                      +15% funding with video
+                      Invest In Africa's Bright Minds
                     </div>
                   </div>
                 </div>
