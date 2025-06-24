@@ -146,7 +146,7 @@ const Hero = () => {
                   <span className="text-blue-500">Platform</span>
                 </h1>
 
-                <p className="text-lg md:text-xl text-gray-500 mb-8 animate-fade-up delay-200">
+                <p className="text-lg md:text-xl text-gray-600 mb-8 animate-fade-up delay-200">
                   BantuHive is an all-in-one, gamified investment crowdfunding
                   platform empowering individuals, organizations, and
                   communities across Africa and its global diaspora. We tackle
