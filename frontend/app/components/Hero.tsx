@@ -281,7 +281,7 @@ const Hero = () => {
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse delay-100"></div>
                   <div className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse delay-200"></div>
                 </div>
-                <div className="text-xs text-right">5 new backers just now</div>
+                <div className="text-xs text-right">Easy Way To Fund Africa's Future.</div>
               </div>
 
               <div className="relative rounded-xl overflow-hidden shadow-2xl group">
