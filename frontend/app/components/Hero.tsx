@@ -160,7 +160,7 @@ const Hero = () => {
                     <Link
                       href={`${user ? '/account/dashboard/create' : '/auth/register'}`}
                     >
-                      Grow Now for Free
+                      Raise Capital Now
                     </Link>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </button>
