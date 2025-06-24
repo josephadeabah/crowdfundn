@@ -156,20 +156,21 @@ const Hero = () => {
                 </p>
 
                 <div className="flex flex-row gap-4 animate-fade-up animate-delay-300">
-  <Link href={user ? '/account/dashboard/create' : '/auth/register'}>
-    <button className="group px-6 py-3 bg-green-600 text-primary-foreground rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2">
-      Raise Capital Now
-      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-    </button>
-  </Link>
+                  <Link
+                    href={user ? '/account/dashboard/create' : '/auth/register'}
+                  >
+                    <button className="group px-6 py-3 bg-green-600 text-primary-foreground rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2">
+                      Raise Capital Now
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </Link>
 
-  <Link href="/how-it-works">
-    <button className="px-6 py-3 bg-transparent border border-border text-foreground rounded-md hover:bg-muted transition-colors">
-      How It Works
-    </button>
-  </Link>
-</div>
-
+                  <Link href="/how-it-works">
+                    <button className="px-6 py-3 bg-transparent border border-border text-foreground rounded-md hover:bg-muted transition-colors">
+                      How It Works
+                    </button>
+                  </Link>
+                </div>
 
                 <div className="mt-12 flex flex-col sm:flex-row items-center gap-4 animate-fade-up animate-delay-400">
                   <div className="flex -space-x-3">
@@ -261,7 +262,9 @@ const Hero = () => {
                     <Zap className="h-4 w-4 text-white" />
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500">Fund A Dream Today!</div>
+                    <div className="text-xs text-gray-500">
+                      Fund A Dream Today!
+                    </div>
                     <div className="text-xs font-semibold">
                       Invest In Africa's Bright Minds w/ As Little As $100
                     </div>
@@ -283,7 +286,9 @@ const Hero = () => {
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse delay-100"></div>
                   <div className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse delay-200"></div>
                 </div>
-                <div className="text-xs text-right">Easy Way To Fund Africa's Future.</div>
+                <div className="text-xs text-right">
+                  Easy Way To Fund Africa's Future.
+                </div>
               </div>
 
               <div className="relative rounded-xl overflow-hidden shadow-2xl group">
