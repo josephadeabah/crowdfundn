@@ -147,7 +147,7 @@ const Hero = () => {
                 </h1>
 
                 <p className="text-lg md:text-xl text-gray-600 mb-8 animate-fade-up delay-200">
-                  BantuHive is a gamified crowdfunding and micro-investment
+                  Gamified crowdfunding and micro-investment
                   platform designed to empower individuals, communities, and
                   organizations across Africa and its global diaspora. We make
                   funding more accessible, inclusive, and engaging — helping
