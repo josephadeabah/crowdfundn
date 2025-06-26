@@ -22,12 +22,12 @@ const HowItWorks = () => {
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-fundify-primary to-fundify-accent">
-              How Bantu Hive Works
+              How BantuHive Works
             </span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-10">
             We've simplified the fundraising process to help you bring your
-            ideas to life and make a positive impact in your community.
+            ideas to life and make a positive impact the world.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link href="/">
@@ -35,12 +35,12 @@ const HowItWorks = () => {
                 Start a Campaign
               </Button>
             </Link>
-            <Link href="/partner-program">
+            <Link href="/faq">
               <Button
                 variant="outline"
                 className="border-fundify-primary text-fundify-primary"
               >
-                Become a Partner
+                FAQ
               </Button>
             </Link>
           </div>
@@ -72,11 +72,12 @@ const HowItWorks = () => {
                   <div className="flex flex-col md:flex-row items-center">
                     <div className="md:w-1/2 md:pr-12 md:text-right order-2 md:order-1">
                       <h3 className="text-xl font-bold mb-3">
-                        Create Your Campaign
+                        Choose Your Campaign Type
                       </h3>
                       <p className="text-gray-600 mb-4">
-                        Share your story, set your funding goal, and customize
-                        your campaign page with compelling images and videos.
+                        Select from donation-based, reward-based, or equity
+                        crowdfunding depending on your project goals and what
+                        you can offer supporters.
                       </p>
                       <div className="flex md:justify-end">
                         <div className="bg-fundify-muted p-3 rounded-full">
@@ -114,11 +115,11 @@ const HowItWorks = () => {
 
                     <div className="md:w-1/2 md:pl-12">
                       <h3 className="text-xl font-bold mb-3">
-                        Connect with Partners
+                        Create Your Campaign
                       </h3>
                       <p className="text-gray-600 mb-4">
-                        Match with our verified partners who can help amplify
-                        your campaign and reach a wider audience of potential
+                        Build a compelling campaign page with your story,
+                        funding goal, timeline, and rewards or equity terms for
                         backers.
                       </p>
                       <div className="flex">
@@ -141,11 +142,12 @@ const HowItWorks = () => {
                   <div className="flex flex-col md:flex-row items-center">
                     <div className="md:w-1/2 md:pr-12 md:text-right order-2 md:order-1">
                       <h3 className="text-xl font-bold mb-3">
-                        Engage Your Community
+                        Launch & Promote
                       </h3>
                       <p className="text-gray-600 mb-4">
-                        Utilize our powerful tools to share your campaign with
-                        friends, family, and social networks to build momentum.
+                        Go live with your campaign and leverage our marketing
+                        tools & support to reach your target audience across all
+                        funding types.
                       </p>
                       <div className="flex md:justify-end">
                         <div className="bg-fundify-muted p-3 rounded-full">
@@ -183,12 +185,12 @@ const HowItWorks = () => {
 
                     <div className="md:w-1/2 md:pl-12">
                       <h3 className="text-xl font-bold mb-3">
-                        Track & Receive Funds
+                        Fulfill & Deliver
                       </h3>
                       <p className="text-gray-600 mb-4">
-                        Monitor your campaign progress in real-time and receive
-                        funds directly to your account with our secure payment
-                        processing.
+                        Once funded, fulfill your promises - whether that's
+                        delivering rewards, providing donation updates, or
+                        managing equity relationships.
                       </p>
                       <div className="flex">
                         <div className="bg-fundify-muted p-3 rounded-full">

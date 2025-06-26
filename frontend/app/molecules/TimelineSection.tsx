@@ -142,8 +142,8 @@ const TimelineSection = () => {
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            We're building a transparent, inspiring & personalised way to make
-            change
+            We're building a transparent, inspiring & personalised way to fund
+            Africa's future
           </p>
         </div>
 
@@ -152,7 +152,7 @@ const TimelineSection = () => {
             <TimelineItem
               year="2024"
               title="Why we started?"
-              description="When you see something that needs to change in your community what do you do? Shout at the tv that 'someone should do something about it'? Rant online about how broken the system is and how people just don't 'get it'? What if instead of doing that, we all put up our hand to do something - big or small. All around the world, there are millions of people who already do just that. We built bantuhive for them. To make it incredibly simple for them to fundraise. To make it easy for them to find a community of people who wanted to support them. And to give the rest of us a more transparent and effective way of making the world we want to see."
+              description="Across Africa and its global diaspora, countless changemakers see challenges in their communities and dream of launching solutions — but access to funding holds them back. We started BantuHive to change that. To give everyday people a platform to raise capital, rally support, and turn their ideas into reality. Whether you're building a business, leading a cause, or supporting a mission that matters, BantuHive exists to make funding more accessible, transparent, and empowering — so that together, we can shape the Africa we all believe in."
               icon="Lightbulb"
               imageUrl="https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=1470"
               learnMoreUrl="/about/mission"
@@ -163,7 +163,7 @@ const TimelineSection = () => {
             <TimelineItem
               year="2025"
               title="First Platform Launch"
-              description="After months of development and user testing, we launched the first version of Bantu Hive. Our initial platform focused on community-driven campaigns that addressed local social issues. Within the first month, we facilitated funding for 50 grassroots campaigns across 12 cities."
+              description="After months of development and user testing, we launched the first version of Bantu Hive. Our initial platform focused on community-driven campaigns that addressed local social issues. Within the first 3 months, we facilitated funding for 30 grassroots campaigns across 3 cities in Ghana."
               icon="Rocket"
               imageUrl="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=1470"
               isLeft={false}
@@ -174,7 +174,7 @@ const TimelineSection = () => {
             <TimelineItem
               year="2025"
               title="Expanding Our Reach"
-              description="During a challenging year globally, we expanded our platform to include virtual fundraising tools. This allowed campaigns to continue despite physical restrictions, resulting in a 300% increase in user engagement and supporting an additional 500 campaigns focused on pandemic relief."
+              description="Within these same months, BantuHive got selected to participate in the prestigious Tony Elumelu Entreprenuership Programme, which provided us with $5000 grant, mentorship and resources to scale our impact."
               icon="Globe"
               imageUrl="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=1471"
               learnMoreUrl="/about/expansion"
@@ -185,7 +185,7 @@ const TimelineSection = () => {
             <TimelineItem
               year="2025"
               title="Partnership Program"
-              description="We launched our partnership program to bring together corporations, nonprofits, and community organizations. This collaborative approach has created a powerful network of change-makers, with over 100 partner organizations joining in the first year and collectively raising over $10 million for various causes."
+              description="We launched our partnership program to bring together corporations, nonprofits, and community organizations. This collaborative approach has created a powerful network of change-makers, with over 6 partner organizations joining in the first year and collectively raising over $10 thousand for various causes."
               icon="Handshake"
               imageUrl="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&q=80&w=1470"
               isLeft={false}
@@ -207,7 +207,7 @@ const TimelineSection = () => {
             <TimelineItem
               year="2025"
               title="The Future of Bantu Hive"
-              description="Today, Bantu Hive stands as a leading platform for community-driven change, with over 1 million active users across 50 countries. We're now developing AI-powered tools to better connect campaigns with potential supporters, blockchain integration for enhanced transparency, and mobile solutions to make fundraising possible from anywhere."
+              description="Today, Bantu Hive stands as a leading platform for community-driven change and launching and scaling high-impact startups and projects, with over 5000 active users across Ghana."
               icon="Zap"
               imageUrl="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1470"
               isLeft={false}

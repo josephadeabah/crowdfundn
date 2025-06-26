@@ -48,13 +48,15 @@ const About = () => {
               >
                 <h1 className="text-4xl md:text-5xl font-bold mb-6">
                   <span className="bg-clip-text text-transparent bg-gradient-to-r from-fundify-primary to-fundify-accent">
-                    About Bantu Hive
+                    About BantuHive
                   </span>
                 </h1>
                 <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                  Bantu Hive is an impact acceleration platform that connects
-                  innovators, creators, and change-makers with impact makers who
-                  are passionate about bringing ideas to life.
+                  BantuHive is an all-in-one, gamified crowdfunding and
+                  micro-investment platform giving individuals and organizations
+                  across Africa and its diaspora the power to fund and co-own
+                  high-impact startups and projects that shape the continent’s
+                  future.
                 </p>
                 <Button
                   className="bg-fundify-primary hover:bg-fundify-primary/90 text-white"
@@ -110,12 +112,8 @@ const About = () => {
                   <div className="absolute -bottom-3 left-0 w-20 h-1 bg-fundify-primary"></div>
                 </h2>
                 <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                  Our mission is to empower Africans and the diaspora to fund
-                  dreams, drive impact, and build legacies through an
-                  accessible, transparent, and engaging impact acceleration
-                  platform. We believe in the potential of every idea and strive
-                  to provide a platform that fosters innovation, collaboration,
-                  and positive change.
+                  To democratize access to funding and empower individuals and
+                  communities to build legacies and make good things happen.
                 </p>
                 <div className="space-y-6">
                   <div className="flex items-start">
@@ -193,7 +191,7 @@ const About = () => {
                       />
                     </div>
                     <div>
-                      <h4 className="text-lg font-medium">Joseph Adeabah</h4>
+                      <h4 className="text-lg font-medium">Nqoba Manana</h4>
                       <p className="text-gray-500">Co-Founder</p>
                     </div>
                   </div>
@@ -206,7 +204,7 @@ const About = () => {
                       />
                     </div>
                     <div>
-                      <h4 className="text-lg font-medium">Nqoba Manana</h4>
+                      <h4 className="text-lg font-medium">Joseph Adeabah</h4>
                       <p className="text-gray-500">Co-Founder</p>
                     </div>
                   </div>
