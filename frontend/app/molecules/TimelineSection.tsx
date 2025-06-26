@@ -152,7 +152,7 @@ const TimelineSection = () => {
             <TimelineItem
               year="2024"
               title="Why we started?"
-              description="Across Africa and its global diaspora, countless changemakers see challenges in their communities and dream of launching solutions — but access to funding holds them back. We started BantuHive to change that. To give everyday people a platform to raise capital or invest & co-own high-impact startups and projects, rally support, and turn their ideas into reality. Whether you're building a business, leading a cause, or supporting a mission that matters, BantuHive exists to make funding more accessible, transparent, and empowering — so that together, we can shape the Africa we all believe in."
+              description="Across Africa and its global diaspora, countless changemakers see problems they want to solve — but lack the capital to get started. We built BantuHive to change that. Our platform empowers individuals and communities to raise funds, attract micro-investments, and build a support base around their ideas. Whether it's launching a high-impact startup or funding a grassroots project, BantuHive enables co-ownership and community-driven growth — making it easier than ever to back the future of Africa, together."
               icon="Lightbulb"
               imageUrl="https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=1470"
               learnMoreUrl="/about/mission"
