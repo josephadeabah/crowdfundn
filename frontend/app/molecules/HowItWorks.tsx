@@ -35,7 +35,7 @@ const HowItWorks = () => {
                 Start a Campaign
               </Button>
             </Link>
-            <Link href="/faq">
+            <Link href="/faqs">
               <Button
                 variant="outline"
                 className="border-fundify-primary text-fundify-primary"
