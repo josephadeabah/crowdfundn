@@ -41,7 +41,7 @@ const InvestPage = () => {
       <div className="max-w-7xl mx-auto">
         <h1 className="mt-2">Invest in founders building the future</h1>
         <EquityCampaignCarousel
-          title="Featured Investment Opportunities"
+          title="Featured Startups"
           campaigns={displayedCampaigns}
           loading={loading}
           error={error}
