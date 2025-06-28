@@ -80,7 +80,7 @@ const EquityCampaignCarousel: React.FC<EquityCarouselProps> = ({
 
     return (
       <div className="w-full text-xl text-center py-8 text-gray-500">
-        No investment opportunities found.
+        No Startups yet.
       </div>
     );
   };

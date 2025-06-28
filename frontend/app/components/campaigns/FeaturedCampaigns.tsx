@@ -68,7 +68,7 @@ const FeaturedCampaigns = () => {
             size="lg"
             className="rounded-full text-sm md:text-lg whitespace-nowrap"
           >
-            View More Investment Opportunities
+            View More Startups
           </Button>
         </Link>
       </div>
