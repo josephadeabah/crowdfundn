@@ -27,7 +27,7 @@ const HowItWorks = () => {
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-10">
             We've simplified the fundraising process to help you bring your
-            ideas to life and make a positive impact the world.
+            ideas to life and make a positive impact in the world.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link href="/">
