@@ -22,25 +22,35 @@ const PartnersCarousel = () => {
               <TooltipProvider key={`partner-provider-${partner.id}-${index}`}>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <a
-                      href={partner.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-shrink-0 flex items-center justify-center h-28 group"
-                    >
-                      <img
-                        src={partner.logo}
-                        alt={partner.name}
-                        className="h-full max-h-20 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
-                      />
-                    </a>
+                    <div className="flex-shrink-0 flex items-center justify-center h-28 group">
+                      <a
+                        href={partner.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="h-full flex items-center justify-center"
+                        onClick={(e) => e.stopPropagation()} // Prevent event bubbling
+                      >
+                        <img
+                          src={partner.logo}
+                          alt={partner.name}
+                          className="h-full max-h-20 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
+                        />
+                      </a>
+                    </div>
                   </TooltipTrigger>
                   <TooltipContent
                     side="top"
                     className="bg-white text-gray-800 px-3 py-2 text-sm font-medium rounded-md shadow-lg border border-gray-200 cursor-pointer hover:bg-gray-50"
-                    onClick={() => window.open(partner.link, '_blank')}
                   >
-                    <p>{partner.name}</p>
+                    <a
+                      href={partner.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full h-full"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {partner.name}
+                    </a>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
