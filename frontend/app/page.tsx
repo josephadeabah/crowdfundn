@@ -4,8 +4,6 @@ import FeaturedCampaigns from './components/campaigns/FeaturedCampaigns';
 import Hero from './components/Hero';
 import React, { useEffect } from 'react';
 import PartnersCarousel from './molecules/PartnersCarousel';
-// import PartnerProgram from './components/partnerprogram/PartnerProgram';
-// import { AIPoweredSection, GameElements } from './molecules/InfoSections';
 import BlogPosts from './components/blogs/BlogPosts';
 import BrandIdentity from './molecules/BrandIdentity';
 
@@ -41,9 +39,6 @@ const HomePage = () => {
         <div className="w-full">
           <Hero />
         </div>
-        {/* <div className="w-full">
-          <GameElements />
-        </div> */}
         <div className="w-full bg-white">
           <FeaturedCampaigns />
         </div>
@@ -52,9 +47,6 @@ const HomePage = () => {
             <BlogPosts />
           </div>
         </div>
-        {/* <div className="w-full">
-          <PartnerProgram />
-        </div> */}
         <section className="">
           <BrandIdentity />
         </section>
