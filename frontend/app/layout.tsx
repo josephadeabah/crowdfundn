@@ -9,6 +9,7 @@ import { ReactNode } from 'react';
 import { GlobalContextProvider } from './context/GlobalContextProvider';
 import { usePathname } from 'next/navigation';
 import GoogleTagManager from './components/googletag/GoogleTagManager';
+import HeadComponent from './head';
 
 const roboto = Roboto({
   weight: ['400', '500', '700', '900'],
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className="h-full scroll-smooth light">
       <GoogleTagManager />
+      <HeadComponent/>
       <body
         className={`max-w-full bg-green-50 dark:bg-gray-900 mx-auto transition-all duration-150 ${roboto.variable} ${ubuntu.variable} h-full flex flex-col min-h-screen`}
       >
