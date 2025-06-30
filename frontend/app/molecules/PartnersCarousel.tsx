@@ -16,7 +16,7 @@ const PartnersCarousel = () => {
       <h2 className="text-2xl font-bold mb-6 px-4 py-6">Our Partners</h2>
 
       {partners && partners.length > 0 ? (
-        <div className="relative overflow-hidden mt-11">
+        <div className="relative overflow-hidden">
           <div className="flex space-x-16 animate-marquee whitespace-nowrap pt-4 mt-11">
             {[...partners, ...partners].map((partner, index) => (
               <TooltipProvider key={`partner-provider-${partner.id}-${index}`}>
