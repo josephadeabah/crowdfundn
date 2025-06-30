@@ -4,8 +4,8 @@ import FeaturedCampaigns from './components/campaigns/FeaturedCampaigns';
 import Hero from './components/Hero';
 import React, { useEffect } from 'react';
 import PartnersCarousel from './molecules/PartnersCarousel';
-import PartnerProgram from './components/partnerprogram/PartnerProgram';
-import { AIPoweredSection, GameElements } from './molecules/InfoSections';
+// import PartnerProgram from './components/partnerprogram/PartnerProgram';
+// import { AIPoweredSection, GameElements } from './molecules/InfoSections';
 import BlogPosts from './components/blogs/BlogPosts';
 import BrandIdentity from './molecules/BrandIdentity';
 
