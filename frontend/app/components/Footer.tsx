@@ -127,7 +127,7 @@ const Footer = () => {
                     href="#"
                     className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
                   >
-                    Hives
+                    Investor Guide
                   </a>
                 </li>
                 <li>
