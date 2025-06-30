@@ -41,9 +41,9 @@ const HomePage = () => {
         <div className="w-full">
           <Hero />
         </div>
-        <div className="w-full">
+        {/* <div className="w-full">
           <GameElements />
-        </div>
+        </div> */}
         <div className="w-full bg-white">
           <FeaturedCampaigns />
         </div>
