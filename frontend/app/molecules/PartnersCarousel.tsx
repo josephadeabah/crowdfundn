@@ -12,28 +12,27 @@ const PartnersCarousel = () => {
   const partners: Partner[] = partnersData.partners;
 
   return (
-    <div className="max-w-7xl mx-auto px-4">
-      <h2 className="text-2xl font-bold mb-8 text-center">Our Partners</h2>
+    <div className="max-w-7xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6 px-4 py-6">Our Partners</h2>
 
       {partners && partners.length > 0 ? (
-        <div className="relative overflow-hidden py-4">
-          <div className="flex space-x-16 animate-marquee whitespace-nowrap">
+        <div className="relative overflow-hidden">
+          <div className="flex space-x-16 animate-marquee whitespace-nowrap pt-4">
             {[...partners, ...partners].map((partner, index) => (
               <TooltipProvider key={`partner-provider-${partner.id}-${index}`}>
-                <Tooltip delayDuration={100}>
+                <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex-shrink-0 flex items-center justify-center h-28 px-4 group">
+                    <div className="flex-shrink-0 flex items-center justify-center h-28 group">
                       <img
                         src={partner.logo}
                         alt={partner.name}
-                        className="h-full max-h-20 w-auto object-contain transition-all duration-300 group-hover:scale-110"
+                        className="h-full max-h-20 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
                       />
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent
-                    side="bottom"
-                    align="center"
-                    className="bg-gray-800 text-white px-3 py-2 text-sm font-medium rounded-md shadow-lg"
+                  <TooltipContent 
+                    side="top"
+                    className="bg-white text-gray-800 px-3 py-2 text-sm font-medium rounded-md shadow-lg border border-gray-200"
                   >
                     <p>{partner.name}</p>
                   </TooltipContent>
