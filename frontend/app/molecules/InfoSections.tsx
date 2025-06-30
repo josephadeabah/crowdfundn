@@ -48,8 +48,8 @@ export const GameElements = () => {
       step: '3',
       title: 'Undergo Our Due Diligence Process',
       description:
-        "If you're raising capital for investment into your startup or business, you'll first undergo our due diligence process to verify your project’s credibility, integrity, and potential impact.",
-      icon: '🚀',
+        "If you're raising capital for investment into your startup or business, you'll first undergo our due diligence process to verify your project's credibility, integrity, and potential impact.",
+      icon: '🔍',
     },
     {
       step: '4',
@@ -81,23 +81,26 @@ export const GameElements = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {steps.map((step, index) => (
             <div key={index} className="relative">
-              <div className="bg-white rounded-2xl p-6 shadow-sm text-center h-full">
+              <div className="bg-white rounded-2xl p-6 shadow-sm text-center h-full flex flex-col">
                 <div className="text-4xl mb-4">{step.icon}</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">
                   {step.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-600 leading-relaxed text-sm flex-grow">
                   {step.description}
                 </p>
+                <div className="mt-4 text-sm font-medium text-fundify-primary">
+                  Step {step.step}
+                </div>
               </div>
 
               {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2">
-                  <div className="w-8 h-0.5 bg-gradient-to-r from-green-600 to-orange-600"></div>
-                  <div className="w-0 h-0 border-l-4 border-l-orange-600 border-t-2 border-t-transparent border-b-2 border-b-transparent ml-8 -mt-0.5"></div>
+                <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2">
+                  <div className="w-6 h-0.5 bg-gradient-to-r from-green-600 to-orange-600"></div>
+                  <div className="w-0 h-0 border-l-[6px] border-l-orange-600 border-t-[3px] border-t-transparent border-b-[3px] border-b-transparent ml-6 -mt-[2px]"></div>
                 </div>
               )}
             </div>
