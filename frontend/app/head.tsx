@@ -5,7 +5,7 @@ export default function HeadComponent() {
       <meta charSet="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>
-        BantuHive | Fund & Invest in Africa's Top Startups & Impact Projects
+        Fund & Invest in Africa's Top Startups & Impact Projects
       </title>
       <meta
         name="description"
