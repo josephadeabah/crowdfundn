@@ -30,9 +30,10 @@ const PartnersCarousel = () => {
                       />
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent 
+                  <TooltipContent
                     side="top"
-                    className="bg-white text-gray-800 px-3 py-2 text-sm font-medium rounded-md shadow-lg border border-gray-200"
+                    className="bg-white text-gray-800 px-3 py-2 text-sm font-medium rounded-md shadow-lg border border-gray-200 cursor-pointer hover:bg-gray-50"
+                    onClick={() => window.open(partner.logo, '_blank')}
                   >
                     <p>{partner.name}</p>
                   </TooltipContent>
