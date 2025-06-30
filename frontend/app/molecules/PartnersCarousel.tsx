@@ -22,9 +22,9 @@ const PartnersCarousel = () => {
               <TooltipProvider key={`partner-provider-${partner.id}-${index}`}>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                     <a 
-                      href={partner.link} 
-                      target="_blank" 
+                    <a
+                      href={partner.link}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="flex-shrink-0 flex items-center justify-center h-28 group"
                     >
