@@ -92,9 +92,6 @@ export const GameElements = () => {
                 <p className="text-gray-600 leading-relaxed text-sm flex-grow">
                   {step.description}
                 </p>
-                <div className="mt-4 text-sm font-medium text-fundify-primary">
-                  Step {step.step}
-                </div>
               </div>
 
               {index < steps.length - 1 && (
