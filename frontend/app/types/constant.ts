@@ -112,5 +112,5 @@ export interface Partner {
   name: string;
   logo: string;
   description: string;
-  link: string;
+  link?: string;
 }
