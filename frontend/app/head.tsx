@@ -1,8 +1,7 @@
+// app/head.tsx
 export default function Head() {
   return (
     <>
-      <meta charSet="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>
         BantuHive | Fund & Invest in Africa's Top Startups & Impact Projects
       </title>
@@ -32,7 +31,7 @@ export default function Head() {
       />
       <meta property="og:type" content="website" />
       <meta property="og:url" content="https://bantuhive.com" />
-      <meta property="og:image" content="https://bantuhive.com/og-image.jpg" />
+      <meta property="og:image" content="/favicon.svg" />
       <meta property="og:site_name" content="BantuHive" />
 
       {/* Twitter Card */}
@@ -48,22 +47,6 @@ export default function Head() {
       <meta
         name="twitter:image"
         content="https://bantuhive.com/twitter-card.jpg"
-      />
-
-      {/* Google Tag Manager */}
-      <script
-        async
-        src="https://www.googletagmanager.com/gtag/js?id=G-YWLECWF7W7"
-      ></script>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-YWLECWF7W7');
-          `,
-        }}
       />
     </>
   );
