@@ -1,7 +1,9 @@
 // app/head.tsx
-export default function Head() {
+import Head from 'next/head';
+
+export default function HeadComponent() {
   return (
-    <>
+    <Head>
       <title>
         BantuHive | Fund & Invest in Africa's Top Startups & Impact Projects
       </title>
@@ -16,8 +18,8 @@ export default function Head() {
       <link rel="canonical" href="https://bantuhive.com" />
 
       {/* Favicon and App Icons */}
-      <link rel="icon" href="/favicon.ico" />
-      <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+      <link rel="icon" href="/bantuhive.ico" />
+      <link rel="icon" href="/bantuhive.svg" type="image/svg+xml" />
       <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
       {/* Open Graph / Social Meta Tags */}
@@ -31,7 +33,7 @@ export default function Head() {
       />
       <meta property="og:type" content="website" />
       <meta property="og:url" content="https://bantuhive.com" />
-      <meta property="og:image" content="/favicon.svg" />
+      <meta property="og:image" content="/bantuhive.svg" />
       <meta property="og:site_name" content="BantuHive" />
 
       {/* Twitter Card */}
@@ -48,6 +50,6 @@ export default function Head() {
         name="twitter:image"
         content="https://bantuhive.com/twitter-card.jpg"
       />
-    </>
+    </Head>
   );
 }
