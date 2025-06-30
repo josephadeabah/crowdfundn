@@ -142,12 +142,13 @@ const HowItWorks = () => {
                   <div className="flex flex-col md:flex-row items-center">
                     <div className="md:w-1/2 md:pr-12 md:text-right order-2 md:order-1">
                       <h3 className="text-xl font-bold mb-3">
-                        Launch & Promote
+                        Undergo Our Due Diligence Process
                       </h3>
                       <p className="text-gray-600 mb-4">
-                        Go live with your campaign and leverage our marketing
-                        tools & support to reach your target audience across all
-                        funding types.
+                        If you're raising capital for investment into your
+                        startup or business, you'll first undergo our due
+                        diligence process to verify your project’s credibility,
+                        integrity, and potential impact.
                       </p>
                       <div className="flex md:justify-end">
                         <div className="bg-fundify-muted p-3 rounded-full">
@@ -185,12 +186,12 @@ const HowItWorks = () => {
 
                     <div className="md:w-1/2 md:pl-12">
                       <h3 className="text-xl font-bold mb-3">
-                        Fulfill & Deliver
+                        Launch & Promote
                       </h3>
                       <p className="text-gray-600 mb-4">
-                        Once funded, fulfill your promises - whether that's
-                        delivering rewards, providing donation updates, or
-                        managing equity relationships.
+                        Go live with your campaign and leverage our marketing
+                        tools & support to reach your target audience across all
+                        funding types.
                       </p>
                       <div className="flex">
                         <div className="bg-fundify-muted p-3 rounded-full">
@@ -211,11 +212,13 @@ const HowItWorks = () => {
 
                   <div className="flex flex-col md:flex-row items-center">
                     <div className="md:w-1/2 md:pr-12 md:text-right order-2 md:order-1">
-                      <h3 className="text-xl font-bold mb-3">Make an Impact</h3>
+                      <h3 className="text-xl font-bold mb-3">
+                        Fulfill & Deliver
+                      </h3>
                       <p className="text-gray-600 mb-4">
-                        Implement your project and share updates with backers as
-                        you bring your vision to life and create positive
-                        change.
+                        Once funded, fulfill your promises - whether that's
+                        delivering rewards, providing donation updates, or
+                        managing equity relationships.
                       </p>
                       <div className="flex md:justify-end">
                         <div className="bg-fundify-muted p-3 rounded-full">

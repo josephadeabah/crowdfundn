@@ -46,13 +46,20 @@ export const GameElements = () => {
     },
     {
       step: '3',
+      title: 'Undergo Our Due Diligence Process',
+      description:
+        "If you're raising capital for investment into your startup or business, you'll first undergo our due diligence process to verify your project’s credibility, integrity, and potential impact.",
+      icon: '🚀',
+    },
+    {
+      step: '4',
       title: 'Launch & Promote',
       description:
         'Go live with your campaign and leverage our marketing tools & support to reach your target audience across all funding types.',
       icon: '🚀',
     },
     {
-      step: '4',
+      step: '5',
       title: 'Fulfill & Deliver',
       description:
         "Once funded, fulfill your promises - whether that's delivering rewards, providing donation updates, or managing equity relationships.",
@@ -74,10 +81,10 @@ export const GameElements = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
           {steps.map((step, index) => (
             <div key={index} className="relative">
-              <div className="bg-white rounded-2xl p-8 shadow-sm text-center h-full">
+              <div className="bg-white rounded-2xl p-6 shadow-sm text-center h-full">
                 <div className="text-4xl mb-4">{step.icon}</div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">
                   {step.title}
