@@ -1,9 +1,7 @@
 // app/head.tsx
-import Head from 'next/head';
-
 export default function HeadComponent() {
   return (
-    <Head>
+    <head>
       <title>
         BantuHive | Fund & Invest in Africa's Top Startups & Impact Projects
       </title>
@@ -50,6 +48,6 @@ export default function HeadComponent() {
         name="twitter:image"
         content="https://bantuhive.com/twitter-card.jpg"
       />
-    </Head>
+    </head>
   );
 }
