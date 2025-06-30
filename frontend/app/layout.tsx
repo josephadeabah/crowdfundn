@@ -37,7 +37,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className="h-full scroll-smooth light">
       <GoogleTagManager />
-      <HeadComponent/>
+      <HeadComponent />
       <body
         className={`max-w-full bg-green-50 dark:bg-gray-900 mx-auto transition-all duration-150 ${roboto.variable} ${ubuntu.variable} h-full flex flex-col min-h-screen`}
       >

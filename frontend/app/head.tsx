@@ -2,6 +2,8 @@
 export default function HeadComponent() {
   return (
     <head>
+      <meta charSet="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>
         BantuHive | Fund & Invest in Africa's Top Startups & Impact Projects
       </title>
@@ -46,7 +48,7 @@ export default function HeadComponent() {
       />
       <meta
         name="twitter:image"
-        content="https://bantuhive.com/twitter-card.jpg"
+        content="/bantuhive.svg"
       />
     </head>
   );
