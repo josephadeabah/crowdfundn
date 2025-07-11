@@ -3,7 +3,7 @@ export default function HeadComponent() {
   return (
     <head>
       <title>
-        Fund and Invest in Africa's Top Startups and Impact Projects
+        Fund and Invest in Ghana's Top Startups and Impact Projects
       </title>
       <meta
         name="description"
