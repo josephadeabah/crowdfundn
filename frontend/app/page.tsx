@@ -35,9 +35,10 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col w-full relative">
-      <DynamicBackground />
-      <main className="w-full relative z-10">
+    <div className="min-h-screen flex flex-col w-full">
+      <main className="w-full relative">
+              <DynamicBackground />
+
         <div className="w-full">
           <Hero />
         </div>
