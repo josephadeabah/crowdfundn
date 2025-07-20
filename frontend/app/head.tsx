@@ -2,9 +2,7 @@
 export default function HeadComponent() {
   return (
     <head>
-      <title>
-        Fund and Invest in Ghana's Top Startups and Impact Projects
-      </title>
+      <title>Fund and Invest in Ghana's Top Startups and Impact Projects</title>
       <meta
         name="description"
         content="BantuHive: Africa's all-in-one fundraising platform connecting investors with promising startups and impact projects. Crowdfunding, donations, and investment opportunities."
@@ -44,10 +42,7 @@ export default function HeadComponent() {
         name="twitter:description"
         content="Africa's premier fundraising platform for startups and impact projects."
       />
-      <meta
-        name="twitter:image"
-        content="/bantuhive.svg"
-      />
+      <meta name="twitter:image" content="/bantuhive.svg" />
     </head>
   );
 }
