@@ -6,7 +6,6 @@ import React, { useEffect } from 'react';
 import PartnersCarousel from './molecules/PartnersCarousel';
 import BlogPosts from './components/blogs/BlogPosts';
 import BrandIdentity from './molecules/BrandIdentity';
-import DynamicBackground from './components/galaxybg/DynamicBackground';
 
 const HomePage = () => {
   useEffect(() => {
@@ -36,9 +35,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen flex flex-col w-full">
-      <main className="w-full relative">
-              <DynamicBackground />
-
+      <main className="w-full">
         <div className="w-full">
           <Hero />
         </div>
