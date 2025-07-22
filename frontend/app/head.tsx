@@ -2,10 +2,10 @@
 export default function HeadComponent() {
   return (
     <head>
-      <title>Fund and Invest in Ghana's Top Startups and Impact Projects</title>
+      <title>Fund and Invest in Ghana's promising Startups and Impact Projects</title>
       <meta
         name="description"
-        content="BantuHive: Africa's all-in-one fundraising platform connecting investors with promising startups and impact projects. Crowdfunding, donations, and investment opportunities."
+        content="BantuHive: Ghana's all-in-one fundraising platform connecting individual and institutional investors with promising startups and impact projects. Investment opportunities, Crowdfunding and donations"
       />
       <meta
         name="keywords"
@@ -21,11 +21,11 @@ export default function HeadComponent() {
       {/* Open Graph / Social Meta Tags */}
       <meta
         property="og:title"
-        content="BantuHive | Fund & Invest in Africa's Top Startups"
+        content="BantuHive, Fund and Invest in Ghana's Promising Startups"
       />
       <meta
         property="og:description"
-        content="Africa's all-in-one fundraising platform connecting investors with promising startups and impact projects."
+        content="Ghana's all-in-one fundraising platform connecting investors with promising startups and impact projects."
       />
       <meta property="og:type" content="website" />
       <meta property="og:url" content="https://bantuhive.com" />
@@ -36,11 +36,11 @@ export default function HeadComponent() {
       <meta name="twitter:card" content="summary_large_image" />
       <meta
         name="twitter:title"
-        content="BantuHive | Fund & Invest in Africa's Top Startups"
+        content="BantuHive, Fund & Invest in Ghana's Promising Startups"
       />
       <meta
         name="twitter:description"
-        content="Africa's premier fundraising platform for startups and impact projects."
+        content="Ghana's premier fundraising platform for startups and impact projects."
       />
       <meta name="twitter:image" content="/bantuhive.svg" />
     </head>
