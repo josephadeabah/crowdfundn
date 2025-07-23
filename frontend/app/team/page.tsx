@@ -69,7 +69,7 @@ const Teams = () => {
     },
     {
       id: '7',
-      name: 'Sarah Rodriguez',
+      name: 'Maria Enyah',
       position: 'Chief Financial Officer',
       image: ctoHeadshot,
       email: 'sarah.rodriguez@company.com',
