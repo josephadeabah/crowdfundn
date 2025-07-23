@@ -176,6 +176,14 @@ const Teams = () => {
       email: 'rachel.kim@company.com',
       level: 'member' as const,
     },
+    {
+      id: '17',
+      name: 'Rachel Kim',
+      position: 'Compliance Manager',
+      image: legalDirector,
+      email: 'rachel.kim@company.com',
+      level: 'member' as const,
+    },
   ];
 
   return (
