@@ -13,7 +13,7 @@ const Teams = () => {
   const boardMembers = [
     {
       id: '1',
-      name: 'John Harrison',
+      name: 'Member Pending',
       position: 'Chairman of the Board',
       image: ceoHeadshot,
       email: 'john.harrison@company.com',
