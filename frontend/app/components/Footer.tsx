@@ -26,7 +26,7 @@ const Footer = () => {
               <BantuHiveLogoIcon className="w-40 h-auto" />
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-              We democratize access to funding and empower individuals and
+              We're democratizing access to funding and empower individuals and
               communities to build legacies and make good things happen.
             </p>
             <div className="flex space-x-4">
