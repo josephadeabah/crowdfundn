@@ -62,7 +62,7 @@ const Teams = () => {
     {
       id: '6',
       name: 'Sadat Adams',
-      position: 'General Manager',
+      position: 'Director of Partnerships',
       image: ctoHeadshot,
       email: 'sadat.adams@bantuhive.com',
       linkedin: 'https://linkedin.com/in/sadatadams',
