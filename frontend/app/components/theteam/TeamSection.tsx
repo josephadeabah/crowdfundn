@@ -15,7 +15,7 @@ interface TeamSectionProps {
   title: string;
   subtitle?: string;
   members: TeamMember[];
-  level: 'board' | 'department';
+  level: 'board' | 'department' | 'legal';
 }
 
 export const TeamSection = ({
@@ -25,7 +25,7 @@ export const TeamSection = ({
   level,
 }: TeamSectionProps) => {
   const getGridCols = () => {
-    if (level === 'board') {
+    if (level === 'board' || level === 'legal') {
       return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
     }
     return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
