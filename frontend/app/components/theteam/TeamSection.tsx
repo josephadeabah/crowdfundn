@@ -1,11 +1,11 @@
 import React from 'react';
 import { TeamMemberCard } from './TeamMemberCard';
-import { StaticImageData } from 'next/image';
+
 interface TeamMember {
   id: string;
   name: string;
   position: string;
-  image: StaticImageData;
+  image: string;
   email: string;
   linkedin?: string;
   level: 'board' | 'lead' | 'member';

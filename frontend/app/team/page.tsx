@@ -1,14 +1,14 @@
 'use client';
 import { TeamSection } from '@/app/components/theteam/TeamSection';
-import ceoHeadshot from '@/assets/avatar-default.png';
-import ctoHeadshot from '@/assets/avatar-default.png';
-import cfoHeadshot from '@/assets/avatar-default.png';
-import cooHeadshot from '@/assets/avatar-default.png';
-import marketingLead from '@/assets/avatar-default.png';
-import legalDirector from '@/assets/avatar-default.png';
-import legalCounsel from '@/assets/avatar-default.png';
 
 const Teams = () => {
+  const ceoHeadshot = '/avatar-default.png';
+  const ctoHeadshot = '/avatar-default.png';
+  const cfoHeadshot = '/avatar-default.png';
+  const cooHeadshot = '/avatar-default.png';
+  const marketingLead = '/avatar-default.png';
+  const legalDirector = '/avatar-default.png';
+  const legalCounsel = '/avatar-default.png';
   const boardMembers = [
     {
       id: '1',

@@ -1,12 +1,11 @@
 import { Mail, Linkedin } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
-import { StaticImageData } from 'next/image';
 
 interface TeamMemberCardProps {
   name: string;
   position: string;
   department?: string;
-  image: StaticImageData;
+  image: string;
   email: string;
   linkedin?: string;
   level: 'board' | 'lead' | 'member';
@@ -49,7 +48,7 @@ export const TeamMemberCard = ({
           className={`${getImageSize()} rounded-full overflow-hidden ring-4 ring-white shadow-subtle`}
         >
           <img
-            src={image.src}
+            src={image}
             alt={`${name} headshot`}
             className="w-full h-full object-cover"
           />
