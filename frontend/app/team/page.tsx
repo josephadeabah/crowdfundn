@@ -44,7 +44,7 @@ const Teams = () => {
     {
       id: '4',
       name: 'Joseph Adeabah',
-      position: 'CEO & Chief Technology Officer',
+      position: 'Chief Executive Officer',
       image: ceoHeadshot,
       email: 'joseph.adeabah@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/joseph-835977a5/',
@@ -53,7 +53,7 @@ const Teams = () => {
     {
       id: '5',
       name: 'Nqoba Manana',
-      position: 'CEO & Chief Operating Officer',
+      position: 'Chief Operating Officer',
       image: nqobaMananaHeadshot,
       email: 'nqoba.manana@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/nqoba-g-manana/',
