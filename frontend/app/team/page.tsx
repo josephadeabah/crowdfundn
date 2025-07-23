@@ -67,6 +67,15 @@ const Teams = () => {
       linkedin: 'https://linkedin.com/in/sarahrodriguez',
       level: 'lead' as const,
     },
+    {
+      id: '7',
+      name: 'Sarah Rodriguez',
+      position: 'Chief Financial Officer',
+      image: ctoHeadshot,
+      email: 'sarah.rodriguez@company.com',
+      linkedin: 'https://linkedin.com/in/sarahrodriguez',
+      level: 'lead' as const,
+    },
   ];
 
   const marketingTeam = [
@@ -125,6 +134,14 @@ const Teams = () => {
     },
     {
       id: '9',
+      name: 'Jennifer Lee',
+      position: 'Frontend Developer',
+      image: marketingLead,
+      email: 'jennifer.lee@company.com',
+      level: 'member' as const,
+    },
+    {
+      id: '10',
       name: 'Jennifer Lee',
       position: 'Frontend Developer',
       image: marketingLead,
