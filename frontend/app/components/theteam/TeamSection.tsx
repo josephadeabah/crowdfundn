@@ -1,6 +1,5 @@
 import React from 'react';
 import { TeamMemberCard } from './TeamMemberCard';
-import { cn } from '@/app/lib/utils';
 import { StaticImageData } from 'next/image';
 interface TeamMember {
   id: string;

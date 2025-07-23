@@ -1,3 +1,4 @@
+'use client';
 import { TeamSection } from '@/app/components/theteam/TeamSection';
 import ceoHeadshot from '@/assets/avatar-default.png';
 import ctoHeadshot from '@/assets/avatar-default.png';
