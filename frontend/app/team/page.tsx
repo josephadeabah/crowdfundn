@@ -5,6 +5,7 @@ const Teams = () => {
   const ceoHeadshot = '/avatar-default.png';
   const ctoHeadshot = '/avatar-default.png';
   const cfoHeadshot = '/avatar-default.png';
+  const nqobaMananaHeadshot = '/Nqoba.JPG';
   const cooHeadshot = '/avatar-default.png';
   const marketingLead = '/avatar-default.png';
   const legalDirector = '/avatar-default.png';
@@ -32,7 +33,7 @@ const Teams = () => {
       id: '3',
       name: 'Nqoba Manana',
       position: 'Board Member',
-      image: cfoHeadshot,
+      image: nqobaMananaHeadshot,
       email: 'nqoba.manana@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/nqoba-g-manana/',
       level: 'board' as const,
