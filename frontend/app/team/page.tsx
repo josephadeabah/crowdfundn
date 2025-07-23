@@ -260,7 +260,7 @@ const Teams = () => {
             for innovation and excellence.
           </p>
           <button
-            className="bg-gradient-primary text-white px-8 py-3 rounded-lg font-medium hover:shadow-card-hover transition-all duration-300 transform hover:scale-105"
+            className="bg-gradient-primary text-black px-8 py-3 rounded-lg font-medium hover:shadow-card-hover transition-all duration-300 transform hover:scale-105"
             onClick={() => (window.location.href = '/careers')}
           >
             View Open Positions
