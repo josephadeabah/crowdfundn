@@ -242,7 +242,10 @@ const Teams = () => {
             We're always looking for talented individuals who share our passion
             for innovation and excellence.
           </p>
-          <button className="bg-gradient-primary text-white px-8 py-3 rounded-lg font-medium hover:shadow-card-hover transition-all duration-300 transform hover:scale-105" onClick={() => window.location.href = '/careers'}>
+          <button
+            className="bg-gradient-primary text-white px-8 py-3 rounded-lg font-medium hover:shadow-card-hover transition-all duration-300 transform hover:scale-105"
+            onClick={() => (window.location.href = '/careers')}
+          >
             View Open Positions
           </button>
         </div>
