@@ -162,10 +162,10 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="/press"
+                    href="/team"
                     className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
                   >
-                    Press
+                    Team
                   </a>
                 </li>
                 <li>

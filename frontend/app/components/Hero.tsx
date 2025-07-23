@@ -148,9 +148,9 @@ const Hero = () => {
 
                 <p className="text-lg md:text-xl text-gray-600 mb-8 animate-fade-up delay-200">
                   The all-in-one, gamified crowdfunding and micro-investment
-                  platform giving individuals and organizations across Ghana
-                  and its diaspora the power to fund and co-own high-impact
-                  startups and projects that shape the country's future.
+                  platform giving individuals and organizations across Ghana and
+                  its diaspora the power to fund and co-own high-impact startups
+                  and projects that shape the country's future.
                 </p>
 
                 <div className="flex flex-row gap-4 animate-fade-up animate-delay-300">

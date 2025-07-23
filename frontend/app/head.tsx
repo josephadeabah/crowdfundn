@@ -2,7 +2,9 @@
 export default function HeadComponent() {
   return (
     <head>
-      <title>Fund and Invest in Ghana's promising Startups and Impact Projects</title>
+      <title>
+        Fund and Invest in Ghana's promising Startups and Impact Projects
+      </title>
       <meta
         name="description"
         content="BantuHive: Ghana's all-in-one fundraising platform connecting individual and institutional investors with promising startups and impact projects. Investment opportunities, Crowdfunding and donations"
