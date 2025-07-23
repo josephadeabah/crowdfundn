@@ -17,7 +17,7 @@ const Teams = () => {
       position: 'Chairman of the Board',
       image: ceoHeadshot,
       email: 'john.harrison@company.com',
-      linkedin: 'https://linkedin.com/in/johnharrison',
+      linkedin: 'https://linkedin.com/in/',
       level: 'board' as const,
     },
     {
@@ -44,7 +44,7 @@ const Teams = () => {
     {
       id: '4',
       name: 'Joseph Adeabah',
-      position: 'Chief Executive Officer',
+      position: 'Chief Technology Officer',
       image: ceoHeadshot,
       email: 'joseph.adeabah@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/joseph-835977a5/',
