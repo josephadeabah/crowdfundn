@@ -70,7 +70,7 @@ const Teams = () => {
     },
     {
       id: '7',
-      name: 'Maria Enyah',
+      name: 'Member Pending',
       position: 'Chief Financial Officer',
       image: ctoHeadshot,
       email: 'sarah.rodriguez@company.com',
@@ -82,7 +82,7 @@ const Teams = () => {
   const marketingTeam = [
     {
       id: '10',
-      name: 'Emma Watson',
+      name: 'Member Pending',
       position: 'Marketing Director',
       image: marketingLead,
       email: 'emma.watson@company.com',
@@ -91,7 +91,7 @@ const Teams = () => {
     },
     {
       id: '11',
-      name: 'Alex Johnson',
+      name: 'Member Pending',
       position: 'Digital Marketing Manager',
       image: marketingLead,
       email: 'alex.johnson@company.com',
@@ -99,7 +99,7 @@ const Teams = () => {
     },
     {
       id: '12',
-      name: 'Lisa Park',
+      name: 'Member Pending',
       position: 'Content Marketing Specialist',
       image: marketingLead,
       email: 'lisa.park@company.com',
@@ -107,7 +107,7 @@ const Teams = () => {
     },
     {
       id: '13',
-      name: 'James Wilson',
+      name: 'Member Pending',
       position: 'Brand Manager',
       image: marketingLead,
       email: 'james.wilson@company.com',
@@ -118,7 +118,7 @@ const Teams = () => {
   const engineeringTeam = [
     {
       id: '7',
-      name: 'Dr. Maria Garcia',
+      name: 'Member Pending',
       position: 'Engineering Director',
       image: ctoHeadshot,
       email: 'maria.garcia@company.com',
@@ -127,7 +127,7 @@ const Teams = () => {
     },
     {
       id: '8',
-      name: 'Tom Anderson',
+      name: 'Member Pending',
       position: 'Senior Software Engineer',
       image: ceoHeadshot,
       email: 'tom.anderson@company.com',
@@ -135,7 +135,7 @@ const Teams = () => {
     },
     {
       id: '9',
-      name: 'Jennifer Lee',
+      name: 'Member Pending',
       position: 'Backend Developer',
       image: marketingLead,
       email: 'jennifer.lee@company.com',
@@ -143,7 +143,7 @@ const Teams = () => {
     },
     {
       id: '10',
-      name: 'Jennifer Lee',
+      name: 'Member Pending',
       position: 'Frontend Developer',
       image: marketingLead,
       email: 'jennifer.lee@company.com',
@@ -154,7 +154,7 @@ const Teams = () => {
   const legalTeam = [
     {
       id: '14',
-      name: 'Catherine Foster',
+      name: 'Member Pending',
       position: 'Legal Director',
       image: legalDirector,
       email: 'catherine.foster@company.com',
@@ -163,7 +163,7 @@ const Teams = () => {
     },
     {
       id: '15',
-      name: 'Mark Stevens',
+      name: 'Member Pending',
       position: 'Senior Administrative Associate',
       image: legalCounsel,
       email: 'mark.stevens@company.com',
@@ -171,7 +171,7 @@ const Teams = () => {
     },
     {
       id: '16',
-      name: 'Rachel Kim',
+      name: 'Member Pending',
       position: 'Compliance Manager',
       image: legalDirector,
       email: 'rachel.kim@company.com',
@@ -179,7 +179,7 @@ const Teams = () => {
     },
     {
       id: '17',
-      name: 'Susan Anaman',
+      name: 'Member Pending',
       position: 'Investment Associate',
       image: legalDirector,
       email: 'susan.anaman@company.com',
