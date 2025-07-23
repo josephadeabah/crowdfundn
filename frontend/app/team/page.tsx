@@ -21,20 +21,20 @@ const Teams = () => {
     },
     {
       id: '2',
-      name: 'Margaret Thompson',
-      position: 'Independent Director',
+      name: 'Joseph Adeabah',
+      position: 'Secretary of the Board',
       image: legalDirector,
-      email: 'margaret.thompson@company.com',
-      linkedin: 'https://linkedin.com/in/margaretthompson',
+      email: 'joseph.adeabah@bantuhive.com',
+      linkedin: 'https://www.linkedin.com/in/joseph-835977a5/',
       level: 'board' as const,
     },
     {
       id: '3',
-      name: 'Robert Chang',
+      name: 'Nqoba Manana',
       position: 'Board Member',
       image: cfoHeadshot,
-      email: 'robert.chang@company.com',
-      linkedin: 'https://linkedin.com/in/robertchang',
+      email: 'nqoba.manana@bantuhive.com',
+      linkedin: 'https://www.linkedin.com/in/nqoba-g-manana/',
       level: 'board' as const,
     },
   ];
@@ -135,7 +135,7 @@ const Teams = () => {
     {
       id: '9',
       name: 'Jennifer Lee',
-      position: 'Frontend Developer',
+      position: 'Backend Developer',
       image: marketingLead,
       email: 'jennifer.lee@company.com',
       level: 'member' as const,
@@ -163,7 +163,7 @@ const Teams = () => {
     {
       id: '15',
       name: 'Mark Stevens',
-      position: 'Senior Legal Counsel',
+      position: 'Senior Administrative Associate',
       image: legalCounsel,
       email: 'mark.stevens@company.com',
       level: 'member' as const,
@@ -178,10 +178,10 @@ const Teams = () => {
     },
     {
       id: '17',
-      name: 'Rachel Kim',
-      position: 'Compliance Manager',
+      name: 'Susan Anaman',
+      position: 'Investment Associate',
       image: legalDirector,
-      email: 'rachel.kim@company.com',
+      email: 'susan.anaman@company.com',
       level: 'member' as const,
     },
   ];
@@ -196,7 +196,7 @@ const Teams = () => {
             <p className="text-xl text-white/90 leading-relaxed">
               Our diverse team of talented professionals brings together
               expertise, innovation, and passion to drive our company's success
-              and deliver exceptional results for our clients.
+              and deliver exceptional results for you.
             </p>
           </div>
         </div>
