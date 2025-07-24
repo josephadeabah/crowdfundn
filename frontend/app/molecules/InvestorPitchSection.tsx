@@ -1,22 +1,19 @@
 'use client';
 
 import React from 'react';
-import {
-  TrendingUp,
-  Globe,
-  Building2,
-  Users,
-} from 'lucide-react';
+import { TrendingUp, Globe, Building2, Users } from 'lucide-react';
 
 const features = [
   {
     title: 'Diversify Your Portfolio',
-    description: 'Invest in thoroughly vetted, high-potential startups across Africa.',
+    description:
+      'Invest in thoroughly vetted, high-potential startups across Africa.',
     icon: TrendingUp,
   },
   {
     title: 'Support High-Growth Sectors',
-    description: 'Back ventures in tech, clean energy, health, agri-finance, and more.',
+    description:
+      'Back ventures in tech, clean energy, health, agri-finance, and more.',
     icon: Globe,
   },
   {
@@ -40,7 +37,10 @@ const InvestorPitchSection: React.FC = () => {
             Invest in Africa’s Future, One Visionary Startup at a Time
           </h2>
           <p className="text-lg text-gray-600">
-            BantuHive connects forward-thinking investors with Africa’s most promising startups and community-driven ventures. Whether you're an individual or an institution, discover opportunities that let you invest with purpose and earn with impact.
+            BantuHive connects forward-thinking investors with Africa’s most
+            promising startups and community-driven ventures. Whether you're an
+            individual or an institution, discover opportunities that let you
+            invest with purpose and earn with impact.
           </p>
         </div>
 
@@ -51,7 +51,9 @@ const InvestorPitchSection: React.FC = () => {
                 <feature.icon className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-gray-900">{feature.title}</h3>
+                <h3 className="text-xl font-semibold text-gray-900">
+                  {feature.title}
+                </h3>
                 <p className="text-gray-600 mt-1">{feature.description}</p>
               </div>
             </div>
