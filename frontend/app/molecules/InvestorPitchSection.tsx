@@ -31,7 +31,7 @@ const features = [
 const InvestorPitchSection: React.FC = () => {
   return (
     <div className="bg-green-900 py-20 text-white">
-      <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16">
+      <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-4xl mx-auto mb-16">
           <h2 className="text-4xl font-bold text-white mb-4">
             Invest in Africa’s Future, One Visionary Startup at a Time
