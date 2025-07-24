@@ -30,43 +30,43 @@ const features = [
 
 const InvestorPitchSection: React.FC = () => {
   return (
-    <div className="bg-white py-20">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center max-w-5xl mx-auto mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+    <div className="bg-green-900 py-20 text-white">
+      <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16">
+        <div className="text-center max-w-4xl mx-auto mb-16">
+          <h2 className="text-4xl font-bold text-white mb-4">
             Invest in Africa’s Future, One Visionary Startup at a Time
           </h2>
-          <p className="text-lg text-gray-600">
-            BantuHive connects forward-thinking investors with Africa’s most
-            promising startups and community-driven ventures. Whether you're an
-            individual or an institution, discover opportunities that let you
-            invest with purpose and earn with impact.
+          <p className="text-lg text-green-100">
+            BantuHive connects forward-thinking investors with Africa’s most promising startups and community-driven ventures. Whether you're an individual or an institution, discover opportunities that let you invest with purpose and earn with impact.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           {features.map((feature, index) => (
-            <div key={index} className="flex items-start space-x-5">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <feature.icon className="h-6 w-6 text-primary" />
+            <div
+              key={index}
+              className="flex items-start space-x-5 border-l-4 border-orange-500 pl-5"
+            >
+              <div className="h-12 w-12 rounded-full bg-orange-500/20 flex items-center justify-center">
+                <feature.icon className="h-6 w-6 text-orange-400" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-gray-900">
+                <h3 className="text-xl font-semibold text-white">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 mt-1">{feature.description}</p>
+                <p className="text-green-100 mt-1">{feature.description}</p>
               </div>
             </div>
           ))}
         </div>
 
         <div className="text-center mt-16">
-          <p className="text-xl font-semibold text-gray-800 mb-6">
+          <p className="text-xl font-semibold text-white mb-6">
             Join BantuHive today — invest in what’s next.
           </p>
           <a
             href="/invest"
-            className="inline-block bg-green-600 text-white px-6 py-3 rounded-xl text-lg font-medium hover:bg-gray-900 transition"
+            className="inline-block bg-orange-500 text-white px-6 py-3 rounded-xl text-lg font-medium hover:bg-orange-600 transition"
           >
             Start Investing. Shape the Future.
           </a>
