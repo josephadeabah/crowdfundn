@@ -33,7 +33,7 @@ const features = [
 
 const InvestorPitchSection: React.FC = () => {
   return (
-    <div className="bg-white py-20 px-6 md:px-10 lg:px-16">
+    <div className="bg-white py-20 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
