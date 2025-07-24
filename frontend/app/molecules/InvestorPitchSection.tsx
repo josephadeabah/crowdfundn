@@ -1,52 +1,74 @@
 'use client';
 
 import React from 'react';
+import {
+  TrendingUp,
+  Globe,
+  Building2,
+  Users,
+} from 'lucide-react';
+
+const features = [
+  {
+    title: 'Diversify Your Portfolio',
+    description: 'Invest in thoroughly vetted, high-potential startups across Africa.',
+    icon: TrendingUp,
+  },
+  {
+    title: 'Support High-Growth Sectors',
+    description: 'Back ventures in tech, clean energy, health, agri-finance, and more.',
+    icon: Globe,
+  },
+  {
+    title: 'Gain Equity from the Ground Up',
+    description: 'Secure ownership in impactful businesses at early stages.',
+    icon: Building2,
+  },
+  {
+    title: 'Be Part of Africa’s Future',
+    description: 'Fuel innovation and shape communities across the continent.',
+    icon: Users,
+  },
+];
 
 const InvestorPitchSection: React.FC = () => {
   return (
-    <section className="bg-white py-16 px-4 md:px-12 lg:px-24 text-gray-800">
-      <div className="max-w-7xl mx-auto text-center">
-        <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
-          Invest in Ghana’s Future, One Visionary Startup at a Time
-        </h2>
-        <p className="text-lg md:text-xl mb-8 text-gray-700">
-          At <span className="font-semibold text-black">BantuHive</span>, we
-          connect forward-thinking investors with Ghana’s most promising
-          startups and community-driven ventures. Whether you're an individual
-          looking to co-own innovative businesses or an institutional investor
-          seeking high-impact, early-stage opportunities, BantuHive makes it
-          easy to discover, support, and grow the next generation of African
-          success stories.
-        </p>
-        <ul className="text-left inline-block text-gray-700 space-y-2 mb-10">
-          <li>
-            🔹 <span className="font-medium">Diversify your portfolio</span>{' '}
-            with vetted startups
-          </li>
-          <li>
-            🔹 <span className="font-medium">Support high-growth sectors</span>{' '}
-            across tech, green energy, health, and more
-          </li>
-          <li>
-            🔹 <span className="font-medium">Gain equity</span> in impactful
-            businesses from the ground up
-          </li>
-          <li>
-            🔹{' '}
-            <span className="font-medium">
-              Be part of Ghana’s transformation story
-            </span>
-          </li>
-        </ul>
-        <p className="text-xl font-semibold mb-6">
-          Join BantuHive today — invest in what’s next.
-        </p>
-        <a
-          href="/invest"
-          className="inline-block bg-black text-white px-6 py-3 rounded-xl text-lg font-medium hover:bg-gray-900 transition"
-        >
-          Start Investing. Shape the Future.
-        </a>
+    <section className="bg-white py-20 px-6 md:px-10 lg:px-16">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            Invest in Africa’s Future, One Visionary Startup at a Time
+          </h2>
+          <p className="text-lg text-gray-600">
+            BantuHive connects forward-thinking investors with Africa’s most promising startups and community-driven ventures. Whether you're an individual or an institution, discover opportunities that let you invest with purpose and earn with impact.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          {features.map((feature, index) => (
+            <div key={index} className="flex items-start space-x-5">
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <feature.icon className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900">{feature.title}</h3>
+                <p className="text-gray-600 mt-1">{feature.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="text-center mt-16">
+          <p className="text-xl font-semibold text-gray-800 mb-6">
+            Join BantuHive today — invest in what’s next.
+          </p>
+          <a
+            href="/invest"
+            className="inline-block bg-black text-white px-6 py-3 rounded-xl text-lg font-medium hover:bg-gray-900 transition"
+          >
+            Start Investing. Shape the Future.
+          </a>
+        </div>
       </div>
     </section>
   );
