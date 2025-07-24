@@ -7,11 +7,11 @@ const InvestorPitchSection: React.FC = () => {
     <section className="bg-white py-16 px-4 md:px-12 lg:px-24 text-gray-800">
       <div className="max-w-7xl mx-auto text-center">
         <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
-          Invest in Africa’s Future, One Visionary Startup at a Time
+          Invest in Ghana’s Future, One Visionary Startup at a Time
         </h2>
         <p className="text-lg md:text-xl mb-8 text-gray-700">
           At <span className="font-semibold text-black">BantuHive</span>, we
-          connect forward-thinking investors with Africa’s most promising
+          connect forward-thinking investors with Ghana’s most promising
           startups and community-driven ventures. Whether you're an individual
           looking to co-own innovative businesses or an institutional investor
           seeking high-impact, early-stage opportunities, BantuHive makes it
@@ -34,7 +34,7 @@ const InvestorPitchSection: React.FC = () => {
           <li>
             🔹{' '}
             <span className="font-medium">
-              Be part of Africa’s transformation story
+              Be part of Ghana’s transformation story
             </span>
           </li>
         </ul>
