@@ -246,7 +246,7 @@ const VentureFundingLaws = () => {
                 Foreign Investment Considerations
               </h2>
               <div className="bg-card p-6 rounded-lg border">
-                <h3 className="font-semibold mb-3 text-accent">
+                <h3 className="font-semibold mb-3 text-primary">
                   Ghana Investment Promotion Centre (GIPC) Requirements
                 </h3>
                 <div className="space-y-3 text-sm">
