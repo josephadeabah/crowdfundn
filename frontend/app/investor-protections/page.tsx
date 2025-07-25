@@ -364,7 +364,7 @@ const InvestorProtections = () => {
                   </p>
                   <p>BantuHive Ltd</p>
                   <p>Email: protection@bantuhive.com</p>
-                  <p>Phone: +233 (0) 302 123 4567</p>
+                  <p>Phone: +233 (0) 200 415 683</p>
                   <p>Hours: 8AM - 6PM (GMT)</p>
                 </div>
                 <div>
