@@ -197,7 +197,7 @@ const Disclosures = () => {
               </h2>
               <div className="space-y-4">
                 <div className="bg-accent/10 p-6 rounded-lg border border-accent/20">
-                  <h3 className="font-semibold mb-3 text-accent">
+                  <h3 className="font-semibold mb-3 text-growth">
                     Tax Advisory Notice
                   </h3>
                   <p className="text-sm leading-relaxed">
