@@ -110,9 +110,9 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Navigation Links */}
+           {/* Navigation Links - each section spans 1 column */}
           {footerSections.map((section, index) => (
-            <div key={index}>
+            <div key={index} className="md:col-span-1">
               <h3 className="font-semibold mb-4 dark:text-gray-100">
                 {section.title}
               </h3>
