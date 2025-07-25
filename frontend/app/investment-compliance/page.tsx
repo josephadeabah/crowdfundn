@@ -8,8 +8,8 @@ const InvestmentCompliance = () => {
           </h1>
 
           <div className="space-y-8 text-foreground">
-            <section className="bg-card p-6 rounded-lg border border-accent/20">
-              <h2 className="text-xl font-semibold mb-4 text-accent">
+            <div className="bg-card p-6 rounded-lg border border-accent/20">
+              <h2 className="text-xl font-semibold mb-4 text-orange-600">
                 Compliance Framework
               </h2>
               <p className="leading-relaxed">
@@ -18,10 +18,10 @@ const InvestmentCompliance = () => {
                 best practices to protect both investors and issuers on our
                 platform.
               </p>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Anti-Money Laundering (AML) Compliance
               </h2>
               <div className="space-y-4">
@@ -61,9 +61,9 @@ const InvestmentCompliance = () => {
                   </div>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
+            <div>
               <h2 className="text-2xl font-semibold mb-4 text-secondary">
                 Know Your Customer (KYC) Requirements
               </h2>
@@ -113,10 +113,10 @@ const InvestmentCompliance = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Investor Protection Measures
               </h2>
               <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
@@ -143,10 +143,10 @@ const InvestmentCompliance = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Compliance Monitoring & Reporting
               </h2>
               <div className="space-y-4">
@@ -172,10 +172,10 @@ const InvestmentCompliance = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Data Protection & Privacy
               </h2>
               <p className="leading-relaxed mb-4">
@@ -193,9 +193,9 @@ const InvestmentCompliance = () => {
                 <li>Data breach notification procedures</li>
                 <li>Customer data access and deletion rights</li>
               </ul>
-            </section>
+            </div>
 
-            <section className="bg-muted p-6 rounded-lg">
+            <div className="bg-muted p-6 rounded-lg">
               <h2 className="text-xl font-semibold mb-4">Compliance Contact</h2>
               <div className="space-y-2 text-sm">
                 <p>
@@ -206,7 +206,7 @@ const InvestmentCompliance = () => {
                 <p>Phone: +233 (0) 302 123 4567</p>
                 <p>Address: East Legon, Accra, Ghana</p>
               </div>
-            </section>
+            </div>
           </div>
         </div>
       </div>
