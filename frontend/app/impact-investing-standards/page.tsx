@@ -130,7 +130,7 @@ const ImpactInvestingStandards = () => {
               </h2>
               <div className="space-y-6">
                 <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="font-semibold mb-3 text-accent">
+                  <h3 className="font-semibold mb-3 text-growth">
                     Third-Party Verification
                   </h3>
                   <p className="text-sm leading-relaxed mb-3">
@@ -286,7 +286,7 @@ const ImpactInvestingStandards = () => {
                 Environmental & Social Safeguards
               </h2>
               <div className="bg-card p-6 rounded-lg border">
-                <h3 className="font-semibold mb-3 text-accent">
+                <h3 className="font-semibold mb-3 text-growth">
                   Do No Harm Principles
                 </h3>
                 <div className="space-y-4 text-sm">
