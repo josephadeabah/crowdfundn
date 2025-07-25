@@ -59,18 +59,6 @@ const InvestorPitchSection: React.FC = () => {
             </div>
           ))}
         </div>
-
-        {/* <div className="text-center mt-16">
-          <p className="text-xl font-semibold text-white mb-6">
-            Join BantuHive today — invest in what’s next.
-          </p>
-          <a
-            href="/invest"
-            className="inline-block bg-orange-500 text-white px-6 py-3 rounded-xl text-lg font-medium hover:bg-orange-600 transition"
-          >
-            Start Investing. Shape the Future.
-          </a>
-        </div> */}
       </div>
     </div>
   );

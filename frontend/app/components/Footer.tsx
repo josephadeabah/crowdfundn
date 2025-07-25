@@ -1,7 +1,5 @@
 'use client';
 import React from 'react';
-import { Input } from '@/app/components/ui/input';
-import { Button } from '@/app/components/ui/button';
 import BantuHiveLogoIcon from './icons/BantuHiveLogoIcon';
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
 
@@ -180,24 +178,61 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Newsletter */}
+          {/* Compliance & Legal Section */}
           <div className="md:col-span-1">
             <h3 className="font-semibold mb-4 dark:text-gray-100">
-              Stay Updated
+              Compliance & Legal
             </h3>
-            <p className="text-sm text-gray-600 mb-4 dark:text-gray-300">
-              Subscribe to our newsletter for the latest projects and updates.
-            </p>
-            <div className="flex space-x-2">
-              <Input
-                type="email"
-                placeholder="Your email"
-                className="max-w-[220px] dark:bg-gray-900 dark:border-gray-700"
-              />
-              <Button className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700">
-                Subscribe
-              </Button>
-            </div>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <a
+                  href="/sec-regulations"
+                  className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                >
+                  SEC Regulations
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/investment-compliance"
+                  className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                >
+                  Investment Compliance
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/venture-funding-laws"
+                  className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                >
+                  Venture Funding Laws
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/impact-investing-standards"
+                  className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                >
+                  Impact Investing Standards
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/disclosures"
+                  className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                >
+                  Disclosures
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/investor-protections"
+                  className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                >
+                  Investor Protections
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 
