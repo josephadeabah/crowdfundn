@@ -8,7 +8,7 @@ const ImpactInvestingStandards = () => {
           </h1>
 
           <div className="space-y-8 text-foreground">
-            <section className="bg-trust/10 p-6 rounded-lg border border-trust/20">
+            <div className="bg-trust/10 p-6 rounded-lg border border-trust/20">
               <h2 className="text-xl font-semibold mb-4 text-trust">
                 Our Commitment to Impact
               </h2>
@@ -19,10 +19,10 @@ const ImpactInvestingStandards = () => {
                 impact investing standards to ensure authentic impact
                 measurement and management.
               </p>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Impact Measurement Framework
               </h2>
               <div className="space-y-6">
@@ -70,10 +70,10 @@ const ImpactInvestingStandards = () => {
                   </div>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 United Nations Sustainable Development Goals (SDGs)
               </h2>
               <div className="space-y-4">
@@ -122,10 +122,10 @@ const ImpactInvestingStandards = () => {
                   </div>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Impact Verification & Monitoring
               </h2>
               <div className="space-y-6">
@@ -194,10 +194,10 @@ const ImpactInvestingStandards = () => {
                   </div>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Sector-Specific Impact Standards
               </h2>
               <div className="space-y-6">
@@ -279,10 +279,10 @@ const ImpactInvestingStandards = () => {
                   </div>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Environmental & Social Safeguards
               </h2>
               <div className="bg-card p-6 rounded-lg border">
@@ -317,10 +317,10 @@ const ImpactInvestingStandards = () => {
                   </div>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Impact Investor Resources
               </h2>
               <div className="grid md:grid-cols-2 gap-6">
@@ -349,9 +349,9 @@ const ImpactInvestingStandards = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section className="bg-muted p-6 rounded-lg">
+            <div className="bg-muted p-6 rounded-lg">
               <h2 className="text-xl font-semibold mb-4">
                 Impact Standards Resources
               </h2>
@@ -373,7 +373,7 @@ const ImpactInvestingStandards = () => {
                   <p>UN SDGs: sdgs.un.org</p>
                 </div>
               </div>
-            </section>
+            </div>
           </div>
         </div>
       </div>
