@@ -60,7 +60,7 @@ const InvestorPitchSection: React.FC = () => {
           ))}
         </div>
 
-        <div className="text-center mt-16">
+        {/* <div className="text-center mt-16">
           <p className="text-xl font-semibold text-white mb-6">
             Join BantuHive today — invest in what’s next.
           </p>
@@ -70,7 +70,7 @@ const InvestorPitchSection: React.FC = () => {
           >
             Start Investing. Shape the Future.
           </a>
-        </div>
+        </div> */}
       </div>
     </div>
   );
