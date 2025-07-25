@@ -278,7 +278,7 @@ const Disclosures = () => {
                   investing.
                 </p>
                 <p className="font-semibold">
-                  Last Updated: January 2024 | Document Version: 1.0
+                  Last Updated: January 2025 | Document Version: 1.0
                 </p>
               </div>
             </div>

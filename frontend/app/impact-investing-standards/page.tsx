@@ -362,7 +362,7 @@ const ImpactInvestingStandards = () => {
                   </p>
                   <p>BantuHive Ltd</p>
                   <p>Email: impact@bantuhive.com</p>
-                  <p>Phone: +233 (0) 302 123 4567</p>
+                  <p>Phone: +233 (0) 200 415 683</p>
                 </div>
                 <div>
                   <p>
