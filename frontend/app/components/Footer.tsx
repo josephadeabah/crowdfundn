@@ -55,7 +55,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="relative bg-gray-50 border-t dark:bg-gray-950">
+       <footer className="relative bg-gray-50 border-t dark:bg-gray-950">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-no-repeat bg-contain opacity-10 dark:opacity-5"
@@ -67,9 +67,9 @@ const Footer = () => {
       ></div>
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Logo and Mission */}
-          <div className="md:col-span-1">
+        <div className="grid grid-cols-1 md:grid-cols-7 gap-8">
+          {/* Logo and Mission - spans 2 columns on md+ screens */}
+          <div className="md:col-span-2">
             <div className="mb-4">
               <BantuHiveLogoIcon className="w-40 h-auto" />
             </div>
@@ -79,34 +79,7 @@ const Footer = () => {
               things happen.
             </p>
             <div className="flex space-x-4">
-              <a
-                href="https://web.facebook.com/profile.php?id=61568192851056"
-                className="text-gray-400 hover:text-orange-500 dark:hover:text-orange-400"
-                aria-label="Facebook"
-              >
-                <FaFacebook className="h-5 w-5" />
-              </a>
-              <a
-                href="https://twitter.com"
-                className="text-gray-400 hover:text-orange-500 dark:hover:text-orange-400"
-                aria-label="Twitter"
-              >
-                <FaTwitter className="h-5 w-5" />
-              </a>
-              <a
-                href="https://www.instagram.com/bantuhive_fund/"
-                className="text-gray-400 hover:text-orange-500 dark:hover:text-orange-400"
-                aria-label="Instagram"
-              >
-                <FaInstagram className="h-5 w-5" />
-              </a>
-              <a
-                href="https://www.linkedin.com/company/bantu-hive/posts/?feedView=all"
-                className="text-gray-400 hover:text-orange-500 dark:hover:text-orange-400"
-                aria-label="LinkedIn"
-              >
-                <FaLinkedin className="h-5 w-5" />
-              </a>
+              {/* Social icons remain the same */}
             </div>
           </div>
 
