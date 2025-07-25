@@ -8,7 +8,7 @@ const VentureFundingLaws = () => {
           </h1>
 
           <div className="space-y-8 text-foreground">
-            <section className="bg-card p-6 rounded-lg border border-growth/20">
+            <div className="bg-card p-6 rounded-lg border border-growth/20">
               <h2 className="text-xl font-semibold mb-4 text-growth">
                 Legal Framework Overview
               </h2>
@@ -19,10 +19,10 @@ const VentureFundingLaws = () => {
                 to ensure all venture funding activities comply with Ghanaian
                 law.
               </p>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Primary Legislation
               </h2>
               <div className="space-y-6">
@@ -76,10 +76,10 @@ const VentureFundingLaws = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Investment Structures
               </h2>
               <div className="grid md:grid-cols-2 gap-6">
@@ -138,10 +138,10 @@ const VentureFundingLaws = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Regulatory Requirements for Startups
               </h2>
               <div className="space-y-4">
@@ -188,10 +188,10 @@ const VentureFundingLaws = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Tax Implications
               </h2>
               <div className="space-y-4">
@@ -239,10 +239,10 @@ const VentureFundingLaws = () => {
                   </li>
                 </ul>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Foreign Investment Considerations
               </h2>
               <div className="bg-card p-6 rounded-lg border">
@@ -271,10 +271,10 @@ const VentureFundingLaws = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Dispute Resolution
               </h2>
               <div className="grid md:grid-cols-2 gap-6">
@@ -297,9 +297,9 @@ const VentureFundingLaws = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section className="bg-muted p-6 rounded-lg">
+            <div className="bg-muted p-6 rounded-lg">
               <h2 className="text-xl font-semibold mb-4">Legal Resources</h2>
               <div className="grid md:grid-cols-2 gap-6 text-sm">
                 <div>
@@ -319,7 +319,7 @@ const VentureFundingLaws = () => {
                   <p>Email: info@gipcghana.com</p>
                 </div>
               </div>
-            </section>
+            </div>
           </div>
         </div>
       </div>
