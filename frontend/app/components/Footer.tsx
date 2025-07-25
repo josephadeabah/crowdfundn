@@ -42,10 +42,10 @@ const Footer = () => {
       title: 'Compliance & Legal',
       links: [
         { name: 'SEC Regulations', path: '/sec-regulations' },
-        { name: 'Investment Compliance', path: '/investment-compliance' },
+        { name: 'IC', path: '/investment-compliance' },
         { name: 'Venture Funding Laws', path: '/venture-funding-laws' },
         {
-          name: 'Impact Investing Standards',
+          name: 'IIS',
           path: '/impact-investing-standards',
         },
         { name: 'Disclosures', path: '/disclosures' },
@@ -79,7 +79,7 @@ const Footer = () => {
               things happen.
             </p>
             <div className="flex space-x-4">
-                           <a
+              <a
                 href="https://web.facebook.com/profile.php?id=61568192851056"
                 className="text-gray-400 hover:text-orange-500 dark:hover:text-orange-400"
                 aria-label="Facebook"
