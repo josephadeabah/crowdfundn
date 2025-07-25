@@ -4,6 +4,56 @@ import BantuHiveLogoIcon from './icons/BantuHiveLogoIcon';
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
 
 const Footer = () => {
+  const footerSections = [
+    {
+      title: 'Product',
+      links: [
+        { name: 'How it Works', path: '/how-it-works' },
+        { name: 'Enterprise Support', path: '/enterprise-support' },
+        { name: 'FAQ', path: '/faq' },
+        { name: 'Trust & Safety', path: '/trust-safety' },
+        { name: 'Pricing', path: '/pricing' },
+        { name: 'Features', path: '/features' },
+      ],
+    },
+    {
+      title: 'Resources',
+      links: [
+        { name: 'Blog', path: '/blog' },
+        { name: 'Creator Handbook', path: '/creator-handbook' },
+        { name: 'Investor Guide', path: '/investor-guide' },
+        { name: 'Partners', path: '/partners' },
+        { name: 'Case Studies', path: '/case-studies' },
+        { name: 'Webinars', path: '/webinars' },
+      ],
+    },
+    {
+      title: 'Company',
+      links: [
+        { name: 'About', path: '/about' },
+        { name: 'Careers', path: '/careers' },
+        { name: 'Team', path: '/team' },
+        { name: 'Contact', path: '/contact' },
+        { name: 'Press', path: '/press' },
+        { name: 'Newsroom', path: '/newsroom' },
+      ],
+    },
+    {
+      title: 'Compliance & Legal',
+      links: [
+        { name: 'SEC Regulations', path: '/sec-regulations' },
+        { name: 'Investment Compliance', path: '/investment-compliance' },
+        { name: 'Venture Funding Laws', path: '/venture-funding-laws' },
+        {
+          name: 'Impact Investing Standards',
+          path: '/impact-investing-standards',
+        },
+        { name: 'Disclosures', path: '/disclosures' },
+        { name: 'Investor Protections', path: '/investor-protections' },
+      ],
+    },
+  ];
+
   return (
     <footer className="relative bg-gray-50 border-t dark:bg-gray-950">
       {/* Background Image */}
@@ -61,228 +111,25 @@ const Footer = () => {
           </div>
 
           {/* Navigation Links */}
-          <div className="grid grid-cols-2 md:grid-cols-3 col-span-1 md:col-span-2 gap-8">
-            <div>
-              <h3 className="font-semibold mb-4 dark:text-gray-100">Product</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <a
-                    href="/how-it-works"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    How it Works
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/upgrade"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    Enterprise Support
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/faqs"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    FAQ
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/trust-and-safety"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    Trust & Safety
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/pricing"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    Pricing
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/features"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    Features
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
+          {footerSections.map((section, index) => (
+            <div key={index}>
               <h3 className="font-semibold mb-4 dark:text-gray-100">
-                Resources
+                {section.title}
               </h3>
               <ul className="space-y-2 text-sm">
-                <li>
-                  <a
-                    href="/blog"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    Blog
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/creator-handbook"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    Creator Handbook
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/investor-guide"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    Investor Guide
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/partners"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    Partners
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/case-studies"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    Case Studies
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/webinars"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    Webinars
-                  </a>
-                </li>
+                {section.links.map((link, linkIndex) => (
+                  <li key={linkIndex}>
+                    <a
+                      href={link.path}
+                      className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                    >
+                      {link.name}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
-
-            <div>
-              <h3 className="font-semibold mb-4 dark:text-gray-100">Company</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <a
-                    href="/about-us"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    About
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/careers"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    Careers
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/team"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    Team
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/contactus"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    Contact
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/press"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    Press
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/newsroom"
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                  >
-                    Newsroom
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Compliance & Legal Section */}
-          <div className="md:col-span-1">
-            <h3 className="font-semibold mb-4 dark:text-gray-100">
-              Compliance & Legal
-            </h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a
-                  href="/sec-regulations"
-                  className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                >
-                  SEC Regulations
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/investment-compliance"
-                  className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                >
-                  Investment Compliance
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/venture-funding-laws"
-                  className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                >
-                  Venture Funding Laws
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/impact-investing-standards"
-                  className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                >
-                  Impact Investing Standards
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/disclosures"
-                  className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                >
-                  Disclosures
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/investor-protections"
-                  className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
-                >
-                  Investor Protections
-                </a>
-              </li>
-            </ul>
-          </div>
+          ))}
         </div>
 
         {/* Bottom Section */}
