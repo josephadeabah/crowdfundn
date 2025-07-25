@@ -55,7 +55,7 @@ const Footer = () => {
   ];
 
   return (
-       <footer className="relative bg-gray-50 border-t dark:bg-gray-950">
+    <footer className="relative bg-gray-50 border-t dark:bg-gray-950">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-no-repeat bg-contain opacity-10 dark:opacity-5"
@@ -79,11 +79,38 @@ const Footer = () => {
               things happen.
             </p>
             <div className="flex space-x-4">
-              {/* Social icons remain the same */}
+                           <a
+                href="https://web.facebook.com/profile.php?id=61568192851056"
+                className="text-gray-400 hover:text-orange-500 dark:hover:text-orange-400"
+                aria-label="Facebook"
+              >
+                <FaFacebook className="h-5 w-5" />
+              </a>
+              <a
+                href="https://twitter.com"
+                className="text-gray-400 hover:text-orange-500 dark:hover:text-orange-400"
+                aria-label="Twitter"
+              >
+                <FaTwitter className="h-5 w-5" />
+              </a>
+              <a
+                href="https://www.instagram.com/bantuhive_fund/"
+                className="text-gray-400 hover:text-orange-500 dark:hover:text-orange-400"
+                aria-label="Instagram"
+              >
+                <FaInstagram className="h-5 w-5" />
+              </a>
+              <a
+                href="https://www.linkedin.com/company/bantu-hive/posts/?feedView=all"
+                className="text-gray-400 hover:text-orange-500 dark:hover:text-orange-400"
+                aria-label="LinkedIn"
+              >
+                <FaLinkedin className="h-5 w-5" />
+              </a>
             </div>
           </div>
 
-           {/* Navigation Links - each section spans 1 column */}
+          {/* Navigation Links - each section spans 1 column */}
           {footerSections.map((section, index) => (
             <div key={index} className="md:col-span-1">
               <h3 className="font-semibold mb-4 dark:text-gray-100">
