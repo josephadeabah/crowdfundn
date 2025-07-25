@@ -8,7 +8,7 @@ const Disclosures = () => {
           </h1>
 
           <div className="space-y-8 text-foreground">
-            <section className="bg-destructive/10 p-6 rounded-lg border border-destructive/20">
+            <div className="bg-destructive/10 p-6 rounded-lg border border-destructive/20">
               <h2 className="text-xl font-semibold mb-4 text-destructive">
                 ⚠️ Important Risk Warning
               </h2>
@@ -18,10 +18,10 @@ const Disclosures = () => {
                 can afford to lose their entire investment. You should not
                 invest more than you can afford to lose.
               </p>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 General Investment Risks
               </h2>
               <div className="space-y-4">
@@ -61,10 +61,10 @@ const Disclosures = () => {
                   </p>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Platform-Specific Risks
               </h2>
               <div className="space-y-4">
@@ -99,10 +99,10 @@ const Disclosures = () => {
                   </p>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Investor Eligibility & Suitability
               </h2>
               <div className="bg-card p-6 rounded-lg border">
@@ -123,10 +123,10 @@ const Disclosures = () => {
                   </li>
                 </ul>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Due Diligence Limitations
               </h2>
               <div className="space-y-4">
@@ -153,10 +153,10 @@ const Disclosures = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Fees & Charges
               </h2>
               <div className="grid md:grid-cols-2 gap-6">
@@ -189,10 +189,10 @@ const Disclosures = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Tax Implications
               </h2>
               <div className="space-y-4">
@@ -226,10 +226,10 @@ const Disclosures = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Investor Protections
               </h2>
               <div className="space-y-4">
@@ -253,9 +253,9 @@ const Disclosures = () => {
                   <li>Investor complaint resolution process</li>
                 </ul>
               </div>
-            </section>
+            </div>
 
-            <section className="bg-muted p-6 rounded-lg">
+            <div className="bg-muted p-6 rounded-lg">
               <h2 className="text-xl font-semibold mb-4">Important Notices</h2>
               <div className="space-y-3 text-sm">
                 <p>
@@ -281,7 +281,7 @@ const Disclosures = () => {
                   Last Updated: January 2024 | Document Version: 1.0
                 </p>
               </div>
-            </section>
+            </div>
           </div>
         </div>
       </div>
