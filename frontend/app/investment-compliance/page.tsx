@@ -203,8 +203,8 @@ const InvestmentCompliance = () => {
                 </p>
                 <p>BantuHive Ltd</p>
                 <p>Email: compliance@bantuhive.com</p>
-                <p>Phone: +233 (0) 302 123 4567</p>
-                <p>Address: East Legon, Accra, Ghana</p>
+                <p>Phone: +233 (0) 200 415 683</p>
+                <p>Address: HNO. B293, Apollo, Takoradi, Ghana</p>
               </div>
             </div>
           </div>
