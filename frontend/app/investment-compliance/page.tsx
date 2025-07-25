@@ -64,7 +64,7 @@ const InvestmentCompliance = () => {
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Know Your Customer (KYC) Requirements
               </h2>
               <p className="leading-relaxed mb-4">
