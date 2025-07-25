@@ -42,10 +42,10 @@ const Footer = () => {
       title: 'Compliance & Legal',
       links: [
         { name: 'SEC Regulations', path: '/sec-regulations' },
-        { name: 'IC', path: '/investment-compliance' },
+        { name: 'Investment Compliance', path: '/investment-compliance' },
         { name: 'Venture Funding Laws', path: '/venture-funding-laws' },
         {
-          name: 'IIS',
+          name: 'Impact Investing Standards',
           path: '/impact-investing-standards',
         },
         { name: 'Disclosures', path: '/disclosures' },
@@ -110,8 +110,8 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Navigation Links - each section spans 1 column */}
-          {footerSections.map((section, index) => (
+                   {/* First three sections (Product, Resources, Company) - each spans 1 column */}
+          {footerSections.slice(0, 3).map((section, index) => (
             <div key={index} className="md:col-span-1">
               <h3 className="font-semibold mb-4 dark:text-gray-100">
                 {section.title}
@@ -130,6 +130,25 @@ const Footer = () => {
               </ul>
             </div>
           ))}
+
+          {/* Compliance & Legal section - spans 2 columns */}
+          <div className="md:col-span-2">
+            <h3 className="font-semibold mb-4 dark:text-gray-100">
+              {footerSections[3].title}
+            </h3>
+            <ul className="space-y-2 text-sm">
+              {footerSections[3].links.map((link, linkIndex) => (
+                <li key={linkIndex}>
+                  <a
+                    href={link.path}
+                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                  >
+                    {link.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         {/* Bottom Section */}
