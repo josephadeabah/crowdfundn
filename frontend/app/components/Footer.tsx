@@ -96,6 +96,22 @@ const Footer = () => {
                     Trust & Safety
                   </a>
                 </li>
+                <li>
+                  <a
+                    href="/pricing"
+                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                  >
+                    Pricing
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/features"
+                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                  >
+                    Features
+                  </a>
+                </li>
               </ul>
             </div>
 
@@ -114,7 +130,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/creator-handbook"
                     className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
                   >
                     Creator Handbook
@@ -122,7 +138,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/investor-guide"
                     className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
                   >
                     Investor Guide
@@ -134,6 +150,22 @@ const Footer = () => {
                     className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
                   >
                     Partners
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/case-studies"
+                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                  >
+                    Case Studies
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/webinars"
+                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                  >
+                    Webinars
                   </a>
                 </li>
               </ul>
@@ -172,6 +204,22 @@ const Footer = () => {
                     className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
                   >
                     Contact
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/press"
+                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                  >
+                    Press
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/newsroom"
+                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                  >
+                    Newsroom
                   </a>
                 </li>
               </ul>
