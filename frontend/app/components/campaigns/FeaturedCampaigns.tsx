@@ -8,6 +8,7 @@ import EquityCampaignCarousel from './EquityCampaignCarousel ';
 import Link from 'next/link';
 import { Button } from '../ui/button';
 import InvestorPitchSection from '@/app/molecules/InvestorPitchSection';
+import DynamicBackground from '../galaxybg/DynamicBackground';
 
 const FeaturedCampaigns = () => {
   const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
@@ -55,7 +56,7 @@ const FeaturedCampaigns = () => {
         />
       </div>
       <div className="">
-        <InvestorPitchSection />
+        <DynamicBackground />
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <EquityCampaignCarousel

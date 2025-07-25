@@ -2,6 +2,7 @@
 import React, { useRef, useMemo, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Float, Preload } from '@react-three/drei';
+import { TrendingUp, Globe, Building2, Users } from 'lucide-react';
 import * as THREE from 'three';
 
 // Galaxy Spiral Arm component
@@ -347,6 +348,29 @@ export default function DynamicBackground() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
 
+  const features = [
+    {
+      title: 'Diversify Your Portfolio',
+      description: 'Invest in thoroughly vetted, high-potential startups across Africa.',
+      icon: TrendingUp,
+    },
+    {
+      title: 'Support High-Growth Sectors',
+      description: 'Back ventures in tech, clean energy, health, agri-finance, and more.',
+      icon: Globe,
+    },
+    {
+      title: 'Gain Equity from the Ground Up',
+      description: 'Secure ownership in impactful businesses at early stages.',
+      icon: Building2,
+    },
+    {
+      title: 'Be Part of Africa’s Future',
+      description: 'Fuel innovation and shape communities across the continent.',
+      icon: Users,
+    },
+  ];
+
   return (
     <div className="fixed inset-0 -z-10">
       {/* Deep space gradient background */}
@@ -374,6 +398,39 @@ export default function DynamicBackground() {
 
       {/* Cosmic overlay for content readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50 pointer-events-none" />
+
+      {/* Investor Pitch Content Overlay */}
+      <div className="relative h-full w-full flex items-center justify-center">
+        <div className="bg-green-900/80 backdrop-blur-sm text-white p-12 rounded-xl max-w-6xl mx-auto">
+          <div className="text-center max-w-4xl mx-auto mb-16">
+            <h2 className="text-4xl font-bold text-white mb-4">
+              Invest in Africa's Future, One Visionary Startup at a Time
+            </h2>
+            <p className="text-lg text-green-100">
+              BantuHive connects forward-thinking investors with Africa's most
+              promising startups and community-driven ventures. Whether you're an
+              individual or an institution, discover opportunities that let you
+              invest with purpose and earn with impact.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {features.map((feature, index) => (
+              <div key={index} className="flex items-start space-x-5 pl-5">
+                <div className="h-12 w-12 rounded-full bg-orange-500/20 flex items-center justify-center">
+                  <feature.icon className="h-6 w-6 text-orange-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-white">
+                    {feature.title}
+                  </h3>
+                  <p className="text-green-100 mt-1">{feature.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
