@@ -110,7 +110,7 @@ const Footer = () => {
             </div>
           </div>
 
-                   {/* First three sections (Product, Resources, Company) - each spans 1 column */}
+          {/* First three sections (Product, Resources, Company) - each spans 1 column */}
           {footerSections.slice(0, 3).map((section, index) => (
             <div key={index} className="md:col-span-1">
               <h3 className="font-semibold mb-4 dark:text-gray-100">

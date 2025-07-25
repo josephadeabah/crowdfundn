@@ -8,7 +8,7 @@ const InvestorProtections = () => {
           </h1>
 
           <div className="space-y-8 text-foreground">
-            <section className="bg-trust/10 p-6 rounded-lg border border-trust/20">
+            <div className="bg-trust/10 p-6 rounded-lg border border-trust/20">
               <h2 className="text-xl font-semibold mb-4 text-trust">
                 Our Commitment to Investor Protection
               </h2>
@@ -18,10 +18,10 @@ const InvestorProtections = () => {
                 robust operational safeguards, and transparent business
                 practices designed to safeguard your interests.
               </p>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Regulatory Framework Protection
               </h2>
               <div className="grid md:grid-cols-2 gap-6">
@@ -50,10 +50,10 @@ const InvestorProtections = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Financial Safeguards
               </h2>
               <div className="space-y-6">
@@ -104,10 +104,10 @@ const InvestorProtections = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Investment Safeguards
               </h2>
               <div className="space-y-6">
@@ -175,15 +175,15 @@ const InvestorProtections = () => {
                   </div>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Transparency & Disclosure
               </h2>
               <div className="space-y-4">
                 <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="font-semibold mb-3 text-accent">
+                  <h3 className="font-semibold mb-3 text-growth">
                     Mandatory Disclosures
                   </h3>
                   <div className="grid md:grid-cols-2 gap-4">
@@ -216,10 +216,10 @@ const InvestorProtections = () => {
                   </div>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Technology & Security
               </h2>
               <div className="grid md:grid-cols-2 gap-6">
@@ -250,10 +250,10 @@ const InvestorProtections = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Investor Rights & Remedies
               </h2>
               <div className="space-y-6">
@@ -320,10 +320,10 @@ const InvestorProtections = () => {
                   </div>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-secondary">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 text-green-600">
                 Emergency Procedures
               </h2>
               <div className="bg-card p-6 rounded-lg border">
@@ -351,9 +351,9 @@ const InvestorProtections = () => {
                   </div>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section className="bg-muted p-6 rounded-lg">
+            <div className="bg-muted p-6 rounded-lg">
               <h2 className="text-xl font-semibold mb-4">
                 Contact Investor Protection Team
               </h2>
@@ -380,7 +380,7 @@ const InvestorProtections = () => {
                   <p>Email: complaints@sec.gov.gh</p>
                 </div>
               </div>
-            </section>
+            </div>
           </div>
         </div>
       </div>
