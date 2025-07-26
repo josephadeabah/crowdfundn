@@ -290,9 +290,6 @@ const FAQsPage = () => {
         </div>
 
         <div className="">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Bantu Hive FAQs
-          </h2>
           <div className="text-center text-lg py-8">
             Bantu Hive connects communities and people with the funding they
             need, to create lasting impact.
