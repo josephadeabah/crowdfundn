@@ -142,7 +142,7 @@ const About = () => {
                           </p>
                         </div>
                         <div className="bg-card p-6 rounded-lg border">
-                          <h3 className="font-semibold mb-2 text-accent">
+                          <h3 className="font-semibold mb-2 text-growth">
                             🎁 Reward-Based
                           </h3>
                           <p className="text-sm">
