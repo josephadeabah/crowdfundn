@@ -192,7 +192,6 @@ const Partners = () => {
                   <ul className="space-y-2 text-sm">
                     <li>Venture Platform</li>
                     <li>Oui Capital</li>
-                    <li>Microtraction</li>
                     <li>Golden Palm Investments</li>
                   </ul>
                 </div>
