@@ -39,47 +39,6 @@ const About = () => {
       <main className="flex-grow">
         <div className="py-16 md:py-24 bg-gradient-to-br from-fundify-muted to-white">
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-              <div
-                ref={(el: HTMLDivElement | null) =>
-                  (sectionsRef.current[0] = el)
-                }
-                className="opacity-0"
-              >
-                <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-fundify-primary to-fundify-accent">
-                    About BantuHive
-                  </span>
-                </h1>
-                <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                  BantuHive is an all-in-one, gamified crowdfunding and
-                  micro-investment platform giving individuals and organizations
-                  across Africa and its diaspora the power to fund and co-own
-                  high-impact startups and projects that shape the continent’s
-                  future.
-                </p>
-                <Button
-                  className="bg-fundify-primary hover:bg-fundify-primary/90 text-white"
-                  size="lg"
-                >
-                  Learn More
-                </Button>
-              </div>
-
-              <div
-                ref={(el: HTMLDivElement | null) =>
-                  (sectionsRef.current[1] = el)
-                }
-                className="opacity-0"
-              >
-                <img
-                  src="/bantuhive.svg"
-                  alt="About Bantu Hive"
-                  className="w-full h-auto rounded-lg shadow-md"
-                />
-              </div>
-            </div>
-
             <div className="min-h-screen bg-background">
               <div className="container mx-auto px-6 py-12">
                 <div className="max-w-4xl mx-auto">
