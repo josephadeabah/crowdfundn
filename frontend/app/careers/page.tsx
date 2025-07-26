@@ -3,14 +3,14 @@ const Careers = () => {
     {
       title: 'Senior Software Engineer',
       department: 'Engineering',
-      location: 'Accra, Ghana',
+      location: 'Takoradi, Ghana',
       type: 'Full-time',
       experience: '3-5 years',
       description:
-        'Join our engineering team to build scalable crowdfunding platform features using React, Node.js, and cloud technologies.',
+        'Join our engineering team to build scalable crowdfunding platform features using React, Ruby, and cloud technologies.',
       requirements: [
         "Bachelor's degree in Computer Science or related field",
-        '3+ years experience with React and Node.js',
+        '3+ years experience with React and Ruby',
         'Experience with cloud platforms (AWS/Azure)',
         'Knowledge of financial systems and security best practices',
       ],
@@ -18,7 +18,7 @@ const Careers = () => {
     {
       title: 'Compliance Officer',
       department: 'Legal & Compliance',
-      location: 'Accra, Ghana',
+      location: 'Takoradi, Ghana',
       type: 'Full-time',
       experience: '5-7 years',
       description:
@@ -33,7 +33,7 @@ const Careers = () => {
     {
       title: 'Investment Analyst',
       department: 'Investment Operations',
-      location: 'Accra, Ghana / Remote',
+      location: 'Takoradi, Ghana / Remote',
       type: 'Full-time',
       experience: '2-4 years',
       description:
@@ -48,7 +48,7 @@ const Careers = () => {
     {
       title: 'Community Manager',
       department: 'Marketing & Growth',
-      location: 'Accra, Ghana',
+      location: 'Takoradi, Ghana',
       type: 'Full-time',
       experience: '2-3 years',
       description:
@@ -327,7 +327,7 @@ const Careers = () => {
                     <strong>HR Team:</strong> careers@bantuhive.com
                   </p>
                   <p>
-                    <strong>Office:</strong> East Legon, Accra, Ghana
+                    <strong>Office:</strong> Takoradi, Ghana
                   </p>
                 </div>
               </div>
