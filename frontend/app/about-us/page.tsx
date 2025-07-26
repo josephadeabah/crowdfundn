@@ -83,13 +83,10 @@ const About = () => {
             <div className="min-h-screen bg-background">
               <div className="container mx-auto px-6 py-12">
                 <div className="max-w-4xl mx-auto">
-                  <h1 className="text-4xl font-bold mb-8 text-primary">
-                    About BantuHive
-                  </h1>
 
                   <div className="space-y-8 text-foreground">
                     <div>
-                      <h2 className="text-2xl font-semibold mb-4 text-secondary">
+                      <h2 className="text-2xl font-semibold mb-4 text-green-600">
                         Our Mission
                       </h2>
                       <p className="text-lg leading-relaxed mb-4">
@@ -110,7 +107,7 @@ const About = () => {
                     </div>
 
                     <div>
-                      <h2 className="text-2xl font-semibold mb-4 text-secondary">
+                      <h2 className="text-2xl font-semibold mb-4 text-green-600">
                         Our Story
                       </h2>
                       <p className="leading-relaxed mb-4">
@@ -131,7 +128,7 @@ const About = () => {
                     </div>
 
                     <div>
-                      <h2 className="text-2xl font-semibold mb-4 text-secondary">
+                      <h2 className="text-2xl font-semibold mb-4 text-green-600">
                         Our Approach
                       </h2>
                       <div className="grid md:grid-cols-3 gap-6">
@@ -166,7 +163,7 @@ const About = () => {
                     </div>
 
                     <div>
-                      <h2 className="text-2xl font-semibold mb-4 text-secondary">
+                      <h2 className="text-2xl font-semibold mb-4 text-green-600">
                         Why BantuHive?
                       </h2>
                       <ul className="space-y-3">
