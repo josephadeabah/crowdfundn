@@ -22,7 +22,7 @@ const Footer = () => {
         { name: 'Blog', path: '/blog' },
         { name: 'Creator Handbook', path: '/creator-handbook' },
         { name: 'Investor Guide', path: '/investor-guide' },
-        { name: 'Partners', path: '/partners' },
+        { name: 'Partners', path: '/partnerships' },
         { name: 'Case Studies', path: '/case-studies' },
         { name: 'Webinars', path: '/webinars' },
       ],
