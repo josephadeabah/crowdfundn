@@ -293,69 +293,6 @@ const About = () => {
           </div>
         </div>
 
-        <div className="py-16 bg-fundify-muted">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-              <div
-                ref={(el: HTMLDivElement | null) =>
-                  (sectionsRef.current[4] = el)
-                }
-                className="opacity-0"
-              >
-                <h2 className="text-3xl font-bold mb-6 relative">
-                  Our Team
-                  <div className="absolute -bottom-3 left-0 w-20 h-1 bg-fundify-primary"></div>
-                </h2>
-                <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                  We are a diverse team of passionate individuals dedicated to
-                  making crowdfunding accessible and impactful for everyone.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="flex items-center">
-                    <div className="mr-4">
-                      <img
-                        src="/placeholder.svg"
-                        alt="Team Member"
-                        className="w-16 h-16 rounded-full"
-                      />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-medium">Nqoba Manana</h4>
-                      <p className="text-gray-500">Co-Founder</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="mr-4">
-                      <img
-                        src="/placeholder.svg"
-                        alt="Team Member"
-                        className="w-16 h-16 rounded-full"
-                      />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-medium">Joseph Adeabah</h4>
-                      <p className="text-gray-500">Co-Founder</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                ref={(el: HTMLDivElement | null) =>
-                  (sectionsRef.current[5] = el)
-                }
-                className="opacity-0"
-              >
-                <img
-                  src="/combined.webp"
-                  alt="Our Team"
-                  className="w-full h-auto rounded-lg shadow-lg"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div className="py-16 bg-white">
           <div className="container mx-auto px-4 text-center">
             <div
