@@ -285,7 +285,7 @@ const Partners = () => {
                     <strong>Contact Partnership Team:</strong>
                     <p className="mt-2">Email: partnerships@bantuhive.com</p>
                     <p>Phone: +233 (0) 302 123 4567</p>
-                    <p>Address: East Legon, Accra, Ghana</p>
+                    <p>Address: Takoradi, Ghana</p>
                   </div>
                 </div>
               </div>
