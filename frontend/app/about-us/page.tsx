@@ -37,7 +37,7 @@ const About = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-grow">
-        <section className="py-16 md:py-24 bg-gradient-to-br from-fundify-muted to-white">
+        <div className="py-16 md:py-24 bg-gradient-to-br from-fundify-muted to-white">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
               <div
@@ -79,13 +79,145 @@ const About = () => {
                 />
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* Add our new TimelineSection */}
+            <div className="min-h-screen bg-background">
+              <div className="container mx-auto px-6 py-12">
+                <div className="max-w-4xl mx-auto">
+                  <h1 className="text-4xl font-bold mb-8 text-primary">
+                    About BantuHive
+                  </h1>
+
+                  <div className="space-y-8 text-foreground">
+                    <div>
+                      <h2 className="text-2xl font-semibold mb-4 text-secondary">
+                        Our Mission
+                      </h2>
+                      <p className="text-lg leading-relaxed mb-4">
+                        BantuHive is revolutionizing how Ghanaians and the
+                        diaspora fund and co-own transformative startups and
+                        projects. We believe that every innovative idea deserves
+                        a chance to flourish, and every individual should have
+                        the opportunity to participate in Ghana's economic
+                        growth story.
+                      </p>
+                      <p className="leading-relaxed">
+                        Our platform combines the power of crowdfunding,
+                        micro-investment, and gamification to create an
+                        ecosystem where entrepreneurs can access capital while
+                        investors can discover and support high-impact ventures
+                        across Ghana.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h2 className="text-2xl font-semibold mb-4 text-secondary">
+                        Our Story
+                      </h2>
+                      <p className="leading-relaxed mb-4">
+                        Founded in 2024, BantuHive emerged from the recognition
+                        that Ghana's entrepreneurial ecosystem needed a platform
+                        that could bridge the gap between innovative ideas and
+                        accessible funding. We saw talented entrepreneurs
+                        struggling to access capital while potential investors
+                        lacked easy ways to discover and support promising
+                        ventures.
+                      </p>
+                      <p className="leading-relaxed">
+                        Today, we're proud to be Ghana's leading platform for
+                        democratic investment, enabling anyone to participate in
+                        building the country's economic future through our
+                        innovative three-tier funding model.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h2 className="text-2xl font-semibold mb-4 text-secondary">
+                        Our Approach
+                      </h2>
+                      <div className="grid md:grid-cols-3 gap-6">
+                        <div className="bg-card p-6 rounded-lg border">
+                          <h3 className="font-semibold mb-2 text-trust">
+                            🎁 Donation|Grant-Based
+                          </h3>
+                          <p className="text-sm">
+                            Supporting social impact projects and early-stage
+                            innovations through grants and donations.
+                          </p>
+                        </div>
+                        <div className="bg-card p-6 rounded-lg border">
+                          <h3 className="font-semibold mb-2 text-accent">
+                            🎁 Reward-Based
+                          </h3>
+                          <p className="text-sm">
+                            Backing creative projects and product launches with
+                            tangible rewards for supporters.
+                          </p>
+                        </div>
+                        <div className="bg-card p-6 rounded-lg border">
+                          <h3 className="font-semibold mb-2 text-growth">
+                            📈 Equity Investment
+                          </h3>
+                          <p className="text-sm">
+                            Enabling micro-investment in promising startups with
+                            potential for financial returns.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h2 className="text-2xl font-semibold mb-4 text-secondary">
+                        Why BantuHive?
+                      </h2>
+                      <ul className="space-y-3">
+                        <li className="flex items-start">
+                          <span className="text-trust mr-2">✓</span>
+                          <span>
+                            <strong>Fully Compliant:</strong> Licensed and
+                            regulated under Ghanaian securities law
+                          </span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-trust mr-2">✓</span>
+                          <span>
+                            <strong>Accessible:</strong> Start investing with as
+                            little as GHS 50
+                          </span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-trust mr-2">✓</span>
+                          <span>
+                            <strong>Transparent:</strong> Full disclosure of
+                            risks, fees, and investment terms
+                          </span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-trust mr-2">✓</span>
+                          <span>
+                            <strong>Local Focus:</strong> Supporting Ghana's
+                            economic development and job creation
+                          </span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-trust mr-2">✓</span>
+                          <span>
+                            <strong>Diaspora-Friendly:</strong> Easy
+                            participation for Ghanaians worldwide
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Add our new Timelinediv */}
         <TimelineSection />
 
-        <section className="py-16 bg-white">
+        <div className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
               <div
@@ -162,9 +294,9 @@ const About = () => {
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
-        <section className="py-16 bg-fundify-muted">
+        <div className="py-16 bg-fundify-muted">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
               <div
@@ -225,9 +357,9 @@ const About = () => {
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
-        <section className="py-16 bg-white">
+        <div className="py-16 bg-white">
           <div className="container mx-auto px-4 text-center">
             <div
               ref={(el: HTMLDivElement | null) => (sectionsRef.current[6] = el)}
@@ -252,7 +384,7 @@ const About = () => {
               </div>
             </div>
           </div>
-        </section>
+        </div>
       </main>
     </div>
   );

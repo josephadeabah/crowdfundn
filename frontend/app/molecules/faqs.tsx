@@ -101,12 +101,141 @@ export const faqs = [
   {
     question: 'Can I update my profile details?',
     answer:
-      'Yes, you can update your profile details anytime by going to the "Settings" section of your dashboard.',
+      'Yes, you can update your profile details anytime by going to the "Settings" div of your dashboard.',
   },
   {
     question: 'Still have questions?',
     answer:
       'If you didn’t find the answer you were looking for, don’t worry! Reach out to us at help@bantuhive.com, and our team will be happy to assist you.',
+  },
+];
+
+const faq = [
+  {
+    category: 'Getting Started',
+    questions: [
+      {
+        q: 'What is BantuHive?',
+        a: "BantuHive is Ghana's premier crowdfunding and micro-investment platform that offers three funding models: donation/grant-based, reward-based, and equity investment. We connect entrepreneurs with investors and supporters across Ghana and its diaspora.",
+      },
+      {
+        q: 'Who can use BantuHive?',
+        a: 'BantuHive is open to Ghanaian citizens, residents, and diaspora members aged 18 and above. Companies must be registered in Ghana to raise funds, while investors can participate from anywhere in the world.',
+      },
+      {
+        q: 'How do I get started as an investor?',
+        a: 'Simply create an account, complete our KYC verification process, and start browsing investment opportunities. You can begin investing with as little as GHS 50.',
+      },
+      {
+        q: 'How do I raise funds for my business?',
+        a: 'Create a detailed campaign including your business plan, financial projections, and funding requirements. Our team will review your application and help you launch your campaign once approved.',
+      },
+    ],
+  },
+  {
+    category: 'Investment & Returns',
+    questions: [
+      {
+        q: 'What are the minimum and maximum investment amounts?',
+        a: 'Minimum investment is GHS 50 per project. For individual investors, the maximum annual investment is GHS 50,000. Accredited investors have higher limits based on their qualification.',
+      },
+      {
+        q: 'What returns can I expect?',
+        a: 'Returns vary by investment type. Donation-based funding provides social impact returns. Reward-based offers products or perks. Equity investments may provide dividends and capital appreciation, though all investments carry risk of loss.',
+      },
+      {
+        q: 'How long before I see returns?',
+        a: 'Investment timelines vary. Reward-based campaigns typically deliver within 6-12 months. Equity investments are long-term (3-7 years typically) with potential for earlier liquidity events.',
+      },
+      {
+        q: 'Can I sell my equity investments?',
+        a: "Equity investments are generally illiquid. However, we're developing a secondary market and may facilitate certain exit opportunities as companies grow.",
+      },
+    ],
+  },
+  {
+    category: 'Security & Regulation',
+    questions: [
+      {
+        q: 'Is BantuHive regulated?',
+        a: 'Yes, BantuHive is licensed by the Securities and Exchange Commission of Ghana (SEC Ghana) and operates under strict regulatory oversight to protect investors.',
+      },
+      {
+        q: 'How are my funds protected?',
+        a: "Client funds are held in segregated accounts with SEC Ghana-approved banks, separate from BantuHive's operational funds. We also maintain comprehensive insurance coverage.",
+      },
+      {
+        q: 'What due diligence do you perform?',
+        a: 'We conduct thorough verification of all companies including business registration, financial statements, management background checks, and market validation before listing.',
+      },
+      {
+        q: 'How do you verify investor eligibility?',
+        a: 'We require comprehensive KYC documentation including government ID, proof of address, income verification, and investment experience assessment before allowing participation.',
+      },
+    ],
+  },
+  {
+    category: 'Fees & Charges',
+    questions: [
+      {
+        q: 'What fees do investors pay?',
+        a: 'Investors pay a 2% platform fee on investments plus 1.5% payment processing fee. There are no account maintenance fees. Diaspora investors pay a 0.5% currency conversion fee.',
+      },
+      {
+        q: 'What do entrepreneurs pay?',
+        a: 'Entrepreneurs pay a 1% listing fee and 5% success fee on funds raised. Additional costs include due diligence (GHS 2,000-10,000) and legal documentation (GHS 5,000-15,000).',
+      },
+      {
+        q: 'Are there any hidden fees?',
+        a: 'No. All fees are clearly disclosed upfront. We provide a detailed fee schedule in our investment documentation and during the onboarding process.',
+      },
+      {
+        q: 'Do you charge ongoing fees?',
+        a: 'Investors have no ongoing fees. Entrepreneurs pay GHS 500 quarterly for ongoing reporting and support services during the investment period.',
+      },
+    ],
+  },
+  {
+    category: 'Tax & Legal',
+    questions: [
+      {
+        q: 'What are the tax implications of investing?',
+        a: 'Tax treatment depends on investment type and your jurisdiction. Ghana residents may benefit from capital gains tax reductions for venture investments held 3+ years. Consult a tax advisor for personalized guidance.',
+      },
+      {
+        q: 'Do I get tax benefits for impact investing?',
+        a: 'Yes, qualifying impact investments may receive favorable tax treatment including reduced capital gains rates and enhanced loss relief provisions.',
+      },
+      {
+        q: 'What legal protections do I have?',
+        a: 'All investments are governed by standardized legal documentation under Ghanaian law. You receive shareholder rights, information access, and dispute resolution mechanisms.',
+      },
+      {
+        q: 'Can diaspora investors face legal issues?',
+        a: 'BantuHive complies with international regulations. However, diaspora investors should consult local legal and tax advisors regarding compliance in their residence jurisdiction.',
+      },
+    ],
+  },
+  {
+    category: 'Platform Features',
+    questions: [
+      {
+        q: 'How do I track my investments?',
+        a: "Your investor dashboard provides real-time updates on all investments including financial performance, company milestones, and impact metrics. You'll receive regular reports from portfolio companies.",
+      },
+      {
+        q: 'Can I invest from mobile devices?',
+        a: 'Yes, our platform is fully mobile-optimized. We also offer mobile apps for iOS and Android with full investment and tracking functionality.',
+      },
+      {
+        q: 'Do you offer investment advice?',
+        a: 'We provide educational resources and company information but do not offer personalized investment advice. All investment decisions are your responsibility based on disclosed information.',
+      },
+      {
+        q: 'How do I contact customer support?',
+        a: 'Contact our support team via email (support@bantuhive.com), phone (+233 302 123 4567), or live chat on our platform. Support hours are 8AM-6PM GMT Monday-Friday.',
+      },
+    ],
   },
 ];
 
@@ -118,9 +247,48 @@ const FAQsPage = () => {
   };
 
   return (
-    <section className="p-3 md:p-0 text-gray-700 dark:bg-gray-800 dark:text-gray-50">
-      {/* FAQs Section */}
+    <div className="p-3 md:p-0 text-gray-700 dark:bg-gray-800 dark:text-gray-50">
+      {/* FAQs div */}
       <div id="faqs" className="py-20 max-w-7xl mx-auto mb-10">
+        <div className="min-h-screen bg-background">
+          <div className="container mx-auto px-6 py-12">
+            <div className="max-w-4xl mx-auto">
+              <h1 className="text-4xl font-bold mb-8 text-primary text-center">
+                Frequently Asked Questions
+              </h1>
+              <p className="text-lg text-center text-muted-foreground mb-12">
+                Find answers to common questions about investing and raising
+                funds on BantuHive
+              </p>
+
+              <div className="space-y-12">
+                {faq.map((category, categoryIndex) => (
+                  <div key={categoryIndex}>
+                    <h2 className="text-2xl font-semibold mb-6 text-green-600">
+                      {category.category}
+                    </h2>
+                    <div className="space-y-6">
+                      {category.questions.map((faqobj, faqIndex) => (
+                        <div
+                          key={faqIndex}
+                          className="bg-card p-6 rounded-lg border"
+                        >
+                          <h3 className="text-lg font-semibold mb-3 text-primary">
+                            {faqobj.q}
+                          </h3>
+                          <p className="text-muted-foreground leading-relaxed">
+                            {faqobj.a}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="">
           <h2 className="text-3xl font-bold text-center mb-12">
             Bantu Hive FAQs
@@ -157,6 +325,30 @@ const FAQsPage = () => {
               </div>
             ))}
           </div>
+
+          <div className="mt-16 bg-primary/5 p-8 rounded-lg text-center">
+            <h2 className="text-2xl font-semibold mb-4 text-primary">
+              Still Have Questions?
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Our team is here to help. Contact us for personalized assistance
+              with your investment or fundraising needs.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
+                href="mailto:support@bantuhive.com"
+                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+              >
+                Email Support
+              </a>
+              <a
+                href="tel:+233302123456"
+                className="bg-secondary text-green-600-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+              >
+                Call Us
+              </a>
+            </div>
+          </div>
         </div>
       </div>
       {/* FAQPage Schema */}
@@ -177,7 +369,7 @@ const FAQsPage = () => {
           }),
         }}
       />
-    </section>
+    </div>
   );
 };
 

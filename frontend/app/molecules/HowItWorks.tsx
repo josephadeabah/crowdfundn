@@ -12,12 +12,11 @@ import {
   Rocket,
   Users,
 } from 'lucide-react';
-import FundingTypes from './FundingTypes';
 
 const HowItWorks = () => {
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section */}
+      {/* Hero div */}
       <div className="bg-gradient-to-b from-fundify-primary/10 to-white pt-16 pb-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
@@ -47,7 +46,7 @@ const HowItWorks = () => {
         </div>
       </div>
 
-      {/* Timeline Section */}
+      {/* Timeline div */}
       <div className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
@@ -244,63 +243,336 @@ const HowItWorks = () => {
 
       {/* Funding Types */}
       <div className="bg-gray-50 py-16">
-        <FundingTypes />
-      </div>
+        <div className="min-h-screen bg-background">
+          <div className="container mx-auto px-6 py-12">
+            <div className="max-w-4xl mx-auto">
+              <h1 className="text-4xl font-bold mb-8 text-primary">
+                How BantuHive Works
+              </h1>
 
-      {/* FAQ Section */}
-      <div className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Everything you need to know about creating and managing your
-              campaign on Bantu Hive.
-            </p>
-          </div>
+              <div className="space-y-12 text-foreground">
+                <div className="text-center">
+                  <p className="text-xl leading-relaxed text-muted-foreground">
+                    BantuHive simplifies the fundraising and investment process
+                    through our innovative three-tier platform designed
+                    specifically for the Ghanaian market.
+                  </p>
+                </div>
 
-          <div className="max-w-3xl mx-auto space-y-6">
-            {[
-              {
-                question: 'How much does it cost to launch a campaign?',
-                answer:
-                  'Bantu Hive charges a 5% platform fee on the total amount raised for successful campaigns, plus payment processing fees of 2.9% + $0.30 per transaction. There are no upfront costs to launch your campaign.',
-              },
-              {
-                question: "What happens if I don't reach my funding goal?",
-                answer:
-                  'It depends on your funding type. With flexible funding, you keep whatever funds you raise, minus our fees. With all-or-nothing funding, funds are only collected if you reach or exceed your goal.',
-              },
-              {
-                question: 'How long can my campaign run?',
-                answer:
-                  'Campaigns can run anywhere from 1 to 60 days, but our data shows that 30-40 day campaigns tend to be most successful.',
-              },
-              {
-                question: 'When do I receive the funds raised?',
-                answer:
-                  'For successful campaigns, funds are typically disbursed 14 business days after your campaign ends, allowing time for payment processing and any potential refunds.',
-              },
-              {
-                question: 'Can I edit my campaign after launching?',
-                answer:
-                  'Yes, you can edit most aspects of your campaign after it launches, including your description, images, and updates. However, your funding goal and type can be changed once your campaign is live.',
-              },
-            ].map((faq, index) => (
-              <div
-                key={index}
-                className="bg-white p-6 rounded-lg border shadow-sm"
-              >
-                <h3 className="text-lg font-medium mb-3">{faq.question}</h3>
-                <p className="text-gray-600">{faq.answer}</p>
+                <div>
+                  <h2 className="text-2xl font-semibold mb-6 text-green-600">
+                    Three Ways to Fund Your Future
+                  </h2>
+                  <div className="grid md:grid-cols-3 gap-8">
+                    <div className="bg-card p-6 rounded-lg border text-center">
+                      <div className="text-4xl mb-4">🎁</div>
+                      <h3 className="text-xl font-semibold mb-3 text-trust">
+                        Donation & Grant-Based
+                      </h3>
+                      <p className="text-sm leading-relaxed mb-4">
+                        Perfect for social impact projects, community
+                        initiatives, and early-stage innovations that focus on
+                        solving local problems.
+                      </p>
+                      <ul className="text-xs space-y-1 text-left">
+                        <li>• No equity given up</li>
+                        <li>• Focus on social impact</li>
+                        <li>• Community-driven support</li>
+                        <li>• Transparent fund usage</li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-card p-6 rounded-lg border text-center">
+                      <div className="text-4xl mb-4">🎁</div>
+                      <h3 className="text-xl font-semibold mb-3 text-growth">
+                        Reward-Based
+                      </h3>
+                      <p className="text-sm leading-relaxed mb-4">
+                        Support creative projects and product launches while
+                        receiving exclusive rewards, early access, or limited
+                        edition items.
+                      </p>
+                      <ul className="text-xs space-y-1 text-left">
+                        <li>• Pre-order products</li>
+                        <li>• Exclusive rewards</li>
+                        <li>• Creative project support</li>
+                        <li>• Community building</li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-card p-6 rounded-lg border text-center">
+                      <div className="text-4xl mb-4">📈</div>
+                      <h3 className="text-xl font-semibold mb-3 text-growth">
+                        Equity Investment
+                      </h3>
+                      <p className="text-sm leading-relaxed mb-4">
+                        Invest in high-growth startups and become a co-owner
+                        with potential for financial returns as the company
+                        grows.
+                      </p>
+                      <ul className="text-xs space-y-1 text-left">
+                        <li>• Ownership stakes</li>
+                        <li>• Potential returns</li>
+                        <li>• Professional due diligence</li>
+                        <li>• Investor protections</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h2 className="text-2xl font-semibold mb-6 text-green-600">
+                    For Entrepreneurs
+                  </h2>
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div className="space-y-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+                          1
+                        </div>
+                        <div>
+                          <h3 className="font-semibold mb-2">
+                            Create Your Campaign
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            Tell your story, set your funding goal, and choose
+                            your funding type. Our team helps you craft a
+                            compelling campaign.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-4">
+                        <div className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+                          2
+                        </div>
+                        <div>
+                          <h3 className="font-semibold mb-2">Get Verified</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Complete our comprehensive verification process
+                            including business registration, financial
+                            documents, and background checks.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-4">
+                        <div className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+                          3
+                        </div>
+                        <div>
+                          <h3 className="font-semibold mb-2">
+                            Launch & Promote
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            Go live on our platform and leverage our marketing
+                            tools, investor network, and community to reach your
+                            funding goals.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="bg-secondary text-green-600-foreground rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+                          4
+                        </div>
+                        <div>
+                          <h3 className="font-semibold mb-2">Raise Funds</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Watch your funding grow through our gamified
+                            platform that encourages investor engagement and
+                            viral sharing.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-4">
+                        <div className="bg-secondary text-green-600-foreground rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+                          5
+                        </div>
+                        <div>
+                          <h3 className="font-semibold mb-2">
+                            Deliver Results
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            Execute your business plan with regular updates to
+                            your investor community and transparent reporting.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-4">
+                        <div className="bg-secondary text-green-600-foreground rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+                          6
+                        </div>
+                        <div>
+                          <h3 className="font-semibold mb-2">Scale & Grow</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Access follow-on funding rounds, mentorship
+                            programs, and our network of successful
+                            entrepreneurs and investors.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h2 className="text-2xl font-semibold mb-6 text-green-600">
+                    For Investors
+                  </h2>
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div className="space-y-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="bg-trust text-trust-foreground rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+                          1
+                        </div>
+                        <div>
+                          <h3 className="font-semibold mb-2">
+                            Sign Up & Verify
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            Create your account and complete our KYC process to
+                            ensure platform security and regulatory compliance.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-4">
+                        <div className="bg-trust text-trust-foreground rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+                          2
+                        </div>
+                        <div>
+                          <h3 className="font-semibold mb-2">
+                            Discover Opportunities
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            Browse vetted investment opportunities across
+                            various sectors, from tech startups to agricultural
+                            innovations.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-4">
+                        <div className="bg-trust text-trust-foreground rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+                          3
+                        </div>
+                        <div>
+                          <h3 className="font-semibold mb-2">
+                            Conduct Due Diligence
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            Access detailed financials, business plans,
+                            management information, and risk assessments for
+                            informed decision-making.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="bg-growth text-growth-foreground rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+                          4
+                        </div>
+                        <div>
+                          <h3 className="font-semibold mb-2">
+                            Invest Securely
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            Make investments starting from GHS 50 through our
+                            secure payment system with full legal documentation.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-4">
+                        <div className="bg-growth text-growth-foreground rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+                          5
+                        </div>
+                        <div>
+                          <h3 className="font-semibold mb-2">
+                            Track Performance
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            Monitor your investments through our dashboard with
+                            real-time updates, financial reports, and company
+                            milestones.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-4">
+                        <div className="bg-growth text-growth-foreground rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+                          6
+                        </div>
+                        <div>
+                          <h3 className="font-semibold mb-2">
+                            Realize Returns
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            Benefit from dividends, capital appreciation, or
+                            rewards based on your investment type and company
+                            performance.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-card p-8 rounded-lg border">
+                  <h2 className="text-2xl font-semibold mb-4 text-center text-green-600">
+                    Why Choose BantuHive?
+                  </h2>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                    <div>
+                      <div className="text-2xl mb-2">🛡️</div>
+                      <h3 className="font-semibold mb-2">Fully Regulated</h3>
+                      <p className="text-xs text-muted-foreground">
+                        Licensed by SEC Ghana with comprehensive investor
+                        protections
+                      </p>
+                    </div>
+                    <div>
+                      <div className="text-2xl mb-2">🎮</div>
+                      <h3 className="font-semibold mb-2">
+                        Gamified Experience
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        Engaging platform that makes investing and fundraising
+                        fun
+                      </p>
+                    </div>
+                    <div>
+                      <div className="text-2xl mb-2">🌍</div>
+                      <h3 className="font-semibold mb-2">Diaspora-Friendly</h3>
+                      <p className="text-xs text-muted-foreground">
+                        Designed for Ghanaians worldwide to invest back home
+                      </p>
+                    </div>
+                    <div>
+                      <div className="text-2xl mb-2">📊</div>
+                      <h3 className="font-semibold mb-2">
+                        Transparent Reporting
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        Real-time updates and comprehensive performance tracking
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* CTA Section */}
+      {/* CTA div */}
       <div className="bg-gradient-to-r from-fundify-primary to-fundify-accent py-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-white mb-6">
