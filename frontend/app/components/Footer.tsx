@@ -13,7 +13,7 @@ const Footer = () => {
         { name: 'FAQ', path: '/faq' },
         { name: 'Trust & Safety', path: '/trust-safety' },
         { name: 'Pricing', path: '/pricing' },
-        { name: 'Features', path: '/features' },
+        { name: 'Features', path: '/platform-features' },
       ],
     },
     {
