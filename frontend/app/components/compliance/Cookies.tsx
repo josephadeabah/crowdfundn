@@ -2,168 +2,461 @@ import React from 'react';
 
 const Cookies = () => {
   return (
-    <section className="px-12 py-12 max-w-7xl mx-auto">
-      <h1 className="text-4xl font-semibold text-center mb-8">Cookie Policy</h1>
-
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">1. Introduction</h2>
-        <p className="text-lg leading-relaxed">
-          This Cookie Policy explains how Bantuhive.com ("we", "our", or "us")
-          uses cookies and similar technologies to recognize you when you visit
-          our website at Bantuhive.com (the "Site"). It explains what these
-          technologies are, why we use them, and your rights to control our use
-          of them.
-        </p>
-        <p className="text-lg leading-relaxed mt-4">
-          By using Bantuhive, you consent to our use of cookies as described in
-          this policy. If you do not agree to the use of cookies, you should
-          adjust your browser settings accordingly or refrain from using the
-          Site.
-        </p>
+    <div className="min-h-screen flex flex-col">
+      {/* Header */}
+      <div className="bg-gradient-to-br from-primary to-secondary text-white py-16">
+        <div className="container mx-auto px-6 text-center">
+          <h1 className="text-4xl font-bold mb-4">Cookie Policy</h1>
+          <p className="text-xl opacity-90">
+            How we use cookies and tracking technologies
+          </p>
+        </div>
       </div>
 
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">2. What Are Cookies?</h2>
-        <p className="text-lg leading-relaxed">
-          Cookies are small data files that are placed on your device when you
-          visit a website. They allow the website to remember your actions and
-          preferences over a period of time, making your next visit more
-          efficient and personalized. Cookies may be set by the website you are
-          visiting (first-party cookies) or by third-party services (third-party
-          cookies) that are embedded on the website.
-        </p>
-        <p className="text-lg leading-relaxed mt-4">
-          Cookies can be used for various purposes, such as recognizing your
-          login information, remembering your preferences, analyzing how you use
-          the site, or enabling social media functions.
-        </p>
-      </div>
+      {/* Content */}
+      <div className="flex-1 py-16">
+        <div className="container mx-auto px-6 max-w-4xl">
+          <div className="prose prose-lg max-w-none">
+            <p className="text-sm text-muted-foreground mb-8">
+              <strong>Last Updated:</strong> December 2024
+              <br />
+              <strong>Effective Date:</strong> January 1, 2025
+            </p>
 
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">
-          3. Types of Cookies We Use
-        </h2>
-        <p className="text-lg leading-relaxed">
-          We use different types of cookies to enhance your experience on
-          Bantuhive. Below are the categories of cookies that we use:
-        </p>
-        <ul className="list-inside list-disc text-lg leading-relaxed mt-4">
-          <li>
-            <strong>Essential Cookies:</strong> These cookies are necessary for
-            the operation of the Site, such as allowing you to navigate the
-            platform and use its features. Without these cookies, certain
-            services on the Site may not be available.
-          </li>
-          <li>
-            <strong>Performance Cookies:</strong> These cookies collect
-            information about how you interact with the Site, such as which
-            pages you visit most often. This data helps us improve the
-            functionality of the Site and optimize user experience.
-          </li>
-          <li>
-            <strong>Functional Cookies:</strong> These cookies allow the Site to
-            remember choices you make (e.g., language preferences or region) and
-            provide enhanced features to improve your experience.
-          </li>
-          <li>
-            <strong>Advertising Cookies:</strong> These cookies track your
-            browsing habits and are used to serve targeted advertisements based
-            on your interests. They are also used to limit the number of times
-            you see an ad.
-          </li>
-          <li>
-            <strong>Third-Party Cookies:</strong> In addition to the cookies we
-            use, third-party service providers may set cookies on your device to
-            perform functions like tracking analytics or serving ads. These
-            cookies are governed by the privacy policies of the third parties.
-          </li>
-        </ul>
-      </div>
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">1. Introduction</h2>
+              <p>
+                This Cookie Policy explains how BantuHive Ltd. ("we," "our," or
+                "us") uses cookies and similar tracking technologies on our
+                crowdfunding platform. This policy should be read alongside our
+                Privacy Policy and Terms of Service.
+              </p>
+            </div>
 
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">4. How We Use Cookies</h2>
-        <p className="text-lg leading-relaxed">
-          We use cookies for a variety of purposes, including:
-        </p>
-        <ul className="list-inside list-disc text-lg leading-relaxed mt-4">
-          <li>To enhance and personalize your user experience on Bantuhive.</li>
-          <li>
-            To remember your preferences and login details across sessions.
-          </li>
-          <li>
-            To analyze and measure the effectiveness of our marketing campaigns
-            and ads.
-          </li>
-          <li>
-            To provide social media features (e.g., share buttons) and analyze
-            their usage.
-          </li>
-          <li>
-            To track site performance and identify potential areas for
-            improvement.
-          </li>
-        </ul>
-      </div>
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                2. What Are Cookies?
+              </h2>
+              <p>
+                Cookies are small text files that are placed on your device when
+                you visit our website. They help us provide you with a better
+                experience by remembering your preferences, analyzing how you
+                use our platform, and improving our services.
+              </p>
 
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">
-          5. Your Control Over Cookies
-        </h2>
-        <p className="text-lg leading-relaxed">
-          You have the right to control and manage cookies through your browser
-          settings. Most browsers allow you to:
-        </p>
-        <ul className="list-inside list-disc text-lg leading-relaxed mt-4">
-          <li>Block cookies from being set on your device.</li>
-          <li>Delete cookies that have already been set.</li>
-          <li>
-            Set preferences for certain types of cookies (e.g., only allow
-            essential cookies).{' '}
-          </li>
-        </ul>
-        <p className="text-lg leading-relaxed mt-4">
-          Please note that disabling cookies may impact your experience on
-          Bantuhive. Some features or services may not function properly if
-          cookies are disabled. For detailed instructions on how to manage
-          cookies in different browsers, you can visit the help section of your
-          browser's website.
-        </p>
-      </div>
+              <h3 className="text-xl font-semibold mb-3 mt-6">
+                Types of Cookies We Use:
+              </h3>
+              <ul className="list-disc pl-6">
+                <li>
+                  <strong>Session Cookies:</strong> Temporary cookies that
+                  expire when you close your browser
+                </li>
+                <li>
+                  <strong>Persistent Cookies:</strong> Cookies that remain on
+                  your device for a set period
+                </li>
+                <li>
+                  <strong>First-Party Cookies:</strong> Set directly by
+                  BantuHive
+                </li>
+                <li>
+                  <strong>Third-Party Cookies:</strong> Set by our service
+                  providers and partners
+                </li>
+              </ul>
+            </div>
 
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">
-          6. Changes to This Cookie Policy
-        </h2>
-        <p className="text-lg leading-relaxed">
-          Bantuhive reserves the right to update or change this Cookie Policy at
-          any time. Any changes will be posted on this page, and we will update
-          the "Effective Date" at the top of the page. We encourage you to
-          review this policy periodically for any updates or changes.
-        </p>
-      </div>
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                3. How We Use Cookies
+              </h2>
 
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">7. Contact Us</h2>
-        <p className="text-lg leading-relaxed">
-          If you have any questions or concerns about this Cookie Policy, please
-          contact us at:
-        </p>
-        <p className="text-lg leading-relaxed mt-4">
-          <strong>Email:</strong> help@bantuhive.com
-        </p>
-        <p className="text-lg leading-relaxed mt-4">
-          <strong>Address:</strong> IVY Street, Kingstel Hotel Avenue,
-          [Takoradi, Ghana]
-        </p>
-      </div>
+              <h3 className="text-xl font-semibold mb-3">
+                3.1 Essential Cookies
+              </h3>
+              <div className="bg-muted p-6 rounded-lg mb-4">
+                <p>
+                  <strong>Purpose:</strong> These cookies are necessary for the
+                  platform to function properly.
+                </p>
+                <p>
+                  <strong>Legal Basis:</strong> Legitimate interest (platform
+                  functionality)
+                </p>
+                <p>
+                  <strong>Opt-out:</strong> Not possible - required for basic
+                  functionality
+                </p>
+              </div>
+              <ul className="list-disc pl-6">
+                <li>User authentication and session management</li>
+                <li>Security and fraud prevention</li>
+                <li>Load balancing and system stability</li>
+                <li>Form submission and data validation</li>
+                <li>Shopping cart and transaction processing</li>
+              </ul>
 
-      <div className="mt-12 text-center">
-        <p className="text-lg font-medium">
-          By continuing to use Bantuhive.com, you agree to the use of cookies as
-          outlined in this Cookie Policy.
-        </p>
+              <h3 className="text-xl font-semibold mb-3 mt-6">
+                3.2 Functional Cookies
+              </h3>
+              <div className="bg-muted p-6 rounded-lg mb-4">
+                <p>
+                  <strong>Purpose:</strong> Enhance your user experience with
+                  personalized features.
+                </p>
+                <p>
+                  <strong>Legal Basis:</strong> Legitimate interest (improved
+                  user experience)
+                </p>
+                <p>
+                  <strong>Opt-out:</strong> Available through cookie preferences
+                </p>
+              </div>
+              <ul className="list-disc pl-6">
+                <li>Language and currency preferences</li>
+                <li>Dark/light mode settings</li>
+                <li>Customized dashboard layouts</li>
+                <li>Recently viewed projects</li>
+                <li>Investment portfolio preferences</li>
+              </ul>
+
+              <h3 className="text-xl font-semibold mb-3 mt-6">
+                3.3 Analytics Cookies
+              </h3>
+              <div className="bg-muted p-6 rounded-lg mb-4">
+                <p>
+                  <strong>Purpose:</strong> Help us understand how users
+                  interact with our platform.
+                </p>
+                <p>
+                  <strong>Legal Basis:</strong> Legitimate interest (platform
+                  improvement)
+                </p>
+                <p>
+                  <strong>Opt-out:</strong> Available through cookie preferences
+                </p>
+              </div>
+              <ul className="list-disc pl-6">
+                <li>Page views and user journey tracking</li>
+                <li>Feature usage analytics</li>
+                <li>Performance monitoring</li>
+                <li>Error tracking and debugging</li>
+                <li>A/B testing for platform improvements</li>
+              </ul>
+
+              <h3 className="text-xl font-semibold mb-3 mt-6">
+                3.4 Marketing Cookies
+              </h3>
+              <div className="bg-muted p-6 rounded-lg mb-4">
+                <p>
+                  <strong>Purpose:</strong> Deliver relevant advertising and
+                  measure campaign effectiveness.
+                </p>
+                <p>
+                  <strong>Legal Basis:</strong> Consent
+                </p>
+                <p>
+                  <strong>Opt-out:</strong> Available through cookie preferences
+                </p>
+              </div>
+              <ul className="list-disc pl-6">
+                <li>Targeted advertising on social media platforms</li>
+                <li>Retargeting campaigns</li>
+                <li>Email marketing optimization</li>
+                <li>Conversion tracking</li>
+                <li>Interest-based advertising</li>
+              </ul>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                4. Third-Party Cookies
+              </h2>
+              <p>
+                We work with trusted third-party providers who may set cookies
+                on our platform:
+              </p>
+
+              <div className="overflow-x-auto mt-4">
+                <table className="w-full border-collapse border border-gray-300">
+                  <thead>
+                    <tr className="bg-muted">
+                      <th className="border border-gray-300 px-4 py-2 text-left">
+                        Provider
+                      </th>
+                      <th className="border border-gray-300 px-4 py-2 text-left">
+                        Purpose
+                      </th>
+                      <th className="border border-gray-300 px-4 py-2 text-left">
+                        Type
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border border-gray-300 px-4 py-2">
+                        Google Analytics
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        Website analytics and performance
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        Analytics
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 px-4 py-2">
+                        Facebook Pixel
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        Social media advertising
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        Marketing
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 px-4 py-2">
+                        Hotjar
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        User experience analytics
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        Analytics
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 px-4 py-2">
+                        Intercom
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        Customer support chat
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        Functional
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 px-4 py-2">
+                        Stripe
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        Payment processing
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        Essential
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                5. Ghana-Specific Considerations
+              </h2>
+              <p>
+                In compliance with Ghana's Data Protection Act, 2012 (Act 843)
+                and emerging digital privacy regulations:
+              </p>
+              <ul className="list-disc pl-6 mt-4">
+                <li>We obtain clear consent for non-essential cookies</li>
+                <li>We provide granular control over cookie preferences</li>
+                <li>
+                  We respect Do Not Track signals where technically feasible
+                </li>
+                <li>We regularly review and update our cookie practices</li>
+                <li>
+                  We maintain records of consent for regulatory compliance
+                </li>
+              </ul>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                6. Managing Your Cookie Preferences
+              </h2>
+
+              <h3 className="text-xl font-semibold mb-3">
+                6.1 BantuHive Cookie Settings
+              </h3>
+              <p>You can manage your cookie preferences at any time by:</p>
+              <ul className="list-disc pl-6 mt-4">
+                <li>Clicking the "Cookie Preferences" link in our footer</li>
+                <li>Accessing your account settings and selecting "Privacy"</li>
+                <li>
+                  Using the cookie banner that appears on your first visit
+                </li>
+              </ul>
+
+              <h3 className="text-xl font-semibold mb-3 mt-6">
+                6.2 Browser Settings
+              </h3>
+              <p>Most browsers allow you to:</p>
+              <ul className="list-disc pl-6 mt-4">
+                <li>View and delete cookies</li>
+                <li>Block cookies from specific websites</li>
+                <li>Block all cookies (may affect website functionality)</li>
+                <li>Set preferences for third-party cookies</li>
+              </ul>
+
+              <h3 className="text-xl font-semibold mb-3 mt-6">
+                6.3 Browser-Specific Instructions
+              </h3>
+              <ul className="list-disc pl-6">
+                <li>
+                  <strong>Chrome:</strong> Settings &gt; Privacy and Security
+                  &gt; Cookies and other site data
+                </li>
+                <li>
+                  <strong>Firefox:</strong> Settings &gt; Privacy &amp; Security
+                  &gt; Cookies and Site Data
+                </li>
+                <li>
+                  <strong>Safari:</strong> Preferences &gt; Privacy &gt; Manage
+                  Website Data
+                </li>
+                <li>
+                  <strong>Edge:</strong> Settings &gt; Site permissions &gt;
+                  Cookies and site data
+                </li>
+              </ul>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">7. Mobile Apps</h2>
+              <p>
+                Our mobile applications may use similar tracking technologies:
+              </p>
+              <ul className="list-disc pl-6 mt-4">
+                <li>Device identifiers and mobile advertising IDs</li>
+                <li>App usage analytics</li>
+                <li>Push notification tokens</li>
+                <li>Location data (with explicit permission)</li>
+                <li>Biometric authentication data (stored locally)</li>
+              </ul>
+              <p className="mt-4">
+                You can manage these settings through your device's privacy
+                settings or within the app preferences.
+              </p>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">8. Data Retention</h2>
+              <p>Cookie data is retained for varying periods:</p>
+              <ul className="list-disc pl-6 mt-4">
+                <li>
+                  <strong>Session Cookies:</strong> Deleted when browser is
+                  closed
+                </li>
+                <li>
+                  <strong>Functional Cookies:</strong> 1-2 years
+                </li>
+                <li>
+                  <strong>Analytics Cookies:</strong> 2 years
+                </li>
+                <li>
+                  <strong>Marketing Cookies:</strong> 13 months (Google), varies
+                  by provider
+                </li>
+                <li>
+                  <strong>Security Cookies:</strong> 30 days
+                </li>
+              </ul>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">9. Your Rights</h2>
+              <p>You have the right to:</p>
+              <ul className="list-disc pl-6 mt-4">
+                <li>Withdraw consent for non-essential cookies at any time</li>
+                <li>Access information about cookies stored on your device</li>
+                <li>
+                  Request deletion of cookie data (subject to technical
+                  limitations)
+                </li>
+                <li>
+                  Lodge a complaint with Ghana's Data Protection Commission
+                </li>
+                <li>Receive clear information about our cookie practices</li>
+              </ul>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                10. Updates to This Policy
+              </h2>
+              <p>
+                We may update this Cookie Policy to reflect changes in
+                technology, law, or our practices. Material changes will be
+                communicated through:
+              </p>
+              <ul className="list-disc pl-6 mt-4">
+                <li>Email notifications to registered users</li>
+                <li>Prominent notices on our platform</li>
+                <li>Updated cookie banners</li>
+                <li>Push notifications in mobile apps</li>
+              </ul>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                11. Contact Information
+              </h2>
+              <p>For questions about our cookie practices:</p>
+              <div className="mt-4">
+                <p>
+                  <strong>BantuHive Ltd.</strong>
+                </p>
+                <p>Email: privacy@bantuhive.com</p>
+                <p>Cookie Questions: cookies@bantuhive.com</p>
+                <p>Phone: +233 (0) 302 123 456</p>
+                <p>Address: Digital Address: GA-594-7744, Takoradi, Ghana</p>
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">12. Useful Links</h2>
+              <ul className="list-disc pl-6">
+                <li>
+                  <a href="/privacy" className="text-primary hover:underline">
+                    Privacy Policy
+                  </a>
+                </li>
+                <li>
+                  <a href="/terms" className="text-primary hover:underline">
+                    Terms of Service
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.dataprotection.org.gh"
+                    className="text-primary hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Ghana Data Protection Commission
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.allaboutcookies.org"
+                    className="text-primary hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    All About Cookies
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
   );
 };
 

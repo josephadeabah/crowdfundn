@@ -2,148 +2,269 @@ import React from 'react';
 
 const Terms = () => {
   return (
-    <section className="px-12 py-12 max-w-7xl mx-auto">
-      <h1 className="text-4xl font-semibold text-center mb-8">
-        Terms of Service
-      </h1>
-
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">1. TARGET AUDIENCE</h2>
-        <p className="text-lg leading-relaxed">
-          Bantuhive.com is a crowdfunding platform primarily designed to serve
-          individuals, organizations, and communities within Africa and its
-          global diaspora. Our platform connects campaign owners with supporters
-          to fund projects that address local and international needs. We
-          welcome users from all corners of the world, but our primary focus is
-          on creating meaningful impact within Africa.
-        </p>
+    <div className="min-h-screen flex flex-col">
+      {/* Header */}
+      <div className="bg-gradient-to-br from-primary to-secondary text-white py-16">
+        <div className="container mx-auto px-6 text-center">
+          <h1 className="text-4xl font-bold mb-4">Terms of Service</h1>
+          <p className="text-xl opacity-90">
+            Legal terms governing your use of BantuHive
+          </p>
+        </div>
       </div>
 
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">2. CONTENT RIGHTS</h2>
-        <p className="text-lg leading-relaxed">
-          By submitting content to Bantuhive, whether it's campaign materials,
-          text, photos, videos, or other content, you retain full ownership of
-          your intellectual property. However, by uploading content, you grant
-          Bantuhive a non-exclusive, worldwide, royalty-free license to display,
-          distribute, and promote the content on our platform, across social
-          media, and through marketing materials to further the success of your
-          campaign.
-        </p>
-        <p className="text-lg leading-relaxed mt-4">
-          You represent and warrant that the content you submit does not
-          infringe on any third-party intellectual property rights, and you are
-          solely responsible for all legal consequences related to the content.
-        </p>
-      </div>
+      {/* Content */}
+      <div className="flex-1 py-16">
+        <div className="container mx-auto px-6 max-w-4xl">
+          <div className="prose prose-lg max-w-none">
+            <p className="text-sm text-muted-foreground mb-8">
+              <strong>Last Updated:</strong> December 2024
+              <br />
+              <strong>Effective Date:</strong> January 1, 2025
+            </p>
 
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">3. ACCOUNT REGISTRATION</h2>
-        <p className="text-lg leading-relaxed">
-          Signup is optional for all users, but it is required for campaign
-          owners to create and manage campaigns on Bantuhive. When registering,
-          you will be asked to provide accurate and up-to-date information. You
-          are responsible for maintaining the confidentiality of your account
-          credentials and for all activities that occur under your account.
-        </p>
-        <p className="text-lg leading-relaxed mt-4">
-          Users must be at least 18 years old to create an account. If you are
-          under 18, you may only use Bantuhive with the consent of a parent or
-          guardian.
-        </p>
-      </div>
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                1. Acceptance of Terms
+              </h2>
+              <p>
+                By accessing or using BantuHive ("Platform"), operated by
+                BantuHive Ltd., a company registered in Ghana, you agree to be
+                bound by these Terms of Service ("Terms"). If you do not agree
+                to these Terms, you may not use our Platform.
+              </p>
+            </div>
 
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">
-          4. BUSINESS MODEL, PAYMENT, AND USER RIGHTS
-        </h2>
-        <p className="text-lg leading-relaxed">
-          Bantuhive operates on a business model that involves one-time and
-          recurring donations to support campaigns.Recurring payments are fixed
-          (i.e, hourly, daily, weekly and so on). Backers/Donors have the
-          freedom to cancel subscriptions on their own terms. Donors receive
-          notifications of upcoming transactions.
-        </p>
-        <p className="text-lg leading-relaxed mt-4">
-          All payment transactions are processed securely through trusted
-          payment gateways. Bantuhive charges a platform fee on all funds
-          raised, which is clearly stated in our
-          <a href="/pricing" className="text-blue-500 ml-1">
-            fee policy
-          </a>
-        </p>
-        <p className="text-lg leading-relaxed mt-4">
-          Users (donors and campaign owners) retain the right to withdraw from a
-          campaign or cancel a recurring donation at any time. Refund policies
-          are subject to the terms outlined in our our
-          <a href="/pricing" className="text-blue-500 ml-1">
-            fee policy
-          </a>
-        </p>
-      </div>
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                2. Platform Description
+              </h2>
+              <p>
+                BantuHive is a crowdfunding and micro-investment platform that
+                facilitates three types of funding:
+              </p>
+              <ul className="list-disc pl-6 mt-4">
+                <li>
+                  <strong>Donation/Grant-Based:</strong> Non-repayable funding
+                  for projects and causes
+                </li>
+                <li>
+                  <strong>Reward-Based:</strong> Funding in exchange for
+                  products, services, or perks
+                </li>
+                <li>
+                  <strong>Equity Investment:</strong> Investment in exchange for
+                  ownership stakes in companies
+                </li>
+              </ul>
+            </div>
 
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">5. COMMON PROVISIONS</h2>
-        <ul className="list-inside list-disc text-lg leading-relaxed">
-          <li>
-            <strong>Governing Law:</strong> These terms are governed by the laws
-            of the jurisdiction in which Bantuhive is incorporated, without
-            regard to conflict of law principles.
-          </li>
-          <li>
-            <strong>Dispute Resolution:</strong> Any disputes arising from the
-            use of Bantuhive will be resolved through binding arbitration in
-            accordance with the laws of the applicable jurisdiction. By using
-            Bantuhive, you agree to submit to arbitration and waive the right to
-            participate in a class action lawsuit.
-          </li>
-          <li>
-            <strong>Severability:</strong> If any provision of these terms is
-            deemed invalid or unenforceable, the remaining provisions will
-            continue in full force and effect.
-          </li>
-          <li>
-            <strong>Changes to Terms:</strong> Bantuhive reserves the right to
-            modify these terms at any time. Users will be notified of any
-            material changes through the platform.
-          </li>
-        </ul>
-      </div>
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                3. Regulatory Compliance
+              </h2>
+              <p>
+                BantuHive operates under the regulatory framework of Ghana,
+                including but not limited to:
+              </p>
+              <ul className="list-disc pl-6 mt-4">
+                <li>
+                  Securities and Exchange Commission Ghana (SEC Ghana)
+                  regulations
+                </li>
+                <li>Bank of Ghana (BoG) payment services regulations</li>
+                <li>Companies Act, 2019 (Act 992)</li>
+                <li>Data Protection Act, 2012 (Act 843)</li>
+                <li>Electronic Transactions Act, 2008 (Act 772)</li>
+              </ul>
+            </div>
 
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">
-          6. DISCLAIMERS OF WARRANTIES, LIMITATIONS OF LIABILITY, AND INDEMNITY
-        </h2>
-        <p className="text-lg leading-relaxed">
-          Bantuhive provides the platform "as is" and does not guarantee the
-          accuracy, reliability, or availability of the services. We disclaim
-          all warranties, whether express or implied, including but not limited
-          to the implied warranties of merchantability, fitness for a particular
-          purpose, and non-infringement.
-        </p>
-        <p className="text-lg leading-relaxed mt-4">
-          In no event shall Bantuhive be liable for any indirect, incidental,
-          special, or consequential damages arising from the use of the
-          platform, including but not limited to the loss of profits, data, or
-          goodwill.
-        </p>
-        <p className="text-lg leading-relaxed mt-4">
-          You agree to indemnify, defend, and hold harmless Bantuhive, its
-          affiliates, officers, and employees from any claim, loss, or liability
-          (including reasonable attorney fees) arising out of your use of the
-          platform, breach of these terms, or violation of the rights of any
-          third party.
-        </p>
-      </div>
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                4. User Eligibility
+              </h2>
+              <p>To use BantuHive, you must:</p>
+              <ul className="list-disc pl-6 mt-4">
+                <li>
+                  Be at least 18 years old or the age of majority in your
+                  jurisdiction
+                </li>
+                <li>Have legal capacity to enter into binding agreements</li>
+                <li>Provide accurate and complete registration information</li>
+                <li>Comply with all applicable laws and regulations</li>
+                <li>
+                  Not be prohibited from using financial services under any
+                  applicable law
+                </li>
+              </ul>
+            </div>
 
-      <div className="mt-12 text-center">
-        <p className="text-lg font-medium">
-          By using Bantuhive.com, you acknowledge and agree to these terms and
-          conditions. If you do not agree to these terms, you must refrain from
-          using the platform.
-        </p>
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                5. Project Creator Obligations
+              </h2>
+              <p>As a project creator, you agree to:</p>
+              <ul className="list-disc pl-6 mt-4">
+                <li>
+                  Provide truthful, accurate, and complete information about
+                  your project
+                </li>
+                <li>Use funds raised only for the stated project purposes</li>
+                <li>
+                  Fulfill all promised rewards and deliverables in a timely
+                  manner
+                </li>
+                <li>Maintain transparent communication with funders</li>
+                <li>
+                  Comply with all applicable securities laws for equity
+                  offerings
+                </li>
+                <li>Provide regular progress updates to stakeholders</li>
+              </ul>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                6. Investor/Funder Rights and Responsibilities
+              </h2>
+              <p>As an investor or funder, you understand that:</p>
+              <ul className="list-disc pl-6 mt-4">
+                <li>
+                  All investments carry risk, including total loss of capital
+                </li>
+                <li>Past performance does not guarantee future results</li>
+                <li>
+                  You must conduct your own due diligence before investing
+                </li>
+                <li>
+                  Equity investments are subject to securities regulations
+                </li>
+                <li>Rewards and deliverables are not guaranteed</li>
+                <li>
+                  Refunds are subject to project-specific terms and our refund
+                  policy
+                </li>
+              </ul>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">7. Platform Fees</h2>
+              <p>BantuHive charges the following fees:</p>
+              <ul className="list-disc pl-6 mt-4">
+                <li>
+                  Platform fee: 5% of funds raised for successful campaigns
+                </li>
+                <li>
+                  Payment processing fees: 2.9% + GHS 1.50 per transaction
+                </li>
+                <li>Equity transaction fees: 2% of investment amount</li>
+                <li>Premium features: As detailed in our pricing page</li>
+              </ul>
+              <p className="mt-4">
+                All fees are clearly disclosed before transactions are
+                completed.
+              </p>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                8. Prohibited Activities
+              </h2>
+              <p>You may not use BantuHive to:</p>
+              <ul className="list-disc pl-6 mt-4">
+                <li>Fund illegal activities or prohibited businesses</li>
+                <li>
+                  Engage in fraudulent, deceptive, or misleading practices
+                </li>
+                <li>Violate intellectual property rights</li>
+                <li>Harass, threaten, or abuse other users</li>
+                <li>Circumvent platform security measures</li>
+                <li>Create multiple accounts to evade restrictions</li>
+                <li>Engage in money laundering or terrorist financing</li>
+              </ul>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                9. Intellectual Property
+              </h2>
+              <p>
+                BantuHive respects intellectual property rights. Users retain
+                ownership of their content but grant BantuHive a license to use,
+                display, and promote their projects. Users must not infringe on
+                third-party intellectual property rights.
+              </p>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                10. Dispute Resolution
+              </h2>
+              <p>
+                Disputes will be resolved through binding arbitration in
+                accordance with the Alternative Dispute Resolution Act, 2010
+                (Act 798) of Ghana. The arbitration will be conducted in Accra,
+                Ghana, in English.
+              </p>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                11. Limitation of Liability
+              </h2>
+              <p>
+                BantuHive's liability is limited to the maximum extent permitted
+                by Ghanaian law. We are not liable for project failures,
+                investment losses, or indirect damages.
+              </p>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">12. Termination</h2>
+              <p>
+                We may terminate or suspend accounts for violations of these
+                Terms. Users may terminate their accounts at any time, subject
+                to ongoing obligations.
+              </p>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">13. Governing Law</h2>
+              <p>
+                These Terms are governed by the laws of Ghana. Any legal
+                proceedings must be brought in the courts of Ghana.
+              </p>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                14. Changes to Terms
+              </h2>
+              <p>
+                We may update these Terms periodically. Users will be notified
+                of material changes via email or platform notifications.
+                Continued use constitutes acceptance of updated Terms.
+              </p>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                15. Contact Information
+              </h2>
+              <p>For questions about these Terms, contact us at:</p>
+              <div className="mt-4">
+                <p>
+                  <strong>BantuHive Ltd.</strong>
+                </p>
+                <p>Email: legal@bantuhive.com</p>
+                <p>Phone: +233 (0) 302 123 456</p>
+                <p>Address: Digital Address: GA-594-7744, Takoradi, Ghana</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
   );
 };
 

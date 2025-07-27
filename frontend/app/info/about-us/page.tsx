@@ -42,7 +42,6 @@ const About = () => {
             <div className="min-h-screen bg-background">
               <div className="container mx-auto px-6 py-12">
                 <div className="max-w-4xl mx-auto">
-
                   <div className="space-y-8 text-foreground">
                     <div>
                       <h2 className="text-2xl font-semibold mb-4 text-green-600">
