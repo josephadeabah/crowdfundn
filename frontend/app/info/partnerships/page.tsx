@@ -77,7 +77,7 @@ const Partners = () => {
                   </h3>
                   <ul className="space-y-2 text-sm">
                     <li>• Ministry of Finance</li>
-                    <li>• Ministry of Trade and Industry</li>
+                    <li>• Youth Employment Agency</li>
                     <li>• Ghana Investment Promotion Centre (GIPC)</li>
                     <li>• National Entrepreneurship & Innovation Programme</li>
                     <li>• Ghana Enterprise Agency</li>
