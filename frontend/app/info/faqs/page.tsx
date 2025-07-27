@@ -1,6 +1,6 @@
 'use client';
 
-import FAQsPage from '../molecules/faqs';
+import FAQsPage from '../../molecules/faqs';
 
 const FAQs = () => {
   return (
