@@ -100,16 +100,13 @@ const Partners = () => {
     },
     {
       title: 'Investment Firms',
-      items: ['Venture Platform', 'Oui Capital', 'Golden Palm Investments'],
+      items: ['Venture Platform'],
       color: 'text-growth',
     },
     {
       title: 'NGOs & Development',
       items: [
         'Tony Elumelu Foundation',
-        'GIZ Ghana',
-        'USAID Ghana',
-        'World Bank Group',
       ],
       color: 'text-green-600',
     },
