@@ -18,7 +18,7 @@ const Features = () => {
                     Smart Campaign Builder
                   </h3>
                   <p className="text-sm">
-                    Intuitive drag-and-drop interface to create compelling
+                    Intuitive interface to create compelling
                     campaigns with rich media support.
                   </p>
                 </div>

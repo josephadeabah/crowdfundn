@@ -26,7 +26,7 @@ const Partners = () => {
                     <li>GCB Bank Limited</li>
                     <li>Ecobank Ghana</li>
                     <li>Standard Chartered Bank</li>
-                    <li>Absa Bank Ghana</li>
+                    <li>UBA Bank Ghana</li>
                   </ul>
                 </div>
                 <div className="bg-card p-6 rounded-lg border text-center">
@@ -47,8 +47,8 @@ const Partners = () => {
                   <ul className="space-y-2 text-sm">
                     <li>PayStack</li>
                     <li>Flutterwave</li>
-                    <li>DPO Group</li>
-                    <li>Interswitch</li>
+                    <li>Paypal</li>
+                    <li>Stripe</li>
                   </ul>
                 </div>
               </div>
@@ -97,7 +97,7 @@ const Partners = () => {
                   </h3>
                   <ul className="space-y-1 text-sm">
                     <li>Amazon Web Services</li>
-                    <li>Microsoft Azure</li>
+                    <li>Digital Ocean</li>
                     <li>Google Cloud Platform</li>
                   </ul>
                 </div>
@@ -124,8 +124,8 @@ const Partners = () => {
                     Communication
                   </h3>
                   <ul className="space-y-1 text-sm">
-                    <li>Twilio</li>
-                    <li>SendGrid</li>
+                    <li>Slack</li>
+                    <li>Google Meet</li>
                     <li>Zoom</li>
                   </ul>
                 </div>
