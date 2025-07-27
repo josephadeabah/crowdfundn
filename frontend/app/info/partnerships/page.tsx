@@ -75,11 +75,6 @@ const Partners = () => {
     {
       title: 'Universities & Research',
       items: [
-        'University of Ghana Business School',
-        'Kwame Nkrumah University of Science and Technology',
-        'University of Cape Coast',
-        'Ashesi University',
-        'Takoradi Technical University',
         'Institute of Statistical, Social and Economic Research (ISSER)',
         'Centre for Entrepreneurship & SME Development',
       ],
@@ -87,7 +82,7 @@ const Partners = () => {
     },
     {
       title: 'Professional Services',
-      items: ['PwC Ghana', 'KPMG Ghana', 'Deloitte Ghana'],
+      items: ['Deloitte Ghana'],
       color: 'text-growth',
     },
   ];
