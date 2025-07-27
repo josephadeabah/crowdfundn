@@ -14,7 +14,7 @@ export const dropdownLinks: DropdownLinks = {
   About: [
     {
       label: 'Who We Are',
-      href: '/about-us',
+      href: '/info/about-us',
       icon: UserGroupIcon,
       description: 'Learn more about our mission and vision.',
     },
@@ -46,7 +46,7 @@ export const dropdownLinks: DropdownLinks = {
     },
     {
       label: 'Pricing',
-      href: '/pricing',
+      href: '/info/pricing',
       icon: BanknotesIcon,
       description: 'Understand our pricing structure.',
     },
@@ -60,13 +60,13 @@ export const dropdownLinks: DropdownLinks = {
   Contact: [
     {
       label: 'Ghana',
-      href: '/contactus',
+      href: '/info/contactus',
       icon: PhoneIcon,
       description: 'Reach out to our Ghana office.',
     },
     {
       label: 'Eswatini',
-      href: '/contactus',
+      href: '/info/contactus',
       icon: PhoneIcon,
       description: 'Reach out to our Eswatini office.',
     },
