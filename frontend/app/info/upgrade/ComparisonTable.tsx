@@ -80,9 +80,9 @@ const ComparisonTable = () => {
           <TableHeader>
             <TableRow>
               <TableHead className="w-1/4">Feature</TableHead>
-              <TableHead className="text-center">Starter ($15/mo)</TableHead>
-              <TableHead className="text-center">Growth ($30/mo)</TableHead>
-              <TableHead className="text-center">Pro+ ($75/mo)</TableHead>
+              <TableHead className="text-center">Starter ($29.99/mo)</TableHead>
+              <TableHead className="text-center">Growth ($79.99/mo)</TableHead>
+              <TableHead className="text-center">Pro+ ($199.99/mo)</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

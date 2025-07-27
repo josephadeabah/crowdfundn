@@ -32,14 +32,14 @@ const PricingSection = () => {
       <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
         <PricingCard
           name="Starter"
-          price="$15"
+          price="$29.99"
           description="Perfect for beginners looking to launch their first campaign."
           features={starterFeatures}
         />
 
         <PricingCard
           name="Growth"
-          price="$30"
+          price="$79.99"
           description="Ideal for creators serious about campaign success."
           features={growthFeatures}
           popular={true}
@@ -47,7 +47,7 @@ const PricingSection = () => {
 
         <PricingCard
           name="Pro+"
-          price="$75"
+          price="$199.99"
           description="For professional campaigns that demand the very best support."
           features={proFeatures}
           gradient={true}
