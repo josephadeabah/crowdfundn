@@ -175,7 +175,7 @@ const Partners = () => {
       <h3 className={`font-semibold mb-3 ${color}`}>{title}</h3>
       <ul className={`space-y-2 text-sm ${center ? '' : 'list-disc pl-5'}`}>
         {items.map((item, index) => (
-          <li key={index}>{center ? item : `• ${item}`}</li>
+          <li key={index}>{center ? item : `${item}`}</li>
         ))}
       </ul>
     </div>
