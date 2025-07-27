@@ -18,8 +18,8 @@ const Features = () => {
                     Smart Campaign Builder
                   </h3>
                   <p className="text-sm">
-                    Intuitive interface to create compelling
-                    campaigns with rich media support.
+                    Intuitive interface to create compelling campaigns with rich
+                    media support.
                   </p>
                 </div>
                 <div className="bg-card p-6 rounded-lg border">

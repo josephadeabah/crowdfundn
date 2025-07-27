@@ -1,4 +1,186 @@
 const Partners = () => {
+  // Partner data arrays
+  const financialPartners = [
+    {
+      title: 'Commercial Banks',
+      items: [
+        'GCB Bank Limited',
+        'Ecobank Ghana',
+        'Standard Chartered Bank',
+        'UBA Bank Ghana',
+      ],
+      color: 'text-trust',
+    },
+    {
+      title: 'Mobile Money Operators',
+      items: ['MTN Mobile Money', 'Vodafone Cash', 'AirtelTigo Money'],
+      color: 'text-growth',
+    },
+    {
+      title: 'Payment Processors',
+      items: ['PayStack', 'Flutterwave', 'Paypal', 'Stripe'],
+      color: 'text-green-600',
+    },
+  ];
+
+  const governmentRegulatory = [
+    {
+      title: 'Regulatory Bodies',
+      items: [
+        'Securities and Exchange Commission (SEC Ghana)',
+        'Bank of Ghana (BoG)',
+        'Financial Intelligence Centre (FIC)',
+        "Registrar General's Department",
+        'Ghana Revenue Authority (GRA)',
+      ],
+      color: 'text-trust',
+    },
+    {
+      title: 'Government Agencies',
+      items: [
+        'Ministry of Finance',
+        'Youth Employment Agency',
+        'Ghana Investment Promotion Centre (GIPC)',
+        'National Entrepreneurship & Innovation Programme',
+        'Ghana Enterprise Agency',
+      ],
+      color: 'text-growth',
+    },
+  ];
+
+  const technologyPartners = [
+    {
+      title: 'Cloud Infrastructure',
+      items: ['Amazon Web Services', 'Digital Ocean', 'Google Cloud Platform'],
+      color: 'text-trust',
+    },
+    {
+      title: 'Security',
+      items: ['Cloudflare'],
+      color: 'text-growth',
+    },
+    {
+      title: 'Analytics',
+      items: ['Google Analytics', 'Mixpanel', 'Tableau'],
+      color: 'text-green-600',
+    },
+    {
+      title: 'Communication',
+      items: ['Slack', 'Google Meet', 'Zoom'],
+      color: 'text-growth',
+    },
+  ];
+
+  const educationalProfessional = [
+    {
+      title: 'Universities & Research',
+      items: [
+        'University of Ghana Business School',
+        'Kwame Nkrumah University of Science and Technology',
+        'University of Cape Coast',
+        'Ashesi University',
+        'Takoradi Technical University',
+        'Institute of Statistical, Social and Economic Research (ISSER)',
+        'Centre for Entrepreneurship & SME Development',
+      ],
+      color: 'text-trust',
+    },
+    {
+      title: 'Professional Services',
+      items: ['PwC Ghana', 'KPMG Ghana', 'Deloitte Ghana'],
+      color: 'text-growth',
+    },
+  ];
+
+  const ecosystemPartners = [
+    {
+      title: 'Incubators & Accelerators',
+      items: [
+        'MEST Africa',
+        'Impact Hub Accra',
+        'Startupbootcamp AfriTech',
+        'iSpace Ghana',
+      ],
+      color: 'text-trust',
+    },
+    {
+      title: 'Investment Firms',
+      items: ['Venture Platform', 'Oui Capital', 'Golden Palm Investments'],
+      color: 'text-growth',
+    },
+    {
+      title: 'NGOs & Development',
+      items: [
+        'TechnoServe Ghana',
+        'GIZ Ghana',
+        'USAID Ghana',
+        'World Bank Group',
+      ],
+      color: 'text-green-600',
+    },
+  ];
+
+  const mediaPartners = [
+    {
+      title: 'Traditional Media',
+      items: ['GoodNews FM', 'Skyy Power FM', 'YFM'],
+      color: 'text-trust',
+    },
+    {
+      title: 'Digital Media',
+      items: ['TechCabal', 'Disrupt Africa', 'Africa Business', 'Pulse Ghana'],
+      color: 'text-growth',
+    },
+    {
+      title: 'Social Platforms',
+      items: ['Facebook', 'Twitter/X', 'LinkedIn', 'WhatsApp Business'],
+      color: 'text-green-600',
+    },
+    {
+      title: 'Industry Events',
+      items: [
+        'Ghana Tech Summit',
+        'Africa Fintech Festival',
+        'Ghana Investment Summit',
+        'SME Ghana Conference',
+      ],
+      color: 'text-growth',
+    },
+  ];
+
+  const partnershipOpportunities = [
+    'Strategic partnerships',
+    'Technology integrations',
+    'Distribution partnerships',
+    'Educational collaborations',
+  ];
+
+  // Helper component for rendering partner cards
+  type PartnerCardProps = {
+    title: string;
+    items: string[];
+    color: string;
+    center?: boolean;
+  };
+
+  const PartnerCard: React.FC<PartnerCardProps> = ({
+    title,
+    items,
+    color,
+    center = false,
+  }) => (
+    <div
+      className={`bg-card p-6 rounded-lg border ${center ? 'text-center' : ''}`}
+    >
+      <h3 className={`font-semibold mb-3 ${color}`}>{title}</h3>
+      <ul className={`space-y-2 text-sm ${center ? '' : 'list-disc pl-5'}`}>
+        {items.map((item, index) => (
+          <li key={index}>{center ? item : `• ${item}`}</li>
+        ))}
+      </ul>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-12">
@@ -13,254 +195,112 @@ const Partners = () => {
           </p>
 
           <div className="space-y-12">
+            {/* Financial Partners */}
             <div>
               <h2 className="text-2xl font-semibold mb-6 text-green-600 text-center">
                 Financial Partners
               </h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div className="bg-card p-6 rounded-lg border text-center">
-                  <h3 className="font-semibold mb-3 text-trust">
-                    Commercial Banks
-                  </h3>
-                  <ul className="space-y-2 text-sm">
-                    <li>GCB Bank Limited</li>
-                    <li>Ecobank Ghana</li>
-                    <li>Standard Chartered Bank</li>
-                    <li>UBA Bank Ghana</li>
-                  </ul>
-                </div>
-                <div className="bg-card p-6 rounded-lg border text-center">
-                  <h3 className="font-semibold mb-3 text-growth">
-                    Mobile Money Operators
-                  </h3>
-                  <ul className="space-y-2 text-sm">
-                    <li>MTN Mobile Money</li>
-                    <li>Vodafone Cash</li>
-                    <li>AirtelTigo Money</li>
-                    <li>Zeepay</li>
-                  </ul>
-                </div>
-                <div className="bg-card p-6 rounded-lg border text-center">
-                  <h3 className="font-semibold mb-3 text-green-600">
-                    Payment Processors
-                  </h3>
-                  <ul className="space-y-2 text-sm">
-                    <li>PayStack</li>
-                    <li>Flutterwave</li>
-                    <li>Paypal</li>
-                    <li>Stripe</li>
-                  </ul>
-                </div>
+                {financialPartners.map((partner, index) => (
+                  <PartnerCard
+                    key={index}
+                    title={partner.title}
+                    items={partner.items}
+                    color={partner.color}
+                    center={true}
+                  />
+                ))}
               </div>
             </div>
 
+            {/* Government & Regulatory */}
             <div>
               <h2 className="text-2xl font-semibold mb-6 text-green-600 text-center">
                 Government & Regulatory
               </h2>
               <div className="grid md:grid-cols-2 gap-8">
-                <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="font-semibold mb-3 text-trust">
-                    Regulatory Bodies
-                  </h3>
-                  <ul className="space-y-2 text-sm">
-                    <li>• Securities and Exchange Commission (SEC Ghana)</li>
-                    <li>• Bank of Ghana (BoG)</li>
-                    <li>• Financial Intelligence Centre (FIC)</li>
-                    <li>• Registrar General's Department</li>
-                    <li>• Ghana Revenue Authority (GRA)</li>
-                  </ul>
-                </div>
-                <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="font-semibold mb-3 text-growth">
-                    Government Agencies
-                  </h3>
-                  <ul className="space-y-2 text-sm">
-                    <li>• Ministry of Finance</li>
-                    <li>• Youth Employment Agency</li>
-                    <li>• Ghana Investment Promotion Centre (GIPC)</li>
-                    <li>• National Entrepreneurship & Innovation Programme</li>
-                    <li>• Ghana Enterprise Agency</li>
-                  </ul>
-                </div>
+                {governmentRegulatory.map((partner, index) => (
+                  <PartnerCard
+                    key={index}
+                    title={partner.title}
+                    items={partner.items}
+                    color={partner.color}
+                  />
+                ))}
               </div>
             </div>
 
+            {/* Technology Partners */}
             <div>
               <h2 className="text-2xl font-semibold mb-6 text-green-600 text-center">
                 Technology Partners
               </h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-card p-6 rounded-lg border text-center">
-                  <h3 className="font-semibold mb-3 text-trust">
-                    Cloud Infrastructure
-                  </h3>
-                  <ul className="space-y-1 text-sm">
-                    <li>Amazon Web Services</li>
-                    <li>Digital Ocean</li>
-                    <li>Google Cloud Platform</li>
-                  </ul>
-                </div>
-                <div className="bg-card p-6 rounded-lg border text-center">
-                  <h3 className="font-semibold mb-3 text-growth">Security</h3>
-                  <ul className="space-y-1 text-sm">
-                    <li>Cloudflare</li>
-                    <li>PwC Cybersecurity</li>
-                    <li>KPMG Risk Advisory</li>
-                  </ul>
-                </div>
-                <div className="bg-card p-6 rounded-lg border text-center">
-                  <h3 className="font-semibold mb-3 text-green-600">
-                    Analytics
-                  </h3>
-                  <ul className="space-y-1 text-sm">
-                    <li>Google Analytics</li>
-                    <li>Mixpanel</li>
-                    <li>Tableau</li>
-                  </ul>
-                </div>
-                <div className="bg-card p-6 rounded-lg border text-center">
-                  <h3 className="font-semibold mb-3 text-growth">
-                    Communication
-                  </h3>
-                  <ul className="space-y-1 text-sm">
-                    <li>Slack</li>
-                    <li>Google Meet</li>
-                    <li>Zoom</li>
-                  </ul>
-                </div>
+                {technologyPartners.map((partner, index) => (
+                  <PartnerCard
+                    key={index}
+                    title={partner.title}
+                    items={partner.items}
+                    color={partner.color}
+                    center={true}
+                  />
+                ))}
               </div>
             </div>
 
+            {/* Educational & Professional */}
             <div>
               <h2 className="text-2xl font-semibold mb-6 text-green-600 text-center">
                 Educational & Professional
               </h2>
               <div className="grid md:grid-cols-2 gap-8">
-                <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="font-semibold mb-3 text-trust">
-                    Universities & Research
-                  </h3>
-                  <ul className="space-y-2 text-sm">
-                    <li>• University of Ghana Business School</li>
-                    <li>
-                      • Kwame Nkrumah University of Science and Technology
-                    </li>
-                    <li>• University of Cape Coast</li>
-                    <li>
-                      • Institute of Statistical, Social and Economic Research
-                      (ISSER)
-                    </li>
-                    <li>• Centre for Entrepreneurship & SME Development</li>
-                  </ul>
-                </div>
-                <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="font-semibold mb-3 text-growth">
-                    Professional Services
-                  </h3>
-                  <ul className="space-y-2 text-sm">
-                    <li>• PwC Ghana</li>
-                    <li>• KPMG Ghana</li>
-                    <li>• Deloitte Ghana</li>
-                    <li>• B&P Associates</li>
-                    <li>• Bentsi-Enchill, Letsa & Ankomah</li>
-                  </ul>
-                </div>
+                {educationalProfessional.map((partner, index) => (
+                  <PartnerCard
+                    key={index}
+                    title={partner.title}
+                    items={partner.items}
+                    color={partner.color}
+                  />
+                ))}
               </div>
             </div>
 
+            {/* Ecosystem Partners */}
             <div>
               <h2 className="text-2xl font-semibold mb-6 text-green-600 text-center">
                 Ecosystem Partners
               </h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="font-semibold mb-3 text-trust">
-                    Incubators & Accelerators
-                  </h3>
-                  <ul className="space-y-2 text-sm">
-                    <li>MEST Africa</li>
-                    <li>Impact Hub Accra</li>
-                    <li>Startupbootcamp AfriTech</li>
-                    <li>iSpace Ghana</li>
-                  </ul>
-                </div>
-                <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="font-semibold mb-3 text-growth">
-                    Investment Firms
-                  </h3>
-                  <ul className="space-y-2 text-sm">
-                    <li>Venture Platform</li>
-                    <li>Oui Capital</li>
-                    <li>Golden Palm Investments</li>
-                  </ul>
-                </div>
-                <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="font-semibold mb-3 text-green-600">
-                    NGOs & Development
-                  </h3>
-                  <ul className="space-y-2 text-sm">
-                    <li>TechnoServe Ghana</li>
-                    <li>GIZ Ghana</li>
-                    <li>USAID Ghana</li>
-                    <li>World Bank Group</li>
-                  </ul>
-                </div>
+                {ecosystemPartners.map((partner, index) => (
+                  <PartnerCard
+                    key={index}
+                    title={partner.title}
+                    items={partner.items}
+                    color={partner.color}
+                  />
+                ))}
               </div>
             </div>
 
+            {/* Media & Communication */}
             <div>
               <h2 className="text-2xl font-semibold mb-6 text-green-600 text-center">
                 Media & Communication
               </h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-card p-6 rounded-lg border text-center">
-                  <h3 className="font-semibold mb-3 text-trust">
-                    Traditional Media
-                  </h3>
-                  <ul className="space-y-1 text-sm">
-                    <li>Daily Graphic</li>
-                    <li>Joy FM</li>
-                    <li>Citi FM</li>
-                    <li>Ghana Broadcasting Corporation</li>
-                  </ul>
-                </div>
-                <div className="bg-card p-6 rounded-lg border text-center">
-                  <h3 className="font-semibold mb-3 text-growth">
-                    Digital Media
-                  </h3>
-                  <ul className="space-y-1 text-sm">
-                    <li>TechCabal</li>
-                    <li>Disrupt Africa</li>
-                    <li>Africa Business</li>
-                    <li>Pulse Ghana</li>
-                  </ul>
-                </div>
-                <div className="bg-card p-6 rounded-lg border text-center">
-                  <h3 className="font-semibold mb-3 text-green-600">
-                    Social Platforms
-                  </h3>
-                  <ul className="space-y-1 text-sm">
-                    <li>Facebook</li>
-                    <li>Twitter/X</li>
-                    <li>LinkedIn</li>
-                    <li>WhatsApp Business</li>
-                  </ul>
-                </div>
-                <div className="bg-card p-6 rounded-lg border text-center">
-                  <h3 className="font-semibold mb-3 text-growth">
-                    Industry Events
-                  </h3>
-                  <ul className="space-y-1 text-sm">
-                    <li>Ghana Tech Summit</li>
-                    <li>Africa Fintech Festival</li>
-                    <li>Ghana Investment Summit</li>
-                    <li>SME Ghana Conference</li>
-                  </ul>
-                </div>
+                {mediaPartners.map((partner, index) => (
+                  <PartnerCard
+                    key={index}
+                    title={partner.title}
+                    items={partner.items}
+                    color={partner.color}
+                    center={true}
+                  />
+                ))}
               </div>
             </div>
 
+            {/* Become a Partner */}
             <div className="bg-muted p-8 rounded-lg">
               <h2 className="text-2xl font-semibold mb-6 text-center">
                 Become a Partner
@@ -275,10 +315,9 @@ const Partners = () => {
                   <div>
                     <strong>Partnership Opportunities:</strong>
                     <ul className="mt-2 space-y-1">
-                      <li>• Strategic partnerships</li>
-                      <li>• Technology integrations</li>
-                      <li>• Distribution partnerships</li>
-                      <li>• Educational collaborations</li>
+                      {partnershipOpportunities.map((item, index) => (
+                        <li key={index}>• {item}</li>
+                      ))}
                     </ul>
                   </div>
                   <div>
