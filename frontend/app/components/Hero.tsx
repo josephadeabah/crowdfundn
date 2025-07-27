@@ -264,7 +264,7 @@ const Hero = () => {
                       Fund A Dream Today!
                     </div>
                     <div className="text-xs font-semibold">
-                      Invest In Africa's Bright Minds w/ As Little As $100
+                      Invest In Africa's Bright Minds w/ As Little As GHS50
                     </div>
                   </div>
                 </div>
