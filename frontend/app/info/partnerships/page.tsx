@@ -111,7 +111,7 @@ const Partners = () => {
     {
       title: 'NGOs & Development',
       items: [
-        'TechnoServe Ghana',
+        'Tony Elumelu Foundation',
         'GIZ Ghana',
         'USAID Ghana',
         'World Bank Group',
