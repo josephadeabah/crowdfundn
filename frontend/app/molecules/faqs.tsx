@@ -324,7 +324,7 @@ const FAQsPage = () => {
           </div>
 
           <div className="mt-16 bg-primary/5 p-8 rounded-lg text-center">
-            <h2 className="text-2xl font-semibold mb-4 text-primary">
+            <h2 className="text-2xl font-semibold mb-4 text-growth">
               Still Have Questions?
             </h2>
             <p className="text-muted-foreground mb-6">
@@ -334,7 +334,7 @@ const FAQsPage = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
                 href="mailto:support@bantuhive.com"
-                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+                className="bg-growth text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
               >
                 Email Support
               </a>

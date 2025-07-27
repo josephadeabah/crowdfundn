@@ -9,7 +9,7 @@ const Footer = () => {
       title: 'Product',
       links: [
         { name: 'How it Works', path: '/how-it-works' },
-        { name: 'Enterprise Support', path: '/enterprise-support' },
+        { name: 'Enterprise Support', path: '/upgrade' },
         { name: 'FAQ', path: '/faqs' },
         { name: 'Trust & Safety', path: '/trust-safety' },
         { name: 'Pricing', path: '/pricing' },
