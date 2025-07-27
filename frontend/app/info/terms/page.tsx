@@ -1,4 +1,4 @@
-import Terms from '../components/compliance/Terms';
+import Terms from '../../components/compliance/Terms';
 
 const TermsPage = () => {
   return (

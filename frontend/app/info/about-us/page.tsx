@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { Button } from '@/app/components/ui/button';
 import TimelineSection from '@/app/molecules/TimelineSection';
 import { ArrowRight, Heart, Lightbulb, TrendingUp } from 'lucide-react';
-import { useAuth } from '../context/auth/AuthContext';
+import { useAuth } from '../../context/auth/AuthContext';
 import { motion } from 'framer-motion';
 
 const About = () => {

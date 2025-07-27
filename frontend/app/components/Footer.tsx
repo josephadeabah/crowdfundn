@@ -159,19 +159,19 @@ const Footer = () => {
           </div>
           <div className="flex space-x-6">
             <a
-              href="/terms"
+              href="/info/terms"
               className="hover:text-orange-500 dark:hover:text-orange-400"
             >
               Terms
             </a>
             <a
-              href="/privacy"
+              href="/info/privacy"
               className="hover:text-orange-500 dark:hover:text-orange-400"
             >
               Privacy
             </a>
             <a
-              href="/cookies"
+              href="/info/cookies"
               className="hover:text-orange-500 dark:hover:text-orange-400"
             >
               Cookies

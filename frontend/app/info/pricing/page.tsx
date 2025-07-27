@@ -1,4 +1,4 @@
-import FeePolicy from '../components/compliance/FeePolicy';
+import FeePolicy from '../../components/compliance/FeePolicy';
 
 const Fee = () => {
   return <FeePolicy />;

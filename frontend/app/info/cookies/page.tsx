@@ -1,4 +1,4 @@
-import Cookies from '../components/compliance/Cookies';
+import Cookies from '../../components/compliance/Cookies';
 
 const CookiesPage = () => {
   return (

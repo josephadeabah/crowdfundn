@@ -1,10 +1,10 @@
 import React from 'react';
-import PricingHeader from '@/app/upgrade/PricingHeader';
-import PricingSection from '@/app/upgrade/PricingSection';
-import ComparisonTable from '@/app/upgrade/ComparisonTable';
-import FAQ from '@/app/upgrade/FAQ';
-import Testimonials from '@/app/upgrade/Testimonials';
-import CTASection from '@/app/upgrade/CTASection';
+import PricingHeader from '@/app/info/upgrade/PricingHeader';
+import PricingSection from '@/app/info/upgrade/PricingSection';
+import ComparisonTable from '@/app/info/upgrade/ComparisonTable';
+import FAQ from '@/app/info/upgrade/FAQ';
+import Testimonials from '@/app/info/upgrade/Testimonials';
+import CTASection from '@/app/info/upgrade/CTASection';
 
 const Index = () => {
   return (

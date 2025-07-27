@@ -1,4 +1,4 @@
-import Privacy from '../components/compliance/Privacy';
+import Privacy from '../../components/compliance/Privacy';
 
 const PrivacyPage = () => {
   return (
