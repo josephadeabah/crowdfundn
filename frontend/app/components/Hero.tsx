@@ -163,7 +163,7 @@ const Hero = () => {
                     </button>
                   </Link>
 
-                  <Link href="/how-it-works">
+                  <Link href="/info/how-it-works">
                     <button className="px-6 py-3 bg-transparent border border-border text-foreground rounded-md hover:bg-muted transition-colors">
                       How It Works
                     </button>
