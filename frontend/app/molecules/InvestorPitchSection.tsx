@@ -30,7 +30,7 @@ const features = [
 
 const InvestorPitchSection: React.FC = () => {
   return (
-    <div className="py-20 text-white" style={{backgroundColor: '#FFB400'}}>
+    <div className="py-20 text-white" style={{backgroundColor: '#16C47F'}}>
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           {features.map((feature, index) => (
