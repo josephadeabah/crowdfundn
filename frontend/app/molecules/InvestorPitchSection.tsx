@@ -32,18 +32,6 @@ const InvestorPitchSection: React.FC = () => {
   return (
     <div className="bg-green-900 py-20 text-white">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center max-w-4xl mx-auto mb-16">
-          <h2 className="text-4xl font-bold text-white mb-4">
-            Invest in Africa’s Future, One Visionary Startup at a Time
-          </h2>
-          <p className="text-lg text-green-100">
-            BantuHive connects forward-thinking investors with Africa’s most
-            promising startups and community-driven ventures. Whether you're an
-            individual or an institution, discover opportunities that let you
-            invest with purpose and earn with impact.
-          </p>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           {features.map((feature, index) => (
             <div key={index} className="flex items-start space-x-5 pl-5">
