@@ -36,7 +36,7 @@ const InvestorPitchSection: React.FC = () => {
           {features.map((feature, index) => (
             <div key={index} className="flex items-start space-x-5 pl-5">
               <div className="h-12 w-12 rounded-full bg-orange-500/20 flex items-center justify-center">
-                <feature.icon className="h-6 w-6 text-orange-400" />
+                <feature.icon className="h-6 w-6 text-orange-300" />
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-white">
