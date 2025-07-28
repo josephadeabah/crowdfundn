@@ -75,6 +75,11 @@ const Partners = () => {
     {
       title: 'Universities & Research',
       items: [
+        'University of Ghana Business School',
+        'Kwame Nkrumah University of Science and Technology (KNUST)',
+        'Ashesi University',
+        'University of Cape Coast',
+        'Takoradi Technical University',
         'Institute of Statistical, Social and Economic Research (ISSER)',
         'Centre for Entrepreneurship & SME Development',
       ],
@@ -100,13 +105,16 @@ const Partners = () => {
     },
     {
       title: 'Investment Firms',
-      items: ['Venture Platform'],
+      items: ['Venture Platform', 'Injaro Investments'],
       color: 'text-growth',
     },
     {
       title: 'NGOs & Development',
       items: [
         'Tony Elumelu Foundation',
+        'GIZ Ghana',
+        'United Nations Development Programme (UNDP)',
+        'World Bank Group',
       ],
       color: 'text-green-600',
     },
