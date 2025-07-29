@@ -11,6 +11,7 @@ class EquityCampaign < Campaign
   validate :founders_equity_allocation
   validate :maximum_greater_than_minimum
   validate :type_cannot_change, on: :update
+  validate :shares_within_equity_limits
 
   attribute :equity_status, :integer, default: 0
   
@@ -22,34 +23,50 @@ class EquityCampaign < Campaign
     failed: 4,
     closed: 5
   }
+
+  after_update :update_investments_valuation, if: :saved_change_to_valuation?
+
+  # Add this method to update all investments when valuation changes
+  def update_all_investment_values
+    equity_investments.completed.each do |investment|
+      InvestmentUpdateJob.perform_later(investment.id)
+    end
+  end
   
-  # This method is used to determine the number of shares in money available for investment.
-  def shares_available
-    return 0 if equity_offered.nil? || valuation.nil? || equity_offered <= 0 || valuation <= 0
-    (equity_offered.to_f * valuation.to_f / 100) - equity_investments.sum(:amount)
+  def update_shares_available
+    update_columns(
+      shares_issued: equity_investments.sum(:shares),
+      equity_issued: equity_investments.sum(:percentage)
+    )
   end
 
-  # This method calculates the number of shares available for investment.
-  def shares_available_count
-    return 0 if equity_offered.nil? || valuation.nil? || total_shares.nil? || equity_offered <= 0 || valuation <= 0
+  def create_investment(user, amount)
+  price_per_share = valuation.to_f / total_shares.to_f
+  shares = (amount / price_per_share).round(2)
+  percentage = ((amount / (valuation.to_f * equity_offered.to_f / 100)) * 100).round(4)
   
-    # 1. Total value of equity being offered (e.g. 10% of 100m = 10m)
-    total_equity_value = (equity_offered.to_f * valuation.to_f / 100)
-  
-    # 2. Remaining amount that hasn't been invested yet
-    remaining_amount = total_equity_value - equity_investments.sum(:amount)
-  
-    # 3. Price per share based on total valuation and shares
-    price_per_share = valuation.to_f / total_shares.to_f
-  
-    # 4. Return the number of shares still available to investors
-    (remaining_amount / price_per_share).round(2)
+  equity_investments.create(
+    user: user,
+    amount: amount,
+    shares: shares,
+    percentage: percentage,
+    status: :pending  # Changed from :completed to :pending
+  )
+end
+
+  def shares_available
+    return 0 if equity_offered.nil? || valuation.nil? || total_shares.nil?
+    
+    total_equity_shares = (equity_offered.to_f / 100) * total_shares.to_f
+    total_equity_shares - equity_investments.sum(:shares)
   end
-  
+
+  def percentage_available
+    equity_offered.to_f - equity_investments.sum(:percentage)
+  end
 
   def percentage_raised
-    return 0 if equity_offered.nil? || valuation.nil? || equity_offered <= 0 || valuation <= 0
-    (equity_investments.sum(:amount) / (equity_offered.to_f * valuation.to_f / 100)) * 100
+    (equity_investments.sum(:percentage) / equity_offered.to_f) * 100
   end
   
   def founder_equity_percentage
@@ -94,6 +111,16 @@ class EquityCampaign < Campaign
   end
   
   private
+
+  def update_investments_valuation
+    UpdateCampaignInvestmentsJob.perform_later(id)
+  end
+
+  def shares_within_equity_limits
+    if shares_issued > (equity_offered.to_f / 100) * total_shares.to_f
+      errors.add(:base, "Total shares issued cannot exceed equity offered")
+    end
+  end
 
   def type_cannot_change
     if type_changed? && persisted?

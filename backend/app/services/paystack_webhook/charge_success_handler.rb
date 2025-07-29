@@ -9,23 +9,48 @@ class PaystackWebhook::ChargeSuccessHandler
     Rails.logger.info { "Processing charge success: #{transaction_reference} or subscription #{subscription_code}" }
 
     # Check if the event has already been processed (deduplication)
-    if EventProcessed.exists?(event_id: transaction_reference)
-      Rails.logger.info "Charge success already processed: #{transaction_reference}"
-      return # Skip processing if the event has already been processed
-    end
+     if EventProcessed.exists?(event_id: transaction_reference)
+    return
+  end
 
-    ActiveRecord::Base.transaction do
-      handle_donation_success if @data.present?
+  ActiveRecord::Base.transaction do
+    if equity_investment?(@data)
+      handle_equity_investment_success
+    else
+      handle_donation_success
     end
-  rescue StandardError => e
-    Rails.logger.info "Error processing charge success: #{e.message}"
+    
+    EventProcessed.create!(event_id: transaction_reference)
+  end
+  rescue => e
+    Rails.logger.error "Webhook processing failed: #{e.message}"
     raise e
-  ensure
-    # Mark the event as processed (deduplication logic)
-    EventProcessed.create(event_id: transaction_reference)
   end
 
   private
+
+    def equity_investment?(data)
+      metadata = data[:metadata] || {}
+      metadata[:type] == 'equity_investment'
+    end
+
+    def handle_equity_investment_success
+      response = verify_transaction(@data[:reference])
+      return unless response[:status]
+      
+      metadata = parse_metadata(response)
+      investment = EquityInvestment.find_by(id: metadata[:investment_id])
+      
+      if investment && investment.pending?
+        investment.update!(
+          status: :completed,
+          transaction_reference: @data[:reference]
+        )
+        
+        certificate = InvestmentCertificateService.generate_certificate(investment)
+        InvestmentConfirmationEmailService.send_confirmation_email(investment, certificate.url) if certificate
+      end
+    end
 
   def handle_donation_success
     transaction_reference = @data[:reference]

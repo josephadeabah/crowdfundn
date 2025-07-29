@@ -67,6 +67,10 @@ gem 'brevo'
 gem 'brevo-ruby'
 gem 'sib-api-v3-sdk'
 
+# For PDF generation
+gem 'prawn'
+gem 'prawn-table' # For table support
+
 
 
 # Use Redis adapter to run Action Cable in production

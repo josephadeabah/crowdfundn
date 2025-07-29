@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_06_05_101218) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_29_044349) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -142,6 +142,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_05_101218) do
     t.string "contract_term"
     t.decimal "maximum_investment"
     t.string "slug", null: false
+    t.integer "total_shares", default: 0
+    t.integer "shares_issued", default: 0
+    t.decimal "equity_issued", precision: 5, scale: 2, default: "0.0"
     t.index ["fundraiser_id"], name: "index_campaigns_on_fundraiser_id"
     t.index ["slug"], name: "index_campaigns_on_slug", unique: true
     t.index ["type"], name: "index_campaigns_on_type"
@@ -189,11 +192,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_05_101218) do
     t.bigint "campaign_id", null: false
     t.bigint "user_id", null: false
     t.decimal "amount", precision: 15, scale: 2
-    t.decimal "share_count", precision: 15, scale: 2
-    t.string "status"
+    t.decimal "shares", precision: 15, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "percentage", precision: 10, scale: 4
+    t.string "certificate_number"
+    t.date "investment_date"
+    t.integer "status", default: 0
     t.index ["campaign_id"], name: "index_equity_investments_on_campaign_id"
+    t.index ["certificate_number"], name: "index_equity_investments_on_certificate_number", unique: true
     t.index ["user_id"], name: "index_equity_investments_on_user_id"
   end
 
