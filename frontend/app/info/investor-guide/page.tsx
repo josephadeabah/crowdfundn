@@ -197,7 +197,7 @@ const InvestorGuide = () => {
                       across sectors
                     </li>
                     <li>
-                      • <strong>Due Diligence:</strong> Thorough research before
+                      • <strong>Due Diligence:</strong> BantuHive does 99% investigations on your behalf. However, do your own thorough research before
                       investing
                     </li>
                     <li>
