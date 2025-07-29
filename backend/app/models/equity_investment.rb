@@ -2,28 +2,39 @@
 class EquityInvestment < ApplicationRecord
   belongs_to :user
   belongs_to :campaign, class_name: 'EquityCampaign'
+  belongs_to :reward, optional: true
+  has_many :pledges, dependent: :destroy
   
   has_one_attached :certificate
   
   validates :amount, :shares, :percentage, presence: true, numericality: { greater_than: 0 }
   validates :certificate_number, uniqueness: true, allow_nil: true
+  validates :transaction_reference, uniqueness: true, allow_nil: true
   
   enum status: {
-    pending: 0,       # Investment initiated but payment not confirmed
-    completed: 1,     # Payment confirmed and shares allocated
-    canceled: 2,      # Investment canceled by user
-    refunded: 3,      # Investment refunded
-    failed: 4         # Payment failed
+    pending: 0,       # Investment initiated but payment not started
+    initialized: 1,   # Payment initialized but not completed
+    success: 2,       # Payment successful and shares allocated
+    failed: 3,        # Payment failed
+    abandoned: 4,     # User abandoned the payment process
+    canceled: 5,      # Investment canceled by user
+    refunded: 6       # Investment refunded
   }
 
+  scope :successful, -> { where(status: 'success') }
+  
   before_validation :calculate_shares_and_percentage, on: :create
   before_create :generate_certificate_number
   before_create :set_investment_date
   after_create :update_campaign_equity
   after_update :update_campaign_equity, if: :saved_change_to_amount?
-  after_commit :generate_certificate_after_commit, on: [:create, :update], if: :completed?
+  after_commit :generate_certificate_after_commit, on: [:create, :update], if: :success?
+  after_commit :update_investor_portfolios, on: [:create, :update], if: :success?
 
-  
+  def successful?
+    status == 'success'
+  end
+
   def current_value
     (campaign.valuation * percentage / 100).round(2)
   end
@@ -38,7 +49,7 @@ class EquityInvestment < ApplicationRecord
   end
 
   def self.total_invested(campaign_id)
-    where(campaign_id: campaign_id, status: :completed).sum(:amount)
+    where(campaign_id: campaign_id, status: :success).sum(:amount)
   end
 
   def certificate_url
@@ -49,38 +60,18 @@ class EquityInvestment < ApplicationRecord
       "#{Rails.application.credentials.dig(:digitalocean, :bucket)}/" \
       "#{certificate.blob.key}"
     else
-      # For development/test, use Rails URL helpers
       Rails.application.routes.url_helpers.rails_blob_url(certificate, only_path: false)
     end
   end
 
-    # Update the campaign's valuation whenever new investments come in
-  after_commit :update_investor_portfolios, on: [:create, :update], if: :completed?
-
   private
-
-  def update_portfolio_values
-    # Update all investments in this campaign
-    if saved_change_to_percentage? || saved_change_to_amount? || campaign.saved_change_to_valuation?
-      campaign.update_all_investment_values
-    end
-  end
-
-  def update_investor_portfolios
-    # This will trigger updates for all investors in this campaign
-    campaign.equity_investments.completed.each do |investment|
-      InvestmentUpdateJob.perform_later(investment.id)
-    end
-  end
 
   def calculate_shares_and_percentage
     return unless campaign && amount.present? && amount.positive?
 
-    # Calculate shares based on valuation and total shares
     price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
     self.shares = (amount / price_per_share).round(4)
 
-    # Calculate ownership percentage
     total_equity_value = (campaign.valuation.to_f * campaign.equity_offered.to_f / 100)
     self.percentage = ((amount / total_equity_value) * 100).round(4)
   end
@@ -103,6 +94,12 @@ class EquityInvestment < ApplicationRecord
     certificate = InvestmentCertificateService.generate_certificate(self)
     if certificate.nil?
       Rails.logger.error "Failed to generate certificate for investment #{id}"
+    end
+  end
+
+  def update_investor_portfolios
+    campaign.equity_investments.success.each do |investment|
+      InvestmentUpdateJob.perform_later(investment.id)
     end
   end
 end

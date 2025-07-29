@@ -5,23 +5,22 @@ class PaystackWebhook::ChargeSuccessHandler
 
   def call
     transaction_reference = @data[:reference]
-    subscription_code = @data[:subscription_code]
-    Rails.logger.info { "Processing charge success: #{transaction_reference} or subscription #{subscription_code}" }
+    Rails.logger.info { "Processing charge success: #{transaction_reference}" }
 
     # Check if the event has already been processed (deduplication)
-     if EventProcessed.exists?(event_id: transaction_reference)
-    return
-  end
-
-  ActiveRecord::Base.transaction do
-    if equity_investment?(@data)
-      handle_equity_investment_success
-    else
-      handle_donation_success
+    if EventProcessed.exists?(event_id: transaction_reference)
+      return
     end
-    
-    EventProcessed.create!(event_id: transaction_reference)
-  end
+
+    ActiveRecord::Base.transaction do
+      if equity_investment?(@data)
+        handle_equity_investment_success
+      else
+        handle_donation_success
+      end
+      
+      EventProcessed.create!(event_id: transaction_reference)
+    end
   rescue => e
     Rails.logger.error "Webhook processing failed: #{e.message}"
     raise e
@@ -29,59 +28,32 @@ class PaystackWebhook::ChargeSuccessHandler
 
   private
 
-    def equity_investment?(data)
-      metadata = data[:metadata] || {}
-      metadata[:type] == 'equity_investment'
-    end
+  def equity_investment?(data)
+    metadata = data[:metadata] || {}
+    metadata[:type] == 'equity_investment'
+  end
 
-    def handle_equity_investment_success
-      response = verify_transaction(@data[:reference])
-      return unless response[:status]
-      
-      metadata = parse_metadata(response)
-      investment = EquityInvestment.find_by(id: metadata[:investment_id])
-      
-      if investment && investment.pending?
-        investment.update!(
-          status: :completed,
-          transaction_reference: @data[:reference]
-        )
-        
-        certificate = InvestmentCertificateService.generate_certificate(investment)
-        InvestmentConfirmationEmailService.send_confirmation_email(investment, certificate.url) if certificate
-      end
-    end
-
-  def handle_donation_success
+  def handle_equity_investment_success
     transaction_reference = @data[:reference]
-    # Log for debug purposes
-    Rails.logger.info "Verifying donation with reference #{transaction_reference}"
+    Rails.logger.info "Verifying equity investment with reference #{transaction_reference}"
 
-    # Verify transaction with Paystack
+    # Verify transaction with Paystack - same as donations
     response = PaystackService.new.verify_transaction(transaction_reference)
     unless response[:status] == true
       Rails.logger.error "Transaction verification failed for #{transaction_reference}"
       raise 'Transaction verification failed'
     end
 
-    # Extract transaction status
     transaction_status = response.dig(:data, :status)
     if transaction_status == 'success'
-      gross_amount = response.dig(:data, :amount).to_f / 100.0 # Gross amount from Paystack
-
-      # Step 1: Calculate the net amount (93% of the gross amount)
-      net_amount = gross_amount * 0.93
-
-      # Step 2: Calculate the platform fee (7% of the gross amount)
-      platform_fee = gross_amount * 0.07
-
-      # Step 3: Adjust the platform fee after Paystack's 1.95% deduction
-      paystack_fee = platform_fee * 0.0195
-
-      # Step 4: Subtract Paystack's fee from the platform fee
+      # Same financial calculations as donations
+      gross_amount = response.dig(:data, :amount).to_f / 100.0
+      net_amount = gross_amount * 0.93 # 93% to fundraiser
+      platform_fee = gross_amount * 0.07 # 7% platform fee
+      paystack_fee = platform_fee * 0.0195 # Paystack's cut
       adjusted_platform_fee = platform_fee - paystack_fee
 
-      # Safely parse metadata
+      # Same metadata parsing logic
       metadata = if response.dig(:data, :metadata).is_a?(String)
                   begin
                     fixed_metadata = fix_malformed_json(response.dig(:data, :metadata))
@@ -94,22 +66,127 @@ class PaystackWebhook::ChargeSuccessHandler
                   response.dig(:data, :metadata) || {}
                 end
 
-      # Log parsed metadata for debugging
       Rails.logger.debug "Parsed metadata: #{metadata}"
 
-      # Step 5: Extract metadata values (user_id, campaign_id, session_token)
-      user_id = metadata[:user_id]
-      campaign_id = metadata[:campaign_id]
-      session_token = metadata[:anonymous_token]
-      donor_ip = response.dig(:data, :ip_address) # Extract the IP address
-      donor_country = response.dig(:data, :authorization, :country_code) # Country from Paystack
-
-      # Map IP address to country
+      # Same donor location handling
+      donor_ip = response.dig(:data, :ip_address)
+      donor_country = response.dig(:data, :authorization, :country_code)
       country_from_ip = Geocoder.search(donor_ip).first&.country || 'Unknown'
       final_country = donor_country.presence || country_from_ip
       final_country = 'Unknown' if final_country.blank?
 
-      # Extract campaign metadata (title, description, etc.)
+      # Find the investment
+      investment = EquityInvestment.find_by(id: metadata[:investment_id])
+      
+      if investment && (investment.pending? || investment.initialized?)
+        # Update with all the same transaction details as donations
+        investment.update!(
+          status: :success,
+          transaction_reference: transaction_reference,
+          gross_amount: gross_amount,
+          net_amount: net_amount,
+          platform_fee: adjusted_platform_fee,
+          subaccount_code: response.dig(:data, :subaccount, :subaccount_code),
+          processed: false,
+          country: final_country,
+          ip_address: donor_ip,
+          metadata: {
+            user_id: metadata[:user_id],
+            campaign_id: metadata[:campaign_id],
+            shares: metadata[:shares],
+            percentage: metadata[:percentage],
+            type: 'equity_investment',
+            subaccount_contact: {
+              name: response.dig(:data, :subaccount, :primary_contact_name),
+              email: response.dig(:data, :subaccount, :primary_contact_email),
+              phone: response.dig(:data, :subaccount, :primary_contact_phone)
+            }
+          }
+        )
+        
+        # Update campaign totals
+        campaign = investment.campaign
+        campaign.update!(
+          total_equity_invested: campaign.total_equity_invested + net_amount,
+          shares_issued: campaign.shares_issued + investment.shares
+        )
+        
+        # Handle rewards (same pattern as donations)
+        if investment.reward
+          Pledge.create!(
+            equity_investment_id: investment.id,
+            reward_id: investment.reward.id,
+            amount: investment.amount,
+            status: 'pending',
+            shipping_status: 'not_shipped',
+            campaign_id: campaign.id,
+            user_id: campaign.fundraiser_id
+          )
+        end
+        
+        # Generate certificate and send confirmation
+        certificate = InvestmentCertificateService.generate_certificate(investment)
+        InvestmentConfirmationEmailService.send_confirmation_email(
+          investment, 
+          certificate.url,
+          response.dig(:data, :customer, :email),
+          investment.user&.full_name || 'Investor'
+        ) if certificate
+        
+        # Update portfolio
+        InvestmentUpdateJob.perform_later(investment.id)
+      else
+        Rails.logger.error "Equity investment not found or invalid state: #{metadata[:investment_id]}"
+        raise "Invalid investment state"
+      end
+    else
+      Rails.logger.error "Transaction failed with status #{transaction_status}"
+      raise "Transaction status is #{transaction_status}"
+    end
+  end
+
+  def handle_donation_success
+    transaction_reference = @data[:reference]
+    Rails.logger.info "Verifying donation with reference #{transaction_reference}"
+
+    response = PaystackService.new.verify_transaction(transaction_reference)
+    unless response[:status] == true
+      Rails.logger.error "Transaction verification failed for #{transaction_reference}"
+      raise 'Transaction verification failed'
+    end
+
+    transaction_status = response.dig(:data, :status)
+    if transaction_status == 'success'
+      gross_amount = response.dig(:data, :amount).to_f / 100.0
+      net_amount = gross_amount * 0.93
+      platform_fee = gross_amount * 0.07
+      paystack_fee = platform_fee * 0.0195
+      adjusted_platform_fee = platform_fee - paystack_fee
+
+      metadata = if response.dig(:data, :metadata).is_a?(String)
+                  begin
+                    fixed_metadata = fix_malformed_json(response.dig(:data, :metadata))
+                    JSON.parse(fixed_metadata, symbolize_names: true)
+                  rescue JSON::ParserError => e
+                    Rails.logger.error "Failed to parse metadata even after fixing: #{e.message}"
+                    raise "Invalid metadata: #{response.dig(:data, :metadata)}"
+                  end
+                else
+                  response.dig(:data, :metadata) || {}
+                end
+
+      Rails.logger.debug "Parsed metadata: #{metadata}"
+
+      user_id = metadata[:user_id]
+      campaign_id = metadata[:campaign_id]
+      session_token = metadata[:anonymous_token]
+      donor_ip = response.dig(:data, :ip_address)
+      donor_country = response.dig(:data, :authorization, :country_code)
+
+      country_from_ip = Geocoder.search(donor_ip).first&.country || 'Unknown'
+      final_country = donor_country.presence || country_from_ip
+      final_country = 'Unknown' if final_country.blank?
+
       campaign_metadata = {
         title: metadata[:title],
         goal_amount: metadata[:goal_amount],
@@ -120,17 +197,14 @@ class PaystackWebhook::ChargeSuccessHandler
         fundraiser_name: metadata[:fundraiser_name]
       }
 
-      # Extract subaccount contact details
       subaccount_name = response.dig(:data, :subaccount, :primary_contact_name) || 'No contact name'
       subaccount_contact = response.dig(:data, :subaccount, :primary_contact_email) || 'No contact email'
       subaccount_phone = response.dig(:data, :subaccount, :primary_contact_phone) || 'No contact phone'
 
-      # Step 6: Extract shipping data, selected rewards, and delivery option
       shipping_data = metadata[:metadata] && metadata[:metadata][:shippingData] || {}
       selected_rewards = metadata[:metadata] && metadata[:metadata][:selectedRewards] || []
       delivery_option = metadata[:metadata] && metadata[:metadata][:deliveryOption] || 'pickup'
 
-      # Step 7: Create the donation record with extracted metadata and transaction details
       donation = Donation.create!(
         transaction_reference: transaction_reference,
         status: 'successful',
@@ -138,18 +212,18 @@ class PaystackWebhook::ChargeSuccessHandler
         net_amount: net_amount,
         platform_fee: adjusted_platform_fee,
         amount: net_amount,
-        user_id: user_id.presence, # Update user_id only if provided
-        campaign_id: campaign_id.presence, # Update campaign_id only if provided
-        full_name: metadata[:donor_name], # Update full_name with donor's name
+        user_id: user_id.presence,
+        campaign_id: campaign_id.presence,
+        full_name: metadata[:donor_name],
         email: response.dig(:data, :customer, :email),
         phone: metadata[:phone],
-        country: final_country,  # Store the most reliable country info
-        ip_address: donor_ip, # Store the IP address
+        country: final_country,
+        ip_address: donor_ip,
         metadata: {
           anonymous_token: session_token,
-          user_id: user_id, # Add user_id to metadata
-          campaign_id: campaign_id, # Add campaign_id to metadata
-          campaign_metadata: campaign_metadata, # Add campaign metadata to donation
+          user_id: user_id,
+          campaign_id: campaign_id,
+          campaign_metadata: campaign_metadata,
           redirect_url: metadata[:redirect_url],
           title: metadata[:title],
           goal_amount: metadata[:goal_amount],
@@ -163,21 +237,18 @@ class PaystackWebhook::ChargeSuccessHandler
             email: subaccount_contact,
             phone: subaccount_phone
           }
-        }, # Replacing the existing metadata entirely
-        processed: false # New donations will have `processed` set to `false`
+        },
+        processed: false
       )
 
-      # Step 8: Update the related campaign
       campaign = donation.campaign
       campaign.update!(
         total_successful_donations: campaign.current_amount + net_amount,
         current_amount: campaign.current_amount + net_amount
       )
 
-      # Update the transferred amount for the campaign
       campaign.update_transferred_amount(net_amount)
 
-      # Step 9: Create or update pledges with shipping data, selected rewards, and delivery option
       selected_rewards.each do |reward|
         unless Pledge.exists?(donation_id: donation.id, reward_id: reward[:id])
           Pledge.create!(
@@ -195,11 +266,9 @@ class PaystackWebhook::ChargeSuccessHandler
         end
       end
 
-      # Send confirmation email to the donor
       DonationConfirmationEmailService.send_confirmation_email(donation)
       FundraiserDonationNotificationService.send_notification_email(donation)
 
-      # ✅ Fixed points & leaderboard updates
       if donation.user.present?
         Point.add_points(donation.user, donation)
         LeaderboardEntry.update_leaderboard(donation.user, donation.user.total_points)
@@ -207,15 +276,12 @@ class PaystackWebhook::ChargeSuccessHandler
         Rails.logger.info "Skipping points & leaderboard update for anonymous donation: #{donation.id}"
       end
     else
-      # If the transaction status isn't 'success', raise an error
       Rails.logger.error "Transaction failed with status #{transaction_status}"
       raise "Transaction status is #{transaction_status}"
     end
   end
 
-  # Helper method to fix malformed JSON strings
   def fix_malformed_json(json_string)
-    # If the JSON string is cut off, append the missing closing braces and quotes
     if json_string.end_with?('"')
       json_string + '"}'
     elsif json_string.end_with?('}')
@@ -225,6 +291,6 @@ class PaystackWebhook::ChargeSuccessHandler
     end
   rescue => e
     Rails.logger.error "Failed to fix JSON string: #{e.message}"
-    json_string # Return the original string if fixing fails
+    json_string
   end
 end

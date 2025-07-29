@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_07_29_044349) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_29_224725) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -199,8 +199,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_29_044349) do
     t.string "certificate_number"
     t.date "investment_date"
     t.integer "status", default: 0
+    t.string "transaction_reference"
+    t.decimal "gross_amount", precision: 10, scale: 2
+    t.decimal "net_amount", precision: 10, scale: 2
+    t.decimal "platform_fee", precision: 10, scale: 2
+    t.string "subaccount_code"
+    t.boolean "processed", default: false
+    t.bigint "reward_id"
+    t.string "country"
+    t.string "ip_address"
     t.index ["campaign_id"], name: "index_equity_investments_on_campaign_id"
     t.index ["certificate_number"], name: "index_equity_investments_on_certificate_number", unique: true
+    t.index ["reward_id"], name: "index_equity_investments_on_reward_id"
+    t.index ["transaction_reference"], name: "index_equity_investments_on_transaction_reference", unique: true
     t.index ["user_id"], name: "index_equity_investments_on_user_id"
   end
 
@@ -266,13 +277,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_29_044349) do
     t.string "shipping_status", default: "not_shipped", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "campaign_id", null: false
     t.jsonb "shipping_data", default: {}
     t.jsonb "selected_rewards", default: []
     t.string "delivery_option"
     t.integer "user_id"
-    t.index ["campaign_id"], name: "index_pledges_on_campaign_id"
+    t.bigint "equity_investment_id"
+    t.string "campaign_type"
+    t.bigint "campaign_id"
     t.index ["donation_id"], name: "index_pledges_on_donation_id"
+    t.index ["equity_investment_id"], name: "index_pledges_on_equity_investment_id"
     t.index ["reward_id"], name: "index_pledges_on_reward_id"
   end
 
@@ -321,12 +334,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_29_044349) do
     t.text "description"
     t.decimal "amount"
     t.string "image"
-    t.bigint "campaign_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "invoice_data"
     t.jsonb "shipping_info"
-    t.index ["campaign_id"], name: "index_rewards_on_campaign_id"
+    t.string "campaign_type"
+    t.bigint "campaign_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -482,6 +495,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_29_044349) do
   add_foreign_key "donations", "campaigns"
   add_foreign_key "donations", "users"
   add_foreign_key "equity_investments", "campaigns"
+  add_foreign_key "equity_investments", "rewards"
   add_foreign_key "equity_investments", "users"
   add_foreign_key "favorites", "campaigns"
   add_foreign_key "favorites", "users"
@@ -490,14 +504,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_29_044349) do
   add_foreign_key "investor_documents", "campaigns"
   add_foreign_key "investor_documents", "users"
   add_foreign_key "leaderboard_entries", "users"
-  add_foreign_key "pledges", "campaigns"
   add_foreign_key "pledges", "donations"
+  add_foreign_key "pledges", "equity_investments"
   add_foreign_key "pledges", "rewards"
   add_foreign_key "points", "donations"
   add_foreign_key "points", "users"
   add_foreign_key "premium_subscriptions", "users"
   add_foreign_key "profiles", "users"
-  add_foreign_key "rewards", "campaigns"
   add_foreign_key "subaccounts", "campaigns"
   add_foreign_key "subaccounts", "users"
   add_foreign_key "subscriptions", "campaigns"
