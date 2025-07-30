@@ -34,17 +34,17 @@ const InvestorPitchSection: React.FC = () => {
       {/* Background images stacked side by side */}
       <div className="absolute inset-0 flex">
         <img
-          src="/NQOBA.JPG"
+          src="/busshot.avif"
           alt="background1"
           className="w-1/3 object-cover h-full"
         />
         <img
-          src="/NQOBA.JPG"
+          src="/busshot3.avif"
           alt="background2"
           className="w-1/3 object-cover h-full"
         />
         <img
-          src="/NQOBA.JPG"
+          src="/busshot2.jpg"
           alt="background3"
           className="w-1/3 object-cover h-full"
         />
