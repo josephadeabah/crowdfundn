@@ -21,7 +21,7 @@ class EquityInvestment < ApplicationRecord
     refunded: 6       # Investment refunded
   }
 
-  scope :successful, -> { where(status: 'success') }
+  scope :successful, -> { where(status: 'successful') }
   
   before_validation :calculate_shares_and_percentage, on: :create
   before_create :generate_certificate_number
@@ -32,7 +32,7 @@ class EquityInvestment < ApplicationRecord
   after_commit :update_investor_portfolios, on: [:create, :update], if: :success?
 
   def successful?
-    status == 'success'
+    status == 'successful'
   end
 
   def current_value

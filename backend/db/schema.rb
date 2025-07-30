@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_07_29_224725) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_30_213530) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -208,8 +208,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_29_224725) do
     t.bigint "reward_id"
     t.string "country"
     t.string "ip_address"
+    t.jsonb "metadata", default: {}
     t.index ["campaign_id"], name: "index_equity_investments_on_campaign_id"
     t.index ["certificate_number"], name: "index_equity_investments_on_certificate_number", unique: true
+    t.index ["metadata"], name: "index_equity_investments_on_metadata", using: :gin
     t.index ["reward_id"], name: "index_equity_investments_on_reward_id"
     t.index ["transaction_reference"], name: "index_equity_investments_on_transaction_reference", unique: true
     t.index ["user_id"], name: "index_equity_investments_on_user_id"
