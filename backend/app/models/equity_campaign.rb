@@ -8,6 +8,7 @@ class EquityCampaign < Campaign
   validates :valuation, :equity_offered, :minimum_investment, :maximum_investment, 
             presence: true, numericality: { greater_than: 0 }
   validates :equity_offered, numericality: { less_than_or_equal_to: 100 }
+  validate :equity_issued_within_limits
   validate :founders_equity_allocation
   validate :maximum_greater_than_minimum
   validate :type_cannot_change, on: :update
@@ -111,6 +112,13 @@ end
   end
   
   private
+
+  # Add this method in your private section with other validation methods
+  def equity_issued_within_limits
+    if equity_issued.to_f > equity_offered.to_f
+      errors.add(:equity_issued, "cannot exceed equity offered")
+    end
+  end
 
   def update_investments_valuation
     UpdateCampaignInvestmentsJob.perform_later(id)
