@@ -24,3 +24,18 @@ every(1.day, 'update_investment_values', at: '04:00') do
     UpdateCampaignInvestmentsJob.perform_later(campaign.id)
   end
 end
+
+
+# Add this new block at the end for certificate retries
+every(1.hour, 'retry_failed_certificates') do
+  Rails.logger.info "Checking for failed certificate generations at #{Time.current}"
+  
+  EquityInvestment.success
+    .where.not(certificate_number: nil)
+    .left_outer_joins(:certificate_attachment)
+    .where(active_storage_attachments: { id: nil })
+    .find_each(batch_size: 100) do |investment|
+      CertificateGenerationJob.perform_later(investment.id)
+      Rails.logger.info "Enqueued certificate generation for investment #{investment.id}"
+    end
+end

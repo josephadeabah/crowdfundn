@@ -28,7 +28,7 @@ class EquityInvestment < ApplicationRecord
   before_create :set_investment_date
   after_create :update_campaign_equity
   after_update :update_campaign_equity, if: :saved_change_to_amount?
-  after_commit :generate_certificate_after_commit, on: [:create, :update], if: :success?
+  after_commit :generate_certificate_after_commit, on: [:create, :update], if: :should_generate_certificate?
   after_commit :update_investor_portfolios, on: [:create, :update], if: :success?
 
   def successful?
@@ -54,14 +54,11 @@ class EquityInvestment < ApplicationRecord
 
   def certificate_url
     return unless certificate.attached?
-    
-    if Rails.env.production?
-      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/" \
-      "#{Rails.application.credentials.dig(:digitalocean, :bucket)}/" \
-      "#{certificate.blob.key}"
-    else
-      Rails.application.routes.url_helpers.rails_blob_url(certificate, only_path: false)
-    end
+    Rails.application.routes.url_helpers.url_for(certificate)
+  end
+
+  def certificate_present?
+    certificate.attached? && certificate.blob.present?
   end
 
   private
@@ -88,13 +85,23 @@ class EquityInvestment < ApplicationRecord
     campaign.update_shares_available
   end
 
+  def should_generate_certificate?
+    success? && certificate_number.present? && 
+    (certificate.blank? || certificate_needs_update?)
+  end
+
   def generate_certificate_after_commit
-    return if certificate.attached?
-    
     certificate = InvestmentCertificateService.generate_certificate(self)
-    if certificate.nil?
+    unless certificate
       Rails.logger.error "Failed to generate certificate for investment #{id}"
+      # Queue for retry if needed
+      CertificateGenerationJob.set(wait: 5.minutes).perform_later(id)
     end
+  end
+
+  def certificate_needs_update?
+    saved_change_to_amount? || saved_change_to_shares? || saved_change_to_percentage? ||
+    saved_change_to_certificate_number? || certificate.blob.blank?
   end
 
   def update_investor_portfolios
