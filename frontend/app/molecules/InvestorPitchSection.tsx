@@ -39,12 +39,12 @@ const InvestorPitchSection: React.FC = () => {
           className="w-1/3 object-cover h-full"
         />
         <img
-          src="/busshot2.avif"
+          src="/busshot3.avif"
           alt="background2"
           className="w-1/3 object-cover h-full"
         />
         <img
-          src="/busshot1.avif"
+          src="/busshot2.avif"
           alt="background3"
           className="w-1/3 object-cover h-full"
         />
