@@ -30,8 +30,29 @@ const features = [
 
 const InvestorPitchSection: React.FC = () => {
   return (
-    <div className="py-20 text-white" style={{ backgroundColor: '#16C47F' }}>
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="relative py-20 text-white overflow-hidden">
+      {/* Background images stacked side by side */}
+      <div className="absolute inset-0 flex">
+        <img
+          src="/NQOBA.JPG"
+          alt="background1"
+          className="w-1/3 object-cover h-full"
+        />
+        <img
+          src="/NQOBA.JPG"
+          alt="background2"
+          className="w-1/3 object-cover h-full"
+        />
+        <img
+          src="/NQOBA.JPG"
+          alt="background3"
+          className="w-1/3 object-cover h-full"
+        />
+        <div className="absolute inset-0 bg-green-600/70" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           {features.map((feature, index) => (
             <div key={index} className="flex items-start space-x-5 pl-5">
