@@ -32,6 +32,16 @@ Rails.application.routes.draw do
         delete 'users/:id', to: 'users#destroy'
       end
 
+      # Add KYC namespace
+      namespace :kyc do
+        resources :kycs, only: [:index, :create, :update, :show] do
+          member do
+            post :verify
+            post :reject
+          end
+        end
+      end
+
       namespace :fundraisers do
         resources :transfers, only: [] do
           collection do

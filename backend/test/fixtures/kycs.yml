@@ -1,0 +1,27 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  status: MyString
+  verification_type: MyString
+  id_number: MyString
+  id_expiry_date: 2025-07-31
+  id_image_data: MyText
+  address_proof_data: MyText
+  investor_signature_data: MyText
+  issuer_signature_data: MyText
+  verified_at: 2025-07-31 02:49:11
+  verified_by: one
+
+two:
+  user: two
+  status: MyString
+  verification_type: MyString
+  id_number: MyString
+  id_expiry_date: 2025-07-31
+  id_image_data: MyText
+  address_proof_data: MyText
+  investor_signature_data: MyText
+  issuer_signature_data: MyText
+  verified_at: 2025-07-31 02:49:11
+  verified_by: two

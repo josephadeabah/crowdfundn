@@ -18,6 +18,9 @@ class User < ApplicationRecord
   has_many :invested_campaigns, through: :equity_investments, source: :campaign
   has_many :investor_documents, dependent: :destroy
   has_many :premium_subscriptions, dependent: :destroy
+  # Update KYC associations to use full namespace
+  has_many :kycs, class_name: '::Kyc', dependent: :destroy
+  has_one :latest_kyc, -> { order(created_at: :desc) }, class_name: '::Kyc'
 
   validates :status, inclusion: { in: STATUSES }
   validates :user_type, inclusion: { in: USER_TYPES }
@@ -120,6 +123,23 @@ class User < ApplicationRecord
 
   def active_premium_subscription
     premium_subscriptions.active.last
+  end
+
+  # Add KYC status methods
+  def kyc_verified?
+    latest_kyc&.verified? && !latest_kyc.expired?
+  end
+
+  def investor_kyc_verified?
+    kyc_verified? && (latest_kyc.investor? || latest_kyc.both?)
+  end
+
+  def issuer_kyc_verified?
+    kyc_verified? && (latest_kyc.issuer? || latest_kyc.both?)
+  end
+
+  def requires_kyc?
+    (investor? || campaigns.any?) && !kyc_verified?
   end
 
   private
