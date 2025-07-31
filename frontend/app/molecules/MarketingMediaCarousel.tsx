@@ -1,10 +1,9 @@
 'use client';
 import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { FaPlay, FaPause } from "react-icons/fa";
 
-// Type definitions
 type MediaType = "image" | "video";
 
 interface BaseMediaItem {
@@ -107,13 +106,19 @@ const MarketingMediaCarousel: React.FC = () => {
   const handleMouseUp = () => {
     if (!carouselRef.current) return;
     setIsDragging(false);
+
     const slideWidth = carouselRef.current.offsetWidth;
-    const newIndex = Math.round(carouselRef.current.scrollLeft / slideWidth);
-    setCurrentIndex(newIndex);
-    carouselRef.current.scrollTo({
-      left: newIndex * slideWidth,
-      behavior: "smooth"
-    });
+    const scrollPos = carouselRef.current.scrollLeft;
+    const newIndex = Math.round(scrollPos / slideWidth);
+
+    const distance = Math.abs(scrollPos - newIndex * slideWidth);
+    if (distance < slideWidth * 0.25) {
+      setCurrentIndex(newIndex);
+      carouselRef.current.scrollTo({
+        left: newIndex * slideWidth,
+        behavior: "smooth"
+      });
+    }
   };
 
   const MediaItem: React.FC<MediaItemComponentProps> = ({ item, index }) => {
@@ -125,11 +130,8 @@ const MarketingMediaCarousel: React.FC = () => {
 
     const togglePlay = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
-      // Reset all other videos when playing current one
       const videos = document.querySelectorAll('video');
-      videos.forEach((video) => {
-        video.pause();
-      });
+      videos.forEach((video) => video.pause());
       setIsPlaying(!isPlaying);
     };
 
@@ -175,8 +177,8 @@ const MarketingMediaCarousel: React.FC = () => {
         </motion.div>
         <div className="flex justify-between items-center mt-4 px-2">
           <p className="text-gray-700 text-lg font-medium">{item.description}</p>
-          <button 
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-300"
+          <button
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-300 whitespace-nowrap"
             onClick={() => console.log(`Navigate to story ${index + 1}`)}
           >
             Read customer story
