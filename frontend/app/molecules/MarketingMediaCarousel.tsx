@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import { FaPlay, FaPause } from "react-icons/fa";
 
 type MediaType = "image" | "video";
 
@@ -95,6 +96,23 @@ const MarketingMediaCarousel: React.FC = () => {
 
   const MediaItem: React.FC<MediaItemComponentProps> = ({ item }) => {
     const [ref, inView] = useInView({ threshold: 0.5, triggerOnce: false });
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const [isPlaying, setIsPlaying] = useState(true);
+
+    useEffect(() => {
+      if (videoRef.current) {
+        if (inView && isPlaying) {
+          videoRef.current.play().catch(() => {});
+        } else {
+          videoRef.current.pause();
+        }
+      }
+    }, [inView, isPlaying]);
+
+    const togglePlayback = (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      setIsPlaying((prev) => !prev);
+    };
 
     return (
       <div className="flex flex-col">
@@ -113,14 +131,24 @@ const MarketingMediaCarousel: React.FC = () => {
               loading="lazy"
             />
           ) : (
-            <video
-              src={item.url}
-              muted
-              autoPlay
-              loop
-              playsInline
-              className="w-full h-full object-cover"
-            />
+            <div className="relative w-full h-full group">
+              <video
+                ref={videoRef}
+                src={item.url}
+                muted
+                loop
+                playsInline
+                autoPlay
+                className="w-full h-full object-cover"
+              />
+              <button
+                onClick={togglePlayback}
+                className="absolute bottom-4 left-4 bg-orange-500 bg-opacity-80 p-3 rounded-full text-white hover:bg-opacity-100 transition-all duration-300"
+                aria-label={isPlaying ? "Pause video" : "Play video"}
+              >
+                {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} />}
+              </button>
+            </div>
           )}
         </motion.div>
         <div className="flex justify-between items-center mt-4 px-2">
