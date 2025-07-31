@@ -1,4 +1,3 @@
-# app/models/equity_investment.rb
 class EquityInvestment < ApplicationRecord
   belongs_to :user
   belongs_to :campaign, class_name: 'EquityCampaign'
@@ -12,24 +11,23 @@ class EquityInvestment < ApplicationRecord
   validates :transaction_reference, uniqueness: true, allow_nil: true
 
   enum :status, {
-    pending: 0,       # Investment initiated but payment not started
-    initialized: 1,   # Payment initialized but not completed
-    success: 2,       # Payment successful and shares allocated
-    failed: 3,        # Payment failed
-    abandoned: 4,     # User abandoned the payment process
-    canceled: 5,      # Investment canceled by user
-    refunded: 6       # Investment refunded
-  }
+    pending: 0,
+    initialized: 1,
+    successful: 2,
+    failed: 3,
+    abandoned: 4,
+    canceled: 5,
+    refunded: 6
+  }, default: :pending
 
-  scope :successful, -> { where(status: 'successful') }
+  scope :successful, -> { where(status: :successful) }
 
   before_validation :calculate_shares_and_percentage, on: :create
   before_create :generate_certificate_number
   before_create :set_investment_date
-  after_create :update_campaign_equity
-  after_update :update_campaign_equity, if: :saved_change_to_amount?
-  after_commit :generate_certificate_after_commit, on: %i[create update], if: :should_generate_certificate?
-  after_commit :update_investor_portfolios, on: %i[create update], if: :success?
+  after_commit :update_campaign_equity, on: [:create, :update], if: :saved_change_to_amount?
+  after_commit :generate_certificate_after_commit, on: [:create, :update], if: :should_generate_certificate?
+  after_commit :update_investor_portfolios, on: [:create, :update], if: :successful?
 
   def successful?
     status == 'successful'
@@ -45,17 +43,15 @@ class EquityInvestment < ApplicationRecord
 
   def roi
     return 0 if amount.zero?
-
     ((total_returns / amount) * 100).round(2)
   end
 
   def self.total_invested(campaign_id)
-    where(campaign_id: campaign_id, status: :success).sum(:amount)
+    where(campaign_id: campaign_id, status: :successful).sum(:amount)
   end
 
   def certificate_url
     return unless certificate.attached?
-
     Rails.application.routes.url_helpers.url_for(certificate)
   end
 
@@ -76,7 +72,7 @@ class EquityInvestment < ApplicationRecord
   end
 
   def generate_certificate_number
-    self.certificate_number ||= "BANTU-#{SecureRandom.alphanumeric(10).upcase}"
+    self.certificate_number ||= "BHV-#{SecureRandom.alphanumeric(10).upcase}"
   end
 
   def set_investment_date
@@ -88,27 +84,27 @@ class EquityInvestment < ApplicationRecord
   end
 
   def should_generate_certificate?
-    success? && certificate_number.present? &&
-      (certificate.blank? || certificate_needs_update?)
+    successful? && certificate_number.present? && 
+    (certificate.blank? || certificate_needs_update?)
   end
 
   def generate_certificate_after_commit
-    certificate = InvestmentCertificateService.generate_certificate(self)
-    return if certificate
-
-    Rails.logger.error "Failed to generate certificate for investment #{id}"
-    # Queue for retry if needed
-    CertificateGenerationJob.set(wait: 5.minutes).perform_later(id)
+    if InvestmentCertificateService.generate_certificate(self)
+      Rails.logger.info "Successfully generated certificate for investment #{id}"
+    else
+      Rails.logger.error "Failed to generate certificate for investment #{id}"
+      CertificateGenerationJob.set(wait: 5.minutes).perform_later(id)
+    end
   end
 
   def certificate_needs_update?
     saved_change_to_amount? || saved_change_to_shares? || saved_change_to_percentage? ||
-      saved_change_to_certificate_number? || certificate.blob.blank?
+    saved_change_to_certificate_number? || certificate.blob.blank?
   end
 
   def update_investor_portfolios
-    campaign.equity_investments.success.each do |investment|
-      InvestmentUpdateJob.perform_later(investment.id)
+    campaign.equity_investments.successful.each do |inv|
+      InvestmentUpdateJob.perform_later(inv.id)
     end
   end
 end

@@ -1,32 +1,26 @@
-# app/services/investment_certificate_service.rb
 class InvestmentCertificateService
   require 'prawn'
   require 'prawn/table'
   require 'prawn/measurement_extensions'
 
   def self.generate_certificate(investment)
-    return nil unless investment.is_a?(EquityInvestment) && investment.success?
+    return false unless valid_investment?(investment)
 
     begin
       pdf = initialize_pdf
-      campaign = investment.campaign
-
-      add_certificate_header(pdf)
-      add_investor_details(pdf, investment, campaign)
-      add_investment_details(pdf, investment, campaign)
-      add_footer(pdf, campaign)
-
-      attach_certificate(pdf, investment)
-    rescue Prawn::Errors::CannotRender => e
-      log_error('PDF generation failed', e, investment)
-      nil
-    rescue ActiveStorage::Error => e
-      log_error('Certificate upload failed', e, investment)
-      nil
-    rescue StandardError => e
-      log_error('Unexpected error', e, investment)
-      nil
+      add_certificate_content(pdf, investment)
+      attach_to_investment(pdf, investment)
+    rescue => e
+      log_error(e, investment)
+      false
     end
+  end
+
+  private
+
+  def self.valid_investment?(investment)
+    investment.is_a?(EquityInvestment) && investment.successful? && 
+    investment.certificate_number.present? && investment.campaign.present?
   end
 
   def self.initialize_pdf
@@ -45,7 +39,16 @@ class InvestmentCertificateService
     end
   end
 
-  def self.add_certificate_header(pdf)
+  def self.add_certificate_content(pdf, investment)
+    campaign = investment.campaign
+    
+    add_header(pdf)
+    add_investor_details(pdf, investment, campaign)
+    add_investment_details(pdf, investment, campaign)
+    add_footer(pdf, campaign)
+  end
+
+  def self.add_header(pdf)
     pdf.text 'BANTUHIVE INVESTMENT CERTIFICATE',
              size: 24, align: :center, style: :bold
     pdf.move_down 30
@@ -102,34 +105,20 @@ class InvestmentCertificateService
              size: 12, align: :center
   end
 
-  def self.attach_certificate(pdf, investment)
+  def self.attach_to_investment(pdf, investment)
     filename = "investment_certificate_#{investment.certificate_number}.pdf"
-    temp_file = Tempfile.new(filename, binmode: true)
-
-    begin
-      # Render PDF to temp file
+    
+    Tempfile.create(filename, binmode: true) do |temp_file|
       pdf.render_file(temp_file.path)
-      temp_file.close
+      temp_file.rewind
 
-      # Attach to investment
       investment.certificate.attach(
-        io: File.open(temp_file.path),
+        io: temp_file,
         filename: filename,
-        content_type: 'application/pdf',
-        identify: false
+        content_type: 'application/pdf'
       )
 
-      # Verify attachment
-      if investment.certificate.attached?
-        Rails.logger.info "Successfully attached certificate to investment #{investment.id}"
-        investment.certificate
-      else
-        Rails.logger.error "Failed to attach certificate to investment #{investment.id}"
-        nil
-      end
-    ensure
-      temp_file.close unless temp_file.closed?
-      temp_file.unlink
+      investment.certificate.attached?
     end
   end
 
@@ -137,9 +126,9 @@ class InvestmentCertificateService
     ActionController::Base.helpers.sanitize(text.to_s, tags: []).strip
   end
 
-  def self.log_error(message, error, investment)
-    full_message = "#{message} for investment #{investment.id}: #{error.message}"
-    Rails.logger.error(full_message)
+  def self.log_error(error, investment)
+    message = "Certificate generation failed for investment #{investment.id}: #{error.message}"
+    Rails.logger.error(message)
     Sentry.capture_exception(error, extra: { investment_id: investment.id }) if defined?(Sentry)
   end
 end
