@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_07_30_213530) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_31_041159) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -262,6 +262,31 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_30_213530) do
     t.index ["user_id"], name: "index_investor_documents_on_user_id"
   end
 
+  create_table "kycs", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "verified_by_id"
+    t.string "reference"
+    t.string "kyc_type", default: "investor", null: false
+    t.string "status", default: "pending", null: false
+    t.string "verification_type", null: false
+    t.string "id_number", null: false
+    t.date "id_expiry_date", null: false
+    t.text "rejection_reason"
+    t.datetime "verified_at"
+    t.jsonb "signature_data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.jsonb "investor_signature_data"
+    t.boolean "issuer_accepted_terms", default: false
+    t.datetime "signature_completed_at"
+    t.datetime "issuer_signature_completed_at"
+    t.index ["id_number"], name: "index_kycs_on_id_number", unique: true
+    t.index ["reference"], name: "index_kycs_on_reference", unique: true
+    t.index ["user_id", "status"], name: "index_kycs_on_user_id_and_status"
+    t.index ["user_id"], name: "index_kycs_on_user_id"
+    t.index ["verified_by_id"], name: "index_kycs_on_verified_by_id"
+  end
+
   create_table "leaderboard_entries", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.integer "points"
@@ -505,6 +530,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_30_213530) do
   add_foreign_key "fundraisers", "users"
   add_foreign_key "investor_documents", "campaigns"
   add_foreign_key "investor_documents", "users"
+  add_foreign_key "kycs", "users"
+  add_foreign_key "kycs", "users", column: "verified_by_id"
   add_foreign_key "leaderboard_entries", "users"
   add_foreign_key "pledges", "donations"
   add_foreign_key "pledges", "equity_investments"
