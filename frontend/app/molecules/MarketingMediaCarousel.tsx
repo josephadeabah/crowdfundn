@@ -118,7 +118,7 @@ const MarketingMediaCarousel: React.FC = () => {
       <div className="flex flex-col">
         <motion.div
           ref={ref}
-          className="relative w-full h-64 md:h-96 overflow-hidden rounded-sm"
+          className="relative w-full h-80 md:h-[32rem] overflow-hidden rounded-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: inView ? 1 : 0 }}
           transition={{ duration: 0.5 }}
