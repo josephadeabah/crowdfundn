@@ -1,10 +1,10 @@
 'use client';
-import React, { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import { FaPlay, FaPause } from "react-icons/fa";
+import React, { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
+import { FaPlay, FaPause } from 'react-icons/fa';
 
-type MediaType = "image" | "video";
+type MediaType = 'image' | 'video';
 
 interface BaseMediaItem {
   type: MediaType;
@@ -12,13 +12,13 @@ interface BaseMediaItem {
 }
 
 interface ImageMediaItem extends BaseMediaItem {
-  type: "image";
+  type: 'image';
   url: string;
   alt: string;
 }
 
 interface VideoMediaItem extends BaseMediaItem {
-  type: "video";
+  type: 'video';
   url: string;
   thumbnail: string;
 }
@@ -38,41 +38,41 @@ const MarketingMediaCarousel: React.FC = () => {
 
   const mediaItems: MediaItem[] = [
     {
-      type: "image",
-      url: "https://images.unsplash.com/photo-1531297484001-80022131f5a1",
-      alt: "Tech Marketing Campaign",
-      description: "How we transformed digital presence for Tech Corp"
+      type: 'image',
+      url: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1',
+      alt: 'Tech Marketing Campaign',
+      description: 'How we transformed digital presence for Tech Corp',
     },
     {
-      type: "video",
-      url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
-      thumbnail: "",
-      description: "Innovation in motion: A startup success story"
+      type: 'video',
+      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+      thumbnail: '',
+      description: 'Innovation in motion: A startup success story',
     },
     {
-      type: "image",
-      url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
-      alt: "Digital Marketing Strategy",
-      description: "Breaking records with our marketing strategy"
+      type: 'image',
+      url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f',
+      alt: 'Digital Marketing Strategy',
+      description: 'Breaking records with our marketing strategy',
     },
     {
-      type: "video",
-      url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-      thumbnail: "",
-      description: "Revolutionizing customer engagement through video"
+      type: 'video',
+      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+      thumbnail: '',
+      description: 'Revolutionizing customer engagement through video',
     },
     {
-      type: "image",
-      url: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
-      alt: "Team Collaboration",
-      description: "Building stronger teams through innovation"
+      type: 'image',
+      url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f',
+      alt: 'Team Collaboration',
+      description: 'Building stronger teams through innovation',
     },
     {
-      type: "video",
-      url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
-      thumbnail: "",
-      description: "The future of digital marketing"
-    }
+      type: 'video',
+      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+      thumbnail: '',
+      description: 'The future of digital marketing',
+    },
   ];
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -119,11 +119,11 @@ const MarketingMediaCarousel: React.FC = () => {
         <motion.div
           ref={ref}
           className="relative w-full h-80 md:h-[32rem] overflow-hidden rounded-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: inView ? 1 : 0 }}
+          initial={false}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          {item.type === "image" ? (
+          {item.type === 'image' ? (
             <img
               src={item.url}
               alt={item.alt}
@@ -144,7 +144,7 @@ const MarketingMediaCarousel: React.FC = () => {
               <button
                 onClick={togglePlayback}
                 className="absolute bottom-4 left-4 bg-orange-500 bg-opacity-80 p-3 rounded-full text-white hover:bg-opacity-100 transition-all duration-300"
-                aria-label={isPlaying ? "Pause video" : "Play video"}
+                aria-label={isPlaying ? 'Pause video' : 'Play video'}
               >
                 {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} />}
               </button>
@@ -152,7 +152,9 @@ const MarketingMediaCarousel: React.FC = () => {
           )}
         </motion.div>
         <div className="flex justify-between items-center mt-4 px-2">
-          <p className="text-gray-700 text-lg font-medium">{item.description}</p>
+          <p className="text-gray-700 text-lg font-medium">
+            {item.description}
+          </p>
           <button
             className="bg-green-900 text-white px-4 py-2 rounded-lg hover:bg-green-500 transition-colors duration-300 whitespace-nowrap"
             onClick={() => console.log(`Navigate to story`)}
