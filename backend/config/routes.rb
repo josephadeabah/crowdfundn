@@ -102,6 +102,7 @@ Rails.application.routes.draw do
           resources :equity_investments, only: [:index, :create] do
             collection do
               get :public_investments
+              get :my_investments
             end
           end
         end

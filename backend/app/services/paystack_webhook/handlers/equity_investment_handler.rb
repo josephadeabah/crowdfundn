@@ -98,13 +98,14 @@ module PaystackWebhook::Handlers
 
           # Generate certificate and send confirmation
           certificate = InvestmentCertificateService.generate_certificate(investment)
-          if certificate
-            InvestmentConfirmationEmailService.send_confirmation_email(
-              investment,
-              certificate.url,
-              response.dig(:data, :customer, :email),
-              investment.user&.full_name || 'Investor'
-            )
+            if investment.certificate_present?
+              InvestmentConfirmationEmailService.send_confirmation_email(
+                investment,
+                investment.certificate_url,
+                response.dig(:data, :customer, :email),
+                investment.user&.full_name || 'Investor'
+              )
+            end
           end
 
           # Update portfolio

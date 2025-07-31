@@ -116,6 +116,23 @@ module Api
           render json: { error: e.message }, status: :unprocessable_entity
         end
 
+        def my_investments
+          investments = @current_user.equity_investments
+                                    .includes(:campaign, :reward)
+                                    .order(created_at: :desc)
+                                    .page(params[:page])
+                                    .per(params[:per_page] || 10)
+
+          render json: {
+            investments: investments.map { |i| my_investment_json(i) },
+            pagination: pagination_data(investments),
+            summary: {
+              total_invested: investments.sum(:amount),
+              total_campaigns: investments.distinct.count(:campaign_id)
+            }
+          }, status: :ok
+        end
+
         def portfolio
           investments = @current_user.equity_investments
                                      .includes(:campaign, :reward)
@@ -262,6 +279,26 @@ module Api
               status: investment.campaign.status,
               last_valuation_change: investment.campaign.updated_at
             }
+          }
+        end
+
+        def my_investment_json(investment)
+          {
+            id: investment.id,
+            amount: investment.amount,
+            shares: investment.shares,
+            percentage: investment.percentage,
+            status: investment.status,
+            created_at: investment.created_at,
+            campaign: {
+              id: investment.campaign.id,
+              title: investment.campaign.title,
+              valuation: investment.campaign.valuation,
+              status: investment.campaign.status,
+              image_url: investment.campaign.image_url
+            },
+            reward: investment.reward&.as_json(only: %i[title description delivery_date]),
+            certificate_url: investment.certificate_url
           }
         end
 
