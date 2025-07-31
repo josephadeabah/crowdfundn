@@ -2,7 +2,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { FaPlay, FaPause } from "react-icons/fa";
 
 type MediaType = "image" | "video";
 
@@ -31,10 +30,9 @@ interface MediaItemComponentProps {
 }
 
 const MarketingMediaCarousel: React.FC = () => {
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [startX, setStartX] = useState<number>(0);
-  const [scrollLeft, setScrollLeft] = useState<number>(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
 
   const mediaItems: MediaItem[] = [
@@ -46,8 +44,8 @@ const MarketingMediaCarousel: React.FC = () => {
     },
     {
       type: "video",
-      url: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
-      thumbnail: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
+      url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+      thumbnail: "",
       description: "Innovation in motion: A startup success story"
     },
     {
@@ -58,8 +56,8 @@ const MarketingMediaCarousel: React.FC = () => {
     },
     {
       type: "video",
-      url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
-      thumbnail: "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3",
+      url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+      thumbnail: "",
       description: "Revolutionizing customer engagement through video"
     },
     {
@@ -70,21 +68,9 @@ const MarketingMediaCarousel: React.FC = () => {
     },
     {
       type: "video",
-      url: "https://images.unsplash.com/photo-1554774853-719586f82d77",
-      thumbnail: "https://images.unsplash.com/photo-1554774853-719586f82d77",
+      url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+      thumbnail: "",
       description: "The future of digital marketing"
-    },
-    {
-      type: "image",
-      url: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0",
-      alt: "Business Growth",
-      description: "Scaling success in the digital age"
-    },
-    {
-      type: "video",
-      url: "https://images.unsplash.com/photo-1557804506-669a67965ba0",
-      thumbnail: "https://images.unsplash.com/photo-1557804506-669a67965ba0",
-      description: "Transforming businesses digitally"
     }
   ];
 
@@ -104,42 +90,11 @@ const MarketingMediaCarousel: React.FC = () => {
   };
 
   const handleMouseUp = () => {
-    if (!carouselRef.current) return;
     setIsDragging(false);
-
-    const slideWidth = carouselRef.current.offsetWidth;
-    const scrollPos = carouselRef.current.scrollLeft;
-    const newIndex = Math.round(scrollPos / slideWidth);
-
-    const distance = Math.abs(scrollPos - newIndex * slideWidth);
-    if (distance < slideWidth * 0.25) {
-      setCurrentIndex(newIndex);
-      carouselRef.current.scrollTo({
-        left: newIndex * slideWidth,
-        behavior: "smooth"
-      });
-    }
   };
 
-  const MediaItem: React.FC<MediaItemComponentProps> = ({ item, index }) => {
-    const [isPlaying, setIsPlaying] = useState<boolean>(false);
-    const [ref, inView] = useInView({
-      threshold: 0.5,
-      triggerOnce: false
-    });
-
-    const togglePlay = (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.stopPropagation();
-      const videos = document.querySelectorAll('video');
-      videos.forEach((video) => video.pause());
-      setIsPlaying(!isPlaying);
-    };
-
-    useEffect(() => {
-      if (!inView && isPlaying) {
-        setIsPlaying(false);
-      }
-    }, [inView, isPlaying]);
+  const MediaItem: React.FC<MediaItemComponentProps> = ({ item }) => {
+    const [ref, inView] = useInView({ threshold: 0.5, triggerOnce: false });
 
     return (
       <div className="flex flex-col">
@@ -158,28 +113,21 @@ const MarketingMediaCarousel: React.FC = () => {
               loading="lazy"
             />
           ) : (
-            <div className="relative w-full h-full group">
-              <img
-                src={item.thumbnail}
-                alt="Video thumbnail"
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-              <button
-                onClick={togglePlay}
-                className="absolute bottom-4 left-4 bg-orange-500 bg-opacity-80 p-3 rounded-full text-white hover:bg-opacity-100 transition-all duration-300"
-                aria-label={isPlaying ? "Pause video" : "Play video"}
-              >
-                {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} />}
-              </button>
-            </div>
+            <video
+              src={item.url}
+              muted
+              autoPlay
+              loop
+              playsInline
+              className="w-full h-full object-cover"
+            />
           )}
         </motion.div>
         <div className="flex justify-between items-center mt-4 px-2">
           <p className="text-gray-700 text-lg font-medium">{item.description}</p>
           <button
             className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-300 whitespace-nowrap"
-            onClick={() => console.log(`Navigate to story ${index + 1}`)}
+            onClick={() => console.log(`Navigate to story`)}
           >
             Read customer story
           </button>
@@ -192,7 +140,9 @@ const MarketingMediaCarousel: React.FC = () => {
     <div className="w-full py-8">
       <div
         ref={carouselRef}
-        className="flex overflow-x-hidden cursor-grab active:cursor-grabbing"
+        className={`flex overflow-x-hidden ${
+          isDragging ? 'cursor-grabbing' : 'cursor-grab'
+        }`}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
