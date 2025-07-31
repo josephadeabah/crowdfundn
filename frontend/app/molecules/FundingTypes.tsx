@@ -4,7 +4,7 @@ import MarketingMediaCarousel from './MarketingMediaCarousel';
 
 const FundingTypes = () => {
   return (
-    <div className="">
+    <div className="px-2 sm:px-3">
       <div className="text-center mb-12">
         <h2 className="text-3xl font-bold mb-4">
           From tomorrow’s unicorns to local coffee shops

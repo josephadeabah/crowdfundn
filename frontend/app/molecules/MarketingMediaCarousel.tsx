@@ -167,7 +167,7 @@ const MarketingMediaCarousel: React.FC = () => {
   };
 
   return (
-    <div className="w-full px-1 py-8">
+    <div className="w-full py-8">
       <div
         ref={carouselRef}
         className={`flex overflow-x-hidden ${
