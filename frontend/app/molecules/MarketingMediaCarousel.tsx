@@ -118,7 +118,7 @@ const MarketingMediaCarousel: React.FC = () => {
       <div className="flex flex-col">
         <motion.div
           ref={ref}
-          className="relative w-full h-96 md:h-96 overflow-hidden rounded-sm"
+          className="relative w-full h-64 md:h-96 overflow-hidden rounded-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: inView ? 1 : 0 }}
           transition={{ duration: 0.5 }}
@@ -180,7 +180,7 @@ const MarketingMediaCarousel: React.FC = () => {
           {mediaItems.map((item, index) => (
             <div
               key={index}
-              className="min-w-[calc(33.333%-16px)] md:min-w-[calc(33.333%-24px)]"
+              className="min-w-[calc(50%-12px)] md:min-w-[calc(40%-16px)]"
               role="group"
               aria-label={`Slide ${index + 1} of ${mediaItems.length}`}
             >
