@@ -58,7 +58,7 @@ const MarketingMediaCarousel: React.FC = () => {
     },
     {
       type: "video",
-      url: "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3",
+      url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
       thumbnail: "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3",
       description: "Revolutionizing customer engagement through video"
     },
