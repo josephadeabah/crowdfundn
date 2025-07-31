@@ -10,7 +10,7 @@ class Article < ApplicationRecord
   validates :slug, uniqueness: true
 
   # Enums
-  enum status: { draft: 0, published: 1, archived: 2 }
+  enum :status, { draft: 0, published: 1, archived: 2 }
 
   # Callbacks
   before_validation :generate_slug, if: -> { slug.blank? && title.present? }
@@ -28,7 +28,9 @@ class Article < ApplicationRecord
   def featured_image_url
     return unless featured_image.attached?
 
-    "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{featured_image.blob.key}"
+    "#{Rails.application.credentials.dig(:digitalocean,
+                                         :endpoint)}/#{Rails.application.credentials.dig(:digitalocean,
+                                                                                         :bucket)}/#{featured_image.blob.key}"
   end
 
   # Method to return featured_image filename
@@ -38,9 +40,9 @@ class Article < ApplicationRecord
 
   # Custom JSON representation
   def as_json(options = {})
-    super(options).merge(
+    super.merge(
       featured_image: featured_image_url,
-      featured_image_filename: featured_image_filename,
+      featured_image_filename: featured_image_filename
     )
   end
 

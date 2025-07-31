@@ -21,7 +21,7 @@ module Api
 
         # GET /api/v1/articles/articles/:slug_or_id
         def show
-          render json: @article, include: [:description, :featured_image]
+          render json: @article, include: %i[description featured_image]
         end
 
         # POST /api/v1/articles/articles
@@ -72,10 +72,10 @@ module Api
         def set_article
           # Find article by slug or ID
           @article = if params[:slug_or_id].match?(/\A\d+\z/)
-                      Article.find_by!(id: params[:slug_or_id])
-                    else
-                      Article.find_by!(slug: params[:slug_or_id])
-                    end
+                       Article.find(params[:slug_or_id])
+                     else
+                       Article.find_by!(slug: params[:slug_or_id])
+                     end
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'Article not found' }, status: :not_found
         end

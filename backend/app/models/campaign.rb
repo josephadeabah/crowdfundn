@@ -21,7 +21,7 @@ class Campaign < ApplicationRecord
   validates :goal_amount, numericality: { greater_than: 0 }
   validates :slug, uniqueness: true, presence: true
 
-  enum status: { active: 0, completed: 1, canceled: 2 }
+  enum :status, { active: 0, completed: 1, canceled: 2 }
 
   # Permissions settings
   attribute :accept_donations, :boolean, default: true
@@ -40,8 +40,8 @@ class Campaign < ApplicationRecord
   # Attachments for images or videos
   has_one_attached :media # Use `has_many_attached` if there are multiple files
 
-  before_validation :generate_slug, if: -> { slug.blank? && title.present? }
   after_initialize :set_default_status, if: :new_record?
+  before_validation :generate_slug, if: -> { slug.blank? && title.present? }
   after_update :send_status_update_webhook, if: :status_changed?
   # Automatically call `update_status_based_on_date` after update
   after_update :update_status_based_on_date, if: -> { remaining_days.zero? && active? }
@@ -49,14 +49,16 @@ class Campaign < ApplicationRecord
   def to_param
     slug
   end
+
   # STI Configuration (replace the line 45 declaration with this)
   def self.inheritance_column
     'type'
   end
-  
+
   def self.descendants
     [EquityCampaign] # Add other subclasses as needed
   end
+
   # New cancel method
   def cancel
     update!(status: :canceled)
@@ -81,9 +83,9 @@ class Campaign < ApplicationRecord
   def media_filename
     media.attached? ? media.filename.to_s : nil
   end
-  
+
   # app/models/campaign.rb
-    def as_json(options = {})
+  def as_json(options = {})
     json = super({
       only: %i[
         id title goal_amount current_amount transferred_amount start_date end_date
@@ -129,14 +131,16 @@ class Campaign < ApplicationRecord
           equity_percentage: member.equity_percentage,
           description: member.description,
           avatar_url: member.avatar_url,
-          user: member.user ? {
-            id: member.user.id,
-            email: member.user.email,
-            profile: {
-              first_name: member.user.profile&.first_name,
-              last_name: member.user.profile&.last_name
-            }
-          } : nil
+          user: if member.user
+                  {
+                    id: member.user.id,
+                    email: member.user.email,
+                    profile: {
+                      first_name: member.user.profile&.first_name,
+                      last_name: member.user.profile&.last_name
+                    }
+                  }
+                end
         }
       end,
       fundraiser: {
@@ -150,7 +154,7 @@ class Campaign < ApplicationRecord
       remaining_days: remaining_days,
       favorited: options[:user] ? options[:user].favorited_campaigns.include?(self) : false
     )
-    end
+  end
 
   def total_days
     return 0 unless start_date && end_date
@@ -201,19 +205,19 @@ class Campaign < ApplicationRecord
     # Define the start and end of the current month
     start_of_month = Time.zone.now.beginning_of_month
     end_of_month = Time.zone.now.end_of_month
-  
+
     # Fetch successful donations within the current month and group them by day
     donations = self.donations
                     .where(status: 'successful', created_at: start_of_month..end_of_month)
                     .group_by_day(:created_at, format: '%Y-%m-%d')
                     .sum(:amount)
-  
+
     # Ensure all days in the current month are included, even if there are no donations
     (start_of_month.to_date..end_of_month.to_date).each do |date|
       formatted_date = date.strftime('%Y-%m-%d')
       donations[formatted_date] ||= 0
     end
-  
+
     donations.sort.to_h
   end
 
@@ -227,7 +231,7 @@ class Campaign < ApplicationRecord
     self.slug = title.parameterize
     # Handle duplicate slugs
     counter = 1
-    while Campaign.exists?(slug: slug) && (self.new_record? || Campaign.where.not(id: id).exists?(slug: slug))
+    while Campaign.exists?(slug: slug) && (new_record? || Campaign.where.not(id: id).exists?(slug: slug))
       self.slug = "#{title.parameterize}-#{counter}"
       counter += 1
     end

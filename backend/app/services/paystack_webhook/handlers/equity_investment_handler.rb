@@ -27,18 +27,18 @@ module PaystackWebhook::Handlers
 
         # Same metadata parsing logic
         metadata = if response.dig(:data, :metadata).is_a?(String)
-                    begin
-                      fixed_metadata = fix_malformed_json(response.dig(:data, :metadata))
-                      JSON.parse(fixed_metadata, symbolize_names: true)
-                    rescue JSON::ParserError => e
-                      Rails.logger.error "Failed to parse metadata even after fixing: #{e.message}"
-                      raise "Invalid metadata: #{response.dig(:data, :metadata)}"
-                    end
-                  else
-                    response.dig(:data, :metadata) || {}
-                  end
+                     begin
+                       fixed_metadata = fix_malformed_json(response.dig(:data, :metadata))
+                       JSON.parse(fixed_metadata, symbolize_names: true)
+                     rescue JSON::ParserError => e
+                       Rails.logger.error "Failed to parse metadata even after fixing: #{e.message}"
+                       raise "Invalid metadata: #{response.dig(:data, :metadata)}"
+                     end
+                   else
+                     response.dig(:data, :metadata) || {}
+                   end
 
-        Rails.logger.debug "Parsed metadata: #{metadata}"
+        Rails.logger.debug { "Parsed metadata: #{metadata}" }
 
         # Same donor location handling
         donor_ip = response.dig(:data, :ip_address)
@@ -49,7 +49,7 @@ module PaystackWebhook::Handlers
 
         # Find the investment
         investment = EquityInvestment.find_by(id: metadata[:investment_id])
-        
+
         if investment && (investment.pending? || investment.initialized?)
           # Update with all the same transaction details as donations
           investment.update!(
@@ -75,14 +75,14 @@ module PaystackWebhook::Handlers
               }
             }
           )
-          
+
           # Update campaign totals
           campaign = investment.campaign
           campaign.update!(
             total_equity_invested: campaign.total_equity_invested + net_amount,
             shares_issued: campaign.shares_issued + investment.shares
           )
-          
+
           # Handle rewards (same pattern as donations)
           if investment.reward
             Pledge.create!(
@@ -95,28 +95,28 @@ module PaystackWebhook::Handlers
               user_id: campaign.fundraiser_id
             )
           end
-          
+
           # Generate certificate and send confirmation
           certificate = InvestmentCertificateService.generate_certificate(investment)
-          InvestmentConfirmationEmailService.send_confirmation_email(
-            investment, 
-            certificate.url,
-            response.dig(:data, :customer, :email),
-            investment.user&.full_name || 'Investor'
-          ) if certificate
-          
+          if certificate
+            InvestmentConfirmationEmailService.send_confirmation_email(
+              investment,
+              certificate.url,
+              response.dig(:data, :customer, :email),
+              investment.user&.full_name || 'Investor'
+            )
+          end
+
           # Update portfolio
           InvestmentUpdateJob.perform_later(investment.id)
         else
           Rails.logger.error "Equity investment not found or invalid state: #{metadata[:investment_id]}"
-          raise "Invalid investment state"
+          raise 'Invalid investment state'
         end
       else
         Rails.logger.error "Transaction failed with status #{transaction_status}"
         raise "Transaction status is #{transaction_status}"
       end
     end
-
-    private
   end
 end

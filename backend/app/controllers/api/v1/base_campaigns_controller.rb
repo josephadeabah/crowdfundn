@@ -1,8 +1,11 @@
 module Api
   module V1
     class BaseCampaignsController < ApplicationController
-      before_action :authenticate_request, only: %i[index create update destroy my_campaigns statistics favorite unfavorite favorites]
-      before_action :set_campaign, only: %i[show update destroy webhook_status_update favorite unfavorite cancel_campaign contact_fundraiser]
+      before_action :authenticate_request,
+                    only: %i[index create update destroy my_campaigns statistics favorite unfavorite favorites]
+      before_action :set_campaign,
+                    only: %i[show update destroy webhook_status_update favorite unfavorite cancel_campaign
+                             contact_fundraiser]
       before_action :authorize_campaign_user!, only: %i[update destroy]
 
       def index
@@ -57,16 +60,16 @@ module Api
       def group_by_category
         page = params[:page] || 1
         page_size = params[:page_size] || 12
-        
+
         # Group only active campaigns by category
         grouped_campaigns = Campaign.active.order(created_at: :desc).group_by do |campaign|
           campaign.category.downcase.gsub(/\s+/, '-')
         end
-        
+
         grouped_paginated_campaigns = grouped_campaigns.transform_values do |campaigns|
           Kaminari.paginate_array(campaigns).page(page).per(page_size)
         end
-      
+
         response_data = grouped_paginated_campaigns.each_with_object({}) do |(category, campaigns), result|
           result[category] = {
             campaigns: campaigns.map do |campaign|
@@ -77,22 +80,22 @@ module Api
             total_count: campaigns.total_count
           }
         end
-        
+
         render json: {
           grouped_campaigns: response_data
         }, status: :ok
-      end 
+      end
 
       def create
         @campaign = campaign_class.new(campaign_params)
         @campaign.fundraiser = @current_user
         @campaign.media.attach(params[:media]) if params[:media].present?
-        
+
         # Ensure slug is generated from title if not provided
         @campaign.slug ||= @campaign.title.parameterize if @campaign.title.present?
         # Explicitly set type from params if present
         @campaign.type = campaign_params[:type] if campaign_params[:type]
-        
+
         # Set defaults for equity campaigns
         if @campaign.is_a?(EquityCampaign)
           @campaign.equity_status ||= :draft
@@ -101,7 +104,7 @@ module Api
           @campaign.minimum_investment ||= 0
           @campaign.maximum_investment ||= 0
         end
-      
+
         if @campaign.save
           render json: {
             message: "#{@campaign.class.name} campaign created successfully",
@@ -159,10 +162,10 @@ module Api
 
       def favorites
         @campaigns = @current_user.favorited_campaigns
-          .includes(:rewards, :updates, :comments, fundraiser: :profile)
-          .page(params[:page])
-          .per(params[:pageSize] || 20)
-      
+                                  .includes(:rewards, :updates, :comments, fundraiser: :profile)
+                                  .page(params[:page])
+                                  .per(params[:pageSize] || 20)
+
         render json: {
           campaigns: @campaigns.map { |c| campaign_json(c) },
           current_page: @campaigns.current_page,
@@ -205,14 +208,15 @@ module Api
         end
 
         # Validate required parameters
-        required_params = [:full_name, :email, :message]
+        required_params = %i[full_name email message]
         missing_params = required_params.select { |p| params[p].blank? }
         if missing_params.any?
-          return render json: { error: "Missing required fields: #{missing_params.join(', ')}" }, status: :unprocessable_entity
+          return render json: { error: "Missing required fields: #{missing_params.join(', ')}" },
+                        status: :unprocessable_entity
         end
 
         # Validate email format
-        unless params[:email] =~ /\A[^@\s]+@[^@\s]+\z/
+        unless /\A[^@\s]+@[^@\s]+\z/.match?(params[:email])
           return render json: { error: 'Invalid email format' }, status: :unprocessable_entity
         end
 
@@ -227,21 +231,21 @@ module Api
         )
 
         render json: { message: 'Your message has been sent to the fundraiser.' }, status: :ok
-      rescue => e
+      rescue StandardError => e
         render json: { error: e.message }, status: :unprocessable_entity
       end
 
       protected
 
       def campaign_scope
-      campaign_class.includes(
-        :rewards, 
-        :updates, 
-        :comments, 
-        :investor_documents, 
-        fundraiser: :profile,
-      )
-    end
+        campaign_class.includes(
+          :rewards,
+          :updates,
+          :comments,
+          :investor_documents,
+          fundraiser: :profile
+        )
+      end
 
       def campaign_class
         self.class.name.include?('Equity') ? EquityCampaign : Campaign
@@ -276,10 +280,10 @@ module Api
             description: campaign.company_description,
             headquarters: campaign.company_headquarters,
             website: campaign.company_website,
-            contract_term: campaign.contract_term,
+            contract_term: campaign.contract_term
           }
         )
-        
+
         if campaign.is_a?(EquityCampaign)
           json.merge!(
             shares_available: campaign.shares_available,
@@ -292,7 +296,7 @@ module Api
             }
           )
         end
-        
+
         json
       end
 
@@ -314,8 +318,8 @@ module Api
 
       def set_campaign
         campaign_id = params[:id] || JSON.parse(request.body.read)['campaign_id']
-        @campaign = if campaign_id.to_s.match?(/\A\d+\z/)  # Convert to string before matching
-                      campaign_scope.find_by!(id: campaign_id)
+        @campaign = if campaign_id.to_s.match?(/\A\d+\z/) # Convert to string before matching
+                      campaign_scope.find(campaign_id)
                     else
                       campaign_scope.find_by!(slug: campaign_id)
                     end

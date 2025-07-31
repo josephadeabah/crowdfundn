@@ -6,8 +6,8 @@ module Api
         class InvestorDocumentsController < ApplicationController
           before_action :authenticate_request
           before_action :set_campaign
-          before_action :authorize_fundraiser!, except: [:index, :show]
-          before_action :set_document, only: [:show, :update, :destroy]
+          before_action :authorize_fundraiser!, except: %i[index show]
+          before_action :set_document, only: %i[show update destroy]
 
           # GET /api/v1/campaigns/:campaign_id/investor_documents
           def index
@@ -46,8 +46,8 @@ module Api
                 document: @document.as_json
               }, status: :created
             else
-              render json: { 
-                errors: @document.errors.full_messages 
+              render json: {
+                errors: @document.errors.full_messages
               }, status: :unprocessable_entity
             end
           end
@@ -56,7 +56,7 @@ module Api
           def update
             if params[:files].present?
               @document.files.purge if @document.files.attached?
-              
+
               params[:files].each_with_index do |file, index|
                 filename = "#{params[:document_type]}_#{Time.now.to_i}_#{index}.pdf"
                 @document.files.attach(
@@ -73,8 +73,8 @@ module Api
                 document: @document.as_json
               }, status: :ok
             else
-              render json: { 
-                errors: @document.errors.full_messages 
+              render json: {
+                errors: @document.errors.full_messages
               }, status: :unprocessable_entity
             end
           end
@@ -100,9 +100,9 @@ module Api
           end
 
           def authorize_fundraiser!
-            unless @campaign.fundraiser == @current_user
-              render json: { error: 'Unauthorized' }, status: :unauthorized
-            end
+            return if @campaign.fundraiser == @current_user
+
+            render json: { error: 'Unauthorized' }, status: :unauthorized
           end
 
           def document_params

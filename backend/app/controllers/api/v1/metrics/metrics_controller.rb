@@ -40,10 +40,11 @@ module Api
             donations: {
               total_amount: Donation.sum(:gross_amount),
               average_donation: Donation.average(:gross_amount),
-              donations_over_time: Donation.group_by_week(:created_at, format: "%Y-%m-%d").sum(:gross_amount).sort.reverse.to_h,
+              donations_over_time: Donation.group_by_week(:created_at,
+                                                          format: '%Y-%m-%d').sum(:gross_amount).sort.reverse.to_h,
               repeat_donors: Donation.select(:user_id).group(:user_id).having('count(*) > 1').count.keys.size
             },
-            platform_fees:  Donation.where(processed: false).sum(:platform_fee),
+            platform_fees: Donation.where(processed: false).sum(:platform_fee),
             roles: Role.joins(:users).group(:name).count,
             subscriptions: {
               active: Subscription.where(status: 'active').count,

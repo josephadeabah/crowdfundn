@@ -20,12 +20,15 @@ module Api
 
         # Fetch user’s assigned reward (requires authentication)
         def my_reward
-          return render json: { message: 'Anonymous users do not have rewards' }, status: :forbidden if @current_user.nil? || @current_user.id.nil?
-        
+          if @current_user.nil? || @current_user.id.nil?
+            return render json: { message: 'Anonymous users do not have rewards' },
+                          status: :forbidden
+          end
+
           BackerReward.assign_reward(@current_user)
-        
+
           reward = @current_user.backer_rewards.order(points_required: :desc, created_at: :desc).first
-        
+
           if reward
             render json: {
               id: reward.id,
@@ -37,7 +40,7 @@ module Api
           else
             render json: { message: 'No rewards assigned yet' }, status: :ok
           end
-        end        
+        end
       end
     end
   end

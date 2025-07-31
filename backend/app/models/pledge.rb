@@ -32,8 +32,8 @@ class Pledge < ApplicationRecord
   private
 
   def must_belong_to_donation_or_investment
-    unless donation_id.present? ^ equity_investment_id.present? # XOR operation
-      errors.add(:base, "Pledge must belong to either a donation or an equity investment, but not both")
-    end
+    return if donation_id.present? ^ equity_investment_id.present? # XOR operation
+
+    errors.add(:base, 'Pledge must belong to either a donation or an equity investment, but not both')
   end
 end

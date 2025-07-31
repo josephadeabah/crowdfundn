@@ -24,7 +24,8 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
   validates :currency_symbol, presence: true
   validates :phone_code, presence: true
-  validates :full_name, :phone_number, :country, :payment_method, :currency, :birth_date, :category, :target_amount, presence: true
+  validates :full_name, :phone_number, :country, :payment_method, :currency, :birth_date, :category, :target_amount,
+            presence: true
   # Add this validation for equity investment
   validates :tax_id, format: { with: /\A[A-Z0-9]+\z/ }, if: :investor?
   has_one :profile, dependent: :destroy
@@ -102,13 +103,13 @@ class User < ApplicationRecord
   # Update accredited investor check with proper decimal handling
   def accredited_investor?
     return false unless net_worth.present? && annual_income.present?
-    
+
     net_worth >= 1_000_000 || annual_income >= 200_000
   end
 
   def has_premium_access?
     # Check if user has an active subscription
-    subscriptions.where("expires_at > ?", Time.current).exists? ||
+    subscriptions.where('expires_at > ?', Time.current).exists? ||
       # Or if they have a lifetime access flag
       premium_access
   end

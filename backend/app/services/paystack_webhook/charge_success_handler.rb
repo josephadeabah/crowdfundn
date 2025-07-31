@@ -8,9 +8,7 @@ class PaystackWebhook::ChargeSuccessHandler
     Rails.logger.info { "Processing charge success: #{transaction_reference}" }
 
     # Check if the event has already been processed (deduplication)
-    if EventProcessed.exists?(event_id: transaction_reference)
-      return
-    end
+    return if EventProcessed.exists?(event_id: transaction_reference)
 
     ActiveRecord::Base.transaction do
       if equity_investment?(@data)
@@ -18,10 +16,10 @@ class PaystackWebhook::ChargeSuccessHandler
       else
         PaystackWebhook::Handlers::DonationHandler.new(@data).call
       end
-      
+
       EventProcessed.create!(event_id: transaction_reference)
     end
-  rescue => e
+  rescue StandardError => e
     Rails.logger.error "Webhook processing failed: #{e.message}"
     raise e
   end

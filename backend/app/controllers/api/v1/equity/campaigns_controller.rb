@@ -7,8 +7,8 @@ module Api
           if @campaign.may_launch? && @campaign.launch!
             render json: campaign_json(@campaign), status: :ok
           else
-            render json: { 
-              error: "Cannot launch campaign",
+            render json: {
+              error: 'Cannot launch campaign',
               errors: @campaign.errors.full_messages
             }, status: :unprocessable_entity
           end
@@ -18,8 +18,8 @@ module Api
           if @campaign.may_close? && @campaign.close!
             render json: campaign_json(@campaign), status: :ok
           else
-            render json: { 
-              error: "Cannot close campaign",
+            render json: {
+              error: 'Cannot close campaign',
               errors: @campaign.errors.full_messages
             }, status: :unprocessable_entity
           end

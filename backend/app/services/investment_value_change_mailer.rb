@@ -15,14 +15,14 @@ class InvestmentValueChangeMailer < ApplicationMailer
     body = <<~HTML
       <p>Hello #{user},</p>
       <p>We want to inform you about changes to your investment in <strong>#{campaign_name}</strong>.</p>
-      
+
       <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;">
         <p><strong>Original Investment:</strong> #{currency_symbol}#{investment_amount.round(2)}</p>
         <p><strong>Current Value:</strong> #{currency_symbol}#{current_value.round(2)}</p>
         <p><strong>Total Returns:</strong> #{currency_symbol}#{total_returns.round(2)}</p>
         <p><strong>ROI:</strong> #{roi.round(2)}%</p>
       </div>
-      
+
       <p>This update was calculated on <strong>#{update_date}</strong> based on the current valuation of <strong>#{campaign_name}</strong>.</p>
       <p>You can view more details in your <a href="#{Rails.application.routes.url_helpers.portfolio_url(host: 'bantuhive.com')}">investment portfolio</a>.</p>
     HTML

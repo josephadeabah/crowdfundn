@@ -24,18 +24,18 @@ module PaystackWebhook::Handlers
         adjusted_platform_fee = platform_fee - paystack_fee
 
         metadata = if response.dig(:data, :metadata).is_a?(String)
-                    begin
-                      fixed_metadata = fix_malformed_json(response.dig(:data, :metadata))
-                      JSON.parse(fixed_metadata, symbolize_names: true)
-                    rescue JSON::ParserError => e
-                      Rails.logger.error "Failed to parse metadata even after fixing: #{e.message}"
-                      raise "Invalid metadata: #{response.dig(:data, :metadata)}"
-                    end
-                  else
-                    response.dig(:data, :metadata) || {}
-                  end
+                     begin
+                       fixed_metadata = fix_malformed_json(response.dig(:data, :metadata))
+                       JSON.parse(fixed_metadata, symbolize_names: true)
+                     rescue JSON::ParserError => e
+                       Rails.logger.error "Failed to parse metadata even after fixing: #{e.message}"
+                       raise "Invalid metadata: #{response.dig(:data, :metadata)}"
+                     end
+                   else
+                     response.dig(:data, :metadata) || {}
+                   end
 
-        Rails.logger.debug "Parsed metadata: #{metadata}"
+        Rails.logger.debug { "Parsed metadata: #{metadata}" }
 
         user_id = metadata[:user_id]
         campaign_id = metadata[:campaign_id]
@@ -61,9 +61,9 @@ module PaystackWebhook::Handlers
         subaccount_contact = response.dig(:data, :subaccount, :primary_contact_email) || 'No contact email'
         subaccount_phone = response.dig(:data, :subaccount, :primary_contact_phone) || 'No contact phone'
 
-        shipping_data = metadata[:metadata] && metadata[:metadata][:shippingData] || {}
-        selected_rewards = metadata[:metadata] && metadata[:metadata][:selectedRewards] || []
-        delivery_option = metadata[:metadata] && metadata[:metadata][:deliveryOption] || 'pickup'
+        shipping_data = (metadata[:metadata] && metadata[:metadata][:shippingData]) || {}
+        selected_rewards = (metadata[:metadata] && metadata[:metadata][:selectedRewards]) || []
+        delivery_option = (metadata[:metadata] && metadata[:metadata][:deliveryOption]) || 'pickup'
 
         donation = Donation.create!(
           transaction_reference: transaction_reference,
@@ -110,20 +110,20 @@ module PaystackWebhook::Handlers
         campaign.update_transferred_amount(net_amount)
 
         selected_rewards.each do |reward|
-          unless Pledge.exists?(donation_id: donation.id, reward_id: reward[:id])
-            Pledge.create!(
-              donation_id: donation.id,
-              reward_id: reward[:id],
-              amount: reward[:amount],
-              shipping_data: shipping_data,
-              selected_rewards: [reward],
-              delivery_option: delivery_option,
-              status: 'pending',
-              shipping_status: 'not_shipped',
-              campaign_id: campaign_id,
-              user_id: metadata[:fundraiser_id]
-            )
-          end
+          next if Pledge.exists?(donation_id: donation.id, reward_id: reward[:id])
+
+          Pledge.create!(
+            donation_id: donation.id,
+            reward_id: reward[:id],
+            amount: reward[:amount],
+            shipping_data: shipping_data,
+            selected_rewards: [reward],
+            delivery_option: delivery_option,
+            status: 'pending',
+            shipping_status: 'not_shipped',
+            campaign_id: campaign_id,
+            user_id: metadata[:fundraiser_id]
+          )
         end
 
         DonationConfirmationEmailService.send_confirmation_email(donation)
@@ -140,7 +140,5 @@ module PaystackWebhook::Handlers
         raise "Transaction status is #{transaction_status}"
       end
     end
-
-    private
   end
 end

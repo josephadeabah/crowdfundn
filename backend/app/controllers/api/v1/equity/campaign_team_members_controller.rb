@@ -6,12 +6,12 @@ module Api
         before_action :authenticate_request
         before_action :set_campaign
         before_action :authorize_campaign_user!
-        before_action :set_team_member, only: [:update, :destroy]
+        before_action :set_team_member, only: %i[update destroy]
 
         def index
           @team_members = @campaign.campaign_team_members.includes(:user)
           render json: {
-            team_members: @team_members.map { |tm| 
+            team_members: @team_members.map do |tm|
               {
                 id: tm.id,
                 name: tm.name,
@@ -22,15 +22,15 @@ module Api
                 description: tm.description,
                 avatar_url: tm.avatar.attached? ? url_for(tm.avatar_url) : nil
               }
-            }
+            end
           }, status: :ok
         end
 
         def create
           @team_member = @campaign.campaign_team_members.new(team_member_params)
-          
+
           @team_member.avatar.attach(params.dig(:campaign_team_member, :avatar))
-          
+
           if @team_member.save
             render json: team_member_json(@team_member), status: :created
           else
@@ -40,7 +40,7 @@ module Api
 
         def convert_to_user
           @team_member = CampaignTeamMember.find(params[:id])
-          
+
           if @team_member.convert_to_user
             render json: { message: 'Successfully converted to user' }
           else
@@ -61,9 +61,9 @@ module Api
           if @team_member.destroy
             render json: { success: true, message: 'Team member removed successfully' }, status: :ok
           else
-            render json: { 
-              success: false, 
-              errors: @team_member.errors.full_messages 
+            render json: {
+              success: false,
+              errors: @team_member.errors.full_messages
             }, status: :unprocessable_entity
           end
         end
@@ -86,8 +86,8 @@ module Api
           params.require(:campaign_team_member).permit(
             :name,
             :email,
-            :role, 
-            :title, 
+            :role,
+            :title,
             :equity_percentage,
             :description,
             :user_id # Still optional
@@ -99,7 +99,7 @@ module Api
             only: %i[id role title equity_percentage description created_at updated_at name email],
             methods: [:avatar_url]
           )
-          
+
           if team_member.user
             json.merge!(
               user: team_member.user.as_json(

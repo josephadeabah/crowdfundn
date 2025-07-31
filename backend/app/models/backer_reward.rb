@@ -12,19 +12,19 @@ class BackerReward < ApplicationRecord
 
   def self.assign_reward(user)
     return if user.nil? || user.id.nil? # Skip anonymous users
-  
+
     user_points = user.total_points
-  
+
     reward_level = LEVELS.find { |_, range| range.include?(user_points) }&.first
-  
+
     user.backer_rewards.destroy_all
-  
+
     return unless reward_level
-  
+
     user.backer_rewards.create!(
       level: reward_level.to_s.capitalize,
       points_required: user_points,
       description: "BHC: #{user_points * 10} coins"
     )
-  end  
+  end
 end

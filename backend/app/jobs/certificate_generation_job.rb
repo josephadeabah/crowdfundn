@@ -6,11 +6,11 @@ class CertificateGenerationJob < ApplicationJob
     investment = EquityInvestment.find_by(id: investment_id)
     return unless investment&.success?
 
-    unless investment.certificate_present?
-      certificate = InvestmentCertificateService.generate_certificate(investment)
-      unless certificate
-        retry_job(wait: 10.minutes) if executions < 3
-      end
-    end
+    return if investment.certificate_present?
+
+    certificate = InvestmentCertificateService.generate_certificate(investment)
+    return if certificate
+
+    retry_job(wait: 10.minutes) if executions < 3
   end
 end

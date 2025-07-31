@@ -7,7 +7,7 @@ module PaystackWebhook
 
     def call
       transaction_reference = @data[:reference]
-      
+
       # Check for duplicate processing
       if EventProcessed.exists?(event_id: transaction_reference)
         Rails.logger.info "Premium subscription already processed: #{transaction_reference}"
@@ -22,7 +22,7 @@ module PaystackWebhook
         end
 
         metadata = parse_metadata(response)
-        
+
         # Only process if this is a premium subscription
         if metadata[:premium_access]
           user = User.find(metadata[:user_id])
@@ -51,7 +51,7 @@ module PaystackWebhook
     def process_premium_subscription(user, response, metadata)
       amount = response.dig(:data, :amount).to_f / 100.0
       reference = response.dig(:data, :reference)
-      
+
       # Create premium subscription record
       subscription = PremiumSubscription.create!(
         user: user,

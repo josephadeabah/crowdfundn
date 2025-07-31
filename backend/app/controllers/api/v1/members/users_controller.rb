@@ -21,6 +21,10 @@ module Api
           }, status: :ok
         end
 
+        def show
+          render json: @current_user.as_json(include: %i[profile roles]), status: :ok
+        end
+
         # In your subscriptions_controller or payment processor
         def create
           # Process payment...
@@ -31,18 +35,14 @@ module Api
               expires_at: 1.month.from_now,
               status: 'active'
             )
-            
+
             # Update user's premium access
             @current_user.update(premium_access: true)
-            
+
             render json: { success: true, subscription: subscription }
           else
             render json: { success: false, error: 'Payment failed' }, status: :unprocessable_entity
           end
-        end
-
-        def show
-          render json: @current_user.as_json(include: %i[profile roles]), status: :ok
         end
 
         def show_by_id
@@ -52,26 +52,26 @@ module Api
         def create_subaccount
           user = User.find(params[:user_id])
           raise 'User not found' unless user
-        
+
           # Prepare metadata
           metadata = params[:subaccount][:metadata] || { custom_fields: [] }
-        
+
           # Add user and campaign details to metadata
           metadata.merge!(
             user_id: user.id,
             email: user.email,
-            user_name: user.full_name,
+            user_name: user.full_name
           )
-        
+
           # Ensure custom_fields is an array
-          if metadata[:custom_fields]
-            metadata[:custom_fields] = metadata[:custom_fields].map do |field|
-              field.slice(:display_name, :variable_name, :value, :type)
-            end
-          else
-            metadata[:custom_fields] = []
-          end
-        
+          metadata[:custom_fields] = if metadata[:custom_fields]
+                                       metadata[:custom_fields].map do |field|
+                                         field.slice(:display_name, :variable_name, :value, :type)
+                                       end
+                                     else
+                                       []
+                                     end
+
           ActiveRecord::Base.transaction do
             # Create a new subaccount via Paystack
             response = PaystackService.new.create_subaccount(
@@ -86,9 +86,9 @@ module Api
               primary_contact_phone: user.phone_number,
               metadata: metadata
             )
-        
+
             raise StandardError, response[:message] unless response[:status] == true
-        
+
             # Create and associate a new subaccount with the user
             subaccount = Subaccount.create!(
               business_name: response[:data][:business_name],
@@ -102,11 +102,11 @@ module Api
               metadata: metadata,
               user_id: user.id
             )
-        
+
             # Update user's subaccount_id
             user.update_columns(subaccount_id: subaccount.subaccount_code)
           end
-        
+
           render json: { success: true, subaccount_code: user.subaccount_id }, status: :ok
         rescue StandardError => e
           Rails.logger.error "Error during account creation: #{e.message}"
@@ -130,39 +130,42 @@ module Api
         def update_subaccount
           user = User.find(params[:user_id])
           raise 'User not found' unless user
-        
+
           subaccount = Subaccount.find_by(subaccount_code: params[:subaccount_code])
           if subaccount.nil?
             render json: { success: false, error: 'Subaccount not found' }, status: :not_found
             return
           end
-        
+
           metadata = params[:metadata] || {}
-        
+
           # Add user and campaign details to metadata
           metadata.merge!(
             user_id: user.id,
             email: user.email,
-            user_name: user.full_name,
+            user_name: user.full_name
           )
-        
+
           # Check if recipient_code exists. If it does, delete and create a new one.
           if subaccount.recipient_code.present?
             # Attempt to delete the recipient code on Paystack
             delete_response = PaystackService.new.delete_transfer_recipient(subaccount.recipient_code)
             unless delete_response[:status]
               # If the recipient code does not exist on Paystack, skip deletion
-              if delete_response[:message]&.include?('Not Found')
-                Rails.logger.warn "Recipient code not found on Paystack, skipping deletion."
-              else
+              unless delete_response[:message]&.include?('Not Found')
                 raise StandardError, "Failed to delete recipient on Paystack: #{delete_response[:message]}"
               end
+
+              Rails.logger.warn 'Recipient code not found on Paystack, skipping deletion.'
+
+
+
             end
-        
+
             # Delete recipient code locally
             subaccount.update!(recipient_code: nil)
           end
-        
+
           # Proceed to update the subaccount
           response = PaystackService.new.update_subaccount(
             subaccount_code: subaccount.subaccount_code,
@@ -177,7 +180,7 @@ module Api
             primary_contact_phone: user.phone_number,
             metadata: metadata
           )
-        
+
           if response[:status] == true
             subaccount.update!(
               business_name: response[:data][:business_name],
@@ -190,7 +193,7 @@ module Api
               metadata: metadata,
               user_id: user.id
             )
-        
+
             # If the recipient_code was deleted, create a new one
             if response[:status] == true && subaccount.recipient_code.blank?
               create_response = PaystackService.new.create_transfer_recipient(
@@ -202,7 +205,7 @@ module Api
                 description: "Recipient for #{params[:business_name]}",
                 metadata: metadata
               )
-        
+
               if create_response[:status] == true
                 subaccount.update!(recipient_code: create_response[:data][:recipient_code])
               else
@@ -211,7 +214,7 @@ module Api
                 return
               end
             end
-        
+
             render json: { success: true, subaccount: subaccount }, status: :ok
           else
             render json: { success: false, error: response[:message] }, status: :unprocessable_entity

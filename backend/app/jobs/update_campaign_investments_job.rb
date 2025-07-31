@@ -17,7 +17,7 @@ class InvestmentUpdateJob < ApplicationJob
   def perform(investment_id)
     investment = EquityInvestment.find(investment_id)
     investment.touch # This forces updated_at to change
-    
+
     # Broadcast update via ActionCable if you're using it
     if defined?(InvestmentsChannel)
       InvestmentsChannel.broadcast_to(
@@ -31,10 +31,10 @@ class InvestmentUpdateJob < ApplicationJob
         }
       )
     end
-    
+
     # Optionally send email notification for significant changes
-    if investment.saved_change_to_percentage? || investment.campaign.saved_change_to_valuation?
-      InvestmentValueChangeMailer.notify(investment).deliver_later
-    end
+    return unless investment.saved_change_to_percentage? || investment.campaign.saved_change_to_valuation?
+
+    InvestmentValueChangeMailer.notify(investment).deliver_later
   end
 end

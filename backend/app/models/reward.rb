@@ -12,7 +12,9 @@ class Reward < ApplicationRecord
   def image_url
     return unless image.attached?
 
-    "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{image.blob.key}"
+    "#{Rails.application.credentials.dig(:digitalocean,
+                                         :endpoint)}/#{Rails.application.credentials.dig(:digitalocean,
+                                                                                         :bucket)}/#{image.blob.key}"
   end
 
   def image_filename

@@ -7,7 +7,7 @@ module PaystackWebhook::JsonHelper
     else
       json_string + '"}'
     end
-  rescue => e
+  rescue StandardError => e
     Rails.logger.error "Failed to fix JSON string: #{e.message}"
     json_string
   end

@@ -5,6 +5,13 @@ module Api
       class PremiumSubscriptionsController < ApplicationController
         before_action :authenticate_request
 
+        def show
+          render json: {
+            has_premium: @current_user.premium_access?,
+            expires_at: @current_user.premium_expires_at
+          }, status: :ok
+        end
+
         def create
           # Initialize Paystack payment
           paystack_service = PaystackService.new
@@ -23,13 +30,6 @@ module Api
           else
             render json: { error: response[:message] }, status: :unprocessable_entity
           end
-        end
-
-        def show
-          render json: {
-            has_premium: @current_user.premium_access?,
-            expires_at: @current_user.premium_expires_at
-          }, status: :ok
         end
       end
     end

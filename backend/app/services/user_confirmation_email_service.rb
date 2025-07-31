@@ -3,7 +3,7 @@ class UserConfirmationEmailService
     token = user.confirmation_token.presence || 'invalid-token-please-enter-your-email-to-resend'
     confirmation_url = "#{host}/auth/confirm_email/#{token}"
     email = user.email
-    full_name = user.full_name.presence || "Anonymous"  # Default to 'Anonymous' if name is missing
+    full_name = user.full_name.presence || 'Anonymous' # Default to 'Anonymous' if name is missing
 
     send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
       to: [
@@ -75,7 +75,7 @@ class UserConfirmationEmailService
               }
               .footer a:hover {
                 text-decoration: underline;
-              }    
+              }#{'    '}
             </style>
           </head>
           <body>
