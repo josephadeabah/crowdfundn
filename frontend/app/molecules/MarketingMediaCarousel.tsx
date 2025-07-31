@@ -116,74 +116,75 @@ const MarketingMediaCarousel: React.FC = () => {
     });
   };
 
-const MediaItem: React.FC<MediaItemComponentProps> = ({ item, index }) => {
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [ref, inView] = useInView({
-    threshold: 0.5,
-    triggerOnce: false
-  });
-
-  const togglePlay = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    const videos = document.querySelectorAll('video');
-    videos.forEach((video) => {
-      video.pause();
+  const MediaItem: React.FC<MediaItemComponentProps> = ({ item, index }) => {
+    const [isPlaying, setIsPlaying] = useState<boolean>(false);
+    const [ref, inView] = useInView({
+      threshold: 0.5,
+      triggerOnce: false
     });
-    setIsPlaying(!isPlaying);
-  };
 
-  useEffect(() => {
-    if (!inView && isPlaying) {
-      setIsPlaying(false);
-    }
-  }, [inView, isPlaying]);
+    const togglePlay = (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      // Reset all other videos when playing current one
+      const videos = document.querySelectorAll('video');
+      videos.forEach((video) => {
+        video.pause();
+      });
+      setIsPlaying(!isPlaying);
+    };
 
-  return (
-    <div className="flex flex-col">
-      <motion.div
-        ref={ref}
-        className="relative w-full h-64 md:h-96 overflow-hidden rounded-lg shadow-lg"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: inView ? 1 : 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        {item.type === "image" ? (
-          <img
-            src={item.url}
-            alt={item.alt}
-            className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
-            loading="lazy"
-          />
-        ) : (
-          <div className="relative w-full h-full group">
+    useEffect(() => {
+      if (!inView && isPlaying) {
+        setIsPlaying(false);
+      }
+    }, [inView, isPlaying]);
+
+    return (
+      <div className="flex flex-col">
+        <motion.div
+          ref={ref}
+          className="relative w-full h-64 md:h-96 overflow-hidden rounded-lg shadow-lg"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: inView ? 1 : 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {item.type === "image" ? (
             <img
-              src={item.thumbnail}
-              alt="Video thumbnail"
-              className="w-full h-full object-cover"
+              src={item.url}
+              alt={item.alt}
+              className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
               loading="lazy"
             />
-            <button
-              onClick={togglePlay}
-              className="absolute bottom-4 left-4 bg-orange-500 bg-opacity-80 p-3 rounded-full text-white hover:bg-opacity-100 transition-all duration-300"
-              aria-label={isPlaying ? "Pause video" : "Play video"}
-            >
-              {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} />}
-            </button>
-          </div>
-        )}
-      </motion.div>
-      <div className="flex justify-between items-center mt-4 px-2">
-        <p className="text-gray-700 text-lg font-medium truncate pr-4">{item.description}</p>
-        <button 
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-300 whitespace-nowrap flex-shrink-0"
-          onClick={() => console.log(`Navigate to story ${index + 1}`)}
-        >
-          Read customer story
-        </button>
+          ) : (
+            <div className="relative w-full h-full group">
+              <img
+                src={item.thumbnail}
+                alt="Video thumbnail"
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+              <button
+                onClick={togglePlay}
+                className="absolute bottom-4 left-4 bg-orange-500 bg-opacity-80 p-3 rounded-full text-white hover:bg-opacity-100 transition-all duration-300"
+                aria-label={isPlaying ? "Pause video" : "Play video"}
+              >
+                {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} />}
+              </button>
+            </div>
+          )}
+        </motion.div>
+       <div className="flex justify-between items-center mt-4 px-2">
+  <p className="text-gray-700 text-lg font-medium truncate pr-4">{item.description}</p>
+  <button 
+    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-300 whitespace-nowrap flex-shrink-0"
+    onClick={() => console.log(`Navigate to story ${index + 1}`)}
+  >
+    Read customer story
+  </button>
+</div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
   return (
     <div className="w-full py-8">
