@@ -51,7 +51,7 @@ const MarketingMediaCarousel: React.FC = () => {
     },
     {
       type: 'image',
-      url: '/busshot.avif',
+      url: '/farminggirl.jpg',
       alt: 'Digital Marketing Strategy',
       description: 'Breaking records with our marketing strategy',
     },
