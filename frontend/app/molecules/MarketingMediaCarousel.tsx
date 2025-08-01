@@ -39,7 +39,7 @@ const MarketingMediaCarousel: React.FC = () => {
   const mediaItems: MediaItem[] = [
     {
       type: 'image',
-      url: '/busshot2.avif',
+      url: '/busshot.jpg',
       alt: 'Tech Marketing Campaign',
       description: 'How we transformed digital presence for Tech Corp',
     },
@@ -57,7 +57,7 @@ const MarketingMediaCarousel: React.FC = () => {
     },
     {
       type: 'video',
-      url: '/innovation2.mp4',
+      url: '/innovation4.mp4',
       thumbnail: '',
       description: 'Revolutionizing customer engagement through video',
     },
@@ -95,23 +95,22 @@ const MarketingMediaCarousel: React.FC = () => {
   };
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-  if (!carouselRef.current) return;
-  setIsDragging(true);
-  setStartX(e.touches[0].pageX - carouselRef.current.offsetLeft);
-  setScrollLeft(carouselRef.current.scrollLeft);
-};
+    if (!carouselRef.current) return;
+    setIsDragging(true);
+    setStartX(e.touches[0].pageX - carouselRef.current.offsetLeft);
+    setScrollLeft(carouselRef.current.scrollLeft);
+  };
 
-    const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
     if (!isDragging || !carouselRef.current) return;
     const x = e.touches[0].pageX - carouselRef.current.offsetLeft;
     const walk = (x - startX) * 2;
     carouselRef.current.scrollLeft = scrollLeft - walk;
-    };
+  };
 
-    const handleTouchEnd = () => {
+  const handleTouchEnd = () => {
     setIsDragging(false);
-    };
-
+  };
 
   const MediaItem: React.FC<MediaItemComponentProps> = ({ item }) => {
     const [ref, inView] = useInView({ threshold: 0.5, triggerOnce: false });
