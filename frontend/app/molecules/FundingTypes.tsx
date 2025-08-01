@@ -1,5 +1,4 @@
 import React from 'react';
-import { Building, Gift, Heart, Rocket } from 'lucide-react';
 import MarketingMediaCarousel from './MarketingMediaCarousel';
 
 const FundingTypes = () => {
