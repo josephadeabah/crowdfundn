@@ -170,7 +170,7 @@ const MarketingMediaCarousel: React.FC = () => {
                 className="absolute bottom-4 left-4 bg-orange-500 bg-opacity-80 p-3 rounded-full text-white hover:bg-opacity-100 transition-all duration-300"
                 aria-label={isPlaying ? 'Pause video' : 'Play video'}
               >
-                {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} />}
+                {isPlaying ? <FaPlay size={20} /> : <FaPause size={20} />}
               </button>
             </div>
           )}
