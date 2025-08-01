@@ -183,7 +183,7 @@ const faq = [
       },
       {
         q: 'What do entrepreneurs pay?',
-        a: 'Entrepreneurs pay a 1% listing fee and 5% success fee on funds raised. Additional costs include due diligence (GHS 2,000-10,000) and legal documentation (GHS 5,000-15,000).',
+        a: 'Entrepreneurs pay a GHS50 promotion fee (optional) and 5% success fee on funds raised.',
       },
       {
         q: 'Are there any hidden fees?',
@@ -191,7 +191,7 @@ const faq = [
       },
       {
         q: 'Do you charge ongoing fees?',
-        a: 'Investors have no ongoing fees. Entrepreneurs pay GHS 500 quarterly for ongoing reporting and support services during the investment period.',
+        a: 'Investors have no ongoing fees. Entrepreneurs pay additional fee for ongoing reporting and support services during the investment period. This is optional and based on the level of support needed.',
       },
     ],
   },
@@ -225,7 +225,7 @@ const faq = [
       },
       {
         q: 'Can I invest from mobile devices?',
-        a: 'Yes, our platform is fully mobile-optimized. We also offer mobile apps for iOS and Android with full investment and tracking functionality.',
+        a: 'Yes, our platform is fully mobile-optimized. You can browse, invest, and manage your portfolio from any smartphone or tablet.',
       },
       {
         q: 'Do you offer investment advice?',
@@ -233,7 +233,7 @@ const faq = [
       },
       {
         q: 'How do I contact customer support?',
-        a: 'Contact our support team via email (support@bantuhive.com), phone (+233 302 123 4567), or live chat on our platform. Support hours are 8AM-6PM GMT Monday-Friday.',
+        a: 'Contact our support team via email (support@bantuhive.com), phone (+233 200 415 683), or live chat on our platform. Support hours are 8AM-6PM GMT Monday-Friday.',
       },
     ],
   },
