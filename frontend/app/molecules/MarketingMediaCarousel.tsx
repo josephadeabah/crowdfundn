@@ -45,7 +45,7 @@ const MarketingMediaCarousel: React.FC = () => {
     },
     {
       type: 'video',
-      url: 'innovation1.mp4',
+      url: '/innovation1.mp4',
       thumbnail: '',
       description: 'Innovation in motion: A startup success story',
     },
@@ -57,7 +57,7 @@ const MarketingMediaCarousel: React.FC = () => {
     },
     {
       type: 'video',
-      url: 'innovation2.mp4',
+      url: '/innovation2.mp4',
       thumbnail: '',
       description: 'Revolutionizing customer engagement through video',
     },
@@ -69,7 +69,7 @@ const MarketingMediaCarousel: React.FC = () => {
     },
     {
       type: 'video',
-      url: 'innovation3.mp4',
+      url: '/innovation3.mp4',
       thumbnail: '',
       description: 'The future of digital marketing',
     },
@@ -93,6 +93,25 @@ const MarketingMediaCarousel: React.FC = () => {
   const handleMouseUp = () => {
     setIsDragging(false);
   };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+  if (!carouselRef.current) return;
+  setIsDragging(true);
+  setStartX(e.touches[0].pageX - carouselRef.current.offsetLeft);
+  setScrollLeft(carouselRef.current.scrollLeft);
+};
+
+    const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!isDragging || !carouselRef.current) return;
+    const x = e.touches[0].pageX - carouselRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    carouselRef.current.scrollLeft = scrollLeft - walk;
+    };
+
+    const handleTouchEnd = () => {
+    setIsDragging(false);
+    };
+
 
   const MediaItem: React.FC<MediaItemComponentProps> = ({ item }) => {
     const [ref, inView] = useInView({ threshold: 0.5, triggerOnce: false });
@@ -177,6 +196,9 @@ const MarketingMediaCarousel: React.FC = () => {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         <div className="flex gap-6 transition-transform duration-300">
           {mediaItems.map((item, index) => (
