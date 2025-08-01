@@ -40,38 +40,44 @@ const MarketingMediaCarousel: React.FC = () => {
     {
       type: 'image',
       url: '/busshot.jpg',
-      alt: 'Tech Marketing Campaign',
-      description: 'How we transformed digital presence for Tech Corp',
+      alt: 'Man working in a carpentry workshop',
+      description:
+        'Empowering local craftsmanship — this carpenter’s dream came to life through our community-backed funding, bringing sustainable furniture solutions to his neighborhood.',
     },
     {
       type: 'video',
       url: '/innovation1.mp4',
       thumbnail: '',
-      description: 'Innovation in motion: A startup success story',
+      description:
+        'Capturing innovation from above — drone technology is revolutionizing delivery, farming, and logistics in rural Africa, one crowdfunded idea at a time.',
     },
     {
       type: 'image',
       url: '/farminggirl.jpg',
-      alt: 'Digital Marketing Strategy',
-      description: 'Breaking records with our marketing strategy',
+      alt: 'Young woman innovating on her farm',
+      description:
+        'Meet the young agripreneur transforming agriculture with smart, eco-friendly techniques — supported entirely by the people who believe in her mission.',
     },
     {
       type: 'video',
       url: '/innovation4.mp4',
       thumbnail: '',
-      description: 'Revolutionizing customer engagement through video',
+      description:
+        'Inside the lab: this funded research project is producing groundbreaking bioplastics to reduce pollution and inspire the next generation of green startups.',
     },
     {
       type: 'image',
       url: '/busshot3.avif',
-      alt: 'Team Collaboration',
-      description: 'Building stronger teams through innovation',
+      alt: 'Baker preparing bread in his workshop',
+      description:
+        'From passion to profit — see how crowdfunding helped this local baker expand his kitchen and deliver fresh, affordable bread to his community daily.',
     },
     {
       type: 'video',
       url: '/innovation3.mp4',
       thumbnail: '',
-      description: 'The future of digital marketing',
+      description:
+        'The future is immersive — this crowdfunded tech startup is building virtual and augmented reality tools for education, gaming, and storytelling across Africa.',
     },
   ];
 
