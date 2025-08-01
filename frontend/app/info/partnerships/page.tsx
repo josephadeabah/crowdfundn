@@ -3,22 +3,17 @@ const Partners = () => {
   const financialPartners = [
     {
       title: 'Commercial Banks',
-      items: [
-        'GCB Bank Limited',
-        'Ecobank Ghana',
-        'Standard Chartered Bank',
-        'UBA Bank Ghana',
-      ],
+      items: ['Ecobank Ghana', 'UBA Bank Ghana'],
       color: 'text-trust',
     },
     {
       title: 'Mobile Money Operators',
-      items: ['MTN Mobile Money', 'Vodafone Cash', 'AirtelTigo Money'],
+      items: ['Inviting Partners'],
       color: 'text-growth',
     },
     {
       title: 'Payment Processors',
-      items: ['PayStack', 'Flutterwave', 'Paypal', 'Stripe'],
+      items: ['PayStack'],
       color: 'text-green-600',
     },
   ];
@@ -26,24 +21,12 @@ const Partners = () => {
   const governmentRegulatory = [
     {
       title: 'Regulatory Bodies',
-      items: [
-        'Securities and Exchange Commission (SEC Ghana)',
-        'Bank of Ghana (BoG)',
-        'Financial Intelligence Centre (FIC)',
-        "Registrar General's Department",
-        'Ghana Revenue Authority (GRA)',
-      ],
+      items: ['Securities and Exchange Commission (SEC Ghana)'],
       color: 'text-trust',
     },
     {
       title: 'Government Agencies',
-      items: [
-        'Ministry of Finance',
-        'Youth Employment Agency',
-        'Ghana Investment Promotion Centre (GIPC)',
-        'National Entrepreneurship & Innovation Programme',
-        'Ghana Enterprise Agency',
-      ],
+      items: ['Youth Employment Agency'],
       color: 'text-growth',
     },
   ];
@@ -51,7 +34,7 @@ const Partners = () => {
   const technologyPartners = [
     {
       title: 'Cloud Infrastructure',
-      items: ['Amazon Web Services', 'Digital Ocean', 'Google Cloud Platform'],
+      items: ['Digital Ocean'],
       color: 'text-trust',
     },
     {
@@ -66,7 +49,7 @@ const Partners = () => {
     },
     {
       title: 'Communication',
-      items: ['Slack', 'Google Meet', 'Zoom'],
+      items: ['Brevo'],
       color: 'text-growth',
     },
   ];
@@ -74,20 +57,12 @@ const Partners = () => {
   const educationalProfessional = [
     {
       title: 'Universities & Research',
-      items: [
-        'University of Ghana Business School',
-        'Kwame Nkrumah University of Science and Technology (KNUST)',
-        'Ashesi University',
-        'University of Cape Coast',
-        'Takoradi Technical University',
-        'Institute of Statistical, Social and Economic Research (ISSER)',
-        'Centre for Entrepreneurship & SME Development',
-      ],
+      items: ['Centre for Entrepreneurship & SME Development'],
       color: 'text-trust',
     },
     {
       title: 'Professional Services',
-      items: ['Deloitte Ghana'],
+      items: ['Inviting Partners'],
       color: 'text-growth',
     },
   ];
@@ -95,27 +70,17 @@ const Partners = () => {
   const ecosystemPartners = [
     {
       title: 'Incubators & Accelerators',
-      items: [
-        'MEST Africa',
-        'Impact Hub Accra',
-        'Startupbootcamp AfriTech',
-        'iSpace Ghana',
-      ],
+      items: ['Inviting Partners'],
       color: 'text-trust',
     },
     {
       title: 'Investment Firms',
-      items: ['Venture Platform', 'Injaro Investments'],
+      items: ['Inviting Partners'],
       color: 'text-growth',
     },
     {
       title: 'NGOs & Development',
-      items: [
-        'Tony Elumelu Foundation',
-        'GIZ Ghana',
-        'United Nations Development Programme (UNDP)',
-        'World Bank Group',
-      ],
+      items: ['Tony Elumelu Foundation'],
       color: 'text-green-600',
     },
   ];
@@ -123,12 +88,12 @@ const Partners = () => {
   const mediaPartners = [
     {
       title: 'Traditional Media',
-      items: ['GoodNews FM', 'Skyy Power FM', 'YFM'],
+      items: ['Inviting Partners'],
       color: 'text-trust',
     },
     {
       title: 'Digital Media',
-      items: ['TechCabal', 'Disrupt Africa', 'Africa Business', 'Pulse Ghana'],
+      items: ['Inviting Partners'],
       color: 'text-growth',
     },
     {
@@ -138,12 +103,7 @@ const Partners = () => {
     },
     {
       title: 'Industry Events',
-      items: [
-        'Ghana Tech Summit',
-        'Africa Fintech Festival',
-        'Ghana Investment Summit',
-        'SME Ghana Conference',
-      ],
+      items: ['Inviting Partners'],
       color: 'text-growth',
     },
   ];
