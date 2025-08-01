@@ -145,7 +145,7 @@ const faq = [
       },
       {
         q: 'How long before I see returns?',
-        a: 'Investment timelines vary. Reward-based campaigns typically deliver within 6-12 months. Equity investments are long-term (3-7 years typically) with potential for earlier liquidity events.',
+        a: 'Investment timelines vary. Reward-based campaigns typically deliver within 2-3 months. Equity investments are long-term (3-7 years typically) with potential for earlier liquidity events.',
       },
       {
         q: 'Can I sell my equity investments?',
