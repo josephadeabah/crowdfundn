@@ -180,7 +180,7 @@ const MarketingMediaCarousel: React.FC = () => {
             {item.description}
           </p>
           <button
-            className="bg-green-900 text-white px-4 py-2 rounded-lg hover:bg-green-500 transition-colors duration-300 whitespace-nowrap"
+            className="bg-green-950 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors duration-300 whitespace-nowrap"
             onClick={() => console.log(`Navigate to story`)}
           >
             Read customer story
