@@ -45,7 +45,7 @@ const MarketingMediaCarousel: React.FC = () => {
     },
     {
       type: 'video',
-      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+      url: 'innovation1.mp4',
       thumbnail: '',
       description: 'Innovation in motion: A startup success story',
     },
@@ -57,7 +57,7 @@ const MarketingMediaCarousel: React.FC = () => {
     },
     {
       type: 'video',
-      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+      url: 'innovation2.mp4',
       thumbnail: '',
       description: 'Revolutionizing customer engagement through video',
     },
@@ -69,7 +69,7 @@ const MarketingMediaCarousel: React.FC = () => {
     },
     {
       type: 'video',
-      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+      url: 'innovation3.mp4',
       thumbnail: '',
       description: 'The future of digital marketing',
     },
