@@ -39,7 +39,7 @@ const MarketingMediaCarousel: React.FC = () => {
   const mediaItems: MediaItem[] = [
     {
       type: 'image',
-      url: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1',
+      url: '/busshot2.avif',
       alt: 'Tech Marketing Campaign',
       description: 'How we transformed digital presence for Tech Corp',
     },
@@ -51,7 +51,7 @@ const MarketingMediaCarousel: React.FC = () => {
     },
     {
       type: 'image',
-      url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f',
+      url: '/busshot.avif',
       alt: 'Digital Marketing Strategy',
       description: 'Breaking records with our marketing strategy',
     },
@@ -63,7 +63,7 @@ const MarketingMediaCarousel: React.FC = () => {
     },
     {
       type: 'image',
-      url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f',
+      url: '/busshot3.avif',
       alt: 'Team Collaboration',
       description: 'Building stronger teams through innovation',
     },
