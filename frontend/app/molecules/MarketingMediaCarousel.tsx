@@ -36,7 +36,7 @@ const MarketingMediaCarousel = () => {
       url: '/busshot.jpg',
       alt: 'Man working in a carpentry workshop',
       description:
-        'Empowering local craftsmanship — this carpenter\'s dream came to life through our community-backed funding, bringing sustainable furniture solutions to his neighborhood.',
+        'Empowering local craftsmanship — this carpenter’s dream came to life through our community-backed funding, bringing sustainable furniture solutions to his neighborhood.',
     },
     {
       type: 'video',
@@ -136,17 +136,17 @@ const MarketingMediaCarousel = () => {
                 className="absolute bottom-4 left-4 bg-orange-500 bg-opacity-80 p-3 rounded-full text-white hover:bg-opacity-100 transition-all duration-300"
                 aria-label={isPlaying ? 'Pause video' : 'Play video'}
               >
-                {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} />}
+                {isPlaying ? <FaPlay size={20} /> : <FaPause size={20} />}
               </button>
             </div>
           )}
         </motion.div>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-4 px-2 gap-2 sm:gap-4">
-          <p className="text-gray-300 text-base sm:text-lg font-medium">
+          <p className="text-gray-700 text-base sm:text-lg font-medium">
             {item.description}
           </p>
           <button
-            className="bg-gray-800 text-orange-400 px-4 py-2 rounded-lg hover:bg-orange-500 hover:text-white transition-colors duration-300 whitespace-nowrap text-sm sm:text-base border border-gray-700"
+            className="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-600 hover:text-white transition-colors duration-300 whitespace-nowrap text-sm sm:text-base"
             onClick={() => console.log(`Navigate to story ${index + 1}`)}
           >
             Read fundraiser story
@@ -222,7 +222,7 @@ const MarketingMediaCarousel = () => {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-8 relative bg-gray-900 rounded-xl">
+    <div className="w-full max-w-7xl mx-auto px-4 py-8 relative">
       <div
         ref={carouselRef}
         className="flex overflow-x-hidden cursor-grab active:cursor-grabbing touch-pan-x relative"
@@ -250,22 +250,22 @@ const MarketingMediaCarousel = () => {
 
       <button
         onClick={handlePrevSlide}
-        className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800/80 hover:bg-gray-700 p-2 rounded-full shadow-lg z-10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-gray-700"
+        className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg z-10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
         disabled={currentIndex === 0}
         aria-label="Previous slide"
       >
         <FaChevronLeft
-          className={`text-2xl ${currentIndex === 0 ? 'text-gray-600' : 'text-orange-500'}`}
+          className={`text-2xl ${currentIndex === 0 ? 'text-gray-400' : 'text-orange-500'}`}
         />
       </button>
       <button
         onClick={handleNextSlide}
-        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800/80 hover:bg-gray-700 p-2 rounded-full shadow-lg z-10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-gray-700"
+        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg z-10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
         disabled={currentIndex === mediaItems.length - 1}
         aria-label="Next slide"
       >
         <FaChevronRight
-          className={`text-2xl ${currentIndex === mediaItems.length - 1 ? 'text-gray-600' : 'text-orange-500'}`}
+          className={`text-2xl ${currentIndex === mediaItems.length - 1 ? 'text-gray-400' : 'text-orange-500'}`}
         />
       </button>
     </div>
