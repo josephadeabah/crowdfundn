@@ -1,42 +1,36 @@
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import { FaPlay, FaPause } from 'react-icons/fa';
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import { FaPlay, FaPause, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
-type MediaType = 'image' | 'video';
+type MediaItemType = 
+  | {
+      type: "image";
+      url: string;
+      alt: string;
+      description: string;
+    }
+  | {
+      type: "video";
+      url: string;
+      thumbnail: string;
+      description: string;
+    };
 
-interface BaseMediaItem {
-  type: MediaType;
-  description: string;
-}
-
-interface ImageMediaItem extends BaseMediaItem {
-  type: 'image';
-  url: string;
-  alt: string;
-}
-
-interface VideoMediaItem extends BaseMediaItem {
-  type: 'video';
-  url: string;
-  thumbnail: string;
-}
-
-type MediaItem = ImageMediaItem | VideoMediaItem;
-
-interface MediaItemComponentProps {
-  item: MediaItem;
+interface MediaItemProps {
+  item: MediaItemType;
   index: number;
 }
 
-const MarketingMediaCarousel: React.FC = () => {
+const MarketingMediaCarousel = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
 
-  const mediaItems: MediaItem[] = [
+  const mediaItems: MediaItemType[] = [
     {
       type: 'image',
       url: '/busshot.jpg',
@@ -81,107 +75,77 @@ const MarketingMediaCarousel: React.FC = () => {
     },
   ];
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!carouselRef.current) return;
-    setIsDragging(true);
-    setStartX(e.pageX - carouselRef.current.offsetLeft);
-    setScrollLeft(carouselRef.current.scrollLeft);
-  };
+  const MediaItem: React.FC<MediaItemProps> = ({ item, index }) => {
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [ref, inView] = useInView({
+      threshold: 0.5,
+      triggerOnce: false
+    });
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDragging || !carouselRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - carouselRef.current.offsetLeft;
-    const walk = (x - startX) * 2;
-    carouselRef.current.scrollLeft = scrollLeft - walk;
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (!carouselRef.current) return;
-    setIsDragging(true);
-    setStartX(e.touches[0].pageX - carouselRef.current.offsetLeft);
-    setScrollLeft(carouselRef.current.scrollLeft);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (!isDragging || !carouselRef.current) return;
-    const x = e.touches[0].pageX - carouselRef.current.offsetLeft;
-    const walk = (x - startX) * 2;
-    carouselRef.current.scrollLeft = scrollLeft - walk;
-  };
-
-  const handleTouchEnd = () => {
-    setIsDragging(false);
-  };
-
-  const MediaItem: React.FC<MediaItemComponentProps> = ({ item }) => {
-    const [ref, inView] = useInView({ threshold: 0.5, triggerOnce: false });
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const [isPlaying, setIsPlaying] = useState(true);
+    const togglePlay = (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      const videos = document.querySelectorAll('video');
+      videos.forEach((video) => {
+        video.pause();
+      });
+      setIsPlaying(!isPlaying);
+    };
 
     useEffect(() => {
-      if (videoRef.current) {
-        if (inView && isPlaying) {
-          videoRef.current.play().catch(() => {});
-        } else {
-          videoRef.current.pause();
-        }
+      if (!inView && isPlaying) {
+        setIsPlaying(false);
       }
     }, [inView, isPlaying]);
-
-    const togglePlayback = (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.stopPropagation();
-      setIsPlaying((prev) => !prev);
-    };
 
     return (
       <div className="flex flex-col">
         <motion.div
           ref={ref}
-          className="relative w-full h-72 md:h-[26rem] overflow-hidden rounded-sm"
-          initial={false}
-          animate={{ opacity: 1 }}
+          className="relative w-full h-48 sm:h-64 md:h-96 overflow-hidden rounded-lg shadow-lg"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: inView ? 1 : 0 }}
           transition={{ duration: 0.5 }}
         >
-          {item.type === 'image' ? (
+          {item.type === "image" ? (
             <img
               src={item.url}
               alt={item.alt}
-              className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
+              className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300 max-w-full"
               loading="lazy"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.onerror = null;
+                target.src = "https://via.placeholder.com/400x300?text=Image+Not+Found";
+              }}
             />
           ) : (
             <div className="relative w-full h-full group">
-              <video
-                ref={videoRef}
-                src={item.url}
-                muted
-                loop
-                playsInline
-                autoPlay
-                className="w-full h-full object-cover"
+              <img
+                src={item.thumbnail}
+                alt="Video thumbnail"
+                className="w-full h-full object-cover max-w-full"
+                loading="lazy"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.onerror = null;
+                  target.src = "https://via.placeholder.com/400x300?text=Thumbnail+Not+Found";
+                }}
               />
               <button
-                onClick={togglePlayback}
+                onClick={togglePlay}
                 className="absolute bottom-4 left-4 bg-orange-500 bg-opacity-80 p-3 rounded-full text-white hover:bg-opacity-100 transition-all duration-300"
-                aria-label={isPlaying ? 'Pause video' : 'Play video'}
+                aria-label={isPlaying ? "Pause video" : "Play video"}
               >
-                {isPlaying ? <FaPlay size={20} /> : <FaPause size={20} />}
+                {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} />}
               </button>
             </div>
           )}
         </motion.div>
-        <div className="flex justify-between items-center mt-4 px-2">
-          <p className="text-gray-700 text-lg font-medium">
-            {item.description}
-          </p>
-          <button
-            className="bg-green-950 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors duration-300 whitespace-nowrap"
-            onClick={() => console.log(`Navigate to story`)}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-4 px-2 gap-2 sm:gap-4">
+          <p className="text-gray-700 text-base sm:text-lg font-medium">{item.description}</p>
+          <button 
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-300 whitespace-nowrap text-sm sm:text-base"
+            onClick={() => console.log(`Navigate to story ${index + 1}`)}
           >
             Read customer story
           </button>
@@ -190,26 +154,89 @@ const MarketingMediaCarousel: React.FC = () => {
     );
   };
 
+  const handlePrevSlide = () => {
+    if (carouselRef.current) {
+      const slideWidth = carouselRef.current.offsetWidth;
+      const newIndex = Math.max(currentIndex - 1, 0);
+      setCurrentIndex(newIndex);
+      carouselRef.current.scrollTo({
+        left: newIndex * slideWidth,
+        behavior: "smooth"
+      });
+    }
+  };
+
+  const handleNextSlide = () => {
+    if (carouselRef.current) {
+      const slideWidth = carouselRef.current.offsetWidth;
+      const maxIndex = mediaItems.length - 1;
+      const newIndex = Math.min(currentIndex + 1, maxIndex);
+      setCurrentIndex(newIndex);
+      carouselRef.current.scrollTo({
+        left: newIndex * slideWidth,
+        behavior: "smooth"
+      });
+    }
+  };
+
+  const handleDragStart = (
+    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
+  ) => {
+    setIsDragging(true);
+    const pageX = 'touches' in e ? e.touches[0].clientX : e.pageX;
+    if (carouselRef.current) {
+      setStartX(pageX - carouselRef.current.offsetLeft);
+      setScrollLeft(carouselRef.current.scrollLeft);
+    }
+  };
+
+  const handleDragMove = (
+    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
+  ) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const pageX =
+      "touches" in e
+        ? (e as React.TouchEvent<HTMLDivElement>).touches[0].clientX
+        : (e as React.MouseEvent<HTMLDivElement>).pageX;
+    if (carouselRef.current) {
+      const x = pageX - carouselRef.current.offsetLeft;
+      const walk = (x - startX) * 2;
+      carouselRef.current.scrollLeft = scrollLeft - walk;
+    }
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    if (carouselRef.current) {
+      const slideWidth = carouselRef.current.offsetWidth;
+      const newIndex = Math.round(carouselRef.current.scrollLeft / slideWidth);
+      setCurrentIndex(newIndex);
+      carouselRef.current.scrollTo({
+        left: newIndex * slideWidth,
+        behavior: "smooth"
+      });
+    }
+  };
+
   return (
-    <div className="w-full py-8">
+    <div className="w-full max-w-7xl mx-auto px-4 py-8 relative">
       <div
         ref={carouselRef}
-        className={`flex overflow-x-hidden ${
-          isDragging ? 'cursor-grabbing' : 'cursor-grab'
-        }`}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
+        className="flex overflow-x-hidden cursor-grab active:cursor-grabbing touch-pan-x relative"
+        onMouseDown={handleDragStart}
+        onMouseMove={handleDragMove}
+        onMouseUp={handleDragEnd}
+        onMouseLeave={handleDragEnd}
+        onTouchStart={handleDragStart}
+        onTouchMove={handleDragMove}
+        onTouchEnd={handleDragEnd}
       >
-        <div className="flex gap-6 transition-transform duration-300">
+        <div className="flex gap-4 md:gap-6 transition-transform duration-300">
           {mediaItems.map((item, index) => (
             <div
               key={index}
-              className="min-w-[calc(50%-12px)] md:min-w-[calc(40%-16px)]"
+              className="min-w-[calc(100%-16px)] sm:min-w-[calc(50%-16px)] md:min-w-[calc(33.333%-24px)] snap-center"
               role="group"
               aria-label={`Slide ${index + 1} of ${mediaItems.length}`}
             >
@@ -218,6 +245,23 @@ const MarketingMediaCarousel: React.FC = () => {
           ))}
         </div>
       </div>
+
+      <button
+        onClick={handlePrevSlide}
+        className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg z-10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
+        disabled={currentIndex === 0}
+        aria-label="Previous slide"
+      >
+        <FaChevronLeft className={`text-2xl ${currentIndex === 0 ? 'text-gray-400' : 'text-orange-500'}`} />
+      </button>
+      <button
+        onClick={handleNextSlide}
+        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg z-10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
+        disabled={currentIndex === mediaItems.length - 1}
+        aria-label="Next slide"
+      >
+        <FaChevronRight className={`text-2xl ${currentIndex === mediaItems.length - 1 ? 'text-gray-400' : 'text-orange-500'}`} />
+      </button>
     </div>
   );
 };
