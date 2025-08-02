@@ -9,8 +9,9 @@ const FundingTypes = () => {
           From tomorrow’s unicorns to local coffee shops
         </h2>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Put your community on your cap table, no matter what your industry,
-          stage, or goals.
+          Invest to bring founders’ dreams to life, strengthen local
+          communities, build a portfolio of long-term angel investments, or all
+          of the above.
         </p>
       </div>
       <MarketingMediaCarousel />
