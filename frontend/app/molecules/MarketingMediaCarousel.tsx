@@ -1,18 +1,18 @@
 'use client';
-import React, { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import { FaPlay, FaPause, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import React, { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
+import { FaPlay, FaPause, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
-type MediaItemType = 
+type MediaItemType =
   | {
-      type: "image";
+      type: 'image';
       url: string;
       alt: string;
       description: string;
     }
   | {
-      type: "video";
+      type: 'video';
       url: string;
       thumbnail: string;
       description: string;
@@ -35,44 +35,50 @@ const MarketingMediaCarousel = () => {
       type: 'image',
       url: '/busshot.jpg',
       alt: 'Man working in a carpentry workshop',
-      description: 'Empowering local craftsmanship — this carpenter’s dream came to life through our community-backed funding, bringing sustainable furniture solutions to his neighborhood.',
+      description:
+        'Empowering local craftsmanship — this carpenter’s dream came to life through our community-backed funding, bringing sustainable furniture solutions to his neighborhood.',
     },
     {
       type: 'video',
       url: '/innovation1.mp4',
       thumbnail: '/video-thumbnail1.jpg',
-      description: 'Capturing innovation from above — drone technology is revolutionizing delivery, farming, and logistics in rural Africa, one crowdfunded idea at a time.',
+      description:
+        'Capturing innovation from above — drone technology is revolutionizing delivery, farming, and logistics in rural Africa, one crowdfunded idea at a time.',
     },
     {
       type: 'image',
       url: '/farminggirl.jpg',
       alt: 'Young woman innovating on her farm',
-      description: 'Meet the young agripreneur transforming agriculture with smart, eco-friendly techniques — supported entirely by the people who believe in her mission.',
+      description:
+        'Meet the young agripreneur transforming agriculture with smart, eco-friendly techniques — supported entirely by the people who believe in her mission.',
     },
     {
       type: 'video',
       url: '/innovation4.mp4',
       thumbnail: '/video-thumbnail2.jpg',
-      description: 'Inside the lab: this funded research project is producing groundbreaking bioplastics to reduce pollution and inspire the next generation of green startups.',
+      description:
+        'Inside the lab: this funded research project is producing groundbreaking bioplastics to reduce pollution and inspire the next generation of green startups.',
     },
     {
       type: 'image',
       url: '/busshot3.avif',
       alt: 'Baker preparing bread in his workshop',
-      description: 'From passion to profit — see how crowdfunding helped this local baker expand his kitchen and deliver fresh, affordable bread to his community daily.',
+      description:
+        'From passion to profit — see how crowdfunding helped this local baker expand his kitchen and deliver fresh, affordable bread to his community daily.',
     },
     {
       type: 'video',
       url: '/innovation3.mp4',
       thumbnail: '/video-thumbnail3.jpg',
-      description: 'The future is immersive — this crowdfunded tech startup is building virtual and augmented reality tools for education, gaming, and storytelling across Africa.',
+      description:
+        'The future is immersive — this crowdfunded tech startup is building virtual and augmented reality tools for education, gaming, and storytelling across Africa.',
     },
   ];
 
   const MediaItem: React.FC<MediaItemProps> = ({ item, index }) => {
     const [ref, inView] = useInView({
       threshold: 0.5,
-      triggerOnce: false
+      triggerOnce: false,
     });
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isPlaying, setIsPlaying] = useState(true);
@@ -101,7 +107,7 @@ const MarketingMediaCarousel = () => {
           animate={{ opacity: inView ? 1 : 0 }}
           transition={{ duration: 0.5 }}
         >
-          {item.type === "image" ? (
+          {item.type === 'image' ? (
             <img
               src={item.url}
               alt={item.alt}
@@ -110,7 +116,8 @@ const MarketingMediaCarousel = () => {
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.onerror = null;
-                target.src = "https://via.placeholder.com/400x300?text=Image+Not+Found";
+                target.src =
+                  'https://via.placeholder.com/400x300?text=Image+Not+Found';
               }}
             />
           ) : (
@@ -135,9 +142,11 @@ const MarketingMediaCarousel = () => {
           )}
         </motion.div>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-4 px-2 gap-2 sm:gap-4">
-          <p className="text-gray-700 text-base sm:text-lg font-medium">{item.description}</p>
-          <button 
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-300 whitespace-nowrap text-sm sm:text-base"
+          <p className="text-gray-700 text-base sm:text-lg font-medium">
+            {item.description}
+          </p>
+          <button
+            className="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-300 whitespace-nowrap text-sm sm:text-base"
             onClick={() => console.log(`Navigate to story ${index + 1}`)}
           >
             Read customer story
@@ -154,7 +163,7 @@ const MarketingMediaCarousel = () => {
       setCurrentIndex(newIndex);
       carouselRef.current.scrollTo({
         left: newIndex * slideWidth,
-        behavior: "smooth"
+        behavior: 'smooth',
       });
     }
   };
@@ -167,13 +176,13 @@ const MarketingMediaCarousel = () => {
       setCurrentIndex(newIndex);
       carouselRef.current.scrollTo({
         left: newIndex * slideWidth,
-        behavior: "smooth"
+        behavior: 'smooth',
       });
     }
   };
 
   const handleDragStart = (
-    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
+    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>,
   ) => {
     setIsDragging(true);
     const pageX = 'touches' in e ? e.touches[0].clientX : e.pageX;
@@ -184,12 +193,12 @@ const MarketingMediaCarousel = () => {
   };
 
   const handleDragMove = (
-    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
+    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>,
   ) => {
     if (!isDragging) return;
     e.preventDefault();
     const pageX =
-      "touches" in e
+      'touches' in e
         ? (e as React.TouchEvent<HTMLDivElement>).touches[0].clientX
         : (e as React.MouseEvent<HTMLDivElement>).pageX;
     if (carouselRef.current) {
@@ -207,7 +216,7 @@ const MarketingMediaCarousel = () => {
       setCurrentIndex(newIndex);
       carouselRef.current.scrollTo({
         left: newIndex * slideWidth,
-        behavior: "smooth"
+        behavior: 'smooth',
       });
     }
   };
@@ -245,7 +254,9 @@ const MarketingMediaCarousel = () => {
         disabled={currentIndex === 0}
         aria-label="Previous slide"
       >
-        <FaChevronLeft className={`text-2xl ${currentIndex === 0 ? 'text-gray-400' : 'text-orange-500'}`} />
+        <FaChevronLeft
+          className={`text-2xl ${currentIndex === 0 ? 'text-gray-400' : 'text-orange-500'}`}
+        />
       </button>
       <button
         onClick={handleNextSlide}
@@ -253,7 +264,9 @@ const MarketingMediaCarousel = () => {
         disabled={currentIndex === mediaItems.length - 1}
         aria-label="Next slide"
       >
-        <FaChevronRight className={`text-2xl ${currentIndex === mediaItems.length - 1 ? 'text-gray-400' : 'text-orange-500'}`} />
+        <FaChevronRight
+          className={`text-2xl ${currentIndex === mediaItems.length - 1 ? 'text-gray-400' : 'text-orange-500'}`}
+        />
       </button>
     </div>
   );
