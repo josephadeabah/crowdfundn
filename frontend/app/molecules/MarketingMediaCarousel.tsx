@@ -104,7 +104,7 @@ const MarketingMediaCarousel = () => {
           ref={ref}
           className="relative w-full h-48 sm:h-64 md:h-96 overflow-hidden rounded-lg"
           initial={false}
-          animate={{ opacity: 1 }}
+          animate={{ opacity: inView ? 1 : 0 }}
           transition={{ duration: 0.5 }}
         >
           {item.type === 'image' ? (
