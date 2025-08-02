@@ -148,7 +148,7 @@ const MediaItem: React.FC<MediaItemProps> = ({ item, index }) => {
               className="w-full h-full object-cover"
               poster={item.thumbnail}
               x-webkit-airplay="allow"
-             preload="auto"
+             preload="metadata"
             />
             <button
               onClick={togglePlayback}
