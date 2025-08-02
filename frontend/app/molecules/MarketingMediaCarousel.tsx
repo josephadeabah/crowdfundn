@@ -81,28 +81,35 @@ const MarketingMediaCarousel = () => {
       triggerOnce: false,
     });
     const videoRef = useRef<HTMLVideoElement>(null);
-    const [isPlaying, setIsPlaying] = useState(true);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [hasError, setHasError] = useState(false);
 
     useEffect(() => {
-      if (videoRef.current) {
+      if (item.type === 'video' && videoRef.current) {
+        videoRef.current.muted = true;
+        
         if (inView && isPlaying) {
-          videoRef.current.play().catch(() => {});
+          videoRef.current.play().catch(error => {
+            console.error('Video play failed:', error);
+            setIsPlaying(false);
+          });
         } else {
           videoRef.current.pause();
         }
       }
-    }, [inView, isPlaying]);
+    }, [inView, isPlaying, item.type]);
 
     const togglePlayback = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
-      setIsPlaying((prev) => !prev);
+      setIsPlaying(!isPlaying);
     };
 
     return (
       <div className="flex flex-col">
         <motion.div
           ref={ref}
-          className="relative w-full h-48 sm:h-64 md:h-96 overflow-hidden rounded-lg"
+          className="relative w-full aspect-video overflow-hidden rounded-lg"
+          style={{ minHeight: '200px' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: inView ? 1 : 0 }}
           transition={{ duration: 0.5 }}
@@ -113,6 +120,8 @@ const MarketingMediaCarousel = () => {
               alt={item.alt}
               className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300 max-w-full"
               loading="lazy"
+              decoding="async"
+              sizes="(max-width: 768px) 100vw, 50vw"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.onerror = null;
@@ -122,22 +131,34 @@ const MarketingMediaCarousel = () => {
             />
           ) : (
             <div className="relative w-full h-full group">
-              <video
-                ref={videoRef}
-                src={item.url}
-                muted
-                loop
-                playsInline
-                autoPlay
-                className="w-full h-full object-cover"
-              />
-              <button
-                onClick={togglePlayback}
-                className="absolute bottom-4 left-4 bg-orange-500 bg-opacity-80 p-3 rounded-full text-white hover:bg-opacity-100 transition-all duration-300"
-                aria-label={isPlaying ? 'Pause video' : 'Play video'}
-              >
-                {isPlaying ? <FaPlay size={20} /> : <FaPause size={20} />}
-              </button>
+              {hasError ? (
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-500">Video unavailable</span>
+                </div>
+              ) : (
+                <>
+                  <video
+                    ref={videoRef}
+                    src={item.url}
+                    muted
+                    loop
+                    playsInline
+                    webkit-playsinline="true"
+                    x-webkit-airplay="allow"
+                    preload="metadata"
+                    className="w-full h-full object-cover"
+                    poster={item.thumbnail}
+                    onError={() => setHasError(true)}
+                  />
+                  <button
+                    onClick={togglePlayback}
+                    className="absolute bottom-4 left-4 bg-orange-500 bg-opacity-80 p-3 rounded-full text-white hover:bg-opacity-100 transition-all duration-300"
+                    aria-label={isPlaying ? 'Pause video' : 'Play video'}
+                  >
+                    {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} />}
+                  </button>
+                </>
+              )}
             </div>
           )}
         </motion.div>
