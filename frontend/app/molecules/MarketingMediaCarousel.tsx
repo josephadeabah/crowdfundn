@@ -145,10 +145,9 @@ const MediaItem: React.FC<MediaItemProps> = ({ item, index }) => {
               loop
               playsInline
               webkit-playsinline="true"
+              preload="metadata"
               className="w-full h-full object-cover"
               poster={item.thumbnail}
-              x-webkit-airplay="allow"
-             preload="metadata"
             />
             <button
               onClick={togglePlayback}
