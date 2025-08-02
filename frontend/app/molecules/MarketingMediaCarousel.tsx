@@ -146,7 +146,7 @@ const MarketingMediaCarousel = () => {
             {item.description}
           </p>
           <button
-            className="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-300 whitespace-nowrap text-sm sm:text-base"
+            className="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-600 hover:text-white transition-colors duration-300 whitespace-nowrap text-sm sm:text-base"
             onClick={() => console.log(`Navigate to story ${index + 1}`)}
           >
             Read customer story
