@@ -21,8 +21,6 @@ type MediaItemType =
 interface MediaItemProps {
   item: MediaItemType;
   index: number;
-  isPlaying: boolean;
-  onPlayToggle: (index: number) => void;
 }
 
 const MarketingMediaCarousel = () => {
@@ -30,9 +28,7 @@ const MarketingMediaCarousel = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
-  const [playingIndex, setPlayingIndex] = useState<number | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   const mediaItems: MediaItemType[] = [
     {
@@ -44,7 +40,7 @@ const MarketingMediaCarousel = () => {
     {
       type: 'video',
       url: '/innovation1.mp4',
-      thumbnail: '/video-thumbnail1.jpg', // Add proper thumbnail paths
+      thumbnail: '/video-thumbnail1.jpg',
       description: 'Capturing innovation from above — drone technology is revolutionizing delivery, farming, and logistics in rural Africa, one crowdfunded idea at a time.',
     },
     {
@@ -56,7 +52,7 @@ const MarketingMediaCarousel = () => {
     {
       type: 'video',
       url: '/innovation4.mp4',
-      thumbnail: '/video-thumbnail2.jpg', // Add proper thumbnail paths
+      thumbnail: '/video-thumbnail2.jpg',
       description: 'Inside the lab: this funded research project is producing groundbreaking bioplastics to reduce pollution and inspire the next generation of green startups.',
     },
     {
@@ -68,38 +64,33 @@ const MarketingMediaCarousel = () => {
     {
       type: 'video',
       url: '/innovation3.mp4',
-      thumbnail: '/video-thumbnail3.jpg', // Add proper thumbnail paths
+      thumbnail: '/video-thumbnail3.jpg',
       description: 'The future is immersive — this crowdfunded tech startup is building virtual and augmented reality tools for education, gaming, and storytelling across Africa.',
     },
   ];
 
-  const handlePlayToggle = (index: number) => {
-    if (playingIndex === index) {
-      // Pause currently playing video
-      videoRefs.current[index]?.pause();
-      setPlayingIndex(null);
-    } else {
-      // Pause any currently playing video
-      if (playingIndex !== null) {
-        videoRefs.current[playingIndex]?.pause();
-      }
-      // Play new video
-      videoRefs.current[index]?.play();
-      setPlayingIndex(index);
-    }
-  };
-
-  const MediaItem: React.FC<MediaItemProps> = ({ item, index, isPlaying, onPlayToggle }) => {
+  const MediaItem: React.FC<MediaItemProps> = ({ item, index }) => {
     const [ref, inView] = useInView({
       threshold: 0.5,
       triggerOnce: false
     });
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const [isPlaying, setIsPlaying] = useState(true);
 
     useEffect(() => {
-      if (!inView && isPlaying) {
-        onPlayToggle(index);
+      if (videoRef.current) {
+        if (inView && isPlaying) {
+          videoRef.current.play().catch(() => {});
+        } else {
+          videoRef.current.pause();
+        }
       }
-    }, [inView, isPlaying, index, onPlayToggle]);
+    }, [inView, isPlaying]);
+
+    const togglePlayback = (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      setIsPlaying((prev) => !prev);
+    };
 
     return (
       <div className="flex flex-col">
@@ -124,41 +115,22 @@ const MarketingMediaCarousel = () => {
             />
           ) : (
             <div className="relative w-full h-full group">
-              {isPlaying ? (
-                <video
-                  ref={el => videoRefs.current[index] = el}
-                  src={item.url}
-                  className="w-full h-full object-cover"
-                  controls
-                  onEnded={() => setPlayingIndex(null)}
-                />
-              ) : (
-                <>
-                  <img
-                    src={item.thumbnail || "https://via.placeholder.com/400x300?text=Video+Thumbnail"}
-                    alt="Video thumbnail"
-                    className="w-full h-full object-cover max-w-full"
-                    loading="lazy"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.onerror = null;
-                      target.src = "https://via.placeholder.com/400x300?text=Thumbnail+Not+Found";
-                    }}
-                  />
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onPlayToggle(index);
-                    }}
-                    className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-50 transition-all duration-300"
-                    aria-label="Play video"
-                  >
-                    <div className="bg-orange-500 bg-opacity-80 p-4 rounded-full text-white hover:bg-opacity-100 transition-all duration-300">
-                      <FaPlay size={24} />
-                    </div>
-                  </button>
-                </>
-              )}
+              <video
+                ref={videoRef}
+                src={item.url}
+                muted
+                loop
+                playsInline
+                autoPlay
+                className="w-full h-full object-cover"
+              />
+              <button
+                onClick={togglePlayback}
+                className="absolute bottom-4 left-4 bg-orange-500 bg-opacity-80 p-3 rounded-full text-white hover:bg-opacity-100 transition-all duration-300"
+                aria-label={isPlaying ? 'Pause video' : 'Play video'}
+              >
+                {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} />}
+              </button>
             </div>
           )}
         </motion.div>
@@ -261,12 +233,7 @@ const MarketingMediaCarousel = () => {
               role="group"
               aria-label={`Slide ${index + 1} of ${mediaItems.length}`}
             >
-              <MediaItem 
-                item={item} 
-                index={index}
-                isPlaying={playingIndex === index}
-                onPlayToggle={handlePlayToggle}
-              />
+              <MediaItem item={item} index={index} />
             </div>
           ))}
         </div>
