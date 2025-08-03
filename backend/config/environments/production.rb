@@ -97,8 +97,6 @@ Rails.application.configure do
   
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  config.hosts << "bantuhive-app-hldzm.ondigitalocean.app"
-  config.hosts << "api.bantuhive.com"
   # config.hosts = [
   #   "example.com",     # Allow requests from example.com
   #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
