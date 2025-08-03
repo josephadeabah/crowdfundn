@@ -144,7 +144,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                             slidesPerPage === 2 ? 'md:w-1/2' : 'w-full'
                           }`}
                         >
-                          <div className="absolute top-2 left-2 bg-transparent backdrop-blur-sm text-white text-xs font-semibold px-2 py-1 rounded-md shadow-md z-10">
+                          <div className="absolute top-2 left-2 bg-transparent backdrop-blur-sm text-white text-xs font-semibold px-2 py-1 rounded-md z-10">
                             Sponsored
                           </div>
 
@@ -157,7 +157,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                             />
                           ) : (
                             <div className="relative w-full h-full">
-                              <div className="absolute top-2 left-2 bg-transparent backdrop-blur-sm text-white text-xs font-semibold px-2 py-1 rounded-md shadow-md z-10">
+                              <div className="absolute top-2 left-2 bg-transparent backdrop-blur-sm text-white text-xs font-semibold px-2 py-1 rounded-md z-10">
                                 Sponsored
                               </div>
 
