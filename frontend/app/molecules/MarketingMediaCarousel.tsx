@@ -152,14 +152,14 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                               loading="lazy"
                             />
                           ) : (
-                            <div className="relative w-full aspect-video">
+                            <div className="relative w-full h-full">
                               <video
                                 ref={(el) =>
                                   (videoRefs.current[absoluteIndex] = el)
                                 }
                                 src={slide.url}
                                 poster={slide.thumbnail}
-                                className="w-full h-full object-cover aspect-video"
+                                className="w-full h-full object-cover"
                                 loop
                                 muted
                                 playsInline
