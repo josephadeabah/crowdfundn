@@ -159,7 +159,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                                 }
                                 src={slide.url}
                                 poster={slide.thumbnail}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover aspect-video"
                                 loop
                                 muted
                                 playsInline
