@@ -125,7 +125,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                 {slides
                   .slice(
                     groupIndex * slidesPerPage,
-                    (groupIndex + 1) * slidesPerPage
+                    (groupIndex + 1) * slidesPerPage,
                   )
                   .map((slide, slideIndex) => {
                     const absoluteIndex =
@@ -144,6 +144,9 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                             slidesPerPage === 2 ? 'md:w-1/2' : 'w-full'
                           }`}
                         >
+                          <div className="absolute top-2 left-2 bg-orange-600 text-white text-xs font-semibold px-2 py-1 rounded shadow-md z-10">
+                            Sponsored
+                          </div>
                           {slide.type === 'image' ? (
                             <img
                               src={slide.url}
@@ -153,6 +156,9 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                             />
                           ) : (
                             <div className="relative w-full h-full">
+                              <div className="absolute top-2 left-2 bg-orange-600 text-white text-xs font-semibold px-2 py-1 rounded shadow-md z-10">
+                                Sponsored
+                              </div>
                               <video
                                 ref={(el) =>
                                   (videoRefs.current[absoluteIndex] = el)
@@ -165,9 +171,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                                 playsInline
                               />
                               <button
-                                onClick={() =>
-                                  handleVideoPlay(absoluteIndex)
-                                }
+                                onClick={() => handleVideoPlay(absoluteIndex)}
                                 className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white p-2 rounded-full"
                                 aria-label="Play video"
                               >
