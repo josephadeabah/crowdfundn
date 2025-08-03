@@ -86,7 +86,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
     }, 5000);
 
     return () => clearInterval(timer);
-  }, [isPlaying, slidesPerPage]);
+  }, [isPlaying, slidesPerPage, totalGroups]); // Added totalGroups to dependencies
 
   const handleMouseEnter = () => {
     setIsPlaying(false);
@@ -149,7 +149,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                           {slide.type === 'image' ? (
                             <img
                               src={slide.url}
-                              alt={slide.alt || ''}
+                              alt={slide.alt}
                               className="w-full h-full object-cover aspect-video"
                               loading="lazy"
                             />
@@ -187,7 +187,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                             </p>
                           </div>
                           <div className="flex justify-end">
-                            <button className="whitespace-nowrap bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                            <button className="whitespace-nowrap bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-md transition-colors">
                               Learn More
                             </button>
                           </div>
@@ -223,7 +223,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`w-3 h-3 rounded-full ${currentIndex === index ? 'bg-blue-600' : 'bg-gray-300'}`}
+            className={`w-3 h-3 rounded-full ${currentIndex === index ? 'bg-orange-600' : 'bg-gray-300'}`}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}
