@@ -27,7 +27,6 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [slidesPerPage, setSlidesPerPage] = useState(1);
 
-  // Handle responsive slides per page
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
@@ -42,7 +41,6 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Auto-play videos when they become active
   useEffect(() => {
     Object.values(videoRefs.current).forEach((video) => {
       if (video) {
@@ -77,7 +75,6 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
     setCurrentIndex((prev) => (prev + 1) % totalGroups);
   };
 
-  // Auto-advance slides
   useEffect(() => {
     if (!isPlaying) return;
 
@@ -86,7 +83,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
     }, 5000);
 
     return () => clearInterval(timer);
-  }, [isPlaying, slidesPerPage, totalGroups]); // Added totalGroups to dependencies
+  }, [isPlaying, totalGroups]);
 
   const handleMouseEnter = () => {
     setIsPlaying(false);
@@ -114,7 +111,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
         <div
           className="flex transition-transform duration-500 ease-in-out"
           style={{
-            transform: `translateX(-${currentIndex * 100}%)`,
+            transform: `translateX(-${(100 / totalGroups) * currentIndex}%)`,
             width: `${totalGroups * 100}%`,
           }}
         >
@@ -128,7 +125,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                 {slides
                   .slice(
                     groupIndex * slidesPerPage,
-                    (groupIndex + 1) * slidesPerPage,
+                    (groupIndex + 1) * slidesPerPage
                   )
                   .map((slide, slideIndex) => {
                     const absoluteIndex =
@@ -142,9 +139,10 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                             : 'flex flex-col'
                         }`}
                       >
-                        {/* Media container */}
                         <div
-                          className={`relative ${slidesPerPage === 2 ? 'md:w-1/2' : 'w-full'}`}
+                          className={`relative ${
+                            slidesPerPage === 2 ? 'md:w-1/2' : 'w-full'
+                          }`}
                         >
                           {slide.type === 'image' ? (
                             <img
@@ -167,7 +165,9 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                                 playsInline
                               />
                               <button
-                                onClick={() => handleVideoPlay(absoluteIndex)}
+                                onClick={() =>
+                                  handleVideoPlay(absoluteIndex)
+                                }
                                 className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white p-2 rounded-full"
                                 aria-label="Play video"
                               >
@@ -177,9 +177,10 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                           )}
                         </div>
 
-                        {/* Content container */}
                         <div
-                          className={`p-6 flex flex-col ${slidesPerPage === 2 ? 'md:w-1/2' : 'w-full'}`}
+                          className={`p-6 flex flex-col ${
+                            slidesPerPage === 2 ? 'md:w-1/2' : 'w-full'
+                          }`}
                         >
                           <div className="flex-grow">
                             <p className="text-gray-700 mb-4">
@@ -200,7 +201,6 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
           ))}
         </div>
 
-        {/* Navigation arrows */}
         <button
           onClick={goToPrev}
           className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 p-2 rounded-full shadow-md hover:bg-opacity-100 transition-all"
@@ -217,13 +217,14 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
         </button>
       </div>
 
-      {/* Pagination indicators */}
       <div className="flex justify-center mt-4 gap-2">
         {Array.from({ length: totalGroups }).map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`w-3 h-3 rounded-full ${currentIndex === index ? 'bg-orange-600' : 'bg-gray-300'}`}
+            className={`w-3 h-3 rounded-full ${
+              currentIndex === index ? 'bg-orange-600' : 'bg-gray-300'
+            }`}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}
@@ -232,7 +233,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
   );
 };
 
-// Example usage with your data
+// Example usage
 const MarketingMediaCarousel = () => {
   const slides: MediaSlide[] = [
     {
