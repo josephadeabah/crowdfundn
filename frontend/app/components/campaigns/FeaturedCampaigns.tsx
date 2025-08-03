@@ -54,7 +54,7 @@ const FeaturedCampaigns = () => {
           error={error}
         />
       </div>
-      <div className='bg-gray-50 py-12'>
+      <div className="bg-gray-50 py-12">
         <InvestorPitchSection />
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
