@@ -145,8 +145,8 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                           }`}
                         >
                           <div className="absolute top-2 left-2 bg-orange-600/60 backdrop-blur-sm text-white text-xs font-semibold px-2 py-1 rounded-md shadow-md z-10">
-  Sponsored
-</div>
+                            Sponsored
+                          </div>
 
                           {slide.type === 'image' ? (
                             <img
@@ -158,8 +158,8 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                           ) : (
                             <div className="relative w-full h-full">
                               <div className="absolute top-2 left-2 bg-orange-600/60 backdrop-blur-sm text-white text-xs font-semibold px-2 py-1 rounded-md shadow-md z-10">
-  Sponsored
-</div>
+                                Sponsored
+                              </div>
 
                               <video
                                 ref={(el) =>
