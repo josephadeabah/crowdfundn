@@ -1,42 +1,246 @@
-'use client';
-import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import { FaPlay, FaPause, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
+import { FaArrowLeft, FaArrowRight, FaPlay } from 'react-icons/fa';
 
-type MediaItemType =
+type MediaSlide = {
+  description: string;
+} & (
   | {
       type: 'image';
       url: string;
       alt: string;
-      description: string;
     }
   | {
       type: 'video';
       url: string;
       thumbnail: string;
-      description: string;
+    }
+);
+
+type CarouselProps = {
+  slides: MediaSlide[];
+};
+
+const Carousel: React.FC<CarouselProps> = ({ slides }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const videoRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [slidesPerPage, setSlidesPerPage] = useState(1);
+
+  // Handle responsive slides per page
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setSlidesPerPage(2);
+      } else {
+        setSlidesPerPage(1);
+      }
     };
 
-interface MediaItemProps {
-  item: MediaItemType;
-  index: number;
-}
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
+  // Auto-play videos when they become active
+  useEffect(() => {
+    Object.values(videoRefs.current).forEach((video) => {
+      if (video) {
+        video.muted = true;
+        if (isPlaying && isVideoInView(video)) {
+          video.play().catch((e) => console.log('Autoplay prevented:', e));
+        } else {
+          video.pause();
+        }
+      }
+    });
+  }, [currentIndex, isPlaying]);
+
+  const isVideoInView = (video: HTMLVideoElement) => {
+    if (!containerRef.current) return false;
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const videoRect = video.getBoundingClientRect();
+
+    return (
+      videoRect.left >= containerRect.left &&
+      videoRect.right <= containerRect.right
+    );
+  };
+
+  const totalGroups = Math.ceil(slides.length / slidesPerPage);
+
+  const goToPrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + totalGroups) % totalGroups);
+  };
+
+  const goToNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % totalGroups);
+  };
+
+  // Auto-advance slides
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    const timer = setInterval(() => {
+      goToNext();
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [isPlaying, slidesPerPage]);
+
+  const handleMouseEnter = () => {
+    setIsPlaying(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsPlaying(true);
+  };
+
+  const handleVideoPlay = (index: number) => {
+    const video = videoRefs.current[index];
+    if (video) {
+      video.play().catch((e) => console.log('Play prevented:', e));
+    }
+  };
+
+  return (
+    <div
+      className="w-full max-w-7xl mx-auto py-8 px-4"
+      ref={containerRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div className="relative overflow-hidden">
+        <div
+          className="flex transition-transform duration-500 ease-in-out"
+          style={{
+            transform: `translateX(-${currentIndex * 100}%)`,
+            width: `${totalGroups * 100}%`,
+          }}
+        >
+          {Array.from({ length: totalGroups }).map((_, groupIndex) => (
+            <div
+              key={groupIndex}
+              className="w-full flex-shrink-0 px-2"
+              style={{ width: `${100 / totalGroups}%` }}
+            >
+              <div className="flex gap-4">
+                {slides
+                  .slice(
+                    groupIndex * slidesPerPage,
+                    (groupIndex + 1) * slidesPerPage,
+                  )
+                  .map((slide, slideIndex) => {
+                    const absoluteIndex =
+                      groupIndex * slidesPerPage + slideIndex;
+                    return (
+                      <div
+                        key={absoluteIndex}
+                        className={`flex-1 min-w-0 bg-white rounded-xl shadow-md overflow-hidden ${
+                          slidesPerPage === 2
+                            ? 'flex flex-col md:flex-row'
+                            : 'flex flex-col'
+                        }`}
+                      >
+                        {/* Media container */}
+                        <div
+                          className={`relative ${slidesPerPage === 2 ? 'md:w-1/2' : 'w-full'}`}
+                        >
+                          {slide.type === 'image' ? (
+                            <img
+                              src={slide.url}
+                              alt={slide.alt || ''}
+                              className="w-full h-full object-cover aspect-video"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="relative w-full aspect-video">
+                              <video
+                                ref={(el) =>
+                                  (videoRefs.current[absoluteIndex] = el)
+                                }
+                                src={slide.url}
+                                poster={slide.thumbnail}
+                                className="w-full h-full object-cover"
+                                loop
+                                muted
+                                playsInline
+                              />
+                              <button
+                                onClick={() => handleVideoPlay(absoluteIndex)}
+                                className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white p-2 rounded-full"
+                                aria-label="Play video"
+                              >
+                                <FaPlay size={14} />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Content container */}
+                        <div
+                          className={`p-6 flex flex-col ${slidesPerPage === 2 ? 'md:w-1/2' : 'w-full'}`}
+                        >
+                          <div className="flex-grow">
+                            <p className="text-gray-700 mb-4">
+                              {slide.description}
+                            </p>
+                          </div>
+                          <div className="flex justify-end">
+                            <button className="whitespace-nowrap bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                              Learn More
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Navigation arrows */}
+        <button
+          onClick={goToPrev}
+          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 p-2 rounded-full shadow-md hover:bg-opacity-100 transition-all"
+          aria-label="Previous slide"
+        >
+          <FaArrowLeft className="text-gray-800" />
+        </button>
+        <button
+          onClick={goToNext}
+          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 p-2 rounded-full shadow-md hover:bg-opacity-100 transition-all"
+          aria-label="Next slide"
+        >
+          <FaArrowRight className="text-gray-800" />
+        </button>
+      </div>
+
+      {/* Pagination indicators */}
+      <div className="flex justify-center mt-4 gap-2">
+        {Array.from({ length: totalGroups }).map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            className={`w-3 h-3 rounded-full ${currentIndex === index ? 'bg-blue-600' : 'bg-gray-300'}`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Example usage with your data
 const MarketingMediaCarousel = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const carouselRef = useRef<HTMLDivElement>(null);
-
-  const mediaItems: MediaItemType[] = [
+  const slides: MediaSlide[] = [
     {
       type: 'image',
       url: '/busshot.jpg',
       alt: 'Man working in a carpentry workshop',
       description:
-        'Empowering local craftsmanship — this carpenter’s dream came to life through our community-backed funding, bringing sustainable furniture solutions to his neighborhood.',
+        "Empowering local craftsmanship — this carpenter's dream came to life through our community-backed funding, bringing sustainable furniture solutions to his neighborhood.",
     },
     {
       type: 'video',
@@ -75,201 +279,7 @@ const MarketingMediaCarousel = () => {
     },
   ];
 
-  const MediaItem: React.FC<MediaItemProps> = ({ item, index }) => {
-    const [ref, inView] = useInView({
-      threshold: 0.5,
-      triggerOnce: false,
-    });
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const [isPlaying, setIsPlaying] = useState(true);
-
-    useEffect(() => {
-      if (videoRef.current) {
-        if (inView && isPlaying) {
-          videoRef.current.play().catch(() => {});
-        } else {
-          videoRef.current.pause();
-        }
-      }
-    }, [inView, isPlaying]);
-
-    const togglePlayback = (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.stopPropagation();
-      setIsPlaying((prev) => !prev);
-    };
-
-    return (
-      <div className="flex flex-col">
-        <motion.div
-          ref={ref}
-          className="relative w-full h-48 sm:h-64 md:h-96 overflow-hidden rounded-lg"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: inView ? 1 : 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          {item.type === 'image' ? (
-            <img
-              src={item.url}
-              alt={item.alt}
-              className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300 max-w-full"
-              loading="lazy"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.onerror = null;
-                target.src =
-                  'https://via.placeholder.com/400x300?text=Image+Not+Found';
-              }}
-            />
-          ) : (
-            <div className="relative w-full h-full group">
-              <video
-                ref={videoRef}
-                src={item.url}
-                muted
-                loop
-                playsInline
-                autoPlay
-                className="w-full h-full object-cover"
-              />
-              <button
-                onClick={togglePlayback}
-                className="absolute bottom-4 left-4 bg-orange-500 bg-opacity-80 p-3 rounded-full text-white hover:bg-opacity-100 transition-all duration-300"
-                aria-label={isPlaying ? 'Pause video' : 'Play video'}
-              >
-                {isPlaying ? <FaPlay size={20} /> : <FaPause size={20} />}
-              </button>
-            </div>
-          )}
-        </motion.div>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-4 px-2 gap-2 sm:gap-4">
-          <p className="text-gray-700 text-base sm:text-lg font-medium">
-            {item.description}
-          </p>
-          <button
-            className="bg-orange-100 text-orange-800 px-4 py-2 rounded-lg hover:bg-orange-600 hover:text-white transition-colors duration-300 whitespace-nowrap text-sm sm:text-base"
-            onClick={() => console.log(`Navigate to story ${index + 1}`)}
-          >
-            Read fundraiser story
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  const handlePrevSlide = () => {
-    if (carouselRef.current) {
-      const slideWidth = carouselRef.current.offsetWidth;
-      const newIndex = Math.max(currentIndex - 1, 0);
-      setCurrentIndex(newIndex);
-      carouselRef.current.scrollTo({
-        left: newIndex * slideWidth,
-        behavior: 'smooth',
-      });
-    }
-  };
-
-  const handleNextSlide = () => {
-    if (carouselRef.current) {
-      const slideWidth = carouselRef.current.offsetWidth;
-      const maxIndex = mediaItems.length - 1;
-      const newIndex = Math.min(currentIndex + 1, maxIndex);
-      setCurrentIndex(newIndex);
-      carouselRef.current.scrollTo({
-        left: newIndex * slideWidth,
-        behavior: 'smooth',
-      });
-    }
-  };
-
-  const handleDragStart = (
-    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>,
-  ) => {
-    setIsDragging(true);
-    const pageX = 'touches' in e ? e.touches[0].clientX : e.pageX;
-    if (carouselRef.current) {
-      setStartX(pageX - carouselRef.current.offsetLeft);
-      setScrollLeft(carouselRef.current.scrollLeft);
-    }
-  };
-
-  const handleDragMove = (
-    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>,
-  ) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const pageX =
-      'touches' in e
-        ? (e as React.TouchEvent<HTMLDivElement>).touches[0].clientX
-        : (e as React.MouseEvent<HTMLDivElement>).pageX;
-    if (carouselRef.current) {
-      const x = pageX - carouselRef.current.offsetLeft;
-      const walk = (x - startX) * 2;
-      carouselRef.current.scrollLeft = scrollLeft - walk;
-    }
-  };
-
-  const handleDragEnd = () => {
-    setIsDragging(false);
-    if (carouselRef.current) {
-      const slideWidth = carouselRef.current.offsetWidth;
-      const newIndex = Math.round(carouselRef.current.scrollLeft / slideWidth);
-      setCurrentIndex(newIndex);
-      carouselRef.current.scrollTo({
-        left: newIndex * slideWidth,
-        behavior: 'smooth',
-      });
-    }
-  };
-
-  return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-8 relative">
-      <div
-        ref={carouselRef}
-        className="flex overflow-x-hidden cursor-grab active:cursor-grabbing touch-pan-x relative"
-        onMouseDown={handleDragStart}
-        onMouseMove={handleDragMove}
-        onMouseUp={handleDragEnd}
-        onMouseLeave={handleDragEnd}
-        onTouchStart={handleDragStart}
-        onTouchMove={handleDragMove}
-        onTouchEnd={handleDragEnd}
-      >
-        <div className="flex gap-4 md:gap-6 transition-transform duration-300">
-          {mediaItems.map((item, index) => (
-            <div
-              key={index}
-              className="min-w-[calc(100%-16px)] sm:min-w-[calc(50%-16px)] md:min-w-[calc(33.333%-24px)] snap-center"
-              role="group"
-              aria-label={`Slide ${index + 1} of ${mediaItems.length}`}
-            >
-              <MediaItem item={item} index={index} />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <button
-        onClick={handlePrevSlide}
-        className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg z-10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
-        disabled={currentIndex === 0}
-        aria-label="Previous slide"
-      >
-        <FaChevronLeft
-          className={`text-2xl ${currentIndex === 0 ? 'text-gray-400' : 'text-orange-500'}`}
-        />
-      </button>
-      <button
-        onClick={handleNextSlide}
-        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg z-10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
-        disabled={currentIndex === mediaItems.length - 1}
-        aria-label="Next slide"
-      >
-        <FaChevronRight
-          className={`text-2xl ${currentIndex === mediaItems.length - 1 ? 'text-gray-400' : 'text-orange-500'}`}
-        />
-      </button>
-    </div>
-  );
+  return <Carousel slides={slides} />;
 };
 
 export default MarketingMediaCarousel;
