@@ -118,7 +118,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
           {Array.from({ length: totalGroups }).map((_, groupIndex) => (
             <div
               key={groupIndex}
-              className="w-full flex-shrink-0 px-2"
+              className="w-full flex-shrink-0 p-4"
               style={{ width: `${100 / totalGroups}%` }}
             >
               <div className="flex gap-4">
