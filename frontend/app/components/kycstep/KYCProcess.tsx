@@ -14,15 +14,6 @@ import {
 import { Button } from '@/app/components/ui/button';
 import { Form } from '@/app/components/ui/form';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/app/components/ui/dialog';
-
-import {
   CreatorKYCFormData,
   InvestorKYCFormData,
   MentorKYCFormData,
