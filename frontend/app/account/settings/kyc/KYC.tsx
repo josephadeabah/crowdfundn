@@ -97,7 +97,7 @@ const mentorKycSteps = [
 ];
 
 // Calculate minimum date (18 years ago)
-const getMinimumBirthDate = () => {
+export const getMinimumBirthDate = () => {
   const today = new Date();
   return new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
 };

@@ -9,6 +9,17 @@ import { registerUser } from '@/app/utils/api/api.register';
 import ToastComponent from '@/app/components/toast/Toast';
 import { categories } from '@/app/utils/helpers/categories';
 import { useAuth } from '@/app/context/auth/AuthContext';
+import { format } from 'date-fns';
+import { Calendar as CalendarIcon } from 'lucide-react';
+import { cn } from '@/app/lib/utils';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/app/components/ui/popover';
+import { Button } from '@/app/components/ui/button';
+import { getMinimumBirthDate } from '@/app/account/settings/kyc/KYC';
+import { Calendar } from '@/app/components/ui/calender';
 
 type FormData = {
   email: string;
@@ -158,6 +169,17 @@ const RegisterForm: React.FC = () => {
         error = !phoneRegex.test(value) ? 'Invalid phone number' : '';
         break;
       }
+      case 'birthDate':
+        if (!value) {
+          error = 'Date of birth is required';
+        } else {
+          const birthDate = new Date(value);
+          const minDate = getMinimumBirthDate();
+          if (birthDate > minDate) {
+            error = 'You must be at least 18 years old';
+          }
+        }
+        break;
       case 'paymentMethod':
         error = value.trim() === '' ? 'Payment method is required' : '';
         break;
@@ -396,16 +418,56 @@ const RegisterForm: React.FC = () => {
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Birth Date <span className="text-red-500">*</span>
+                  Date of Birth <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="date"
-                  name="birthDate"
-                  value={formData.birthDate}
-                  onChange={handleChange}
-                  className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${errors.birthDate ? 'border-red-500' : 'border-gray-300'}`}
-                  required
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={'outline'}
+                      className={cn(
+                        'w-full pl-3 text-left font-normal',
+                        !formData.birthDate && 'text-muted-foreground',
+                        errors.birthDate ? 'border-red-500' : 'border-gray-300',
+                      )}
+                    >
+                      {formData.birthDate ? (
+                        format(new Date(formData.birthDate), 'PPP')
+                      ) : (
+                        <span>Pick your date of birth</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={
+                        formData.birthDate
+                          ? new Date(formData.birthDate)
+                          : undefined
+                      }
+                      onSelect={(date) => {
+                        if (date) {
+                          const isoDate = date.toISOString().split('T')[0];
+                          setFormData((prev) => ({
+                            ...prev,
+                            birthDate: isoDate,
+                          }));
+                          const error = validateField('birthDate', isoDate);
+                          setErrors((prev) => ({ ...prev, birthDate: error }));
+                        }
+                      }}
+                      disabled={(date) =>
+                        date > getMinimumBirthDate() ||
+                        date < new Date('1900-01-01')
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <p className="mt-1 text-sm text-gray-500">
+                  You must be at least 18 years old to participate.
+                </p>
                 {errors.birthDate && (
                   <p className="mt-1 text-sm text-red-500">
                     {errors.birthDate}
