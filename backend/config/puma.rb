@@ -16,7 +16,7 @@ if ENV['RAILS_ENV'] == 'production'
   workers worker_count
   
   # Important cluster mode settings
-  preload_app!  # Preload the application before forking workers
+  # preload_app!  # Preload the application before forking workers
   worker_timeout 60  # Default is 30, increase if you have long-running requests
   
   # Recommended for deployments with zero-downtime restarts
