@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { FaCreditCard, FaUser, FaBell } from 'react-icons/fa';
+import { FaCreditCard, FaUser, FaBell, FaIdCard } from 'react-icons/fa';
 import { MdAccountCircle } from 'react-icons/md';
 import PaymentMethod from './paymentmethod/PaymentMethod';
 import UserSettings from './usersettings/UserSettings';
@@ -17,6 +17,8 @@ const AccountSettings = () => {
         return <UserSettings />;
       case 'system':
         return <SystemSettingsPage />;
+      case 'kyc':
+        return null; // You'll add the KYC component here later
       default:
         return null;
     }
@@ -46,6 +48,13 @@ const AccountSettings = () => {
         >
           <FaBell className="mr-2" />
           System
+        </button>
+        <button
+          className={`flex items-center px-4 py-2 border-b-2 font-medium text-sm ${activeTab === 'kyc' ? 'border-gray-500 text-gray-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+          onClick={() => setActiveTab('kyc')}
+        >
+          <FaIdCard className="mr-2" />
+          KYC
         </button>
       </div>
 
