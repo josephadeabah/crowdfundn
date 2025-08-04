@@ -18,8 +18,8 @@ import {
   PopoverTrigger,
 } from '@/app/components/ui/popover';
 import { Button } from '@/app/components/ui/button';
-import { getMinimumBirthDate } from '@/app/account/settings/kyc/KYC';
 import { Calendar } from '@/app/components/ui/calender';
+import { getMinimumBirthDate } from '@/app/types/kyc.type';
 
 type FormData = {
   email: string;
