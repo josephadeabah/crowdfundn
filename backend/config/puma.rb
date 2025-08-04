@@ -34,15 +34,14 @@ if ENV['RAILS_ENV'] == 'production'
 end
 
 # Basic settings
-port ENV.fetch('PORT', 3000)
+# Basic settings
+port ENV.fetch('PORT', 3000) # optional if bind is used
+bind "tcp://0.0.0.0:#{ENV.fetch('PORT', 3000)}"
 environment ENV.fetch('RAILS_ENV', 'development')
 pidfile ENV.fetch('PIDFILE', 'tmp/pids/server.pid')
 
 # Allow for zero-downtime restarts
 plugin :tmp_restart
-
-# Optimize for Kubernetes/container environments
-bind 'tcp://0.0.0.0:3000'
 
 # For better performance with reverse proxies
 persistent_timeout 20  # Default is 20 seconds
