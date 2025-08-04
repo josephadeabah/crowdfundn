@@ -1,10 +1,11 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins 'https://bantuhive.com'
+    origins 'https://www.bantuhive.com'
 
     resource '*',
-      headers: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'X-Requested-With'],
+      headers: :any,
       methods: [:get, :post, :put, :patch, :delete, :options, :head],
-      credentials: true
+      credentials: true,
+      max_age: 600
   end
 end
