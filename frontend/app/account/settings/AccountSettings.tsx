@@ -5,6 +5,7 @@ import { MdAccountCircle } from 'react-icons/md';
 import PaymentMethod from './paymentmethod/PaymentMethod';
 import UserSettings from './usersettings/UserSettings';
 import SystemSettingsPage from './systemsettings/SystemSettings';
+import KYC from './kyc/KYC';
 
 const AccountSettings = () => {
   const [activeTab, setActiveTab] = useState('payment');
@@ -18,7 +19,7 @@ const AccountSettings = () => {
       case 'system':
         return <SystemSettingsPage />;
       case 'kyc':
-        return null; // You'll add the KYC component here later
+        return <KYC />;
       default:
         return null;
     }
