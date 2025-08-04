@@ -34,9 +34,9 @@ if ENV['RAILS_ENV'] == 'production'
 end
 
 # Basic settings
-# Basic settings
-port ENV.fetch('PORT', 3000) # optional if bind is used
-bind "tcp://0.0.0.0:#{ENV.fetch('PORT', 3000)}"
+port ENV.fetch('PORT', 8080)
+bind "tcp://0.0.0.0:#{ENV.fetch('PORT', 8080)}"
+
 environment ENV.fetch('RAILS_ENV', 'development')
 pidfile ENV.fetch('PIDFILE', 'tmp/pids/server.pid')
 
