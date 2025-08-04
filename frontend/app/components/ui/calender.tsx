@@ -49,11 +49,11 @@ function Calendar({
         day_range_middle:
           'aria-selected:bg-accent aria-selected:text-accent-foreground',
         day_hidden: 'invisible',
-        caption_dropdowns: 'flex gap-2 justify-center items-center',
+        caption_dropdowns: 'flex justify-center items-center',
         dropdown: cn(
-          'text-transparent bg-background border border-input px-2 py-1 rounded-md',
-          'appearance-none relative z-10',
-          'focus:outline-none focus:ring-2 focus:ring-primary/50'
+          'rounded-md border border-input bg-background px-2 py-1 text-sm shadow-sm',
+          'focus:outline-none focus:ring-2 focus:ring-primary/50',
+          'disabled:opacity-50 disabled:pointer-events-none',
         ),
         dropdown_icon: 'ml-1 w-4 h-4 text-muted-foreground',
 
