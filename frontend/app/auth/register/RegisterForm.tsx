@@ -465,7 +465,7 @@ const RegisterForm: React.FC = () => {
                     />
                   </PopoverContent>
                 </Popover>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-xs text-gray-500">
                   You must be at least 18 years old to participate.
                 </p>
                 {errors.birthDate && (
