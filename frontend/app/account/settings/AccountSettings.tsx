@@ -16,10 +16,10 @@ const AccountSettings = () => {
         return <PaymentMethod />;
       case 'account':
         return <UserSettings />;
-      case 'system':
-        return <SystemSettingsPage />;
       case 'kyc':
         return <KYC />;
+      case 'system':
+        return <SystemSettingsPage />;
       default:
         return null;
     }
@@ -44,18 +44,18 @@ const AccountSettings = () => {
           Account
         </button>
         <button
-          className={`flex items-center px-4 py-2 border-b-2 font-medium text-sm ${activeTab === 'system' ? 'border-gray-500 text-gray-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
-          onClick={() => setActiveTab('system')}
-        >
-          <FaBell className="mr-2" />
-          System
-        </button>
-        <button
           className={`flex items-center px-4 py-2 border-b-2 font-medium text-sm ${activeTab === 'kyc' ? 'border-gray-500 text-gray-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
           onClick={() => setActiveTab('kyc')}
         >
           <FaIdCard className="mr-2" />
           KYC
+        </button>
+        <button
+          className={`flex items-center px-4 py-2 border-b-2 font-medium text-sm ${activeTab === 'system' ? 'border-gray-500 text-gray-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+          onClick={() => setActiveTab('system')}
+        >
+          <FaBell className="mr-2" />
+          System
         </button>
       </div>
 
