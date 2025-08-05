@@ -281,7 +281,7 @@ const PledgesListPage = () => {
                     </div>
                     <div className="flex gap-2">
                       {pledge.status === "success" && pledge.shipping_status === "not_shipped" && (
-                        <Button size="sm" className="bg-tab-success text-white">
+                        <Button size="sm" className="bg-tab-success text-gray-600">
                           <Truck className="h-4 w-4 mr-1" />
                           Ship Now
                         </Button>
