@@ -9,6 +9,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/app/components/ui/form';
 import { Input } from '@/app/components/ui/input';
 import { Textarea } from '@/app/components/ui/textarea';
@@ -105,6 +106,9 @@ export const PersonalInfoStep: React.FC = () => {
                 />
               </PopoverContent>
             </Popover>
+            <FormDescription>
+              You must be at least 18 years old to participate.
+            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
