@@ -106,9 +106,6 @@ export const PersonalInfoStep: React.FC = () => {
                 />
               </PopoverContent>
             </Popover>
-            <FormDescription>
-              You must be at least 18 years old to participate.
-            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
