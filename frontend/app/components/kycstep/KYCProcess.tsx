@@ -207,10 +207,12 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   });
 
   const onSubmit = async (data: any) => {
+    console.log('Form submission initiated');
     const updatedFormData = { ...formData, ...data };
     setFormData(updatedFormData);
 
     if (isInvestor && currentStep === 2) {
+      console.log('Processing investor quiz results');
       const results: { [key: string]: boolean } = {};
       const incorrect: {
         [key: string]: { userAnswer: string; correctAnswer: string };
@@ -244,22 +246,26 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     const certificateStepIndex = isCreator ? 2 : isInvestor ? 4 : 3;
     if (currentStep === certificateStepIndex) {
       if (!isSigned) {
+        console.warn('Submission blocked: Signature missing');
         toast.error('Please sign your certificate before proceeding.');
         return;
       }
     }
 
     if (currentStep < kycSteps.length - 1) {
+      console.log(`Moving to step ${currentStep + 1}`);
       setCurrentStep(currentStep + 1);
     } else {
+      console.log('Final submission step reached');
+      
       if (isInvestor && !isQuizPassed()) {
-        toast.error(
-          'Please complete the investor quiz correctly before submitting.',
-        );
+        console.warn('Submission blocked: Quiz not passed');
+        toast.error('Please complete the investor quiz correctly before submitting.');
         return;
       }
 
       if (!isSigned) {
+        console.warn('Submission blocked: Signature missing on final step');
         toast.error('Please sign your certificate before submitting.');
         return;
       }
@@ -271,11 +277,13 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           signedAt: new Date().toISOString()
         };
 
-        // Log the complete form data with signature
-        console.log('Complete Form Data with Signature:', {
-          ...finalFormData,
-          signatureImage: signatureImage.substring(0, 50) + '...' // Show partial signature to avoid huge logs
-        });
+        console.group('FINAL FORM SUBMISSION DATA');
+        console.log('User Type:', userType);
+        console.log('Form Data:', updatedFormData);
+        console.log('Signature Image (truncated):', signatureImage.substring(0, 50) + '...');
+        console.log('Signature Points:', signature);
+        console.log('Signed At:', new Date().toISOString());
+        console.groupEnd();
 
         const userTypeLabel = isCreator
           ? 'Campaign creator'
@@ -283,9 +291,10 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             ? 'Investor'
             : 'Mentor';
 
+        console.log('Showing success toast');
         toast.success(`${userTypeLabel} verification submitted successfully`);
 
-        // Here you would typically send to your API
+        // API submission would go here
         // await submitToBackend(finalFormData);
       } catch (error) {
         console.error('Submission error:', error);
