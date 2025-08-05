@@ -166,7 +166,7 @@ const ProfileTabs = () => {
                     className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap min-w-fit lg:min-w-full lg:w-full relative group ${
                       isActive
                         ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-400 dark:text-orange-600'
-                        : 'border-transparent text-gray-600 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-gray-950'
+                        : 'border-transparent text-gray-800 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-gray-950'
                     }  focus:outline-none ${
                       isOnboarding
                         ? 'bg-green-600 text-white dark:bg-orange-700'

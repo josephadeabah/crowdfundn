@@ -37,7 +37,8 @@ const KYC = () => {
                 ? 'start fundraising'
                 : userType === 'investor'
                   ? 'begin investing'
-                  : 'become a qualified mentor to a startup'}.
+                  : 'become a qualified mentor to a startup'}
+              .
             </p>
           </div>
 
