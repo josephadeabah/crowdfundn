@@ -172,74 +172,106 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     })(),
   });
 
-  const onSubmit = (data: any) => {
-    const updatedFormData = { ...formData, ...data };
-    setFormData(updatedFormData);
+const onSubmit = (data: any) => {
+  const updatedFormData = { ...formData, ...data };
+  setFormData(updatedFormData);
 
-    if (isInvestor && currentStep === 2) {
-      const results: { [key: string]: boolean } = {};
-      const incorrect: {
-        [key: string]: { userAnswer: string; correctAnswer: string };
-      } = {};
+  if (isInvestor && currentStep === 2) {
+    const results: { [key: string]: boolean } = {};
+    const incorrect: {
+      [key: string]: { userAnswer: string; correctAnswer: string };
+    } = {};
 
-      Object.keys(quizQuestions).forEach((questionKey) => {
-        const userAnswer = data[questionKey];
-        const correctAnswer =
-          quizQuestions[questionKey as keyof typeof quizQuestions].correct;
-        const isCorrect = userAnswer === correctAnswer;
-        results[questionKey] = isCorrect;
+    Object.keys(quizQuestions).forEach((questionKey) => {
+      const userAnswer = data[questionKey];
+      const correctAnswer =
+        quizQuestions[questionKey as keyof typeof quizQuestions].correct;
+      const isCorrect = userAnswer === correctAnswer;
+      results[questionKey] = isCorrect;
 
-        if (!isCorrect) {
-          const userOption = quizQuestions[
-            questionKey as keyof typeof quizQuestions
-          ].options.find((opt) => opt.value === userAnswer);
-          const correctOption = quizQuestions[
-            questionKey as keyof typeof quizQuestions
-          ].options.find((opt) => opt.value === correctAnswer);
-          incorrect[questionKey] = {
-            userAnswer: userOption?.label || userAnswer,
-            correctAnswer: correctOption?.label || correctAnswer,
-          };
-        }
-      });
-
-      setQuizResults(results);
-      setIncorrectAnswers(incorrect);
-    }
-
-    const certificateStepIndex = isCreator ? 2 : isInvestor ? 4 : 3;
-    if (currentStep === certificateStepIndex) {
-      if (!isSigned) {
-        toast.error('Please sign your certificate before proceeding.');
-        return;
+      if (!isCorrect) {
+        const userOption = quizQuestions[
+          questionKey as keyof typeof quizQuestions
+        ].options.find((opt) => opt.value === userAnswer);
+        const correctOption = quizQuestions[
+          questionKey as keyof typeof quizQuestions
+        ].options.find((opt) => opt.value === correctAnswer);
+        incorrect[questionKey] = {
+          userAnswer: userOption?.label || userAnswer,
+          correctAnswer: correctOption?.label || correctAnswer,
+        };
       }
+    });
+
+    setQuizResults(results);
+    setIncorrectAnswers(incorrect);
+  }
+
+  const certificateStepIndex = isCreator ? 2 : isInvestor ? 4 : 3;
+  if (currentStep === certificateStepIndex) {
+    if (!isSigned) {
+      toast.error('Please sign your certificate before proceeding.');
+      return;
+    }
+  }
+
+  if (currentStep < kycSteps.length - 1) {
+    setCurrentStep(currentStep + 1);
+  } else {
+    if (isInvestor && !isQuizPassed()) {
+      toast.error(
+        'Please complete the investor quiz correctly before submitting.',
+      );
+      return;
     }
 
-    if (currentStep < kycSteps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      if (isInvestor && !isQuizPassed()) {
-        toast.error(
-          'Please complete the investor quiz correctly before submitting.',
+    if (!isSigned) {
+      toast.error('Please sign your certificate before submitting.');
+      return;
+    }
+
+    const userTypeLabel = isCreator
+      ? 'Campaign creator'
+      : isInvestor
+        ? 'Investor'
+        : 'Mentor';
+    toast.success(`${userTypeLabel} verification submitted successfully`);
+
+    // ✅ Prepare FormData for backend submission
+    const formDataToSend = new FormData();
+
+    // Append all fields from updatedFormData
+    Object.entries(updatedFormData).forEach(([key, value]) => {
+      if (value instanceof File || value instanceof Blob) {
+        formDataToSend.append(key, value);
+      } else if (Array.isArray(value)) {
+        value.forEach((v, i) =>
+          formDataToSend.append(`${key}[${i}]`, String(v)),
         );
-        return;
+      } else if (typeof value === 'boolean' || typeof value === 'number') {
+        formDataToSend.append(key, value.toString());
+      } else if (value !== undefined && value !== null) {
+        formDataToSend.append(key, value as string);
       }
+    });
 
-      if (!isSigned) {
-        toast.error('Please sign your certificate before submitting.');
-        return;
-      }
+    // Append the signature (serialized as JSON string)
+    formDataToSend.append('signature', JSON.stringify(signature));
 
-      const userTypeLabel = isCreator
-        ? 'Campaign creator'
-        : isInvestor
-          ? 'Investor'
-          : 'Mentor';
-      toast.success(`${userTypeLabel} verification submitted successfully`);
-      console.log('Final form data:', updatedFormData);
-      console.log('Signature data:', signature);
+    // ✅ Log FormData entries
+    console.log('📦 Prepared FormData for submission:');
+    for (const pair of formDataToSend.entries()) {
+      console.log(pair[0] + ':', pair[1]);
     }
-  };
+
+    // ❗You can later send it like:
+    // fetch('/api/submit', {
+    //   method: 'POST',
+    //   body: formDataToSend,
+    // });
+  }
+};
+
 
   const goToPreviousStep = () => {
     if (currentStep > 0) {
