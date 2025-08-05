@@ -175,6 +175,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const onSubmit = (data: any) => {
     const updatedFormData = { ...formData, ...data };
     setFormData(updatedFormData);
+    console.log("KYC Data", updatedFormData);
 
     if (isInvestor && currentStep === 2) {
       const results: { [key: string]: boolean } = {};
