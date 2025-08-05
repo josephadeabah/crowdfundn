@@ -241,6 +241,47 @@ const RewardsPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Left Column - Performance Overview */}
             <div className="space-y-6">
+                            {/* Level Information */}
+              {userReward && userReward.level ? (
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                      Your Current Level
+                    </h2>
+                    <div className="flex items-center">
+                      <FaInfoCircle
+                        data-tooltip-id="tooltip-level-info"
+                        data-tooltip-content="Your level is determined by your total contributions and campaign sharing activity."
+                        className="text-gray-400 text-sm cursor-pointer mr-2"
+                      />
+                      <Tooltip
+                        id="tooltip-level-info"
+                        className="max-w-xs text-gray-600 dark:text-gray-400 text-sm p-2 rounded z-10"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-4 flex flex-col items-center">
+                    <div className="text-2xl font-semibold text-orange-500">
+                      {userReward.level}
+                    </div>
+                    <div className="mt-2">
+                      {getCupIcon(userReward.level)}
+                    </div>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
+                      {userReward.description}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                  <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                    Your Current Level
+                  </h2>
+                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                    You haven't reached any reward level yet.
+                  </p>
+                </div>
+              )}
               {/* Performance Summary */}
               <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
                 <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
@@ -349,48 +390,6 @@ const RewardsPage: React.FC = () => {
 
             {/* Right Column - Rewards and Level */}
             <div className="space-y-6">
-              {/* Level Information */}
-              {userReward && userReward.level ? (
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
-                      Your Current Level
-                    </h2>
-                    <div className="flex items-center">
-                      <FaInfoCircle
-                        data-tooltip-id="tooltip-level-info"
-                        data-tooltip-content="Your level is determined by your total contributions and campaign sharing activity."
-                        className="text-gray-400 text-sm cursor-pointer mr-2"
-                      />
-                      <Tooltip
-                        id="tooltip-level-info"
-                        className="max-w-xs text-gray-600 dark:text-gray-400 text-sm p-2 rounded z-10"
-                      />
-                    </div>
-                  </div>
-                  <div className="mt-4 flex flex-col items-center">
-                    <div className="text-2xl font-semibold text-orange-500">
-                      {userReward.level}
-                    </div>
-                    <div className="mt-2">
-                      {getCupIcon(userReward.level)}
-                    </div>
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
-                      {userReward.description}
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                  <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
-                    Your Current Level
-                  </h2>
-                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                    You haven't reached any reward level yet.
-                  </p>
-                </div>
-              )}
-
               {/* User Rewards */}
               <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
                 <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
