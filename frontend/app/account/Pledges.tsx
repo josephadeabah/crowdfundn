@@ -73,10 +73,11 @@ const PledgesListPage = () => {
       (sum, pledge) =>
         sum +
         pledge.selected_rewards.reduce(
-          (rewardSum, reward) => rewardSum + parseFloat(reward.amount.toString()),
-          0
+          (rewardSum, reward) =>
+            rewardSum + parseFloat(reward.amount.toString()),
+          0,
         ),
-      0
+      0,
     ),
   };
 
@@ -190,9 +191,7 @@ const PledgesListPage = () => {
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Button className="bg-white text-gray-600">
-            Process Pledges
-          </Button>
+          <Button className="bg-white text-gray-600">Process Pledges</Button>
         </div>
       </div>
 
@@ -223,9 +222,10 @@ const PledgesListPage = () => {
           <CardContent className="p-6 text-center">
             <CheckCircle className="h-8 w-8 mx-auto mb-2 text-tab-accent" />
             <p className="text-2xl font-bold">
-              ₵{stats.totalValue.toLocaleString('en-US', {
+              ₵
+              {stats.totalValue.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                maximumFractionDigits: 2,
               })}
             </p>
             <p className="text-sm text-muted-foreground">Total Value</p>
@@ -315,12 +315,13 @@ const PledgesListPage = () => {
                         ₵
                         {pledge.selected_rewards
                           .reduce(
-                            (sum, reward) => sum + parseFloat(reward.amount.toString()),
-                            0
+                            (sum, reward) =>
+                              sum + parseFloat(reward.amount.toString()),
+                            0,
                           )
                           .toLocaleString('en-US', {
                             minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
+                            maximumFractionDigits: 2,
                           })}
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -430,9 +431,12 @@ const PledgesListPage = () => {
                                         {reward.description}
                                       </p>
                                       <p className="text-sm font-medium text-tab-primary">
-                                        ₵{parseFloat(reward.amount.toString()).toLocaleString('en-US', {
+                                        ₵
+                                        {parseFloat(
+                                          reward.amount.toString(),
+                                        ).toLocaleString('en-US', {
                                           minimumFractionDigits: 2,
-                                          maximumFractionDigits: 2
+                                          maximumFractionDigits: 2,
                                         })}
                                       </p>
                                     </div>
