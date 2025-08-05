@@ -159,7 +159,7 @@ const RewardsPage: React.FC = () => {
 
   const handleDeleteReward = (campaignId: string, rewardId: number) => {
     setRewardToDelete(rewardId);
-    setSelectedCampaignId(campaignId); // Set the selected campaign ID here
+    setSelectedCampaignId(campaignId);
     setShowDeletePopup(true);
   };
 
@@ -186,7 +186,7 @@ const RewardsPage: React.FC = () => {
 
     if (!level) {
       return (
-        <div className="text-center p-4 bg-gray-100 rounded-lg col-span-full">
+        <div className="text-center p-4 bg-gray-100 rounded-lg">
           Your special certificate of honor will be available here to download
           or share once you reach a reward level.
         </div>
@@ -220,7 +220,8 @@ const RewardsPage: React.FC = () => {
     <>
       <div className="px-2 py-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center">
+          {/* Header Section */}
+          <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
               Rewards & Gifts
             </h2>
@@ -232,373 +233,380 @@ const RewardsPage: React.FC = () => {
               <FiPlus className="mr-2" /> Add Gift
             </button>
           </div>
-          <div className="text-gray-500 text-sm mb-4">
+          <p className="text-gray-500 text-sm mb-6">
             Give and Receive Rewards and Gifts
-          </div>
-          {/* User Rewards & Rank Summary Section */}
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
-            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
-              Your Performance Progress Overview
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2">
-              {/* Backing User Rank */}
-              {userRank && userRank.rank ? (
-                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Backer Rank
-                  </p>
-                  <p className="text-4xl font-extrabold text-green-600">
-                    {getRankWithSuffix(userRank.rank)}
-                  </p>
-                </div>
-              ) : (
-                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Backer Rank
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    You have no rank yet
-                  </p>
-                </div>
-              )}
+          </p>
 
-              {/* Fundraiser User Rank */}
-              {fundraiserLeaderboardRank && fundraiserLeaderboardRank.rank ? (
-                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Fundraiser Rank
-                  </p>
-                  <p className="text-4xl font-extrabold text-green-600">
-                    {getRankWithSuffix(fundraiserLeaderboardRank.rank)}
-                  </p>
-                </div>
-              ) : (
-                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Fundraiser Rank
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    You have no rank yet
-                  </p>
-                </div>
-              )}
+          {/* Two Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left Column - Performance Overview */}
+            <div className="space-y-6">
+              {/* Performance Summary */}
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
+                  Your Performance Progress Overview
+                </h2>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Backing User Rank */}
+                  <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                    <p className="text-base font-bold text-gray-800 dark:text-gray-200">
+                      Backer Rank
+                    </p>
+                    {userRank && userRank.rank ? (
+                      <p className="text-4xl font-extrabold text-green-600">
+                        {getRankWithSuffix(userRank.rank)}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        You have no rank yet
+                      </p>
+                    )}
+                  </div>
 
-              {/* Total Points */}
-              {userPoints ? (
-                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Percentage Progress
-                  </p>
-                  <ProgressRing
-                    value={Math.round(userPoints.total_points)}
-                    size={80}
-                    strokeWidth={7}
-                    color="#22c55e"
-                  />
-                </div>
-              ) : (
-                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Percentage Progress
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    No progress data available
-                  </p>
-                </div>
-              )}
+                  {/* Fundraiser User Rank */}
+                  <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                    <p className="text-base font-bold text-gray-800 dark:text-gray-200">
+                      Fundraiser Rank
+                    </p>
+                    {fundraiserLeaderboardRank && fundraiserLeaderboardRank.rank ? (
+                      <p className="text-4xl font-extrabold text-green-600">
+                        {getRankWithSuffix(fundraiserLeaderboardRank.rank)}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        You have no rank yet
+                      </p>
+                    )}
+                  </div>
 
-              {userRank && userRank?.total_donations ? (
-                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Contributions
-                  </p>
-                  <p className="text-xl font-extrabold text-green-600">
-                    {userRank?.currency}{' '}
-                    {Number(userRank?.total_donations || 0).toFixed(2) || 'N/A'}
-                  </p>
-                </div>
-              ) : (
-                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Contributions
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    You have not made any impact yet.
-                  </p>
-                </div>
-              )}
+                  {/* Total Points */}
+                  <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                    <p className="text-base font-bold text-gray-800 dark:text-gray-200">
+                      Percentage Progress
+                    </p>
+                    {userPoints ? (
+                      <div className="flex justify-center">
+                        <ProgressRing
+                          value={Math.round(userPoints.total_points)}
+                          size={80}
+                          strokeWidth={7}
+                          color="#22c55e"
+                        />
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        No progress data available
+                      </p>
+                    )}
+                  </div>
 
-              {/* Next Reward */}
-              {userReward && userReward.level ? (
-                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Level
-                  </p>
-                  <p className="text-xl font-semibold text-orange-500">
-                    {userReward.level}
-                  </p>
-                  <p className="w-full flex justify-center items-center">
-                    {getCupIcon(userReward.level)}
-                  </p>
-                  <div className="font-semibold flex items-center justify-center">
+                  {/* Contributions */}
+                  <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                    <p className="text-base font-bold text-gray-800 dark:text-gray-200">
+                      Contributions
+                    </p>
+                    {userRank && userRank?.total_donations ? (
+                      <p className="text-xl font-extrabold text-green-600">
+                        {userRank?.currency}{' '}
+                        {Number(userRank?.total_donations || 0).toFixed(2) || 'N/A'}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        You have not made any impact yet.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Certificate Section */}
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="font-semibold flex items-center">
                     <FaInfoCircle
-                      data-tooltip-id="tooltip-average-logins"
-                      data-tooltip-content="Bantu Hive Credit. This coins will be converted to real money and add to your withdrawal when you start new campaign. BHC100 equals GHS₵10"
+                      data-tooltip-id="tooltip-certificate-reveal"
+                      data-tooltip-content="This is a special certificate of Honor prepared and given to you by Bantu Hive for the great impact you're making in the world. The highest Level reward (Diamond) comes with $1000 and other perks which will be given to you by Bantu Hive. Actively sharing campaigns (10%) and making donations (90%) count towards this reward."
                       className="text-gray-400 text-sm cursor-pointer mr-2"
                     />
                     <Tooltip
-                      id="tooltip-average-logins"
+                      id="tooltip-certificate-reveal"
                       className="max-w-xs text-gray-600 dark:text-gray-400 text-sm p-2 rounded z-10"
                     />
-                    <p className="text-sm font-semibold text-gray-400">
+                    <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                      Your Certificate of Honor
+                    </h2>
+                  </div>
+                  <Link
+                    href="/leaderboard/backers#leaderboard-info"
+                    className="text-sm font-medium text-cyan-600 dark:text-blue-400 hover:underline"
+                  >
+                    Learn More →
+                  </Link>
+                </div>
+                {getBackerCertWithLevel(userReward?.level)}
+              </div>
+            </div>
+
+            {/* Right Column - Rewards and Level */}
+            <div className="space-y-6">
+              {/* Level Information */}
+              {userReward && userReward.level ? (
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                      Your Current Level
+                    </h2>
+                    <div className="flex items-center">
+                      <FaInfoCircle
+                        data-tooltip-id="tooltip-level-info"
+                        data-tooltip-content="Your level is determined by your total contributions and campaign sharing activity."
+                        className="text-gray-400 text-sm cursor-pointer mr-2"
+                      />
+                      <Tooltip
+                        id="tooltip-level-info"
+                        className="max-w-xs text-gray-600 dark:text-gray-400 text-sm p-2 rounded z-10"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-4 flex flex-col items-center">
+                    <div className="text-2xl font-semibold text-orange-500">
+                      {userReward.level}
+                    </div>
+                    <div className="mt-2">
+                      {getCupIcon(userReward.level)}
+                    </div>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
                       {userReward.description}
                     </p>
                   </div>
                 </div>
               ) : (
-                <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                  <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Level
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    You haven't won rewards yet
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                  <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                    Your Current Level
+                  </h2>
+                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                    You haven't reached any reward level yet.
                   </p>
                 </div>
               )}
-            </div>
-          </div>
 
-          {/* Unlock Your Reward Section */}
-          <div className="bg-white col-span-full p-4 rounded-lg shadow mb-6">
-            <div className="flex items-center justify-between">
-              <div className="font-semibold flex items-center justify-center">
-                <FaInfoCircle
-                  data-tooltip-id="tooltip-certificate-reveal"
-                  data-tooltip-content="This is a special certificate of Honor prepared and given to you by Bantu Hive for the great impact you're making in the world. The highest Level reward (Diamond) comes with $1000 and other perks which will be given to you by Bantu Hive. Actively sharing campaigns (10%) and making donations (90%) count towards this reward."
-                  className="text-gray-400 text-sm cursor-pointer mr-2"
-                />
-                <Tooltip
-                  id="tooltip-certificate-reveal"
-                  className="max-w-xs text-gray-600 dark:text-gray-400 text-sm p-2 rounded z-10"
-                />
-                <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
-                  Your Certificate of Honor
+              {/* User Rewards */}
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
+                  Your Gifts & Rewards
                 </h2>
-              </div>
-              <Link
-                href="/leaderboard/backers#leaderboard-info"
-                className="text-lg font-medium text-cyan-600 dark:text-blue-400 hover:underline"
-              >
-                Learn More →
-              </Link>
-            </div>
-            {getBackerCertWithLevel(userReward?.level)}
-          </div>
-
-          {loading ? (
-            <RewardsLoader />
-          ) : (
-            <>
-              {userCampaigns?.every(
-                (campaign) => campaign.rewards.length === 0,
-              ) ? (
-                <p className="text-gray-500 text-sm">
-                  The Gifts You create will appear here!
-                </p>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {userCampaigns?.map((campaign) =>
-                    campaign.rewards.map((reward) => (
-                      <RewardCard
-                        key={reward.id}
-                        reward={reward}
-                        campaignId={String(campaign.id)}
-                        onDelete={handleDeleteReward}
-                      />
-                    )),
-                  )}
-                </div>
-              )}
-            </>
-          )}
-          <Modal
-            isOpen={showModal}
-            onClose={() => setShowModal(false)}
-            size="xlarge"
-            closeOnBackdropClick={false}
-          >
-            <div className="overflow-y-auto max-h-[60vh] p-2">
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
-                Add New Gift
-              </h2>
-              {loading ? (
-                <div className="flex justify-center items-center h-32">
-                  <p>Loading campaigns...</p>
-                </div>
-              ) : (
-                <>
-                  <p className="text-gray-500 text-sm">
-                    Create low-priced items or gifts to reward backers who
-                    donate as specified.
-                  </p>
-                  <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                      <label
-                        htmlFor="campaignId"
-                        className="block text-gray-700 dark:text-gray-300 mb-2"
-                      >
-                        Select Campaign
-                      </label>
-                      <select
-                        id="campaignId"
-                        name="campaignId"
-                        value={selectedCampaignId || ''}
-                        onChange={(e) => setSelectedCampaignId(e.target.value)}
-                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.campaignId ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
-                        aria-invalid={errors.campaignId ? 'true' : 'false'}
-                      >
-                        <option value="" disabled>
-                          {userCampaigns && userCampaigns.length > 0
-                            ? 'Select a campaign'
-                            : 'No campaigns available'}
-                        </option>
-
-                        {userCampaigns && userCampaigns.length > 0 ? (
-                          userCampaigns.map(
-                            (campaign: CampaignResponseDataType) => (
-                              <option key={campaign.id} value={campaign.id}>
-                                {truncateTitle(campaign.title, 60)}
-                              </option>
-                            ),
-                          )
-                        ) : (
-                          <option value="" disabled>
-                            No campaigns available
-                          </option>
+                {loading ? (
+                  <RewardsLoader />
+                ) : (
+                  <>
+                    {userCampaigns?.every(
+                      (campaign) => campaign.rewards.length === 0,
+                    ) ? (
+                      <p className="text-gray-500 text-sm text-center py-4">
+                        The Gifts You create will appear here!
+                      </p>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {userCampaigns?.map((campaign) =>
+                          campaign.rewards.map((reward) => (
+                            <RewardCard
+                              key={reward.id}
+                              reward={reward}
+                              campaignId={String(campaign.id)}
+                              onDelete={handleDeleteReward}
+                            />
+                          )),
                         )}
-                      </select>
-                      {errors.campaignId && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.campaignId}
-                        </p>
-                      )}
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        htmlFor="title"
-                        className="block text-gray-700 dark:text-gray-300 mb-2"
-                      >
-                        Title
-                      </label>
-                      <input
-                        type="text"
-                        id="title"
-                        name="title"
-                        value={formData.title}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.title ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
-                        aria-invalid={errors.title ? 'true' : 'false'}
-                      />
-                      {errors.title && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.title}
-                        </p>
-                      )}
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        htmlFor="description"
-                        className="block text-gray-700 dark:text-gray-300 mb-2"
-                      >
-                        Description
-                      </label>
-                      <textarea
-                        id="description"
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.description ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
-                        aria-invalid={errors.description ? 'true' : 'false'}
-                      />
-                      {errors.description && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.description}
-                        </p>
-                      )}
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        htmlFor="amount"
-                        className="block text-gray-700 dark:text-gray-300 mb-2"
-                      >
-                        Amount
-                      </label>
-                      <input
-                        type="text"
-                        id="amount"
-                        name="amount"
-                        value={formData.amount}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.amount ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
-                        aria-invalid={errors.amount ? 'true' : 'false'}
-                      />
-                      {errors.amount && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.amount}
-                        </p>
-                      )}
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        htmlFor="image"
-                        className="block text-gray-700 dark:text-gray-300 mb-2"
-                      >
-                        Image
-                      </label>
-                      <input
-                        type="file"
-                        id="image"
-                        name="image"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className={`w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.image ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
-                        aria-invalid={errors.image ? 'true' : 'false'}
-                      />
-                      {errors.image && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.image}
-                        </p>
-                      )}
-                      {previewImage && (
-                        <img
-                          src={previewImage}
-                          alt="Preview"
-                          className="mt-2 h-32 w-32 object-cover rounded-lg"
-                        />
-                      )}
-                    </div>
-                    <button
-                      type="submit"
-                      className={`w-full px-4 py-2 rounded-lg transition-colors ${loadingReward ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} text-white`}
-                      disabled={loadingReward}
-                    >
-                      {loadingReward ? 'Adding...' : 'Add Gift'}
-                    </button>
-                  </form>
-                </>
-              )}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
-          </Modal>
+          </div>
         </div>
+
+        {/* Add Reward Modal */}
+        <Modal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          size="xlarge"
+          closeOnBackdropClick={false}
+        >
+          <div className="overflow-y-auto max-h-[60vh] p-2">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+              Add New Gift
+            </h2>
+            {loading ? (
+              <div className="flex justify-center items-center h-32">
+                <p>Loading campaigns...</p>
+              </div>
+            ) : (
+              <>
+                <p className="text-gray-500 text-sm">
+                  Create low-priced items or gifts to reward backers who
+                  donate as specified.
+                </p>
+                <form onSubmit={handleSubmit}>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="campaignId"
+                      className="block text-gray-700 dark:text-gray-300 mb-2"
+                    >
+                      Select Campaign
+                    </label>
+                    <select
+                      id="campaignId"
+                      name="campaignId"
+                      value={selectedCampaignId || ''}
+                      onChange={(e) => setSelectedCampaignId(e.target.value)}
+                      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.campaignId ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
+                      aria-invalid={errors.campaignId ? 'true' : 'false'}
+                    >
+                      <option value="" disabled>
+                        {userCampaigns && userCampaigns.length > 0
+                          ? 'Select a campaign'
+                          : 'No campaigns available'}
+                      </option>
+
+                      {userCampaigns && userCampaigns.length > 0 ? (
+                        userCampaigns.map(
+                          (campaign: CampaignResponseDataType) => (
+                            <option key={campaign.id} value={campaign.id}>
+                              {truncateTitle(campaign.title, 60)}
+                            </option>
+                          ),
+                        )
+                      ) : (
+                        <option value="" disabled>
+                          No campaigns available
+                        </option>
+                      )}
+                    </select>
+                    {errors.campaignId && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.campaignId}
+                      </p>
+                    )}
+                  </div>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="title"
+                      className="block text-gray-700 dark:text-gray-300 mb-2"
+                    >
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      id="title"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleChange}
+                      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.title ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
+                      aria-invalid={errors.title ? 'true' : 'false'}
+                    />
+                    {errors.title && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.title}
+                      </p>
+                    )}
+                  </div>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="description"
+                      className="block text-gray-700 dark:text-gray-300 mb-2"
+                    >
+                      Description
+                    </label>
+                    <textarea
+                      id="description"
+                      name="description"
+                      value={formData.description}
+                      onChange={handleChange}
+                      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.description ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
+                      aria-invalid={errors.description ? 'true' : 'false'}
+                    />
+                    {errors.description && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.description}
+                      </p>
+                    )}
+                  </div>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="amount"
+                      className="block text-gray-700 dark:text-gray-300 mb-2"
+                    >
+                      Amount
+                    </label>
+                    <input
+                      type="text"
+                      id="amount"
+                      name="amount"
+                      value={formData.amount}
+                      onChange={handleChange}
+                      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.amount ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
+                      aria-invalid={errors.amount ? 'true' : 'false'}
+                    />
+                    {errors.amount && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.amount}
+                      </p>
+                    )}
+                  </div>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="image"
+                      className="block text-gray-700 dark:text-gray-300 mb-2"
+                    >
+                      Image
+                    </label>
+                    <input
+                      type="file"
+                      id="image"
+                      name="image"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className={`w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.image ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
+                      aria-invalid={errors.image ? 'true' : 'false'}
+                    />
+                    {errors.image && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.image}
+                      </p>
+                    )}
+                    {previewImage && (
+                      <img
+                        src={previewImage}
+                        alt="Preview"
+                        className="mt-2 h-32 w-32 object-cover rounded-lg"
+                      />
+                    )}
+                  </div>
+                  <button
+                    type="submit"
+                    className={`w-full px-4 py-2 rounded-lg transition-colors ${loadingReward ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} text-white`}
+                    disabled={loadingReward}
+                  >
+                    {loadingReward ? 'Adding...' : 'Add Gift'}
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
+        </Modal>
+
+        {/* Delete Confirmation Popup */}
+        <AlertPopup
+          title="Confirm Deletion"
+          message="Are you sure you want to delete this gift? This action cannot be undone."
+          isOpen={showDeletePopup}
+          setIsOpen={setShowDeletePopup}
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+        />
       </div>
-      <AlertPopup
-        title="Confirm Deletion"
-        message="Are you sure you want to delete this gift? This action cannot be undone."
-        isOpen={showDeletePopup}
-        setIsOpen={setShowDeletePopup}
-        onConfirm={confirmDelete}
-        onCancel={cancelDelete}
-      />
     </>
   );
 };
