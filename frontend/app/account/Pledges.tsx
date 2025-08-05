@@ -128,8 +128,8 @@ const PledgesListPage = () => {
       <div className="space-y-6 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-tab-primary to-tab-secondary bg-clip-text text-gray-600">
-              Pledge Management
+            <h2 className="text-3xl font-bold bg-clip-text text-gray-600">
+              Pledges
             </h2>
             <p className="text-muted-foreground">Track and fulfill your supporter pledges</p>
             <p className="text-sm text-muted-foreground mt-1">
@@ -151,7 +151,7 @@ const PledgesListPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-tab-primary to-tab-secondary bg-clip-text text-gray-600">
+          <h2 className="text-3xl font-bold bg-clip-text text-gray-600">
             Pledge Management
           </h2>
           <p className="text-muted-foreground">Track and fulfill your supporter pledges</p>
@@ -172,28 +172,28 @@ const PledgesListPage = () => {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-tab-primary/10 to-tab-primary/5">
+        <Card className="">
           <CardContent className="p-6 text-center">
             <Package className="h-8 w-8 mx-auto mb-2 text-tab-primary" />
             <p className="text-2xl font-bold">{stats.total}</p>
             <p className="text-sm text-muted-foreground">Total Pledges</p>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-tab-secondary/10 to-tab-secondary/5">
+        <Card className="">
           <CardContent className="p-6 text-center">
             <Clock className="h-8 w-8 mx-auto mb-2 text-tab-secondary" />
             <p className="text-2xl font-bold">{stats.readyToShip}</p>
             <p className="text-sm text-muted-foreground">Ready to Ship</p>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-tab-success/10 to-tab-success/5">
+        <Card className="">
           <CardContent className="p-6 text-center">
             <Truck className="h-8 w-8 mx-auto mb-2 text-tab-success" />
             <p className="text-2xl font-bold">{stats.shipped}</p>
             <p className="text-sm text-muted-foreground">Shipped</p>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-tab-accent/10 to-tab-accent/5">
+        <Card className="">
           <CardContent className="p-6 text-center">
             <CheckCircle className="h-8 w-8 mx-auto mb-2 text-tab-accent" />
             <p className="text-2xl font-bold">₵{stats.totalValue.toLocaleString()}</p>
