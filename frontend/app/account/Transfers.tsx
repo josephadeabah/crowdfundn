@@ -210,31 +210,43 @@ export default function Transfers() {
           </h3>
           
           <div className="bg-white dark:bg-neutral-800 rounded-lg shadow overflow-hidden">
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600 [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-700">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
                 <thead className="bg-gray-50 dark:bg-neutral-700">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
                       Amount
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
                       Date
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
                       Status
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                      Reference
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                      Account
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                      Bank
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                      Reason
                     </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-neutral-800 divide-y divide-gray-200 dark:divide-neutral-700">
                   {loading ? (
                     <tr>
-                      <td colSpan={3} className="px-4 py-4">
+                      <td colSpan={7} className="px-4 py-4">
                         <TransferLoader />
                       </td>
                     </tr>
                   ) : transfers?.length === 0 ? (
                     <tr>
-                      <td colSpan={3} className="px-4 py-4 text-center text-gray-500 dark:text-neutral-400">
+                      <td colSpan={7} className="px-4 py-4 text-center text-gray-500 dark:text-neutral-400">
                         You have no transfer history.
                       </td>
                     </tr>
@@ -245,7 +257,7 @@ export default function Transfers() {
                           {transfer.currency} {parseFloat(transfer.amount.toString()).toLocaleString()}
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-neutral-400">
-                          {moment(transfer.created_at).format('MMM D, YYYY')}
+                          {moment(transfer.created_at).format('MMM D, YYYY h:mm A')}
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap">
                           {transfer.status === 'success' ? (
@@ -258,30 +270,24 @@ export default function Transfers() {
                             </span>
                           )}
                         </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-white">
+                          {transfer.reference}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-white">
+                          {transfer.account_number || 'N/A'}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-white">
+                          {transfer.bank_name || 'N/A'}
+                        </td>
+                        <td className="px-4 py-4 text-sm text-gray-800 dark:text-white max-w-xs truncate">
+                          {transfer.reason}
+                        </td>
                       </tr>
                     ))
                   )}
                 </tbody>
               </table>
             </div>
-            
-            {/* Expanded details for mobile */}
-            {transfers?.map((transfer) => (
-              <div key={`mobile-${transfer.id}`} className="lg:hidden p-4 border-t border-gray-200 dark:border-neutral-700">
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="text-gray-500 dark:text-neutral-400">Reference:</div>
-                  <div className="text-gray-800 dark:text-white">{transfer.reference}</div>
-                  
-                  <div className="text-gray-500 dark:text-neutral-400">Account:</div>
-                  <div className="text-gray-800 dark:text-white">
-                    {transfer.account_number || 'N/A'} ({transfer.bank_name || 'N/A'})
-                  </div>
-                  
-                  <div className="text-gray-500 dark:text-neutral-400">Reason:</div>
-                  <div className="text-gray-800 dark:text-white">{transfer.reason || '-'}</div>
-                </div>
-              </div>
-            ))}
 
             {totalPages > 1 && (
               <div className="px-4 py-3 bg-gray-50 dark:bg-neutral-700 border-t border-gray-200 dark:border-neutral-700">
