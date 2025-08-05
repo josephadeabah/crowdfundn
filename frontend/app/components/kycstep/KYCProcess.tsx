@@ -1,3 +1,4 @@
+// KYCProcess.tsx
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -50,7 +51,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const [formData, setFormData] = useState<
     Partial<CreatorKYCFormData | InvestorKYCFormData | MentorKYCFormData>
   >({});
-  const [quizResults, setQuizResults] = useState<{ [key: string]: boolean }>({});
+  const [quizResults, setQuizResults] = useState<{ [key: string]: boolean }>(
+    {},
+  );
   const [incorrectAnswers, setIncorrectAnswers] = useState<{
     [key: string]: { userAnswer: string; correctAnswer: string };
   }>({});
@@ -65,8 +68,8 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const kycSteps = isCreator
     ? creatorKycSteps
     : isInvestor
-    ? investorKycSteps
-    : mentorKycSteps;
+      ? investorKycSteps
+      : mentorKycSteps;
 
   useEffect(() => {
     const savedSignature = localStorage.getItem(`${userType}Signature`);
@@ -91,9 +94,11 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     return z.object({});
   };
 
+  const currentSchema = getCurrentSchema();
+
   const form = useForm<any>({
-    resolver: zodResolver(getCurrentSchema()),
-     defaultValues: (() => {
+    resolver: zodResolver(currentSchema),
+    defaultValues: (() => {
       if (currentStep === 0) {
         return {
           fullName: formData.fullName || '',
@@ -164,10 +169,10 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         };
       }
       return {};
-    })(), // Kept empty to simplify
+    })(),
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = (data: any) => {
     const updatedFormData = { ...formData, ...data };
     setFormData(updatedFormData);
 
@@ -203,73 +208,52 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     }
 
     const certificateStepIndex = isCreator ? 2 : isInvestor ? 4 : 3;
-    if (currentStep === certificateStepIndex && !isSigned) {
-      toast.error('Please sign your certificate before proceeding.');
-      return;
+    if (currentStep === certificateStepIndex) {
+      if (!isSigned) {
+        toast.error('Please sign your certificate before proceeding.');
+        return;
+      }
     }
 
     if (currentStep < kycSteps.length - 1) {
       setCurrentStep(currentStep + 1);
-      return;
+    } else {
+      if (isInvestor && !isQuizPassed()) {
+        toast.error(
+          'Please complete the investor quiz correctly before submitting.',
+        );
+        return;
+      }
+
+      if (!isSigned) {
+        toast.error('Please sign your certificate before submitting.');
+        return;
+      }
+
+      const userTypeLabel = isCreator
+        ? 'Campaign creator'
+        : isInvestor
+          ? 'Investor'
+          : 'Mentor';
+      toast.success(`${userTypeLabel} verification submitted successfully`);
+      console.log('Final form data:', updatedFormData);
+      console.log('Signature data:', signature);
     }
-
-    if (isInvestor && !isQuizPassed()) {
-      toast.error('Please complete the investor quiz correctly before submitting.');
-      return;
-    }
-
-    if (!isSigned) {
-      toast.error('Please sign your certificate before submitting.');
-      return;
-    }
-
-    // ✅ Convert signature to image (canvas to blob)
-    const canvas = document.createElement('canvas');
-    canvas.width = 400;
-    canvas.height = 200;
-    const ctx = canvas.getContext('2d');
-
-    if (ctx && signature.length > 0) {
-      ctx.strokeStyle = 'black';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      signature.forEach((point, index) => {
-        if (index === 0) {
-          ctx.moveTo(point.x, point.y);
-        } else {
-          ctx.lineTo(point.x, point.y);
-        }
-      });
-      ctx.stroke();
-    }
-
-    const blob = await new Promise<Blob>((resolve) =>
-      canvas.toBlob((b) => resolve(b as Blob), 'image/png')
-    );
-
-    const signatureFile = new File([blob], 'signature.png', {
-      type: 'image/png',
-    });
-
-    const submissionPayload = {
-      ...updatedFormData,
-      userType,
-      signatureFile,
-    };
-
-    // ✅ Logging everything
-    toast.success(`${userType} verification submitted successfully`);
-    console.log('Final form data:', updatedFormData);
-    console.log('Signature points:', signature);
-    console.log('Signature image file:', signatureFile);
   };
 
   const goToPreviousStep = () => {
-    if (currentStep > 0) setCurrentStep(currentStep - 1);
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
   };
 
-  const handleOpenSignDialog = () => setIsSignDialogOpen(true);
-  const handleCancelSignature = () => setIsSignDialogOpen(false);
+  const handleOpenSignDialog = () => {
+    setIsSignDialogOpen(true);
+  };
+
+  const handleCancelSignature = () => {
+    setIsSignDialogOpen(false);
+  };
 
   const handleSaveSignature = (newSignature: Point[]) => {
     if (newSignature.length < 5) {
@@ -318,7 +302,10 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             />
           ) : (
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
                 {currentStep === 0 && <PersonalInfoStep />}
                 {currentStep === 1 && <DocumentVerificationStep />}
                 {isMentor && currentStep === 2 && <MentorExperienceStep />}
@@ -377,12 +364,22 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 };
 
 // Helper functions
-function getStepDescription(currentStep: number, isCreator: boolean, isInvestor: boolean, isMentor: boolean) {
-  if (currentStep === 0) return 'Please provide your personal information accurately.';
-  if (currentStep === 1) return 'Upload your identification documents for verification.';
-  if (currentStep === 2 && isInvestor) return 'Complete this quiz to demonstrate your understanding of startup investment risks.';
-  if (currentStep === 2 && isMentor) return 'Tell us about your professional experience and expertise.';
-  if (currentStep === 3 && isInvestor) return 'Please read and acknowledge the following declarations.';
+function getStepDescription(
+  currentStep: number,
+  isCreator: boolean,
+  isInvestor: boolean,
+  isMentor: boolean,
+) {
+  if (currentStep === 0)
+    return 'Please provide your personal information accurately.';
+  if (currentStep === 1)
+    return 'Upload your identification documents for verification.';
+  if (currentStep === 2 && isInvestor)
+    return 'Complete this quiz to demonstrate your understanding of startup investment risks.';
+  if (currentStep === 2 && isMentor)
+    return 'Tell us about your professional experience and expertise.';
+  if (currentStep === 3 && isInvestor)
+    return 'Please read and acknowledge the following declarations.';
   if (
     (currentStep === 2 && isCreator) ||
     (currentStep === 3 && isMentor) ||
@@ -393,7 +390,12 @@ function getStepDescription(currentStep: number, isCreator: boolean, isInvestor:
   return 'Review your information and submit your verification request.';
 }
 
-function isCertificateStep(currentStep: number, isCreator: boolean, isInvestor: boolean, isMentor: boolean) {
+function isCertificateStep(
+  currentStep: number,
+  isCreator: boolean,
+  isInvestor: boolean,
+  isMentor: boolean,
+) {
   return (
     (currentStep === 2 && isCreator) ||
     (currentStep === 3 && isMentor) ||
@@ -401,7 +403,12 @@ function isCertificateStep(currentStep: number, isCreator: boolean, isInvestor: 
   );
 }
 
-function isReviewStep(currentStep: number, isCreator: boolean, isInvestor: boolean, isMentor: boolean) {
+function isReviewStep(
+  currentStep: number,
+  isCreator: boolean,
+  isInvestor: boolean,
+  isMentor: boolean,
+) {
   return (
     (currentStep === 3 && isCreator) ||
     (currentStep === 4 && isMentor) ||
