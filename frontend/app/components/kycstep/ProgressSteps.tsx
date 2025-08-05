@@ -19,9 +19,13 @@ export const ProgressSteps: React.FC<ProgressStepsProps> = ({
 }) => {
   return (
     <div className="mb-10">
-      <div className="flex justify-between mb-2">
+      {/* Vertical stack on mobile, horizontal on desktop */}
+      <div className="flex flex-col md:flex-row justify-between mb-2 space-y-4 md:space-y-0">
         {steps.map((step, index) => (
-          <div key={step.id} className="flex flex-col items-center">
+          <div 
+            key={step.id} 
+            className="flex md:flex-col items-center md:items-center space-x-4 md:space-x-0"
+          >
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
                 index <= currentStep
@@ -32,7 +36,7 @@ export const ProgressSteps: React.FC<ProgressStepsProps> = ({
               <step.icon className="h-5 w-5" />
             </div>
             <span
-              className={`text-sm mt-2 text-center ${
+              className={`text-sm md:mt-2 text-center ${
                 index <= currentStep ? 'text-bantu-green' : 'text-gray-500'
               }`}
             >
