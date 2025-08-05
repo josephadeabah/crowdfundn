@@ -61,7 +61,7 @@ const PledgesListPage = () => {
     })),
   );
 
-  // Calculate statistics
+  // Calculate statistics with proper number handling
   const stats = {
     total: allPledges.length,
     pending: allPledges.filter((p) => p.status === 'pending').length,
@@ -73,10 +73,10 @@ const PledgesListPage = () => {
       (sum, pledge) =>
         sum +
         pledge.selected_rewards.reduce(
-          (rewardSum, reward) => rewardSum + reward.amount,
-          0,
+          (rewardSum, reward) => rewardSum + parseFloat(reward.amount.toString()),
+          0
         ),
-      0,
+      0
     ),
   };
 
@@ -223,7 +223,10 @@ const PledgesListPage = () => {
           <CardContent className="p-6 text-center">
             <CheckCircle className="h-8 w-8 mx-auto mb-2 text-tab-accent" />
             <p className="text-2xl font-bold">
-              ₵{stats.totalValue.toLocaleString()}
+              ₵{stats.totalValue.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })}
             </p>
             <p className="text-sm text-muted-foreground">Total Value</p>
           </CardContent>
@@ -310,10 +313,15 @@ const PledgesListPage = () => {
                     <div className="text-right mr-4">
                       <p className="font-medium text-lg">
                         ₵
-                        {pledge.selected_rewards.reduce(
-                          (sum, reward) => sum + reward.amount,
-                          0,
-                        )}
+                        {pledge.selected_rewards
+                          .reduce(
+                            (sum, reward) => sum + parseFloat(reward.amount.toString()),
+                            0
+                          )
+                          .toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                          })}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {pledge.delivery_option}
@@ -422,7 +430,10 @@ const PledgesListPage = () => {
                                         {reward.description}
                                       </p>
                                       <p className="text-sm font-medium text-tab-primary">
-                                        ₵{reward.amount}
+                                        ₵{parseFloat(reward.amount.toString()).toLocaleString('en-US', {
+                                          minimumFractionDigits: 2,
+                                          maximumFractionDigits: 2
+                                        })}
                                       </p>
                                     </div>
                                   </div>
