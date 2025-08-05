@@ -132,7 +132,7 @@ export default function Transfers() {
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
             Campaigns Available for Transfer
           </h3>
-          
+
           {isLoadingCampaigns ? (
             <TransferCampaignLoader />
           ) : userCampaigns === null ? (
@@ -154,8 +154,13 @@ export default function Transfers() {
                     <div className="shrink-0">
                       <ProgressRing
                         value={Math.round(
-                          (parseFloat(campaign.current_amount?.toString() || '0') /
-                          parseFloat(campaign.goal_amount?.toString() || '1')) * 100
+                          (parseFloat(
+                            campaign.current_amount?.toString() || '0',
+                          ) /
+                            parseFloat(
+                              campaign.goal_amount?.toString() || '1',
+                            )) *
+                            100,
                         )}
                         size={60}
                         strokeWidth={5}
@@ -167,14 +172,20 @@ export default function Transfers() {
                         {campaign.title}
                       </h3>
                       <p className="text-sm text-gray-500 dark:text-neutral-400">
-                        <span className={
-                          parseFloat(campaign.current_amount?.toString() || '0') >=
-                          parseFloat(campaign.goal_amount?.toString() || '0')
-                            ? 'text-green-600'
-                            : 'text-orange-500'
-                        }>
+                        <span
+                          className={
+                            parseFloat(
+                              campaign.current_amount?.toString() || '0',
+                            ) >=
+                            parseFloat(campaign.goal_amount?.toString() || '0')
+                              ? 'text-green-600'
+                              : 'text-orange-500'
+                          }
+                        >
                           {campaign.currency.toUpperCase()}
-                          {parseFloat(campaign.current_amount?.toString() || '0').toLocaleString()}
+                          {parseFloat(
+                            campaign.current_amount?.toString() || '0',
+                          ).toLocaleString()}
                         </span>
                         <span> raised of </span>
                         <span className="text-green-600">
@@ -208,7 +219,7 @@ export default function Transfers() {
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
             Transaction History
           </h3>
-          
+
           <div className="bg-white dark:bg-neutral-800 rounded-lg shadow overflow-hidden">
             <div className="overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600 [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-700">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
@@ -246,29 +257,40 @@ export default function Transfers() {
                     </tr>
                   ) : transfers?.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-4 py-4 text-center text-gray-500 dark:text-neutral-400">
+                      <td
+                        colSpan={7}
+                        className="px-4 py-4 text-center text-gray-500 dark:text-neutral-400"
+                      >
                         You have no transfer history.
                       </td>
                     </tr>
                   ) : (
                     transfers?.map((transfer) => (
-                      <tr key={transfer.id} className="hover:bg-gray-50 dark:hover:bg-neutral-700">
+                      <tr
+                        key={transfer.id}
+                        className="hover:bg-gray-50 dark:hover:bg-neutral-700"
+                      >
                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-white">
-                          {transfer.currency} {parseFloat(transfer.amount.toString()).toLocaleString()}
+                          {transfer.currency}{' '}
+                          {parseFloat(
+                            transfer.amount.toString(),
+                          ).toLocaleString()}
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-neutral-400">
-                          {moment(transfer.created_at).format('MMM D, YYYY h:mm A')}
+                          {moment(transfer.created_at).format(
+                            'MMM D, YYYY h:mm A',
+                          )}
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap">
-                           {transfer.status === 'success' ? (
-                        <span className="text-sm text-white px-2 bg-lime-400 rounded-full">
-                          PAID
-                        </span>
-                      ) : (
-                        <span className="text-gray-500 dark:text-gray-400">
-                          {transfer.status}
-                        </span>
-                      )}
+                          {transfer.status === 'success' ? (
+                            <span className="text-sm text-white px-2 bg-lime-400 rounded-full">
+                              PAID
+                            </span>
+                          ) : (
+                            <span className="text-gray-500 dark:text-gray-400">
+                              {transfer.status}
+                            </span>
+                          )}
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-white">
                           {transfer.reference}
