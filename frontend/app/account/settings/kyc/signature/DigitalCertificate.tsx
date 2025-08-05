@@ -68,14 +68,14 @@ const DigitalCertificate: React.FC<DigitalCertificateProps> = ({
       </CardContent>
       <CardFooter>
         {!isSigned ? (
-          <Button className="w-full bg-indigo-300 hover:bg-indigo-400 text-indigo-800" onClick={onSignClick}>
+          <Button className="w-full" variant="outline" onClick={onSignClick}>
             <Pencil className="mr-2 h-4 w-4" />
             Sign Certificate
           </Button>
         ) : (
           <Button
-            variant="outline"
-            className="w-full bg-indigo-300 hover:bg-indigo-400 text-indigo-800"
+            variant="destructive"
+            className="w-full"
             onClick={onRemoveSignature}
           >
             Remove Signature
