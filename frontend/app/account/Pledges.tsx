@@ -173,7 +173,7 @@ const PledgesListPage = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold bg-clip-text text-gray-600">
-            Pledge Management
+            Pledges
           </h2>
           <p className="text-muted-foreground">
             Track and fulfill your supporter pledges
