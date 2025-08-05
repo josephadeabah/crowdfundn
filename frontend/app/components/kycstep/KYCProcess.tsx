@@ -271,25 +271,22 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           signedAt: new Date().toISOString()
         };
 
+        // Log the complete form data with signature
+        console.log('Complete Form Data with Signature:', {
+          ...finalFormData,
+          signatureImage: signatureImage.substring(0, 50) + '...' // Show partial signature to avoid huge logs
+        });
+
         const userTypeLabel = isCreator
           ? 'Campaign creator'
           : isInvestor
             ? 'Investor'
             : 'Mentor';
 
-        console.log('Final form data with signature:', finalFormData);
         toast.success(`${userTypeLabel} verification submitted successfully`);
 
-        // Uncomment to send to your API:
-        /*
-        const response = await fetch('/api/kyc/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(finalFormData),
-        });
-        if (!response.ok) throw new Error('Submission failed');
-        toast.success('Verification submitted successfully!');
-        */
+        // Here you would typically send to your API
+        // await submitToBackend(finalFormData);
       } catch (error) {
         console.error('Submission error:', error);
         toast.error('Failed to submit verification');
