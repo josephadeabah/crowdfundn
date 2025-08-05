@@ -49,12 +49,22 @@ function Calendar({
         day_range_middle:
           'aria-selected:bg-accent aria-selected:text-accent-foreground',
         day_hidden: 'invisible',
+        caption_dropdowns: 'block',
+        dropdown: cn(
+          'rounded-md border border-input bg-background px-2 py-1 text-sm shadow-sm',
+          'focus:outline-none focus:ring-2 focus:ring-primary/50',
+          'disabled:opacity-50 disabled:pointer-events-none',
+        ),
+        dropdown_icon: 'ml-1 w-4 h-4 text-muted-foreground',
         ...classNames,
       }}
       components={{
         IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
         IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
       }}
+      captionLayout="dropdown-buttons"
+      fromYear={1924}
+      toYear={new Date().getFullYear() - 18}
       {...props}
     />
   );

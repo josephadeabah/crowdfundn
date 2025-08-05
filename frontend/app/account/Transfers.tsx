@@ -13,8 +13,8 @@ import TransferLoader from '../loaders/TransferLoader ';
 
 export default function Transfers() {
   const {
-    userCampaigns, // Now using user-specific campaigns
-    fetchUserCampaigns, // Using the dedicated user campaigns fetcher
+    userCampaigns,
+    fetchUserCampaigns,
     loading: isLoadingCampaigns,
   } = useCampaignContext();
 
@@ -50,52 +50,38 @@ export default function Transfers() {
     });
   };
 
-  // Fetch user's campaigns on component mount
   useEffect(() => {
     fetchUserCampaigns();
   }, [fetchUserCampaigns]);
 
-  // Fetch transfers from Paystack
   useEffect(() => {
     fetchTransfersFromPaystack();
   }, [fetchTransfersFromPaystack]);
 
-  // Fetch transfers with pagination
   useEffect(() => {
     fetchTransfers(currentPage);
   }, [fetchTransfers, currentPage]);
 
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
-      // Step 1: Create the transfer recipient
       const response = await createTransferRecipient(campaignId);
-
-      // Step 2: Check if recipient creation was successful
       if (response && response.recipient_code) {
-        // Step 3: If successful, initiate the transfer
         const initiateResponse = await initiateTransfer(
           campaignId,
           response.recipient_code,
         );
-
         if (typeof initiateResponse === 'object' && initiateResponse !== null) {
-          // Check if the response from initiateTransfer contains an error
-          if (
-            initiateResponse &&
-            typeof initiateResponse === 'object' &&
-            'error' in initiateResponse
-          ) {
+          if (initiateResponse && 'error' in initiateResponse) {
             showToast(
               'Error',
               (initiateResponse as { error: string }).error,
               'error',
             );
           } else {
-            // Success toast if transfer initiation is successful
             showToast('Success', 'Transfer initiated successfully', 'success');
             fetchTransfersFromPaystack();
             fetchTransfers(currentPage);
-            fetchUserCampaigns(); // Refresh the user's campaigns list
+            fetchUserCampaigns();
           }
         } else {
           showToast('Error', 'Failed to initiate transfer', 'error');
@@ -110,7 +96,6 @@ export default function Transfers() {
 
   return (
     <div className="px-2 py-4">
-      {/* Toast component to show notifications */}
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
@@ -120,94 +105,100 @@ export default function Transfers() {
       />
 
       {/* Header Section */}
-      <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
-        Transfers
-      </h2>
-      <p className="text-gray-500 dark:text-neutral-400 mb-4">
-        Review your transfer history or request new transfers.
-        <span className="text-muted-foreground">
-          {' '}
-          Typically request for transfer weekdays from 10:30AM
-        </span>
-      </p>
+      <div className="mb-6">
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
+          Transfers
+        </h2>
+        <p className="text-gray-500 dark:text-neutral-400">
+          Review your transfer history or request new transfers.
+          <span className="text-muted-foreground">
+            {' '}
+            Typically request for transfer weekdays from 10:30AM
+          </span>
+        </p>
+        <Button
+          variant="ghost"
+          className="flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full mt-2"
+        >
+          <HiShieldCheck className="mr-2 w-5 h-5" />
+          Transfers are secure on our platform
+        </Button>
+      </div>
 
-      {/* Secure Transfers Button */}
-      <Button
-        variant="ghost"
-        className="flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full mb-6"
-      >
-        <HiShieldCheck className="mr-2 w-5 h-5" />
-        Transfers are secure on our platform
-      </Button>
+      {/* Two Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left Column - Campaigns */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+            Campaigns Available for Transfer
+          </h3>
 
-      {/* Campaigns Section - Updated to use userCampaigns */}
-      <div className="space-y-4">
-        {isLoadingCampaigns ? (
-          <TransferCampaignLoader />
-        ) : userCampaigns === null ? (
-          <div className="text-center py-4 text-gray-500 dark:text-neutral-400">
-            Loading your campaigns...
-          </div>
-        ) : userCampaigns.length === 0 ? (
-          <div className="text-center py-4 text-gray-500 dark:text-neutral-400">
-            You have no campaigns available for transfer
-          </div>
-        ) : (
-          userCampaigns.map((campaign: CampaignResponseDataType) => (
-            <div
-              key={campaign.id}
-              className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow w-full"
-            >
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="flex items-center gap-6 w-full sm:w-auto">
-                  <div className="space-y-2 flex-1">
-                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                      {campaign.title}
-                    </h3>
-                    <p className="text-gray-500 dark:text-neutral-400">
-                      <span
-                        className={`${
-                          parseFloat(
+          {isLoadingCampaigns ? (
+            <TransferCampaignLoader />
+          ) : userCampaigns === null ? (
+            <div className="text-center py-4 text-gray-500 dark:text-neutral-400">
+              Loading your campaigns...
+            </div>
+          ) : userCampaigns.length === 0 ? (
+            <div className="text-center py-4 text-gray-500 dark:text-neutral-400">
+              You have no campaigns available for transfer
+            </div>
+          ) : (
+            userCampaigns.map((campaign: CampaignResponseDataType) => (
+              <div
+                key={campaign.id}
+                className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow"
+              >
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div className="flex items-center gap-4 w-full sm:w-auto">
+                    <div className="shrink-0">
+                      <ProgressRing
+                        value={Math.round(
+                          (parseFloat(
                             campaign.current_amount?.toString() || '0',
-                          ) >=
-                          parseFloat(campaign.goal_amount?.toString() || '0')
-                            ? 'text-green-600'
-                            : 'text-orange-500'
-                        }`}
-                      >
-                        {campaign.currency.toUpperCase()}
-                        {parseFloat(
-                          campaign.current_amount?.toString() || '0',
-                        ).toLocaleString()}
-                      </span>
-                      <span className="mx-1">raised of</span>
-                      <span className="text-green-600">
-                        {campaign.currency.toUpperCase()}
-                        {parseFloat(campaign.goal_amount).toLocaleString()}
-                      </span>
-                      <span className="ml-1">goal</span>
-                    </p>
+                          ) /
+                            parseFloat(
+                              campaign.goal_amount?.toString() || '1',
+                            )) *
+                            100,
+                        )}
+                        size={60}
+                        strokeWidth={5}
+                        color="#22c55e"
+                      />
+                    </div>
+                    <div className="space-y-1 flex-1">
+                      <h3 className="font-medium text-gray-800 dark:text-white">
+                        {campaign.title}
+                      </h3>
+                      <p className="text-sm text-gray-500 dark:text-neutral-400">
+                        <span
+                          className={
+                            parseFloat(
+                              campaign.current_amount?.toString() || '0',
+                            ) >=
+                            parseFloat(campaign.goal_amount?.toString() || '0')
+                              ? 'text-green-600'
+                              : 'text-orange-500'
+                          }
+                        >
+                          {campaign.currency.toUpperCase()}
+                          {parseFloat(
+                            campaign.current_amount?.toString() || '0',
+                          ).toLocaleString()}
+                        </span>
+                        <span> raised of </span>
+                        <span className="text-green-600">
+                          {campaign.currency.toUpperCase()}
+                          {parseFloat(campaign.goal_amount).toLocaleString()}
+                        </span>
+                      </p>
+                    </div>
                   </div>
-                  <div className="shrink-0">
-                    <ProgressRing
-                      value={Math.round(
-                        (parseFloat(
-                          campaign.current_amount?.toString() || '0',
-                        ) /
-                          parseFloat(campaign.goal_amount?.toString() || '1')) *
-                          100,
-                      )}
-                      size={80}
-                      strokeWidth={5}
-                      color="#22c55e"
-                    />
-                  </div>
-                </div>
 
-                <div className="w-full sm:w-auto flex justify-end">
                   <Button
                     onClick={() => handleRequestTransfer(campaign.id)}
-                    className="px-4 py-2 bg-green-400 text-white rounded-full hover:bg-green-600 dark:hover:bg-green-700 whitespace-nowrap"
+                    className="w-full sm:w-auto px-4 py-2 bg-green-400 text-white rounded-full hover:bg-green-600 dark:hover:bg-green-700 whitespace-nowrap"
                     disabled={
                       loadingCampaigns[campaign.id] ||
                       parseFloat(campaign.current_amount) < 60.0
@@ -219,105 +210,117 @@ export default function Transfers() {
                   </Button>
                 </div>
               </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* Transfer History Section */}
-      <div className="mt-8">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-          Transaction History
-        </h3>
-        <div className="overflow-x-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
-          <table className="min-w-full bg-white dark:bg-neutral-800 rounded-lg">
-            <thead className="bg-gray-50 dark:bg-neutral-700">
-              <tr>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  Amount
-                </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  Date
-                </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  Status
-                </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  Reference
-                </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  Account Number
-                </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  Settlement Bank
-                </th>
-                <th className="px-4 py-2 text-left text-gray-600 dark:text-neutral-300 whitespace-nowrap">
-                  Reason
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <TransferLoader />
-              ) : transfers?.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="px-4 py-2 text-center text-gray-800 dark:text-white"
-                  >
-                    You have no transfer history.
-                  </td>
-                </tr>
-              ) : (
-                transfers?.map((transfer) => (
-                  <tr key={transfer.id}>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.currency}{' '}
-                      {parseFloat(transfer.amount.toString()).toLocaleString()}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {moment(transfer.created_at).format(
-                        'MMM DD, YYYY, hh:mm:ss A',
-                      )}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      {transfer.status === 'success' ? (
-                        <span className="text-sm text-white px-2 bg-lime-400 rounded-full">
-                          PAID
-                        </span>
-                      ) : (
-                        <span className="text-gray-500 dark:text-gray-400">
-                          {transfer.status}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.reference}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.account_number || 'N/A'}
-                    </td>
-                    <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
-                      {transfer.bank_name || 'N/A'}
-                    </td>
-                    <td className="px-4 py-2 truncate text-gray-800 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis">
-                      {transfer.reason}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-        {/* Pagination Component */}
-        <div className="w-full max-w-3xl mx-auto py-12">
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={fetchTransfers}
-            />
+            ))
           )}
+        </div>
+
+        {/* Right Column - Transfer History */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+            Transaction History
+          </h3>
+
+          <div className="bg-white dark:bg-neutral-800 rounded-lg shadow overflow-hidden">
+            <div className="overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600 [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-700">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
+                <thead className="bg-gray-50 dark:bg-neutral-700">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                      Amount
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                      Date
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                      Status
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                      Reference
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                      Account
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                      Bank
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                      Reason
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-neutral-800 divide-y divide-gray-200 dark:divide-neutral-700">
+                  {loading ? (
+                    <tr>
+                      <td colSpan={7} className="px-4 py-4">
+                        <TransferLoader />
+                      </td>
+                    </tr>
+                  ) : transfers?.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="px-4 py-4 text-center text-gray-500 dark:text-neutral-400"
+                      >
+                        You have no transfer history.
+                      </td>
+                    </tr>
+                  ) : (
+                    transfers?.map((transfer) => (
+                      <tr
+                        key={transfer.id}
+                        className="hover:bg-gray-50 dark:hover:bg-neutral-700"
+                      >
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-white">
+                          {transfer.currency}{' '}
+                          {parseFloat(
+                            transfer.amount.toString(),
+                          ).toLocaleString()}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-neutral-400">
+                          {moment(transfer.created_at).format(
+                            'MMM D, YYYY h:mm A',
+                          )}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          {transfer.status === 'success' ? (
+                            <span className="text-sm text-white px-2 bg-lime-400 rounded-full">
+                              PAID
+                            </span>
+                          ) : (
+                            <span className="text-gray-500 dark:text-gray-400">
+                              {transfer.status}
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-white">
+                          {transfer.reference}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-white">
+                          {transfer.account_number || 'N/A'}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-white">
+                          {transfer.bank_name || 'N/A'}
+                        </td>
+                        <td className="px-4 py-4 text-sm text-gray-800 dark:text-white max-w-xs truncate">
+                          {transfer.reason}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {totalPages > 1 && (
+              <div className="px-4 py-3 bg-gray-50 dark:bg-neutral-700 border-t border-gray-200 dark:border-neutral-700">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={fetchTransfers}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -1,65 +1,72 @@
-import React from 'react';
-import { Building, Gift, Heart, Rocket } from 'lucide-react';
+'use client';
 
-const FundingTypes = () => {
+import React from 'react';
+import { TrendingUp, Globe, Building2, Users } from 'lucide-react';
+
+const features = [
+  {
+    title: 'Diversify Your Portfolio',
+    description:
+      'Invest in thoroughly vetted, high-potential startups across Africa.',
+    icon: TrendingUp,
+  },
+  {
+    title: 'Support High-Growth Sectors',
+    description:
+      'Back ventures in tech, clean energy, health, agri-finance, and more.',
+    icon: Globe,
+  },
+  {
+    title: 'Gain Equity from the Ground Up',
+    description: 'Secure ownership in impactful businesses at early stages.',
+    icon: Building2,
+  },
+  {
+    title: 'Be Part of Africa’s Future',
+    description: 'Fuel innovation and shape communities across the continent.',
+    icon: Users,
+  },
+];
+
+const FundingTypes: React.FC = () => {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold mb-4">
-          From tomorrow’s unicorns to local coffee shops
-        </h2>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Put your community on your cap table, no matter what your industry,
-          stage, or goals.
-        </p>
+    <div className="relative py-20 text-white overflow-hidden">
+      {/* Background images stacked side by side */}
+      <div className="absolute inset-0 flex">
+        <img
+          src="/busshot.avif"
+          alt="background1"
+          className="w-1/3 object-cover h-full"
+        />
+        <img
+          src="/busshot3.avif"
+          alt="background2"
+          className="w-1/3 object-cover h-full"
+        />
+        <img
+          src="/busshot2.jpg"
+          alt="background3"
+          className="w-1/3 object-cover h-full"
+        />
+        <div className="absolute inset-0 bg-green-600/70" />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-xl shadow-sm">
-          <div className="bg-fundify-muted w-14 h-14 rounded-full flex items-center justify-center mb-4">
-            <Gift className="h-7 w-7 text-fundify-primary" />
-          </div>
-          <h3 className="text-xl font-bold mb-3">Reward-Based</h3>
-          <p className="text-gray-600 mb-4">
-            Offer tangible rewards or experiences to backers based on their
-            contribution level.
-          </p>
-          <div className="text-sm text-fundify-primary font-medium">
-            Ideal for: Products, Creative Projects, Innovations
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow-sm">
-          <div className="bg-fundify-muted w-14 h-14 rounded-full flex items-center justify-center mb-4">
-            <Heart className="h-7 w-7 text-fundify-primary" />
-          </div>
-          <h3 className="text-xl font-bold mb-3">Donation-Based</h3>
-          <p className="text-gray-600 mb-4">
-            Collect donations for charitable causes, community projects, or
-            personal needs.
-          </p>
-          <div className="text-sm text-fundify-primary font-medium">
-            Ideal for: Nonprofits, Community Projects, Personal Causes
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow-sm">
-          <div className="bg-fundify-muted w-14 h-14 rounded-full flex items-center justify-center mb-4">
-            <Building className="h-7 w-7 text-fundify-primary" />
-          </div>
-          <h3 className="text-xl font-bold mb-3 relative">
-            Equity-Based
-            <span className="ml-3 bg-yellow-500 text-white px-2 py-1 rounded-full text-sm font-medium align-middle">
-              coming soon
-            </span>
-          </h3>
-          <p className="text-gray-600 mb-4">
-            Offer equity shares in your business to investors who believe in
-            your vision.
-          </p>
-          <div className="text-sm text-fundify-primary font-medium">
-            Ideal for: Startups, Business Expansion, Real Estate
-          </div>
+      {/* Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          {features.map((feature, index) => (
+            <div key={index} className="flex items-start space-x-5 pl-5">
+              <div className="h-12 w-12 rounded-full bg-orange-300/20 flex items-center justify-center">
+                <feature.icon className="h-6 w-6 text-orange-200" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-white">
+                  {feature.title}
+                </h3>
+                <p className="text-green-100 mt-1">{feature.description}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

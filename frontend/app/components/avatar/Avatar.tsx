@@ -10,6 +10,8 @@ interface AvatarProps {
 const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
   const [initials, setInitials] = useState<string>('');
   const [bgColor, setBgColor] = useState<string>('');
+  const [imgSrc, setImgSrc] = useState<string | undefined>(imageUrl);
+  const [imgError, setImgError] = useState<boolean>(false);
 
   useEffect(() => {
     if (name) {
@@ -22,6 +24,17 @@ const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
       setBgColor(generateColor(nameInitials));
     }
   }, [name]);
+
+  useEffect(() => {
+    // Reset image source when imageUrl prop changes
+    setImgSrc(imageUrl);
+    setImgError(false);
+  }, [imageUrl]);
+
+  const handleImageError = () => {
+    setImgSrc('/avatar-default.png');
+    setImgError(true);
+  };
 
   const generateColor = (str: string): string => {
     // Combine all colors: Rainbow, Primary, Secondary, Tertiary, Complementary, Vibrant, and Neutral
@@ -97,12 +110,13 @@ const Avatar: React.FC<AvatarProps> = ({ name, imageUrl, size = 'md' }) => {
       role="img"
       aria-label={`Avatar for ${name || 'User'}`}
     >
-      {imageUrl ? (
+      {imgSrc && !imgError ? (
         <img
-          src={imageUrl}
+          src={imgSrc}
           alt={`${name}'s avatar`}
           className="w-full h-full object-cover"
           loading="lazy"
+          onError={handleImageError}
         />
       ) : initials ? (
         <div
