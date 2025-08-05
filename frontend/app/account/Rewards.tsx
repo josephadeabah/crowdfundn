@@ -241,7 +241,7 @@ const RewardsPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Left Column - Performance Overview */}
             <div className="space-y-6">
-                            {/* Level Information */}
+              {/* Level Information */}
               {userReward && userReward.level ? (
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
                   <div className="flex items-center justify-between">
@@ -264,9 +264,7 @@ const RewardsPage: React.FC = () => {
                     <div className="text-2xl font-semibold text-orange-500">
                       {userReward.level}
                     </div>
-                    <div className="mt-2">
-                      {getCupIcon(userReward.level)}
-                    </div>
+                    <div className="mt-2">{getCupIcon(userReward.level)}</div>
                     <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
                       {userReward.description}
                     </p>
@@ -309,7 +307,8 @@ const RewardsPage: React.FC = () => {
                     <p className="text-base font-bold text-gray-800 dark:text-gray-200">
                       Fundraiser Rank
                     </p>
-                    {fundraiserLeaderboardRank && fundraiserLeaderboardRank.rank ? (
+                    {fundraiserLeaderboardRank &&
+                    fundraiserLeaderboardRank.rank ? (
                       <p className="text-4xl font-extrabold text-green-600">
                         {getRankWithSuffix(fundraiserLeaderboardRank.rank)}
                       </p>
@@ -349,7 +348,8 @@ const RewardsPage: React.FC = () => {
                     {userRank && userRank?.total_donations ? (
                       <p className="text-xl font-extrabold text-green-600">
                         {userRank?.currency}{' '}
-                        {Number(userRank?.total_donations || 0).toFixed(2) || 'N/A'}
+                        {Number(userRank?.total_donations || 0).toFixed(2) ||
+                          'N/A'}
                       </p>
                     ) : (
                       <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -444,8 +444,8 @@ const RewardsPage: React.FC = () => {
             ) : (
               <>
                 <p className="text-gray-500 text-sm">
-                  Create low-priced items or gifts to reward backers who
-                  donate as specified.
+                  Create low-priced items or gifts to reward backers who donate
+                  as specified.
                 </p>
                 <form onSubmit={handleSubmit}>
                   <div className="mb-4">
