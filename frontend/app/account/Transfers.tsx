@@ -260,15 +260,15 @@ export default function Transfers() {
                           {moment(transfer.created_at).format('MMM D, YYYY h:mm A')}
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap">
-                          {transfer.status === 'success' ? (
-                            <span className="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded-full">
-                              PAID
-                            </span>
-                          ) : (
-                            <span className="text-gray-500 dark:text-gray-400 capitalize">
-                              {transfer.status}
-                            </span>
-                          )}
+                           {transfer.status === 'success' ? (
+                        <span className="text-sm text-white px-2 bg-lime-400 rounded-full">
+                          PAID
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 dark:text-gray-400">
+                          {transfer.status}
+                        </span>
+                      )}
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-white">
                           {transfer.reference}
