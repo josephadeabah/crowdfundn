@@ -51,24 +51,6 @@ const DigitalCertificate: React.FC<DigitalCertificateProps> = ({
       </CardHeader>
       <CardContent className="relative">
         <div className="bg-slate-50 p-4 sm:p-6 rounded-md border mb-4">
-          <h3 className="text-lg font-semibold mb-2">Investment Certificate</h3>
-          <p className="text-sm text-gray-600 mb-4">
-            This document certifies your investment in Bantu Hive projects.
-          </p>
-          <div className="flex flex-col space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="font-medium">Issue Date:</span>
-              <span>May 7, 2025</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">Certificate ID:</span>
-              <span>BH-INV-2025-001</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">Investment Amount:</span>
-              <span>$10,000</span>
-            </div>
-          </div>
           {isSigned && (
             <div className="mt-4 pt-3 border-t">
               <p className="text-sm font-medium mb-1">Investor Signature:</p>
@@ -86,14 +68,14 @@ const DigitalCertificate: React.FC<DigitalCertificateProps> = ({
       </CardContent>
       <CardFooter>
         {!isSigned ? (
-          <Button className="w-full" onClick={onSignClick}>
+          <Button className="w-full bg-indigo-300 hover:bg-indigo-400 text-indigo-800" onClick={onSignClick}>
             <Pencil className="mr-2 h-4 w-4" />
             Sign Certificate
           </Button>
         ) : (
           <Button
             variant="outline"
-            className="w-full"
+            className="w-full bg-indigo-300 hover:bg-indigo-400 text-indigo-800"
             onClick={onRemoveSignature}
           >
             Remove Signature

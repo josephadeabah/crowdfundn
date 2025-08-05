@@ -51,15 +51,14 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const [formData, setFormData] = useState<
     Partial<CreatorKYCFormData | InvestorKYCFormData | MentorKYCFormData>
   >({});
-  const [quizResults, setQuizResults] = useState<{ [key: string]: boolean }>(
-    {},
-  );
+  const [quizResults, setQuizResults] = useState<{ [key: string]: boolean }>({});
   const [incorrectAnswers, setIncorrectAnswers] = useState<{
     [key: string]: { userAnswer: string; correctAnswer: string };
   }>({});
   const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
   const [isSigned, setIsSigned] = useState(false);
   const [signature, setSignature] = useState<Point[]>([]);
+  const [signatureImage, setSignatureImage] = useState<string>('');
 
   const isCreator = userType === 'creator';
   const isInvestor = userType === 'investor';
@@ -71,13 +70,48 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       ? investorKycSteps
       : mentorKycSteps;
 
+  const convertSignatureToImage = (signaturePoints: Point[]): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 400;
+      canvas.height = 200;
+      const ctx = canvas.getContext('2d');
+      
+      if (!ctx || signaturePoints.length === 0) {
+        resolve('');
+        return;
+      }
+
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = 'black';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+
+      signaturePoints.forEach((point, i) => {
+        if (i === 0) {
+          ctx.moveTo(point.x, point.y);
+        } else {
+          ctx.lineTo(point.x, point.y);
+        }
+      });
+
+      ctx.stroke();
+      resolve(canvas.toDataURL('image/png'));
+    });
+  };
+
   useEffect(() => {
     const savedSignature = localStorage.getItem(`${userType}Signature`);
     if (savedSignature) {
       try {
         const parsedSignature = JSON.parse(savedSignature);
-        setSignature(parsedSignature);
-        setIsSigned(parsedSignature.length > 0);
+        setSignature(parsedSignature.points || []);
+        setSignatureImage(parsedSignature.image || '');
+        setIsSigned(parsedSignature.points?.length > 0);
       } catch (error) {
         console.error('Error loading signature:', error);
       }
@@ -172,10 +206,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     })(),
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     const updatedFormData = { ...formData, ...data };
     setFormData(updatedFormData);
-    console.log("KYC Data", updatedFormData);
 
     if (isInvestor && currentStep === 2) {
       const results: { [key: string]: boolean } = {};
@@ -231,14 +264,36 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         return;
       }
 
-      const userTypeLabel = isCreator
-        ? 'Campaign creator'
-        : isInvestor
-          ? 'Investor'
-          : 'Mentor';
-      toast.success(`${userTypeLabel} verification submitted successfully`);
-      console.log('Final form data:', updatedFormData);
-      console.log('Signature data:', signature);
+      try {
+        const finalFormData = {
+          ...updatedFormData,
+          signature: signatureImage,
+          signedAt: new Date().toISOString()
+        };
+
+        const userTypeLabel = isCreator
+          ? 'Campaign creator'
+          : isInvestor
+            ? 'Investor'
+            : 'Mentor';
+
+        console.log('Final form data with signature:', finalFormData);
+        toast.success(`${userTypeLabel} verification submitted successfully`);
+
+        // Uncomment to send to your API:
+        /*
+        const response = await fetch('/api/kyc/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(finalFormData),
+        });
+        if (!response.ok) throw new Error('Submission failed');
+        toast.success('Verification submitted successfully!');
+        */
+      } catch (error) {
+        console.error('Submission error:', error);
+        toast.error('Failed to submit verification');
+      }
     }
   };
 
@@ -256,21 +311,34 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     setIsSignDialogOpen(false);
   };
 
-  const handleSaveSignature = (newSignature: Point[]) => {
+  const handleSaveSignature = async (newSignature: Point[]) => {
     if (newSignature.length < 5) {
       toast.error('Please add a valid signature');
       return;
     }
 
-    setSignature(newSignature);
-    setIsSigned(true);
-    setIsSignDialogOpen(false);
-    localStorage.setItem(`${userType}Signature`, JSON.stringify(newSignature));
-    toast.success('Certificate signed successfully!');
+    try {
+      const image = await convertSignatureToImage(newSignature);
+      setSignature(newSignature);
+      setSignatureImage(image);
+      setIsSigned(true);
+      setIsSignDialogOpen(false);
+      
+      localStorage.setItem(`${userType}Signature`, JSON.stringify({
+        points: newSignature,
+        image: image
+      }));
+      
+      toast.success('Certificate signed successfully!');
+    } catch (error) {
+      console.error('Error saving signature:', error);
+      toast.error('Failed to save signature');
+    }
   };
 
   const handleRemoveSignature = () => {
     setSignature([]);
+    setSignatureImage('');
     setIsSigned(false);
     localStorage.removeItem(`${userType}Signature`);
   };
@@ -364,7 +432,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   );
 };
 
-// Helper functions
 function getStepDescription(
   currentStep: number,
   isCreator: boolean,
