@@ -181,7 +181,7 @@ const PledgesListPage = () => {
           <p className="text-sm text-muted-foreground mt-1">
             All shipping or delivery is done by you.{' '}
             <span className="font-semibold">
-              Bantu Hive disclaims any responsibility.
+              BantuHive disclaims any responsibility.
             </span>
           </p>
         </div>
@@ -190,7 +190,7 @@ const PledgesListPage = () => {
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Button className="bg-gradient-to-r from-tab-primary to-tab-secondary">
+          <Button className="bg-white text-gray-600">
             Process Pledges
           </Button>
         </div>
@@ -397,18 +397,22 @@ const PledgesListPage = () => {
                                     className="flex items-start gap-3 p-3 bg-tab-muted rounded-lg"
                                   >
                                     <div className="relative w-16 h-16">
-                                  <Image
-                                  src={reward.image || '/bantuhive.svg'}
-                                  alt={reward.title || 'Reward Image'}
-                                  layout="fill"
-                                  objectFit="cover"
-                                  unoptimized
-                                  className="object-cover rounded-md"
-                                  onError={(e) => {
-                                    console.error('Image failed to load:', e);
-                                    e.currentTarget.src = '/bantuhive.svg';
-                                  }}
-                                />
+                                      <Image
+                                        src={reward.image || '/bantuhive.svg'}
+                                        alt={reward.title || 'Reward Image'}
+                                        layout="fill"
+                                        objectFit="cover"
+                                        unoptimized
+                                        className="object-cover rounded-md"
+                                        onError={(e) => {
+                                          console.error(
+                                            'Image failed to load:',
+                                            e,
+                                          );
+                                          e.currentTarget.src =
+                                            '/bantuhive.svg';
+                                        }}
+                                      />
                                     </div>
                                     <div className="flex-1">
                                       <h5 className="font-medium">
