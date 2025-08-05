@@ -152,7 +152,7 @@ const ProfileTabs = () => {
         <div className="md:w-1/6 border-b h-auto md:h-screen md:border-b-0 md:border-r-2 border-dashed border-orange-200 dark:border-neutral-700 flex flex-col sticky top-0">
           <div className="flex flex-col h-full">
             <div
-              className="flex md:flex-col w-full space-x-2 md:space-x-0 md:space-y-2 !overflow-x-auto md:overflow-visible flex-grow"
+              className="flex lg:flex-col overflow-x-auto lg:overflow-visible p-2 space-x-1 lg:space-x-0 lg:space-y-1"
               aria-label="Tabs"
             >
               {tabs.map(({ label, icon, isNew }, index) => {
