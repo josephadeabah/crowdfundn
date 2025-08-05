@@ -205,11 +205,10 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       return {};
     })(),
   });
-
-  const onSubmit = async (data: any) => {
-    console.log('Form submission initiated');
-    const updatedFormData = { ...formData, ...data };
-    setFormData(updatedFormData);
+const onSubmit = async (data: any) => {
+  console.log('Form submission initiated - Current step:', currentStep);
+  const updatedFormData = { ...formData, ...data };
+  setFormData(updatedFormData);
 
     if (isInvestor && currentStep === 2) {
       console.log('Processing investor quiz results');
@@ -243,65 +242,76 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       setIncorrectAnswers(incorrect);
     }
 
-    const certificateStepIndex = isCreator ? 2 : isInvestor ? 4 : 3;
-    if (currentStep === certificateStepIndex) {
-      if (!isSigned) {
-        console.warn('Submission blocked: Signature missing');
-        toast.error('Please sign your certificate before proceeding.');
-        return;
-      }
+  const certificateStepIndex = isCreator ? 2 : isInvestor ? 4 : 3;
+  if (currentStep === certificateStepIndex) {
+    if (!isSigned) {
+      console.warn('Signature required - current signature state:', {
+        isSigned,
+        signatureLength: signature.length,
+        signatureImageExists: !!signatureImage
+      });
+      toast.error('Please sign your certificate before proceeding.');
+      return;
+    }
+  }
+
+  if (currentStep < kycSteps.length - 1) {
+    console.log(`Moving to step ${currentStep + 1} of ${kycSteps.length - 1}`);
+    setCurrentStep(currentStep + 1);
+  } else {
+    console.log('REACHED FINAL SUBMISSION STEP - Verifying requirements...');
+    console.log('Current state:', {
+      isInvestor,
+      isQuizPassed: isQuizPassed(),
+      isSigned,
+      signatureLength: signature.length,
+      requiredSteps: kycSteps.length
+    });
+
+    if (isInvestor && !isQuizPassed()) {
+      console.warn('Submission blocked - Quiz results:', quizResults);
+      toast.error('Please complete the investor quiz correctly before submitting.');
+      return;
     }
 
-    if (currentStep < kycSteps.length - 1) {
-      console.log(`Moving to step ${currentStep + 1}`);
-      setCurrentStep(currentStep + 1);
-    } else {
-      console.log('Final submission step reached');
-      
-      if (isInvestor && !isQuizPassed()) {
-        console.warn('Submission blocked: Quiz not passed');
-        toast.error('Please complete the investor quiz correctly before submitting.');
-        return;
-      }
-
-      if (!isSigned) {
-        console.warn('Submission blocked: Signature missing on final step');
-        toast.error('Please sign your certificate before submitting.');
-        return;
-      }
-
-      try {
-        const finalFormData = {
-          ...updatedFormData,
-          signature: signatureImage,
-          signedAt: new Date().toISOString()
-        };
-
-        console.group('FINAL FORM SUBMISSION DATA');
-        console.log('User Type:', userType);
-        console.log('Form Data:', updatedFormData);
-        console.log('Signature Image (truncated):', signatureImage.substring(0, 50) + '...');
-        console.log('Signature Points:', signature);
-        console.log('Signed At:', new Date().toISOString());
-        console.groupEnd();
-
-        const userTypeLabel = isCreator
-          ? 'Campaign creator'
-          : isInvestor
-            ? 'Investor'
-            : 'Mentor';
-
-        console.log('Showing success toast');
-        toast.success(`${userTypeLabel} verification submitted successfully`);
-
-        // API submission would go here
-        // await submitToBackend(finalFormData);
-      } catch (error) {
-        console.error('Submission error:', error);
-        toast.error('Failed to submit verification');
-      }
+    if (!isSigned) {
+      console.warn('Submission blocked - Signature state:', {
+        isSigned,
+        signatureLength: signature.length
+      });
+      toast.error('Please sign your certificate before submitting.');
+      return;
     }
-  };
+
+    try {
+      const finalFormData = {
+        ...updatedFormData,
+        signature: signatureImage,
+        signedAt: new Date().toISOString(),
+        userType
+      };
+
+      console.group('==== FINAL FORM SUBMISSION DATA ====');
+      console.log('User Type:', userType);
+      console.log('Form Data:', JSON.parse(JSON.stringify(updatedFormData))); // Deep clone for logging
+      console.log('Signature Image Length:', signatureImage.length);
+      console.log('Signature Points Count:', signature.length);
+      console.log('Signed At:', new Date().toISOString());
+      console.groupEnd();
+
+      const userTypeLabel = isCreator ? 'Creator' : isInvestor ? 'Investor' : 'Mentor';
+      console.log('Showing success toast for', userTypeLabel);
+      toast.success(`${userTypeLabel} verification submitted successfully`);
+
+      // Here you would typically send to your API
+      // await submitToBackend(finalFormData);
+
+    } catch (error) {
+      console.error('Submission error:', error);
+      toast.error('Failed to submit verification');
+    }
+  }
+};
 
   const goToPreviousStep = () => {
     if (currentStep > 0) {
