@@ -20,8 +20,7 @@ const KYC = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="">
-        <div className="">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold mb-2">
               {userType === 'creator'
@@ -56,7 +55,6 @@ const KYC = () => {
 
           <KYCProcess userType={userType} onUserTypeChange={setUserType} />
         </div>
-      </div>
     </div>
   );
 };
