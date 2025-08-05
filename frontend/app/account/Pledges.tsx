@@ -2,93 +2,109 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { usePledgesContext } from '@/app/context/pledges/PledgesContext';
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle 
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
 } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/app/components/ui/select';
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '@/app/components/ui/tabs';
-import { 
-  Accordion, 
-  AccordionContent, 
-  AccordionItem, 
-  AccordionTrigger 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
 } from '@/app/components/ui/accordion';
-import { 
-  Package, 
-  Truck, 
-  Clock, 
-  CheckCircle, 
-  Search, 
-  Filter, 
-  Download 
+import {
+  Package,
+  Truck,
+  Clock,
+  CheckCircle,
+  Search,
+  Filter,
+  Download,
 } from 'lucide-react';
 import ErrorPage from '../components/errorpage/ErrorPage';
 import PledgeListPageLoader from '../loaders/PledgeListPageLoader ';
 import { Badge } from '../components/ui/badge';
 
 const PledgesListPage = () => {
-  const { pledges, loading, error, fetchPledges, deletePledge } = usePledgesContext();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [shippingFilter, setShippingFilter] = useState("all");
+  const { pledges, loading, error, fetchPledges, deletePledge } =
+    usePledgesContext();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [shippingFilter, setShippingFilter] = useState('all');
 
   useEffect(() => {
     fetchPledges();
   }, [fetchPledges]);
 
   // Flatten pledges for easier processing
-  const allPledges = pledges.flatMap(campaign => 
-    campaign.pledges.map(pledge => ({
+  const allPledges = pledges.flatMap((campaign) =>
+    campaign.pledges.map((pledge) => ({
       ...pledge,
-      campaign_name: campaign.campaign_name
-    }))
+      campaign_name: campaign.campaign_name,
+    })),
   );
 
   // Calculate statistics
   const stats = {
     total: allPledges.length,
-    pending: allPledges.filter(p => p.status === "pending").length,
-    readyToShip: allPledges.filter(p => p.status === "success" && p.shipping_status === "not_shipped").length,
-    shipped: allPledges.filter(p => p.shipping_status === "shipped").length,
-    totalValue: allPledges.reduce((sum, pledge) => 
-      sum + pledge.selected_rewards.reduce((rewardSum, reward) => rewardSum + reward.amount, 0), 0
-    )
+    pending: allPledges.filter((p) => p.status === 'pending').length,
+    readyToShip: allPledges.filter(
+      (p) => p.status === 'success' && p.shipping_status === 'not_shipped',
+    ).length,
+    shipped: allPledges.filter((p) => p.shipping_status === 'shipped').length,
+    totalValue: allPledges.reduce(
+      (sum, pledge) =>
+        sum +
+        pledge.selected_rewards.reduce(
+          (rewardSum, reward) => rewardSum + reward.amount,
+          0,
+        ),
+      0,
+    ),
   };
 
   // Filter pledges
-  const filteredPledges = allPledges.filter(pledge => {
-    const matchesSearch = pledge.shipping_data?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         pledge.shipping_data?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         pledge.id.toString().toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || pledge.status === statusFilter;
-    const matchesShipping = shippingFilter === "all" || pledge.shipping_status === shippingFilter;
-    
+  const filteredPledges = allPledges.filter((pledge) => {
+    const matchesSearch =
+      pledge.shipping_data?.firstName
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      pledge.shipping_data?.lastName
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      pledge.id.toString().toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      statusFilter === 'all' || pledge.status === statusFilter;
+    const matchesShipping =
+      shippingFilter === 'all' || pledge.shipping_status === shippingFilter;
+
     return matchesSearch && matchesStatus && matchesShipping;
   });
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "success":
+      case 'success':
         return <Badge className="bg-tab-success text-white">Confirmed</Badge>;
-      case "pending":
+      case 'pending':
         return <Badge variant="secondary">Pending</Badge>;
-      case "failed":
+      case 'failed':
         return <Badge variant="destructive">Failed</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
@@ -97,9 +113,9 @@ const PledgesListPage = () => {
 
   const getShippingBadge = (status: string) => {
     switch (status) {
-      case "shipped":
+      case 'shipped':
         return <Badge className="bg-tab-success text-white">Shipped</Badge>;
-      case "not_shipped":
+      case 'not_shipped':
         return <Badge variant="outline">Not Shipped</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
@@ -131,9 +147,14 @@ const PledgesListPage = () => {
             <h2 className="text-3xl font-bold bg-clip-text text-gray-600">
               Pledges
             </h2>
-            <p className="text-muted-foreground">Track and fulfill your supporter pledges</p>
+            <p className="text-muted-foreground">
+              Track and fulfill your supporter pledges
+            </p>
             <p className="text-sm text-muted-foreground mt-1">
-              All shipping or delivery is done by you. <span className="font-semibold">Bantu Hive disclaims any responsibility.</span>
+              All shipping or delivery is done by you.{' '}
+              <span className="font-semibold">
+                Bantu Hive disclaims any responsibility.
+              </span>
             </p>
           </div>
         </div>
@@ -154,9 +175,14 @@ const PledgesListPage = () => {
           <h2 className="text-3xl font-bold bg-clip-text text-gray-600">
             Pledge Management
           </h2>
-          <p className="text-muted-foreground">Track and fulfill your supporter pledges</p>
+          <p className="text-muted-foreground">
+            Track and fulfill your supporter pledges
+          </p>
           <p className="text-sm text-muted-foreground mt-1">
-            All shipping or delivery is done by you. <span className="font-semibold">Bantu Hive disclaims any responsibility.</span>
+            All shipping or delivery is done by you.{' '}
+            <span className="font-semibold">
+              Bantu Hive disclaims any responsibility.
+            </span>
           </p>
         </div>
         <div className="flex gap-3">
@@ -196,7 +222,9 @@ const PledgesListPage = () => {
         <Card className="">
           <CardContent className="p-6 text-center">
             <CheckCircle className="h-8 w-8 mx-auto mb-2 text-tab-accent" />
-            <p className="text-2xl font-bold">₵{stats.totalValue.toLocaleString()}</p>
+            <p className="text-2xl font-bold">
+              ₵{stats.totalValue.toLocaleString()}
+            </p>
             <p className="text-sm text-muted-foreground">Total Value</p>
           </CardContent>
         </Card>
@@ -261,7 +289,10 @@ const PledgesListPage = () => {
             <CardContent>
               <div className="space-y-4">
                 {filteredPledges.map((pledge) => (
-                  <div key={pledge.id} className="flex items-center justify-between p-4 border border-tab-border rounded-lg hover:bg-tab-hover transition-colors">
+                  <div
+                    key={pledge.id}
+                    className="flex items-center justify-between p-4 border border-tab-border rounded-lg hover:bg-tab-hover transition-colors"
+                  >
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h4 className="font-medium">{pledge.id}</h4>
@@ -269,23 +300,33 @@ const PledgesListPage = () => {
                         {getShippingBadge(pledge.shipping_status)}
                       </div>
                       <p className="text-sm font-medium">
-                        {pledge.shipping_data?.firstName} {pledge.shipping_data?.lastName}
+                        {pledge.shipping_data?.firstName}{' '}
+                        {pledge.shipping_data?.lastName}
                       </p>
-                      <p className="text-sm text-muted-foreground">{pledge.campaign_name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {pledge.campaign_name}
+                      </p>
                     </div>
                     <div className="text-right mr-4">
                       <p className="font-medium text-lg">
-                        ₵{pledge.selected_rewards.reduce((sum, reward) => sum + reward.amount, 0)}
+                        ₵
+                        {pledge.selected_rewards.reduce(
+                          (sum, reward) => sum + reward.amount,
+                          0,
+                        )}
                       </p>
-                      <p className="text-xs text-muted-foreground">{pledge.delivery_option}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {pledge.delivery_option}
+                      </p>
                     </div>
                     <div className="flex gap-2">
-                      {pledge.status === "success" && pledge.shipping_status === "not_shipped" && (
-                        <Button size="sm" className="bg-white text-gray-600">
-                          <Truck className="h-4 w-4 mr-1" />
-                          Ship Now
-                        </Button>
-                      )}
+                      {pledge.status === 'success' &&
+                        pledge.shipping_status === 'not_shipped' && (
+                          <Button size="sm" className="bg-white text-gray-600">
+                            <Truck className="h-4 w-4 mr-1" />
+                            Ship Now
+                          </Button>
+                        )}
                       <Button variant="outline" size="sm">
                         View Details
                       </Button>
@@ -300,7 +341,10 @@ const PledgesListPage = () => {
         <TabsContent value="detailed">
           <Accordion type="single" collapsible>
             {pledges.map((campaign) => (
-              <AccordionItem key={campaign.campaign_id} value={campaign.campaign_id.toString()}>
+              <AccordionItem
+                key={campaign.campaign_id}
+                value={campaign.campaign_id.toString()}
+              >
                 <AccordionTrigger className="text-lg font-semibold">
                   {campaign.campaign_name} ({campaign.pledges.length} pledges)
                 </AccordionTrigger>
@@ -311,7 +355,8 @@ const PledgesListPage = () => {
                         <CardHeader>
                           <div className="flex items-center justify-between">
                             <CardTitle className="text-lg">
-                              {pledge.id} - {pledge.shipping_data?.firstName} {pledge.shipping_data?.lastName}
+                              {pledge.id} - {pledge.shipping_data?.firstName}{' '}
+                              {pledge.shipping_data?.lastName}
                             </CardTitle>
                             <div className="flex gap-2">
                               {getStatusBadge(pledge.status)}
@@ -323,57 +368,77 @@ const PledgesListPage = () => {
                           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {/* Shipping Information */}
                             <div>
-                              <h4 className="font-semibold mb-3">Shipping Information</h4>
+                              <h4 className="font-semibold mb-3">
+                                Shipping Information
+                              </h4>
                               <div className="space-y-2 text-sm">
                                 <p>
-                                  <span className="font-medium">Address:</span> {pledge.shipping_data?.shippingAddress}
+                                  <span className="font-medium">Address:</span>{' '}
+                                  {pledge.shipping_data?.shippingAddress}
                                 </p>
                                 <p>
-                                  <span className="font-medium">Delivery Option:</span> {pledge.delivery_option}
+                                  <span className="font-medium">
+                                    Delivery Option:
+                                  </span>{' '}
+                                  {pledge.delivery_option}
                                 </p>
                               </div>
                             </div>
-                            
+
                             {/* Reward Details */}
                             <div>
-                              <h4 className="font-semibold mb-3">Selected Rewards</h4>
+                              <h4 className="font-semibold mb-3">
+                                Selected Rewards
+                              </h4>
                               <div className="space-y-3">
                                 {pledge.selected_rewards.map((reward) => (
-                                  <div key={reward.id} className="flex items-start gap-3 p-3 bg-tab-muted rounded-lg">
+                                  <div
+                                    key={reward.id}
+                                    className="flex items-start gap-3 p-3 bg-tab-muted rounded-lg"
+                                  >
                                     <div className="relative w-16 h-16">
-                                      <Image
-                                        src={reward.image || '/avatar-default.png'}
-                                        alt={reward.title || 'Reward image'}
-                                        fill
-                                        className="object-cover rounded-md"
-                                        onError={(e) => {
-                                          const target = e.target as HTMLImageElement;
-                                          target.src = '/avatar-default.png';
-                                        }}
-                                      />
+                                  <Image
+                                  src={reward.image || '/bantuhive.svg'}
+                                  alt={reward.title || 'Reward Image'}
+                                  layout="fill"
+                                  objectFit="cover"
+                                  unoptimized
+                                  className="object-cover rounded-md"
+                                  onError={(e) => {
+                                    console.error('Image failed to load:', e);
+                                    e.currentTarget.src = '/bantuhive.svg';
+                                  }}
+                                />
                                     </div>
                                     <div className="flex-1">
-                                      <h5 className="font-medium">{reward.title}</h5>
-                                      <p className="text-sm text-muted-foreground">{reward.description}</p>
-                                      <p className="text-sm font-medium text-tab-primary">₵{reward.amount}</p>
+                                      <h5 className="font-medium">
+                                        {reward.title}
+                                      </h5>
+                                      <p className="text-sm text-muted-foreground">
+                                        {reward.description}
+                                      </p>
+                                      <p className="text-sm font-medium text-tab-primary">
+                                        ₵{reward.amount}
+                                      </p>
                                     </div>
                                   </div>
                                 ))}
                               </div>
                             </div>
                           </div>
-                          
+
                           {/* Action Buttons */}
                           <div className="flex gap-3 mt-6 pt-4 border-t">
-                            {pledge.status === "success" && pledge.shipping_status === "not_shipped" && (
-                              <Button className="bg-tab-success text-white">
-                                <Truck className="h-4 w-4 mr-2" />
-                                Mark as Shipped
-                              </Button>
-                            )}
+                            {pledge.status === 'success' &&
+                              pledge.shipping_status === 'not_shipped' && (
+                                <Button className="bg-tab-success text-white">
+                                  <Truck className="h-4 w-4 mr-2" />
+                                  Mark as Shipped
+                                </Button>
+                              )}
                             <Button variant="outline">Edit Details</Button>
-                            <Button 
-                              variant="destructive" 
+                            <Button
+                              variant="destructive"
                               size="sm"
                               onClick={() => deletePledge(pledge.id)}
                             >
