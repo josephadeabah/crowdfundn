@@ -415,9 +415,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       <Card className="bg-white shadow-sm">
         <CardHeader>
           <CardTitle>{kycSteps[currentStep].title}</CardTitle>
-          {/* <CardDescription>
-            {kycSteps[currentStep].description}
-          </CardDescription> */}
         </CardHeader>
 
         <CardContent>
