@@ -215,114 +215,126 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     })(),
   });
 
-  const onSubmit = async (data: any) => {
-    setIsSubmitting(true);
-    const updatedFormData = { ...formData, ...data };
-    setFormData(updatedFormData);
+ // Updated onSubmit function in KYCProcess.tsx
+const onSubmit = async (data: any) => {
+  setIsSubmitting(true);
+  const updatedFormData = { ...formData, ...data };
+  setFormData(updatedFormData);
 
-    const stepType = getCurrentStepType();
+  const stepType = getCurrentStepType();
 
-    // Handle quiz results for investor
-    if (stepType === 'quiz') {
-      const results: { [key: string]: boolean } = {};
-      const incorrect: {
-        [key: string]: { userAnswer: string; correctAnswer: string };
-      } = {};
+  // Handle quiz results for investor
+  if (stepType === 'quiz') {
+    const results: { [key: string]: boolean } = {};
+    const incorrect: {
+      [key: string]: { userAnswer: string; correctAnswer: string };
+    } = {};
 
-      Object.keys(quizQuestions).forEach((questionKey) => {
-        const userAnswer = data[questionKey];
-        const correctAnswer =
-          quizQuestions[questionKey as keyof typeof quizQuestions].correct;
-        const isCorrect = userAnswer === correctAnswer;
-        results[questionKey] = isCorrect;
+    Object.keys(quizQuestions).forEach((questionKey) => {
+      const userAnswer = data[questionKey];
+      const correctAnswer =
+        quizQuestions[questionKey as keyof typeof quizQuestions].correct;
+      const isCorrect = userAnswer === correctAnswer;
+      results[questionKey] = isCorrect;
 
-        if (!isCorrect) {
-          const userOption = quizQuestions[
-            questionKey as keyof typeof quizQuestions
-          ].options.find((opt) => opt.value === userAnswer);
-          const correctOption = quizQuestions[
-            questionKey as keyof typeof quizQuestions
-          ].options.find((opt) => opt.value === correctAnswer);
-          incorrect[questionKey] = {
-            userAnswer: userOption?.label || userAnswer,
-            correctAnswer: correctOption?.label || correctAnswer,
-          };
+      if (!isCorrect) {
+        const userOption = quizQuestions[
+          questionKey as keyof typeof quizQuestions
+        ].options.find((opt) => opt.value === userAnswer);
+        const correctOption = quizQuestions[
+          questionKey as keyof typeof quizQuestions
+        ].options.find((opt) => opt.value === correctAnswer);
+        incorrect[questionKey] = {
+          userAnswer: userOption?.label || userAnswer,
+          correctAnswer: correctOption?.label || correctAnswer,
+        };
+      }
+    });
+
+    setQuizResults(results);
+    setIncorrectAnswers(incorrect);
+  }
+
+  // Handle certificate step validation
+  if (stepType === 'certificate') {
+    if (!isSigned) {
+      toast.error('Please sign your certificate before proceeding.');
+      setIsSubmitting(false);
+      return;
+    }
+  }
+
+  // Handle review step submission
+  if (stepType === 'review') {
+    if (!isSigned) {
+      toast.error('Please sign your certificate before submitting.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (isInvestor && !isQuizPassed()) {
+      toast.error(
+        'Please complete the investor quiz correctly before submitting.',
+      );
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const signatureBlob = await convertSignatureToBlob(signature);
+      const formDataToSubmit = new FormData();
+
+      // For creators, we need to ensure business data is included
+      if (isCreator) {
+        // Validate business data against the schema
+        const businessData = creatorBusinessSchema.parse(data);
+        Object.assign(updatedFormData, businessData);
+      }
+
+      // Append all form data
+      Object.entries(updatedFormData).forEach(([key, value]) => {
+        if (value instanceof File) {
+          formDataToSubmit.append(key, value);
+        } else if (typeof value === 'object' && value !== null) {
+          formDataToSubmit.append(key, JSON.stringify(value));
+        } else {
+          formDataToSubmit.append(key, String(value));
         }
       });
 
-      setQuizResults(results);
-      setIncorrectAnswers(incorrect);
-    }
+      formDataToSubmit.append('signature', signatureBlob, 'signature.png');
 
-    // Handle certificate step validation
-    if (stepType === 'certificate') {
-      if (!isSigned) {
-        toast.error('Please sign your certificate before proceeding.');
-        setIsSubmitting(false);
-        return;
+      const userTypeLabel = isCreator
+        ? 'Campaign creator'
+        : isInvestor
+          ? 'Investor'
+          : 'Mentor';
+
+      // API submission would go here
+      toast.success(`${userTypeLabel} verification submitted successfully`);
+      console.log('Final form data:', updatedFormData);
+      console.log('Signature blob:', signatureBlob);
+
+      // Debugging
+      for (const [key, value] of formDataToSubmit.entries()) {
+        console.log(key, value);
       }
-    }
-
-    // Handle review step submission
-    if (stepType === 'review') {
-      if (!isSigned) {
-        toast.error('Please sign your certificate before submitting.');
-        setIsSubmitting(false);
-        return;
+    } catch (error) {
+      console.error('Error processing form submission:', error);
+      if (error instanceof z.ZodError) {
+        toast.error('Please fill out all required business information');
+      } else {
+        toast.error('Failed to process form submission. Please try again.');
       }
-
-      if (isInvestor && !isQuizPassed()) {
-        toast.error(
-          'Please complete the investor quiz correctly before submitting.',
-        );
-        setIsSubmitting(false);
-        return;
-      }
-
-      try {
-        const signatureBlob = await convertSignatureToBlob(signature);
-        const formDataToSubmit = new FormData();
-
-        // Append all form data
-        Object.entries(updatedFormData).forEach(([key, value]) => {
-          if (value instanceof File) {
-            formDataToSubmit.append(key, value);
-          } else if (typeof value === 'object' && value !== null) {
-            formDataToSubmit.append(key, JSON.stringify(value));
-          } else {
-            formDataToSubmit.append(key, String(value));
-          }
-        });
-
-        formDataToSubmit.append('signature', signatureBlob, 'signature.png');
-
-        const userTypeLabel = isCreator
-          ? 'Campaign creator'
-          : isInvestor
-            ? 'Investor'
-            : 'Mentor';
-
-        // API submission would go here
-        toast.success(`${userTypeLabel} verification submitted successfully`);
-        console.log('Final form data:', updatedFormData);
-        console.log('Signature blob:', signatureBlob);
-
-        // Debugging
-        for (const [key, value] of formDataToSubmit.entries()) {
-          console.log(key, value);
-        }
-      } catch (error) {
-        console.error('Error converting signature:', error);
-        toast.error('Failed to process signature. Please try again.');
-      } finally {
-        setIsSubmitting(false);
-      }
-    } else if (currentStep < kycSteps.length - 1) {
-      // Move to next step if not on review step
-      setCurrentStep(currentStep + 1);
+    } finally {
       setIsSubmitting(false);
     }
-  };
+  } else if (currentStep < kycSteps.length - 1) {
+    // Move to next step if not on review step
+    setCurrentStep(currentStep + 1);
+    setIsSubmitting(false);
+  }
+};
 
   const goToPreviousStep = () => {
     if (currentStep > 0) {
