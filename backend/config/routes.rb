@@ -152,6 +152,9 @@ Rails.application.routes.draw do
       namespace :equity do
         resources :campaigns, controller: 'base_campaigns_controller' do
           member do
+            post :submit_for_approval
+            post :approve
+            post :reject
             post :launch
             post :close
           end

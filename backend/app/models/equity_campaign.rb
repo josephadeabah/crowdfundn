@@ -17,11 +17,64 @@ class EquityCampaign < Campaign
   enum equity_status: {
     draft: 0,
     pending_approval: 1,
-    live: 2,
-    funded: 3,
-    failed: 4,
-    closed: 5
+    approved: 2,  # New status
+    live: 3,
+    funded: 4,
+    failed: 5,
+    closed: 6
   }
+
+    # Add state machine transitions
+  def submit_for_approval
+    if may_submit_for_approval?
+      update!(equity_status: :pending_approval)
+    else
+      false
+    end
+  end
+
+  def approve
+    if may_approve?
+      update!(equity_status: :approved)
+    else
+      false
+    end
+  end
+
+  def reject
+    if may_reject?
+      update!(equity_status: :draft)
+    else
+      false
+    end
+  end
+
+  def may_submit_for_approval?
+    draft? && valid_for_approval?
+  end
+
+  def may_approve?
+    pending_approval?
+  end
+
+  def may_reject?
+    pending_approval?
+  end
+
+  def valid_for_approval?
+    # Add validation checks for required fields before submission
+    [
+      title.present?,
+      description.present?,
+      valuation.present?,
+      equity_offered.present?,
+      minimum_investment.present?,
+      maximum_investment.present?,
+      company_name.present?,
+      company_description.present?,
+      campaign_team_members.exists?(role: 'founder')
+    ].all?
+  end
   
   # This method is used to determine the number of shares in money available for investment.
   def shares_available
