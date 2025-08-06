@@ -74,6 +74,19 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       ? investorKycSteps
       : mentorKycSteps;
 
+  // Calculate the correct step indices for each user type
+  const getCertificateStepIndex = () => {
+    if (isCreator) return 2; // Creator has certificate at step 2
+    if (isInvestor) return 4; // Investor has certificate at step 4
+    return 3; // Mentor has certificate at step 3
+  };
+
+  const getReviewStepIndex = () => {
+    if (isCreator) return 3; // Creator has review at step 3
+    if (isInvestor) return 5; // Investor has review at step 5
+    return 4; // Mentor has review at step 4
+  };
+
   useEffect(() => {
     const savedSignature = localStorage.getItem(`${userType}Signature`);
     if (savedSignature) {
@@ -90,10 +103,13 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const getCurrentSchema = () => {
     if (currentStep === 0) return personalInfoSchema;
     if (currentStep === 1) return documentSchema;
+    if (isCreator && currentStep === 2) return z.object({}); // Certificate step has no schema
     if (isCreator && currentStep === 3) return creatorBusinessSchema;
     if (isMentor && currentStep === 2) return mentorExperienceSchema;
     if (isInvestor && currentStep === 2) return investorQuizSchema;
     if (isInvestor && currentStep === 3) return declarationSchema;
+    if (isInvestor && currentStep === 4) return z.object({}); // Certificate step has no schema
+    if (isMentor && currentStep === 3) return z.object({}); // Certificate step has no schema
     return z.object({});
   };
 
@@ -211,7 +227,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       setIncorrectAnswers(incorrect);
     }
 
-    const certificateStepIndex = isCreator ? 2 : isInvestor ? 4 : 3;
+    const certificateStepIndex = getCertificateStepIndex();
     if (currentStep === certificateStepIndex) {
       if (!isSigned) {
         toast.error('Please sign your certificate before proceeding.');
