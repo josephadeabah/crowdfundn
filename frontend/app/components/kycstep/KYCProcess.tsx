@@ -1,4 +1,3 @@
-// KYCProcess.tsx
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -236,20 +235,21 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       }
     }
 
-    if (currentStep < kycSteps.length - 1) {
-      setCurrentStep(currentStep + 1);
-      setIsSubmitting(false);
-    } else {
-      if (isInvestor && !isQuizPassed()) {
-        toast.error(
-          'Please complete the investor quiz correctly before submitting.',
-        );
+    // Check if we're on the review step
+    const reviewStepIndex = getReviewStepIndex();
+    if (currentStep === reviewStepIndex) {
+      // For all user types, verify signature is complete
+      if (!isSigned) {
+        toast.error('Please sign your certificate before submitting.');
         setIsSubmitting(false);
         return;
       }
 
-      if (!isSigned) {
-        toast.error('Please sign your certificate before submitting.');
+      // Additional investor-specific validation
+      if (isInvestor && !isQuizPassed()) {
+        toast.error(
+          'Please complete the investor quiz correctly before submitting.',
+        );
         setIsSubmitting(false);
         return;
       }
@@ -299,6 +299,10 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       } finally {
         setIsSubmitting(false);
       }
+    } else if (currentStep < kycSteps.length - 1) {
+      // If not on review step, proceed to next step
+      setCurrentStep(currentStep + 1);
+      setIsSubmitting(false);
     }
   };
 
