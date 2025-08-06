@@ -42,6 +42,8 @@ import { SignatureDialog } from './SignatureDialog';
 import { ProgressSteps } from './ProgressSteps';
 import { Point } from '@/app/account/settings/kyc/signature/signatureUtils';
 import { z } from 'zod';
+import { Loader2 } from 'lucide-react';
+import { convertSignatureToBlob } from '@/app/account/settings/kyc/signature/signatureUtils';
 
 const KYCProcess: React.FC<KYCProcessProps> = ({
   userType,
@@ -60,6 +62,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
   const [isSigned, setIsSigned] = useState(false);
   const [signature, setSignature] = useState<Point[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isCreator = userType === 'creator';
   const isInvestor = userType === 'investor';
@@ -172,7 +175,8 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     })(),
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
+    setIsSubmitting(true);
     const updatedFormData = { ...formData, ...data };
     setFormData(updatedFormData);
 
@@ -211,33 +215,74 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     if (currentStep === certificateStepIndex) {
       if (!isSigned) {
         toast.error('Please sign your certificate before proceeding.');
+        setIsSubmitting(false);
         return;
       }
     }
 
     if (currentStep < kycSteps.length - 1) {
       setCurrentStep(currentStep + 1);
+      setIsSubmitting(false);
     } else {
       if (isInvestor && !isQuizPassed()) {
         toast.error(
           'Please complete the investor quiz correctly before submitting.',
         );
+        setIsSubmitting(false);
         return;
       }
 
       if (!isSigned) {
         toast.error('Please sign your certificate before submitting.');
+        setIsSubmitting(false);
         return;
       }
 
-      const userTypeLabel = isCreator
-        ? 'Campaign creator'
-        : isInvestor
-          ? 'Investor'
-          : 'Mentor';
-      toast.success(`${userTypeLabel} verification submitted successfully`);
-      console.log('Final form data:', updatedFormData);
-      console.log('Signature data:', signature);
+      try {
+        // Convert signature to blob
+        const signatureBlob = await convertSignatureToBlob(signature);
+
+        // Create FormData object
+        const formDataToSubmit = new FormData();
+
+        // Append all form data
+        Object.entries(updatedFormData).forEach(([key, value]) => {
+          if (value instanceof File) {
+            formDataToSubmit.append(key, value);
+          } else if (typeof value === 'object' && value !== null) {
+            formDataToSubmit.append(key, JSON.stringify(value));
+          } else {
+            formDataToSubmit.append(key, String(value));
+          }
+        });
+
+        // Append signature as a file
+        formDataToSubmit.append('signature', signatureBlob, 'signature.png');
+
+        const userTypeLabel = isCreator
+          ? 'Campaign creator'
+          : isInvestor
+            ? 'Investor'
+            : 'Mentor';
+
+        // Here you would typically send the formDataToSubmit to your API
+        // For example:
+        // await submitKYCForm(formDataToSubmit);
+
+        toast.success(`${userTypeLabel} verification submitted successfully`);
+        console.log('Final form data:', updatedFormData);
+        console.log('Signature blob:', signatureBlob);
+
+        // If you want to see what's in the FormData (for debugging)
+        for (const [key, value] of formDataToSubmit.entries()) {
+          console.log(key, value);
+        }
+      } catch (error) {
+        console.error('Error converting signature:', error);
+        toast.error('Failed to process signature. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -341,10 +386,18 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
                   <Button
                     type="submit"
                     className="bg-bantu-green hover:bg-bantu-dark-green ml-auto"
+                    disabled={isSubmitting}
                   >
-                    {currentStep === kycSteps.length - 1
-                      ? 'Submit Verification'
-                      : 'Continue'}
+                    {isSubmitting ? (
+                      <span className="flex items-center">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Processing...
+                      </span>
+                    ) : currentStep === kycSteps.length - 1 ? (
+                      'Submit Verification'
+                    ) : (
+                      'Continue'
+                    )}
                   </Button>
                 </div>
               </form>

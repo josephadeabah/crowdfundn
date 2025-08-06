@@ -20,41 +20,41 @@ const KYC = () => {
 
   return (
     <div className="min-h-screen">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-2">
-              {userType === 'creator'
-                ? 'Campaign Creator'
-                : userType === 'investor'
-                  ? 'Investor'
-                  : 'Mentor'}{' '}
-              Verification
-            </h1>
-            <p className="text-gray-600 mb-6">
-              Complete the verification process to{' '}
-              {userType === 'creator'
-                ? 'start fundraising'
-                : userType === 'investor'
-                  ? 'begin investing'
-                  : 'become a qualified mentor to a startup'}
-              .
-            </p>
-          </div>
-
-          <Tabs
-            value={userType}
-            onValueChange={handleTabChange}
-            className="w-full mb-8"
-          >
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="creator">Campaign Creator</TabsTrigger>
-              <TabsTrigger value="investor">Investor</TabsTrigger>
-              <TabsTrigger value="mentor">Apply As Mentor</TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          <KYCProcess userType={userType} onUserTypeChange={setUserType} />
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold mb-2">
+            {userType === 'creator'
+              ? 'Campaign Creator'
+              : userType === 'investor'
+                ? 'Investor'
+                : 'Mentor'}{' '}
+            Verification
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Complete the verification process to{' '}
+            {userType === 'creator'
+              ? 'start fundraising'
+              : userType === 'investor'
+                ? 'begin investing'
+                : 'become a qualified mentor to a startup'}
+            .
+          </p>
         </div>
+
+        <Tabs
+          value={userType}
+          onValueChange={handleTabChange}
+          className="w-full mb-8"
+        >
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="creator">Campaign Creator</TabsTrigger>
+            <TabsTrigger value="investor">Investor</TabsTrigger>
+            <TabsTrigger value="mentor">Apply As Mentor</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        <KYCProcess userType={userType} onUserTypeChange={setUserType} />
+      </div>
     </div>
   );
 };

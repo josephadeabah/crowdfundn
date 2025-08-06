@@ -22,8 +22,8 @@ export const ProgressSteps: React.FC<ProgressStepsProps> = ({
       {/* Vertical stack on mobile, horizontal on desktop */}
       <div className="flex flex-col md:flex-row justify-between mb-2 space-y-4 md:space-y-0">
         {steps.map((step, index) => (
-          <div 
-            key={step.id} 
+          <div
+            key={step.id}
             className="flex md:flex-col items-center md:items-center space-x-4 md:space-x-0"
           >
             <div
