@@ -138,7 +138,7 @@ const SignaturePad: React.FC<SignaturePadProps> = ({ onSave, onCancel }) => {
         <Button variant="destructive" onClick={clearSignature}>
           Clear Signature
         </Button>
-        <Button onClick={() => onSave(signature)} className="bg-green-200 text-green-600">Apply Signature</Button>
+        <Button variant="ghost" onClick={() => onSave(signature)} className="bg-green-200 text-green-600">Apply Signature</Button>
       </div>
     </div>
   );
