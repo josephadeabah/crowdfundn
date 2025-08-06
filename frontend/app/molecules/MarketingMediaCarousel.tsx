@@ -133,7 +133,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                     return (
                       <div
                         key={absoluteIndex}
-                        className={`flex-1 min-w-0 bg-white rounded-xl shadow-md overflow-hidden ${
+                        className={`flex-1 min-w-0 bg-white rounded-xl overflow-hidden ${
                           slidesPerPage === 2
                             ? 'flex flex-col md:flex-row'
                             : 'flex flex-col'
@@ -144,7 +144,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                             slidesPerPage === 2 ? 'md:w-1/2' : 'w-full'
                           }`}
                         >
-                          <div className="absolute top-2 left-2 bg-transparent backdrop-blur-sm text-white text-xs font-semibold px-2 py-1 rounded-md z-10">
+                          <div className="absolute top-2 left-2 bg-transparent text-white text-xs font-semibold px-2 py-1 rounded-md z-10">
                             Sponsored
                           </div>
 
@@ -157,7 +157,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                             />
                           ) : (
                             <div className="relative w-full h-full">
-                              <div className="absolute top-2 left-2 bg-transparent backdrop-blur-sm text-white text-xs font-semibold px-2 py-1 rounded-md z-10">
+                              <div className="absolute top-2 left-2 bg-transparent text-white text-xs font-semibold px-2 py-1 rounded-md z-10">
                                 Sponsored
                               </div>
 
@@ -209,14 +209,14 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
 
         <button
           onClick={goToPrev}
-          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 p-2 rounded-full shadow-md hover:bg-opacity-100 transition-all"
+          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 p-2 rounded-full hover:bg-opacity-100 transition-all"
           aria-label="Previous slide"
         >
           <FaArrowLeft className="text-gray-800" />
         </button>
         <button
           onClick={goToNext}
-          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 p-2 rounded-full shadow-md hover:bg-opacity-100 transition-all"
+          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 p-2 rounded-full hover:bg-opacity-100 transition-all"
           aria-label="Next slide"
         >
           <FaArrowRight className="text-gray-800" />
