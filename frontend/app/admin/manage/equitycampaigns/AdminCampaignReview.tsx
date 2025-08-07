@@ -14,8 +14,8 @@ import {
   DollarSign,
   XCircle,
 } from 'lucide-react';
-import { useEquityCampaignContext } from '@/app/contexts/EquityCampaignContext';
 import { useState } from 'react';
+import { useEquityCampaignContext } from '@/app/contexts/account/campaign/EquityCampaignContext';
 import { AlertPopup } from '@/app/components/alertpopup/AlertPopup';
 
 const getStatusColor = (status: string) => {
