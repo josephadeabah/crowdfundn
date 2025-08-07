@@ -46,6 +46,9 @@ module Api
 
         def reject
           if @campaign.reject
+            # Send rejection email
+            CampaignRejectionEmailService.send_rejection_email(@campaign, params[:rejection_reason])
+            
             render json: campaign_json(@campaign), status: :ok
           else
             render json: { 
