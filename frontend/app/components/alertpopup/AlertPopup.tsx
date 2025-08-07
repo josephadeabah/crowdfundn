@@ -11,9 +11,11 @@ interface AlertPopupProps {
   onCancel?: () => void;
   error?: string | null;
   icon?: ReactNode;
-  confirmText?: string; // Add this line
-  loading?: boolean; // Also add loading since it's being used
+  confirmText?: string;
+  loading?: boolean;
   confirmDisabled?: boolean;
+  confirmButtonClass?: string; // Add this for custom button styling
+  cancelButtonClass?: string; // Optional for cancel button styling
 }
 
 const AlertPopup: React.FC<AlertPopupProps> = ({
@@ -25,9 +27,11 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
   onCancel,
   error,
   icon = <FaExclamationTriangle className="w-6 h-6 text-red-600" />,
-  confirmText = 'Confirm', // Default value
+  confirmText = 'Confirm',
   loading = false,
   confirmDisabled = false,
+  confirmButtonClass = 'bg-gray-600 hover:bg-gray-900 focus:ring-gray-500', // Default button style
+  cancelButtonClass = 'bg-white hover:bg-gray-50', // Default cancel button style
 }) => {
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -105,7 +109,7 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
                   className={`inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm ${
                     confirmDisabled || loading
                       ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-gray-600 hover:bg-gray-900 focus:ring-gray-500'
+                      : confirmButtonClass
                   }`}
                   onClick={onConfirm}
                   disabled={confirmDisabled || loading}
@@ -114,7 +118,7 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
                 </button>
                 <button
                   type="button"
-                  className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                  className={`inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm ${cancelButtonClass}`}
                   onClick={() => {
                     setIsOpen(false);
                     if (onCancel) onCancel();
