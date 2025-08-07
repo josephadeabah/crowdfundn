@@ -284,7 +284,7 @@ export function CampaignReview({
                     <div className="flex items-center space-x-2">
                       <FileText className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-600">
-                        {campaign.documents?.length || 0} Documents
+                        {campaign.investor_documents?.length || 0} Documents
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
