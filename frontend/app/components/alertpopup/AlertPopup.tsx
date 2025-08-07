@@ -11,8 +11,8 @@ interface AlertPopupProps {
   onCancel?: () => void;
   error?: string | null;
   icon?: ReactNode;
-  confirmText?: string;  // Add this line
-  loading?: boolean;    // Also add loading since it's being used
+  confirmText?: string; // Add this line
+  loading?: boolean; // Also add loading since it's being used
 }
 
 const AlertPopup: React.FC<AlertPopupProps> = ({

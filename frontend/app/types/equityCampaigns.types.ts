@@ -131,8 +131,5 @@ export interface EquityCampaignState extends CampaignState {
   ) => Promise<void>;
   submitForApproval: (id: string) => Promise<void>;
   approveCampaign: (id: string) => Promise<void>;
-  rejectCampaign: (
-    id: string,
-    rejectionReason: string,
-  ) => Promise<void>;
+  rejectCampaign: (id: string, rejectionReason: string) => Promise<void>;
 }

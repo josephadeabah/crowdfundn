@@ -287,50 +287,42 @@ export const EquityCampaignProvider = ({
     [token],
   );
 
-  const approveCampaign = useCallback(
-    async (id: string): Promise<void> => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${id}/approve`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
+  const approveCampaign = useCallback(async (id: string): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${id}/approve`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
-        );
+        },
+      );
 
-        if (!response.ok) {
-          handleApiError('Failed to approve campaign. Please try again.');
-          return;
-        }
-
-        const updatedCampaign = await response.json();
-        setCurrentEquityCampaign(updatedCampaign);
-        setEquityCampaigns((prev) =>
-          prev.map((campaign) =>
-            campaign.id === updatedCampaign.id ? updatedCampaign : campaign,
-          ),
-        );
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Error approving campaign',
-        );
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        handleApiError('Failed to approve campaign. Please try again.');
+        return;
       }
-    },
-    [],
-  );
+
+      const updatedCampaign = await response.json();
+      setCurrentEquityCampaign(updatedCampaign);
+      setEquityCampaigns((prev) =>
+        prev.map((campaign) =>
+          campaign.id === updatedCampaign.id ? updatedCampaign : campaign,
+        ),
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error approving campaign');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const rejectCampaign = useCallback(
-    async (
-      id: string,
-      rejectionReason: string,
-    ): Promise<void> => {
+    async (id: string, rejectionReason: string): Promise<void> => {
       setLoading(true);
       setError(null);
       try {
