@@ -244,6 +244,132 @@ export const EquityCampaignProvider = ({
   );
 
   // Equity Campaign Special Actions
+  const submitForApproval = useCallback(
+    async (id: string): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${id}/submit_for_approval`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          handleApiError(
+            'Failed to submit campaign for approval. Please try again.',
+          );
+          return;
+        }
+
+        const updatedCampaign = await response.json();
+        setCurrentEquityCampaign(updatedCampaign);
+        setEquityCampaigns((prev) =>
+          prev.map((campaign) =>
+            campaign.id === updatedCampaign.id ? updatedCampaign : campaign,
+          ),
+        );
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Error submitting campaign for approval',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
+
+  const approveCampaign = useCallback(
+    async (id: string, adminToken: string): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${id}/approve`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${adminToken}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          handleApiError('Failed to approve campaign. Please try again.');
+          return;
+        }
+
+        const updatedCampaign = await response.json();
+        setCurrentEquityCampaign(updatedCampaign);
+        setEquityCampaigns((prev) =>
+          prev.map((campaign) =>
+            campaign.id === updatedCampaign.id ? updatedCampaign : campaign,
+          ),
+        );
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error approving campaign',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
+  const rejectCampaign = useCallback(
+    async (
+      id: string,
+      rejectionReason: string,
+      adminToken: string,
+    ): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${id}/reject`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${adminToken}`,
+            },
+            body: JSON.stringify({ rejection_reason: rejectionReason }),
+          },
+        );
+
+        if (!response.ok) {
+          handleApiError('Failed to reject campaign. Please try again.');
+          return;
+        }
+
+        const updatedCampaign = await response.json();
+        setCurrentEquityCampaign(updatedCampaign);
+        setEquityCampaigns((prev) =>
+          prev.map((campaign) =>
+            campaign.id === updatedCampaign.id ? updatedCampaign : campaign,
+          ),
+        );
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error rejecting campaign',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
   const launchCampaign = useCallback(
     async (id: string): Promise<void> => {
       setLoading(true);
@@ -663,6 +789,9 @@ export const EquityCampaignProvider = ({
       error,
 
       // Campaign actions
+      submitForApproval,
+      approveCampaign,
+      rejectCampaign,
       launchCampaign,
       closeCampaign,
 
@@ -698,6 +827,9 @@ export const EquityCampaignProvider = ({
       currentDocument,
       loading,
       error,
+      submitForApproval,
+      approveCampaign,
+      rejectCampaign,
       launchCampaign,
       closeCampaign,
       addTeamMember,

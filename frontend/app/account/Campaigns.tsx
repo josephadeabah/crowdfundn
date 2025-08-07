@@ -2,6 +2,7 @@
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
+import { useEquityCampaignContext } from '../context/account/campaign/EquityCampaignContext';
 import CampaignsLoader from '../loaders/CampaignsLoader';
 import { Button } from '../components/button/Button';
 import {
@@ -24,7 +25,8 @@ import { generateRandomString } from '../utils/helpers/generate.random-string';
 import ErrorPage from '../components/errorpage/ErrorPage';
 import { FiPlus, FiPlusCircle } from 'react-icons/fi';
 import CampaignTeamDocuments from '@/app/components/campaign/CampaignTeamDocuments';
-import Avatar from '../components/avatar/Avatar'; // Import Avatar component
+import Avatar from '../components/avatar/Avatar';
+import { toast } from 'react-hot-toast';
 
 const Campaigns: React.FC = () => {
   const {
@@ -36,6 +38,13 @@ const Campaigns: React.FC = () => {
     cancelCampaign,
   } = useCampaignContext();
 
+  const {
+    submitForApproval,
+    launchCampaign,
+    closeCampaign,
+    loading: equityActionLoading,
+  } = useEquityCampaignContext();
+
   const [selectedCampaign, setSelectedCampaign] =
     useState<CampaignResponseDataType | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -44,9 +53,9 @@ const Campaigns: React.FC = () => {
   const [alertPopupOpen, setAlertPopupOpen] = useState(false);
   const [campaignToActOn, setCampaignToActOn] =
     useState<CampaignResponseDataType | null>(null);
-  const [actionType, setActionType] = useState<'delete' | 'cancel' | null>(
-    null,
-  );
+  const [actionType, setActionType] = useState<
+    'delete' | 'cancel' | 'submit' | 'launch' | 'close' | null
+  >(null);
 
   const router = useRouter();
 
@@ -78,7 +87,7 @@ const Campaigns: React.FC = () => {
 
   const handleAction = (
     campaign: CampaignResponseDataType,
-    type: 'delete' | 'cancel',
+    type: 'delete' | 'cancel' | 'submit' | 'launch' | 'close',
   ) => {
     setCampaignToActOn(campaign);
     setActionType(type);
@@ -88,25 +97,60 @@ const Campaigns: React.FC = () => {
   const confirmAction = async () => {
     if (!campaignToActOn || !actionType) return;
 
-    if (actionType === 'delete') {
-      await deleteCampaign(String(campaignToActOn.id));
-    } else if (actionType === 'cancel') {
-      await cancelCampaign(String(campaignToActOn.id));
-    }
+    try {
+      if (actionType === 'delete') {
+        await deleteCampaign(String(campaignToActOn.id));
+      } else if (actionType === 'cancel') {
+        await cancelCampaign(String(campaignToActOn.id));
+      } else if (actionType === 'submit') {
+        await submitForApproval(String(campaignToActOn.id));
+        toast.success('Campaign submitted for approval');
+      } else if (actionType === 'launch') {
+        await launchCampaign(String(campaignToActOn.id));
+        toast.success('Campaign launched successfully');
+      } else if (actionType === 'close') {
+        await closeCampaign(String(campaignToActOn.id));
+        toast.success('Campaign closed successfully');
+      }
 
-    await fetchUserCampaigns();
-    setAlertPopupOpen(false);
-    setCampaignToActOn(null);
-    setActionType(null);
+      await fetchUserCampaigns();
+    } catch (error) {
+      toast.error(
+        `Failed to ${actionType} campaign: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+      );
+    } finally {
+      setAlertPopupOpen(false);
+      setCampaignToActOn(null);
+      setActionType(null);
+    }
   };
 
   const getStatusDisplay = (campaign: CampaignResponseDataType) => {
-    if (
-      campaign.type === 'EquityCampaign' &&
-      campaign.equity_status === 'draft'
-    ) {
-      return { text: 'Draft', color: 'text-blue-500' };
+    // Handle equity campaign statuses
+    if (campaign.type === 'EquityCampaign') {
+      switch (campaign.equity_status) {
+        case 'draft':
+          return { text: 'Draft', color: 'text-blue-500' };
+        case 'pending_approval':
+          return { text: 'Pending Approval', color: 'text-yellow-500' };
+        case 'approved':
+          return { text: 'Approved', color: 'text-purple-500' };
+        case 'live':
+          return { text: 'Live', color: 'text-green-500' };
+        case 'funded':
+          return { text: 'Funded', color: 'text-emerald-500' };
+        case 'failed':
+          return { text: 'Failed', color: 'text-red-500' };
+        case 'closed':
+          return { text: 'Closed', color: 'text-gray-500' };
+        default:
+          return { text: 'Unknown', color: '' };
+      }
     }
+
+    // Handle regular campaign statuses
     switch (campaign.status) {
       case 'active':
         return { text: 'Active', color: 'text-green-500' };
@@ -117,6 +161,73 @@ const Campaigns: React.FC = () => {
       default:
         return { text: 'Unknown', color: '' };
     }
+  };
+
+  const getActionButtons = (campaign: CampaignResponseDataType) => {
+    if (campaign.type !== 'EquityCampaign') {
+      return (
+        <>
+          <li>
+            <button
+              className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+              onClick={() => handleAction(campaign, 'cancel')}
+              disabled={
+                campaign.status === 'canceled' ||
+                campaign.status === 'completed'
+              }
+              style={{
+                cursor:
+                  campaign.status === 'canceled' ||
+                  campaign.status === 'completed'
+                    ? 'not-allowed'
+                    : 'pointer',
+              }}
+            >
+              Cancel Campaign
+            </button>
+          </li>
+        </>
+      );
+    }
+
+    // Equity campaign specific actions
+    const actions = [];
+    if (campaign.equity_status === 'draft') {
+      actions.push(
+        <li key="submit">
+          <button
+            className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+            onClick={() => handleAction(campaign, 'submit')}
+          >
+            Submit for Approval
+          </button>
+        </li>,
+      );
+    } else if (campaign.equity_status === 'approved') {
+      actions.push(
+        <li key="launch">
+          <button
+            className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+            onClick={() => handleAction(campaign, 'launch')}
+          >
+            Launch Campaign
+          </button>
+        </li>,
+      );
+    } else if (campaign.equity_status === 'live') {
+      actions.push(
+        <li key="close">
+          <button
+            className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+            onClick={() => handleAction(campaign, 'close')}
+          >
+            Close Campaign
+          </button>
+        </li>,
+      );
+    }
+
+    return actions;
   };
 
   if (loading) return <CampaignsLoader />;
@@ -169,7 +280,6 @@ const Campaigns: React.FC = () => {
                 key={campaign.id}
                 className="relative p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 dark:hover:bg-neutral-700 flex flex-col justify-between"
               >
-                {/* Title and Dots Vertical Icon */}
                 <div className="flex justify-between items-start">
                   <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex-1 pr-4">
                     {campaign.title}
@@ -198,33 +308,12 @@ const Campaigns: React.FC = () => {
                             Delete Campaign
                           </button>
                         </li>
-                        {campaign.type !== 'EquityCampaign' && (
-                          <li>
-                            <button
-                              className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
-                              onClick={() => handleAction(campaign, 'cancel')}
-                              disabled={
-                                campaign.status === 'canceled' ||
-                                campaign.status === 'completed'
-                              }
-                              style={{
-                                cursor:
-                                  campaign.status === 'canceled' ||
-                                  campaign.status === 'completed'
-                                    ? 'not-allowed'
-                                    : 'pointer',
-                              }}
-                            >
-                              Cancel Campaign
-                            </button>
-                          </li>
-                        )}
+                        {getActionButtons(campaign)}
                       </ul>
                     </PopoverContent>
                   </Popover>
                 </div>
 
-                {/* Campaign Details */}
                 <div className="text-gray-500 dark:text-neutral-400 flex justify-between items-center space-x-4">
                   <div className="flex items-center space-x-2">
                     <div className="font-normal">Goal:</div>
@@ -242,7 +331,6 @@ const Campaigns: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Team Members for Equity Campaigns */}
                 {campaign.type === 'EquityCampaign' &&
                   campaign.team_members &&
                   campaign.team_members.length > 0 && (
@@ -379,25 +467,45 @@ const Campaigns: React.FC = () => {
         </div>
       )}
 
-      {/* AlertPopup for confirming delete or cancel action */}
       <AlertPopup
         title={
           actionType === 'delete'
-            ? campaignToActOn?.title || 'Confirm Deletion'
-            : 'Confirm Cancelation'
+            ? 'Confirm Deletion'
+            : actionType === 'cancel'
+              ? 'Confirm Cancellation'
+              : actionType === 'submit'
+                ? 'Submit for Approval'
+                : actionType === 'launch'
+                  ? 'Launch Campaign'
+                  : 'Close Campaign'
         }
         message={
           actionType === 'delete'
             ? 'Are you sure you want to delete this campaign?'
-            : 'Are you sure you want to cancel this campaign?'
+            : actionType === 'cancel'
+              ? 'Are you sure you want to cancel this campaign?'
+              : actionType === 'submit'
+                ? 'Submit this campaign for admin approval?'
+                : actionType === 'launch'
+                  ? 'Launch this campaign to make it publicly visible?'
+                  : 'Close this campaign to prevent further investments?'
         }
         isOpen={alertPopupOpen}
         setIsOpen={setAlertPopupOpen}
         onConfirm={confirmAction}
         onCancel={() => setAlertPopupOpen(false)}
+        confirmText={
+          actionType === 'submit'
+            ? 'Submit'
+            : actionType === 'launch'
+              ? 'Launch'
+              : actionType === 'close'
+                ? 'Close'
+                : 'Confirm'
+        }
+        loading={equityActionLoading}
       />
 
-      {/* Modal for previewing campaign details */}
       {selectedCampaign && (
         <Modal
           isOpen={isModalOpen}
@@ -439,7 +547,6 @@ const Campaigns: React.FC = () => {
         </Modal>
       )}
 
-      {/* Team & Documents Modal */}
       <Modal
         isOpen={isTeamDocumentsModalOpen}
         onClose={() => setIsTeamDocumentsModalOpen(false)}
@@ -502,7 +609,6 @@ const Campaigns: React.FC = () => {
           )}
         </div>
       </Modal>
-      {/* Space Below the Page */}
       <div className="h-20"></div>
     </div>
   );

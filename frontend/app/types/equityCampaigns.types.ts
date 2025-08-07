@@ -129,4 +129,11 @@ export interface EquityCampaignState extends CampaignState {
     campaignId: string,
     certificateId: string,
   ) => Promise<void>;
+  submitForApproval: (id: string) => Promise<void>;
+  approveCampaign: (id: string, adminToken: string) => Promise<void>;
+  rejectCampaign: (
+    id: string,
+    rejectionReason: string,
+    adminToken: string,
+  ) => Promise<void>;
 }
