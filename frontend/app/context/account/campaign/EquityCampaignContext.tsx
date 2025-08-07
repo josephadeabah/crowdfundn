@@ -732,40 +732,40 @@ export const EquityCampaignProvider = ({
   );
 
   // Add the fetch function
-  const fetchPendingReviewCampaigns = useCallback(async (): Promise<
-    EquityCampaignResponseDataType[]
-  > => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/pending_review`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
+const fetchPendingReviewCampaigns = useCallback(async (): Promise<EquityCampaignResponseDataType[]> => {
+  setLoading(true);
+  setError(null);
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/equity/campaigns/pending_review`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
-      );
-
-      if (!response.ok) {
-        throw new Error("Couldn't fetch pending review campaigns");
       }
+    );
 
-      const data = await response.json();
-      return data.campaigns || [];
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Error fetching pending review campaigns',
-      );
-      return [];
-    } finally {
-      setLoading(false);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || "Couldn't fetch pending review campaigns");
     }
-  }, [token]);
+
+    const data = await response.json();
+    if (!data.campaigns) {
+      throw new Error("Invalid response format");
+    }
+    return data.campaigns;
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Error fetching pending review campaigns';
+    setError(errorMessage);
+    console.error('Fetch error:', errorMessage);
+    return [];
+  } finally {
+    setLoading(false);
+  }
+}, [token]);
 
   // Combine with base campaign context
   const contextValue = useMemo(
