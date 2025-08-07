@@ -2,7 +2,7 @@
 module Api
   module V1
     module Equity
-      class CampaignsController < BaseCampaignsController
+      class CampaignsController < Api::V1::BaseCampaignsController
 
         
         def submit_for_approval
