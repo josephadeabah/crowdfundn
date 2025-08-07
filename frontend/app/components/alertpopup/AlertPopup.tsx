@@ -22,6 +22,8 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
   onCancel,
   error,
   icon = <FaExclamationTriangle className="w-6 h-6 text-red-600" />,
+  confirmText = 'Confirm', // Default value
+  loading = false,
 }) => {
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -98,8 +100,10 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
                   type="button"
                   className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-gray-400 border border-transparent rounded-md shadow-sm hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:ml-3 sm:w-auto sm:text-sm"
                   onClick={onConfirm}
+                  disabled={loading}
                 >
-                  Confirm
+                  {loading ? 'Loading...' : confirmText}{' '}
+                  {/* Use confirmText here */}
                 </button>
                 <button
                   type="button"
