@@ -149,32 +149,37 @@ Rails.application.routes.draw do
         resources :pledges, only: [:index, :destroy] # Add this line
       end
       # Add the equity namespace here, alongside members and fundraisers
-      namespace :equity do
-        resources :campaigns, controller: 'api/v1/equity/campaigns' do
-          member do
-            post :submit_for_approval
-            post :approve
-            post :reject
-            post :launch
-            post :close
-          end
-          
-          resources :campaign_team_members, only: [:index, :create, :update, :destroy] do
-            member do
-              post :convert_to_user # Convert team member to user
+      namespace :api do
+        namespace :v1 do
+          namespace :equity do
+            resources :campaigns, only: [] do  # Remove controller specification
+              member do
+                post :submit_for_approval
+                post :approve
+                post :reject
+                post :launch
+                post :close
+              end
+              
+              resources :campaign_team_members, only: [:index, :create, :update, :destroy] do
+                member do
+                  post :convert_to_user
+                end
+              end
+              
+              resources :equity_investments, only: [:create] do
+                collection do
+                  get :callback
+                end
+              end
+              
+              resources :share_certificates, only: [:index, :show]
             end
+            
+            get 'investments/portfolio', to: 'equity_investments#portfolio'
+            get 'investments/my_investments', to: 'equity_investments#my_investments'
           end
-          resources :equity_investments, only: [:create] do
-            collection do
-              get :callback
-            end
-          end
-          resources :share_certificates, only: [:index, :show]
         end
-      
-        # Portfolio and investments routes
-        get 'investments/portfolio', to: 'equity_investments#portfolio'
-        get 'investments/my_investments', to: 'equity_investments#my_investments'
       end
       
     end
