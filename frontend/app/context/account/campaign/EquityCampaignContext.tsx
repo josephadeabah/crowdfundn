@@ -288,7 +288,7 @@ export const EquityCampaignProvider = ({
   );
 
   const approveCampaign = useCallback(
-    async (id: string, adminToken: string): Promise<void> => {
+    async (id: string): Promise<void> => {
       setLoading(true);
       setError(null);
       try {
@@ -298,7 +298,7 @@ export const EquityCampaignProvider = ({
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${adminToken}`,
+              Authorization: `Bearer ${token}`,
             },
           },
         );
@@ -330,7 +330,6 @@ export const EquityCampaignProvider = ({
     async (
       id: string,
       rejectionReason: string,
-      adminToken: string,
     ): Promise<void> => {
       setLoading(true);
       setError(null);
@@ -341,7 +340,7 @@ export const EquityCampaignProvider = ({
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${adminToken}`,
+              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({ rejection_reason: rejectionReason }),
           },
