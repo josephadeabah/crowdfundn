@@ -9,7 +9,7 @@ module Api
           page_size = params[:pageSize] || 20
           
           @campaigns = EquityCampaign.pending_approval
-                          .includes(:fundraiser, :documents, :team_members)
+                          .includes(:fundraiser, :team_members)
                           .order(created_at: :desc)
                           .page(page)
                           .per(page_size)
