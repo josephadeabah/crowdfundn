@@ -25,7 +25,7 @@ import AdminSettings from './settings/Settings';
 import PromotionScheduler from './promotions/Promotions';
 import CampaignManager from './campaigns/CampaignsManager';
 import ContentManagerAdminPage from './content/ContentManager';
-import AdminCampaignReview from './campaigns/AdminCampaignReview';
+import AdminCampaignReview from './equitycampaigns/AdminCampaignReview';
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
