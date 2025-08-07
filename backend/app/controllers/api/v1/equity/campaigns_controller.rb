@@ -2,7 +2,7 @@ module Api
   module V1
     module Equity
       class CampaignsController < Api::V1::BaseCampaignsController
-        before_action :set_campaign, only: [:submit_for_approval, :approve, :reject, :launch, :close,  :pending_review]
+        before_action :set_campaign, only: [:submit_for_approval, :approve, :reject, :launch, :close]
 
         def pending_review
           page = params[:page] || 1
