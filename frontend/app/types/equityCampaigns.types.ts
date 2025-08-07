@@ -81,6 +81,7 @@ export interface EquityCampaignState extends CampaignState {
   currentDocument: InvestorDocument | null;
 
   // Campaign actions
+  fetchPendingReviewCampaigns: () => Promise<EquityCampaignResponseDataType[]>;
   launchCampaign: (id: string) => Promise<void>;
   closeCampaign: (id: string) => Promise<void>;
 

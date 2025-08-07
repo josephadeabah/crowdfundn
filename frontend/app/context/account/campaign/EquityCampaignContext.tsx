@@ -28,16 +28,9 @@ export const EquityCampaignProvider = ({
 }) => {
   const { token, user } = useAuth();
   const campaignContext = useCampaignContext();
-
-  // State
-  const [equityCampaigns, setEquityCampaigns] = useState<
+  const [pendingCampaigns, setPendingCampaigns] = useState<
     EquityCampaignResponseDataType[]
   >([]);
-  const [userEquityCampaigns, setUserEquityCampaigns] = useState<
-    EquityCampaignResponseDataType[] | null
-  >(null);
-  const [currentEquityCampaign, setCurrentEquityCampaign] =
-    useState<EquityCampaignResponseDataType | null>(null);
   const [teamMembers, setTeamMembers] = useState<CampaignTeamMember[]>([]);
   const [investments, setInvestments] = useState<EquityInvestment[]>([]);
   const [documents, setDocuments] = useState<InvestorDocument[]>([]);
@@ -268,12 +261,6 @@ export const EquityCampaignProvider = ({
         }
 
         const updatedCampaign = await response.json();
-        setCurrentEquityCampaign(updatedCampaign);
-        setEquityCampaigns((prev) =>
-          prev.map((campaign) =>
-            campaign.id === updatedCampaign.id ? updatedCampaign : campaign,
-          ),
-        );
       } catch (err) {
         setError(
           err instanceof Error
@@ -308,12 +295,6 @@ export const EquityCampaignProvider = ({
       }
 
       const updatedCampaign = await response.json();
-      setCurrentEquityCampaign(updatedCampaign);
-      setEquityCampaigns((prev) =>
-        prev.map((campaign) =>
-          campaign.id === updatedCampaign.id ? updatedCampaign : campaign,
-        ),
-      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error approving campaign');
     } finally {
@@ -344,12 +325,6 @@ export const EquityCampaignProvider = ({
         }
 
         const updatedCampaign = await response.json();
-        setCurrentEquityCampaign(updatedCampaign);
-        setEquityCampaigns((prev) =>
-          prev.map((campaign) =>
-            campaign.id === updatedCampaign.id ? updatedCampaign : campaign,
-          ),
-        );
       } catch (err) {
         setError(
           err instanceof Error ? err.message : 'Error rejecting campaign',
@@ -383,12 +358,6 @@ export const EquityCampaignProvider = ({
         }
 
         const updatedCampaign = await response.json();
-        setCurrentEquityCampaign(updatedCampaign);
-        setEquityCampaigns((prev) =>
-          prev.map((campaign) =>
-            campaign.id === updatedCampaign.id ? updatedCampaign : campaign,
-          ),
-        );
       } catch (err) {
         setError(
           err instanceof Error ? err.message : 'Error launching campaign',
@@ -422,12 +391,6 @@ export const EquityCampaignProvider = ({
         }
 
         const updatedCampaign = await response.json();
-        setCurrentEquityCampaign(updatedCampaign);
-        setEquityCampaigns((prev) =>
-          prev.map((campaign) =>
-            campaign.id === updatedCampaign.id ? updatedCampaign : campaign,
-          ),
-        );
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error closing campaign');
       } finally {
@@ -768,6 +731,42 @@ export const EquityCampaignProvider = ({
     [token],
   );
 
+  // Add the fetch function
+  const fetchPendingReviewCampaigns = useCallback(async (): Promise<
+    EquityCampaignResponseDataType[]
+  > => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/pending_review`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Couldn't fetch pending review campaigns");
+      }
+
+      const data = await response.json();
+      return data.campaigns || [];
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Error fetching pending review campaigns',
+      );
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
   // Combine with base campaign context
   const contextValue = useMemo(
     () => ({
@@ -779,6 +778,8 @@ export const EquityCampaignProvider = ({
       loading,
       error,
 
+      pendingCampaigns,
+      fetchPendingReviewCampaigns,
       // Campaign actions
       submitForApproval,
       approveCampaign,
@@ -818,6 +819,8 @@ export const EquityCampaignProvider = ({
       currentDocument,
       loading,
       error,
+      pendingCampaigns,
+      fetchPendingReviewCampaigns,
       submitForApproval,
       approveCampaign,
       rejectCampaign,

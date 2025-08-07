@@ -17,12 +17,12 @@ import {
   DollarSign,
   XCircle,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { Progress } from '@/app/components/ui/progress';
-import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
-import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
+import { EquityCampaignResponseDataType } from '@/app/types/equityCampaigns.types';
+
 interface CampaignReviewProps {
   statusFilter?: string;
 }
@@ -33,24 +33,32 @@ export function CampaignReview({
   const {
     approveCampaign,
     rejectCampaign,
-  } = useEquityCampaignContext();
-  const {
-    campaigns,
+    fetchPendingReviewCampaigns,
     loading,
     error,
-  } = useCampaignContext();
+  } = useEquityCampaignContext();
 
+  const [pendingCampaigns, setPendingCampaigns] = useState<
+    EquityCampaignResponseDataType[]
+  >([]);
   const [selectedCampaign, setSelectedCampaign] =
-    useState<CampaignResponseDataType | null>(null);
+    useState<EquityCampaignResponseDataType | null>(null);
   const [rejectionReason, setRejectionReason] = useState<string>('');
   const [isRejectModalOpen, setIsRejectModalOpen] = useState<boolean>(false);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState<boolean>(false);
 
-  // Filter campaigns that need admin attention
-  const pendingCampaigns =
-    campaigns?.filter(
-      (campaign) => campaign.equity_status === statusFilter,
-    ) || [];
+  useEffect(() => {
+    const loadPendingCampaigns = async () => {
+      try {
+        const campaigns = await fetchPendingReviewCampaigns();
+        setPendingCampaigns(campaigns);
+      } catch (err) {
+        console.error('Failed to load campaigns:', err);
+      }
+    };
+
+    loadPendingCampaigns();
+  }, [fetchPendingReviewCampaigns]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -97,7 +105,9 @@ export function CampaignReview({
   const handleApprove = async (campaignId: string) => {
     try {
       await approveCampaign(campaignId);
-      // await fetchEquityCampaigns();
+      setPendingCampaigns((prev) =>
+        prev.filter((c) => c.id.toString() !== campaignId),
+      );
       setIsApproveModalOpen(false);
     } catch (error) {
       console.error('Failed to approve campaign:', error);
@@ -108,7 +118,9 @@ export function CampaignReview({
     try {
       if (!reason.trim()) return;
       await rejectCampaign(campaignId, reason);
-      // await fetchEquityCampaigns();
+      setPendingCampaigns((prev) =>
+        prev.filter((c) => c.id.toString() !== campaignId),
+      );
       setIsRejectModalOpen(false);
       setRejectionReason('');
     } catch (error) {
@@ -116,31 +128,21 @@ export function CampaignReview({
     }
   };
 
-  if (loading) return <div>Loading campaigns...</div>;
-  if (error) return <div>Error loading campaigns: {error}</div>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-64">
+        Loading campaigns...
+      </div>
+    );
+  if (error)
+    return (
+      <div className="text-red-500 p-4">Error loading campaigns: {error}</div>
+    );
 
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total Campaigns
-                </p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {campaigns?.length || 0}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -167,7 +169,10 @@ export function CampaignReview({
                   Live Campaigns
                 </p>
                 <p className="text-3xl font-bold text-green-600">
-                  {campaigns?.filter((c) => c.equity_status === 'live').length || 0}
+                  {
+                    pendingCampaigns.filter((c) => c.equity_status === 'live')
+                      .length
+                  }
                 </p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -186,13 +191,13 @@ export function CampaignReview({
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
                   $
-                  {campaigns
-                    ?.reduce(
+                  {pendingCampaigns
+                    .reduce(
                       (sum, campaign) =>
                         sum + parseFloat(campaign.transferred_amount || '0'),
                       0,
                     )
-                    .toLocaleString() || '0'}
+                    .toLocaleString()}
                 </p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -215,7 +220,7 @@ export function CampaignReview({
             {pendingCampaigns.map((campaign) => {
               const progress = campaign.goal_amount
                 ? (parseFloat(campaign.transferred_amount || '0') /
-                    parseFloat(campaign.goal_amount)) *
+                    parseFloat(campaign.goal_amount || '0')) *
                   100
                 : 0;
 
@@ -234,7 +239,9 @@ export function CampaignReview({
                       </p>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Badge className={getStatusColor(campaign.equity_status ?? '')}>
+                      <Badge
+                        className={getStatusColor(campaign.equity_status ?? '')}
+                      >
                         {getStatusIcon(campaign.equity_status ?? '')}
                         <span className="ml-1 capitalize">
                           {(campaign.equity_status ?? '').replace('_', ' ')}
@@ -280,12 +287,19 @@ export function CampaignReview({
                     <div className="flex items-center space-x-2">
                       <DollarSign className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-600">
-                        ${parseFloat(campaign.transferred_amount || '0').toLocaleString()} / $
-                        {parseFloat(campaign.goal_amount || '0').toLocaleString()}
+                        $
+                        {parseFloat(
+                          campaign.transferred_amount || '0',
+                        ).toLocaleString()}{' '}
+                        / $
+                        {parseFloat(
+                          campaign.goal_amount || '0',
+                        ).toLocaleString()}
                       </span>
                     </div>
                     <div className="text-sm text-gray-600">
-                      Created: {new Date(campaign.created_at).toLocaleDateString()}
+                      Created:{' '}
+                      {new Date(campaign.created_at).toLocaleDateString()}
                     </div>
                   </div>
 
@@ -310,7 +324,6 @@ export function CampaignReview({
                       <Eye className="w-4 h-4 mr-2" />
                       Review
                     </Button>
-
                     <Button
                       variant="destructive"
                       size="sm"
@@ -322,7 +335,6 @@ export function CampaignReview({
                       <XCircle className="w-4 h-4 mr-2" />
                       Reject
                     </Button>
-
                     <Button
                       size="sm"
                       onClick={() => {
@@ -347,7 +359,7 @@ export function CampaignReview({
         </CardContent>
       </Card>
 
-      {/* Approve Confirmation Modal */}
+      {/* Modals */}
       <AlertPopup
         title="Approve Campaign"
         message={`Are you sure you want to approve ${selectedCampaign?.title || 'this campaign'}?`}
@@ -360,13 +372,13 @@ export function CampaignReview({
         confirmText="Approve"
       />
 
-      {/* Reject Confirmation Modal */}
       <AlertPopup
         title="Reject Campaign"
         message={
           <div className="space-y-4">
             <p>
-              Are you sure you want to reject {selectedCampaign?.title || 'this campaign'}?
+              Are you sure you want to reject{' '}
+              {selectedCampaign?.title || 'this campaign'}?
             </p>
             <div>
               <label
@@ -390,7 +402,8 @@ export function CampaignReview({
         isOpen={isRejectModalOpen}
         setIsOpen={setIsRejectModalOpen}
         onConfirm={() =>
-          selectedCampaign && handleReject(selectedCampaign.id.toString(), rejectionReason)
+          selectedCampaign &&
+          handleReject(selectedCampaign.id.toString(), rejectionReason)
         }
         onCancel={() => {
           setIsRejectModalOpen(false);
