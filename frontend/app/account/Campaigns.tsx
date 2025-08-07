@@ -26,7 +26,7 @@ import ErrorPage from '../components/errorpage/ErrorPage';
 import { FiPlus, FiPlusCircle } from 'react-icons/fi';
 import CampaignTeamDocuments from '@/app/components/campaign/CampaignTeamDocuments';
 import Avatar from '../components/avatar/Avatar';
-import { toast } from 'react-hot-toast';
+import ToastComponent from '@/app/components/toast/Toast';
 
 const Campaigns: React.FC = () => {
   const {
@@ -57,7 +57,27 @@ const Campaigns: React.FC = () => {
     'delete' | 'cancel' | 'submit' | 'launch' | 'close' | null
   >(null);
 
+  const [toast, setToast] = useState({
+    isOpen: false,
+    title: '',
+    description: '',
+    type: 'success' as 'success' | 'error' | 'warning',
+  });
+
   const router = useRouter();
+
+  const showToast = (
+    title: string,
+    description: string,
+    type: 'success' | 'error' | 'warning',
+  ) => {
+    setToast({
+      isOpen: true,
+      title,
+      description,
+      type,
+    });
+  };
 
   useEffect(() => {
     fetchUserCampaigns();
@@ -100,25 +120,29 @@ const Campaigns: React.FC = () => {
     try {
       if (actionType === 'delete') {
         await deleteCampaign(String(campaignToActOn.id));
+        showToast('Success', 'Campaign deleted successfully', 'success');
       } else if (actionType === 'cancel') {
         await cancelCampaign(String(campaignToActOn.id));
+        showToast('Success', 'Campaign canceled successfully', 'success');
       } else if (actionType === 'submit') {
         await submitForApproval(String(campaignToActOn.id));
-        toast.success('Campaign submitted for approval');
+        showToast('Success', 'Campaign submitted for approval', 'success');
       } else if (actionType === 'launch') {
         await launchCampaign(String(campaignToActOn.id));
-        toast.success('Campaign launched successfully');
+        showToast('Success', 'Campaign launched successfully', 'success');
       } else if (actionType === 'close') {
         await closeCampaign(String(campaignToActOn.id));
-        toast.success('Campaign closed successfully');
+        showToast('Success', 'Campaign closed successfully', 'success');
       }
 
       await fetchUserCampaigns();
     } catch (error) {
-      toast.error(
+      showToast(
+        'Error',
         `Failed to ${actionType} campaign: ${
           error instanceof Error ? error.message : 'Unknown error'
         }`,
+        'error',
       );
     } finally {
       setAlertPopupOpen(false);
@@ -238,6 +262,14 @@ const Campaigns: React.FC = () => {
 
   return (
     <div className="px-2 py-4">
+      <ToastComponent
+        isOpen={toast.isOpen}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
+        title={toast.title}
+        description={toast.description}
+        type={toast.type}
+      />
+
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
