@@ -16,9 +16,16 @@ module Api
 
         @campaigns = campaign_scope.active
 
-        # Filter equity campaigns to only show approved or live ones
-        if campaign_class == EquityCampaign
-          @campaigns = @campaigns.where(equity_status: [:approved, :live])
+          @campaigns = campaign_scope.active
+
+        # Allow filtering by equity_status if provided
+        if params[:equity_status].present? && campaign_class == EquityCampaign
+          @campaigns = @campaigns.where(equity_status: params[:equity_status])
+        else
+          # Default filter for equity campaigns
+          if campaign_class == EquityCampaign
+            @campaigns = @campaigns.where(equity_status: [:approved, :live])
+          end
         end
 
         if params[:dateRange] && params[:dateRange] != 'all_time'

@@ -2,7 +2,25 @@ module Api
   module V1
     module Equity
       class CampaignsController < Api::V1::BaseCampaignsController
-        before_action :set_campaign, only: [:submit_for_approval, :approve, :reject, :launch, :close]
+        before_action :set_campaign, only: [:submit_for_approval, :approve, :reject, :launch, :close  :pending_review]
+
+        def pending_review
+          page = params[:page] || 1
+          page_size = params[:pageSize] || 20
+          
+          @campaigns = EquityCampaign.pending_approval
+                          .includes(:fundraiser, :documents, :team_members)
+                          .order(created_at: :desc)
+                          .page(page)
+                          .per(page_size)
+
+          render json: {
+            campaigns: @campaigns.map { |c| campaign_json(c) },
+            current_page: @campaigns.current_page,
+            total_pages: @campaigns.total_pages,
+            total_count: @campaigns.total_count
+          }, status: :ok
+        end
         
         def submit_for_approval
           if @campaign.submit_for_approval

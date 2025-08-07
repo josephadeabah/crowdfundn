@@ -151,6 +151,9 @@ Rails.application.routes.draw do
       # Add the equity namespace here, alongside members and fundraisers
       namespace :equity do
         resources :campaigns, only: [] do
+          collection do
+            get :pending_review 
+          end
           member do
             post :submit_for_approval
             post :approve
