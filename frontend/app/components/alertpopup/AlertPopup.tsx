@@ -13,6 +13,7 @@ interface AlertPopupProps {
   icon?: ReactNode;
   confirmText?: string; // Add this line
   loading?: boolean; // Also add loading since it's being used
+  confirmDisabled?: boolean;
 }
 
 const AlertPopup: React.FC<AlertPopupProps> = ({
@@ -26,6 +27,7 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
   icon = <FaExclamationTriangle className="w-6 h-6 text-red-600" />,
   confirmText = 'Confirm', // Default value
   loading = false,
+  confirmDisabled = false,
 }) => {
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -100,12 +102,15 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
               <div className="px-4 py-3 bg-gray-50 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
                   type="button"
-                  className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-gray-400 border border-transparent rounded-md shadow-sm hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:ml-3 sm:w-auto sm:text-sm"
+                  className={`inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm ${
+                    confirmDisabled || loading
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-gray-600 hover:bg-gray-900 focus:ring-gray-500'
+                  }`}
                   onClick={onConfirm}
-                  disabled={loading}
+                  disabled={confirmDisabled || loading}
                 >
-                  {loading ? 'Loading...' : confirmText}{' '}
-                  {/* Use confirmText here */}
+                  {loading ? 'Loading...' : confirmText}
                 </button>
                 <button
                   type="button"

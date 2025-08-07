@@ -1,13 +1,16 @@
 'use client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
+import { Badge } from '@/app/components/ui/badge';
+import { Button } from '@/app/components/ui/button';
 import {
   Eye,
   CheckCircle,
   Clock,
-  AlertTriangle,
   TrendingUp,
   Users,
   FileText,
@@ -15,81 +18,65 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useState } from 'react';
-import { useEquityCampaignContext } from '@/app/contexts/account/campaign/EquityCampaignContext';
-import { AlertPopup } from '@/app/components/alertpopup/AlertPopup';
+import AlertPopup from '@/app/components/alertpopup/AlertPopup';
+import { Progress } from '@/app/components/ui/progress';
+import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'approved':
-      return 'bg-green-100 text-green-800';
-    case 'pending_approval':
-      return 'bg-yellow-100 text-yellow-800';
-    case 'rejected':
-      return 'bg-red-100 text-red-800';
-    case 'draft':
-      return 'bg-blue-100 text-blue-800';
-    case 'live':
-      return 'bg-purple-100 text-purple-800';
-    case 'funded':
-      return 'bg-emerald-100 text-emerald-800';
-    case 'closed':
-      return 'bg-gray-100 text-gray-800';
-    default:
-      return 'bg-gray-100 text-gray-800';
-  }
-};
+interface CampaignReviewProps<T extends CampaignResponseDataType> {
+  campaigns: T[];
+  loading: boolean;
+  error: string | null;
+  approveCampaign: (id: string) => Promise<void>;
+  rejectCampaign: (id: string, rejectionReason: string) => Promise<void>;
+  getStatusColor: (status: string) => string;
+  getStatusIcon: (status: string) => React.ReactNode;
+  statusFilter?: string;
+  campaignTypeLabel?: string;
+}
 
-const getStatusIcon = (status: string) => {
-  switch (status) {
-    case 'approved':
-      return <CheckCircle className="w-4 h-4" />;
-    case 'pending_approval':
-      return <Clock className="w-4 h-4" />;
-    case 'rejected':
-      return <XCircle className="w-4 h-4" />;
-    case 'draft':
-      return <FileText className="w-4 h-4" />;
-    case 'live':
-      return <TrendingUp className="w-4 h-4" />;
-    case 'funded':
-      return <DollarSign className="w-4 h-4" />;
-    case 'closed':
-      return <XCircle className="w-4 h-4" />;
-    default:
-      return <Clock className="w-4 h-4" />;
-  }
-};
+export function CampaignReview<T extends CampaignResponseDataType>({
+  campaigns = [],
+  loading,
+  error,
+  approveCampaign,
+  rejectCampaign,
+  getStatusColor,
+  getStatusIcon,
+  statusFilter = 'pending_approval',
+  campaignTypeLabel = 'Campaign',
+}: CampaignReviewProps<T>) {
+  const [selectedCampaign, setSelectedCampaign] = useState<T | null>(null);
+  const [rejectionReason, setRejectionReason] = useState<string>('');
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState<boolean>(false);
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState<boolean>(false);
 
-export function AdminCampaignReview() {
-  const { equityCampaigns, loading, error, approveCampaign, rejectCampaign } =
-    useEquityCampaignContext();
-  const [selectedCampaign, setSelectedCampaign] = useState(null);
-  const [rejectionReason, setRejectionReason] = useState('');
-  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
-  const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
-
-  // Filter only equity campaigns that need admin attention
+  // Filter campaigns that need admin attention
   const pendingCampaigns =
-    equityCampaigns?.filter(
-      (campaign) => campaign.equity_status === 'pending_approval',
-    ) || [];
+    campaigns?.filter((campaign) => campaign.status === statusFilter) || [];
 
   const handleApprove = async (campaignId: string) => {
     try {
       await approveCampaign(campaignId);
       setIsApproveModalOpen(false);
     } catch (error) {
-      console.error('Failed to approve campaign:', error);
+      console.error(
+        `Failed to approve ${campaignTypeLabel.toLowerCase()}:`,
+        error,
+      );
     }
   };
 
   const handleReject = async (campaignId: string) => {
     try {
+      if (!rejectionReason.trim()) return;
       await rejectCampaign(campaignId, rejectionReason);
       setIsRejectModalOpen(false);
       setRejectionReason('');
     } catch (error) {
-      console.error('Failed to reject campaign:', error);
+      console.error(
+        `Failed to reject ${campaignTypeLabel.toLowerCase()}:`,
+        error,
+      );
     }
   };
 
@@ -98,17 +85,17 @@ export function AdminCampaignReview() {
 
   return (
     <div className="space-y-6">
-      {/* Stats Cards */}
+      {/* Stats Cards - Generic implementation */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Total Campaigns
+                  Total {campaignTypeLabel}s
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {equityCampaigns?.length || 0}
+                  {campaigns?.length || 0}
                 </p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -141,11 +128,10 @@ export function AdminCampaignReview() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Live Campaigns
+                  Live {campaignTypeLabel}s
                 </p>
                 <p className="text-3xl font-bold text-green-600">
-                  {equityCampaigns?.filter((c) => c.equity_status === 'live')
-                    .length || 0}
+                  {campaigns?.filter((c) => c.status === 'live').length || 0}
                 </p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -164,7 +150,7 @@ export function AdminCampaignReview() {
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
                   $
-                  {equityCampaigns
+                  {campaigns
                     ?.reduce(
                       (sum, campaign) =>
                         sum + parseFloat(campaign.transferred_amount || '0'),
@@ -185,8 +171,8 @@ export function AdminCampaignReview() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>Campaign Status</span>
-            <Button size="sm">View All Campaigns</Button>
+            <span>{campaignTypeLabel} Status</span>
+            <Button size="sm">View All {campaignTypeLabel}s</Button>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -209,27 +195,49 @@ export function AdminCampaignReview() {
                         {campaign.title}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        Created by {campaign.creator?.name || 'Unknown'}
+                        Created by {campaign.fundraiser?.name || 'Unknown'}
                       </p>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Badge className={getStatusColor(campaign.equity_status)}>
-                        {getStatusIcon(campaign.equity_status)}
+                      <Badge className={getStatusColor(campaign.status)}>
+                        {getStatusIcon(campaign.status)}
                         <span className="ml-1 capitalize">
-                          {campaign.equity_status.replace('_', ' ')}
+                          {campaign.status.replace('_', ' ')}
                         </span>
                       </Badge>
                     </div>
                   </div>
 
+                  {/* Campaign-specific details can be rendered here */}
+                  {campaign.type === 'EquityCampaign' && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                      <div className="flex items-center space-x-2">
+                        <DollarSign className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">
+                          Valuation: $
+                          {(campaign as any).valuation?.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <TrendingUp className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">
+                          Equity: {(campaign as any).equity_offered}%
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Users className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">
+                          Investors: {(campaign as any).total_investors || 0}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                     <div className="flex items-center space-x-2">
                       <FileText className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-600">
-                        {campaign.documents?.filter(
-                          (d) => d.status === 'approved',
-                        ).length || 0}
-                        /{campaign.documents?.length || 0} Documents
+                        {campaign.documents?.length || 0} Documents
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -273,10 +281,7 @@ export function AdminCampaignReview() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => {
-                        setSelectedCampaign(campaign);
-                        // You could implement a detailed view here
-                      }}
+                      onClick={() => setSelectedCampaign(campaign)}
                     >
                       <Eye className="w-4 h-4 mr-2" />
                       Review
@@ -311,7 +316,7 @@ export function AdminCampaignReview() {
 
             {pendingCampaigns.length === 0 && (
               <div className="text-center py-8 text-gray-500">
-                No campaigns pending approval
+                No {campaignTypeLabel.toLowerCase()}s pending approval
               </div>
             )}
           </div>
@@ -320,23 +325,27 @@ export function AdminCampaignReview() {
 
       {/* Approve Confirmation Modal */}
       <AlertPopup
-        title="Approve Campaign"
-        message={`Are you sure you want to approve ${selectedCampaign?.title || 'this campaign'}?`}
+        title={`Approve ${campaignTypeLabel}`}
+        message={`Are you sure you want to approve ${selectedCampaign?.title || 'this ' + campaignTypeLabel.toLowerCase()}?`}
         isOpen={isApproveModalOpen}
         setIsOpen={setIsApproveModalOpen}
-        onConfirm={() => handleApprove(selectedCampaign?.id)}
+        onConfirm={() =>
+          selectedCampaign && handleApprove(selectedCampaign.id.toString())
+        }
         onCancel={() => setIsApproveModalOpen(false)}
         confirmText="Approve"
       />
 
       {/* Reject Confirmation Modal */}
       <AlertPopup
-        title="Reject Campaign"
+        title={`Reject ${campaignTypeLabel}`}
         message={
           <div className="space-y-4">
             <p>
               Are you sure you want to reject{' '}
-              {selectedCampaign?.title || 'this campaign'}?
+              {selectedCampaign?.title ||
+                'this ' + campaignTypeLabel.toLowerCase()}
+              ?
             </p>
             <div>
               <label
@@ -352,13 +361,16 @@ export function AdminCampaignReview() {
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 placeholder="Provide a reason for rejection..."
+                required
               />
             </div>
           </div>
         }
         isOpen={isRejectModalOpen}
         setIsOpen={setIsRejectModalOpen}
-        onConfirm={() => handleReject(selectedCampaign?.id)}
+        onConfirm={() =>
+          selectedCampaign && handleReject(selectedCampaign.id.toString())
+        }
         onCancel={() => {
           setIsRejectModalOpen(false);
           setRejectionReason('');

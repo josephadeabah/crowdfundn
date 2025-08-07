@@ -25,7 +25,7 @@ import AdminSettings from './settings/Settings';
 import PromotionScheduler from './promotions/Promotions';
 import CampaignManager from './campaigns/CampaignsManager';
 import ContentManagerAdminPage from './content/ContentManager';
-import AdminCampaignReview from './equitycampaigns/AdminCampaignReview';
+import { EquityCampaignReview } from './equitycampaigns/EquityCampaignReview';
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -124,7 +124,7 @@ const AdminDashboard = () => {
     userManagement: <UserManagement />,
     moneyTransfers: <TransfersManager />,
     campaignsManager: <CampaignManager />,
-    campaignReview: <AdminCampaignReview />,
+    campaignReview: <EquityCampaignReview />,
     contentManager: <ContentManagerAdminPage />,
     promotions: <PromotionScheduler />,
     analytics: <AnalyticsComponent />,

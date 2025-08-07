@@ -75,6 +75,7 @@ export interface EquityInvestment {
 }
 
 export interface EquityCampaignState extends CampaignState {
+  equityCampaigns: EquityCampaignResponseDataType[];
   teamMembers: CampaignTeamMember[];
   investments: EquityInvestment[];
   documents: InvestorDocument[];
@@ -83,6 +84,7 @@ export interface EquityCampaignState extends CampaignState {
   // Campaign actions
   launchCampaign: (id: string) => Promise<void>;
   closeCampaign: (id: string) => Promise<void>;
+  fetchEquityCampaigns: () => Promise<void>;
 
   // Team member actions
   addTeamMember: (
