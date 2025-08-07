@@ -737,7 +737,7 @@ const fetchPendingReviewCampaigns = useCallback(async (): Promise<EquityCampaign
   setError(null);
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/equity/campaigns/pending_review`,
+      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/pending_review`,
       {
         method: 'GET',
         headers: {
