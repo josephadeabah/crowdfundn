@@ -62,7 +62,9 @@ export function CampaignReview({
     loadPendingCampaigns();
   }, [fetchPendingReviewCampaigns]);
 
-  const handleViewCampaignDetails = (campaign: EquityCampaignResponseDataType) => {
+  const handleViewCampaignDetails = (
+    campaign: EquityCampaignResponseDataType,
+  ) => {
     const identifier = campaign.slug || campaign.id;
     router.push(`/campaign/${identifier}`);
   };
