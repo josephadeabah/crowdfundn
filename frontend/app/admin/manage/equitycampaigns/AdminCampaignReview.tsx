@@ -50,7 +50,7 @@ const getStatusIcon = (status: string) => {
   }
 };
 
-export function CampaignOverview() {
+export function AdminCampaignReview() {
   const { equityCampaigns, loading, error, approveCampaign, rejectCampaign } = useEquityCampaignContext();
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [rejectionReason, setRejectionReason] = useState("");

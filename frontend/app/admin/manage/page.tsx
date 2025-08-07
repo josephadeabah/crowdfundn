@@ -15,6 +15,7 @@ import {
   InboxIcon,
   PowerIcon,
   XMarkIcon,
+  ClipboardDocumentCheckIcon,
 } from '@heroicons/react/24/solid';
 import TransfersManager from './transfers/TransfersManager';
 import GeneralDashboard from './general/GeneralDashboard';
@@ -24,16 +25,27 @@ import AdminSettings from './settings/Settings';
 import PromotionScheduler from './promotions/Promotions';
 import CampaignManager from './campaigns/CampaignsManager';
 import ContentManagerAdminPage from './content/ContentManager';
+import AdminCampaignReview from './campaigns/AdminCampaignReview';
 
 const AdminDashboard = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true); // Sidebar open by default on small screens
-  const [activeTab, setActiveTab] =
-    useState<'general-dashboard'>('general-dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState<
+    | 'general-dashboard'
+    | 'userManagement'
+    | 'moneyTransfers'
+    | 'campaignsManager'
+    | 'campaignReview'
+    | 'contentManager'
+    | 'promotions'
+    | 'analytics'
+    | 'support'
+    | 'settings'
+  >('general-dashboard');
 
   useEffect(() => {
     const storedTab = localStorage.getItem('activeTab');
     if (storedTab) {
-      setActiveTab(storedTab as 'general-dashboard');
+      setActiveTab(storedTab as any);
     }
   }, []);
 
@@ -47,9 +59,8 @@ const AdminDashboard = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  const selectTab = (tabName: 'general-dashboard') => {
+  const selectTab = (tabName: typeof activeTab) => {
     setActiveTab(tabName);
-    // Close sidebar on mobile after selecting a tab
     if (window.innerWidth < 1024) {
       setSidebarOpen(false);
     }
@@ -75,6 +86,11 @@ const AdminDashboard = () => {
       name: 'campaignsManager',
       label: 'Campaigns',
       icon: <InboxIcon className="h-5 w-5" />,
+    },
+    {
+      name: 'campaignReview',
+      label: 'Campaign Review',
+      icon: <ClipboardDocumentCheckIcon className="h-5 w-5" />,
     },
     {
       name: 'contentManager',
@@ -108,6 +124,7 @@ const AdminDashboard = () => {
     userManagement: <UserManagement />,
     moneyTransfers: <TransfersManager />,
     campaignsManager: <CampaignManager />,
+    campaignReview: <AdminCampaignReview />,
     contentManager: <ContentManagerAdminPage />,
     promotions: <PromotionScheduler />,
     analytics: <AnalyticsComponent />,
@@ -151,7 +168,7 @@ const AdminDashboard = () => {
                 className={`${
                   activeTab === item.name ? 'bg-gray-700 text-white' : ''
                 }`}
-                onClick={() => selectTab(item.name as 'general-dashboard')}
+                onClick={() => selectTab(item.name as any)}
               >
                 <ListItemPrefix>{item.icon}</ListItemPrefix>
                 {item.label}
