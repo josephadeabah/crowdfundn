@@ -6,6 +6,15 @@ class CampaignRejectionEmailService
     campaign_name = campaign.title
     rejection_date = Time.current.strftime('%B %d, %Y')
 
+    # Generate a secure random UUID and create the edit URL
+    secure_random_uuid = SecureRandom.uuid
+    campaign_identifier = campaign.slug || campaign.id
+    edit_url = Rails.application.routes.url_helpers.campaign_url(
+      campaign_identifier,
+      host: 'bantuhive.com',
+      params: { token: secure_random_uuid }
+    )
+
     send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
       to: [
         {
@@ -125,7 +134,7 @@ class CampaignRejectionEmailService
                   <li>Resubmit your campaign for review</li>
                 </ol>
 
-                <a href="#{Rails.application.routes.url_helpers.edit_campaign_url(campaign)}" class="action-button">Edit Your Campaign</a>
+                <a href="#{edit_url}" class="action-button">Edit Your Campaign</a>
 
                 <p>If you have any questions about the feedback or need assistance with your campaign, please don't hesitate to reply to this email.</p>
                 
