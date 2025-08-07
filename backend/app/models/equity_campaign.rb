@@ -17,14 +17,14 @@ class EquityCampaign < Campaign
   enum equity_status: {
     draft: 0,
     pending_approval: 1,
-    approved: 2,  # New status
+    approved: 2,
     live: 3,
     funded: 4,
     failed: 5,
     closed: 6
   }
 
-    # Add state machine transitions
+  # State transition methods
   def submit_for_approval
     if may_submit_for_approval?
       update!(equity_status: :pending_approval)
@@ -49,6 +49,23 @@ class EquityCampaign < Campaign
     end
   end
 
+  def launch
+    if may_launch?
+      update!(equity_status: :live)
+    else
+      false
+    end
+  end
+
+  def close
+    if may_close?
+      update!(equity_status: :closed)
+    else
+      false
+    end
+  end
+
+  # State predicate methods
   def may_submit_for_approval?
     draft? && valid_for_approval?
   end
@@ -61,8 +78,15 @@ class EquityCampaign < Campaign
     pending_approval?
   end
 
+  def may_launch?
+    approved?
+  end
+
+  def may_close?
+    live? || funded?
+  end
+
   def valid_for_approval?
-    # Add validation checks for required fields before submission
     [
       title.present?,
       description.present?,
@@ -98,7 +122,6 @@ class EquityCampaign < Campaign
     # 4. Return the number of shares still available to investors
     (remaining_amount / price_per_share).round(2)
   end
-  
 
   def percentage_raised
     return 0 if equity_offered.nil? || valuation.nil? || equity_offered <= 0 || valuation <= 0
