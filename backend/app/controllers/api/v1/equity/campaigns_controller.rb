@@ -1,9 +1,8 @@
-# app/controllers/api/v1/equity/campaigns_controller.rb
 module Api
   module V1
     module Equity
       class CampaignsController < Api::V1::BaseCampaignsController
-
+        before_action :set_campaign, only: [:submit_for_approval, :approve, :reject, :launch, :close]
         
         def submit_for_approval
           if @campaign.submit_for_approval
