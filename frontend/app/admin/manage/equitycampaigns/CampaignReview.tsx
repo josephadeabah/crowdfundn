@@ -35,7 +35,7 @@ interface CampaignReviewProps<T extends CampaignResponseDataType> {
 }
 
 export function CampaignReview<T extends CampaignResponseDataType>({
-  campaigns = [],
+  campaigns,
   loading,
   error,
   approveCampaign,

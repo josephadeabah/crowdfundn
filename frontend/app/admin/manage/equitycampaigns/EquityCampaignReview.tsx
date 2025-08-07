@@ -56,7 +56,7 @@ const getStatusIcon = (status: string) => {
 
 export function EquityCampaignReview() {
   const {
-    equityCampaigns = [],
+    equityCampaigns,
     loading,
     error,
     approveCampaign,
