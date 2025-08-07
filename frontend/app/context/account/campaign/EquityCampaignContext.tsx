@@ -314,6 +314,8 @@ export const EquityCampaignProvider = ({
           campaign.id === updatedCampaign.id ? updatedCampaign : campaign,
         ),
       );
+      // Refresh the campaigns list
+      await fetchEquityCampaigns();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error approving campaign');
     } finally {
@@ -350,6 +352,8 @@ export const EquityCampaignProvider = ({
             campaign.id === updatedCampaign.id ? updatedCampaign : campaign,
           ),
         );
+        // Refresh the campaigns list
+       await fetchEquityCampaigns();
       } catch (err) {
         setError(
           err instanceof Error ? err.message : 'Error rejecting campaign',
