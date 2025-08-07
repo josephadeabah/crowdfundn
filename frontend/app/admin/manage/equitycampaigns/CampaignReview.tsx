@@ -21,62 +21,98 @@ import { useState } from 'react';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { Progress } from '@/app/components/ui/progress';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
-
-interface CampaignReviewProps<T extends CampaignResponseDataType> {
-  campaigns: T[];
-  loading: boolean;
-  error: string | null;
-  approveCampaign: (id: string) => Promise<void>;
-  rejectCampaign: (id: string, rejectionReason: string) => Promise<void>;
-  getStatusColor: (status: string) => string;
-  getStatusIcon: (status: string) => React.ReactNode;
+import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
+import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
+interface CampaignReviewProps {
   statusFilter?: string;
-  campaignTypeLabel?: string;
 }
 
-export function CampaignReview<T extends CampaignResponseDataType>({
-  campaigns,
-  loading,
-  error,
-  approveCampaign,
-  rejectCampaign,
-  getStatusColor,
-  getStatusIcon,
+export function CampaignReview({
   statusFilter = 'pending_approval',
-  campaignTypeLabel = 'Campaign',
-}: CampaignReviewProps<T>) {
-  const [selectedCampaign, setSelectedCampaign] = useState<T | null>(null);
+}: CampaignReviewProps) {
+  const {
+    approveCampaign,
+    rejectCampaign,
+  } = useEquityCampaignContext();
+  const {
+    campaigns,
+    loading,
+    error,
+  } = useCampaignContext();
+
+  const [selectedCampaign, setSelectedCampaign] =
+    useState<CampaignResponseDataType | null>(null);
   const [rejectionReason, setRejectionReason] = useState<string>('');
   const [isRejectModalOpen, setIsRejectModalOpen] = useState<boolean>(false);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState<boolean>(false);
 
   // Filter campaigns that need admin attention
   const pendingCampaigns =
-    campaigns?.filter((campaign) => campaign.status === statusFilter) || [];
+    campaigns?.filter(
+      (campaign) => campaign.equity_status === statusFilter,
+    ) || [];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending_approval':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'approved':
+        return 'bg-purple-100 text-purple-800';
+      case 'live':
+        return 'bg-green-100 text-green-800';
+      case 'funded':
+        return 'bg-emerald-100 text-emerald-800';
+      case 'failed':
+        return 'bg-red-100 text-red-800';
+      case 'closed':
+        return 'bg-gray-100 text-gray-800';
+      case 'draft':
+        return 'bg-blue-100 text-blue-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'pending_approval':
+        return <Clock className="w-4 h-4" />;
+      case 'approved':
+        return <CheckCircle className="w-4 h-4" />;
+      case 'live':
+        return <TrendingUp className="w-4 h-4" />;
+      case 'funded':
+        return <DollarSign className="w-4 h-4" />;
+      case 'failed':
+        return <XCircle className="w-4 h-4" />;
+      case 'closed':
+        return <XCircle className="w-4 h-4" />;
+      case 'draft':
+        return <FileText className="w-4 h-4" />;
+      default:
+        return <FileText className="w-4 h-4" />;
+    }
+  };
 
   const handleApprove = async (campaignId: string) => {
     try {
       await approveCampaign(campaignId);
+      // await fetchEquityCampaigns();
       setIsApproveModalOpen(false);
     } catch (error) {
-      console.error(
-        `Failed to approve ${campaignTypeLabel.toLowerCase()}:`,
-        error,
-      );
+      console.error('Failed to approve campaign:', error);
     }
   };
 
-  const handleReject = async (campaignId: string) => {
+  const handleReject = async (campaignId: string, reason: string) => {
     try {
-      if (!rejectionReason.trim()) return;
-      await rejectCampaign(campaignId, rejectionReason);
+      if (!reason.trim()) return;
+      await rejectCampaign(campaignId, reason);
+      // await fetchEquityCampaigns();
       setIsRejectModalOpen(false);
       setRejectionReason('');
     } catch (error) {
-      console.error(
-        `Failed to reject ${campaignTypeLabel.toLowerCase()}:`,
-        error,
-      );
+      console.error('Failed to reject campaign:', error);
     }
   };
 
@@ -85,14 +121,14 @@ export function CampaignReview<T extends CampaignResponseDataType>({
 
   return (
     <div className="space-y-6">
-      {/* Stats Cards - Generic implementation */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Total {campaignTypeLabel}s
+                  Total Campaigns
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
                   {campaigns?.length || 0}
@@ -128,10 +164,10 @@ export function CampaignReview<T extends CampaignResponseDataType>({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Live {campaignTypeLabel}s
+                  Live Campaigns
                 </p>
                 <p className="text-3xl font-bold text-green-600">
-                  {campaigns?.filter((c) => c.status === 'live').length || 0}
+                  {campaigns?.filter((c) => c.equity_status === 'live').length || 0}
                 </p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -171,8 +207,7 @@ export function CampaignReview<T extends CampaignResponseDataType>({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>{campaignTypeLabel} Status</span>
-            <Button size="sm">View All {campaignTypeLabel}s</Button>
+            <span>Campaigns Pending Approval</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -199,39 +234,35 @@ export function CampaignReview<T extends CampaignResponseDataType>({
                       </p>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Badge className={getStatusColor(campaign.status)}>
-                        {getStatusIcon(campaign.status)}
+                      <Badge className={getStatusColor(campaign.equity_status ?? '')}>
+                        {getStatusIcon(campaign.equity_status ?? '')}
                         <span className="ml-1 capitalize">
-                          {campaign.status.replace('_', ' ')}
+                          {(campaign.equity_status ?? '').replace('_', ' ')}
                         </span>
                       </Badge>
                     </div>
                   </div>
 
-                  {/* Campaign-specific details can be rendered here */}
-                  {campaign.type === 'EquityCampaign' && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                      <div className="flex items-center space-x-2">
-                        <DollarSign className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-600">
-                          Valuation: $
-                          {(campaign as any).valuation?.toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <TrendingUp className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-600">
-                          Equity: {(campaign as any).equity_offered}%
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Users className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-600">
-                          Investors: {(campaign as any).total_investors || 0}
-                        </span>
-                      </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div className="flex items-center space-x-2">
+                      <DollarSign className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm text-gray-600">
+                        Valuation: ${campaign.valuation?.toLocaleString()}
+                      </span>
                     </div>
-                  )}
+                    <div className="flex items-center space-x-2">
+                      <TrendingUp className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm text-gray-600">
+                        Equity: {campaign.equity_offered}%
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Users className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm text-gray-600">
+                        Investors: {campaign.total_investors || 0}
+                      </span>
+                    </div>
+                  </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                     <div className="flex items-center space-x-2">
@@ -249,19 +280,12 @@ export function CampaignReview<T extends CampaignResponseDataType>({
                     <div className="flex items-center space-x-2">
                       <DollarSign className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-600">
-                        $
-                        {parseFloat(
-                          campaign.transferred_amount || '0',
-                        ).toLocaleString()}{' '}
-                        / $
-                        {parseFloat(
-                          campaign.goal_amount || '0',
-                        ).toLocaleString()}
+                        ${parseFloat(campaign.transferred_amount || '0').toLocaleString()} / $
+                        {parseFloat(campaign.goal_amount || '0').toLocaleString()}
                       </span>
                     </div>
                     <div className="text-sm text-gray-600">
-                      Created:{' '}
-                      {new Date(campaign.created_at).toLocaleDateString()}
+                      Created: {new Date(campaign.created_at).toLocaleDateString()}
                     </div>
                   </div>
 
@@ -316,7 +340,7 @@ export function CampaignReview<T extends CampaignResponseDataType>({
 
             {pendingCampaigns.length === 0 && (
               <div className="text-center py-8 text-gray-500">
-                No {campaignTypeLabel.toLowerCase()}s pending approval
+                No campaigns pending approval
               </div>
             )}
           </div>
@@ -325,8 +349,8 @@ export function CampaignReview<T extends CampaignResponseDataType>({
 
       {/* Approve Confirmation Modal */}
       <AlertPopup
-        title={`Approve ${campaignTypeLabel}`}
-        message={`Are you sure you want to approve ${selectedCampaign?.title || 'this ' + campaignTypeLabel.toLowerCase()}?`}
+        title="Approve Campaign"
+        message={`Are you sure you want to approve ${selectedCampaign?.title || 'this campaign'}?`}
         isOpen={isApproveModalOpen}
         setIsOpen={setIsApproveModalOpen}
         onConfirm={() =>
@@ -338,14 +362,11 @@ export function CampaignReview<T extends CampaignResponseDataType>({
 
       {/* Reject Confirmation Modal */}
       <AlertPopup
-        title={`Reject ${campaignTypeLabel}`}
+        title="Reject Campaign"
         message={
           <div className="space-y-4">
             <p>
-              Are you sure you want to reject{' '}
-              {selectedCampaign?.title ||
-                'this ' + campaignTypeLabel.toLowerCase()}
-              ?
+              Are you sure you want to reject {selectedCampaign?.title || 'this campaign'}?
             </p>
             <div>
               <label
@@ -369,7 +390,7 @@ export function CampaignReview<T extends CampaignResponseDataType>({
         isOpen={isRejectModalOpen}
         setIsOpen={setIsRejectModalOpen}
         onConfirm={() =>
-          selectedCampaign && handleReject(selectedCampaign.id.toString())
+          selectedCampaign && handleReject(selectedCampaign.id.toString(), rejectionReason)
         }
         onCancel={() => {
           setIsRejectModalOpen(false);

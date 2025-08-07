@@ -314,8 +314,6 @@ export const EquityCampaignProvider = ({
           campaign.id === updatedCampaign.id ? updatedCampaign : campaign,
         ),
       );
-      // Refresh the campaigns list
-      await fetchEquityCampaigns();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error approving campaign');
     } finally {
@@ -352,8 +350,6 @@ export const EquityCampaignProvider = ({
             campaign.id === updatedCampaign.id ? updatedCampaign : campaign,
           ),
         );
-        // Refresh the campaigns list
-       await fetchEquityCampaigns();
       } catch (err) {
         setError(
           err instanceof Error ? err.message : 'Error rejecting campaign',
@@ -772,53 +768,16 @@ export const EquityCampaignProvider = ({
     [token],
   );
 
-  const fetchEquityCampaigns = useCallback(async (): Promise<void> => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?type=EquityCampaign`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch equity campaigns');
-      }
-
-      const data = await response.json();
-      // Filter for equity campaigns in case the backend doesn't properly filter
-      const equityCampaigns = data.campaigns.filter(
-        (c: any) => c.type === 'EquityCampaign',
-      );
-      setEquityCampaigns(equityCampaigns);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Error fetching equity campaigns',
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
-
   // Combine with base campaign context
   const contextValue = useMemo(
     () => ({
       ...campaignContext,
-      equityCampaigns,
       teamMembers,
       investments,
       documents,
       currentDocument,
       loading,
       error,
-
-      fetchEquityCampaigns,
 
       // Campaign actions
       submitForApproval,
@@ -859,8 +818,6 @@ export const EquityCampaignProvider = ({
       currentDocument,
       loading,
       error,
-      equityCampaigns,
-      fetchEquityCampaigns,
       submitForApproval,
       approveCampaign,
       rejectCampaign,
