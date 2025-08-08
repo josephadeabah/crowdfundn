@@ -155,6 +155,17 @@ const Campaigns: React.FC = () => {
   const getStatusDisplay = (campaign: CampaignResponseDataType) => {
     // Handle equity campaign statuses
     if (campaign.type === 'EquityCampaign') {
+      // First check the base status (active/completed/canceled)
+      switch (campaign.status) {
+        case 'active':
+          return { text: 'Active', color: 'text-green-500' };
+        case 'completed':
+          return { text: 'Completed', color: 'text-red-500' };
+        case 'canceled':
+          return { text: 'Canceled', color: 'text-orange-300' };
+      }
+
+      // Then fall back to equity-specific statuses if base status not set
       switch (campaign.equity_status) {
         case 'draft':
           return { text: 'Draft', color: 'text-blue-500' };
