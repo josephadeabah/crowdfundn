@@ -99,8 +99,8 @@ class CampaignRejectionEmailService
               }
               .action-button {
                 display: inline-block;
-                background-color: #f44336;
-                color: white;
+                background-color: #8ABB6C;
+                color: #ffffff;
                 padding: 10px 20px;
                 text-decoration: none;
                 border-radius: 5px;
@@ -134,7 +134,7 @@ class CampaignRejectionEmailService
                   <li>Resubmit your campaign for review</li>
                 </ol>
 
-                <a href="#{edit_url}" class="action-button" style="background-color: green; text-color: white;">Edit Your Campaign</a>
+                <a href="#{edit_url}" class="action-button">Edit Your Campaign</a>
 
                 <p>If you have any questions about the feedback or need assistance with your campaign, please don't hesitate to reply to this email.</p>
                 
