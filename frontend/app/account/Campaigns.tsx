@@ -474,6 +474,14 @@ const Campaigns: React.FC = () => {
           You'll be notified once the review is complete."
                         />
                       )}
+                      {status.text === 'Approved' && (
+                        <InfoTooltip
+                          id={`approved-tooltip-${campaign.id}`}
+                          content="Congratulations! Your campaign has successfully passed all due diligence checks. 
+          You can now launch your campaign to make it publicly visible. 
+          Click the vertical dots menu in the top right corner and select 'Launch Campaign' to proceed."
+                        />
+                      )}
                     </div>
                     <div className="flex items-center gap-1">
                       <span
