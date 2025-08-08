@@ -458,27 +458,27 @@ const Campaigns: React.FC = () => {
 
                 <div className="mt-4 flex justify-between items-center">
                   <div className="flex gap-3 items-center">
-                    <Button
-                      className={`px-4 py-2 rounded-full ${status.color}`}
-                      variant="ghost"
-                      size="default"
-                    >
-                      <div className="flex items-center gap-2">
-                        {status.text === 'Pending Approval' && (
-                          <InfoTooltip
-                            id={`pending-tooltip-${campaign.id}`}
-                            content="This campaign is currently undergoing thorough due diligence by our team. 
-        We're carefully reviewing all details to ensure compliance and viability. 
-        You'll be notified once the review is complete."
-                          />
-                        )}
-                        <span>{status.text}</span>
-                      </div>
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        className={`px-4 py-2 rounded-full ${status.color}`}
+                        variant="ghost"
+                        size="default"
+                      >
+                        {status.text}
+                      </Button>
+                      {status.text === 'Pending Approval' && (
+                        <InfoTooltip
+                          id={`pending-tooltip-${campaign.id}`}
+                          content="This campaign is currently undergoing thorough due diligence by our team. 
+          We're carefully reviewing all details to ensure compliance and viability. 
+          You'll be notified once the review is complete."
+                        />
+                      )}
+                    </div>
                     <div className="flex items-center gap-1">
                       <span
                         className={`w-2 h-2 rounded-full 
-                        ${campaign.permissions.is_public ? 'bg-green-500' : 'bg-gray-500'}`}
+        ${campaign.permissions.is_public ? 'bg-green-500' : 'bg-gray-500'}`}
                       ></span>
                       <span className="text-gray-500 font-semibold text-xs">
                         {campaign.permissions.is_public ? 'Public' : 'Private'}
