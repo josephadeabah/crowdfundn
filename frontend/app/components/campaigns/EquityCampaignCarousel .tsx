@@ -37,6 +37,10 @@ const EquityCampaignCarousel: React.FC<EquityCarouselProps> = ({
   const equityCampaigns = campaigns?.filter(
     (campaign) =>
       campaign.status !== 'completed' &&
+      campaign.equity_status !== 'draft' &&
+      campaign.equity_status !== 'pending_approval' &&
+      campaign.equity_status !== 'failed' &&
+      campaign.equity_status !== 'closed' &&
       campaign.type === 'EquityCampaign' &&
       campaign.permissions.is_public,
   );
