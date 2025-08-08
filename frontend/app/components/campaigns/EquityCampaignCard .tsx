@@ -122,7 +122,9 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
           <span
             className={`absolute top-4 left-4 px-2 py-1 text-xs font-semibold rounded-full ${getEquityStatusColor(campaign.equity_status ?? '')}`}
           >
-            {campaign.equity_status?.toUpperCase()}
+            {campaign.equity_status === 'approved'
+              ? 'READY TO LAUNCH'
+              : campaign.equity_status?.toUpperCase()}
           </span>
 
           <button

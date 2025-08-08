@@ -153,6 +153,8 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         return 'bg-blue-500/10 text-blue-500';
       case 'funded':
         return 'bg-purple-500/10 text-purple-500';
+      case 'closed':
+        return 'bg-red-500/10 text-red-500';
       default:
         return 'bg-gray-500/10 text-gray-500';
     }
@@ -210,10 +212,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
             {/* Equity status badge */}
             {campaign.type === 'EquityCampaign' && (
               <span
-                className={`absolute top-2 left-2 px-1.5 py-0.5 text-[10px] font-semibold rounded-full ${getEquityStatusColor(campaign.equity_status ?? '')}`}
-              >
-                {(campaign.equity_status ?? '').toUpperCase()}
-              </span>
+            className={`absolute top-4 left-4 px-2 py-1 text-xs font-semibold rounded-full ${getEquityStatusColor(campaign.equity_status ?? '')}`}
+          >
+            {campaign.equity_status === 'approved'
+              ? 'READY TO LAUNCH'
+              : campaign.equity_status?.toUpperCase()}
+          </span>
             )}
 
             {/* Category badge moved to bottom */}
