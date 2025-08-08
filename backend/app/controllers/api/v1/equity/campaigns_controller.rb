@@ -73,7 +73,7 @@ module Api
         end
 
         def close
-          if @campaign.may_close? && @campaign.close!
+          if @campaign.may_close? && @campaign.close
             render json: campaign_json(@campaign), status: :ok
           else
             render json: { 
