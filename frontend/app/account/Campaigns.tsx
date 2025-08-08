@@ -27,6 +27,7 @@ import { FiPlus, FiPlusCircle } from 'react-icons/fi';
 import CampaignTeamDocuments from '@/app/components/campaign/CampaignTeamDocuments';
 import Avatar from '../components/avatar/Avatar';
 import ToastComponent from '@/app/components/toast/Toast';
+import InfoTooltip from '../components/tooltip/tooltip';
 
 const Campaigns: React.FC = () => {
   const {
@@ -462,7 +463,17 @@ const Campaigns: React.FC = () => {
                       variant="ghost"
                       size="default"
                     >
-                      {status.text}
+                      <div className="flex items-center gap-2">
+                        {status.text === 'Pending Approval' && (
+                          <InfoTooltip
+                            id={`pending-tooltip-${campaign.id}`}
+                            content="This campaign is currently undergoing thorough due diligence by our team. 
+        We're carefully reviewing all details to ensure compliance and viability. 
+        You'll be notified once the review is complete."
+                          />
+                        )}
+                        <span>{status.text}</span>
+                      </div>
                     </Button>
                     <div className="flex items-center gap-1">
                       <span
