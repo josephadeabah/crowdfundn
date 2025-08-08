@@ -59,12 +59,28 @@ module Api
         end
         
         def launch
-          if @campaign.may_launch? && @campaign.launch!
-            render json: campaign_json(@campaign), status: :ok
+          if @campaign.may_launch?
+            if @campaign.launch
+              # Send notification to investors
+              CampaignLaunchNotificationJob.perform_later(@campaign.id)
+              
+              render json: { 
+                campaign: campaign_json(@campaign),
+                message: 'Campaign successfully launched'
+              }, status: :ok
+            else
+              render json: { 
+                error: 'Failed to launch campaign',
+                errors: @campaign.errors.full_messages
+              }, status: :unprocessable_entity
+            end
           else
             render json: { 
-              error: "Cannot launch campaign",
-              errors: @campaign.errors.full_messages
+              error: 'Campaign cannot be launched',
+              current_status: @campaign.equity_status,
+              requirements: {
+                must_be_approved: @campaign.approved?
+              }
             }, status: :unprocessable_entity
           end
         end
