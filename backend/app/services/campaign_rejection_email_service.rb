@@ -140,7 +140,7 @@ class CampaignRejectionEmailService
                   <li>Resubmit your campaign for review</li>
                 </ol>
 
-                <a href="#{edit_url}" class="action-button">Edit Your Campaign</a>
+                <a href="#{edit_url}" class="action-button">Fix Your Campaign</a>
 
                 <p>If you have any questions about the feedback or need assistance with your campaign, please don't hesitate to reply to this email.</p>
                 
