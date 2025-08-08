@@ -84,14 +84,14 @@ class CampaignRejectionEmailService
                 margin: 20px 0;
               }
               .footer {
-                background-color: #f0f0f0;
+                background-color: #f0faf0;
                 padding: 15px;
                 text-align: center;
                 font-size: 14px;
                 color: #666666;
               }
               .footer a {
-                color: #f44336;
+                color: #4CAF50;
                 text-decoration: none;
               }
               .footer a:hover {
@@ -134,7 +134,7 @@ class CampaignRejectionEmailService
                   <li>Resubmit your campaign for review</li>
                 </ol>
 
-                <a href="#{edit_url}" class="action-button">Edit Your Campaign</a>
+                <a href="#{edit_url}" class="action-button" style="background-color: green; text-color: white;">Edit Your Campaign</a>
 
                 <p>If you have any questions about the feedback or need assistance with your campaign, please don't hesitate to reply to this email.</p>
                 
