@@ -21,13 +21,11 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
 }) => {
   const carouselRef = useRef<HTMLDivElement>(null);
 
-  // States for sorting and pagination
   const [sortCriteria, setSortCriteria] = useState<string>('created_at');
   const [sortOrder, setSortOrder] = useState<string>('desc');
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(12);
 
-  // Function to handle page change
   const handlePageChange = (page: number) => {
     setPageNumber(page);
   };
@@ -44,7 +42,6 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
     }
   };
 
-  // Create pairs of campaigns for the two-row grid
   const createCampaignPairs = (campaignList: CampaignResponseDataType[]) => {
     const pairs = [];
     for (let i = 0; i < campaignList.length; i += 2) {
@@ -53,7 +50,6 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
     return pairs;
   };
 
-  // Determine what to show
   const showContent = () => {
     if (loading && (!campaigns || campaigns.length === 0)) {
       return (
