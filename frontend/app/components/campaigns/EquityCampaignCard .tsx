@@ -71,6 +71,19 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
     });
   };
 
+  const getEquityStatusColor = (status: string) => {
+    switch (status) {
+      case 'live':
+        return 'bg-green-500/10 text-green-500';
+      case 'approved':
+        return 'bg-blue-500/10 text-blue-500';
+      case 'funded':
+        return 'bg-purple-500/10 text-purple-500';
+      default:
+        return 'bg-gray-500/10 text-gray-500';
+    }
+  };
+
   if (loading) {
     return <CampaignCardLoader />;
   }
@@ -102,8 +115,12 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
-          <span className="absolute top-4 left-4 px-2 py-1 text-xs font-semibold bg-background/90 text-fuchsia-600 rounded-full">
-            {deslugify(campaign?.category)}
+
+          {/* Equity status badge */}
+          <span
+            className={`absolute top-4 left-4 px-2 py-1 text-xs font-semibold rounded-full ${getEquityStatusColor(campaign.equity_status ?? '')}`}
+          >
+            {campaign.equity_status?.toUpperCase()}
           </span>
 
           <button
@@ -144,11 +161,15 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
         </div>
 
         <div className="p-4 pt-2">
-          {' '}
-          {/* Reduced top padding to account for overlapping avatar */}
           <h3 className="text-lg font-semibold text-foreground mb-2">
             {campaign.title}
           </h3>
+
+          {/* Category badge */}
+          <span className="inline-block mb-2 px-2 py-0.5 text-xs font-semibold bg-gray-100 text-gray-700 rounded-full">
+            {deslugify(campaign?.category)}
+          </span>
+
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-muted-foreground">Valuation</span>
             <span className="text-sm font-semibold">

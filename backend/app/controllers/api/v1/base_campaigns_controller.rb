@@ -19,6 +19,18 @@ module Api
 
         @campaigns = campaign_scope.active
 
+          @campaigns = campaign_scope.active
+
+        # Allow filtering by equity_status if provided
+        if params[:equity_status].present? && campaign_class == EquityCampaign
+          @campaigns = @campaigns.where(equity_status: params[:equity_status])
+        else
+          # Default filter for equity campaigns
+          if campaign_class == EquityCampaign
+            @campaigns = @campaigns.where(equity_status: [:approved, :live])
+          end
+        end
+
         if params[:dateRange] && params[:dateRange] != 'all_time'
           start_date = calculate_date_range(params[:dateRange])
           @campaigns = @campaigns.where('created_at >= ?', start_date) if start_date
@@ -283,20 +295,24 @@ module Api
             contract_term: campaign.contract_term
           }
         )
-
-        if campaign.is_a?(EquityCampaign)
-          json.merge!(
-            shares_available: campaign.shares_available,
-            percentage_raised: campaign.percentage_raised,
-            total_investors: campaign.equity_investments.count,
-            equity_status: campaign.equity_status,
-            investment_range: {
-              minimum: campaign.minimum_investment,
-              maximum: campaign.maximum_investment
-            }
-          )
-        end
-
+        
+          if campaign.is_a?(EquityCampaign)
+            json.merge!(
+              shares_available: campaign.shares_available,
+              percentage_raised: campaign.percentage_raised,
+              total_investors: campaign.equity_investments.count,
+              equity_status: campaign.equity_status,
+              investment_range: {
+                minimum: campaign.minimum_investment,
+                maximum: campaign.maximum_investment
+              },
+              can_submit_for_approval: campaign.may_submit_for_approval?,
+              can_approve: campaign.may_approve?,
+              can_reject: campaign.may_reject?,
+              can_launch: campaign.may_launch?
+            )
+          end
+        
         json
       end
 

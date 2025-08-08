@@ -130,7 +130,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         await favoriteCampaign(campaignId);
         showToast('Success', 'Campaign added to favorites', 'success');
       }
-      // Optionally refresh the campaigns list to reflect the change
       fetchAllCampaigns(
         sortBy,
         sortOrder,
@@ -143,6 +142,19 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       );
     } catch (error) {
       showToast('Error', 'Failed to update favorite status', 'error');
+    }
+  };
+
+  const getEquityStatusColor = (status: string) => {
+    switch (status) {
+      case 'live':
+        return 'bg-green-500/10 text-green-500';
+      case 'approved':
+        return 'bg-blue-500/10 text-blue-500';
+      case 'funded':
+        return 'bg-purple-500/10 text-purple-500';
+      default:
+        return 'bg-gray-500/10 text-gray-500';
     }
   };
 
@@ -194,7 +206,18 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
-            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[10px] font-semibold bg-background/90 text-green-600 rounded-full">
+
+            {/* Equity status badge */}
+            {campaign.type === 'EquityCampaign' && (
+              <span
+                className={`absolute top-2 left-2 px-1.5 py-0.5 text-[10px] font-semibold rounded-full ${getEquityStatusColor(campaign.equity_status ?? '')}`}
+              >
+                {(campaign.equity_status ?? '').toUpperCase()}
+              </span>
+            )}
+
+            {/* Category badge moved to bottom */}
+            <span className="absolute bottom-2 left-2 px-1.5 py-0.5 text-[10px] font-semibold bg-background/90 text-green-600 rounded-full">
               {deslugify(campaign?.category)}
             </span>
           </div>

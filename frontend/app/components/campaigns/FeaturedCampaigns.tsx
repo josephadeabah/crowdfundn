@@ -40,7 +40,14 @@ const FeaturedCampaigns = () => {
   const displayedCampaigns = useMemo(() => {
     if (!campaigns) return [];
     return campaigns.filter((campaign) => {
-      return campaign.status !== 'completed' && campaign.permissions.is_public;
+      return (
+        campaign.status !== 'completed' &&
+        campaign.equity_status !== 'draft' &&
+        campaign.equity_status !== 'pending_approval' &&
+        campaign.equity_status !== 'failed' &&
+        campaign.equity_status !== 'closed' &&
+        campaign.permissions.is_public
+      );
     });
   }, [campaigns]);
 

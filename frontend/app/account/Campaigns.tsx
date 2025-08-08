@@ -2,6 +2,7 @@
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
+import { useEquityCampaignContext } from '../context/account/campaign/EquityCampaignContext';
 import CampaignsLoader from '../loaders/CampaignsLoader';
 import { Button } from '../components/button/Button';
 import {
@@ -24,7 +25,9 @@ import { generateRandomString } from '../utils/helpers/generate.random-string';
 import ErrorPage from '../components/errorpage/ErrorPage';
 import { FiPlus, FiPlusCircle } from 'react-icons/fi';
 import CampaignTeamDocuments from '@/app/components/campaign/CampaignTeamDocuments';
-import Avatar from '../components/avatar/Avatar'; // Import Avatar component
+import Avatar from '../components/avatar/Avatar';
+import ToastComponent from '@/app/components/toast/Toast';
+import InfoTooltip from '../components/tooltip/tooltip';
 
 const Campaigns: React.FC = () => {
   const {
@@ -36,6 +39,13 @@ const Campaigns: React.FC = () => {
     cancelCampaign,
   } = useCampaignContext();
 
+  const {
+    submitForApproval,
+    launchCampaign,
+    closeCampaign,
+    loading: equityActionLoading,
+  } = useEquityCampaignContext();
+
   const [selectedCampaign, setSelectedCampaign] =
     useState<CampaignResponseDataType | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -44,11 +54,31 @@ const Campaigns: React.FC = () => {
   const [alertPopupOpen, setAlertPopupOpen] = useState(false);
   const [campaignToActOn, setCampaignToActOn] =
     useState<CampaignResponseDataType | null>(null);
-  const [actionType, setActionType] = useState<'delete' | 'cancel' | null>(
-    null,
-  );
+  const [actionType, setActionType] = useState<
+    'delete' | 'cancel' | 'submit' | 'launch' | 'close' | null
+  >(null);
+
+  const [toast, setToast] = useState({
+    isOpen: false,
+    title: '',
+    description: '',
+    type: 'success' as 'success' | 'error' | 'warning',
+  });
 
   const router = useRouter();
+
+  const showToast = (
+    title: string,
+    description: string,
+    type: 'success' | 'error' | 'warning',
+  ) => {
+    setToast({
+      isOpen: true,
+      title,
+      description,
+      type,
+    });
+  };
 
   useEffect(() => {
     fetchUserCampaigns();
@@ -78,7 +108,7 @@ const Campaigns: React.FC = () => {
 
   const handleAction = (
     campaign: CampaignResponseDataType,
-    type: 'delete' | 'cancel',
+    type: 'delete' | 'cancel' | 'submit' | 'launch' | 'close',
   ) => {
     setCampaignToActOn(campaign);
     setActionType(type);
@@ -88,25 +118,77 @@ const Campaigns: React.FC = () => {
   const confirmAction = async () => {
     if (!campaignToActOn || !actionType) return;
 
-    if (actionType === 'delete') {
-      await deleteCampaign(String(campaignToActOn.id));
-    } else if (actionType === 'cancel') {
-      await cancelCampaign(String(campaignToActOn.id));
-    }
+    try {
+      if (actionType === 'delete') {
+        await deleteCampaign(String(campaignToActOn.id));
+        showToast('Success', 'Campaign deleted successfully', 'success');
+      } else if (actionType === 'cancel') {
+        await cancelCampaign(String(campaignToActOn.id));
+        showToast('Success', 'Campaign canceled successfully', 'success');
+      } else if (actionType === 'submit') {
+        await submitForApproval(String(campaignToActOn.id));
+        showToast('Success', 'Campaign submitted for approval', 'success');
+      } else if (actionType === 'launch') {
+        await launchCampaign(String(campaignToActOn.id));
+        showToast('Success', 'Campaign launched successfully', 'success');
+      } else if (actionType === 'close') {
+        await closeCampaign(String(campaignToActOn.id));
+        showToast('Success', 'Campaign closed successfully', 'success');
+      }
 
-    await fetchUserCampaigns();
-    setAlertPopupOpen(false);
-    setCampaignToActOn(null);
-    setActionType(null);
+      await fetchUserCampaigns();
+    } catch (error) {
+      showToast(
+        'Error',
+        `Failed to ${actionType} campaign: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+        'error',
+      );
+    } finally {
+      setAlertPopupOpen(false);
+      setCampaignToActOn(null);
+      setActionType(null);
+    }
+  };
+
+  const getBaseCampaignStatus = (campaign: CampaignResponseDataType) => {
+    if (campaign.type !== 'EquityCampaign') return null;
+
+    switch (campaign.status) {
+      case 'active':
+        return { text: 'Active', color: 'text-green-500' };
+      case 'completed':
+        return { text: 'Completed', color: 'text-red-500' };
+      case 'canceled':
+        return { text: 'Canceled', color: 'text-orange-300' };
+      default:
+        return null;
+    }
   };
 
   const getStatusDisplay = (campaign: CampaignResponseDataType) => {
-    if (
-      campaign.type === 'EquityCampaign' &&
-      campaign.equity_status === 'draft'
-    ) {
-      return { text: 'Draft', color: 'text-blue-500' };
+    if (campaign.type === 'EquityCampaign') {
+      switch (campaign.equity_status) {
+        case 'draft':
+          return { text: 'Draft', color: 'text-blue-500' };
+        case 'pending_approval':
+          return { text: 'Pending Approval', color: 'text-yellow-500' };
+        case 'approved':
+          return { text: 'Approved', color: 'text-purple-500' };
+        case 'live':
+          return { text: 'Live', color: 'text-green-500' };
+        case 'funded':
+          return { text: 'Funded', color: 'text-emerald-500' };
+        case 'failed':
+          return { text: 'Failed', color: 'text-red-500' };
+        case 'closed':
+          return { text: 'Closed', color: 'text-gray-500' };
+        default:
+          return { text: 'Unknown', color: '' };
+      }
     }
+
     switch (campaign.status) {
       case 'active':
         return { text: 'Active', color: 'text-green-500' };
@@ -119,6 +201,72 @@ const Campaigns: React.FC = () => {
     }
   };
 
+  const getActionButtons = (campaign: CampaignResponseDataType) => {
+    if (campaign.type !== 'EquityCampaign') {
+      return (
+        <>
+          <li>
+            <button
+              className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+              onClick={() => handleAction(campaign, 'cancel')}
+              disabled={
+                campaign.status === 'canceled' ||
+                campaign.status === 'completed'
+              }
+              style={{
+                cursor:
+                  campaign.status === 'canceled' ||
+                  campaign.status === 'completed'
+                    ? 'not-allowed'
+                    : 'pointer',
+              }}
+            >
+              Cancel Campaign
+            </button>
+          </li>
+        </>
+      );
+    }
+
+    const actions = [];
+    if (campaign.equity_status === 'draft') {
+      actions.push(
+        <li key="submit">
+          <button
+            className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+            onClick={() => handleAction(campaign, 'submit')}
+          >
+            Submit for Approval
+          </button>
+        </li>,
+      );
+    } else if (campaign.equity_status === 'approved') {
+      actions.push(
+        <li key="launch">
+          <button
+            className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+            onClick={() => handleAction(campaign, 'launch')}
+          >
+            Launch Campaign
+          </button>
+        </li>,
+      );
+    } else if (campaign.equity_status === 'live') {
+      actions.push(
+        <li key="close">
+          <button
+            className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+            onClick={() => handleAction(campaign, 'close')}
+          >
+            Close Campaign
+          </button>
+        </li>,
+      );
+    }
+
+    return actions;
+  };
+
   if (loading) return <CampaignsLoader />;
 
   if (error) {
@@ -127,6 +275,14 @@ const Campaigns: React.FC = () => {
 
   return (
     <div className="px-2 py-4">
+      <ToastComponent
+        isOpen={toast.isOpen}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
+        title={toast.title}
+        description={toast.description}
+        type={toast.type}
+      />
+
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
@@ -169,14 +325,13 @@ const Campaigns: React.FC = () => {
                 key={campaign.id}
                 className="relative p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 dark:hover:bg-neutral-700 flex flex-col justify-between"
               >
-                {/* Title and Dots Vertical Icon */}
-                <div className="flex justify-between items-start">
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex-1 pr-4">
+                <div className="flex justify-between items-start gap-2">
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white line-clamp-2 break-words">
                     {campaign.title}
                   </h3>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <button className="text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-200">
+                      <button className="text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-200 flex-shrink-0">
                         <DotsVerticalIcon className="h-6 w-6" />
                       </button>
                     </PopoverTrigger>
@@ -198,51 +353,29 @@ const Campaigns: React.FC = () => {
                             Delete Campaign
                           </button>
                         </li>
-                        {campaign.type !== 'EquityCampaign' && (
-                          <li>
-                            <button
-                              className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
-                              onClick={() => handleAction(campaign, 'cancel')}
-                              disabled={
-                                campaign.status === 'canceled' ||
-                                campaign.status === 'completed'
-                              }
-                              style={{
-                                cursor:
-                                  campaign.status === 'canceled' ||
-                                  campaign.status === 'completed'
-                                    ? 'not-allowed'
-                                    : 'pointer',
-                              }}
-                            >
-                              Cancel Campaign
-                            </button>
-                          </li>
-                        )}
+                        {getActionButtons(campaign)}
                       </ul>
                     </PopoverContent>
                   </Popover>
                 </div>
 
-                {/* Campaign Details */}
-                <div className="text-gray-500 dark:text-neutral-400 flex justify-between items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <div className="font-normal">Goal:</div>
-                    <div className="font-medium">
+                <div className="mt-2 text-gray-500 dark:text-neutral-400 grid grid-cols-2 gap-2">
+                  <div className="flex flex-col">
+                    <span className="text-xs">Goal:</span>
+                    <span className="font-medium">
                       {campaign?.currency?.toUpperCase()}{' '}
                       {parseFloat(campaign.goal_amount).toLocaleString()}
-                    </div>
+                    </span>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="font-normal">Raised:</div>
-                    <div className="font-medium">
+                  <div className="flex flex-col">
+                    <span className="text-xs">Raised:</span>
+                    <span className="font-medium">
                       {campaign?.currency?.toUpperCase()}{' '}
                       {parseFloat(campaign.transferred_amount).toLocaleString()}
-                    </div>
+                    </span>
                   </div>
                 </div>
 
-                {/* Team Members for Equity Campaigns */}
                 {campaign.type === 'EquityCampaign' &&
                   campaign.team_members &&
                   campaign.team_members.length > 0 && (
@@ -335,38 +468,73 @@ const Campaigns: React.FC = () => {
                     </div>
                   )}
 
-                <div className="mt-4 flex justify-between items-center">
-                  <div className="flex gap-3 items-center">
-                    <Button
-                      className={`px-4 py-2 rounded-full ${status.color}`}
-                      variant="ghost"
-                      size="default"
-                    >
+                <div className="mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className={`text-sm ${status.color}`}>
                       {status.text}
-                    </Button>
+                    </span>
+                    {status.text === 'Pending Approval' && (
+                      <InfoTooltip
+                        id={`pending-tooltip-${campaign.id}`}
+                        content="This campaign is currently undergoing thorough due diligence by our team. 
+          We're carefully reviewing all details to ensure compliance and viability. 
+          You'll be notified once the review is complete."
+                      />
+                    )}
+                    {status.text === 'Approved' && (
+                      <InfoTooltip
+                        id={`approved-tooltip-${campaign.id}`}
+                        content="Congratulations! Your campaign has successfully passed all due diligence checks. 
+          You can now launch your campaign to make it publicly visible. 
+          Click the vertical dots menu in the top right corner and select 'Launch Campaign' to proceed"
+                      />
+                    )}
+
                     <div className="flex items-center gap-1">
                       <span
-                        className={`w-2 h-2 rounded-full 
-                        ${campaign.permissions.is_public ? 'bg-green-500' : 'bg-gray-500'}`}
+                        className={`w-2 h-2 rounded-full ${
+                          campaign.permissions.is_public
+                            ? 'bg-green-500'
+                            : 'bg-gray-500'
+                        }`}
                       ></span>
-                      <span className="text-gray-500 font-semibold text-xs">
+                      <span className="text-xs text-gray-500 dark:text-neutral-400">
                         {campaign.permissions.is_public ? 'Public' : 'Private'}
                       </span>
                     </div>
+
+                    {campaign.type === 'EquityCampaign' && (
+                      <div className="flex items-center gap-1">
+                        {(() => {
+                          const baseStatus = getBaseCampaignStatus(campaign);
+                          return baseStatus ? (
+                            <>
+                              <span
+                                className={`w-2 h-2 rounded-full ${baseStatus.color}`}
+                              ></span>
+                              <span className={`text-xs ${baseStatus.color}`}>
+                                {baseStatus.text}
+                              </span>
+                            </>
+                          ) : null;
+                        })()}
+                      </div>
+                    )}
                   </div>
-                  <div className="flex gap-2 items-center">
+
+                  <div className="flex gap-2 w-full sm:w-auto">
                     <Button
-                      className="px-4 py-2 text-gray-500 rounded-full"
-                      variant="secondary"
-                      size="default"
+                      className="w-full sm:w-auto px-3 py-1.5 text-sm"
+                      variant="outline"
+                      size="sm"
                       onClick={() => handleViewCampaignDetails(campaign)}
                     >
                       View
                     </Button>
                     <Button
-                      className="px-4 py-2 text-gray-700 dark:text-gray-300 rounded-full"
-                      variant="secondary"
-                      size="default"
+                      className="w-full sm:w-auto px-3 py-1.5 text-sm"
+                      variant="outline"
+                      size="sm"
                       onClick={() => handleOpenModal(campaign)}
                     >
                       Preview
@@ -379,25 +547,45 @@ const Campaigns: React.FC = () => {
         </div>
       )}
 
-      {/* AlertPopup for confirming delete or cancel action */}
       <AlertPopup
         title={
           actionType === 'delete'
-            ? campaignToActOn?.title || 'Confirm Deletion'
-            : 'Confirm Cancelation'
+            ? 'Confirm Deletion'
+            : actionType === 'cancel'
+              ? 'Confirm Cancellation'
+              : actionType === 'submit'
+                ? 'Submit for Approval'
+                : actionType === 'launch'
+                  ? 'Launch Campaign'
+                  : 'Close Campaign'
         }
         message={
           actionType === 'delete'
             ? 'Are you sure you want to delete this campaign?'
-            : 'Are you sure you want to cancel this campaign?'
+            : actionType === 'cancel'
+              ? 'Are you sure you want to cancel this campaign?'
+              : actionType === 'submit'
+                ? 'Submit this campaign for admin approval?'
+                : actionType === 'launch'
+                  ? 'Launch this campaign to make it publicly visible?'
+                  : 'Close this campaign to prevent further investments?'
         }
         isOpen={alertPopupOpen}
         setIsOpen={setAlertPopupOpen}
         onConfirm={confirmAction}
         onCancel={() => setAlertPopupOpen(false)}
+        confirmText={
+          actionType === 'submit'
+            ? 'Submit'
+            : actionType === 'launch'
+              ? 'Launch'
+              : actionType === 'close'
+                ? 'Close'
+                : 'Confirm'
+        }
+        loading={equityActionLoading}
       />
 
-      {/* Modal for previewing campaign details */}
       {selectedCampaign && (
         <Modal
           isOpen={isModalOpen}
@@ -439,7 +627,6 @@ const Campaigns: React.FC = () => {
         </Modal>
       )}
 
-      {/* Team & Documents Modal */}
       <Modal
         isOpen={isTeamDocumentsModalOpen}
         onClose={() => setIsTeamDocumentsModalOpen(false)}
@@ -502,7 +689,6 @@ const Campaigns: React.FC = () => {
           )}
         </div>
       </Modal>
-      {/* Space Below the Page */}
       <div className="h-20"></div>
     </div>
   );

@@ -135,10 +135,16 @@ const SignaturePad: React.FC<SignaturePadProps> = ({ onSave, onCancel }) => {
         />
       </div>
       <div className="flex justify-between w-full">
-        <Button variant="outline" onClick={clearSignature}>
+        <Button variant="destructive" onClick={clearSignature}>
           Clear Signature
         </Button>
-        <Button onClick={() => onSave(signature)}>Apply Signature</Button>
+        <Button
+          variant="ghost"
+          onClick={() => onSave(signature)}
+          className="bg-green-200 text-green-600"
+        >
+          Apply Signature
+        </Button>
       </div>
     </div>
   );

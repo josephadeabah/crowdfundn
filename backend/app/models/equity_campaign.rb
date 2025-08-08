@@ -19,10 +19,11 @@ class EquityCampaign < Campaign
   enum :equity_status, {
     draft: 0,
     pending_approval: 1,
-    live: 2,
-    funded: 3,
-    failed: 4,
-    closed: 5
+    approved: 2,
+    live: 3,
+    funded: 4,
+    failed: 5,
+    closed: 6
   }
 
   after_update :update_investments_valuation, if: :saved_change_to_valuation?
@@ -32,6 +33,86 @@ class EquityCampaign < Campaign
     equity_investments.completed.each do |investment|
       InvestmentUpdateJob.perform_later(investment.id)
     end
+  # State transition methods
+  def submit_for_approval
+    if may_submit_for_approval?
+      update!(equity_status: :pending_approval)
+    else
+      false
+    end
+  end
+
+  def approve
+    if may_approve?
+      update!(equity_status: :approved)
+    else
+      false
+    end
+  end
+
+  def reject
+    if may_reject?
+      update!(equity_status: :draft)
+    else
+      false
+    end
+  end
+
+  def launch
+    if may_launch?
+      update!(equity_status: :live)
+    else
+      false
+    end
+  end
+
+  def close
+    if may_close?
+      update!(equity_status: :closed)
+    else
+      false
+    end
+  end
+
+  # State predicate methods
+  def may_submit_for_approval?
+    draft? && valid_for_approval?
+  end
+
+  def may_approve?
+    pending_approval?
+  end
+
+  def may_reject?
+    pending_approval?
+  end
+
+  def may_launch?
+    approved?
+  end
+
+  def may_close?
+    live? || funded?
+  end
+
+  def valid_for_approval?
+    [
+      title.present?,
+      description.present?,
+      valuation.present?,
+      equity_offered.present?,
+      minimum_investment.present?,
+      maximum_investment.present?,
+      company_name.present?,
+      company_description.present?,
+      campaign_team_members.exists?(role: 'founder')
+    ].all?
+  end
+  
+  # This method is used to determine the number of shares in money available for investment.
+  def shares_available
+    return 0 if equity_offered.nil? || valuation.nil? || equity_offered <= 0 || valuation <= 0
+    (equity_offered.to_f * valuation.to_f / 100) - equity_investments.sum(:amount)
   end
 
   def update_shares_available

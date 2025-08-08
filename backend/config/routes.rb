@@ -173,8 +173,14 @@ Rails.application.routes.draw do
 
       # General equity management
       namespace :equity do
-        resources :campaigns, controller: 'base_campaigns_controller' do
+        resources :campaigns, only: [] do
+          collection do
+            get :pending_review 
+          end
           member do
+            post :submit_for_approval
+            post :approve
+            post :reject
             post :launch
             post :close
           end
