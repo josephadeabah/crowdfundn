@@ -458,7 +458,7 @@ const Campaigns: React.FC = () => {
 
                 <div className="mt-4 flex justify-between items-center">
                   <div className="flex gap-3 items-center">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center">
                       <Button
                         className={`px-4 py-2 rounded-full ${status.color}`}
                         variant="ghost"
