@@ -168,7 +168,6 @@ const Campaigns: React.FC = () => {
   };
 
   const getStatusDisplay = (campaign: CampaignResponseDataType) => {
-    // Handle equity campaign statuses
     if (campaign.type === 'EquityCampaign') {
       switch (campaign.equity_status) {
         case 'draft':
@@ -190,7 +189,6 @@ const Campaigns: React.FC = () => {
       }
     }
 
-    // Handle regular campaign statuses
     switch (campaign.status) {
       case 'active':
         return { text: 'Active', color: 'text-green-500' };
@@ -230,7 +228,6 @@ const Campaigns: React.FC = () => {
       );
     }
 
-    // Equity campaign specific actions
     const actions = [];
     if (campaign.equity_status === 'draft') {
       actions.push(
@@ -328,13 +325,13 @@ const Campaigns: React.FC = () => {
                 key={campaign.id}
                 className="relative p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 dark:hover:bg-neutral-700 flex flex-col justify-between"
               >
-                <div className="flex justify-between items-start">
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex-1 pr-4">
+                <div className="flex justify-between items-start gap-2">
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white line-clamp-2 break-words">
                     {campaign.title}
                   </h3>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <button className="text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-200">
+                      <button className="text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-200 flex-shrink-0">
                         <DotsVerticalIcon className="h-6 w-6" />
                       </button>
                     </PopoverTrigger>
@@ -362,20 +359,20 @@ const Campaigns: React.FC = () => {
                   </Popover>
                 </div>
 
-                <div className="text-gray-500 dark:text-neutral-400 flex justify-between items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <div className="font-normal">Goal:</div>
-                    <div className="font-medium">
+                <div className="mt-2 text-gray-500 dark:text-neutral-400 grid grid-cols-2 gap-2">
+                  <div className="flex flex-col">
+                    <span className="text-xs">Goal:</span>
+                    <span className="font-medium">
                       {campaign?.currency?.toUpperCase()}{' '}
                       {parseFloat(campaign.goal_amount).toLocaleString()}
-                    </div>
+                    </span>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="font-normal">Raised:</div>
-                    <div className="font-medium">
+                  <div className="flex flex-col">
+                    <span className="text-xs">Raised:</span>
+                    <span className="font-medium">
                       {campaign?.currency?.toUpperCase()}{' '}
                       {parseFloat(campaign.transferred_amount).toLocaleString()}
-                    </div>
+                    </span>
                   </div>
                 </div>
 
@@ -471,43 +468,41 @@ const Campaigns: React.FC = () => {
                     </div>
                   )}
 
-                <div className="mt-4 flex justify-between items-center">
-                  <div className="flex gap-3 items-center">
-                    <div className="flex items-center">
-                      <Button
-                        className={`px-4 py-2 rounded-full ${status.color}`}
-                        variant="ghost"
-                        size="default"
-                      >
-                        {status.text}
-                      </Button>
-                      {status.text === 'Pending Approval' && (
-                        <InfoTooltip
-                          id={`pending-tooltip-${campaign.id}`}
-                          content="This campaign is currently undergoing thorough due diligence by our team. 
+                <div className="mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className={`text-sm ${status.color}`}>
+                      {status.text}
+                    </span>
+                    {status.text === 'Pending Approval' && (
+                      <InfoTooltip
+                        id={`pending-tooltip-${campaign.id}`}
+                        content="This campaign is currently undergoing thorough due diligence by our team. 
           We're carefully reviewing all details to ensure compliance and viability. 
           You'll be notified once the review is complete."
-                        />
-                      )}
-                      {status.text === 'Approved' && (
-                        <InfoTooltip
-                          id={`approved-tooltip-${campaign.id}`}
-                          content="Congratulations! Your campaign has successfully passed all due diligence checks. 
+                      />
+                    )}
+                    {status.text === 'Approved' && (
+                      <InfoTooltip
+                        id={`approved-tooltip-${campaign.id}`}
+                        content="Congratulations! Your campaign has successfully passed all due diligence checks. 
           You can now launch your campaign to make it publicly visible. 
-          Click the vertical dots menu in the top right corner and select 'Launch Campaign' to proceed."
-                        />
-                      )}
-                    </div>
+          Click the vertical dots menu in the top right corner and select 'Launch Campaign' to proceed"
+                      />
+                    )}
+
                     <div className="flex items-center gap-1">
                       <span
-                        className={`w-2 h-2 rounded-full 
-        ${campaign.permissions.is_public ? 'bg-green-500' : 'bg-gray-500'}`}
+                        className={`w-2 h-2 rounded-full ${
+                          campaign.permissions.is_public
+                            ? 'bg-green-500'
+                            : 'bg-gray-500'
+                        }`}
                       ></span>
-                      <span className="text-gray-500 font-semibold text-xs">
+                      <span className="text-xs text-gray-500 dark:text-neutral-400">
                         {campaign.permissions.is_public ? 'Public' : 'Private'}
                       </span>
                     </div>
-                    {/* Add base status display for equity campaigns */}
+
                     {campaign.type === 'EquityCampaign' && (
                       <div className="flex items-center gap-1">
                         {(() => {
@@ -517,9 +512,7 @@ const Campaigns: React.FC = () => {
                               <span
                                 className={`w-2 h-2 rounded-full ${baseStatus.color}`}
                               ></span>
-                              <span
-                                className={`text-xs font-semibold ${baseStatus.color}`}
-                              >
+                              <span className={`text-xs ${baseStatus.color}`}>
                                 {baseStatus.text}
                               </span>
                             </>
@@ -528,19 +521,20 @@ const Campaigns: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  <div className="flex gap-2 items-center">
+
+                  <div className="flex gap-2 w-full sm:w-auto">
                     <Button
-                      className="px-4 py-2 text-gray-500 rounded-full"
-                      variant="secondary"
-                      size="default"
+                      className="w-full sm:w-auto px-3 py-1.5 text-sm"
+                      variant="outline"
+                      size="sm"
                       onClick={() => handleViewCampaignDetails(campaign)}
                     >
                       View
                     </Button>
                     <Button
-                      className="px-4 py-2 text-gray-700 dark:text-gray-300 rounded-full"
-                      variant="secondary"
-                      size="default"
+                      className="w-full sm:w-auto px-3 py-1.5 text-sm"
+                      variant="outline"
+                      size="sm"
                       onClick={() => handleOpenModal(campaign)}
                     >
                       Preview
