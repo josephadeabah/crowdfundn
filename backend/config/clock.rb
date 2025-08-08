@@ -1,8 +1,8 @@
 # config/clock.rb
+require 'clockwork'
 require './config/boot'
 require './config/environment'
 
-require 'clockwork'
 include Clockwork
 
 every(8.hours, 'send_webhook') do
