@@ -152,20 +152,24 @@ const Campaigns: React.FC = () => {
     }
   };
 
+  const getBaseCampaignStatus = (campaign: CampaignResponseDataType) => {
+    if (campaign.type !== 'EquityCampaign') return null;
+
+    switch (campaign.status) {
+      case 'active':
+        return { text: 'Active', color: 'text-green-500' };
+      case 'completed':
+        return { text: 'Completed', color: 'text-red-500' };
+      case 'canceled':
+        return { text: 'Canceled', color: 'text-orange-300' };
+      default:
+        return null;
+    }
+  };
+
   const getStatusDisplay = (campaign: CampaignResponseDataType) => {
     // Handle equity campaign statuses
     if (campaign.type === 'EquityCampaign') {
-      // First check the base status (active/completed/canceled)
-      switch (campaign.status) {
-        case 'active':
-          return { text: 'Active', color: 'text-green-500' };
-        case 'completed':
-          return { text: 'Completed', color: 'text-red-500' };
-        case 'canceled':
-          return { text: 'Canceled', color: 'text-orange-300' };
-      }
-
-      // Then fall back to equity-specific statuses if base status not set
       switch (campaign.equity_status) {
         case 'draft':
           return { text: 'Draft', color: 'text-blue-500' };
@@ -503,6 +507,26 @@ const Campaigns: React.FC = () => {
                         {campaign.permissions.is_public ? 'Public' : 'Private'}
                       </span>
                     </div>
+                    {/* Add base status display for equity campaigns */}
+                    {campaign.type === 'EquityCampaign' && (
+                      <div className="flex items-center gap-1">
+                        {(() => {
+                          const baseStatus = getBaseCampaignStatus(campaign);
+                          return baseStatus ? (
+                            <>
+                              <span
+                                className={`w-2 h-2 rounded-full ${baseStatus.color}`}
+                              ></span>
+                              <span
+                                className={`text-xs font-semibold ${baseStatus.color}`}
+                              >
+                                {baseStatus.text}
+                              </span>
+                            </>
+                          ) : null;
+                        })()}
+                      </div>
+                    )}
                   </div>
                   <div className="flex gap-2 items-center">
                     <Button
