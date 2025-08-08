@@ -98,14 +98,20 @@ class CampaignRejectionEmailService
                 text-decoration: underline;
               }
               .action-button {
-                display: inline-block;
-                background-color: #8ABB6C;
-                color: #ffffff;
-                padding: 10px 20px;
-                text-decoration: none;
-                border-radius: 5px;
-                margin-top: 15px;
-              }
+              display: inline-block;
+              background-color: #8ABB6C;
+              color: white !important; 
+              padding: 10px 20px;
+              text-decoration: none;
+              border-radius: 5px;
+              margin-top: 15px;
+              font-weight: bold;  
+              border: none; 
+            }
+            .action-button:hover {
+              background-color: #6DA34A; 
+              color: white !important; 
+            }
             </style>
           </head>
           <body>
