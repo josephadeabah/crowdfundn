@@ -120,7 +120,11 @@ const Campaigns: React.FC = () => {
     if (!campaignToActOn || !actionType) return;
 
     try {
-      let result;
+      let result: {
+        success: boolean;
+        error?: string;
+        requirements?: { validation_errors?: string[] };
+      };
 
       if (actionType === 'delete') {
         await deleteCampaign(String(campaignToActOn.id));
@@ -135,7 +139,9 @@ const Campaigns: React.FC = () => {
         } else {
           showToast(
             'Error',
-            result.error || 'Failed to submit campaign',
+            [result?.error, result?.requirements?.validation_errors?.[0]]
+              .filter(Boolean)
+              .join(' - ') || 'Failed to submit campaign',
             'error',
           );
         }
