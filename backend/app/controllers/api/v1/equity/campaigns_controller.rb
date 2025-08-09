@@ -1,3 +1,4 @@
+# app/controllers/api/v1/equity/campaigns_controller.rb
 module Api
   module V1
     module Equity
@@ -9,7 +10,7 @@ module Api
           page_size = params[:pageSize] || 20
           
           @campaigns = EquityCampaign.pending_approval
-                          .includes(:fundraiser, :campaign_team_members,  investor_documents: [:files_attachments])
+                          .includes(:fundraiser, :campaign_team_members, investor_documents: [:files_attachments])
                           .order(created_at: :desc)
                           .page(page)
                           .per(page_size)
@@ -46,9 +47,7 @@ module Api
 
         def reject
           if @campaign.reject
-            # Send rejection email
             CampaignRejectionEmailService.send_rejection_email(@campaign, params[:rejection_reason])
-            
             render json: campaign_json(@campaign), status: :ok
           else
             render json: { 
@@ -59,7 +58,7 @@ module Api
         end
         
         def launch
-          if @campaign.may_launch? && @campaign.launch  # Remove the ! here
+          if @campaign.may_launch? && @campaign.launch
             render json: campaign_json(@campaign), status: :ok
           else
             render json: { 
@@ -81,6 +80,62 @@ module Api
               errors: @campaign.errors.full_messages
             }, status: :unprocessable_entity
           end
+        end
+
+        private
+
+        def campaign_json(campaign)
+          {
+            id: campaign.id,
+            title: campaign.title,
+            slug: campaign.slug,
+            description: campaign.description,
+            goal_amount: campaign.goal_amount,
+            current_amount: campaign.current_amount,
+            transferred_amount: campaign.transferred_amount,
+            equity_status: campaign.equity_status,
+            valuation: campaign.valuation,
+            equity_offered: campaign.equity_offered,
+            minimum_investment: campaign.minimum_investment,
+            shares_available: campaign.shares_available,
+            percentage_raised: campaign.percentage_raised,
+            total_investors: campaign.total_investors,
+            created_at: campaign.created_at,
+            updated_at: campaign.updated_at,
+            fundraiser: {
+              id: campaign.fundraiser.id,
+              name: campaign.fundraiser.full_name,
+              email: campaign.fundraiser.email
+            },
+            team_members: campaign.campaign_team_members.map do |member|
+              {
+                id: member.id,
+                name: member.name,
+                role: member.role,
+                equity_percentage: member.equity_percentage
+              }
+            end,
+            documents: campaign.investor_documents.map do |doc|
+              {
+                id: doc.id,
+                type: doc.document_type,
+                display_name: doc.display_name,
+                files: doc.files.map do |file|
+                  {
+                    url: file.url,
+                    filename: file.filename,
+                    size: file.byte_size,
+                    human_size: ActiveSupport::NumberHelper.number_to_human_size(file.byte_size),
+                    uploaded_at: file.created_at
+                  }
+                end
+              }
+            end
+          }
+        end
+
+        def set_campaign
+          @campaign = EquityCampaign.find(params[:id])
         end
       end
     end
