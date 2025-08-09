@@ -37,7 +37,11 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
   const rewards = campaigns
     ?.filter(
       (campaign) =>
-        campaign.status !== 'completed' && campaign.permissions.is_public,
+        campaign.status !== 'completed' &&
+        campaign.equity_status !== 'draft' &&
+        campaign.equity_status !== 'pending_approval' &&
+        campaign.equity_status !== 'failed' &&
+        campaign.permissions.is_public,
     )
     .flatMap((campaign) =>
       campaign.rewards.map((reward) => ({

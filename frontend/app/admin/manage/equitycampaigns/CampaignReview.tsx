@@ -1,3 +1,4 @@
+// app/components/campaign/CampaignReview.tsx
 'use client';
 import {
   Card,
@@ -16,13 +17,18 @@ import {
   FileText,
   DollarSign,
   XCircle,
+  Download,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { Progress } from '@/app/components/ui/progress';
 import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
-import { EquityCampaignResponseDataType } from '@/app/types/equityCampaigns.types';
+import {
+  EquityCampaignResponseDataType,
+  InvestorDocument,
+} from '@/app/types/equityCampaigns.types';
 import { useRouter } from 'next/navigation';
+import Modal from '@/app/components/modal/Modal';
 
 interface CampaignReviewProps {
   statusFilter?: string;
@@ -48,6 +54,9 @@ export function CampaignReview({
   const [rejectionReason, setRejectionReason] = useState<string>('');
   const [isRejectModalOpen, setIsRejectModalOpen] = useState<boolean>(false);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState<boolean>(false);
+  const [isDocumentModalOpen, setIsDocumentModalOpen] =
+    useState<boolean>(false);
+  const [documentFilter, setDocumentFilter] = useState<string>('all');
 
   useEffect(() => {
     const loadPendingCampaigns = async () => {
@@ -137,6 +146,114 @@ export function CampaignReview({
     }
   };
 
+  const DocumentSection = ({
+    documents,
+  }: {
+    documents: InvestorDocument[];
+  }) => {
+    const filteredDocs =
+      documentFilter === 'all'
+        ? documents
+        : documents.filter((doc) => doc.document_type === documentFilter);
+
+    const documentGroups = filteredDocs.reduce(
+      (acc, doc) => {
+        if (!acc[doc.document_type]) {
+          acc[doc.document_type] = [];
+        }
+        acc[doc.document_type].push(doc);
+        return acc;
+      },
+      {} as Record<string, InvestorDocument[]>,
+    );
+
+    return (
+      <div className="mt-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-medium">Due Diligence Documents</h3>
+          <div className="flex space-x-2">
+            <Button
+              variant={documentFilter === 'all' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setDocumentFilter('all')}
+            >
+              All
+            </Button>
+            <Button
+              variant={documentFilter === 'pitch' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setDocumentFilter('pitch')}
+            >
+              Pitch
+            </Button>
+            <Button
+              variant={
+                documentFilter === 'financial_statement' ? 'default' : 'outline'
+              }
+              size="sm"
+              onClick={() => setDocumentFilter('financial_statement')}
+            >
+              Financials
+            </Button>
+            <Button
+              variant={
+                documentFilter === 'business_plan' ? 'default' : 'outline'
+              }
+              size="sm"
+              onClick={() => setDocumentFilter('business_plan')}
+            >
+              Business Plan
+            </Button>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          {Object.entries(documentGroups).map(([type, docs]) => (
+            <div key={type} className="border rounded-lg p-4">
+              <h4 className="font-medium mb-2 capitalize">
+                {docs[0].display_name || type.replace('_', ' ')}
+              </h4>
+              <div className="space-y-2">
+                {docs.flatMap((doc) =>
+                  doc.files.map((file) => (
+                    <div
+                      key={file.url}
+                      className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <FileText className="w-4 h-4 text-gray-500" />
+                        <div>
+                          <p className="text-sm">{file.filename}</p>
+                          <p className="text-xs text-gray-500">
+                            {file.human_size}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-gray-500">
+                          {new Date(file.uploaded_at).toLocaleDateString()}
+                        </span>
+                        <a
+                          href={file.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-blue-600 hover:underline flex items-center"
+                        >
+                          <Download className="w-4 h-4 mr-1" />
+                          Download
+                        </a>
+                      </div>
+                    </div>
+                  )),
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   if (loading)
     return (
       <div className="flex justify-center items-center h-64">
@@ -175,17 +292,17 @@ export function CampaignReview({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Live Campaigns
+                  Total Documents
                 </p>
                 <p className="text-3xl font-bold text-green-600">
-                  {
-                    pendingCampaigns.filter((c) => c.equity_status === 'live')
-                      .length
-                  }
+                  {pendingCampaigns.reduce(
+                    (sum, campaign) => sum + (campaign.documents?.length || 0),
+                    0,
+                  )}
                 </p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-green-600" />
+                <FileText className="w-6 h-6 text-green-600" />
               </div>
             </div>
           </CardContent>
@@ -281,10 +398,16 @@ export function CampaignReview({
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                    <div className="flex items-center space-x-2">
+                    <div
+                      className="flex items-center space-x-2 cursor-pointer"
+                      onClick={() => {
+                        setSelectedCampaign(campaign);
+                        setIsDocumentModalOpen(true);
+                      }}
+                    >
                       <FileText className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-600">
-                        {campaign.investor_documents?.length || 0} Documents
+                        {campaign.documents?.length || 0} Documents
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -346,6 +469,8 @@ export function CampaignReview({
                     </Button>
                     <Button
                       size="sm"
+                      variant="ghost"
+                      className="bg-bantu-green text-white hover:bg-green-600 hover:text-white"
                       onClick={() => {
                         setSelectedCampaign(campaign);
                         setIsApproveModalOpen(true);
@@ -423,6 +548,22 @@ export function CampaignReview({
         confirmDisabled={!rejectionReason.trim()}
         cancelButtonClass="bg-red-400 hover:bg-red-500 text-white"
       />
+
+      {/* Document Modal */}
+      <Modal
+        isOpen={isDocumentModalOpen}
+        onClose={() => setIsDocumentModalOpen(false)}
+        size="xxxlarge"
+      >
+        {selectedCampaign && (
+          <div className="p-6">
+            <h3 className="text-xl font-bold mb-4">
+              Documents for {selectedCampaign.title}
+            </h3>
+            <DocumentSection documents={selectedCampaign.documents} />
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

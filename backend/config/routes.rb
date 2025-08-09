@@ -196,7 +196,7 @@ Rails.application.routes.draw do
   end
 
   # Health check route
-  get "/healthz", to: proc { [200, {}, ["OK"]] }
+  get '/health', to: proc { [200, {}, ['OK']] }
   get 'up' => 'rails/health#show', as: :rails_health_check
   # Catch-all route for unmatched requests (must be the last route)
   match '*unmatched', to: 'application#not_found', via: :all

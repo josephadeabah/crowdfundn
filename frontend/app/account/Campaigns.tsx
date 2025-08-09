@@ -28,6 +28,7 @@ import CampaignTeamDocuments from '@/app/components/campaign/CampaignTeamDocumen
 import Avatar from '../components/avatar/Avatar';
 import ToastComponent from '@/app/components/toast/Toast';
 import InfoTooltip from '../components/tooltip/tooltip';
+import { getDetailedErrorMessage } from '../types/campaign.error.messages.types';
 
 const Campaigns: React.FC = () => {
   const {
@@ -119,32 +120,86 @@ const Campaigns: React.FC = () => {
     if (!campaignToActOn || !actionType) return;
 
     try {
+      let result:
+        | {
+            success: boolean;
+            error?: string;
+            details?: string[];
+            requirements?: {
+              [key: string]: boolean | string[] | undefined;
+              validation_errors?: string[];
+            };
+          }
+        | undefined;
+      let successMessage = '';
+
       if (actionType === 'delete') {
         await deleteCampaign(String(campaignToActOn.id));
-        showToast('Success', 'Campaign deleted successfully', 'success');
+        successMessage = 'Campaign deleted successfully';
       } else if (actionType === 'cancel') {
         await cancelCampaign(String(campaignToActOn.id));
-        showToast('Success', 'Campaign canceled successfully', 'success');
+        successMessage = 'Campaign canceled successfully';
       } else if (actionType === 'submit') {
-        await submitForApproval(String(campaignToActOn.id));
-        showToast('Success', 'Campaign submitted for approval', 'success');
+        result = await submitForApproval(String(campaignToActOn.id));
+        successMessage = 'Campaign submitted for approval';
       } else if (actionType === 'launch') {
-        await launchCampaign(String(campaignToActOn.id));
-        showToast('Success', 'Campaign launched successfully', 'success');
+        result = await launchCampaign(String(campaignToActOn.id));
+        successMessage = 'Campaign launched successfully';
       } else if (actionType === 'close') {
-        await closeCampaign(String(campaignToActOn.id));
-        showToast('Success', 'Campaign closed successfully', 'success');
+        result = await closeCampaign(String(campaignToActOn.id));
+        successMessage = 'Campaign closed successfully';
       }
 
-      await fetchUserCampaigns();
+      if (!result || result.success) {
+        showToast('Success', successMessage, 'success');
+        await fetchUserCampaigns();
+      } else {
+        // Collect all error messages
+        const errorMessages: string[] = [];
+
+        // Add main error if exists
+        if (result.error) {
+          errorMessages.push(result.error);
+        }
+
+        // Add validation errors from requirements.validation_errors if they exist
+        if (result.requirements?.validation_errors?.length) {
+          errorMessages.push(...result.requirements.validation_errors);
+        }
+
+        // Add regular details if they exist
+        if (result.details?.length) {
+          errorMessages.push(...result.details);
+        }
+
+        // Add unmet requirements (excluding validation_errors)
+        if (result.requirements) {
+          const unmetRequirements = Object.entries(result.requirements)
+            .filter(
+              ([key, value]) =>
+                key !== 'validation_errors' &&
+                typeof value === 'boolean' &&
+                !value,
+            )
+            .map(([req]) => req.replace(/_/g, ' '));
+
+          if (unmetRequirements.length) {
+            errorMessages.push(
+              `Requirements not met: ${unmetRequirements.join(', ')}`,
+            );
+          }
+        }
+
+        // Fallback if no specific errors were found
+        if (errorMessages.length === 0) {
+          errorMessages.push('Action failed for unknown reasons');
+        }
+
+        showToast('Error', errorMessages.join('\n'), 'error');
+      }
     } catch (error) {
-      showToast(
-        'Error',
-        `Failed to ${actionType} campaign: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`,
-        'error',
-      );
+      const errorMessage = getDetailedErrorMessage(error);
+      showToast('Error', errorMessage, 'error');
     } finally {
       setAlertPopupOpen(false);
       setCampaignToActOn(null);

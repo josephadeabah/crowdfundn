@@ -82,8 +82,18 @@ export interface EquityCampaignState extends CampaignState {
 
   // Campaign actions
   fetchPendingReviewCampaigns: () => Promise<EquityCampaignResponseDataType[]>;
-  launchCampaign: (id: string) => Promise<void>;
-  closeCampaign: (id: string) => Promise<void>;
+  submitForApproval: (
+    id: string,
+  ) => Promise<{ success: boolean; error?: string }>;
+  approveCampaign: (
+    id: string,
+  ) => Promise<{ success: boolean; error?: string }>;
+  rejectCampaign: (
+    id: string,
+    rejectionReason: string,
+  ) => Promise<{ success: boolean; error?: string }>;
+  launchCampaign: (id: string) => Promise<{ success: boolean; error?: string }>;
+  closeCampaign: (id: string) => Promise<{ success: boolean; error?: string }>;
 
   // Team member actions
   addTeamMember: (
@@ -130,7 +140,4 @@ export interface EquityCampaignState extends CampaignState {
     campaignId: string,
     certificateId: string,
   ) => Promise<void>;
-  submitForApproval: (id: string) => Promise<void>;
-  approveCampaign: (id: string) => Promise<void>;
-  rejectCampaign: (id: string, rejectionReason: string) => Promise<void>;
 }

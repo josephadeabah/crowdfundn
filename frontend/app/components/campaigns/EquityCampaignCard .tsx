@@ -79,6 +79,8 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
         return 'bg-blue-500/10 text-blue-500';
       case 'funded':
         return 'bg-purple-500/10 text-purple-500';
+      case 'closed':
+        return 'bg-red-500/10 text-red-500';
       default:
         return 'bg-gray-500/10 text-gray-500';
     }
@@ -120,7 +122,9 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
           <span
             className={`absolute top-4 left-4 px-2 py-1 text-xs font-semibold rounded-full ${getEquityStatusColor(campaign.equity_status ?? '')}`}
           >
-            {campaign.equity_status?.toUpperCase()}
+            {campaign.equity_status === 'approved'
+              ? 'READY TO LAUNCH'
+              : campaign.equity_status?.toUpperCase()}
           </span>
 
           <button

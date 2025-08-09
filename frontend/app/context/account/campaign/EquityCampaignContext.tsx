@@ -16,10 +16,18 @@ import {
   EquityCampaignState,
   InvestorDocument,
 } from '@/app/types/equityCampaigns.types';
+import { getDetailedErrorMessage } from '@/app/types/campaign.error.messages.types';
 
 const EquityCampaignContext = createContext<EquityCampaignState | undefined>(
   undefined,
 );
+
+export type CampaignActionResult = {
+  success: boolean;
+  error?: string;
+  validationErrors?: string[];
+  requirements?: Record<string, boolean>;
+};
 
 export const EquityCampaignProvider = ({
   children,
@@ -38,9 +46,14 @@ export const EquityCampaignProvider = ({
     useState<InvestorDocument | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const { fetchUserCampaigns } = useCampaignContext();
 
-  const handleApiError = (errorText: string) => {
-    setError(errorText);
+  const handleApiError = (errorData: any) => {
+    if (typeof errorData === 'string') {
+      setError(errorData);
+    } else {
+      setError(getDetailedErrorMessage(errorData));
+    }
   };
 
   // Document Management
@@ -61,7 +74,8 @@ export const EquityCampaignProvider = ({
         );
 
         if (!response.ok) {
-          handleApiError("Couldn't fetch documents. Please try again.");
+          const errorData = await response.json().catch(() => ({}));
+          handleApiError(errorData);
           return;
         }
 
@@ -95,7 +109,8 @@ export const EquityCampaignProvider = ({
         );
 
         if (!response.ok) {
-          handleApiError("Couldn't fetch document. Please try again.");
+          const errorData = await response.json().catch(() => ({}));
+          handleApiError(errorData);
           return;
         }
 
@@ -137,7 +152,8 @@ export const EquityCampaignProvider = ({
         );
 
         if (!response.ok) {
-          handleApiError("Couldn't create document. Please try again.");
+          const errorData = await response.json().catch(() => ({}));
+          handleApiError(errorData);
           return null;
         }
 
@@ -182,7 +198,8 @@ export const EquityCampaignProvider = ({
         );
 
         if (!response.ok) {
-          handleApiError("Couldn't update document. Please try again.");
+          const errorData = await response.json().catch(() => ({}));
+          handleApiError(errorData);
           return null;
         }
 
@@ -220,7 +237,8 @@ export const EquityCampaignProvider = ({
         );
 
         if (!response.ok) {
-          handleApiError("Couldn't delete document. Please try again.");
+          const errorData = await response.json().catch(() => ({}));
+          handleApiError(errorData);
           return;
         }
 
@@ -237,13 +255,14 @@ export const EquityCampaignProvider = ({
   );
 
   // Equity Campaign Special Actions
+
   const submitForApproval = useCallback(
-    async (id: string): Promise<void> => {
+    async (campaignId: string): Promise<CampaignActionResult> => {
       setLoading(true);
       setError(null);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${id}/submit_for_approval`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${campaignId}/submit_for_approval`,
           {
             method: 'POST',
             headers: {
@@ -253,62 +272,83 @@ export const EquityCampaignProvider = ({
           },
         );
 
+        const data = await response.json();
+
         if (!response.ok) {
-          handleApiError(
-            'Failed to submit campaign for approval. Please try again.',
-          );
-          return;
+          // Handle structured error response from backend
+          return {
+            success: false,
+            error: data.error || 'Submission failed',
+            validationErrors: data.details,
+            requirements: data.requirements,
+          };
         }
 
-        const updatedCampaign = await response.json();
+        await fetchUserCampaigns();
+        return { success: true };
       } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : 'Error submitting campaign for approval',
-        );
+        return {
+          success: false,
+          error: getDetailedErrorMessage(err),
+        };
       } finally {
         setLoading(false);
       }
     },
-    [token],
+    [token, fetchUserCampaigns],
   );
 
-  const approveCampaign = useCallback(async (id: string): Promise<void> => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${id}/approve`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (!response.ok) {
-        handleApiError('Failed to approve campaign. Please try again.');
-        return;
-      }
-
-      const updatedCampaign = await response.json();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error approving campaign');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const rejectCampaign = useCallback(
-    async (id: string, rejectionReason: string): Promise<void> => {
+  const approveCampaign = useCallback(
+    async (campaignId: string): Promise<CampaignActionResult> => {
       setLoading(true);
       setError(null);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${id}/reject`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${campaignId}/approve`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          return {
+            success: false,
+            error: data.error || 'Approval failed',
+            validationErrors: data.details,
+            requirements: data.requirements,
+          };
+        }
+
+        await fetchUserCampaigns();
+        return { success: true };
+      } catch (err) {
+        return {
+          success: false,
+          error: getDetailedErrorMessage(err),
+        };
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token, fetchUserCampaigns],
+  );
+
+  const rejectCampaign = useCallback(
+    async (
+      campaignId: string,
+      rejectionReason: string,
+    ): Promise<CampaignActionResult> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${campaignId}/reject`,
           {
             method: 'POST',
             headers: {
@@ -319,30 +359,38 @@ export const EquityCampaignProvider = ({
           },
         );
 
+        const data = await response.json();
+
         if (!response.ok) {
-          handleApiError('Failed to reject campaign. Please try again.');
-          return;
+          return {
+            success: false,
+            error: data.error || 'Rejection failed',
+            validationErrors: data.details,
+            requirements: data.requirements,
+          };
         }
 
-        const updatedCampaign = await response.json();
+        await fetchUserCampaigns();
+        return { success: true };
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Error rejecting campaign',
-        );
+        return {
+          success: false,
+          error: getDetailedErrorMessage(err),
+        };
       } finally {
         setLoading(false);
       }
     },
-    [],
+    [token, fetchUserCampaigns],
   );
 
   const launchCampaign = useCallback(
-    async (id: string): Promise<void> => {
+    async (campaignId: string): Promise<CampaignActionResult> => {
       setLoading(true);
       setError(null);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${id}/launch`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${campaignId}/launch`,
           {
             method: 'POST',
             headers: {
@@ -352,30 +400,38 @@ export const EquityCampaignProvider = ({
           },
         );
 
+        const data = await response.json();
+
         if (!response.ok) {
-          handleApiError('Failed to launch campaign. Please try again.');
-          return;
+          return {
+            success: false,
+            error: data.error || 'Launch failed',
+            validationErrors: data.details,
+            requirements: data.requirements,
+          };
         }
 
-        const updatedCampaign = await response.json();
+        await fetchUserCampaigns();
+        return { success: true };
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Error launching campaign',
-        );
+        return {
+          success: false,
+          error: getDetailedErrorMessage(err),
+        };
       } finally {
         setLoading(false);
       }
     },
-    [token],
+    [token, fetchUserCampaigns],
   );
 
   const closeCampaign = useCallback(
-    async (id: string): Promise<void> => {
+    async (campaignId: string): Promise<CampaignActionResult> => {
       setLoading(true);
       setError(null);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${id}/close`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${campaignId}/close`,
           {
             method: 'POST',
             headers: {
@@ -385,19 +441,29 @@ export const EquityCampaignProvider = ({
           },
         );
 
+        const data = await response.json();
+
         if (!response.ok) {
-          handleApiError('Failed to close campaign. Please try again.');
-          return;
+          return {
+            success: false,
+            error: data.error || 'Closing failed',
+            validationErrors: data.details,
+            requirements: data.requirements,
+          };
         }
 
-        const updatedCampaign = await response.json();
+        await fetchUserCampaigns();
+        return { success: true };
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error closing campaign');
+        return {
+          success: false,
+          error: getDetailedErrorMessage(err),
+        };
       } finally {
         setLoading(false);
       }
     },
-    [token],
+    [token, fetchUserCampaigns],
   );
 
   // Team Member Management
@@ -418,7 +484,8 @@ export const EquityCampaignProvider = ({
         );
 
         if (!response.ok) {
-          handleApiError("Couldn't fetch team members. Please try again.");
+          const errorData = await response.json().catch(() => ({}));
+          handleApiError(errorData);
           return;
         }
 
@@ -455,7 +522,8 @@ export const EquityCampaignProvider = ({
         );
 
         if (!response.ok) {
-          handleApiError("Couldn't add team member. Please try again.");
+          const errorData = await response.json().catch(() => ({}));
+          handleApiError(errorData);
           return null;
         }
 
@@ -641,7 +709,8 @@ export const EquityCampaignProvider = ({
       );
 
       if (!response.ok) {
-        handleApiError("Couldn't fetch your investments. Please try again.");
+        const errorData = await response.json().catch(() => ({}));
+        handleApiError(errorData);
         return;
       }
 
@@ -751,23 +820,18 @@ export const EquityCampaignProvider = ({
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.error || "Couldn't fetch pending review campaigns",
-        );
+        handleApiError(errorData);
+        return [];
       }
 
       const data = await response.json();
       if (!data.campaigns) {
-        throw new Error('Invalid response format');
+        handleApiError('Invalid response format');
+        return [];
       }
       return data.campaigns;
     } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : 'Error fetching pending review campaigns';
-      setError(errorMessage);
-      console.error('Fetch error:', errorMessage);
+      handleApiError(err);
       return [];
     } finally {
       setLoading(false);

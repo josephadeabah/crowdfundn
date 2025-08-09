@@ -59,7 +59,6 @@ const SuggestedCampaignsComponent = ({
         campaignsGroupedByCategory[currentCategory]?.campaigns || [];
       setFilteredCampaigns(campaigns);
     }
-    console.log('campaigns cat', filteredCampaigns);
   }, [campaignsGroupedByCategory, currentCategory]);
 
   const handleFavorite = async (campaignId: string) => {
@@ -114,7 +113,12 @@ const SuggestedCampaignsComponent = ({
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 px-4">
         {filteredCampaigns
-          .filter((campaign) => campaign.permissions.is_public)
+          .filter((campaign) =>  campaign.status !== 'completed' &&
+      campaign.equity_status !== 'draft' &&
+      campaign.equity_status !== 'pending_approval' &&
+      campaign.equity_status !== 'failed' &&
+      campaign.type === 'EquityCampaign' &&
+      campaign.permissions.is_public)
           .map((campaign, index) => {
             const fundraiserCurrency =
               campaign?.currency_symbol || campaign?.currency?.toUpperCase();
