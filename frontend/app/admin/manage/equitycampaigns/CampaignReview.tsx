@@ -297,7 +297,7 @@ export function CampaignReview({
                 <p className="text-3xl font-bold text-green-600">
                   {pendingCampaigns.reduce(
                     (sum, campaign) => sum + (campaign.documents?.length || 0),
-                    0
+                    0,
                   )}
                 </p>
               </div>
@@ -346,8 +346,8 @@ export function CampaignReview({
             {pendingCampaigns.map((campaign) => {
               const progress = campaign.goal_amount
                 ? (parseFloat(campaign.transferred_amount || '0') /
-                  parseFloat(campaign.goal_amount || '0')) *
-                100
+                    parseFloat(campaign.goal_amount || '0')) *
+                  100
                 : 0;
 
               return (

@@ -119,6 +119,8 @@ const Campaigns: React.FC = () => {
     if (!campaignToActOn || !actionType) return;
 
     try {
+      let result;
+
       if (actionType === 'delete') {
         await deleteCampaign(String(campaignToActOn.id));
         showToast('Success', 'Campaign deleted successfully', 'success');
@@ -126,14 +128,38 @@ const Campaigns: React.FC = () => {
         await cancelCampaign(String(campaignToActOn.id));
         showToast('Success', 'Campaign canceled successfully', 'success');
       } else if (actionType === 'submit') {
-        await submitForApproval(String(campaignToActOn.id));
-        showToast('Success', 'Campaign submitted for approval', 'success');
+        result = await submitForApproval(String(campaignToActOn.id));
+        if (result.success) {
+          showToast('Success', 'Campaign submitted for approval', 'success');
+        } else {
+          showToast(
+            'Error',
+            result.error || 'Failed to submit campaign',
+            'error',
+          );
+        }
       } else if (actionType === 'launch') {
-        await launchCampaign(String(campaignToActOn.id));
-        showToast('Success', 'Campaign launched successfully', 'success');
+        result = await launchCampaign(String(campaignToActOn.id));
+        if (result.success) {
+          showToast('Success', 'Campaign launched successfully', 'success');
+        } else {
+          showToast(
+            'Error',
+            result.error || 'Failed to launch campaign',
+            'error',
+          );
+        }
       } else if (actionType === 'close') {
-        await closeCampaign(String(campaignToActOn.id));
-        showToast('Success', 'Campaign closed successfully', 'success');
+        result = await closeCampaign(String(campaignToActOn.id));
+        if (result.success) {
+          showToast('Success', 'Campaign closed successfully', 'success');
+        } else {
+          showToast(
+            'Error',
+            result.error || 'Failed to close campaign',
+            'error',
+          );
+        }
       }
 
       await fetchUserCampaigns();
