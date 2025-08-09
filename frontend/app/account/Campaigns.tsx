@@ -120,7 +120,15 @@ const Campaigns: React.FC = () => {
   if (!campaignToActOn || !actionType) return;
 
   try {
-    let result: { success: boolean; error?: string; details?: string[]; requirements?: Record<string, boolean> } | undefined;
+    let result: {
+      success: boolean;
+      error?: string;
+      details?: string[];
+      requirements?: {
+        [key: string]: boolean | string[] | undefined;
+        validation_errors?: string[];
+      };
+    } | undefined;
     let successMessage = '';
 
     if (actionType === 'delete') {
@@ -140,28 +148,36 @@ const Campaigns: React.FC = () => {
       successMessage = 'Campaign closed successfully';
     }
 
-    // Show success toast if no result (basic actions) or if result is successful
     if (!result || result.success) {
       showToast('Success', successMessage, 'success');
       await fetchUserCampaigns();
     } else {
-      // Handle complex error cases
-      const errorMessages = [];
+      // Collect all error messages
+      const errorMessages: string[] = [];
       
       // Add main error if exists
       if (result.error) {
         errorMessages.push(result.error);
       }
       
-      // Add validation errors if they exist
+      // Add validation errors from requirements.validation_errors if they exist
+      if (result.requirements?.validation_errors?.length) {
+        errorMessages.push(...result.requirements.validation_errors);
+      }
+      
+      // Add regular details if they exist
       if (result.details?.length) {
         errorMessages.push(...result.details);
       }
       
-      // Add unmet requirements if they exist
+      // Add unmet requirements (excluding validation_errors)
       if (result.requirements) {
         const unmetRequirements = Object.entries(result.requirements)
-          .filter(([_, met]) => !met)
+          .filter(([key, value]) => 
+            key !== 'validation_errors' && 
+            typeof value === 'boolean' && 
+            !value
+          )
           .map(([req]) => req.replace(/_/g, ' '));
         
         if (unmetRequirements.length) {
