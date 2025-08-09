@@ -25,22 +25,35 @@ module Api
         
         def submit_for_approval
           if @campaign.submit_for_approval
-            render json: campaign_json(@campaign), status: :ok
+            render json: { 
+              message: "Campaign successfully submitted for approval",
+              campaign: campaign_json(@campaign)
+            }, status: :ok
           else
             render json: { 
-              error: "Cannot submit campaign for approval",
-              errors: @campaign.errors.full_messages
+              error: "Failed to submit campaign for approval",
+              details: @campaign.errors.full_messages,
+              requirements: {
+                must_be_draft: @campaign.draft?,
+                validation_errors: @campaign.validation_errors_for_approval
+              }
             }, status: :unprocessable_entity
           end
         end
 
         def approve
           if @campaign.approve
-            render json: campaign_json(@campaign), status: :ok
+            render json: { 
+              message: "Campaign approved successfully",
+              campaign: campaign_json(@campaign)
+            }, status: :ok
           else
             render json: { 
-              error: "Cannot approve campaign",
-              errors: @campaign.errors.full_messages
+              error: "Failed to approve campaign",
+              details: @campaign.errors.full_messages,
+              requirements: {
+                must_be_pending_approval: @campaign.pending_approval?
+              }
             }, status: :unprocessable_entity
           end
         end
@@ -48,22 +61,31 @@ module Api
         def reject
           if @campaign.reject
             CampaignRejectionEmailService.send_rejection_email(@campaign, params[:rejection_reason])
-            render json: campaign_json(@campaign), status: :ok
+            render json: { 
+              message: "Campaign rejected and returned to draft",
+              campaign: campaign_json(@campaign)
+            }, status: :ok
           else
             render json: { 
-              error: "Cannot reject campaign",
-              errors: @campaign.errors.full_messages
+              error: "Failed to reject campaign",
+              details: @campaign.errors.full_messages,
+              requirements: {
+                must_be_pending_approval: @campaign.pending_approval?
+              }
             }, status: :unprocessable_entity
           end
         end
         
         def launch
-          if @campaign.may_launch? && @campaign.launch
-            render json: campaign_json(@campaign), status: :ok
+          if @campaign.launch
+            render json: { 
+              message: "Campaign launched successfully",
+              campaign: campaign_json(@campaign)
+            }, status: :ok
           else
             render json: { 
-              error: "Cannot launch campaign",
-              errors: @campaign.errors.full_messages,
+              error: "Failed to launch campaign",
+              details: @campaign.errors.full_messages,
               requirements: {
                 must_be_approved: @campaign.approved?
               }
@@ -72,12 +94,18 @@ module Api
         end
 
         def close
-          if @campaign.may_close? && @campaign.close
-            render json: campaign_json(@campaign), status: :ok
+          if @campaign.close
+            render json: { 
+              message: "Campaign closed successfully",
+              campaign: campaign_json(@campaign)
+            }, status: :ok
           else
             render json: { 
-              error: "Cannot close campaign",
-              errors: @campaign.errors.full_messages
+              error: "Failed to close campaign",
+              details: @campaign.errors.full_messages,
+              requirements: {
+                must_be_live_or_funded: @campaign.live? || @campaign.funded?
+              }
             }, status: :unprocessable_entity
           end
         end
