@@ -10,7 +10,7 @@ class EquityInvestment < ApplicationRecord
   validates :certificate_number, uniqueness: true, allow_nil: true
   validates :transaction_reference, uniqueness: true, allow_nil: true
   validates :email, presence: true
-  validates :phone, allow_blank: true
+  validates :phone, presence: false  # Explicitly make it optional
 
   enum :status, {
     pending: 0,
