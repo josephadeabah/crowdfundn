@@ -292,17 +292,17 @@ export function CampaignReview({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Live Campaigns
+                  Total Documents
                 </p>
                 <p className="text-3xl font-bold text-green-600">
-                  {
-                    pendingCampaigns.filter((c) => c.equity_status === 'live')
-                      .length
-                  }
+                  {pendingCampaigns.reduce(
+                    (sum, campaign) => sum + (campaign.documents?.length || 0),
+                    0
+                  )}
                 </p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-green-600" />
+                <FileText className="w-6 h-6 text-green-600" />
               </div>
             </div>
           </CardContent>
@@ -346,8 +346,8 @@ export function CampaignReview({
             {pendingCampaigns.map((campaign) => {
               const progress = campaign.goal_amount
                 ? (parseFloat(campaign.transferred_amount || '0') /
-                    parseFloat(campaign.goal_amount || '0')) *
-                  100
+                  parseFloat(campaign.goal_amount || '0')) *
+                100
                 : 0;
 
               return (
