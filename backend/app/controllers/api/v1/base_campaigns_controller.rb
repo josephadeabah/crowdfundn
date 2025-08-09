@@ -277,7 +277,15 @@ module Api
             updates: {},
             comments: {},
             fundraiser: { include: :profile },
-            investor_documents: {}
+            investor_documents: {
+              only: [:id, :document_type, :display_name, :created_at, :updated_at],
+              include: {
+                files_attachments: {
+                  only: [:filename, :content_type, :byte_size, :created_at],
+                  methods: [:url]
+                }
+              }
+            }
           }
         ).merge(
           type: campaign.class.name,
@@ -291,23 +299,29 @@ module Api
             contract_term: campaign.contract_term,
           }
         )
-        
-          if campaign.is_a?(EquityCampaign)
-            json.merge!(
-              shares_available: campaign.shares_available,
-              percentage_raised: campaign.percentage_raised,
-              total_investors: campaign.equity_investments.count,
-              equity_status: campaign.equity_status,
-              investment_range: {
-                minimum: campaign.minimum_investment,
-                maximum: campaign.maximum_investment
-              },
-              can_submit_for_approval: campaign.may_submit_for_approval?,
-              can_approve: campaign.may_approve?,
-              can_reject: campaign.may_reject?,
-              can_launch: campaign.may_launch?
-            )
+        # Filter to only include contract documents
+        if json[:investor_documents]
+          json[:investor_documents] = json[:investor_documents].select do |doc|
+            doc[:document_type] == 'contract'
           end
+        end
+
+        if campaign.is_a?(EquityCampaign)
+          json.merge!(
+            shares_available: campaign.shares_available,
+            percentage_raised: campaign.percentage_raised,
+            total_investors: campaign.equity_investments.count,
+            equity_status: campaign.equity_status,
+            investment_range: {
+              minimum: campaign.minimum_investment,
+              maximum: campaign.maximum_investment
+            },
+            can_submit_for_approval: campaign.may_submit_for_approval?,
+            can_approve: campaign.may_approve?,
+            can_reject: campaign.may_reject?,
+            can_launch: campaign.may_launch?
+          )
+        end
         
         json
       end
