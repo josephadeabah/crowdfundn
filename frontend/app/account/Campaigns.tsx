@@ -120,11 +120,7 @@ const Campaigns: React.FC = () => {
     if (!campaignToActOn || !actionType) return;
 
     try {
-      let result: {
-        success: boolean;
-        error?: string;
-        requirements?: { validation_errors?: string[] };
-      };
+      let result;
 
       if (actionType === 'delete') {
         await deleteCampaign(String(campaignToActOn.id));
@@ -137,35 +133,21 @@ const Campaigns: React.FC = () => {
         if (result.success) {
           showToast('Success', 'Campaign submitted for approval', 'success');
         } else {
-          showToast(
-            'Error',
-            [result?.error, result?.requirements?.validation_errors?.[0]]
-              .filter(Boolean)
-              .join(' - ') || 'Failed to submit campaign',
-            'error',
-          );
+          showToast('Error', result.error || 'Failed to submit campaign', 'error');
         }
       } else if (actionType === 'launch') {
         result = await launchCampaign(String(campaignToActOn.id));
         if (result.success) {
           showToast('Success', 'Campaign launched successfully', 'success');
         } else {
-          showToast(
-            'Error',
-            result.error || 'Failed to launch campaign',
-            'error',
-          );
+          showToast('Error', result.error || 'Failed to launch campaign', 'error');
         }
       } else if (actionType === 'close') {
         result = await closeCampaign(String(campaignToActOn.id));
         if (result.success) {
           showToast('Success', 'Campaign closed successfully', 'success');
         } else {
-          showToast(
-            'Error',
-            result.error || 'Failed to close campaign',
-            'error',
-          );
+          showToast('Error', result.error || 'Failed to close campaign', 'error');
         }
       }
 
