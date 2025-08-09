@@ -2,28 +2,28 @@ class Kyc < ApplicationRecord
   belongs_to :user, class_name: '::User'
   belongs_to :verified_by, class_name: '::User', optional: true
 
-  # KYC types
-  enum kyc_type: {
+  # KYC types - explicitly string-based enum
+  enum :kyc_type, {
     investor: 'investor',
     issuer: 'issuer',
     both: 'both'
-  }, default: :investor
+  }, default: 'investor', _prefix: :kyc_type
 
-  # Statuses
-  enum status: {
+  # Statuses - explicitly string-based enum
+  enum :status, {
     pending: 'pending',
     verified: 'verified',
     rejected: 'rejected',
     expired: 'expired'
-  }, default: :pending
+  }, default: 'pending', _prefix: true
 
-  # Verification document types
-  enum verification_type: {
+  # Verification document types - explicitly string-based enum
+  enum :verification_type, {
     national_id: 'national_id',
     passport: 'passport',
     drivers_license: 'drivers_license',
     voter_id: 'voter_id'
-  }
+  }, _prefix: :verification
 
   # ActiveStorage attachments
   has_one_attached :id_image
