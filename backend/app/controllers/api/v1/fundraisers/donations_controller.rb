@@ -71,22 +71,22 @@ module Api
             return render json: { error: 'The campaign you are trying to donate to no longer exists.' },
                           status: :not_found
           end
-        
+
           subaccount = Subaccount.find_by(user_id: campaign.fundraiser_id)
-        
+
           if subaccount.nil? || subaccount.subaccount_code.blank?
             return render json: { error: 'Fundraiser does not meet requirements for raising funds.' },
                           status: :unprocessable_entity
           end
-        
+
           subaccount_code = subaccount.subaccount_code
-        
+
           # Create a new donation
           donation = Donation.new(donation_params)
           donation.campaign_id = campaign.id
           donation.status = 'pending'
           donation.full_name = params[:donation][:full_name].presence || 'Anonymous' # Default to "Anonymous" if full_name is blank
-        
+
           if @current_user
             donation.user_id = @current_user.id
           else
@@ -94,17 +94,18 @@ module Api
             anonymous_token = SecureRandom.uuid
             donation.metadata[:anonymous_token] = anonymous_token # Add token to metadata
           end
-        
+
           # Generate a secure random UUID and append it to the redirect_url as a query parameter
           secure_random_uuid = SecureRandom.uuid
-            # Use campaign.slug if available, otherwise fall back to id
+          # Use campaign.slug if available, otherwise fall back to id
           campaign_identifier = campaign.slug || campaign.id
-          redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign_identifier, host: 'bantuhive.com') + "?#{secure_random_uuid}"
+          redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign_identifier,
+                                                                           host: 'bantuhive.com') + "?#{secure_random_uuid}"
           donation.email = params[:donation][:email]
           donation.amount = params[:donation][:amount]
           donation.phone = params[:donation][:phone]
           donation.metadata = params[:donation][:metadata]
-        
+
           metadata = {
             user_id: donation.user_id,
             campaign_id: donation.campaign_id,
@@ -121,11 +122,11 @@ module Api
             phone: donation.phone,
             metadata: donation.metadata
           }
-        
+
           donation.plan = params[:donation][:plan]
-        
+
           paystack_service = PaystackService.new
-        
+
           response = paystack_service.initialize_transaction(
             email: donation.email,
             amount: donation.amount,
@@ -134,11 +135,11 @@ module Api
             metadata: metadata,
             subaccount: subaccount_code
           )
-        
+
           if response[:status] == true
             donation.transaction_reference = response[:data][:reference]
             donation.subscription_code = donation.plan if donation.plan.present?
-        
+
             if donation.save
               render json: {
                 authorization_url: response[:data][:authorization_url],
@@ -155,20 +156,18 @@ module Api
                    status: :unprocessable_entity
           end
         end
-        
+
         # POST /api/v1/fundraisers/donations/send_thank_you_emails
         def send_thank_you_emails
           campaign = Campaign.find_by(id: params[:campaign_id])
-          unless campaign
-            return render json: { error: 'Campaign not found' }, status: :not_found
-          end
+          return render json: { error: 'Campaign not found' }, status: :not_found unless campaign
 
           # Fetch donations based on the filter
-          if params[:filter] == 'all'
-            donations = campaign.donations.successful
-          else
-            donations = campaign.donations.successful.where(id: params[:donor_ids])
-          end
+          donations = if params[:filter] == 'all'
+                        campaign.donations.successful
+                      else
+                        campaign.donations.successful.where(id: params[:donor_ids])
+                      end
 
           # Send thank you emails to donors
           donations.each do |donation|
@@ -179,7 +178,7 @@ module Api
               campaign.fundraiser.profile.avatar_url,
               campaign.title,
               campaign.currency.upcase,
-              donation.gross_amount.to_f.round(2), # Convert to float
+              donation.gross_amount.to_f.round(2) # Convert to float
             )
           end
 

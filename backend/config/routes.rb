@@ -32,6 +32,16 @@ Rails.application.routes.draw do
         delete 'users/:id', to: 'users#destroy'
       end
 
+      # Add KYC namespace
+      namespace :kyc do
+        resources :kycs, only: [:index, :create, :update, :show] do
+          member do
+            post :verify
+            post :reject
+          end
+        end
+      end
+
       namespace :fundraisers do
         resources :transfers, only: [] do
           collection do
@@ -96,6 +106,18 @@ Rails.application.routes.draw do
             resources :investor_documents, only: [:index, :show, :create, :update, :destroy]
           end
         end
+
+        # Fundraiser-facing equity operations
+        resources :equity_campaigns, only: [] do
+          resources :equity_investments, only: [:index, :create] do
+            collection do
+              get :public_investments
+              get :my_investments
+            end
+          end
+        end
+        # Portfolio route (matches your controller action)
+        get 'equity_investments/portfolio', to: 'equity_investments#portfolio'
       end
 
       # Leaderboard routes
@@ -148,7 +170,8 @@ Rails.application.routes.draw do
       namespace :pledges do
         resources :pledges, only: [:index, :destroy] # Add this line
       end
-      # Add the equity namespace here, alongside members and fundraisers
+
+      # General equity management
       namespace :equity do
         resources :campaigns, only: [] do
           collection do
@@ -167,19 +190,8 @@ Rails.application.routes.draw do
               post :convert_to_user # Convert team member to user
             end
           end
-          resources :equity_investments, only: [:create] do
-            collection do
-              get :callback
-            end
-          end
-          resources :share_certificates, only: [:index, :show]
         end
-      
-        # Portfolio and investments routes
-        get 'investments/portfolio', to: 'equity_investments#portfolio'
-        get 'investments/my_investments', to: 'equity_investments#my_investments'
       end
-      
     end
   end
 

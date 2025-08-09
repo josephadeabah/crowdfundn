@@ -18,13 +18,17 @@ class User < ApplicationRecord
   has_many :invested_campaigns, through: :equity_investments, source: :campaign
   has_many :investor_documents, dependent: :destroy
   has_many :premium_subscriptions, dependent: :destroy
+  # Update KYC associations to use full namespace
+  has_many :kycs, class_name: '::Kyc', dependent: :destroy
+  has_one :latest_kyc, -> { order(created_at: :desc) }, class_name: '::Kyc'
 
   validates :status, inclusion: { in: STATUSES }
   validates :user_type, inclusion: { in: USER_TYPES }
   validates :email, presence: true, uniqueness: true
   validates :currency_symbol, presence: true
   validates :phone_code, presence: true
-  validates :full_name, :phone_number, :country, :payment_method, :currency, :birth_date, :category, :target_amount, presence: true
+  validates :full_name, :phone_number, :country, :payment_method, :currency, :birth_date, :category, :target_amount,
+            presence: true
   # Add this validation for equity investment
   validates :tax_id, format: { with: /\A[A-Z0-9]+\z/ }, if: :investor?
   has_one :profile, dependent: :destroy
@@ -102,13 +106,13 @@ class User < ApplicationRecord
   # Update accredited investor check with proper decimal handling
   def accredited_investor?
     return false unless net_worth.present? && annual_income.present?
-    
+
     net_worth >= 1_000_000 || annual_income >= 200_000
   end
 
   def has_premium_access?
     # Check if user has an active subscription
-    subscriptions.where("expires_at > ?", Time.current).exists? ||
+    subscriptions.where('expires_at > ?', Time.current).exists? ||
       # Or if they have a lifetime access flag
       premium_access
   end
@@ -119,6 +123,23 @@ class User < ApplicationRecord
 
   def active_premium_subscription
     premium_subscriptions.active.last
+  end
+
+  # Add KYC status methods
+  def kyc_verified?
+    latest_kyc&.verified? && !latest_kyc.expired?
+  end
+
+  def investor_kyc_verified?
+    kyc_verified? && (latest_kyc.investor? || latest_kyc.both?)
+  end
+
+  def issuer_kyc_verified?
+    kyc_verified? && (latest_kyc.issuer? || latest_kyc.both?)
+  end
+
+  def requires_kyc?
+    (investor? || campaigns.any?) && !kyc_verified?
   end
 
   private

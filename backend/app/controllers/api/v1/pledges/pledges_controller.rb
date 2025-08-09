@@ -57,9 +57,9 @@ module Api
         # Set the pledge for the destroy action
         def set_pledge
           @pledge = Pledge.find_by(id: params[:id])
-          if @pledge.nil?
-            render json: { error: 'Pledge not found' }, status: :not_found
-          end
+          return unless @pledge.nil?
+
+          render json: { error: 'Pledge not found' }, status: :not_found
         end
       end
     end

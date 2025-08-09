@@ -101,7 +101,7 @@ class PaystackService
   end
 
   # 3. Initialize Transaction with Split Code
-  def initialize_transaction(email:, amount:, subaccount:, callback_url:, plan: nil, metadata:)
+  def initialize_transaction(email:, amount:, subaccount:, callback_url:, metadata:, plan: nil)
     return { status: 'error', message: 'Email address is required' } if email.blank?
 
     uri = URI("#{PAYSTACK_BASE_URL}/transaction/initialize")
@@ -127,17 +127,17 @@ class PaystackService
 
   def create_subscription_plan(name:, interval:, amount:)
     valid_intervals = %w[daily weekly monthly quarterly biannually annually]
-    
+
     return { status: 'error', message: 'Invalid interval' } unless valid_intervals.include?(interval.to_s)
     return { status: 'error', message: 'Amount must be at least 50' } if amount.to_f < 0.5 # Minimum ₦0.5/GHS0.5
-  
+
     uri = URI("#{PAYSTACK_BASE_URL}/plan")
     body = {
       name: name,
       interval: interval,
-      amount: (amount.to_f * 100).to_i, # Convert to kobo/pesewa
+      amount: (amount.to_f * 100).to_i # Convert to kobo/pesewa
     }.to_json
-  
+
     response = make_post_request(uri, body)
     parse_response(response)
   end

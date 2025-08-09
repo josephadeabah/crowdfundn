@@ -2,19 +2,21 @@ class EquityCampaign < Campaign
   has_many :equity_investments, foreign_key: 'campaign_id', dependent: :destroy
   has_many :investors, through: :equity_investments, source: :user
   has_many :campaign_team_members, foreign_key: 'campaign_id', dependent: :destroy
-  has_many :founders, -> { where(campaign_team_members: { role: 'founder' }) }, 
+  has_many :founders, -> { where(campaign_team_members: { role: 'founder' }) },
            through: :campaign_team_members, source: :user
-  
-  validates :valuation, :equity_offered, :minimum_investment, :maximum_investment, 
+
+  validates :valuation, :equity_offered, :minimum_investment, :maximum_investment,
             presence: true, numericality: { greater_than: 0 }
   validates :equity_offered, numericality: { less_than_or_equal_to: 100 }
+  validate :equity_issued_within_limits
   validate :founders_equity_allocation
   validate :maximum_greater_than_minimum
   validate :type_cannot_change, on: :update
+  validate :shares_within_equity_limits
 
   attribute :equity_status, :integer, default: 0
-  
-  enum equity_status: {
+
+  enum :equity_status, {
     draft: 0,
     pending_approval: 1,
     approved: 2,
@@ -24,6 +26,14 @@ class EquityCampaign < Campaign
     closed: 6
   }
 
+  after_update :update_investments_valuation, if: :saved_change_to_valuation?
+
+  # Add this method to update all investments when valuation changes
+  def update_all_investment_values
+    equity_investments.completed.each do |investment|
+      InvestmentUpdateJob.perform_later(investment.id)
+    end
+    
   # State transition methods with improved error handling
   def submit_for_approval
     return false unless may_submit_for_approval?
@@ -119,41 +129,55 @@ class EquityCampaign < Campaign
     (equity_offered.to_f * valuation.to_f / 100) - equity_investments.sum(:amount)
   end
 
-  # This method calculates the number of shares available for investment.
-  def shares_available_count
-    return 0 if equity_offered.nil? || valuation.nil? || total_shares.nil? || equity_offered <= 0 || valuation <= 0
-  
-    # 1. Total value of equity being offered (e.g. 10% of 100m = 10m)
-    total_equity_value = (equity_offered.to_f * valuation.to_f / 100)
-  
-    # 2. Remaining amount that hasn't been invested yet
-    remaining_amount = total_equity_value - equity_investments.sum(:amount)
-  
-    # 3. Price per share based on total valuation and shares
+  def update_shares_available
+    update_columns(
+      shares_issued: equity_investments.sum(:shares),
+      equity_issued: equity_investments.sum(:percentage)
+    )
+  end
+
+  def create_investment(user, amount)
     price_per_share = valuation.to_f / total_shares.to_f
-  
-    # 4. Return the number of shares still available to investors
-    (remaining_amount / price_per_share).round(2)
+    shares = (amount / price_per_share).round(2)
+    percentage = ((amount / (valuation.to_f * equity_offered.to_f / 100)) * 100).round(4)
+
+    equity_investments.create(
+      user: user,
+      amount: amount,
+      shares: shares,
+      percentage: percentage,
+      status: :pending # Changed from :completed to :pending
+    )
+  end
+
+  def shares_available
+    return 0 if equity_offered.nil? || valuation.nil? || total_shares.nil?
+
+    total_equity_shares = (equity_offered.to_f / 100) * total_shares.to_f
+    total_equity_shares - equity_investments.sum(:shares)
+  end
+
+  def percentage_available
+    equity_offered.to_f - equity_investments.sum(:percentage)
   end
 
   def percentage_raised
-    return 0 if equity_offered.nil? || valuation.nil? || equity_offered <= 0 || valuation <= 0
-    (equity_investments.sum(:amount) / (equity_offered.to_f * valuation.to_f / 100)) * 100
+    (equity_investments.sum(:percentage) / equity_offered.to_f) * 100
   end
-  
+
   def founder_equity_percentage
     campaign_team_members.sum(:equity_percentage).to_f
   end
 
   def as_json(options = {})
-    super(options).merge(
+    super.merge(
       type: 'EquityCampaign',
       company_info: {
         name: company_name,
         description: company_description,
         headquarters: company_headquarters,
         website: company_website,
-        contract_term: contract_term,
+        contract_term: contract_term
       },
       shares_available: shares_available,
       percentage_raised: percentage_raised,
@@ -169,36 +193,55 @@ class EquityCampaign < Campaign
           equity_percentage: member.equity_percentage,
           description: member.description,
           avatar_url: member.avatar_url,
-          user: member.user ? {
-            id: member.user.id,
-            email: member.user.email,
-            profile: {
-              first_name: member.user.profile&.first_name,
-              last_name: member.user.profile&.last_name
-                }
-              } : nil
-            }
-          end
-        )
+          user: if member.user
+                  {
+                    id: member.user.id,
+                    email: member.user.email,
+                    profile: {
+                      first_name: member.user.profile&.first_name,
+                      last_name: member.user.profile&.last_name
+                    }
+                  }
+                end
+        }
+      end
+    )
   end
-  
+
   private
 
-  def type_cannot_change
-    if type_changed? && persisted?
-      errors.add(:type, "cannot be changed once created")
-    end
+  # Add this method in your private section with other validation methods
+  def equity_issued_within_limits
+    return unless equity_issued.to_f > equity_offered.to_f
+
+    errors.add(:equity_issued, 'cannot exceed equity offered')
   end
-  
+
+  def update_investments_valuation
+    UpdateCampaignInvestmentsJob.perform_later(id)
+  end
+
+  def shares_within_equity_limits
+    return unless shares_issued > (equity_offered.to_f / 100) * total_shares.to_f
+
+    errors.add(:base, 'Total shares issued cannot exceed equity offered')
+  end
+
+  def type_cannot_change
+    return unless type_changed? && persisted?
+
+    errors.add(:type, 'cannot be changed once created')
+  end
+
   def founders_equity_allocation
-    if founder_equity_percentage > (100 - equity_offered.to_f)
-      errors.add(:base, "Founders' combined equity cannot exceed #{100 - equity_offered.to_f}%")
-    end
+    return unless founder_equity_percentage > (100 - equity_offered.to_f)
+
+    errors.add(:base, "Founders' combined equity cannot exceed #{100 - equity_offered.to_f}%")
   end
 
   def maximum_greater_than_minimum
-    if maximum_investment.present? && minimum_investment.present? && maximum_investment <= minimum_investment
-      errors.add(:maximum_investment, "must be greater than minimum investment")
-    end
+    return unless maximum_investment.present? && minimum_investment.present? && maximum_investment <= minimum_investment
+
+    errors.add(:maximum_investment, 'must be greater than minimum investment')
   end
 end

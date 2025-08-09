@@ -3,7 +3,8 @@ module Api
     module Fundraisers
       class TransfersController < ApplicationController
         include ErrorHandler
-        before_action :authenticate_request, only: %i[fetch_user_transfers fetch_transfers_from_paystack initialize_transfer]
+        before_action :authenticate_request,
+                      only: %i[fetch_user_transfers fetch_transfers_from_paystack initialize_transfer]
         before_action :set_transfer_service
 
         # Approve or reject a transfer based on the payload
@@ -95,13 +96,13 @@ module Api
           # If no recipient_code exists, proceed to create one
           if subaccount.recipient_code.blank?
             # Merge existing metadata with new fields
-            full_metadata = {
+            {
               user_id: @fundraiser.id,
               campaign_id: campaign.id,
               email: @fundraiser.email,
               user_name: @fundraiser.full_name,
               metadata: metadata
-          }
+            }
             # recipient_type = subaccount.subaccount_type
             response = @paystack_service.create_transfer_recipient(
               type: bank_code_value,
@@ -116,7 +117,8 @@ module Api
                 email: @fundraiser.email,
                 user_name: @fundraiser.full_name,
                 metadata: metadata
-            })
+              }
+            )
 
             if response[:status] == true
               subaccount.update!(recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id)
@@ -249,7 +251,7 @@ module Api
           raise 'Campaign ID is missing' unless params[:campaign_id]
 
           @campaign = Campaign.find(params[:campaign_id])
-          
+
           unless @campaign.fundraiser_id == @current_user.id
             render json: { error: 'You are not authorized to perform this action' }, status: :forbidden
           end

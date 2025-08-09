@@ -4,9 +4,9 @@ class InvestorDocument < ApplicationRecord
   belongs_to :campaign
 
   DOCUMENT_TYPES = %w[
-    accreditation_form 
-    id_proof 
-    tax_document 
+    accreditation_form
+    id_proof
+    tax_document
     agreement
     certificate_of_incorporation
     business_registration
@@ -50,7 +50,7 @@ class InvestorDocument < ApplicationRecord
     }[document_type] || document_type.titleize
   end
 
-  scope :required, -> { where(document_type: ['accreditation_form', 'id_proof', 'tax_document', 'agreement']) }
+  scope :required, -> { where(document_type: %w[accreditation_form id_proof tax_document agreement]) }
 
   def as_json(options = {})
     {
@@ -68,10 +68,12 @@ class InvestorDocument < ApplicationRecord
 
   def file_metadata
     return [] unless files.attached?
-    
+
     files.map do |file|
       {
-        url: "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{file.key}",
+        url: "#{Rails.application.credentials.dig(:digitalocean,
+                                                  :endpoint)}/#{Rails.application.credentials.dig(:digitalocean,
+                                                                                                  :bucket)}/#{file.key}",
         filename: file.filename.to_s,
         content_type: file.content_type,
         byte_size: file.byte_size,
@@ -91,13 +93,9 @@ class InvestorDocument < ApplicationRecord
     return unless files.attached?
 
     files.each do |file|
-      if file.blob.byte_size > 100.megabytes
-        errors.add(:files, "size must be less than 100MB")
-      end
+      errors.add(:files, 'size must be less than 100MB') if file.blob.byte_size > 100.megabytes
 
-      unless file.content_type == 'application/pdf'
-        errors.add(:files, "must be PDF files")
-      end
+      errors.add(:files, 'must be PDF files') unless file.content_type == 'application/pdf'
     end
   end
 end
