@@ -24,7 +24,7 @@ module Clockwork
         Rails.logger.info "Sending webhook for Campaign ID: #{campaign.id}"
         campaign.send_status_update_webhook
       rescue => e
-        Rails.logger.error "Failed to send webhook for Campaign #{campaign.id}: #{e.message}"
+        Rails.logger.info "Failed to send webhook for Campaign #{campaign.id}: #{e.message}"
       end
     end
   end
@@ -34,7 +34,7 @@ module Clockwork
     begin
       PlatformFeeService.transfer_platform_fees
     rescue => e
-      Rails.logger.error "Failed to transfer platform fees: #{e.message}"
+      Rails.logger.info "Failed to transfer platform fees: #{e.message}"
     end
   end
 
@@ -61,7 +61,7 @@ module Clockwork
 
   # Error handler
   error_handler do |error|
-    Rails.logger.error "[Clockwork Error] #{error.class.name}: #{error.message}"
+    Rails.logger.info "[Clockwork Error] #{error.class.name}: #{error.message}"
     Rails.logger.error error.backtrace.join("\n")
   end
 end
