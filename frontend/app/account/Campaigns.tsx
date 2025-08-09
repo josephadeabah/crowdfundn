@@ -28,6 +28,7 @@ import CampaignTeamDocuments from '@/app/components/campaign/CampaignTeamDocumen
 import Avatar from '../components/avatar/Avatar';
 import ToastComponent from '@/app/components/toast/Toast';
 import InfoTooltip from '../components/tooltip/tooltip';
+import { getDetailedErrorMessage } from '../types/campaign.error.messages.types';
 
 const Campaigns: React.FC = () => {
   const {
@@ -164,11 +165,10 @@ const Campaigns: React.FC = () => {
 
       await fetchUserCampaigns();
     } catch (error) {
+      const errorMessage = getDetailedErrorMessage(error);
       showToast(
         'Error',
-        `Failed to ${actionType} campaign: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`,
+        `Failed to ${actionType} campaign: ${errorMessage}`,
         'error',
       );
     } finally {

@@ -41,8 +41,12 @@ export const EquityCampaignProvider = ({
   const [error, setError] = useState<string | null>(null);
   const { fetchUserCampaigns } = useCampaignContext();
 
-  const handleApiError = (errorText: string) => {
-    setError(errorText);
+  const handleApiError = (errorData: any) => {
+    if (typeof errorData === 'string') {
+      setError(errorData);
+    } else {
+      setError(getDetailedErrorMessage(errorData));
+    }
   };
 
   // Document Management
@@ -63,7 +67,8 @@ export const EquityCampaignProvider = ({
         );
 
         if (!response.ok) {
-          handleApiError("Couldn't fetch documents. Please try again.");
+          const errorData = await response.json().catch(() => ({}));
+          handleApiError(errorData);
           return;
         }
 
@@ -97,7 +102,8 @@ export const EquityCampaignProvider = ({
         );
 
         if (!response.ok) {
-          handleApiError("Couldn't fetch document. Please try again.");
+          const errorData = await response.json().catch(() => ({}));
+          handleApiError(errorData);
           return;
         }
 
@@ -139,7 +145,8 @@ export const EquityCampaignProvider = ({
         );
 
         if (!response.ok) {
-          handleApiError("Couldn't create document. Please try again.");
+          const errorData = await response.json().catch(() => ({}));
+          handleApiError(errorData);
           return null;
         }
 
@@ -184,7 +191,8 @@ export const EquityCampaignProvider = ({
         );
 
         if (!response.ok) {
-          handleApiError("Couldn't update document. Please try again.");
+          const errorData = await response.json().catch(() => ({}));
+          handleApiError(errorData);
           return null;
         }
 
@@ -222,7 +230,8 @@ export const EquityCampaignProvider = ({
         );
 
         if (!response.ok) {
-          handleApiError("Couldn't delete document. Please try again.");
+          const errorData = await response.json().catch(() => ({}));
+          handleApiError(errorData);
           return;
         }
 
@@ -443,7 +452,8 @@ export const EquityCampaignProvider = ({
         );
 
         if (!response.ok) {
-          handleApiError("Couldn't fetch team members. Please try again.");
+          const errorData = await response.json().catch(() => ({}));
+          handleApiError(errorData);
           return;
         }
 
@@ -480,7 +490,8 @@ export const EquityCampaignProvider = ({
         );
 
         if (!response.ok) {
-          handleApiError("Couldn't add team member. Please try again.");
+          const errorData = await response.json().catch(() => ({}));
+          handleApiError(errorData);
           return null;
         }
 
@@ -666,7 +677,8 @@ export const EquityCampaignProvider = ({
       );
 
       if (!response.ok) {
-        handleApiError("Couldn't fetch your investments. Please try again.");
+        const errorData = await response.json().catch(() => ({}));
+        handleApiError(errorData);
         return;
       }
 
@@ -776,23 +788,18 @@ export const EquityCampaignProvider = ({
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.error || "Couldn't fetch pending review campaigns",
-        );
+        handleApiError(errorData);
+        return [];
       }
 
       const data = await response.json();
       if (!data.campaigns) {
-        throw new Error('Invalid response format');
+        handleApiError('Invalid response format');
+        return [];
       }
       return data.campaigns;
     } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : 'Error fetching pending review campaigns';
-      setError(errorMessage);
-      console.error('Fetch error:', errorMessage);
+      handleApiError(err);
       return [];
     } finally {
       setLoading(false);
