@@ -33,7 +33,7 @@ class EquityCampaign < Campaign
     equity_investments.completed.each do |investment|
       InvestmentUpdateJob.perform_later(investment.id)
     end
-  end  # This was missing
+  end
     
   # State transition methods with improved error handling
   def submit_for_approval
