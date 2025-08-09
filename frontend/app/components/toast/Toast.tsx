@@ -47,35 +47,21 @@ const ToastComponent: React.FC<ToastProps> = ({
   };
 
   return (
-        <Toast.Provider swipeDirection="right">
+    <Toast.Provider swipeDirection="right">
       <Toast.Root
-        className={`flex items-center gap-4 rounded-md border ${
-          type === 'error' ? 'border-red-200' : 
-          type === 'warning' ? 'border-orange-200' : 'border-green-200'
-        } bg-white p-3 shadow-lg data-[state=closed]:animate-hide data-[state=open]:animate-slideIn data-[swipe=end]:animate-swipeOut dark:border-gray-700 dark:bg-gray-800`}
+        className="flex items-center gap-4 rounded-md border border-gray-200 bg-white p-3 shadow-lg data-[state=closed]:animate-hide data-[state=open]:animate-slideIn data-[swipe=end]:animate-swipeOut dark:border-gray-700 dark:bg-gray-800"
         open={isOpen}
         onOpenChange={onClose}
       >
         {icons[type]}
         <div className="flex-1">
-          <Toast.Title className={`text-lg font-semibold ${
-            type === 'error' ? 'text-red-800' : 
-            type === 'warning' ? 'text-orange-800' : 'text-green-800'
-          } dark:text-white`}>
+          <Toast.Title className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {title}
           </Toast.Title>
           <Toast.Description asChild>
-            <div className="text-sm text-gray-700 dark:text-gray-300">
-              {Array.isArray(description) ? (
-                <ul className="list-disc pl-5 space-y-1">
-                  {description.map((msg, i) => (
-                    <li key={i}>{msg}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p>{description}</p>
-              )}
-            </div>
+            <p className="text-xs text-gray-700 dark:text-gray-300">
+              {description}
+            </p>
           </Toast.Description>
         </div>
       </Toast.Root>
