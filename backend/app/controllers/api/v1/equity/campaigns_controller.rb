@@ -99,7 +99,7 @@ module Api
             minimum_investment: campaign.minimum_investment,
             shares_available: campaign.shares_available,
             percentage_raised: campaign.percentage_raised,
-            total_investors: campaign.total_donors,
+            total_investors: campaign.equity_investments.count,
             created_at: campaign.created_at,
             updated_at: campaign.updated_at,
             fundraiser: {
