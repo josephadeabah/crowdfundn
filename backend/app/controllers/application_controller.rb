@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
   include Authenticable
+  include Pundit::Authorization
   before_action :set_default_response_format
 
   def not_found

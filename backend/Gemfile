@@ -71,6 +71,8 @@ gem 'sib-api-v3-sdk'
 gem 'prawn'
 gem 'prawn-table' # For table support
 
+gem 'pundit'
+
 
 
 # Use Redis adapter to run Action Cable in production
