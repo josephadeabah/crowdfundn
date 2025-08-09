@@ -6,6 +6,8 @@ module Authenticable
     token = header.split(' ').last
     begin
       decoded = decode_token(token)
+      return unless decoded.present? # Safe guard against nil
+
       @current_user = User.find(decoded[:user_id]) if decoded[:user_id]
     rescue ActiveRecord::RecordNotFound
       render json: { error: 'User not found' }, status: :not_found
@@ -45,11 +47,9 @@ module Authenticable
   
     render json: { error: 'You are not authorized to perform this action' }, status: :forbidden
   end
-  
 
   def decode_token(token)
-    JWT.decode(token, Rails.application.secret_key_base)[0].with_indifferent_access
-  rescue StandardError
-    nil
+    decoded = JWT.decode(token, Rails.application.secret_key_base) rescue nil
+    decoded&.first&.with_indifferent_access # Safe navigation
   end
 end
