@@ -56,11 +56,6 @@ module Api
       end
 
       def my_campaigns
-        unless @current_user
-          render json: { error: 'Authentication required' }, status: :unauthorized
-          return
-        end
-
         @campaigns = @current_user.campaigns.order(created_at: :desc).page(params[:page]).per(params[:pageSize] || 12)
 
         render json: {
@@ -70,7 +65,6 @@ module Api
           total_count: @campaigns.total_count
         }, status: :ok
       end
-
 
       def group_by_category
         page = params[:page] || 1
