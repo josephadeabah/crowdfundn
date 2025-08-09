@@ -10,6 +10,8 @@ import {
   FiAlertCircle,
   FiImage,
   FiLoader,
+  FiDollarSign,
+  FiBriefcase,
 } from 'react-icons/fi';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
@@ -41,7 +43,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
   const { fetchUserCampaigns } = useCampaignContext();
 
   const [activeModal, setActiveModal] = useState<
-    'team' | 'pitch' | 'contract' | null
+    'team' | 'pitch' | 'contract' | 'financial' | 'business_plan' | null
   >(null);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [alertConfig, setAlertConfig] = useState({
@@ -51,7 +53,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
     onCancel: () => {},
   });
   const [itemToDelete, setItemToDelete] = useState<{
-    type: 'team' | 'pitch' | 'contract';
+    type: 'team' | 'pitch' | 'contract' | 'financial' | 'business_plan';
     id: string;
   } | null>(null);
 
@@ -76,6 +78,8 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [pitchFiles, setPitchFiles] = useState<File[]>([]);
   const [contractFiles, setContractFiles] = useState<File[]>([]);
+  const [financialFiles, setFinancialFiles] = useState<File[]>([]);
+  const [businessPlanFiles, setBusinessPlanFiles] = useState<File[]>([]);
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -216,8 +220,50 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
     }
   };
 
+  const handleUploadFinancialDocuments = async () => {
+    try {
+      if (financialFiles.length > 0) {
+        await createDocument(campaignId, 'financial_statement', financialFiles);
+        await fetchDocuments(campaignId);
+        await fetchUserCampaigns();
+        setActiveModal(null);
+        setFinancialFiles([]);
+      }
+    } catch (error) {
+      setAlertConfig({
+        title: 'Failed to upload financial documents',
+        message:
+          'There was an error uploading the financial documents. Please try again.',
+        onConfirm: () => setIsAlertOpen(false),
+        onCancel: () => setIsAlertOpen(false),
+      });
+      setIsAlertOpen(true);
+    }
+  };
+
+  const handleUploadBusinessPlanDocuments = async () => {
+    try {
+      if (businessPlanFiles.length > 0) {
+        await createDocument(campaignId, 'business_plan', businessPlanFiles);
+        await fetchDocuments(campaignId);
+        await fetchUserCampaigns();
+        setActiveModal(null);
+        setBusinessPlanFiles([]);
+      }
+    } catch (error) {
+      setAlertConfig({
+        title: 'Failed to upload business plan documents',
+        message:
+          'There was an error uploading the business plan documents. Please try again.',
+        onConfirm: () => setIsAlertOpen(false),
+        onCancel: () => setIsAlertOpen(false),
+      });
+      setIsAlertOpen(true);
+    }
+  };
+
   const openDeleteConfirmation = (
-    type: 'team' | 'pitch' | 'contract',
+    type: 'team' | 'pitch' | 'contract' | 'financial' | 'business_plan',
     id: string,
   ) => {
     setItemToDelete({ type, id });
@@ -277,6 +323,8 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
     setAvatarPreview(null);
     setPitchFiles([]);
     setContractFiles([]);
+    setFinancialFiles([]);
+    setBusinessPlanFiles([]);
   };
 
   return (
@@ -450,6 +498,120 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
             ) : (
               <p className="text-gray-500 dark:text-gray-400 text-sm">
                 No contract documents uploaded yet
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Financial Statements Card */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-medium flex items-center">
+              <FiDollarSign className="mr-2" /> Financial Statements
+            </h3>
+            <button
+              onClick={() => setActiveModal('financial')}
+              className="flex items-center px-3 py-1 bg-fundify-primary text-white rounded-md hover:bg-fundify-primary"
+            >
+              <FiPlus className="mr-1" /> Upload
+            </button>
+          </div>
+
+          <div className="space-y-2">
+            {documents?.length ? (
+              documents
+                .filter((doc) => doc.document_type === 'financial_statement')
+                .map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded"
+                  >
+                    <div>
+                      <p className="font-medium">{doc.display_name}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {doc.files.length} file
+                        {doc.files.length !== 1 ? 's' : ''}
+                      </p>
+                      <p>
+                        {doc.files.map((file) => (
+                          <div
+                            key={file.uploaded_at}
+                            className="text-sm text-gray-400 flex gap-2"
+                          >
+                            <span>{file.human_size}</span>
+                            <span>{file.filename}</span>
+                          </div>
+                        ))}
+                      </p>
+                    </div>
+                    <FiTrash2
+                      className="cursor-pointer text-red-600"
+                      onClick={() =>
+                        openDeleteConfirmation('financial', String(doc.id))
+                      }
+                    />
+                  </div>
+                ))
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
+                No financial statements uploaded yet
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Business Plan Card */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-medium flex items-center">
+              <FiBriefcase className="mr-2" /> Business Plan
+            </h3>
+            <button
+              onClick={() => setActiveModal('business_plan')}
+              className="flex items-center px-3 py-1 bg-fundify-primary text-white rounded-md hover:bg-fundify-primary"
+            >
+              <FiPlus className="mr-1" /> Upload
+            </button>
+          </div>
+
+          <div className="space-y-2">
+            {documents?.length ? (
+              documents
+                .filter((doc) => doc.document_type === 'business_plan')
+                .map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded"
+                  >
+                    <div>
+                      <p className="font-medium">{doc.display_name}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {doc.files.length} file
+                        {doc.files.length !== 1 ? 's' : ''}
+                      </p>
+                      <p>
+                        {doc.files.map((file) => (
+                          <div
+                            key={file.uploaded_at}
+                            className="text-sm text-gray-400 flex gap-2"
+                          >
+                            <span>{file.human_size}</span>
+                            <span>{file.filename}</span>
+                          </div>
+                        ))}
+                      </p>
+                    </div>
+                    <FiTrash2
+                      className="cursor-pointer text-red-600"
+                      onClick={() =>
+                        openDeleteConfirmation('business_plan', String(doc.id))
+                      }
+                    />
+                  </div>
+                ))
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
+                No business plan documents uploaded yet
               </p>
             )}
           </div>
@@ -752,6 +914,153 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
             disabled={contractFiles.length === 0}
             className={`px-4 py-2 rounded-lg ${
               contractFiles.length === 0
+                ? 'bg-gray-300 cursor-not-allowed'
+                : 'bg-fundify-primary text-white hover:bg-fundify-primary'
+            }`}
+            variant="secondary"
+            size="lg"
+          >
+            {loading ? (
+              <>
+                <FiLoader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
+                Uploading...
+              </>
+            ) : (
+              'Upload Documents'
+            )}
+          </Button>
+        </div>
+      </Modal>
+
+      {/* Financial Statements Modal */}
+      <Modal
+        isOpen={activeModal === 'financial'}
+        onClose={closeModal}
+        size="medium"
+      >
+        <h3 className="text-xl font-bold mb-4">Upload Financial Statements</h3>
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+          <input
+            type="file"
+            multiple
+            onChange={(e) =>
+              setFinancialFiles(Array.from(e.target.files || []))
+            }
+            className="hidden"
+            id="financial-upload"
+          />
+          <label htmlFor="financial-upload" className="cursor-pointer block">
+            <FiDollarSign className="mx-auto text-3xl mb-2" />
+            <p>Click to upload files or drag and drop</p>
+            <p className="text-sm text-gray-500 mt-1">PDF (Max 10MB each)</p>
+          </label>
+        </div>
+
+        {financialFiles.length > 0 && (
+          <div className="mt-4 space-y-2">
+            {financialFiles.map((file, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-2 bg-gray-100 rounded"
+              >
+                <span>{file.name}</span>
+                <span className="text-sm text-gray-500">
+                  {(file.size / 1024 / 1024).toFixed(2)}MB
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex justify-end space-x-3 mt-6">
+          <Button
+            onClick={closeModal}
+            className="px-4 py-2 border rounded-lg"
+            variant="outline"
+            size="lg"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleUploadFinancialDocuments}
+            disabled={financialFiles.length === 0}
+            className={`px-4 py-2 rounded-lg ${
+              financialFiles.length === 0
+                ? 'bg-gray-300 cursor-not-allowed'
+                : 'bg-fundify-primary text-white hover:bg-fundify-primary'
+            }`}
+            variant="secondary"
+            size="lg"
+          >
+            {loading ? (
+              <>
+                <FiLoader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
+                Uploading...
+              </>
+            ) : (
+              'Upload Documents'
+            )}
+          </Button>
+        </div>
+      </Modal>
+
+      {/* Business Plan Modal */}
+      <Modal
+        isOpen={activeModal === 'business_plan'}
+        onClose={closeModal}
+        size="medium"
+      >
+        <h3 className="text-xl font-bold mb-4">Upload Business Plan</h3>
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+          <input
+            type="file"
+            multiple
+            onChange={(e) =>
+              setBusinessPlanFiles(Array.from(e.target.files || []))
+            }
+            className="hidden"
+            id="business-plan-upload"
+          />
+          <label
+            htmlFor="business-plan-upload"
+            className="cursor-pointer block"
+          >
+            <FiBriefcase className="mx-auto text-3xl mb-2" />
+            <p>Click to upload files or drag and drop</p>
+            <p className="text-sm text-gray-500 mt-1">PDF (Max 10MB each)</p>
+          </label>
+        </div>
+
+        {businessPlanFiles.length > 0 && (
+          <div className="mt-4 space-y-2">
+            {businessPlanFiles.map((file, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-2 bg-gray-100 rounded"
+              >
+                <span>{file.name}</span>
+                <span className="text-sm text-gray-500">
+                  {(file.size / 1024 / 1024).toFixed(2)}MB
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex justify-end space-x-3 mt-6">
+          <Button
+            onClick={closeModal}
+            className="px-4 py-2 border rounded-lg"
+            variant="outline"
+            size="lg"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleUploadBusinessPlanDocuments}
+            disabled={businessPlanFiles.length === 0}
+            className={`px-4 py-2 rounded-lg ${
+              businessPlanFiles.length === 0
                 ? 'bg-gray-300 cursor-not-allowed'
                 : 'bg-fundify-primary text-white hover:bg-fundify-primary'
             }`}

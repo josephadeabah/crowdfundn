@@ -212,12 +212,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
             {/* Equity status badge */}
             {campaign.type === 'EquityCampaign' && (
               <span
-            className={`absolute top-4 left-4 px-2 py-1 text-xs font-semibold rounded-full ${getEquityStatusColor(campaign.equity_status ?? '')}`}
-          >
-            {campaign.equity_status === 'approved'
-              ? 'READY TO LAUNCH'
-              : campaign.equity_status?.toUpperCase()}
-          </span>
+                className={`absolute top-4 left-4 px-2 py-1 text-xs font-semibold rounded-full ${getEquityStatusColor(campaign.equity_status ?? '')}`}
+              >
+                {campaign.equity_status === 'approved'
+                  ? 'READY TO LAUNCH'
+                  : campaign.equity_status?.toUpperCase()}
+              </span>
             )}
 
             {/* Category badge moved to bottom */}
