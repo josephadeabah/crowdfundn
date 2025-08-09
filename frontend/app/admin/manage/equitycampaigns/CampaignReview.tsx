@@ -551,7 +551,7 @@ export function CampaignReview({
       <Modal
         isOpen={isDocumentModalOpen}
         onClose={() => setIsDocumentModalOpen(false)}
-        size="xlarge"
+        size="xxxlarge"
       >
         {selectedCampaign && (
           <div className="p-6">
