@@ -19,6 +19,8 @@ class InvestorDocument < ApplicationRecord
     proof_of_address
     founders_id
     licenses_permits
+    financial_statement
+    business_plan
   ].freeze
 
   validates :document_type, inclusion: { in: DOCUMENT_TYPES }
@@ -42,25 +44,27 @@ class InvestorDocument < ApplicationRecord
       'bank_account_details' => 'Bank Account Details',
       'proof_of_address' => 'Proof of Address',
       'founders_id' => "Founder's ID",
-      'licenses_permits' => 'Licenses & Permits'
+      'licenses_permits' => 'Licenses & Permits',
+      'financial_statement' => 'Financial Statements',
+      'business_plan' => 'Business Plan'
     }[document_type] || document_type.titleize
   end
 
   scope :required, -> { where(document_type: ['accreditation_form', 'id_proof', 'tax_document', 'agreement']) }
 
   def as_json(options = {})
-  {
-    id: id,
-    user_id: user_id,
-    campaign_id: campaign_id,
-    document_type: document_type,
-    display_name: display_name,
-    files: file_metadata,
-    created_at: created_at,
-    updated_at: updated_at,
-    required: required_document?
-  }
-end
+    {
+      id: id,
+      user_id: user_id,
+      campaign_id: campaign_id,
+      document_type: document_type,
+      display_name: display_name,
+      files: file_metadata,
+      created_at: created_at,
+      updated_at: updated_at,
+      required: required_document?
+    }
+  end
 
   def file_metadata
     return [] unless files.attached?

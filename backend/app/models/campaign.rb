@@ -81,7 +81,7 @@ class Campaign < ApplicationRecord
   def media_filename
     media.attached? ? media.filename.to_s : nil
   end
-  
+
   # app/models/campaign.rb
     def as_json(options = {})
     json = super({

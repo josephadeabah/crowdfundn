@@ -30,8 +30,9 @@ module Api
             )
 
             if params[:files].present?
+              fundraiser_name = @campaign.fundraiser.full_name.parameterize(separator: '_')
               params[:files].each_with_index do |file, index|
-                filename = "#{params[:document_type]}_#{Time.now.to_i}_#{index}.pdf"
+                filename = "#{fundraiser_name}_#{params[:document_type]}_#{Time.now.to_i}_#{index}.pdf"
                 @document.files.attach(
                   io: file,
                   filename: filename,
@@ -56,9 +57,10 @@ module Api
           def update
             if params[:files].present?
               @document.files.purge if @document.files.attached?
+              fundraiser_name = @campaign.fundraiser.full_name.parameterize(separator: '_')
               
               params[:files].each_with_index do |file, index|
-                filename = "#{params[:document_type]}_#{Time.now.to_i}_#{index}.pdf"
+                filename = "#{fundraiser_name}_#{params[:document_type]}_#{Time.now.to_i}_#{index}.pdf"
                 @document.files.attach(
                   io: file,
                   filename: filename,
