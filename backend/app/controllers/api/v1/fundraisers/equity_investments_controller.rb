@@ -163,6 +163,11 @@ module Api
           params.require(:equity_investment).permit(
             :amount,
             :reward_id,
+            :email,
+            :phone,
+            :full_name,
+            :ip_address,
+            :country,
             metadata: {}
           )
         end

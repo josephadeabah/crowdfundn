@@ -9,6 +9,8 @@ class EquityInvestment < ApplicationRecord
   validates :amount, :shares, :percentage, presence: true, numericality: { greater_than: 0 }
   validates :certificate_number, uniqueness: true, allow_nil: true
   validates :transaction_reference, uniqueness: true, allow_nil: true
+  validates :email, presence: true
+  validates :phone, allow_blank: true
 
   enum :status, {
     pending: 0,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_07_31_041159) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_09_205722) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -209,6 +209,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_31_041159) do
     t.string "country"
     t.string "ip_address"
     t.jsonb "metadata", default: {}
+    t.string "email", default: "noemail@example.com", null: false
+    t.string "phone"
+    t.string "full_name"
     t.index ["campaign_id"], name: "index_equity_investments_on_campaign_id"
     t.index ["certificate_number"], name: "index_equity_investments_on_certificate_number", unique: true
     t.index ["metadata"], name: "index_equity_investments_on_metadata", using: :gin
