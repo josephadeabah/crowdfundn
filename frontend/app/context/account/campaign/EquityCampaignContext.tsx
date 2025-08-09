@@ -22,6 +22,15 @@ const EquityCampaignContext = createContext<EquityCampaignState | undefined>(
   undefined,
 );
 
+export type CampaignActionResult = {
+  success: boolean;
+  error?: string;
+  validationErrors?: string[];
+  requirements?: Record<string, boolean>;
+};
+
+// Then update the state transition functions:
+
 export const EquityCampaignProvider = ({
   children,
 }: {
@@ -248,191 +257,213 @@ export const EquityCampaignProvider = ({
   );
 
   // Equity Campaign Special Actions
-  const submitForApproval = useCallback(
-    async (id: string): Promise<{ success: boolean; error?: string }> => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${id}/submit_for_approval`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
+
+const submitForApproval = useCallback(
+  async (campaignId: string): Promise<CampaignActionResult> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${campaignId}/submit_for_approval`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          const errorMessage = getDetailedErrorMessage(data);
-          return { success: false, error: errorMessage };
         }
+      );
 
-        await fetchUserCampaigns();
-        return { success: true };
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error
-            ? err.message
-            : 'Failed to submit campaign for approval';
-        return { success: false, error: errorMessage };
-      } finally {
-        setLoading(false);
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle structured error response from backend
+        return {
+          success: false,
+          error: data.error || 'Submission failed',
+          validationErrors: data.details,
+          requirements: data.requirements
+        };
       }
-    },
-    [token, fetchUserCampaigns],
-  );
 
-  const approveCampaign = useCallback(
-    async (id: string): Promise<{ success: boolean; error?: string }> => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${id}/approve`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
+      await fetchUserCampaigns();
+      return { success: true };
+    } catch (err) {
+      return {
+        success: false,
+        error: getDetailedErrorMessage(err)
+      };
+    } finally {
+      setLoading(false);
+    }
+  },
+  [token, fetchUserCampaigns]
+);
+
+const approveCampaign = useCallback(
+  async (campaignId: string): Promise<CampaignActionResult> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${campaignId}/approve`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          const errorMessage = getDetailedErrorMessage(data);
-          return { success: false, error: errorMessage };
         }
+      );
 
-        await fetchUserCampaigns();
-        return { success: true };
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Failed to approve campaign';
-        return { success: false, error: errorMessage };
-      } finally {
-        setLoading(false);
+      const data = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          error: data.error || 'Approval failed',
+          validationErrors: data.details,
+          requirements: data.requirements
+        };
       }
-    },
-    [token, fetchUserCampaigns],
-  );
 
-  const rejectCampaign = useCallback(
-    async (
-      id: string,
-      rejectionReason: string,
-    ): Promise<{ success: boolean; error?: string }> => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${id}/reject`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ rejection_reason: rejectionReason }),
+      await fetchUserCampaigns();
+      return { success: true };
+    } catch (err) {
+      return {
+        success: false,
+        error: getDetailedErrorMessage(err)
+      };
+    } finally {
+      setLoading(false);
+    }
+  },
+  [token, fetchUserCampaigns]
+);
+
+const rejectCampaign = useCallback(
+  async (campaignId: string, rejectionReason: string): Promise<CampaignActionResult> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${campaignId}/reject`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          const errorMessage = getDetailedErrorMessage(data);
-          return { success: false, error: errorMessage };
+          body: JSON.stringify({ rejection_reason: rejectionReason }),
         }
+      );
 
-        await fetchUserCampaigns();
-        return { success: true };
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Failed to reject campaign';
-        return { success: false, error: errorMessage };
-      } finally {
-        setLoading(false);
+      const data = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          error: data.error || 'Rejection failed',
+          validationErrors: data.details,
+          requirements: data.requirements
+        };
       }
-    },
-    [token, fetchUserCampaigns],
-  );
 
-  const launchCampaign = useCallback(
-    async (id: string): Promise<{ success: boolean; error?: string }> => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${id}/launch`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
+      await fetchUserCampaigns();
+      return { success: true };
+    } catch (err) {
+      return {
+        success: false,
+        error: getDetailedErrorMessage(err)
+      };
+    } finally {
+      setLoading(false);
+    }
+  },
+  [token, fetchUserCampaigns]
+);
+
+const launchCampaign = useCallback(
+  async (campaignId: string): Promise<CampaignActionResult> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${campaignId}/launch`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          const errorMessage = getDetailedErrorMessage(data);
-          return { success: false, error: errorMessage };
         }
+      );
 
-        await fetchUserCampaigns();
-        return { success: true };
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Failed to launch campaign';
-        return { success: false, error: errorMessage };
-      } finally {
-        setLoading(false);
+      const data = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          error: data.error || 'Launch failed',
+          validationErrors: data.details,
+          requirements: data.requirements
+        };
       }
-    },
-    [token, fetchUserCampaigns],
-  );
 
-  const closeCampaign = useCallback(
-    async (id: string): Promise<{ success: boolean; error?: string }> => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${id}/close`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
+      await fetchUserCampaigns();
+      return { success: true };
+    } catch (err) {
+      return {
+        success: false,
+        error: getDetailedErrorMessage(err)
+      };
+    } finally {
+      setLoading(false);
+    }
+  },
+  [token, fetchUserCampaigns]
+);
+
+const closeCampaign = useCallback(
+  async (campaignId: string): Promise<CampaignActionResult> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${campaignId}/close`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          const errorMessage = getDetailedErrorMessage(data);
-          return { success: false, error: errorMessage };
         }
+      );
 
-        await fetchUserCampaigns();
-        return { success: true };
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Failed to close campaign';
-        return { success: false, error: errorMessage };
-      } finally {
-        setLoading(false);
+      const data = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          error: data.error || 'Closing failed',
+          validationErrors: data.details,
+          requirements: data.requirements
+        };
       }
-    },
-    [token, fetchUserCampaigns],
-  );
+
+      await fetchUserCampaigns();
+      return { success: true };
+    } catch (err) {
+      return {
+        success: false,
+        error: getDetailedErrorMessage(err)
+      };
+    } finally {
+      setLoading(false);
+    }
+  },
+  [token, fetchUserCampaigns]
+);
 
   // Team Member Management
   const fetchTeamMembers = useCallback(

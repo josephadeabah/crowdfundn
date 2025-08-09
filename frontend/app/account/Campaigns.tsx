@@ -117,54 +117,74 @@ const Campaigns: React.FC = () => {
   };
 
   const confirmAction = async () => {
-    if (!campaignToActOn || !actionType) return;
+  if (!campaignToActOn || !actionType) return;
 
-    try {
-      let result;
+  try {
+    let result: { success: boolean; error?: string; details?: string[]; requirements?: Record<string, boolean> } | undefined;
+    let successMessage = '';
 
-      if (actionType === 'delete') {
-        await deleteCampaign(String(campaignToActOn.id));
-        showToast('Success', 'Campaign deleted successfully', 'success');
-      } else if (actionType === 'cancel') {
-        await cancelCampaign(String(campaignToActOn.id));
-        showToast('Success', 'Campaign canceled successfully', 'success');
-      } else if (actionType === 'submit') {
-        result = await submitForApproval(String(campaignToActOn.id));
-        if (result.success) {
-          showToast('Success', 'Campaign submitted for approval', 'success');
-        } else {
-          showToast('Error', result.error || 'Failed to submit campaign', 'error');
-        }
-      } else if (actionType === 'launch') {
-        result = await launchCampaign(String(campaignToActOn.id));
-        if (result.success) {
-          showToast('Success', 'Campaign launched successfully', 'success');
-        } else {
-          showToast('Error', result.error || 'Failed to launch campaign', 'error');
-        }
-      } else if (actionType === 'close') {
-        result = await closeCampaign(String(campaignToActOn.id));
-        if (result.success) {
-          showToast('Success', 'Campaign closed successfully', 'success');
-        } else {
-          showToast('Error', result.error || 'Failed to close campaign', 'error');
+    if (actionType === 'delete') {
+      await deleteCampaign(String(campaignToActOn.id));
+      successMessage = 'Campaign deleted successfully';
+    } else if (actionType === 'cancel') {
+      await cancelCampaign(String(campaignToActOn.id));
+      successMessage = 'Campaign canceled successfully';
+    } else if (actionType === 'submit') {
+      result = await submitForApproval(String(campaignToActOn.id));
+      successMessage = 'Campaign submitted for approval';
+    } else if (actionType === 'launch') {
+      result = await launchCampaign(String(campaignToActOn.id));
+      successMessage = 'Campaign launched successfully';
+    } else if (actionType === 'close') {
+      result = await closeCampaign(String(campaignToActOn.id));
+      successMessage = 'Campaign closed successfully';
+    }
+
+    // Show success toast if no result (basic actions) or if result is successful
+    if (!result || result.success) {
+      showToast('Success', successMessage, 'success');
+      await fetchUserCampaigns();
+    } else {
+      // Handle complex error cases
+      const errorMessages = [];
+      
+      // Add main error if exists
+      if (result.error) {
+        errorMessages.push(result.error);
+      }
+      
+      // Add validation errors if they exist
+      if (result.details?.length) {
+        errorMessages.push(...result.details);
+      }
+      
+      // Add unmet requirements if they exist
+      if (result.requirements) {
+        const unmetRequirements = Object.entries(result.requirements)
+          .filter(([_, met]) => !met)
+          .map(([req]) => req.replace(/_/g, ' '));
+        
+        if (unmetRequirements.length) {
+          errorMessages.push(`Requirements not met: ${unmetRequirements.join(', ')}`);
         }
       }
 
-      await fetchUserCampaigns();
-    } catch (error) {
-      const errorMessage = getDetailedErrorMessage(error);
-      showToast(
-        'Error',
-        `Failed to ${actionType} campaign: ${errorMessage}`,
-        'error',
-      );
-    } finally {
-      setAlertPopupOpen(false);
-      setCampaignToActOn(null);
-      setActionType(null);
+      // Fallback if no specific errors were found
+      if (errorMessages.length === 0) {
+        errorMessages.push('Action failed for unknown reasons');
+      }
+
+      showToast('Error', errorMessages.join('\n'), 'error');
     }
-  };
+  } catch (error) {
+    const errorMessage = getDetailedErrorMessage(error);
+    showToast('Error', errorMessage, 'error');
+  } finally {
+    setAlertPopupOpen(false);
+    setCampaignToActOn(null);
+    setActionType(null);
+  }
+};
 
   const getBaseCampaignStatus = (campaign: CampaignResponseDataType) => {
     if (campaign.type !== 'EquityCampaign') return null;
