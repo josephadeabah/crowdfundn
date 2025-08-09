@@ -1,4 +1,3 @@
-# app/controllers/api/v1/equity/campaigns_controller.rb
 module Api
   module V1
     module Equity

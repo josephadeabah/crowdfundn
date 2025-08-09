@@ -24,43 +24,50 @@ class EquityCampaign < Campaign
     closed: 6
   }
 
-  # State transition methods
+  # State transition methods with improved error handling
   def submit_for_approval
-    if may_submit_for_approval?
-      update!(equity_status: :pending_approval)
-    else
-      false
+    return false unless may_submit_for_approval?
+    
+    unless valid_for_approval?
+      errors.add(:base, "Cannot submit for approval: #{validation_errors_for_approval.join(', ')}")
+      return false
     end
+    
+    update(equity_status: :pending_approval)
   end
 
   def approve
     if may_approve?
-      update!(equity_status: :approved)
+      update(equity_status: :approved)
     else
+      errors.add(:base, "Cannot approve campaign that is not pending approval")
       false
     end
   end
 
   def reject
     if may_reject?
-      update!(equity_status: :draft)
+      update(equity_status: :draft)
     else
+      errors.add(:base, "Cannot reject campaign that is not pending approval")
       false
     end
   end
 
   def launch
     if may_launch?
-      update!(equity_status: :live)
+      update(equity_status: :live)
     else
+      errors.add(:base, "Cannot launch campaign that is not approved")
       false
     end
   end
 
   def close
     if may_close?
-      update!(equity_status: :closed)
+      update(equity_status: :closed)
     else
+      errors.add(:base, "Cannot close campaign that is not live or funded")
       false
     end
   end
@@ -87,17 +94,23 @@ class EquityCampaign < Campaign
   end
 
   def valid_for_approval?
-    [
-      title.present?,
-      description.present?,
-      valuation.present?,
-      equity_offered.present?,
-      minimum_investment.present?,
-      maximum_investment.present?,
-      company_name.present?,
-      company_description.present?,
-      campaign_team_members.exists?(role: 'founder')
-    ].all?
+    validation_errors_for_approval.empty?
+  end
+  
+  def validation_errors_for_approval
+    errors = []
+    
+    errors << "Title is required" if title.blank?
+    errors << "Description is required" if description.blank?
+    errors << "Valuation is required" if valuation.blank?
+    errors << "Equity offered is required" if equity_offered.blank?
+    errors << "Minimum investment is required" if minimum_investment.blank?
+    errors << "Maximum investment is required" if maximum_investment.blank?
+    errors << "Company name is required" if company_name.blank?
+    errors << "Company description is required" if company_description.blank?
+    errors << "At least one founder is required" unless campaign_team_members.exists?(role: 'founder')
+    
+    errors
   end
   
   # This method is used to determine the number of shares in money available for investment.
