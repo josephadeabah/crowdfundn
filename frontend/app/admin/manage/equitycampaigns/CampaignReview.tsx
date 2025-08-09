@@ -470,7 +470,7 @@ export function CampaignReview({
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="bg-bantu-green text-white hover:bg-green-600"
+                      className="bg-bantu-green text-white hover:bg-green-600 hover:text-white"
                       onClick={() => {
                         setSelectedCampaign(campaign);
                         setIsApproveModalOpen(true);
