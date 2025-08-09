@@ -469,6 +469,8 @@ export function CampaignReview({
                     </Button>
                     <Button
                       size="sm"
+                      variant="ghost"
+                      className="bg-bantu-green text-white hover:bg-green-600"
                       onClick={() => {
                         setSelectedCampaign(campaign);
                         setIsApproveModalOpen(true);
