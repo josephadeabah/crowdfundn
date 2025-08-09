@@ -46,17 +46,17 @@ module Clockwork
   end
 
   # Add this new block at the end for certificate retries
-  every(1.hour, 'retry_failed_certificates') do
-    Rails.logger.info "Checking for failed certificate generations at #{Time.current}"
-    
-    EquityInvestment.success
-      .where.not(certificate_number: nil)
-      .left_outer_joins(:certificate_attachment)
-      .where(active_storage_attachments: { id: nil })
-      .find_each(batch_size: 100) do |investment|
-        CertificateGenerationJob.perform_later(investment.id)
-        Rails.logger.info "Enqueued certificate generation for investment #{investment.id}"
-      end
+  EquityInvestment.successful
+  .where.not(certificate_number: nil)
+  .left_outer_joins(:certificate_attachment)
+  .where(active_storage_attachments: { id: nil })
+  .find_each(batch_size: 100) do |investment|
+    begin
+      CertificateGenerationJob.perform_later(investment.id)
+      Rails.logger.info "Enqueued certificate generation for investment #{investment.id}"
+    rescue => e
+      Rails.logger.error "Failed to enqueue certificate generation for investment #{investment.id}: #{e.message}"
+    end
   end
 
   # Error handler
