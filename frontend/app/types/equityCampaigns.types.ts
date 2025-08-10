@@ -33,6 +33,7 @@ export interface CampaignTeamMember {
   created_at?: string;
   updated_at?: string;
 }
+
 export interface EquityCampaignResponseDataType
   extends CampaignResponseDataType {
   valuation: number;
@@ -72,6 +73,55 @@ export interface EquityInvestment {
   campaign_id: number;
   created_at: string;
   updated_at: string;
+  status: 'pending' | 'completed' | 'cancelled' | 'refunded';
+  payment_method?: string;
+  transaction_id?: string;
+  investor_details?: {
+    name: string;
+    email: string;
+    phone?: string;
+  };
+  campaign_details?: {
+    title: string;
+    equity_offered: number;
+    valuation: number;
+  };
+}
+
+export interface InvestmentPortfolio {
+  total_invested: number;
+  total_shares: number;
+  active_investments: number;
+  campaigns_invested: number;
+  investments: EquityInvestment[];
+}
+
+export interface ShareCertificate {
+  id: string;
+  campaign_id: number;
+  investor_id: number;
+  shares: number;
+  issue_date: string;
+  certificate_number: string;
+  status: 'issued' | 'pending' | 'cancelled';
+  document_url?: string;
+}
+
+export interface InvestmentCreatePayload {
+  amount: number;
+  shares?: number;
+  email?: string;
+  phone?: string;
+  full_name?: string;
+  metadata?: any;
+  payment_method?: string;
+}
+
+export interface InvestmentUpdatePayload {
+  amount?: number;
+  shares?: number;
+  status?: 'pending' | 'completed' | 'cancelled' | 'refunded';
+  metadata?: any;
 }
 
 export interface EquityCampaignState extends CampaignState {
@@ -79,6 +129,8 @@ export interface EquityCampaignState extends CampaignState {
   investments: EquityInvestment[];
   documents: InvestorDocument[];
   currentDocument: InvestorDocument | null;
+  portfolio: InvestmentPortfolio | null;
+  shareCertificates: ShareCertificate[];
 
   // Campaign actions
   fetchPendingReviewCampaigns: () => Promise<EquityCampaignResponseDataType[]>;
@@ -109,10 +161,22 @@ export interface EquityCampaignState extends CampaignState {
   fetchTeamMembers: (campaignId: string) => Promise<void>;
 
   // Investment actions
+  fetchInvestments: (campaignId: string) => Promise<void>;
+  fetchPublicInvestments: (campaignId: string) => Promise<void>;
   createInvestment: (
     campaignId: string,
-    investment: Omit<EquityInvestment, 'id' | 'created_at'>,
+    investment: InvestmentCreatePayload,
+  ) => Promise<{ success: boolean; data?: EquityInvestment; error?: string }>;
+  fetchInvestmentDetails: (
+    investmentId: string,
   ) => Promise<EquityInvestment | null>;
+  updateInvestment: (
+    investmentId: string,
+    updates: InvestmentUpdatePayload,
+  ) => Promise<{ success: boolean; data?: EquityInvestment; error?: string }>;
+  deleteInvestment: (
+    investmentId: string,
+  ) => Promise<{ success: boolean; error?: string }>;
 
   // Document actions
   fetchDocuments: (campaignId: string) => Promise<void>;
@@ -139,5 +203,5 @@ export interface EquityCampaignState extends CampaignState {
   fetchShareCertificateById: (
     campaignId: string,
     certificateId: string,
-  ) => Promise<void>;
+  ) => Promise<ShareCertificate | null>;
 }
