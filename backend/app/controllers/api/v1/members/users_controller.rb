@@ -139,7 +139,7 @@ module Api
 
           begin
             ActiveRecord::Base.transaction do
-              # Your existing recipient deletion logic
+              # Recipient deletion logic remains the same
               if subaccount.recipient_code.present?
                 delete_response = PaystackService.new.delete_transfer_recipient(subaccount.recipient_code)
                 
@@ -153,7 +153,7 @@ module Api
                 subaccount.update!(recipient_code: nil)
               end
 
-              # Prepare metadata safely
+              # Prepare metadata
               metadata = params[:metadata] || {}
               metadata[:custom_fields] ||= []
               metadata.merge!(
@@ -177,54 +177,57 @@ module Api
                 metadata: metadata
               )
 
-              # Validate response safely
-              unless response.is_a?(Hash) && response[:status] == true && response[:data].is_a?(Hash)
-                raise StandardError, response[:message] || 'Invalid Paystack response'
-              end
+              # FIXED: Proper success/error handling
+              if response.is_a?(Hash)
+                if response[:status] == true || response[:message] == 'Subaccount updated'
+                  # Success case
+                  subaccount.update!(
+                    business_name: params[:business_name],
+                    bank_code: params[:bank_code],
+                    account_number: params[:account_number],
+                    percentage_charge: params[:percentage_charge],
+                    description: params[:description],
+                    settlement_bank: params[:settlement_bank],
+                    metadata: metadata,
+                    user_id: user.id
+                  )
 
-              # Update subaccount record
-              subaccount.update!(
-                business_name: response[:data][:business_name],
-                bank_code: response[:data][:bank_code],
-                account_number: response[:data][:account_number],
-                subaccount_code: response[:data][:subaccount_code],
-                percentage_charge: response[:data][:percentage_charge],
-                description: response[:data][:description],
-                settlement_bank: response[:data][:settlement_bank],
-                metadata: metadata,
-                user_id: user.id
-              )
+                  # Recreate recipient if needed (same as before)
+                  if subaccount.recipient_code.blank?
+                    recipient_type = metadata[:custom_fields].first[:type] rescue 'nuban'
+                    
+                    create_response = PaystackService.new.create_transfer_recipient(
+                      type: recipient_type,
+                      name: params[:business_name],
+                      account_number: params[:account_number],
+                      bank_code: params[:settlement_bank],
+                      currency: user.currency.upcase,
+                      description: "Recipient for #{params[:business_name]}",
+                      metadata: metadata
+                    )
 
-              # Recreate recipient if needed
-              if subaccount.recipient_code.blank?
-                recipient_type = metadata[:custom_fields].first[:type] rescue 'nuban' # Fallback type
-                
-                create_response = PaystackService.new.create_transfer_recipient(
-                  type: recipient_type,
-                  name: params[:business_name],
-                  account_number: params[:account_number],
-                  bank_code: params[:settlement_bank],
-                  currency: user.currency.upcase,
-                  description: "Recipient for #{params[:business_name]}",
-                  metadata: metadata
-                )
+                    if create_response[:status] == true
+                      subaccount.update!(recipient_code: create_response[:data][:recipient_code])
+                    else
+                      raise StandardError, "Recipient creation failed: #{create_response[:message]}"
+                    end
+                  end
 
-                if create_response[:status] == true
-                  subaccount.update!(recipient_code: create_response[:data][:recipient_code])
+                  render json: { success: true, subaccount: subaccount }, status: :ok
+                  return
                 else
-                  raise StandardError, "Recipient creation failed: #{create_response[:message]}"
+                  # Actual error case
+                  raise StandardError, response[:message] || 'Paystack update failed'
                 end
+              else
+                raise StandardError, 'Invalid response from Paystack'
               end
-
-              render json: { success: true, subaccount: subaccount }, status: :ok
             end
           rescue StandardError => e
-            # SAFE ERROR HANDLING - prevents recursion
-            error_message = "Subaccount update failed: #{e.message}"
-            Rails.logger.error error_message
+            Rails.logger.error "Subaccount update error: #{e.message}"
             render json: { 
               success: false, 
-              error: error_message,
+              error: "Subaccount update failed: #{e.message}",
               backtrace: Rails.env.development? ? e.backtrace : nil
             }, status: :unprocessable_entity
           end
