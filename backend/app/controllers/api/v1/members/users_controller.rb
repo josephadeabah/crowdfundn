@@ -161,6 +161,7 @@ module Api
                 email: user.email,
                 user_name: user.full_name
               )
+              subaccount_type = metadata[:custom_fields].first[:type] rescue nil
 
               # Update subaccount
               response = PaystackService.new.update_subaccount(
@@ -168,7 +169,7 @@ module Api
                 business_name: params[:business_name],
                 settlement_bank: params[:settlement_bank],
                 account_number: params[:account_number],
-                bank_code: params[:bank_code],
+                bank_code: params[:bank_code] || params[:settlement_bank],
                 percentage_charge: params[:percentage_charge],
                 description: params[:description],
                 primary_contact_email: user.email,
@@ -189,6 +190,7 @@ module Api
                     description: params[:description],
                     settlement_bank: params[:settlement_bank],
                     metadata: metadata,
+                    subaccount_type: subaccount_type,
                     user_id: user.id
                   )
 
