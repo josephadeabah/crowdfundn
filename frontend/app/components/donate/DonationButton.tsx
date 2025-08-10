@@ -239,6 +239,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
               campaignId: String(fundraiserDetails?.campaignId),
               campaignTitle: fundraiserDetails?.campaignTitle,
             }}
+            isEquityCampaign={isEquityCampaign}
           />
         </Modal>
       )}

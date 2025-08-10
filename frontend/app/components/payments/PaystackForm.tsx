@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
 import ToastComponent from '@/app/components/toast/Toast';
 import { Reward } from '@/app/context/account/rewards/RewardsContext';
+import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
+import { EquityInvestment } from '@/app/types/equityCampaigns.types';
 
 interface PaystackFormProps {
   cardholderName: string;
@@ -27,6 +29,16 @@ interface PaystackFormProps {
   setPaymentEmail: React.Dispatch<React.SetStateAction<string>>;
   setPaymentPhone: React.Dispatch<React.SetStateAction<string>>;
   setPaymentAmount: React.Dispatch<React.SetStateAction<string>>;
+  isEquityCampaign?: boolean;
+}
+
+interface InvestmentResponse {
+  success: boolean;
+  data?: {
+    investment: EquityInvestment;
+    authorization_url?: string;
+  };
+  error?: string;
 }
 
 const PaystackForm: React.FC<PaystackFormProps> = ({
@@ -44,27 +56,76 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   setPaymentEmail,
   setPaymentPhone,
   setPaymentAmount,
+  isEquityCampaign = false,
 }) => {
-  const { createDonationTransaction, loading, error } = useDonationsContext();
+  const {
+    createDonationTransaction,
+    loading: donationLoading,
+    error: donationError,
+  } = useDonationsContext();
+  const {
+    createInvestment,
+    loading: investmentLoading,
+    error: investmentError,
+  } = useEquityCampaignContext();
   const [showToast, setShowToast] = useState(false);
+  const [processingFee, setProcessingFee] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
+
+  // Calculate processing fee and total amount
+  useEffect(() => {
+    if (isEquityCampaign && paymentAmount) {
+      const amount = parseFloat(paymentAmount) || 0;
+      const fee = Math.min(amount * 0.02, 120); // 2% fee capped at 120 GHS
+      setProcessingFee(fee);
+      setTotalAmount(amount + fee);
+    } else {
+      setProcessingFee(0);
+      setTotalAmount(parseFloat(paymentAmount) || 0);
+    }
+  }, [paymentAmount, isEquityCampaign]);
 
   // Trigger toast visibility when error changes
   useEffect(() => {
+    const error = isEquityCampaign ? investmentError : donationError;
     if (error) {
       setShowToast(true);
     } else {
       setShowToast(false);
     }
-  }, [error]);
+  }, [donationError, investmentError, isEquityCampaign]);
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     setShowToast(false);
-    if (validatePaystackForm()) {
+    if (!validatePaystackForm()) return;
+
+    const amount = parseFloat(paymentAmount);
+    if (isNaN(amount) || amount <= 0) return;
+
+    if (isEquityCampaign) {
+      // Handle equity investment
+      const investmentData = {
+        amount: amount, // Use base amount without fees for the investment record
+        email: paymentEmail,
+        phone: paymentPhone,
+        full_name: cardholderName,
+        metadata: combinedMetadata || {},
+      };
+
+      const result = (await createInvestment(
+        campaignId,
+        investmentData,
+      )) as InvestmentResponse;
+      if (result.success && result.data?.authorization_url) {
+        window.location.href = result.data.authorization_url;
+      }
+    } else {
+      // Handle regular donation
       createDonationTransaction(
         paymentEmail,
         cardholderName,
         paymentPhone,
-        Number(paymentAmount),
+        amount,
         campaignId,
         campaignTitle,
         billingFrequency,
@@ -72,6 +133,9 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
       );
     }
   };
+
+  const loading = isEquityCampaign ? investmentLoading : donationLoading;
+  const error = isEquityCampaign ? investmentError : donationError;
 
   return (
     <>
@@ -179,6 +243,22 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
           </p>
         )}
       </div>
+
+      {isEquityCampaign && (
+        <div className="mb-4 p-3 bg-gray-50 rounded-md">
+          <div className="flex justify-between text-sm mb-1">
+            <span className="text-gray-600">Processing Fee (2%):</span>
+            <span className="font-medium">{processingFee.toFixed(2)} GHS</span>
+          </div>
+          <div className="flex justify-between text-sm font-semibold">
+            <span>Total Amount:</span>
+            <span>{totalAmount.toFixed(2)} GHS</span>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            *Processing fee is capped at 120 GHS for equity campaigns
+          </p>
+        </div>
+      )}
 
       <button
         type="button"

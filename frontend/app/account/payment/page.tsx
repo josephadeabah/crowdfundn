@@ -34,6 +34,7 @@ const PaymentPageContent = () => {
   const [campaignTitle, setCampaignTitle] = useState('');
   const [billingFrequency, setBillingFrequency] = useState('');
   const [tokenState, setTokenState] = useState('');
+  const [isEquityCampaign, setIsEquityCampaign] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const searchParams = useSearchParams();
@@ -86,6 +87,9 @@ const PaymentPageContent = () => {
             setFundraiserId(id || '');
             setCampaignId(campaignId || '');
             setCampaignTitle(campaignTitle || '');
+          }
+          if (payload.isEquityCampaign !== undefined) {
+            setIsEquityCampaign(payload.isEquityCampaign as boolean);
           }
         } catch (error) {
           setTokenState(
@@ -214,6 +218,7 @@ const PaymentPageContent = () => {
               setPaymentEmail={setPaymentEmail}
               setPaymentPhone={setPaymentPhone}
               setPaymentAmount={setPaymentAmount}
+              isEquityCampaign={isEquityCampaign}
             />
           )}
 

@@ -1,3 +1,4 @@
+// app/components/donate/ProcessingPayment.tsx
 import React, { useState, useEffect } from 'react';
 import { FaSpinner } from 'react-icons/fa';
 import { motion } from 'framer-motion';
@@ -28,6 +29,7 @@ interface ProcessingPaymentProps {
     email: string;
     type: string;
   };
+  isEquityCampaign?: boolean;
 }
 
 const secretKey = process.env.NEXT_PUBLIC_JWT_SECRET!;
@@ -37,6 +39,7 @@ const ProcessingPayment: React.FC<ProcessingPaymentProps> = ({
   paymentDetails,
   billing,
   fundraiserDetails,
+  isEquityCampaign = false,
 }) => {
   const [isProcessing, setIsProcessing] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -83,6 +86,7 @@ const ProcessingPayment: React.FC<ProcessingPaymentProps> = ({
             campaignId: fundraiserDetails.campaignId,
             campaignTitle: fundraiserDetails.campaignTitle,
           },
+          isEquityCampaign,
         };
 
         // Generate JWT token
@@ -96,6 +100,7 @@ const ProcessingPayment: React.FC<ProcessingPaymentProps> = ({
     paymentDetails,
     billing,
     fundraiserDetails,
+    isEquityCampaign,
   ]);
 
   return (
