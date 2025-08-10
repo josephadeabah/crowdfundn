@@ -1,14 +1,12 @@
 'use client';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FaSort,
   FaSortUp,
   FaSortDown,
   FaEye,
-  FaBan,
   FaTrash,
   FaEdit,
-  FaCheckCircle,
   FaSearch,
   FaLock,
   FaUnlock,
