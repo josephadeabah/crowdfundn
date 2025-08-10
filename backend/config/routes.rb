@@ -109,15 +109,14 @@ Rails.application.routes.draw do
 
         # Fundraiser-facing equity operations
         resources :equity_campaigns, only: [] do
-          resources :equity_investments, only: [:index, :create] do
+          resources :equity_investments, only: [:index, :create, :show, :update, :destroy] do
             collection do
               get :public_investments
               get :my_investments
+              get :portfolio
             end
           end
         end
-        # Portfolio route (matches your controller action)
-        get 'equity_investments/portfolio', to: 'equity_investments#portfolio'
       end
 
       # Leaderboard routes
