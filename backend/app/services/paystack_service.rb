@@ -45,6 +45,35 @@ class PaystackService
     Rack::Utils.secure_compare(expected_signature, signature)
   end
 
+  # Fetch a subaccount's details from Paystack
+    def fetch_subaccount(subaccount_code)
+      uri = URI("#{PAYSTACK_BASE_URL}/subaccount/#{subaccount_code}")
+      response = make_get_request(uri)
+      
+      parsed_response = parse_response(response)
+      
+      # Standardize the response format
+      if parsed_response[:status] == true
+        {
+          status: true,
+          data: parsed_response[:data],
+          message: parsed_response[:message] || 'Subaccount retrieved successfully'
+        }
+      else
+        {
+          status: false,
+          message: parsed_response[:message] || 'Failed to fetch subaccount',
+          code: response.code
+        }
+      end
+    rescue => e
+      Rails.logger.error "Error fetching subaccount: #{e.message}"
+      {
+        status: false,
+        message: "Error fetching subaccount: #{e.message}",
+        error: e
+      }
+    end
   # Create a subaccount
   def create_subaccount(
     business_name: nil,

@@ -139,20 +139,6 @@ module Api
 
           begin
             ActiveRecord::Base.transaction do
-              # Recipient deletion logic remains the same
-              if subaccount.recipient_code.present?
-                delete_response = PaystackService.new.delete_transfer_recipient(subaccount.recipient_code)
-                
-                unless delete_response[:status]
-                  unless delete_response[:message]&.include?('Not Found')
-                    raise StandardError, "Failed to delete recipient: #{delete_response[:message]}"
-                  end
-                  Rails.logger.warn 'Recipient code not found on Paystack, skipping deletion.'
-                end
-
-                subaccount.update!(recipient_code: nil)
-              end
-
               # Prepare metadata
               metadata = params[:metadata] || {}
               metadata[:custom_fields] ||= []
@@ -163,68 +149,98 @@ module Api
               )
               subaccount_type = metadata[:custom_fields].first[:type] rescue nil
 
-              # Update subaccount
-              response = PaystackService.new.update_subaccount(
-                subaccount_code: subaccount.subaccount_code,
-                business_name: params[:business_name],
-                settlement_bank: params[:settlement_bank],
-                account_number: params[:account_number],
-                bank_code: params[:bank_code] || params[:settlement_bank],
-                percentage_charge: params[:percentage_charge],
-                description: params[:description],
-                primary_contact_email: user.email,
-                primary_contact_name: user.full_name,
-                primary_contact_phone: user.phone_number,
-                metadata: metadata,
-                subaccount_type: subaccount_type
-              )
+              # First verify if subaccount exists on Paystack
+              paystack_subaccount = PaystackService.new.fetch_subaccount(subaccount.subaccount_code)
+              
+              if paystack_subaccount.nil? || paystack_subaccount[:status] == false
+                # Subaccount doesn't exist on Paystack - recreate it
+                Rails.logger.info "Subaccount not found on Paystack, recreating..."
+                
+                create_response = PaystackService.new.create_subaccount(
+                  business_name: params[:business_name],
+                  settlement_bank: params[:settlement_bank],
+                  account_number: params[:account_number],
+                  bank_code: params[:bank_code] || params[:settlement_bank],
+                  percentage_charge: params[:percentage_charge],
+                  description: params[:description],
+                  primary_contact_email: user.email,
+                  primary_contact_name: user.full_name,
+                  primary_contact_phone: user.phone_number,
+                  metadata: metadata
+                )
 
-              # FIXED: Proper success/error handling
-              if response.is_a?(Hash)
-                if response[:status] == true || response[:message] == 'Subaccount updated'
-                  # Success case
-                  subaccount.update!(
-                    business_name: params[:business_name],
-                    bank_code: params[:bank_code],
-                    account_number: params[:account_number],
-                    percentage_charge: params[:percentage_charge],
-                    description: params[:description],
-                    settlement_bank: params[:settlement_bank],
-                    metadata: metadata,
-                    subaccount_type: subaccount_type,
-                    user_id: user.id
-                  )
+                unless create_response[:status]
+                  raise StandardError, "Failed to recreate subaccount: #{create_response[:message]}"
+                end
 
-                  # Recreate recipient if needed (same as before)
-                  if subaccount.recipient_code.blank?
-                    recipient_type = metadata[:custom_fields].first[:type] rescue 'nuban'
-                    
-                    create_response = PaystackService.new.create_transfer_recipient(
-                      type: recipient_type,
-                      name: params[:business_name],
-                      account_number: params[:account_number],
-                      bank_code: params[:settlement_bank],
-                      currency: user.currency.upcase,
-                      description: "Recipient for #{params[:business_name]}",
-                      metadata: metadata
-                    )
+                # Update local record with new subaccount code (though it should be the same)
+                subaccount.update!(
+                  subaccount_code: create_response[:data][:subaccount_code],
+                  business_name: params[:business_name],
+                  bank_code: params[:bank_code],
+                  account_number: params[:account_number],
+                  percentage_charge: params[:percentage_charge],
+                  description: params[:description],
+                  settlement_bank: params[:settlement_bank],
+                  metadata: metadata,
+                  subaccount_type: subaccount_type,
+                  user_id: user.id
+                )
+              else
+                # Subaccount exists - proceed with normal update
+                response = PaystackService.new.update_subaccount(
+                  subaccount_code: subaccount.subaccount_code,
+                  business_name: params[:business_name],
+                  settlement_bank: params[:settlement_bank],
+                  account_number: params[:account_number],
+                  bank_code: params[:bank_code] || params[:settlement_bank],
+                  percentage_charge: params[:percentage_charge],
+                  description: params[:description],
+                  primary_contact_email: user.email,
+                  primary_contact_name: user.full_name,
+                  primary_contact_phone: user.phone_number,
+                  metadata: metadata
+                )
 
-                    if create_response[:status] == true
-                      subaccount.update!(recipient_code: create_response[:data][:recipient_code])
-                    else
-                      raise StandardError, "Recipient creation failed: #{create_response[:message]}"
-                    end
-                  end
-
-                  render json: { success: true, subaccount: subaccount }, status: :ok
-                  return
-                else
-                  # Actual error case
+                unless response[:status] || response[:message] == 'Subaccount updated'
                   raise StandardError, response[:message] || 'Paystack update failed'
                 end
-              else
-                raise StandardError, 'Invalid response from Paystack'
+
+                subaccount.update!(
+                  business_name: params[:business_name],
+                  bank_code: params[:bank_code],
+                  account_number: params[:account_number],
+                  percentage_charge: params[:percentage_charge],
+                  description: params[:description],
+                  settlement_bank: params[:settlement_bank],
+                  metadata: metadata,
+                  subaccount_type: subaccount_type,
+                  user_id: user.id
+                )
               end
+
+              # Handle recipient code (same as before)
+              if subaccount.recipient_code.blank?
+                recipient_type = metadata[:custom_fields].first[:type] rescue 'nuban'
+                
+                create_response = PaystackService.new.create_transfer_recipient(
+                  type: recipient_type,
+                  name: params[:business_name],
+                  account_number: params[:account_number],
+                  bank_code: params[:settlement_bank],
+                  currency: user.currency.upcase,
+                  description: "Recipient for #{params[:business_name]}",
+                  metadata: metadata
+                )
+
+                if create_response[:status] == true
+                  subaccount.update!(recipient_code: create_response[:data][:recipient_code])
+                else
+                  raise StandardError, "Recipient creation failed: #{create_response[:message]}"
+                end
+              end
+
+              render json: { success: true, subaccount: subaccount }, status: :ok
             end
           rescue StandardError => e
             Rails.logger.error "Subaccount update error: #{e.message}"
