@@ -38,25 +38,24 @@ module Clockwork
     end
   end
 
+  # Update investment values daily at 4 AM UTC
   every(1.day, 'update_investment_values', at: '04:00') do
     Rails.logger.info "Updating investment values at #{Time.current}"
     EquityCampaign.live.find_each do |campaign|
-      UpdateCampaignInvestmentsJob.perform_later(campaign.id)
+      UpdateCampaignInvestmentsService.update_for_campaign(campaign.id)
     end
   end
 
-  # Add this new block at the end for certificate retries
-  EquityInvestment.successful
-  .where.not(certificate_number: nil)
-  .left_outer_joins(:certificate_attachment)
-  .where(active_storage_attachments: { id: nil })
-  .find_each(batch_size: 100) do |investment|
-    begin
-      CertificateGenerationJob.perform_later(investment.id)
-      Rails.logger.info "Enqueued certificate generation for investment #{investment.id}"
-    rescue => e
-      Rails.logger.error "Failed to enqueue certificate generation for investment #{investment.id}: #{e.message}"
-    end
+  # Retry failed certificate generations every 6 hours
+  every(6.hours, 'retry_failed_certificates') do
+    Rails.logger.info "Retrying failed certificate generations at #{Time.current}"
+    EquityInvestment.successful
+      .where.not(certificate_number: nil)
+      .left_outer_joins(:certificate_attachment)
+      .where(active_storage_attachments: { id: nil })
+      .find_each(batch_size: 100) do |investment|
+        CertificateGenerationService.generate_for_investment(investment.id)
+      end
   end
 
   # Error handler

@@ -10,19 +10,10 @@ class EquityInvestment < ApplicationRecord
   validates :certificate_number, uniqueness: true, allow_nil: true
   validates :transaction_reference, uniqueness: true, allow_nil: true
   validates :email, presence: true
-  validates :phone, presence: false  # Explicitly make it optional
+  validates :phone, presence: false
 
-  enum :status, {
-    pending: 0,
-    initialized: 1,
-    successful: 2,
-    failed: 3,
-    abandoned: 4,
-    canceled: 5,
-    refunded: 6
-  }, default: :pending
-
-  scope :successful, -> { where(status: :successful) }
+  validates :status, inclusion: { in: %w[pending initialized successful failed abandoned canceled refunded] }, allow_nil: false
+  scope :successful, -> { where(status: 'successful') }
 
   before_validation :calculate_shares_and_percentage, on: :create
   before_create :generate_certificate_number
@@ -49,7 +40,7 @@ class EquityInvestment < ApplicationRecord
   end
 
   def self.total_invested(campaign_id)
-    where(campaign_id: campaign_id, status: :successful).sum(:amount)
+    where(campaign_id: campaign_id, status: 'successful').sum(:amount)
   end
 
   def certificate_url

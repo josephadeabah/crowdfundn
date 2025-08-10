@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_09_205722) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_10_034345) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -198,7 +198,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_09_205722) do
     t.decimal "percentage", precision: 10, scale: 4
     t.string "certificate_number"
     t.date "investment_date"
-    t.integer "status", default: 0
+    t.string "status", default: "pending"
     t.string "transaction_reference"
     t.decimal "gross_amount", precision: 10, scale: 2
     t.decimal "net_amount", precision: 10, scale: 2

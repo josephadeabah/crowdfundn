@@ -1,5 +1,5 @@
 # app/mailers/investment_value_change_mailer.rb
-class InvestmentValueChangeMailer < ApplicationMailer
+class InvestmentValueChangeMailer
   def self.send_notification_email(investment)
     user = investment.user.full_name
     email = investment.user.email

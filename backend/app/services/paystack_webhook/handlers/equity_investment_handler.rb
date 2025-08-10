@@ -1,3 +1,4 @@
+# app/services/paystack_webhook/handlers/equity_investment_handler.rb
 module PaystackWebhook::Handlers
   class EquityInvestmentHandler
     include PaystackWebhook::JsonHelper
@@ -36,7 +37,7 @@ module PaystackWebhook::Handlers
       metadata = parse_metadata(response)
       investment = find_investment(metadata)
 
-      if investment && (investment.pending? || investment.initialized?)
+      if investment && (investment.status == 'pending' || investment.status == 'initialized')
         update_investment(investment, response, metadata, gross_amount, net_amount, adjusted_platform_fee)
         update_campaign(investment)
         create_pledge_if_needed(investment)

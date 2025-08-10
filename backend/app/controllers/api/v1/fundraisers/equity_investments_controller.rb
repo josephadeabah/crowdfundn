@@ -8,10 +8,10 @@ module Api
 
         def index
           investments = @campaign.equity_investments
-                                 .includes(:user, :reward)
-                                 .order(created_at: :desc)
-                                 .page(params[:page])
-                                 .per(params[:per_page] || 10)
+                               .includes(:user, :reward)
+                               .order(created_at: :desc)
+                               .page(params[:page])
+                               .per(params[:per_page] || 10)
 
           render json: {
             investments: investments.as_json(include: %i[user reward]),
@@ -21,8 +21,8 @@ module Api
         end
 
         def public_investments
-          investments = @campaign.equity_investments.success
-                                 .order(created_at: :desc)
+          investments = @campaign.equity_investments.successful
+                               .order(created_at: :desc)
 
           investors = investments.map do |investment|
             {
@@ -37,8 +37,8 @@ module Api
           end
 
           paginated_investors = Kaminari.paginate_array(investors)
-                                        .page(params[:page])
-                                        .per(params[:per_page] || 10)
+                                      .page(params[:page])
+                                      .per(params[:per_page] || 10)
 
           render json: {
             investments: paginated_investors,
@@ -48,72 +48,93 @@ module Api
         end
 
         def create
-          # Use strong parameters
           investment_params = equity_investment_params
           amount = investment_params[:amount].to_f
           reward_id = investment_params[:reward_id]
 
           validate_investment_amount(amount) or return
 
-          ActiveRecord::Base.transaction do
-            investment = @campaign.equity_investments.new(
-              user: @current_user,
-              amount: amount,
-              reward_id: reward_id,
-              status: :pending,
-              metadata: investment_params[:metadata] || {} # Include metadata from frontend
-            )
+          subaccount = Subaccount.find_by(user_id: @campaign.fundraiser_id)
 
-            raise ActiveRecord::Rollback, investment.errors.full_messages.join(', ') unless investment.save
-
-            # Generate secure callback URL with UUID
-            secure_uuid = SecureRandom.uuid
-            campaign_identifier = @campaign.slug || @campaign.id
-            redirect_url = Rails.application.routes.url_helpers.campaign_url(
-              campaign_identifier,
-              host: Rails.application.config.app_domain
-            ) + "?#{secure_uuid}"
-
-            # Build metadata combining frontend data and system data
-            metadata = {
-              # Frontend-provided metadata
-              **investment.metadata,
-
-              # System-generated metadata
-              user_id: @current_user.id,
-              campaign_id: @campaign.id,
-              investment_id: investment.id,
-              shares: investment.shares,
-              percentage: investment.percentage,
-              type: 'equity_investment',
-              redirect_url: redirect_url,
-
-              # Campaign details
-              title: @campaign.title,
-              currency: @campaign.currency,
-              currency_symbol: @campaign.currency_symbol,
-              valuation: @campaign.valuation,
-              equity_offered: @campaign.equity_offered,
-
-              # Investor details
-              investor_name: @current_user.full_name,
-              investor_email: @current_user.email,
-
-              # Reward info if present
-              reward: if reward_id
-                        {
-                          id: reward_id,
-                          title: investment.reward&.title,
-                          description: investment.reward&.description,
-                          delivery_date: investment.reward&.delivery_date
-                        }
-                      end
-            }
-
-            initialize_payment(investment, metadata, redirect_url)
+          unless subaccount&.subaccount_code.present?
+            render json: { error: 'Fundraiser does not meet requirements for raising funds' },
+                   status: :unprocessable_entity
+            return
           end
-        rescue StandardError => e
-          render json: { error: e.message }, status: :unprocessable_entity
+
+          investment = @campaign.equity_investments.new(
+            user: @current_user,
+            amount: amount,
+            reward_id: reward_id,
+            status: 'pending',
+            metadata: investment_params[:metadata] || {},
+            email: investment_params[:email] || @current_user.email,
+            phone: investment_params[:phone],
+            full_name: investment_params[:full_name] || @current_user.full_name,
+            country: investment_params[:country],
+            ip_address: request.remote_ip
+          )
+
+          secure_uuid = SecureRandom.uuid
+          campaign_identifier = @campaign.slug || @campaign.id
+          redirect_url = Rails.application.routes.url_helpers.campaign_url(
+            campaign_identifier,
+            host: Rails.application.config.app_domain
+          ) + "?#{secure_uuid}"
+
+          metadata = {
+            user_id: @current_user.id,
+            campaign_id: @campaign.id,
+            type: 'equity_investment',
+            redirect_url: redirect_url,
+            title: @campaign.title,
+            currency: @campaign.currency,
+            currency_symbol: @campaign.currency_symbol,
+            valuation: @campaign.valuation,
+            equity_offered: @campaign.equity_offered,
+            investor_name: investment.full_name,
+            investor_email: investment.email,
+            reward: reward_id ? {
+              id: reward_id,
+              title: investment.reward&.title,
+              description: investment.reward&.description,
+              delivery_date: investment.reward&.delivery_date
+            } : nil
+          }
+
+          paystack_service = PaystackService.new
+          response = paystack_service.initialize_transaction(
+            email: investment.email,
+            amount: investment.amount * 100,
+            callback_url: redirect_url,
+            metadata: metadata,
+            subaccount: subaccount.subaccount_code
+          )
+
+          if response[:status]
+            investment.transaction_reference = response[:data][:reference]
+            investment.metadata = metadata
+            investment.save!
+
+            render json: {
+              authorization_url: response[:data][:authorization_url],
+              redirect_url: redirect_url,
+              investment: {
+                id: investment.id,
+                amount: investment.amount,
+                shares: investment.shares,
+                percentage: investment.percentage,
+                campaign: {
+                  id: @campaign.id,
+                  title: @campaign.title
+                }
+              },
+              total_investors: @campaign.total_investors
+            }, status: :created
+          else
+            render json: { error: response[:message] },
+                   status: :unprocessable_entity
+          end
         end
 
         def my_investments
