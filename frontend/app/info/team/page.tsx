@@ -62,7 +62,7 @@ const Teams = () => {
     {
       id: '5',
       name: 'Nqoba Manana',
-      position: 'Chief Operating Officer',
+      position: 'Chief Executive Officer',
       image: nqobaMananaHeadshot,
       email: 'nqoba.manana@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/nqoba-g-manana/',
