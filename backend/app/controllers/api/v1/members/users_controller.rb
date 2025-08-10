@@ -137,99 +137,97 @@ module Api
             return
           end
 
-          # Your original metadata handling
-          metadata = params[:metadata] || {}
-          metadata.merge!(
-            user_id: user.id,
-            email: user.email,
-            user_name: user.full_name
-          )
-
-          # Preserve your custom fields logic
-          metadata[:custom_fields] = if metadata[:custom_fields]
-            metadata[:custom_fields].map do |field|
-              field.slice(:display_name, :variable_name, :value, :type)
-            end
-          else
-            []
-          end
-
-          ActiveRecord::Base.transaction do
-            # Keep your recipient deletion logic
-            if subaccount.recipient_code.present?
-              delete_response = PaystackService.new.delete_transfer_recipient(subaccount.recipient_code)
-              
-              unless delete_response[:status]
-                unless delete_response[:message]&.include?('Not Found')
-                  raise StandardError, "Failed to delete recipient on Paystack: #{delete_response[:message]}"
+          begin
+            ActiveRecord::Base.transaction do
+              # Your existing recipient deletion logic
+              if subaccount.recipient_code.present?
+                delete_response = PaystackService.new.delete_transfer_recipient(subaccount.recipient_code)
+                
+                unless delete_response[:status]
+                  unless delete_response[:message]&.include?('Not Found')
+                    raise StandardError, "Failed to delete recipient: #{delete_response[:message]}"
+                  end
+                  Rails.logger.warn 'Recipient code not found on Paystack, skipping deletion.'
                 end
-                Rails.logger.warn 'Recipient code not found on Paystack, skipping deletion.'
+
+                subaccount.update!(recipient_code: nil)
               end
 
-              subaccount.update!(recipient_code: nil)
-            end
+              # Prepare metadata safely
+              metadata = params[:metadata] || {}
+              metadata[:custom_fields] ||= []
+              metadata.merge!(
+                user_id: user.id,
+                email: user.email,
+                user_name: user.full_name
+              )
 
-            # SAFER VERSION OF YOUR ORIGINAL CODE:
-            response = PaystackService.new.update_subaccount(
-              subaccount_code: subaccount.subaccount_code,
-              business_name: params[:business_name],
-              settlement_bank: params[:settlement_bank],
-              account_number: params[:account_number],
-              bank_code: params[:bank_code],
-              percentage_charge: params[:percentage_charge],
-              description: params[:description],
-              primary_contact_email: user.email,
-              primary_contact_name: user.full_name,
-              primary_contact_phone: user.phone_number,
-              metadata: metadata
-            )
-
-            # Added safe navigation and validation
-            unless response&.dig(:status) == true && response&.dig(:data).present?
-              raise StandardError, response[:message] || 'Invalid response from Paystack'
-            end
-
-            # Your original update logic with safe navigation
-            subaccount.update!(
-              business_name: response[:data][:business_name],
-              bank_code: response[:data][:bank_code],
-              account_number: response[:data][:account_number],
-              subaccount_code: response[:data][:subaccount_code],
-              percentage_charge: response[:data][:percentage_charge],
-              description: response[:data][:description],
-              settlement_bank: response[:data][:settlement_bank],
-              metadata: metadata,
-              user_id: user.id
-            )
-
-            # Keep your recipient recreation logic
-            if subaccount.recipient_code.blank?
-              create_response = PaystackService.new.create_transfer_recipient(
-                type: metadata[:custom_fields].first[:type],
-                name: params[:business_name],
+              # Update subaccount
+              response = PaystackService.new.update_subaccount(
+                subaccount_code: subaccount.subaccount_code,
+                business_name: params[:business_name],
+                settlement_bank: params[:settlement_bank],
                 account_number: params[:account_number],
-                bank_code: params[:settlement_bank],
-                currency: user.currency.upcase,
-                description: "Recipient for #{params[:business_name]}",
+                bank_code: params[:bank_code],
+                percentage_charge: params[:percentage_charge],
+                description: params[:description],
+                primary_contact_email: user.email,
+                primary_contact_name: user.full_name,
+                primary_contact_phone: user.phone_number,
                 metadata: metadata
               )
 
-              if create_response[:status] == true
-                subaccount.update!(recipient_code: create_response[:data][:recipient_code])
-              else
-                raise StandardError, "Failed to create recipient: #{create_response[:message]}"
+              # Validate response safely
+              unless response.is_a?(Hash) && response[:status] == true && response[:data].is_a?(Hash)
+                raise StandardError, response[:message] || 'Invalid Paystack response'
               end
-            end
 
-            render json: { success: true, subaccount: subaccount }, status: :ok
+              # Update subaccount record
+              subaccount.update!(
+                business_name: response[:data][:business_name],
+                bank_code: response[:data][:bank_code],
+                account_number: response[:data][:account_number],
+                subaccount_code: response[:data][:subaccount_code],
+                percentage_charge: response[:data][:percentage_charge],
+                description: response[:data][:description],
+                settlement_bank: response[:data][:settlement_bank],
+                metadata: metadata,
+                user_id: user.id
+              )
+
+              # Recreate recipient if needed
+              if subaccount.recipient_code.blank?
+                recipient_type = metadata[:custom_fields].first[:type] rescue 'nuban' # Fallback type
+                
+                create_response = PaystackService.new.create_transfer_recipient(
+                  type: recipient_type,
+                  name: params[:business_name],
+                  account_number: params[:account_number],
+                  bank_code: params[:settlement_bank],
+                  currency: user.currency.upcase,
+                  description: "Recipient for #{params[:business_name]}",
+                  metadata: metadata
+                )
+
+                if create_response[:status] == true
+                  subaccount.update!(recipient_code: create_response[:data][:recipient_code])
+                else
+                  raise StandardError, "Recipient creation failed: #{create_response[:message]}"
+                end
+              end
+
+              render json: { success: true, subaccount: subaccount }, status: :ok
+            end
+          rescue StandardError => e
+            # SAFE ERROR HANDLING - prevents recursion
+            error_message = "Subaccount update failed: #{e.message}"
+            Rails.logger.error error_message
+            render json: { 
+              success: false, 
+              error: error_message,
+              backtrace: Rails.env.development? ? e.backtrace : nil
+            }, status: :unprocessable_entity
           end
-        rescue StandardError => e
-          Rails.logger.error "Error updating subaccount: #{e.message}\n#{e.backtrace.join("\n")}"
-          render json: { 
-            success: false, 
-            error: e.message,
-            paystack_response: response # Helps with debugging
-          }, status: :unprocessable_entity
         end
 
         def block_user
