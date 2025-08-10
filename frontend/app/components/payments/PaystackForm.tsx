@@ -105,7 +105,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
     if (isEquityCampaign) {
       // Handle equity investment
       const investmentData = {
-        amount: amount, // Use base amount without fees for the investment record
+        amount: totalAmount, // Use totalAmount with processing fees for the investment record
         email: paymentEmail,
         phone: paymentPhone,
         full_name: cardholderName,
