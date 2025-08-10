@@ -138,145 +138,136 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   const error = isEquityCampaign ? investmentError : donationError;
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Scrollable form content */}
-      <div className="flex-grow overflow-y-auto p-4">
-        {showToast && error && (
-          <ToastComponent
-            type="error"
-            isOpen={showToast}
-            onClose={() => setShowToast(false)}
-            description={error}
-          />
-        )}
-        
-        <div className="space-y-4">
-          <div>
-            <label
-              htmlFor="cardholderName"
-              className="block mb-2 text-sm font-medium text-gray-700"
-            >
-              Name
-            </label>
-            <input
-              type="text"
-              id="cardholderName"
-              className={`w-full px-4 py-3 border rounded-lg ${errors.cardholderName ? 'border-red-500' : 'border-gray-300'}`}
-              placeholder="John Doe"
-              value={cardholderName}
-              onChange={(e) => setCardholderName(e.target.value)}
-              aria-invalid={!!errors.cardholderName}
-              aria-describedby={
-                errors.cardholderName ? 'cardholderName-error' : undefined
-              }
-            />
-            {errors.cardholderName && (
-              <p id="cardholderName-error" className="mt-1 text-sm text-red-500">
-                {errors.cardholderName}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="paymentEmail"
-              className="block mb-2 text-sm font-medium text-gray-700"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              id="paymentEmail"
-              className={`w-full px-4 py-3 border ${errors.paymentEmail ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
-              placeholder="you@example.com"
-              value={paymentEmail}
-              onChange={(e) => setPaymentEmail(e.target.value)}
-              aria-invalid={!!errors.paymentEmail}
-              aria-describedby={
-                errors.paymentEmail ? 'paymentEmail-error' : undefined
-              }
-              required
-            />
-            {errors.paymentEmail && (
-              <p id="paymentEmail-error" className="mt-1 text-sm text-red-500">
-                {errors.paymentEmail}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="paymentPhone"
-              className="block mb-2 text-sm font-medium text-gray-700"
-            >
-              Phone
-            </label>
-            <input
-              type="text"
-              id="paymentPhone"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-              placeholder="Enter your phone number"
-              value={paymentPhone}
-              onChange={(e) => setPaymentPhone(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="paymentAmount"
-              className="block mb-2 text-sm font-medium text-gray-700"
-            >
-              Amount
-            </label>
-            <input
-              type="text"
-              id="paymentAmount"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-              placeholder="Enter your amount"
-              value={paymentAmount}
-              onChange={(e) => setPaymentAmount(e.target.value)}
-              aria-invalid={!!errors.paymentAmount}
-              aria-describedby={
-                errors.paymentAmount ? 'paymentAmount-error' : undefined
-              }
-              required
-            />
-            {errors.paymentAmount && (
-              <p id="paymentAmount-error" className="mt-1 text-sm text-red-500">
-                {errors.paymentAmount}
-              </p>
-            )}
-          </div>
-
-          {isEquityCampaign && (
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="flex justify-between mb-2">
-                <span className="text-gray-600">Processing Fee (2%):</span>
-                <span className="font-medium">{processingFee.toFixed(2)} GHS</span>
-              </div>
-              <div className="flex justify-between font-semibold">
-                <span>Total Amount:</span>
-                <span>{totalAmount.toFixed(2)} GHS</span>
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                *Processing fee is capped at 120 GHS for equity campaigns
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Fixed button at the bottom */}
-      <div className="p-4 border-t border-gray-200 bg-white sticky bottom-0">
-        <button
-          type="button"
-          onClick={handlePayment}
-          className="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 disabled:bg-gray-400 text-lg font-medium"
-          disabled={loading}
+    <div className="max-h-screen my-10">
+      {showToast && error && (
+        <ToastComponent
+          type="error"
+          isOpen={showToast}
+          onClose={() => setShowToast(false)}
+          description={error}
+        />
+      )}
+      <div className="mb-4">
+        <label
+          htmlFor="cardholderName"
+          className="block mb-2 text-sm font-medium text-gray-700"
         >
-          {loading ? 'Processing...' : 'Proceed to Pay'}
-        </button>
+          Name
+        </label>
+        <input
+          type="text"
+          id="cardholderName"
+          className={`w-full px-3 py-2 border rounded-md ${errors.cardholderName ? 'border-red-500' : 'border-gray-300'}`}
+          placeholder="John Doe"
+          value={cardholderName}
+          onChange={(e) => setCardholderName(e.target.value)}
+          aria-invalid={!!errors.cardholderName}
+          aria-describedby={
+            errors.cardholderName ? 'cardholderName-error' : undefined
+          }
+        />
+        {errors.cardholderName && (
+          <p id="cardholderName-error" className="mt-1 text-sm text-red-500">
+            {errors.cardholderName}
+          </p>
+        )}
       </div>
+
+      <div className="mb-4">
+        <label
+          htmlFor="paymentEmail"
+          className="block mb-2 text-sm font-medium text-gray-700"
+        >
+          Email
+        </label>
+        <input
+          type="email"
+          id="paymentEmail"
+          className={`w-full px-3 py-2 border ${errors.paymentEmail ? 'border-red-500' : 'border-gray-300'} rounded-md`}
+          placeholder="you@example.com"
+          value={paymentEmail}
+          onChange={(e) => setPaymentEmail(e.target.value)}
+          aria-invalid={!!errors.paymentEmail}
+          aria-describedby={
+            errors.paymentEmail ? 'paymentEmail-error' : undefined
+          }
+          required
+        />
+        {errors.paymentEmail && (
+          <p id="paymentEmail-error" className="mt-1 text-sm text-red-500">
+            {errors.paymentEmail}
+          </p>
+        )}
+      </div>
+
+      <div className="mb-4">
+        <label
+          htmlFor="paymentPhone"
+          className="block mb-2 text-sm font-medium text-gray-700"
+        >
+          Phone
+        </label>
+        <input
+          type="text"
+          id="paymentPhone"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+          placeholder="Enter your phone number"
+          value={paymentPhone}
+          onChange={(e) => setPaymentPhone(e.target.value)}
+        />
+      </div>
+
+      <div className="mb-4">
+        <label
+          htmlFor="paymentAmount"
+          className="block mb-2 text-sm font-medium text-gray-700"
+        >
+          Amount
+        </label>
+        <input
+          type="text"
+          id="paymentAmount"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+          placeholder="Enter your amount"
+          value={paymentAmount}
+          onChange={(e) => setPaymentAmount(e.target.value)}
+          aria-invalid={!!errors.paymentAmount}
+          aria-describedby={
+            errors.paymentAmount ? 'paymentAmount-error' : undefined
+          }
+          required
+        />
+        {errors.paymentAmount && (
+          <p id="paymentAmount-error" className="mt-1 text-sm text-red-500">
+            {errors.paymentAmount}
+          </p>
+        )}
+      </div>
+
+      {isEquityCampaign && (
+        <div className="mb-4 p-3 bg-gray-50 rounded-md">
+          <div className="flex justify-between text-sm mb-1">
+            <span className="text-gray-600">Processing Fee (2%):</span>
+            <span className="font-medium">{processingFee.toFixed(2)} GHS</span>
+          </div>
+          <div className="flex justify-between text-sm font-semibold">
+            <span>Total Amount:</span>
+            <span>{totalAmount.toFixed(2)} GHS</span>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            *Processing fee is capped at 120 GHS for equity campaigns
+          </p>
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={handlePayment}
+        className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:bg-gray-400"
+        disabled={loading}
+      >
+        {loading ? 'Processing...' : 'Proceed to Pay'}
+      </button>
     </div>
   );
 };
