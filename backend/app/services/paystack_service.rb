@@ -80,7 +80,7 @@ class PaystackService
   def update_subaccount(subaccount_code:, business_name: nil, settlement_bank: nil, account_number: nil,
                         bank_code: nil, percentage_charge: nil, description: nil,
                         primary_contact_email: nil, primary_contact_name: nil,
-                        primary_contact_phone: nil, metadata: nil)
+                        primary_contact_phone: nil, metadata: nil, subaccount_type: nil)
     uri = URI("#{PAYSTACK_BASE_URL}/subaccount/#{subaccount_code}")
 
     body = {
@@ -93,7 +93,8 @@ class PaystackService
       primary_contact_email: primary_contact_email,
       primary_contact_name: primary_contact_name,
       primary_contact_phone: primary_contact_phone,
-      metadata: metadata
+      metadata: metadata,
+      subaccount_type: subaccount_type
     }.compact.to_json # Remove nil values
 
     response = make_put_request(uri, body)

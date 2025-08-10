@@ -175,7 +175,8 @@ module Api
                 primary_contact_email: user.email,
                 primary_contact_name: user.full_name,
                 primary_contact_phone: user.phone_number,
-                metadata: metadata
+                metadata: metadata,
+                subaccount_type: subaccount_type
               )
 
               # FIXED: Proper success/error handling
@@ -193,6 +194,9 @@ module Api
                     subaccount_type: subaccount_type,
                     user_id: user.id
                   )
+                  
+                  Rails.logger.info "Paystack update response: #{response.inspect}"
+
 
                   # Recreate recipient if needed (same as before)
                   if subaccount.recipient_code.blank?
