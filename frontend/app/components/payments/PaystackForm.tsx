@@ -129,7 +129,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         paymentEmail,
         cardholderName,
         paymentPhone,
-        amount,
+        Number(paymentAmount),
         campaignId,
         campaignTitle,
         billingFrequency,
