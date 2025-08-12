@@ -716,7 +716,8 @@ export const EquityCampaignProvider = ({
       success: boolean;
       data?: any;
       error?: string;
-      validationErrors?: Record<string, string>; // Add this line
+      validationErrors?: Record<string, string[] | string>;
+      code?: string;
     }> => {
       setLoading(true);
       setError(null);
@@ -740,18 +741,34 @@ export const EquityCampaignProvider = ({
           if (data.errors) {
             return {
               success: false,
-              error: 'Validation failed',
-              validationErrors: data.errors, // Pass validation errors
+              error: data.error || 'Validation failed',
+              validationErrors: data.errors,
+              code: data.code,
+            };
+          }
+          // Handle Paystack errors
+          if (data.data?.code) {
+            return {
+              success: false,
+              error: data.message || 'Payment processing failed',
+              code: data.data.code,
             };
           }
           return {
             success: false,
             error: data.error || 'Investment creation failed',
             data: data.details,
+            code: data.code,
           };
         }
 
-        return { success: true, data };
+        return {
+          success: true,
+          data,
+          // Include these for better debugging
+          error: undefined,
+          validationErrors: undefined,
+        };
       } catch (err) {
         return {
           success: false,

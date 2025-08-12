@@ -35,10 +35,12 @@ interface PaystackFormProps {
 interface InvestmentResponse {
   success: boolean;
   data?: {
-    investment: EquityInvestment;
+    investment?: EquityInvestment;
     authorization_url?: string;
+    code?: string; // For Paystack error codes
   };
   error?: string;
+  validationErrors?: Record<string, string | string[]>; // For backend validation errors
 }
 
 const PaystackForm: React.FC<PaystackFormProps> = ({
@@ -63,14 +65,12 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
     loading: donationLoading,
     error: donationError,
   } = useDonationsContext();
-  const {
-    createInvestment,
-    loading: investmentLoading,
-    error: investmentError,
-  } = useEquityCampaignContext();
+  const { createInvestment, loading: investmentLoading } =
+    useEquityCampaignContext();
   const [showToast, setShowToast] = useState(false);
   const [processingFee, setProcessingFee] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [investmentError, setInvestmentError] = useState<string>('');
 
   // Calculate processing fee and total amount
   useEffect(() => {
@@ -97,47 +97,60 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
 
   const handlePayment = async () => {
     setShowToast(false);
+    setInvestmentError('');
     if (!validatePaystackForm()) return;
 
     const amount = parseFloat(paymentAmount);
     if (isNaN(amount) || amount <= 0) return;
 
     if (isEquityCampaign) {
-      // Handle equity investment
-      const investmentData = {
-        amount: totalAmount,
-        email: paymentEmail,
-        phone: paymentPhone,
-        full_name: cardholderName,
-        metadata: {
-          ...(combinedMetadata || {}),
-          processingFee,
-          originalAmount: amount,
-        },
-      };
+      try {
+        const investmentData = {
+          amount: totalAmount,
+          email: paymentEmail,
+          phone: paymentPhone,
+          full_name: cardholderName,
+          metadata: {
+            ...(combinedMetadata || {}),
+            processingFee,
+            originalAmount: amount,
+          },
+        };
 
-      const result = (await createInvestment(
-        campaignId,
-        investmentData,
-      )) as InvestmentResponse;
+        const result = (await createInvestment(
+          campaignId,
+          investmentData,
+        )) as InvestmentResponse;
 
-      if (!result.success) {
-        // Show validation errors or general error in toast
-        if (result.validationErrors) {
-          // Format validation errors for display
-          const errorMessages = Object.entries(result.validationErrors)
-            .map(([field, message]) => `${field}: ${message}`)
-            .join('\n');
-          setInvestmentError(errorMessages);
-        } else {
-          setInvestmentError(result.error || 'Investment failed');
+        if (!result.success) {
+          let errorMessage = result.error || 'Investment failed';
+
+          if (result.validationErrors) {
+            errorMessage = Object.entries(result.validationErrors)
+              .map(([field, messages]) => {
+                const message = Array.isArray(messages)
+                  ? messages.join(', ')
+                  : messages;
+                return `${field.charAt(0).toUpperCase() + field.slice(1)}: ${message}`;
+              })
+              .join('\n');
+          }
+
+          if (result.data?.code) {
+            errorMessage += ` (Code: ${result.data.code})`;
+          }
+
+          setInvestmentError(errorMessage);
+          setShowToast(true);
+        } else if (result.data?.authorization_url) {
+          window.location.href = result.data.authorization_url;
         }
+      } catch (error) {
+        setInvestmentError('An unexpected error occurred. Please try again.');
         setShowToast(true);
-      } else if (result.data?.authorization_url) {
-        window.location.href = result.data.authorization_url;
+        console.error('Investment error:', error);
       }
     } else {
-      // Handle regular donation
       createDonationTransaction(
         paymentEmail,
         cardholderName,
@@ -163,7 +176,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
             type="error"
             isOpen={showToast}
             onClose={() => setShowToast(false)}
-            description={isEquityCampaign ? investmentError : error}
+            description={(isEquityCampaign ? investmentError : error) || ''}
           />
         )}
 
