@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_12_150004) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_12_200927) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -164,7 +164,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_12_150004) do
 
   create_table "donations", force: :cascade do |t|
     t.decimal "amount"
-    t.bigint "campaign_id", null: false
     t.bigint "user_id"
     t.string "status"
     t.string "transaction_reference"
@@ -188,7 +187,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_12_150004) do
     t.decimal "percentage", precision: 10, scale: 8
     t.string "certificate_number"
     t.date "investment_date"
-    t.index ["campaign_id"], name: "index_donations_on_campaign_id"
+    t.string "campaign_type"
+    t.bigint "campaign_id"
+    t.index ["campaign_type", "campaign_id"], name: "index_donations_on_campaign"
     t.index ["status"], name: "index_donations_on_status"
     t.index ["type"], name: "index_donations_on_type"
     t.index ["user_id"], name: "index_donations_on_user_id"
@@ -496,7 +497,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_12_150004) do
   add_foreign_key "campaigns", "users", column: "fundraiser_id"
   add_foreign_key "comments", "campaigns"
   add_foreign_key "comments", "users"
-  add_foreign_key "donations", "campaigns"
   add_foreign_key "donations", "users"
   add_foreign_key "favorites", "campaigns"
   add_foreign_key "favorites", "users"
