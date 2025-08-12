@@ -1,18 +1,32 @@
 module Authenticable
   def authenticate_request
     header = request.headers['Authorization']
-    return unless header.present?
+    unless header.present?
+      render json: { error: 'Authorization header missing' }, status: :unauthorized
+      return
+    end
 
     token = header.split(' ').last
+    unless token.present?
+      render json: { error: 'Token missing' }, status: :unauthorized
+      return
+    end
+
     begin
       decoded = decode_token(token)
-      @current_user = User.find(decoded[:user_id]) if decoded[:user_id]
+      unless decoded && decoded[:user_id]
+        render json: { error: 'Invalid token' }, status: :unauthorized
+        return
+      end
+
+      @current_user = User.find(decoded[:user_id])
     rescue ActiveRecord::RecordNotFound
       render json: { error: 'User not found' }, status: :not_found
-      nil
-    rescue JWT::DecodeError
-      render json: { error: 'Invalid token' }, status: :unauthorized
-      nil
+    rescue JWT::DecodeError => e
+      render json: { error: 'Invalid token', details: e.message }, status: :unauthorized
+    rescue StandardError => e
+      Rails.logger.error "Authentication error: #{e.message}"
+      render json: { error: 'Authentication failed' }, status: :internal_server_error
     end
   end
 
