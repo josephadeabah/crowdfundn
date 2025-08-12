@@ -1,10 +1,11 @@
 class Donation < ApplicationRecord
-  belongs_to :campaign, polymorphic: true 
+  belongs_to :campaign 
   belongs_to :user, optional: true
   belongs_to :reward, optional: true
   has_many :points, dependent: :destroy
   has_many :pledges, dependent: :destroy
   has_one_attached :certificate
+  
 
   # Common validations for all donation types
   validates :transaction_reference, presence: true, uniqueness: true, allow_nil: true

@@ -194,17 +194,8 @@ module Api
 
         # Set the campaign based on the campaign_id parameter
         def set_campaign
-          # First try to find by ID (works for both Campaign and EquityCampaign)
-          @campaign = Campaign.find_by(id: params[:id] || params[:campaign_id])
-          
-          # If not found by ID, try by slug
-          if @campaign.nil? && (params[:id].present? && !params[:id].match?(/\A\d+\z/))
-            @campaign = Campaign.find_by(slug: params[:id])
-          end
-
-          return unless @campaign.nil?
-
-          render json: { error: 'Campaign not found' }, status: :not_found
+          @campaign = Campaign.find_by(id: params[:campaign_id])
+          render json: { error: 'Campaign not found' }, status: :not_found unless @campaign
         end
       end
     end

@@ -1,10 +1,8 @@
 class EquityCampaign < Campaign
-  has_many :equity_investments, -> { where(type: 'EquityInvestment') }, class_name: 'Donation', foreign_key: 'campaign_id'
   has_many :investors, through: :equity_investments, source: :user
   has_many :campaign_team_members, foreign_key: 'campaign_id', dependent: :destroy
   has_many :founders, -> { where(campaign_team_members: { role: 'founder' }) },
            through: :campaign_team_members, source: :user
-  has_many :donations, as: :campaign, dependent: :restrict_with_error
 
   attribute :equity_status, :integer, default: 0
   attribute :total_shares, :integer, default: 1_000_000 # Default 1M shares
