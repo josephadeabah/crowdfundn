@@ -57,11 +57,13 @@ class EquityInvestment < ApplicationRecord
   def calculate_shares_and_percentage
     return unless campaign && amount.present? && amount.positive?
 
-    price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
-    self.shares = (amount / price_per_share).round(4)
-
+    # Calculate percentage of the offered equity
     total_equity_value = (campaign.valuation.to_f * campaign.equity_offered.to_f / 100)
-    self.percentage = ((amount / total_equity_value) * 100).round(4)
+    self.percentage = ((amount / total_equity_value) * 100).round(8)
+
+    # Calculate shares based on percentage
+    total_available_shares = (campaign.equity_offered.to_f / 100) * campaign.total_shares.to_f
+    self.shares = (percentage / 100 * total_available_shares).round(4)
   end
 
   def generate_certificate_number
