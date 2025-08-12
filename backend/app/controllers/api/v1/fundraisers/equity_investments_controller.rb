@@ -97,7 +97,7 @@ module Api
           if @campaign.shares_available <= 0
             render json: { 
               error: 'No shares currently available for investment',
-              errors: { shares: 'not available' }
+              errors: { shares: 'currently not available for investment' }
             }, status: :unprocessable_entity
             return
           end
