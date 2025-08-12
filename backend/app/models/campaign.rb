@@ -3,8 +3,10 @@ class Campaign < ApplicationRecord
   has_many :rewards, dependent: :destroy
   has_many :updates, dependent: :destroy
   has_many :comments, dependent: :destroy
-  has_many :backers, through: :donations # assuming a Backer model related to donations
   has_many :donations, dependent: :destroy
+  has_many :backers, through: :donations, source: :user
+  has_many :equity_investments, -> { where(type: 'EquityInvestment') }, class_name: 'Donation'
+  has_many :investors, through: :equity_investments, source: :user
   has_many :transfers, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :subscribers, through: :subscriptions, source: :user

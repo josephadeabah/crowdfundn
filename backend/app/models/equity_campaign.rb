@@ -1,5 +1,5 @@
 class EquityCampaign < Campaign
-  has_many :equity_investments, foreign_key: 'campaign_id', dependent: :destroy
+  has_many :equity_investments, -> { where(type: 'EquityInvestment') }, class_name: 'Donation', foreign_key: 'campaign_id'
   has_many :investors, through: :equity_investments, source: :user
   has_many :campaign_team_members, foreign_key: 'campaign_id', dependent: :destroy
   has_many :founders, -> { where(campaign_team_members: { role: 'founder' }) },

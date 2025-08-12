@@ -4,16 +4,57 @@ class Donation < ApplicationRecord
   belongs_to :reward, optional: true
   has_many :points, dependent: :destroy
   has_many :pledges, dependent: :destroy
+  has_one_attached :certificate
 
-  validates :transaction_reference, presence: true
-  validates :email, presence: true # Email is required
+  # Common validations for all donation types
+  validates :transaction_reference, presence: true, uniqueness: true, allow_nil: true
+  validates :email, presence: true
+  validates :amount, presence: true, numericality: { greater_than: 0 }
+  
+  # Status validation (common to both donations and investments)
+  validates :status, inclusion: { 
+    in: %w[pending initialized successful failed abandoned canceled refunded] 
+  }, allow_nil: false
 
-  # Define the `successful` scope
+  # STI Configuration
+  def self.inheritance_column
+    'type'
+  end
+
+  def self.descendants
+    [EquityInvestment]
+  end
+
+  # Scopes
   scope :successful, -> { where(status: 'successful') }
+  scope :donations, -> { where(type: nil) } # Regular donations have nil type
+  scope :investments, -> { where(type: 'EquityInvestment') }
 
-  # Define the `successful?` method for individual donation check
+  # Common methods for all donation types
   def successful?
     status == 'successful'
+  end
+
+  # Default implementation for donations (overridden in EquityInvestment)
+  def current_value
+    amount
+  end
+
+  def total_returns
+    0
+  end
+
+  def roi
+    0
+  end
+
+  def certificate_url
+    return unless certificate.attached?
+    Rails.application.routes.url_helpers.url_for(certificate)
+  end
+
+  def certificate_present?
+    certificate.attached? && certificate.blob.present?
   end
 
   # Callback to update fundraiser leaderboard when a donation becomes successful

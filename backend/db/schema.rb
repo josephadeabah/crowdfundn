@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_12_092452) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_12_150004) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -183,41 +183,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_12_092452) do
     t.boolean "processed", default: false, null: false
     t.string "ip_address"
     t.string "country"
-    t.index ["campaign_id"], name: "index_donations_on_campaign_id"
-    t.index ["status"], name: "index_donations_on_status"
-    t.index ["user_id"], name: "index_donations_on_user_id"
-  end
-
-  create_table "equity_investments", force: :cascade do |t|
-    t.bigint "campaign_id", null: false
-    t.bigint "user_id", null: false
-    t.decimal "amount", precision: 15, scale: 2
-    t.decimal "shares", precision: 15, scale: 2
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.decimal "percentage", precision: 10, scale: 4
+    t.string "type"
+    t.decimal "shares", precision: 20, scale: 4
+    t.decimal "percentage", precision: 10, scale: 8
     t.string "certificate_number"
     t.date "investment_date"
-    t.string "status", default: "pending"
-    t.string "transaction_reference"
-    t.decimal "gross_amount", precision: 10, scale: 2
-    t.decimal "net_amount", precision: 10, scale: 2
-    t.decimal "platform_fee", precision: 10, scale: 2
-    t.string "subaccount_code"
-    t.boolean "processed", default: false
-    t.bigint "reward_id"
-    t.string "country"
-    t.string "ip_address"
-    t.jsonb "metadata", default: {}
-    t.string "email", default: "noemail@example.com", null: false
-    t.string "phone"
-    t.string "full_name"
-    t.index ["campaign_id"], name: "index_equity_investments_on_campaign_id"
-    t.index ["certificate_number"], name: "index_equity_investments_on_certificate_number", unique: true
-    t.index ["metadata"], name: "index_equity_investments_on_metadata", using: :gin
-    t.index ["reward_id"], name: "index_equity_investments_on_reward_id"
-    t.index ["transaction_reference"], name: "index_equity_investments_on_transaction_reference", unique: true
-    t.index ["user_id"], name: "index_equity_investments_on_user_id"
+    t.index ["campaign_id"], name: "index_donations_on_campaign_id"
+    t.index ["status"], name: "index_donations_on_status"
+    t.index ["type"], name: "index_donations_on_type"
+    t.index ["user_id"], name: "index_donations_on_user_id"
   end
 
   create_table "event_processeds", force: :cascade do |t|
@@ -524,9 +498,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_12_092452) do
   add_foreign_key "comments", "users"
   add_foreign_key "donations", "campaigns"
   add_foreign_key "donations", "users"
-  add_foreign_key "equity_investments", "campaigns"
-  add_foreign_key "equity_investments", "rewards"
-  add_foreign_key "equity_investments", "users"
   add_foreign_key "favorites", "campaigns"
   add_foreign_key "favorites", "users"
   add_foreign_key "fundraiser_leaderboard_entries", "users"
@@ -537,7 +508,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_12_092452) do
   add_foreign_key "kycs", "users", column: "verified_by_id"
   add_foreign_key "leaderboard_entries", "users"
   add_foreign_key "pledges", "donations"
-  add_foreign_key "pledges", "equity_investments"
   add_foreign_key "pledges", "rewards"
   add_foreign_key "points", "donations"
   add_foreign_key "points", "users"

@@ -1,30 +1,15 @@
-class EquityInvestment < ApplicationRecord
-  belongs_to :user
+class EquityInvestment < Donation
   belongs_to :campaign, class_name: 'EquityCampaign'
-  belongs_to :reward, optional: true
   has_many :pledges, dependent: :destroy
 
-  has_one_attached :certificate
-
-  validates :amount, :shares, :percentage, presence: true, numericality: { greater_than: 0 }
-  validates :certificate_number, uniqueness: true, allow_nil: true
-  validates :transaction_reference, uniqueness: true, allow_nil: true
-  validates :email, presence: true
-  validates :phone, presence: false
-
-  validates :status, inclusion: { in: %w[pending initialized successful failed abandoned canceled refunded] }, allow_nil: false
-  scope :successful, -> { where(status: 'successful') }
-
+  validates :shares, :percentage, presence: true, numericality: { greater_than: 0 }
+  
   before_validation :calculate_shares_and_percentage, on: :create
   before_create :generate_certificate_number
   before_create :set_investment_date
   after_commit :update_campaign_equity, on: [:create, :update], if: :saved_change_to_amount?
   after_commit :generate_certificate_after_commit, on: [:create, :update], if: :should_generate_certificate?
   after_commit :update_investor_portfolios, on: [:create, :update], if: :successful?
-
-  def successful?
-    status == 'successful'
-  end
 
   def current_value
     (campaign.valuation * percentage / 100).round(2)
@@ -57,11 +42,9 @@ class EquityInvestment < ApplicationRecord
   def calculate_shares_and_percentage
     return unless campaign && amount.present? && amount.positive?
 
-    # Calculate percentage of the offered equity
     total_equity_value = (campaign.valuation.to_f * campaign.equity_offered.to_f / 100)
     self.percentage = ((amount / total_equity_value) * 100).round(8)
-
-    # Calculate shares based on percentage
+    
     total_available_shares = (campaign.equity_offered.to_f / 100) * campaign.total_shares.to_f
     self.shares = (percentage / 100 * total_available_shares).round(4)
   end
@@ -98,7 +81,7 @@ class EquityInvestment < ApplicationRecord
   end
 
   def update_investor_portfolios
-    campaign.equity_investments.successful.each do |inv|
+    campaign.donations.investments.successful.each do |inv|
       InvestmentUpdateJob.perform_later(inv.id)
     end
   end

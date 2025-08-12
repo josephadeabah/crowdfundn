@@ -7,25 +7,22 @@ module Api
 
         # Public donations list for a campaign
         def public_donations
-          # Fetch donations related to the specified campaign and filter by successful status
-          donations = @campaign.donations.successful
+          # Fetch regular donations (excluding equity investments) for the campaign
+          donations = @campaign.donations.donations.successful
 
-          # Format donation data with user info or 'Anonymous' for anonymous donations
           donors = donations.map do |donation|
             {
-              full_name: donation.full_name || 'Anonymous', # If user exists, show their name; otherwise show 'Anonymous'
+              full_name: donation.full_name || 'Anonymous',
               amount: donation.gross_amount,
               email: donation.email,
               date: donation.created_at.strftime('%Y-%m-%d %H:%M:%S')
             }
           end
 
-          # Paginate the donations
           page = params[:page] || 1
           per_page = params[:per_page] || 10
           paginated_donors = Kaminari.paginate_array(donors).page(page).per(per_page)
 
-          # Prepare pagination info
           pagination = {
             current_page: paginated_donors.current_page,
             total_pages: paginated_donors.total_pages,
@@ -33,27 +30,25 @@ module Api
             total_count: paginated_donors.total_count
           }
 
-          # Render donations along with pagination data
           render json: { donations: paginated_donors, pagination: pagination }, status: :ok
         end
 
-        # fetch donations for a fundraiser
+        # Fetch donations for a fundraiser
         def index
           if @current_user.nil?
             return render json: { error: 'You need to log in to access donations.' }, status: :unauthorized
           end
 
-          # Fetch campaigns owned by the fundraiser
           campaigns = Campaign.where(fundraiser_id: @current_user.id)
-
-          # Fetch donations for those campaigns with successful status
-          donations = Donation.where(status: 'successful')
+          
+          # Explicitly query only regular donations
+          donations = Donation.donations
+                              .where(status: 'successful')
                               .where(campaign_id: campaigns.pluck(:id))
                               .order(created_at: :desc)
                               .page(params[:page] || 1)
                               .per(params[:per_page] || 10)
 
-          # Prepare pagination details
           pagination = {
             current_page: donations.current_page,
             total_pages: donations.total_pages,
@@ -61,7 +56,6 @@ module Api
             total_count: donations.total_count
           }
 
-          # Render the response
           render json: { donations: donations, pagination: pagination }, status: :ok
         end
 
@@ -79,37 +73,36 @@ module Api
                           status: :unprocessable_entity
           end
 
-          subaccount_code = subaccount.subaccount_code
-
-          # Create a new donation
           donation = Donation.new(donation_params)
           donation.campaign_id = campaign.id
           donation.status = 'pending'
-          donation.full_name = params[:donation][:full_name].presence || 'Anonymous' # Default to "Anonymous" if full_name is blank
+          donation.full_name = params[:donation][:full_name].presence || 'Anonymous'
 
           if @current_user
             donation.user_id = @current_user.id
           else
-            # Generate a new anonymous_token if not provided
             anonymous_token = SecureRandom.uuid
-            donation.metadata[:anonymous_token] = anonymous_token # Add token to metadata
+            donation.metadata[:anonymous_token] = anonymous_token
           end
 
-          # Generate a secure random UUID and append it to the redirect_url as a query parameter
           secure_random_uuid = SecureRandom.uuid
-          # Use campaign.slug if available, otherwise fall back to id
           campaign_identifier = campaign.slug || campaign.id
-          redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign_identifier,
-                                                                           host: 'bantuhive.com') + "?#{secure_random_uuid}"
+          redirect_url = Rails.application.routes.url_helpers.campaign_url(
+            campaign_identifier,
+            host: 'bantuhive.com'
+          ) + "?#{secure_random_uuid}"
+          
           donation.email = params[:donation][:email]
           donation.amount = params[:donation][:amount]
           donation.phone = params[:donation][:phone]
           donation.metadata = params[:donation][:metadata]
 
+          # Explicitly mark as donation type in metadata
           metadata = {
+            type: 'donation', # Added explicit type
             user_id: donation.user_id,
             campaign_id: donation.campaign_id,
-            anonymous_token: donation.metadata[:anonymous_token], # Anonymous identifier
+            anonymous_token: donation.metadata[:anonymous_token],
             donor_name: donation.full_name,
             redirect_url: redirect_url,
             title: campaign.title,
@@ -126,14 +119,13 @@ module Api
           donation.plan = params[:donation][:plan]
 
           paystack_service = PaystackService.new
-
           response = paystack_service.initialize_transaction(
             email: donation.email,
             amount: donation.amount,
             plan: donation.plan,
             callback_url: redirect_url,
             metadata: metadata,
-            subaccount: subaccount_code
+            subaccount: subaccount.subaccount_code
           )
 
           if response[:status] == true
@@ -157,19 +149,17 @@ module Api
           end
         end
 
-        # POST /api/v1/fundraisers/donations/send_thank_you_emails
         def send_thank_you_emails
           campaign = Campaign.find_by(id: params[:campaign_id])
           return render json: { error: 'Campaign not found' }, status: :not_found unless campaign
 
-          # Fetch donations based on the filter
+          # Explicitly filter only regular donations
           donations = if params[:filter] == 'all'
-                        campaign.donations.successful
+                        campaign.donations.donations.successful
                       else
-                        campaign.donations.successful.where(id: params[:donor_ids])
+                        campaign.donations.donations.successful.where(id: params[:donor_ids])
                       end
 
-          # Send thank you emails to donors
           donations.each do |donation|
             ThankYouEmailService.send_thank_you_email(
               donation.email,
@@ -178,7 +168,7 @@ module Api
               campaign.fundraiser.profile.avatar_url,
               campaign.title,
               campaign.currency.upcase,
-              donation.gross_amount.to_f.round(2) # Convert to float
+              donation.gross_amount.to_f.round(2)
             )
           end
 
@@ -192,7 +182,6 @@ module Api
                                            metadata: {})
         end
 
-        # Set the campaign based on the campaign_id parameter
         def set_campaign
           @campaign = Campaign.find_by(id: params[:campaign_id])
           return unless @campaign.nil?

@@ -1,4 +1,3 @@
-# app/controllers/api/v1/fundraisers/equity_investments_controller.rb
 module Api
   module V1
     module Fundraisers
@@ -7,21 +6,21 @@ module Api
         before_action :set_campaign, only: %i[create index public_investments]
 
         def index
-          investments = @campaign.equity_investments
+          investments = @campaign.donations.investments
                                .includes(:user, :reward)
                                .order(created_at: :desc)
                                .page(params[:page])
                                .per(params[:per_page] || 10)
 
           render json: {
-            investments: investments.as_json(include: %i[user reward]),
+            investments: investments.as_json(include: %i[user reward], methods: [:certificate_url]),
             pagination: pagination_data(investments),
             campaign: campaign_summary
           }, status: :ok
         end
 
         def public_investments
-          investments = @campaign.equity_investments.successful
+          investments = @campaign.donations.investments.successful
                                .order(created_at: :desc)
 
           investors = investments.map do |investment|
@@ -112,7 +111,8 @@ module Api
             return
           end
 
-          investment = @campaign.equity_investments.new(
+          investment = @campaign.donations.new(
+            type: 'EquityInvestment',
             user: @current_user,
             amount: amount,
             reward_id: reward_id,
@@ -124,6 +124,12 @@ module Api
             country: investment_params[:country],
             ip_address: request.remote_ip
           )
+
+          # Calculate shares and percentage
+          total_equity_value = (@campaign.valuation.to_f * @campaign.equity_offered.to_f / 100)
+          investment.percentage = ((amount / total_equity_value) * 100).round(8)
+          total_available_shares = (@campaign.equity_offered.to_f / 100) * @campaign.total_shares.to_f
+          investment.shares = (investment.percentage / 100 * total_available_shares).round(4)
 
           secure_uuid = SecureRandom.uuid
           campaign_identifier = @campaign.slug || @campaign.id
@@ -144,6 +150,8 @@ module Api
             equity_offered: @campaign.equity_offered,
             investor_name: investment.full_name,
             investor_email: investment.email,
+            shares: investment.shares,
+            percentage: investment.percentage,
             reward: reward_id ? {
               id: reward_id,
               title: investment.reward&.title,
@@ -179,7 +187,7 @@ module Api
                     title: @campaign.title
                   }
                 },
-                total_investors: @campaign.total_investors
+                total_investors: @campaign.donations.investments.successful.count
               }, status: :created
             else
               render json: { 
@@ -197,7 +205,7 @@ module Api
         end
 
         def my_investments
-          investments = @current_user.equity_investments
+          investments = @current_user.donations.investments
                                     .includes(:campaign, :reward)
                                     .order(created_at: :desc)
                                     .page(params[:page])
@@ -214,7 +222,7 @@ module Api
         end
 
         def portfolio
-          investments = @current_user.equity_investments
+          investments = @current_user.donations.investments
                                      .includes(:campaign, :reward)
                                      .order(created_at: :desc)
                                      .page(params[:page])
@@ -227,7 +235,7 @@ module Api
           render json: {
             investments: investments.map { |i| portfolio_investment_json(i) },
             summary: {
-              total_investments: @current_user.equity_investments.count,
+              total_investments: @current_user.donations.investments.count,
               total_invested: total_invested.round(2),
               total_current_value: total_current_value.round(2),
               total_returns: total_returns.round(2),
@@ -257,82 +265,6 @@ module Api
           return if @campaign
 
           render json: { error: 'Campaign not found' }, status: :not_found
-        end
-
-        def validate_investment_amount(amount)
-          if amount < @campaign.minimum_investment
-            render json: { error: "Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}" },
-                   status: :unprocessable_entity
-            return false
-          end
-
-          if amount > @campaign.maximum_investment && @campaign.maximum_investment > 0
-            render json: { error: "Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}" },
-                   status: :unprocessable_entity
-            return false
-          end
-
-          if @campaign.shares_available <= 0
-            render json: { error: 'No shares available for investment' },
-                   status: :unprocessable_entity
-            return false
-          end
-
-          true
-        end
-
-        def initialize_payment(investment, metadata, redirect_url)
-          subaccount = Subaccount.find_by(user_id: @campaign.fundraiser_id)
-
-          unless subaccount&.subaccount_code.present?
-            render json: { error: 'Fundraiser does not meet requirements for raising funds' },
-                   status: :unprocessable_entity
-            return
-          end
-
-          paystack_service = PaystackService.new
-
-          response = paystack_service.initialize_transaction(
-            email: @current_user.email,
-            amount: investment.amount * 100,
-            callback_url: redirect_url,
-            metadata: metadata,
-            subaccount: subaccount.subaccount_code
-          )
-
-          if response[:status]
-            investment.update(
-              transaction_reference: response[:data][:reference],
-              metadata: metadata # Store complete metadata
-            )
-
-            render json: {
-              authorization_url: response[:data][:authorization_url],
-              redirect_url: redirect_url,
-              investment: {
-                id: investment.id,
-                amount: investment.amount,
-                shares: investment.shares,
-                percentage: investment.percentage,
-                campaign: {
-                  id: @campaign.id,
-                  title: @campaign.title
-                }
-              },
-              total_investors: @campaign.total_investors
-            }, status: :created
-          else
-            investment.update(status: :failed)
-            render json: { error: response[:message] },
-                   status: :unprocessable_entity
-          end
-        end
-
-        def investment_callback_url(investment)
-          Rails.application.routes.url_helpers.campaign_url(
-            investment.campaign.slug || investment.campaign.id,
-            host: Rails.application.config.app_domain
-          )
         end
 
         def campaign_summary
