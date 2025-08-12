@@ -105,14 +105,14 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
     if (isEquityCampaign) {
       // Handle equity investment
       const investmentData = {
-        amount: totalAmount, // Changed from amount to totalAmount
+        amount: totalAmount,
         email: paymentEmail,
         phone: paymentPhone,
         full_name: cardholderName,
         metadata: {
           ...(combinedMetadata || {}),
-          processingFee, // Include processing fee in metadata
-          originalAmount: amount, // Store original amount before fees
+          processingFee,
+          originalAmount: amount,
         },
       };
 
@@ -120,7 +120,20 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         campaignId,
         investmentData,
       )) as InvestmentResponse;
-      if (result.success && result.data?.authorization_url) {
+
+      if (!result.success) {
+        // Show validation errors or general error in toast
+        if (result.validationErrors) {
+          // Format validation errors for display
+          const errorMessages = Object.entries(result.validationErrors)
+            .map(([field, message]) => `${field}: ${message}`)
+            .join('\n');
+          setInvestmentError(errorMessages);
+        } else {
+          setInvestmentError(result.error || 'Investment failed');
+        }
+        setShowToast(true);
+      } else if (result.data?.authorization_url) {
         window.location.href = result.data.authorization_url;
       }
     } else {
@@ -145,12 +158,12 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
     <div className="flex flex-col h-full">
       {/* Scrollable form content */}
       <div className="flex-grow overflow-y-auto p-4">
-        {showToast && error && (
+        {showToast && (error || investmentError) && (
           <ToastComponent
             type="error"
             isOpen={showToast}
             onClose={() => setShowToast(false)}
-            description={error}
+            description={isEquityCampaign ? investmentError : error}
           />
         )}
 

@@ -707,13 +707,17 @@ export const EquityCampaignProvider = ({
       campaignId: string,
       investmentData: {
         amount: number;
-        reward_id?: number;
         email?: string;
         phone?: string;
         full_name?: string;
         metadata?: any;
       },
-    ): Promise<{ success: boolean; data?: any; error?: string }> => {
+    ): Promise<{
+      success: boolean;
+      data?: any;
+      error?: string;
+      validationErrors?: Record<string, string>; // Add this line
+    }> => {
       setLoading(true);
       setError(null);
       try {
@@ -732,6 +736,14 @@ export const EquityCampaignProvider = ({
         const data = await response.json();
 
         if (!response.ok) {
+          // Handle validation errors from backend
+          if (data.errors) {
+            return {
+              success: false,
+              error: 'Validation failed',
+              validationErrors: data.errors, // Pass validation errors
+            };
+          }
           return {
             success: false,
             error: data.error || 'Investment creation failed',
