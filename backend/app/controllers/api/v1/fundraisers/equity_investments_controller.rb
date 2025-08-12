@@ -52,13 +52,63 @@ module Api
           amount = investment_params[:amount].to_f
           reward_id = investment_params[:reward_id]
 
-          validate_investment_amount(amount) or return
+          # Basic parameter validation
+          if investment_params[:amount].blank?
+            render json: { 
+              error: 'Investment amount is required',
+              errors: { amount: "can't be blank" }
+            }, status: :unprocessable_entity
+            return
+          end
+
+          if investment_params[:email].blank? && @current_user.email.blank?
+            render json: { 
+              error: 'Email address is required',
+              errors: { email: "can't be blank" }
+            }, status: :unprocessable_entity
+            return
+          end
+
+          # Amount validation
+          if amount <= 0
+            render json: { 
+              error: 'Investment amount must be positive',
+              errors: { amount: "must be greater than 0" }
+            }, status: :unprocessable_entity
+            return
+          end
+
+          if amount < @campaign.minimum_investment
+            render json: { 
+              error: "Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}",
+              errors: { amount: "must be at least #{@campaign.minimum_investment}" }
+            }, status: :unprocessable_entity
+            return
+          end
+
+          if @campaign.maximum_investment > 0 && amount > @campaign.maximum_investment
+            render json: { 
+              error: "Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}",
+              errors: { amount: "must be at most #{@campaign.maximum_investment}" }
+            }, status: :unprocessable_entity
+            return
+          end
+
+          if @campaign.shares_available <= 0
+            render json: { 
+              error: 'No shares currently available for investment',
+              errors: { shares: 'not available' }
+            }, status: :unprocessable_entity
+            return
+          end
 
           subaccount = Subaccount.find_by(user_id: @campaign.fundraiser_id)
 
           unless subaccount&.subaccount_code.present?
-            render json: { error: 'Fundraiser does not meet requirements for raising funds' },
-                   status: :unprocessable_entity
+            render json: { 
+              error: 'Fundraiser does not meet requirements for raising funds',
+              details: 'The fundraiser needs to complete their payment setup before accepting investments'
+            }, status: :unprocessable_entity
             return
           end
 
@@ -114,26 +164,35 @@ module Api
           if response[:status]
             investment.transaction_reference = response[:data][:reference]
             investment.metadata = metadata
-            investment.save!
-
-            render json: {
-              authorization_url: response[:data][:authorization_url],
-              redirect_url: redirect_url,
-              investment: {
-                id: investment.id,
-                amount: investment.amount,
-                shares: investment.shares,
-                percentage: investment.percentage,
-                campaign: {
-                  id: @campaign.id,
-                  title: @campaign.title
-                }
-              },
-              total_investors: @campaign.total_investors
-            }, status: :created
+            
+            if investment.save
+              render json: {
+                authorization_url: response[:data][:authorization_url],
+                redirect_url: redirect_url,
+                investment: {
+                  id: investment.id,
+                  amount: investment.amount,
+                  shares: investment.shares,
+                  percentage: investment.percentage,
+                  campaign: {
+                    id: @campaign.id,
+                    title: @campaign.title
+                  }
+                },
+                total_investors: @campaign.total_investors
+              }, status: :created
+            else
+              render json: { 
+                error: 'Failed to save investment',
+                errors: investment.errors.messages
+              }, status: :unprocessable_entity
+            end
           else
-            render json: { error: response[:message] },
-                   status: :unprocessable_entity
+            render json: { 
+              error: 'Payment initialization failed',
+              details: response[:message],
+              code: response[:data]&.[](:code)
+            }, status: :unprocessable_entity
           end
         end
 
