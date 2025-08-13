@@ -1,126 +1,143 @@
 module PaystackWebhook::Handlers
   class DonationHandler
     include PaystackWebhook::JsonHelper
-    
     def initialize(data)
       @data = data
     end
 
     def call
-      verify_transaction or return
-      process_successful_transaction
-    end
+      transaction_reference = @data[:reference]
+      Rails.logger.info "Verifying donation with reference #{transaction_reference}"
 
-    private
+      response = PaystackService.new.verify_transaction(transaction_reference)
+      unless response[:status] == true
+        Rails.logger.error "Transaction verification failed for #{transaction_reference}"
+        raise 'Transaction verification failed'
+      end
 
-    def verify_transaction
-      @response = PaystackService.new.verify_transaction(@data[:reference])
-      return true if @response[:status] == true
-
-      Rails.logger.error "Transaction verification failed for #{@data[:reference]}"
-      raise 'Transaction verification failed'
-    end
-
-    def process_successful_transaction
-      transaction_status = @response.dig(:data, :status)
+      transaction_status = response.dig(:data, :status)
       if transaction_status == 'success'
-        create_donation
-      else
-        raise "Transaction status is #{transaction_status}"
-      end
-    end
+        gross_amount = response.dig(:data, :amount).to_f / 100.0
+        net_amount = gross_amount * 0.93
+        platform_fee = gross_amount * 0.07
+        paystack_fee = platform_fee * 0.0195
+        adjusted_platform_fee = platform_fee - paystack_fee
 
-    def create_donation
-      donation = Donation.new(
-        type: nil, # Explicitly set to nil for regular donations
-        transaction_reference: @data[:reference],
-        status: 'successful',
-        gross_amount: gross_amount,
-        net_amount: net_amount,
-        platform_fee: adjusted_platform_fee,
-        amount: net_amount,
-        user_id: metadata[:user_id].presence,
-        campaign_id: metadata[:campaign_id].presence,
-        full_name: metadata[:donor_name],
-        email: @response.dig(:data, :customer, :email),
-        phone: metadata[:phone],
-        country: donor_country,
-        ip_address: @response.dig(:data, :ip_address),
-        metadata: build_metadata,
-        processed: false
-      )
+        metadata = if response.dig(:data, :metadata).is_a?(String)
+                     begin
+                       fixed_metadata = fix_malformed_json(response.dig(:data, :metadata))
+                       JSON.parse(fixed_metadata, symbolize_names: true)
+                     rescue JSON::ParserError => e
+                       Rails.logger.error "Failed to parse metadata even after fixing: #{e.message}"
+                       raise "Invalid metadata: #{response.dig(:data, :metadata)}"
+                     end
+                   else
+                     response.dig(:data, :metadata) || {}
+                   end
 
-      if donation.save
-        update_campaign(donation)
-        send_notifications(donation)
-      else
-        raise "Failed to save donation: #{donation.errors.full_messages.join(', ')}"
-      end
-    end
+        Rails.logger.debug { "Parsed metadata: #{metadata}" }
 
-    def metadata
-      @metadata ||= parse_metadata(@response)
-    end
+        user_id = metadata[:user_id]
+        campaign_id = metadata[:campaign_id]
+        session_token = metadata[:anonymous_token]
+        donor_ip = response.dig(:data, :ip_address)
+        donor_country = response.dig(:data, :authorization, :country_code)
 
-    def parse_metadata(response)
-      if response.dig(:data, :metadata).is_a?(String)
-        JSON.parse(fix_malformed_json(response.dig(:data, :metadata)), symbolize_names: true)
-      else
-        response.dig(:data, :metadata) || {}
-      end
-    rescue JSON::ParserError => e
-      Rails.logger.error "Failed to parse metadata: #{e.message}"
-      {}
-    end
+        country_from_ip = Geocoder.search(donor_ip).first&.country || 'Unknown'
+        final_country = donor_country.presence || country_from_ip
+        final_country = 'Unknown' if final_country.blank?
 
-    def gross_amount
-      @response.dig(:data, :amount).to_f / 100.0
-    end
-
-    def net_amount
-      gross_amount * 0.93
-    end
-
-    def adjusted_platform_fee
-      (gross_amount * 0.07) - (gross_amount * 0.07 * 0.0195)
-    end
-
-    def donor_country
-      (@response.dig(:data, :authorization, :country_code) || 
-      Geocoder.search(@response.dig(:data, :ip_address)).first&.country || 
-      'Unknown')
-    end
-
-    def build_metadata
-      {
-        anonymous_token: metadata[:anonymous_token],
-        user_id: metadata[:user_id],
-        campaign_id: metadata[:campaign_id],
-        redirect_url: metadata[:redirect_url],
-        subaccount_contact: {
-          name: @response.dig(:data, :subaccount, :primary_contact_name),
-          email: @response.dig(:data, :subaccount, :primary_contact_email),
-          phone: @response.dig(:data, :subaccount, :primary_contact_phone)
+        campaign_metadata = {
+          title: metadata[:title],
+          goal_amount: metadata[:goal_amount],
+          current_amount: metadata[:current_amount],
+          currency: metadata[:currency],
+          currency_symbol: metadata[:currency_symbol],
+          fundraiser_id: metadata[:fundraiser_id],
+          fundraiser_name: metadata[:fundraiser_name]
         }
-      }
-    end
 
-    def update_campaign(donation)
-      campaign = donation.campaign
-      campaign.update!(
-        total_successful_donations: campaign.current_amount + donation.net_amount,
-        current_amount: campaign.current_amount + donation.net_amount
-      )
-      campaign.update_transferred_amount(donation.net_amount)
-    end
+        subaccount_name = response.dig(:data, :subaccount, :primary_contact_name) || 'No contact name'
+        subaccount_contact = response.dig(:data, :subaccount, :primary_contact_email) || 'No contact email'
+        subaccount_phone = response.dig(:data, :subaccount, :primary_contact_phone) || 'No contact phone'
 
-    def send_notifications(donation)
-      DonationConfirmationEmailService.send_confirmation_email(donation)
-      FundraiserDonationNotificationService.send_notification_email(donation)
+        shipping_data = (metadata[:metadata] && metadata[:metadata][:shippingData]) || {}
+        selected_rewards = (metadata[:metadata] && metadata[:metadata][:selectedRewards]) || []
+        delivery_option = (metadata[:metadata] && metadata[:metadata][:deliveryOption]) || 'pickup'
 
-      if donation.user.present?
-        Point.add_points(donation.user, donation)
-        LeaderboardEntry.update_leaderboard(donation.user, donation.user.total_points)
+        donation = Donation.create!(
+          transaction_reference: transaction_reference,
+          status: 'successful',
+          gross_amount: gross_amount,
+          net_amount: net_amount,
+          platform_fee: adjusted_platform_fee,
+          amount: net_amount,
+          user_id: user_id.presence,
+          campaign_id: campaign_id.presence,
+          full_name: metadata[:donor_name],
+          email: response.dig(:data, :customer, :email),
+          phone: metadata[:phone],
+          country: final_country,
+          ip_address: donor_ip,
+          metadata: {
+            anonymous_token: session_token,
+            user_id: user_id,
+            campaign_id: campaign_id,
+            campaign_metadata: campaign_metadata,
+            redirect_url: metadata[:redirect_url],
+            title: metadata[:title],
+            goal_amount: metadata[:goal_amount],
+            current_amount: metadata[:current_amount],
+            currency: metadata[:currency],
+            currency_symbol: metadata[:currency_symbol],
+            fundraiser_id: metadata[:fundraiser_id],
+            fundraiser_name: metadata[:fundraiser_name],
+            subaccount_contact: {
+              name: subaccount_name,
+              email: subaccount_contact,
+              phone: subaccount_phone
+            }
+          },
+          processed: false
+        )
+
+        campaign = donation.campaign
+        campaign.update!(
+          total_successful_donations: campaign.current_amount + net_amount,
+          current_amount: campaign.current_amount + net_amount
+        )
+
+        campaign.update_transferred_amount(net_amount)
+
+        selected_rewards.each do |reward|
+          next if Pledge.exists?(donation_id: donation.id, reward_id: reward[:id])
+
+          Pledge.create!(
+            donation_id: donation.id,
+            reward_id: reward[:id],
+            amount: reward[:amount],
+            shipping_data: shipping_data,
+            selected_rewards: [reward],
+            delivery_option: delivery_option,
+            status: 'pending',
+            shipping_status: 'not_shipped',
+            campaign_id: campaign_id,
+            user_id: metadata[:fundraiser_id]
+          )
+        end
+
+        DonationConfirmationEmailService.send_confirmation_email(donation)
+        FundraiserDonationNotificationService.send_notification_email(donation)
+
+        if donation.user.present?
+          Point.add_points(donation.user, donation)
+          LeaderboardEntry.update_leaderboard(donation.user, donation.user.total_points)
+        else
+          Rails.logger.info "Skipping points & leaderboard update for anonymous donation: #{donation.id}"
+        end
+      else
+        Rails.logger.error "Transaction failed with status #{transaction_status}"
+        raise "Transaction status is #{transaction_status}"
       end
     end
   end

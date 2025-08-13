@@ -5,11 +5,18 @@ class PaystackWebhook::ChargeSuccessHandler
 
   def call
     transaction_reference = @data[:reference]
+    Rails.logger.info { "Processing charge success: #{transaction_reference}" }
+
+    # Check if the event has already been processed (deduplication)
     return if EventProcessed.exists?(event_id: transaction_reference)
 
     ActiveRecord::Base.transaction do
-      handler = determine_handler
-      handler.call
+      if equity_investment?(@data)
+        PaystackWebhook::Handlers::EquityInvestmentHandler.new(@data).call
+      else
+        PaystackWebhook::Handlers::DonationHandler.new(@data).call
+      end
+
       EventProcessed.create!(event_id: transaction_reference)
     end
   rescue StandardError => e
@@ -19,17 +26,8 @@ class PaystackWebhook::ChargeSuccessHandler
 
   private
 
-  def determine_handler
-    case transaction_type
-    when 'equity_investment'
-      PaystackWebhook::Handlers::EquityInvestmentHandler.new(@data)
-    else
-      PaystackWebhook::Handlers::DonationHandler.new(@data)
-    end
-  end
-
-  def transaction_type
-    metadata = @data[:metadata] || {}
-    metadata[:type] || 'donation' # Default to donation for backward compatibility
+  def equity_investment?(data)
+    metadata = data[:metadata] || {}
+    metadata[:type] == 'equity_investment'
   end
 end

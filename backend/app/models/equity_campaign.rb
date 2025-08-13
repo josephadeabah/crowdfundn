@@ -1,13 +1,9 @@
 class EquityCampaign < Campaign
+  has_many :equity_investments, foreign_key: 'campaign_id', dependent: :destroy
   has_many :investors, through: :equity_investments, source: :user
   has_many :campaign_team_members, foreign_key: 'campaign_id', dependent: :destroy
   has_many :founders, -> { where(campaign_team_members: { role: 'founder' }) },
            through: :campaign_team_members, source: :user
-
-  attribute :equity_status, :integer, default: 0
-  attribute :total_shares, :integer, default: 1_000_000 # Default 1M shares
-  attribute :shares_issued, :integer, default: 0
-  attribute :equity_issued, :decimal, default: 0.0
 
   validates :valuation, :equity_offered, :minimum_investment, :maximum_investment,
             presence: true, numericality: { greater_than: 0 }
@@ -17,8 +13,8 @@ class EquityCampaign < Campaign
   validate :maximum_greater_than_minimum
   validate :type_cannot_change, on: :update
   validate :shares_within_equity_limits
-  validates :total_shares, presence: true, numericality: { greater_than: 0 }
 
+  attribute :equity_status, :integer, default: 0
 
   enum :equity_status, {
     draft: 0,
@@ -37,7 +33,6 @@ class EquityCampaign < Campaign
     equity_investments.completed.each do |investment|
       InvestmentUpdateJob.perform_later(investment.id)
     end
-  end
     
   # State transition methods with improved error handling
   def submit_for_approval
@@ -141,60 +136,25 @@ class EquityCampaign < Campaign
     )
   end
 
-  # Update this method for accurate share calculation
   def create_investment(user, amount)
-    return unless amount >= minimum_investment && amount <= maximum_investment
-
-    # Calculate percentage first
-    total_equity_value = (valuation.to_f * equity_offered.to_f / 100)
-    percentage = ((amount / total_equity_value) * 100).round(8)
-    
-    # Then calculate shares based on percentage
-    total_available_shares = (equity_offered.to_f / 100) * total_shares.to_f
-    shares = (percentage / 100 * total_available_shares).round(4)
+    price_per_share = valuation.to_f / total_shares.to_f
+    shares = (amount / price_per_share).round(2)
+    percentage = ((amount / (valuation.to_f * equity_offered.to_f / 100)) * 100).round(4)
 
     equity_investments.create(
       user: user,
       amount: amount,
       shares: shares,
       percentage: percentage,
-      status: :pending
-    ).tap do |investment|
-      update_shares_available if investment.persisted?
-    end
+      status: :pending # Changed from :completed to :pending
+    )
   end
 
   def shares_available
     return 0 if equity_offered.nil? || valuation.nil? || total_shares.nil?
 
     total_equity_shares = (equity_offered.to_f / 100) * total_shares.to_f
-    remaining_shares = total_equity_shares - shares_issued.to_f
-    remaining_shares.positive? ? remaining_shares : 0
-  end
-
-  def update_shares_available
-    update_columns(
-      shares_issued: equity_investments.sum(:shares),
-      equity_issued: equity_investments.sum(:percentage)
-    )
-  end
-
-    # Add this validation
-  def validate_shares_available(investment_amount)
-    return true if shares_available > 0
-    
-    estimated_shares = (investment_amount / (valuation.to_f / total_shares.to_f)).round(4)
-    if estimated_shares > shares_available
-      errors.add(:base, "Not enough shares available for this investment")
-      false
-    else
-      true
-    end
-  end
-
-  def price_per_share
-  return 0 if valuation.nil? || total_shares.nil? || total_shares.zero?
-  valuation.to_f / total_shares.to_f
+    total_equity_shares - equity_investments.sum(:shares)
   end
 
   def percentage_available
@@ -220,7 +180,6 @@ class EquityCampaign < Campaign
         contract_term: contract_term
       },
       shares_available: shares_available,
-      price_per_share: price_per_share,
       percentage_raised: percentage_raised,
       equity_status: equity_status,
       maximum_investment: maximum_investment,

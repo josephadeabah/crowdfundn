@@ -3,15 +3,8 @@ class Campaign < ApplicationRecord
   has_many :rewards, dependent: :destroy
   has_many :updates, dependent: :destroy
   has_many :comments, dependent: :destroy
-    # All donations (both regular and equity investments)
-  has_many :donations, foreign_key: 'campaign_id', dependent: :restrict_with_error
-  
-  # Regular donations only (where type is nil)
-  has_many :regular_donations, -> { where(type: nil) }, class_name: 'Donation', foreign_key: 'campaign_id'
-  # Equity investments only
-  has_many :equity_investments, -> { where(type: 'EquityInvestment') }, class_name: 'Donation', foreign_key: 'campaign_id'
-  has_many :backers, through: :donations, source: :user
-  has_many :investors, through: :equity_investments, source: :user
+  has_many :backers, through: :donations # assuming a Backer model related to donations
+  has_many :donations, dependent: :destroy
   has_many :transfers, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :subscribers, through: :subscriptions, source: :user

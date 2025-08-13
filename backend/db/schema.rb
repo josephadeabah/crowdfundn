@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_12_200927) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_13_231645) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -182,17 +182,31 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_12_200927) do
     t.boolean "processed", default: false, null: false
     t.string "ip_address"
     t.string "country"
-    t.string "type"
+    t.bigint "campaign_id"
+    t.index ["status"], name: "index_donations_on_status"
+    t.index ["user_id"], name: "index_donations_on_user_id"
+  end
+
+  create_table "equity_investments", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "campaign_id", null: false
+    t.decimal "amount", precision: 12, scale: 2
     t.decimal "shares", precision: 20, scale: 4
     t.decimal "percentage", precision: 10, scale: 8
     t.string "certificate_number"
     t.date "investment_date"
-    t.string "campaign_type"
-    t.bigint "campaign_id"
-    t.index ["campaign_type", "campaign_id"], name: "index_donations_on_campaign"
-    t.index ["status"], name: "index_donations_on_status"
-    t.index ["type"], name: "index_donations_on_type"
-    t.index ["user_id"], name: "index_donations_on_user_id"
+    t.string "transaction_reference"
+    t.jsonb "metadata", default: {}
+    t.string "status"
+    t.string "email", default: "noemail@example.com", null: false
+    t.string "full_name"
+    t.string "phone"
+    t.string "country"
+    t.string "ip_address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id"], name: "index_equity_investments_on_campaign_id"
+    t.index ["user_id"], name: "index_equity_investments_on_user_id"
   end
 
   create_table "event_processeds", force: :cascade do |t|
@@ -497,7 +511,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_12_200927) do
   add_foreign_key "campaigns", "users", column: "fundraiser_id"
   add_foreign_key "comments", "campaigns"
   add_foreign_key "comments", "users"
+  add_foreign_key "donations", "campaigns"
   add_foreign_key "donations", "users"
+  add_foreign_key "equity_investments", "campaigns"
+  add_foreign_key "equity_investments", "users"
   add_foreign_key "favorites", "campaigns"
   add_foreign_key "favorites", "users"
   add_foreign_key "fundraiser_leaderboard_entries", "users"
