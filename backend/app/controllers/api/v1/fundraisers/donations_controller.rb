@@ -59,7 +59,7 @@ module Api
               campaign.fundraiser.profile.avatar_url,
               campaign.title,
               campaign.currency.upcase,
-              donation.gross_amount.to_f.round(2)
+              donation.gross_amount.to_f.round(2))
           end
 
           render json: { message: 'Thank you emails sent successfully' }, status: :ok
