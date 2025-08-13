@@ -28,15 +28,6 @@ class EquityInvestment < Donation
     where(campaign_id: campaign_id, status: 'successful').sum(:amount)
   end
 
-  def certificate_url
-    return unless certificate.attached?
-    Rails.application.routes.url_helpers.url_for(certificate)
-  end
-
-  def certificate_present?
-    certificate.attached? && certificate.blob.present?
-  end
-
   private
 
   def calculate_shares_and_percentage
