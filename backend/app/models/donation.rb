@@ -1,3 +1,4 @@
+# app/models/donation.rb
 class Donation < ApplicationRecord
   belongs_to :campaign 
   belongs_to :user, optional: true
@@ -5,16 +6,17 @@ class Donation < ApplicationRecord
   has_many :points, dependent: :destroy
   has_many :pledges, dependent: :destroy
   has_one_attached :certificate
-  
 
   # Common validations for all donation types
-  # validates :transaction_reference, presence: true, uniqueness: true, allow_nil: true
   validates :email, presence: true
   validates :amount, presence: true, numericality: { greater_than: 0 }
+  
+  # Modified uniqueness validation to be scoped by type
   validates :transaction_reference, uniqueness: {
-    scope: :type, # This makes the uniqueness check per-type
+    scope: :type,
     message: "has already been taken for this donation type"
   }, allow_nil: true
+
   # Status validation (common to both donations and investments)
   validates :status, inclusion: { 
     in: %w[pending initialized successful failed abandoned canceled refunded] 

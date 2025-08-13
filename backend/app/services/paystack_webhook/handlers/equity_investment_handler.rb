@@ -1,3 +1,4 @@
+# app/services/paystack_webhook/handlers/equity_investment_handler.rb
 module PaystackWebhook::Handlers
   class EquityInvestmentHandler
     include PaystackWebhook::JsonHelper
@@ -41,7 +42,6 @@ module PaystackWebhook::Handlers
         update_campaign(investment)
         create_pledge_if_needed(investment)
         handle_certificate_generation(investment, response)
-        # InvestmentUpdateJob.perform_later(investment.id)
       else
         log_invalid_investment(metadata)
       end
@@ -71,6 +71,7 @@ module PaystackWebhook::Handlers
       final_country = donor_country.presence || Geocoder.search(donor_ip).first&.country || 'Unknown'
 
       investment.update!(
+        type: 'EquityInvestment', # Explicitly set type
         status: 'successful',
         transaction_reference: response[:data][:reference],
         gross_amount: gross_amount,
@@ -147,7 +148,6 @@ module PaystackWebhook::Handlers
 
     def retry_certificate_generation(investment_id)
       Rails.logger.error "Certificate generation failed for investment #{investment_id}"
-      # CertificateGenerationJob.set(wait: 5.minutes).perform_later(investment_id)
     end
 
     def log_invalid_investment(metadata)
