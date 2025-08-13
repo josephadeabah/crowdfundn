@@ -39,7 +39,31 @@ module Api
           handle_payment_response(response, donation, campaign)
         end
 
-        
+        def send_thank_you_emails
+          campaign = Campaign.find_by(id: params[:campaign_id])
+          return render json: { error: 'Campaign not found' }, status: :not_found unless campaign
+
+          # Fetch donations based on the filter
+          donations = if params[:filter] == 'all'
+                        campaign.donations.successful
+                      else
+                        campaign.donations.successful.where(id: params[:donor_ids])
+                      end
+
+          # Send thank you emails to donors
+          donations.each do |donation|
+            ThankYouEmailService.send_thank_you_email(
+              donation.email,
+              donation.full_name || 'Anonymous',
+              campaign.fundraiser.full_name,
+              campaign.fundraiser.profile.avatar_url,
+              campaign.title,
+              campaign.currency.upcase,
+              donation.gross_amount.to_f.round(2)
+          end
+
+          render json: { message: 'Thank you emails sent successfully' }, status: :ok
+        end
 
         private
 
