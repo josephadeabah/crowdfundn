@@ -194,14 +194,17 @@ module Api
 
         # Set the campaign based on the campaign_id parameter
         def set_campaign
-          campaign_identifier = params[:id] || params[:campaign_id]
+          campaign_identifier = params[:campaign_id] || params[:id]
           @campaign = if campaign_identifier.to_s.match?(/\A\d+\z/)
                         Campaign.find(campaign_identifier)
                       else
                         Campaign.find_by!(slug: campaign_identifier)
                       end
         rescue ActiveRecord::RecordNotFound
-          render json: { error: 'Campaign not found' }, status: :not_found
+          render json: { 
+            error: 'Campaign not found',
+            details: "Could not find campaign with identifier: #{campaign_identifier}"
+          }, status: :not_found
         end
       end
     end
