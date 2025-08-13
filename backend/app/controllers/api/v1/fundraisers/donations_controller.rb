@@ -3,7 +3,7 @@ module Api
     module Fundraisers
       class DonationsController < ApplicationController
         before_action :authenticate_request, only: %i[index create send_thank_you_emails]
-        before_action :set_campaign, only: [:public_donations]
+        before_action :set_campaign, only: [:public_donations, :create]
 
         # Public donations list for a campaign
         def public_donations
