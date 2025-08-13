@@ -8,10 +8,13 @@ class Donation < ApplicationRecord
   
 
   # Common validations for all donation types
-  validates :transaction_reference, presence: true, uniqueness: true, allow_nil: true
+  # validates :transaction_reference, presence: true, uniqueness: true, allow_nil: true
   validates :email, presence: true
   validates :amount, presence: true, numericality: { greater_than: 0 }
-  
+  validates :transaction_reference, uniqueness: {
+    scope: :type, # This makes the uniqueness check per-type
+    message: "has already been taken for this donation type"
+  }, allow_nil: true
   # Status validation (common to both donations and investments)
   validates :status, inclusion: { 
     in: %w[pending initialized successful failed abandoned canceled refunded] 
