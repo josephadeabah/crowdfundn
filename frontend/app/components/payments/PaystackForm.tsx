@@ -3,7 +3,7 @@ import { useDonationsContext } from '@/app/context/account/donations/DonationsCo
 import ToastComponent from '@/app/components/toast/Toast';
 import { Reward } from '@/app/context/account/rewards/RewardsContext';
 import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
-import { EquityInvestment } from '@/app/types/equityCampaigns.types';
+import { EquityInvestment, InvestmentCreateResponse } from '@/app/types/equityCampaigns.types';
 
 interface PaystackFormProps {
   cardholderName: string;
@@ -30,19 +30,6 @@ interface PaystackFormProps {
   setPaymentPhone: React.Dispatch<React.SetStateAction<string>>;
   setPaymentAmount: React.Dispatch<React.SetStateAction<string>>;
   isEquityCampaign?: boolean;
-}
-
-interface InvestmentResponse {
-  success: boolean;
-  data: {
-    investment?: EquityInvestment;
-    authorization_url: string;
-    redirect_url?: string;
-    code?: string;
-    shares_available?: number;
-  };
-  error?: string;
-  validationErrors?: Record<string, string | string[]>; // For backend validation errors
 }
 
 const PaystackForm: React.FC<PaystackFormProps> = ({
@@ -97,88 +84,76 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
     }
   }, [donationError, investmentError, isEquityCampaign]);
 
-  const handlePayment = async () => {
-    setShowToast(false);
-    setInvestmentError('');
-    if (!validatePaystackForm()) return;
+const handlePayment = async () => {
+  setShowToast(false);
+  setInvestmentError('');
+  if (!validatePaystackForm()) return;
 
-    const amount = parseFloat(paymentAmount);
-    if (isNaN(amount) || amount <= 0) return;
+  const amount = parseFloat(paymentAmount);
+  if (isNaN(amount) || amount <= 0) return;
 
-    if (isEquityCampaign) {
-      try {
-        const investmentData = {
-          amount: totalAmount,
-          email: paymentEmail,
-          phone: paymentPhone,
-          full_name: cardholderName,
-          metadata: {
-            ...combinedMetadata,
-            processingFee,
-            originalAmount: amount,
-          },
-        };
+  if (isEquityCampaign) {
+    try {
+      const investmentData = {
+        amount: totalAmount,
+        email: paymentEmail,
+        phone: paymentPhone,
+        full_name: cardholderName,
+        metadata: {
+          ...(combinedMetadata || {}),
+          processingFee,
+          originalAmount: amount,
+        },
+      };
 
-        const result = (await createInvestment(
-          campaignId,
-          investmentData,
-        )) as unknown as InvestmentResponse;
+      const result = await createInvestment(campaignId, investmentData);
 
-        if (result.success) {
-          console.log("AUTH URL:", result.data.authorization_url)
-          //  window.location.href = result.data.authorization_url;
-          return;
-        } else if (!result?.success) {
-            let errorMessage = result.error || 'Investment failed';
+      if (!result.success) {
+        let errorMessage = result.error || 'Investment failed';
 
-          // Special handling for share availability errors
-          if (
-            errorMessage.includes('shares available') &&
-            result.data?.shares_available
-          ) {
-            const pricePerShare =
-              result.data.shares_available > 0
-                ? (totalAmount / result.data.shares_available).toFixed(2)
-                : 0;
-            errorMessage += `. Current share price: ${pricePerShare}`;
-          }
-
-          if (result.validationErrors) {
-            errorMessage = Object.entries(result.validationErrors)
-              .map(([field, messages]) => {
-                const message = Array.isArray(messages)
-                  ? messages.join(', ')
-                  : messages;
-                return `${field.charAt(0).toUpperCase() + field.slice(1)}: ${message}`;
-              })
-              .join('\n');
-          }
-
-          if (result.data?.code) {
-            errorMessage += ` (Code: ${result.data.code})`;
-          }
-
-          setInvestmentError(errorMessage);
-          setShowToast(true);
+        // Special handling for share availability errors
+        if (result.data?.shares_available !== undefined) {
+          const pricePerShare = result.data.shares_available > 0 
+            ? (totalAmount / result.data.shares_available).toFixed(2)
+            : 0;
+          errorMessage += `. Current share price: ${pricePerShare}`;
         }
-      } catch (error) {
-        setInvestmentError('An unexpected error occurred. Please try again.');
+
+        if (result.validationErrors) {
+          errorMessage = Object.entries(result.validationErrors)
+            .map(([field, messages]) => {
+              const message = Array.isArray(messages)
+                ? messages.join(', ')
+                : messages;
+              return `${field.charAt(0).toUpperCase() + field.slice(1)}: ${message}`;
+            })
+            .join('\n');
+        }
+
+        if (result.code) {
+          errorMessage += ` (Code: ${result.code})`;
+        }
+
+        setInvestmentError(errorMessage);
         setShowToast(true);
-        console.error('Investment error:', error);
       }
-    } else {
-      createDonationTransaction(
-        paymentEmail,
-        cardholderName,
-        paymentPhone,
-        Number(paymentAmount),
-        campaignId,
-        campaignTitle,
-        billingFrequency,
-        combinedMetadata,
-      );
+    } catch (error) {
+      setInvestmentError('An unexpected error occurred. Please try again.');
+      setShowToast(true);
     }
-  };
+  } else {
+    createDonationTransaction(
+      paymentEmail,
+      cardholderName,
+      paymentPhone,
+      Number(paymentAmount),
+      campaignId,
+      campaignTitle,
+      billingFrequency,
+      combinedMetadata,
+    );
+  }
+};
 
   const loading = isEquityCampaign ? investmentLoading : donationLoading;
   const error = isEquityCampaign ? investmentError : donationError;

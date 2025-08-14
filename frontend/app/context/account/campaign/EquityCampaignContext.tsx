@@ -17,6 +17,8 @@ import {
   InvestorDocument,
   InvestmentPortfolio,
   ShareCertificate,
+  InvestmentCreatePayload,
+  InvestmentCreateResponse,
 } from '@/app/types/equityCampaigns.types';
 import { getDetailedErrorMessage } from '@/app/types/campaign.error.messages.types';
 
@@ -702,84 +704,79 @@ export const EquityCampaignProvider = ({
     [token],
   );
 
-  const createInvestment = useCallback(
-    async (
-      campaignId: string,
-      investmentData: {
-        amount: number;
-        email?: string;
-        phone?: string;
-        full_name?: string;
-        metadata?: any;
-      },
-    ): Promise<{
-      success: boolean;
-      data?: any;
-      error?: string;
-      validationErrors?: Record<string, string[] | string>;
-      code?: string;
-    }> => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_campaigns/${campaignId}/equity_investments`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ equity_investment: investmentData }),
+const createInvestment = useCallback(
+  async (
+    campaignId: string,
+    investmentData: InvestmentCreatePayload,
+  ): Promise<InvestmentCreateResponse> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_campaigns/${campaignId}/equity_investments`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
-        );
+          body: JSON.stringify({ equity_investment: investmentData }),
+        },
+      );
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (!response.ok) {
-          // Handle validation errors from backend
-          if (data.errors) {
-            return {
-              success: false,
-              error: data.error || 'Validation failed',
-              validationErrors: data.errors,
-              code: data.code,
-            };
-          }
-          // Handle Paystack errors
-          if (data.data?.code) {
-            return {
-              success: false,
-              error: data.message || 'Payment processing failed',
-              code: data.data.code,
-            };
-          }
+      if (!response.ok) {
+        // Handle validation errors from backend
+        if (data.errors) {
           return {
             success: false,
-            error: data.error || 'Investment creation failed',
-            data: data.details,
+            error: data.error || 'Validation failed',
+            validationErrors: data.errors,
             code: data.code,
           };
         }
-
-        return {
-          success: true,
-          data,
-          // Include these for better debugging
-          error: undefined,
-          validationErrors: undefined,
-        };
-      } catch (err) {
+        // Handle Paystack errors
+        if (data.data?.code) {
+          return {
+            success: false,
+            error: data.message || 'Payment processing failed',
+            code: data.data.code,
+          };
+        }
         return {
           success: false,
-          error: getDetailedErrorMessage(err),
+          error: data.error || 'Investment creation failed',
+          data: data.details,
+          code: data.code,
         };
-      } finally {
-        setLoading(false);
       }
-    },
-    [token],
-  );
+
+      // Handle successful response and redirect here
+      if (data.authorization_url) {
+        window.location.href = data.authorization_url;
+      }
+
+      return {
+        success: true,
+        data: {
+          investment: data.investment,
+          authorization_url: data.authorization_url,
+          redirect_url: data.redirect_url,
+          shares_available: data.shares_available,
+        },
+      };
+    } catch (err) {
+      return {
+        success: false,
+        error: getDetailedErrorMessage(err),
+      };
+    } finally {
+      setLoading(false);
+    }
+  },
+  [token],
+);
 
   const fetchInvestmentDetails = useCallback(
     async (investmentId: string): Promise<any> => {

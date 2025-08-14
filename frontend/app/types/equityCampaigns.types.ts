@@ -117,6 +117,24 @@ export interface InvestmentCreatePayload {
   payment_method?: string;
 }
 
+// Add this interface for the investment response data
+export interface InvestmentResponseData {
+  investment?: EquityInvestment;
+  authorization_url?: string;
+  redirect_url?: string;
+  code?: string;
+  shares_available?: number;
+}
+
+// Update the InvestmentCreateResponse interface
+export interface InvestmentCreateResponse {
+  success: boolean;
+  data?: InvestmentResponseData;
+  error?: string;
+  validationErrors?: Record<string, string[] | string>;
+  code?: string;
+}
+
 export interface InvestmentUpdatePayload {
   amount?: number;
   shares?: number;
@@ -166,7 +184,7 @@ export interface EquityCampaignState extends CampaignState {
   createInvestment: (
     campaignId: string,
     investment: InvestmentCreatePayload,
-  ) => Promise<{ success: boolean; data?: EquityInvestment; error?: string }>;
+  ) => Promise<InvestmentCreateResponse>;
   fetchInvestmentDetails: (
     investmentId: string,
   ) => Promise<EquityInvestment | null>;
