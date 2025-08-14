@@ -726,6 +726,8 @@ const createInvestment = useCallback(
 
       const data = await response.json();
 
+      console.log("DATA", data);
+
       if (!response.ok) {
         // Handle validation errors from backend
         if (data.errors) {
