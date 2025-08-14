@@ -71,7 +71,7 @@ module PaystackWebhook::Handlers
       final_country = donor_country.presence || Geocoder.search(donor_ip).first&.country || 'Unknown'
 
       investment.update!(
-        status: 'successful',
+        status: EquityInvestment::STATUS_SUCCESSFUL,
         transaction_reference: response[:data][:reference],
         gross_amount: gross_amount,
         net_amount: net_amount,

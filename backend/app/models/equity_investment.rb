@@ -44,8 +44,33 @@ class EquityInvestment < ApplicationRecord
   after_commit :update_investor_portfolios, on: [:create, :update], if: :successful?
   after_update :update_campaign_leaderboard, if: :saved_change_to_status?
 
+  # Status query methods
+  def pending?
+    status == STATUS_PENDING
+  end
+
+  def initialized?
+    status == STATUS_INITIALIZED
+  end
+
   def successful?
     status == STATUS_SUCCESSFUL
+  end
+
+  def failed?
+    status == STATUS_FAILED
+  end
+
+  def abandoned?
+    status == STATUS_ABANDONED
+  end
+
+  def canceled?
+    status == STATUS_CANCELED
+  end
+
+  def refunded?
+    status == STATUS_REFUNDED
   end
 
   def current_value

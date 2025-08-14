@@ -1,3 +1,4 @@
+# app/services/paystack_webhook/charge_success_handler.rb
 class PaystackWebhook::ChargeSuccessHandler
   def initialize(data)
     @data = data
