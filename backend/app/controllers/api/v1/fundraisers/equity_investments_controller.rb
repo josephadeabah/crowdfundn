@@ -189,21 +189,27 @@ module Api
           render json: { error: 'Campaign not found' }, status: :not_found
         end
 
-      def validate_investment_amount(amount)
-        if amount < @campaign.minimum_investment
-          return { error: "Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}" }
-        end
+        def validate_investment_amount(amount)
+          if amount < @campaign.minimum_investment
+            return { error: "Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}" }
+          end
 
-        if amount > @campaign.maximum_investment && @campaign.maximum_investment > 0
-          return { error: "Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}" }
-        end
+          if @campaign.maximum_investment > 0 && amount > @campaign.maximum_investment
+            return { error: "Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}" }
+          end
 
-        if @campaign.shares_available <= 0
-          return { error: 'No shares available for investment' }
-        end
+          price_per_share = @campaign.valuation.to_f / @campaign.total_shares.to_f
+          requested_shares = (amount / price_per_share).round(4)
 
-        true
-      end
+          if requested_shares > @campaign.shares_available
+            available_amount = (@campaign.shares_available * price_per_share).floor
+            return { 
+              error: "Not enough shares available. Maximum investment possible: #{@campaign.currency_symbol}#{available_amount}" 
+            }
+          end
+
+          true
+        end
 
        def initialize_payment(investment, metadata, redirect_url)
           subaccount = Subaccount.find_by(user_id: @campaign.fundraiser_id)
