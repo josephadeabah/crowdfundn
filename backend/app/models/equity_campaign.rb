@@ -14,7 +14,6 @@ class EquityCampaign < Campaign
   validate :maximum_greater_than_minimum
   validate :type_cannot_change, on: :update
   validate :shares_within_equity_limits
-  validate :validate_financial_values
 
   attribute :equity_status, :integer, default: 0
 
@@ -29,28 +28,6 @@ class EquityCampaign < Campaign
   }
 
   after_update :update_investments_valuation, if: :saved_change_to_valuation?
-
-  def validate_financial_values
-    if valuation.to_f <= 0
-      errors.add(:valuation, "must be greater than 0") 
-    end
-    
-    if total_shares.to_f <= 0
-      errors.add(:total_shares, "must be greater than 0")
-    end
-    
-    if equity_offered.to_f <= 0
-      errors.add(:equity_offered, "must be greater than 0%")
-    end
-  end
-
-  def valid_financials?
-    valuation.to_f > 0 && 
-    total_shares.to_f > 0 && 
-    equity_offered.to_f > 0 &&
-    equity_offered.to_f <= 100 &&
-    minimum_investment.to_f > 0
-  end
 
   def update_all_investment_values
     equity_investments.completed.each do |investment|
