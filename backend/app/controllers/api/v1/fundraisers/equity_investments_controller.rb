@@ -34,41 +34,43 @@ module Api
 
         def create
           # First validate the investment parameters
-          investment_params = equity_investment_params
-          amount = investment_params[:amount].to_f
-          reward_id = investment_params[:reward_id]
+            investment_params = equity_investment_params
+            amount = investment_params[:amount].to_f
+            reward_id = investment_params[:reward_id]
 
-          # Maintain all existing equity validations
-          validation_result = validate_investment(amount, reward_id)
-          unless validation_result[:valid]
-            return render json: { 
-              success: false, 
-              error: validation_result[:message],
-              validationErrors: validation_result[:errors]
-            }, status: :unprocessable_entity
-          end
-
-          ActiveRecord::Base.transaction do
-            # Create the investment with all equity-specific attributes
-            investment = @campaign.equity_investments.new(
-              user: @current_user,
-              amount: amount,
-              reward_id: reward_id,
-              status: EquityInvestment::STATUS_PENDING,
-              email: investment_params[:email],
-              phone: investment_params[:phone],
-              full_name: investment_params[:full_name],
-              metadata: investment_params[:metadata] || {}
-            )
-
-            # Maintain equity-specific callbacks
-            unless investment.save
+            # First validate basic parameters
+            validation_result = validate_investment(amount, reward_id)
+            unless validation_result[:valid]
               return render json: { 
                 success: false, 
-                error: "Validation failed: #{investment.errors.full_messages.join(', ')}",
-                validationErrors: investment.errors.to_hash
+                error: validation_result[:message],
+                validationErrors: validation_result[:errors]
               }, status: :unprocessable_entity
             end
+
+            ActiveRecord::Base.transaction do
+              # Create the investment first to trigger share calculation
+              investment = @campaign.equity_investments.new(
+                user: @current_user,
+                amount: amount,
+                reward_id: reward_id,
+                status: EquityInvestment::STATUS_PENDING,
+                email: investment_params[:email],
+                phone: investment_params[:phone],
+                full_name: investment_params[:full_name],
+                metadata: investment_params[:metadata] || {}
+              )
+
+              # Manually trigger share calculation before validation
+              investment.calculate_shares_and_percentage
+
+              unless investment.save
+                return render json: { 
+                  success: false, 
+                  error: "Validation failed: #{investment.errors.full_messages.join(', ')}",
+                  validationErrors: investment.errors.to_hash
+                }, status: :unprocessable_entity
+              end
 
             # Generate callback URL similar to donations
             secure_uuid = SecureRandom.uuid
@@ -96,6 +98,19 @@ module Api
 
         def validate_investment(amount, reward_id)
           result = { valid: true }
+  
+          # Calculate minimum possible amount based on share price
+          price_per_share = @campaign.valuation.to_f / @campaign.total_shares.to_f
+          min_possible_amount = price_per_share.ceil
+          
+          if amount < min_possible_amount
+            result = {
+              valid: false,
+              message: "Minimum investment is #{@campaign.currency_symbol}#{min_possible_amount} (1 share)",
+              errors: { amount: ["Minimum investment is #{@campaign.currency_symbol}#{min_possible_amount}"] }
+            }
+            return result
+          end
           
           # Maintain all equity-specific validations
           if amount < @campaign.minimum_investment

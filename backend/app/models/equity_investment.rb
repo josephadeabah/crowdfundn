@@ -27,7 +27,11 @@ class EquityInvestment < ApplicationRecord
     STATUS_REFUNDED
   ].freeze
 
-  validates :amount, :shares, :percentage, presence: true, numericality: { greater_than: 0 }
+  validates :amount, :percentage, presence: true, numericality: { greater_than: 0 }
+  validates :shares, numericality: { 
+  greater_than: 0,
+  message: "must be greater than 0. Amount too small for available share price"
+  }
   validates :certificate_number, uniqueness: true, allow_nil: true
   validates :transaction_reference, uniqueness: true, allow_nil: true
   validates :email, presence: true
@@ -85,13 +89,16 @@ class EquityInvestment < ApplicationRecord
   private
 
   def calculate_shares_and_percentage
+    Rails.logger.debug "Calculating shares for amount: #{amount}, campaign: #{campaign.id}"
     return unless campaign && amount.present? && amount.positive?
 
     price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
     self.shares = (amount / price_per_share).round(4)
+    Rails.logger.debug "Calculated shares: #{shares}"
 
     total_equity_value = (campaign.valuation.to_f * campaign.equity_offered.to_f / 100)
     self.percentage = ((amount / total_equity_value) * 100).round(4)
+    Rails.logger.debug "Calculated percentage: #{percentage}"
   end
 
   def generate_certificate_number
