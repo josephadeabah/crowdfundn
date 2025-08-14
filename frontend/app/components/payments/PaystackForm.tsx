@@ -3,7 +3,10 @@ import { useDonationsContext } from '@/app/context/account/donations/DonationsCo
 import ToastComponent from '@/app/components/toast/Toast';
 import { Reward } from '@/app/context/account/rewards/RewardsContext';
 import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
-import { EquityInvestment, InvestmentCreateResponse } from '@/app/types/equityCampaigns.types';
+import {
+  EquityInvestment,
+  InvestmentCreateResponse,
+} from '@/app/types/equityCampaigns.types';
 
 interface PaystackFormProps {
   cardholderName: string;
@@ -84,76 +87,77 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
     }
   }, [donationError, investmentError, isEquityCampaign]);
 
-const handlePayment = async () => {
-  setShowToast(false);
-  setInvestmentError('');
-  if (!validatePaystackForm()) return;
+  const handlePayment = async () => {
+    setShowToast(false);
+    setInvestmentError('');
+    if (!validatePaystackForm()) return;
 
-  const amount = parseFloat(paymentAmount);
-  if (isNaN(amount) || amount <= 0) return;
+    const amount = parseFloat(paymentAmount);
+    if (isNaN(amount) || amount <= 0) return;
 
-  if (isEquityCampaign) {
-    try {
-      const investmentData = {
-        amount: totalAmount,
-        email: paymentEmail,
-        phone: paymentPhone,
-        full_name: cardholderName,
-        metadata: {
-          ...(combinedMetadata || {}),
-          processingFee,
-          originalAmount: amount,
-        },
-      };
+    if (isEquityCampaign) {
+      try {
+        const investmentData = {
+          amount: totalAmount,
+          email: paymentEmail,
+          phone: paymentPhone,
+          full_name: cardholderName,
+          metadata: {
+            ...(combinedMetadata || {}),
+            processingFee,
+            originalAmount: amount,
+          },
+        };
 
-      const result = await createInvestment(campaignId, investmentData);
+        const result = await createInvestment(campaignId, investmentData);
 
-      if (!result.success) {
-        let errorMessage = result.error || 'Investment failed';
+        if (!result.success) {
+          let errorMessage = result.error || 'Investment failed';
 
-        // Special handling for share availability errors
-        if (result.data?.shares_available !== undefined) {
-          const pricePerShare = result.data.shares_available > 0 
-            ? (totalAmount / result.data.shares_available).toFixed(2)
-            : 0;
-          errorMessage += `. Current share price: ${pricePerShare}`;
+          // Special handling for share availability errors
+          if (result.data?.shares_available !== undefined) {
+            const pricePerShare =
+              result.data.shares_available > 0
+                ? (totalAmount / result.data.shares_available).toFixed(2)
+                : 0;
+            errorMessage += `. Current share price: ${pricePerShare}`;
+          }
+
+          if (result.validationErrors) {
+            errorMessage = Object.entries(result.validationErrors)
+              .map(([field, messages]) => {
+                const message = Array.isArray(messages)
+                  ? messages.join(', ')
+                  : messages;
+                return `${field.charAt(0).toUpperCase() + field.slice(1)}: ${message}`;
+              })
+              .join('\n');
+          }
+
+          if (result.code) {
+            errorMessage += ` (Code: ${result.code})`;
+          }
+
+          setInvestmentError(errorMessage);
+          setShowToast(true);
         }
-
-        if (result.validationErrors) {
-          errorMessage = Object.entries(result.validationErrors)
-            .map(([field, messages]) => {
-              const message = Array.isArray(messages)
-                ? messages.join(', ')
-                : messages;
-              return `${field.charAt(0).toUpperCase() + field.slice(1)}: ${message}`;
-            })
-            .join('\n');
-        }
-
-        if (result.code) {
-          errorMessage += ` (Code: ${result.code})`;
-        }
-
-        setInvestmentError(errorMessage);
+      } catch (error) {
+        setInvestmentError('An unexpected error occurred. Please try again.');
         setShowToast(true);
       }
-    } catch (error) {
-      setInvestmentError('An unexpected error occurred. Please try again.');
-      setShowToast(true);
+    } else {
+      createDonationTransaction(
+        paymentEmail,
+        cardholderName,
+        paymentPhone,
+        Number(paymentAmount),
+        campaignId,
+        campaignTitle,
+        billingFrequency,
+        combinedMetadata,
+      );
     }
-  } else {
-    createDonationTransaction(
-      paymentEmail,
-      cardholderName,
-      paymentPhone,
-      Number(paymentAmount),
-      campaignId,
-      campaignTitle,
-      billingFrequency,
-      combinedMetadata,
-    );
-  }
-};
+  };
 
   const loading = isEquityCampaign ? investmentLoading : donationLoading;
   const error = isEquityCampaign ? investmentError : donationError;
