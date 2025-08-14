@@ -156,13 +156,8 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
 
           setInvestmentError(errorMessage);
           setShowToast(true);
-        } else if (result?.success) {
-          if (result.data?.authorization_url) {
-            window.location.href = result.data.authorization_url;
-          } else {
-            setInvestmentError('No authorization URL returned. Please try again.');
-            setShowToast(true);
-          }
+        } else if (result?.success && result.data?.authorization_url) {
+           window.location.href = result.data.authorization_url;
           return;
         }
       } catch (error) {
