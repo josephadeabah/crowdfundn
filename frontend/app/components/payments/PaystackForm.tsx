@@ -157,7 +157,8 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
           setInvestmentError(errorMessage);
           setShowToast(true);
         } else if (result.data?.authorization_url) {
-          window.location.href = result.data.authorization_url;
+          window.location.replace(result.data.authorization_url);
+          return;
         }
       } catch (error) {
         setInvestmentError('An unexpected error occurred. Please try again.');
