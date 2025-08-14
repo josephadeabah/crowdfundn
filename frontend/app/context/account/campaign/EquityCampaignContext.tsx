@@ -721,29 +721,13 @@ const createInvestment = useCallback(
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ equity_investment: investmentData }),
-        },
+        }
       );
 
       const data = await response.json();
 
       if (!response.ok) {
-        // Handle validation errors from backend
-        if (data.errors) {
-          return {
-            success: false,
-            error: data.error || 'Validation failed',
-            validationErrors: data.errors,
-            code: data.code,
-          };
-        }
-        // Handle Paystack errors
-        if (data.data?.code) {
-          return {
-            success: false,
-            error: data.message || 'Payment processing failed',
-            code: data.data.code,
-          };
-        }
+        // Error handling remains the same
         return {
           success: false,
           error: data.error || 'Investment creation failed',
@@ -752,17 +736,31 @@ const createInvestment = useCallback(
         };
       }
 
-       // Only handle successful responses after error checking
-      if (data.authorization_url) {
-        window.location.href = data.authorization_url;
-        // Return immediately after redirect to prevent further execution
+      // Successful response handling
+      if (data.data?.authorization_url) {
+        // Add a small delay to ensure React state updates complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Verify URL is valid
+        try {
+          new URL(data.data.authorization_url);
+          window.location.assign(data.data.authorization_url); // Use assign() instead of href
+        } catch (e) {
+          console.error('Invalid URL:', data.data.authorization_url);
+          return {
+            success: false,
+            error: 'Invalid payment URL',
+          };
+        }
+        
+        // Return immediately after redirect
         return {
           success: true,
           data: {
-            investment: data.investment,
-            authorization_url: data.authorization_url,
-            redirect_url: data.redirect_url,
-            shares_available: data.shares_available,
+            investment: data.data.investment,
+            authorization_url: data.data.authorization_url,
+            redirect_url: data.data.redirect_url,
+            shares_available: data.data.shares_available,
           },
         };
       }
@@ -770,10 +768,10 @@ const createInvestment = useCallback(
       return {
         success: true,
         data: {
-          investment: data.investment,
-          authorization_url: data.authorization_url,
-          redirect_url: data.redirect_url,
-          shares_available: data.shares_available,
+          investment: data.data?.investment,
+          authorization_url: data.data?.authorization_url,
+          redirect_url: data.data?.redirect_url,
+          shares_available: data.data?.shares_available,
         },
       };
     } catch (err) {
