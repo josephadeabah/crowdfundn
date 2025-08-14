@@ -37,6 +37,7 @@ interface InvestmentResponse {
   data?: {
     investment?: EquityInvestment;
     authorization_url?: string;
+    redirect_url?: string;
     code?: string;
     shares_available?: number;
   };
