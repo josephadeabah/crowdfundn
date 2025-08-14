@@ -48,39 +48,38 @@ module Api
         end
 
         def create
+          # Use strong parameters
           investment_params = equity_investment_params
           amount = investment_params[:amount].to_f
-          metadata = investment_params[:metadata] || {}
+          reward_id = investment_params[:reward_id]
 
-          # Extract frontend fields from metadata if they exist
-          email = metadata[:email] || investment_params[:email] || @current_user.email
-          phone = metadata[:phone] || investment_params[:phone]
-          full_name = metadata[:full_name] || investment_params[:full_name] || @current_user.full_name
-
-          validate_investment_amount(amount) or return
+          # Validate investment amount first
+          validation_result = validate_investment_amount(amount)
+          unless validation_result == true
+            return render json: { 
+              success: false, 
+              error: validation_result[:error],
+              validationErrors: { amount: [validation_result[:error]] }
+            }, status: :unprocessable_entity
+          end
 
           ActiveRecord::Base.transaction do
             investment = @campaign.equity_investments.new(
               user: @current_user,
               amount: amount,
-              email: email,
-              phone: phone,
-              full_name: full_name,
+              reward_id: reward_id,
               status: :pending,
-              metadata: metadata
+              metadata: investment_params[:metadata] || {}
             )
 
-            unless investment.valid?
-              render json: { 
+            unless investment.save
+              error_messages = investment.errors.full_messages.join(', ')
+              return render json: { 
                 success: false, 
-                error: 'Validation failed',
-                validationErrors: investment.errors.messages,
-                code: 'validation_error'
+                error: "Validation failed: #{error_messages}",
+                validationErrors: investment.errors.to_hash
               }, status: :unprocessable_entity
-              raise ActiveRecord::Rollback
             end
-
-            raise ActiveRecord::Rollback, investment.errors.full_messages.join(', ') unless investment.save
 
             # Generate secure callback URL with UUID
             secure_uuid = SecureRandom.uuid
@@ -90,12 +89,9 @@ module Api
               host: Rails.application.config.app_domain
             ) + "?#{secure_uuid}"
 
-            # Build metadata combining frontend data and system data
-            complete_metadata = {
-              # Frontend-provided metadata
-              **metadata,
-
-              # System-generated metadata
+            # Build metadata
+            metadata = {
+              **investment.metadata,
               user_id: @current_user.id,
               campaign_id: @campaign.id,
               investment_id: investment.id,
@@ -103,27 +99,30 @@ module Api
               percentage: investment.percentage,
               type: 'equity_investment',
               redirect_url: redirect_url,
-
-              # Campaign details
               title: @campaign.title,
               currency: @campaign.currency,
               currency_symbol: @campaign.currency_symbol,
               valuation: @campaign.valuation,
               equity_offered: @campaign.equity_offered,
-
-              # Investor details
-              investor_name: full_name,
-              investor_email: email,
-              investor_phone: phone
+              investor_name: @current_user.full_name,
+              investor_email: @current_user.email,
+              reward: if reward_id
+                        {
+                          id: reward_id,
+                          title: investment.reward&.title,
+                          description: investment.reward&.description,
+                          delivery_date: investment.reward&.delivery_date
+                        }
+                      end
             }
 
-            initialize_payment(investment, complete_metadata, redirect_url)
+            initialize_payment(investment, metadata, redirect_url)
           end
         rescue StandardError => e
           render json: { 
-            success: false,
+            success: false, 
             error: e.message,
-            code: 'processing_error'
+            code: e.try(:code) # Include error code if available
           }, status: :unprocessable_entity
         end
 
@@ -173,24 +172,13 @@ module Api
         def equity_investment_params
           params.require(:equity_investment).permit(
             :amount,
+            :reward_id,
             :email,
             :phone,
             :full_name,
-            metadata: [
-              :email,
-              :phone,
-              :full_name,
-              :processingFee,
-              :originalAmount,
-              shippingData: [
-                :firstName,
-                :lastName,
-                :shippingAddress,
-                :entityType
-              ],
-              selectedRewards: [],
-              deliveryOption: []
-            ]
+            :ip_address,
+            :country,
+            metadata: {}
           )
         end
 
@@ -198,36 +186,30 @@ module Api
           @campaign = EquityCampaign.find(params[:campaign_id])
         end
 
-        def validate_investment_amount(amount)
-          if amount < @campaign.minimum_investment
-            render json: { error: "Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}" },
-                   status: :unprocessable_entity
-            return false
-          end
-
-          if amount > @campaign.maximum_investment && @campaign.maximum_investment > 0
-            render json: { error: "Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}" },
-                   status: :unprocessable_entity
-            return false
-          end
-
-          if @campaign.shares_available <= 0
-            render json: { error: 'No shares available for investment' },
-                   status: :unprocessable_entity
-            return false
-          end
-
-          true
+      def validate_investment_amount(amount)
+        if amount < @campaign.minimum_investment
+          return { error: "Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}" }
         end
 
-        def initialize_payment(investment, metadata, redirect_url)
+        if amount > @campaign.maximum_investment && @campaign.maximum_investment > 0
+          return { error: "Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}" }
+        end
+
+        if @campaign.shares_available <= 0
+          return { error: 'No shares available for investment' }
+        end
+
+        true
+      end
+
+       def initialize_payment(investment, metadata, redirect_url)
           subaccount = Subaccount.find_by(user_id: @campaign.fundraiser_id)
 
           unless subaccount&.subaccount_code.present?
             render json: { 
-              success: false,
+              success: false, 
               error: 'Fundraiser does not meet requirements for raising funds',
-              code: 'invalid_subaccount'
+              code: 'MISSING_SUBACCOUNT'
             }, status: :unprocessable_entity
             return
           end
@@ -235,8 +217,8 @@ module Api
           paystack_service = PaystackService.new
 
           response = paystack_service.initialize_transaction(
-            email: investment.email,
-            amount: (investment.amount * 100).to_i, # Convert to cents
+            email: @current_user.email,
+            amount: investment.amount * 100,
             callback_url: redirect_url,
             metadata: metadata,
             subaccount: subaccount.subaccount_code
@@ -251,22 +233,27 @@ module Api
             render json: {
               success: true,
               data: {
+                authorization_url: response[:data][:authorization_url],
+                redirect_url: redirect_url,
                 investment: {
                   id: investment.id,
                   amount: investment.amount,
                   shares: investment.shares,
-                  percentage: investment.percentage
+                  percentage: investment.percentage,
+                  campaign: {
+                    id: @campaign.id,
+                    title: @campaign.title
+                  }
                 },
-                authorization_url: response[:data][:authorization_url],
-                code: response[:data][:reference]
+                total_investors: @campaign.total_investors
               }
             }, status: :created
           else
             investment.update(status: :failed)
             render json: { 
-              success: false,
-              error: response[:message] || 'Payment initialization failed',
-              code: response[:data]&.dig(:code) || 'payment_error'
+              success: false, 
+              error: response[:message],
+              code: response[:data]&.[](:code) # Include Paystack error code if available
             }, status: :unprocessable_entity
           end
         end
