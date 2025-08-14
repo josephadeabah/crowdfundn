@@ -181,7 +181,7 @@ module Api
           paystack_service = PaystackService.new
           response = paystack_service.initialize_transaction(
             email: investment.email,
-            amount: investment.amount * 100,
+            amount: investment.amount,
             callback_url: redirect_url,
             metadata: metadata,
             subaccount: subaccount.subaccount_code
