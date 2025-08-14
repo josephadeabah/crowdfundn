@@ -125,7 +125,8 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         )) as unknown as InvestmentResponse;
 
         if (result.success) {
-           window.location.href = result.data.authorization_url;
+          console.log("AUTH URL:", result.data.authorization_url)
+          //  window.location.href = result.data.authorization_url;
           return;
         } else if (!result?.success) {
             let errorMessage = result.error || 'Investment failed';
