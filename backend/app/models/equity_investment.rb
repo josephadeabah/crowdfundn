@@ -1,28 +1,40 @@
+# app/models/equity_investment.rb
 class EquityInvestment < ApplicationRecord
   belongs_to :user
   belongs_to :campaign, class_name: 'EquityCampaign'
   belongs_to :reward, optional: true
   has_many :pledges, dependent: :destroy
+  has_many :points, dependent: :destroy
 
   has_one_attached :certificate
+
+  # Status constants matching Paystack
+  STATUS_PENDING = 'pending'
+  STATUS_INITIALIZED = 'initialized'
+  STATUS_SUCCESSFUL = 'successful'
+  STATUS_FAILED = 'failed'
+  STATUS_ABANDONED = 'abandoned'
+  STATUS_CANCELED = 'canceled'
+  STATUS_REFUNDED = 'refunded'
+
+  VALID_STATUSES = [
+    STATUS_PENDING,
+    STATUS_INITIALIZED,
+    STATUS_SUCCESSFUL,
+    STATUS_FAILED,
+    STATUS_ABANDONED,
+    STATUS_CANCELED,
+    STATUS_REFUNDED
+  ].freeze
 
   validates :amount, :shares, :percentage, presence: true, numericality: { greater_than: 0 }
   validates :certificate_number, uniqueness: true, allow_nil: true
   validates :transaction_reference, uniqueness: true, allow_nil: true
   validates :email, presence: true
-  validates :phone, presence: false # This allows phone to be blank/nil
+  validates :phone, presence: false
+  validates :status, inclusion: { in: VALID_STATUSES }
 
-  enum :status, {
-    pending: 0,
-    initialized: 1,
-    successful: 2,
-    failed: 3,
-    abandoned: 4,
-    canceled: 5,
-    refunded: 6
-  }, default: :pending
-
-  scope :successful, -> { where(status: :successful) }
+  scope :successful, -> { where(status: STATUS_SUCCESSFUL) }
 
   before_validation :calculate_shares_and_percentage, on: :create
   before_create :generate_certificate_number
@@ -30,9 +42,10 @@ class EquityInvestment < ApplicationRecord
   after_commit :update_campaign_equity, on: [:create, :update], if: :saved_change_to_amount?
   after_commit :generate_certificate_after_commit, on: [:create, :update], if: :should_generate_certificate?
   after_commit :update_investor_portfolios, on: [:create, :update], if: :successful?
+  after_update :update_campaign_leaderboard, if: :saved_change_to_status?
 
   def successful?
-    status == 'successful'
+    status == STATUS_SUCCESSFUL
   end
 
   def current_value
@@ -59,6 +72,14 @@ class EquityInvestment < ApplicationRecord
 
   def certificate_present?
     certificate.attached? && certificate.blob.present?
+  end
+
+  def gross_amount
+    self[:gross_amount] || amount
+  end
+
+  def net_amount
+    self[:net_amount] || amount
   end
 
   private
@@ -108,5 +129,9 @@ class EquityInvestment < ApplicationRecord
     campaign.equity_investments.successful.each do |inv|
       InvestmentUpdateJob.perform_later(inv.id)
     end
+  end
+
+  def update_campaign_leaderboard
+    campaign.update_fundraiser_leaderboard if successful?
   end
 end

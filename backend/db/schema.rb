@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_13_231645) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_14_104031) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -145,8 +145,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_13_231645) do
     t.integer "total_shares", default: 1000000
     t.integer "shares_issued", default: 0
     t.decimal "equity_issued", precision: 5, scale: 2, default: "0.0"
+    t.index ["category", "status"], name: "index_campaigns_on_category_and_status"
+    t.index ["category"], name: "index_campaigns_on_category"
     t.index ["fundraiser_id"], name: "index_campaigns_on_fundraiser_id"
     t.index ["slug"], name: "index_campaigns_on_slug", unique: true
+    t.index ["status"], name: "index_campaigns_on_status"
     t.index ["type"], name: "index_campaigns_on_type"
   end
 
@@ -197,7 +200,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_13_231645) do
     t.date "investment_date"
     t.string "transaction_reference"
     t.jsonb "metadata", default: {}
-    t.string "status"
+    t.string "status", default: "pending"
     t.string "email", default: "noemail@example.com", null: false
     t.string "full_name"
     t.string "phone"
@@ -205,7 +208,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_13_231645) do
     t.string "ip_address"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "gross_amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.decimal "net_amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.string "plan"
+    t.string "subscription_code"
+    t.decimal "platform_fee", precision: 10, scale: 2, default: "0.0"
+    t.boolean "processed", default: false, null: false
+    t.integer "reward_id"
     t.index ["campaign_id"], name: "index_equity_investments_on_campaign_id"
+    t.index ["status"], name: "index_equity_investments_on_status"
+    t.index ["subscription_code"], name: "index_equity_investments_on_subscription_code", unique: true
     t.index ["user_id"], name: "index_equity_investments_on_user_id"
   end
 
