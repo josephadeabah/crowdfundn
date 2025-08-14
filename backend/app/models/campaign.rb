@@ -99,7 +99,7 @@ class Campaign < ApplicationRecord
     json.merge!(
       type: self.class.name,
       description: description.as_json,
-      total_shares: total_shares,
+      total_shares: total_social_media_shares,
       donations_over_time: donations_over_time,
       permissions: {
         accept_donations: accept_donations,
