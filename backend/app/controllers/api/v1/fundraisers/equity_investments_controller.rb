@@ -183,7 +183,10 @@ module Api
         end
 
         def set_campaign
-          @campaign = EquityCampaign.find(params[:campaign_id])
+           @campaign = Campaign.find_by(id: params[:equity_campaign_id] || params[:campaign_id])
+            return if @campaign
+
+          render json: { error: 'Campaign not found' }, status: :not_found
         end
 
       def validate_investment_amount(amount)
