@@ -34,9 +34,9 @@ interface PaystackFormProps {
 
 interface InvestmentResponse {
   success: boolean;
-  data?: {
+  data: {
     investment?: EquityInvestment;
-    authorization_url?: string;
+    authorization_url: string;
     redirect_url?: string;
     code?: string;
     shares_available?: number;
@@ -122,7 +122,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         const result = (await createInvestment(
           campaignId,
           investmentData,
-        )) as InvestmentResponse;
+        )) as unknown as InvestmentResponse;
 
         if (result.success) {
            window.location.href = result.data.authorization_url;
