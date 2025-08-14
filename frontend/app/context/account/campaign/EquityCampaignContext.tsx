@@ -726,8 +726,6 @@ const createInvestment = useCallback(
 
       const data = await response.json();
 
-      console.log("DATA", data);
-
       if (!response.ok) {
         // Handle validation errors from backend
         if (data.errors) {
@@ -754,9 +752,19 @@ const createInvestment = useCallback(
         };
       }
 
-      // Handle successful response and redirect here
+       // Only handle successful responses after error checking
       if (data.authorization_url) {
         window.location.href = data.authorization_url;
+        // Return immediately after redirect to prevent further execution
+        return {
+          success: true,
+          data: {
+            investment: data.investment,
+            authorization_url: data.authorization_url,
+            redirect_url: data.redirect_url,
+            shares_available: data.shares_available,
+          },
+        };
       }
 
       return {
