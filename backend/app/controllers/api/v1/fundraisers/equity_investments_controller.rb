@@ -98,19 +98,6 @@ module Api
 
         def validate_investment(amount, reward_id)
           result = { valid: true }
-  
-          # Calculate minimum possible amount based on share price
-          price_per_share = @campaign.valuation.to_f / @campaign.total_shares.to_f
-          min_possible_amount = price_per_share.ceil
-          
-          if amount < min_possible_amount
-            result = {
-              valid: false,
-              message: "Minimum investment is #{@campaign.currency_symbol}#{min_possible_amount} (1 share)",
-              errors: { amount: ["Minimum investment is #{@campaign.currency_symbol}#{min_possible_amount}"] }
-            }
-            return result
-          end
           
           # Maintain all equity-specific validations
           if amount < @campaign.minimum_investment
