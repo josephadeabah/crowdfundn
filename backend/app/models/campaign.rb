@@ -197,7 +197,7 @@ class Campaign < ApplicationRecord
     FundraiserLeaderboardEntry.update_leaderboard(fundraiser, total_raised)
   end
 
-  def total_shares
+  def total_social_media_shares
     campaign_shares.count
   end
 

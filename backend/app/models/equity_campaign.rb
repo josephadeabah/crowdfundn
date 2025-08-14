@@ -16,6 +16,8 @@ class EquityCampaign < Campaign
   validate :maximum_greater_than_minimum
   validate :type_cannot_change, on: :update
   validate :shares_within_equity_limits
+  alidate :total_shares_must_be_set
+
 
   attribute :equity_status, :integer, default: 0
 
@@ -30,6 +32,15 @@ class EquityCampaign < Campaign
   }
 
   after_update :update_investments_valuation, if: :saved_change_to_valuation?
+
+  
+  def total_shares_must_be_set
+    errors.add(:total_shares, "must be set") if total_shares.to_i <= 0
+  end
+
+  def total_shares
+  self[:total_shares] || calculate_default_shares
+  end
 
   def update_all_investment_values
     equity_investments.completed.each do |investment|
@@ -184,6 +195,7 @@ class EquityCampaign < Campaign
         contract_term: contract_term
       },
       shares_available: shares_available,
+      total_equity_shares: self[:total_shares] || calculate_default_shares
       percentage_raised: percentage_raised,
       equity_status: equity_status,
       maximum_investment: maximum_investment,
@@ -214,10 +226,15 @@ class EquityCampaign < Campaign
 
   private
 
+  def calculate_default_shares
+  (valuation.to_f * 10).round(0) if valuation.present?
+  end
+
   def set_default_total_shares
     # Default to 10 million shares for a $1M valuation, scaled accordingly
     # This gives a nice round number where 1 share = $0.10 at $1M valuation
-    self.total_shares ||= (valuation.to_f * 10).round(0) if valuation.present?
+  return if total_shares.present? || valuation.blank?
+  self.total_shares = calculate_default_shares
   end
 
   def calculate_founder_shares

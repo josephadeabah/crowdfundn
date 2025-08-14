@@ -18,7 +18,7 @@ module Api
 
           render json: {
             message: 'Campaign shared successfully!',
-            total_shares: @campaign.total_shares # Counts all shares for this campaign
+            total_shares: @campaign.total_social_media_shares # Counts all shares for this campaign
           }, status: :ok
         rescue ActiveRecord::RecordInvalid => e
           render json: { error: e.message }, status: :unprocessable_entity
