@@ -448,17 +448,10 @@ const RegisterForm: React.FC = () => {
                           setErrors((prev) => ({ ...prev, birthDate: error }));
                         }
                       }}
-                      // disabled={(date) =>
-                      //   date > getMinimumBirthDate() ||
-                      //   date < new Date('1900-01-01')
-                      // }
                       initialFocus
                     />
                   </PopoverContent>
                 </Popover>
-                <p className="mt-1 text-xs text-gray-500">
-                  You must be at least 18 years old to participate.
-                </p>
                 {errors.birthDate && (
                   <p className="mt-1 text-sm text-red-500">
                     {errors.birthDate}
