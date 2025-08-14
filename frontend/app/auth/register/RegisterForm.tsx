@@ -88,14 +88,7 @@ const RegisterForm: React.FC = () => {
 
   const isStepValid = (): boolean => {
     const fieldsToValidate: Record<number, (keyof FormData)[]> = {
-      1: [
-        'email',
-        'password',
-        'confirmPassword',
-        'fullName',
-        'phoneNumber',
-        'birthDate',
-      ],
+      1: ['email', 'password', 'confirmPassword', 'fullName', 'phoneNumber'],
       2: ['category', 'targetAmount', 'userType'],
       3: [
         'country',
@@ -170,9 +163,7 @@ const RegisterForm: React.FC = () => {
         break;
       }
       case 'birthDate':
-        if (!value) {
-          error = 'Date of birth is required';
-        } else {
+        if (value) {
           const birthDate = new Date(value);
           const minDate = getMinimumBirthDate();
           if (birthDate > minDate) {
@@ -418,7 +409,7 @@ const RegisterForm: React.FC = () => {
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Date of Birth <span className="text-red-500">*</span>
+                  Date of Birth
                 </label>
                 <Popover>
                   <PopoverTrigger asChild>
