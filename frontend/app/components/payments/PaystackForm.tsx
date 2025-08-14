@@ -37,7 +37,8 @@ interface InvestmentResponse {
   data?: {
     investment?: EquityInvestment;
     authorization_url?: string;
-    code?: string; // For Paystack error codes
+    code?: string;
+    shares_available?: number;
   };
   error?: string;
   validationErrors?: Record<string, string | string[]>; // For backend validation errors
@@ -124,6 +125,18 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
 
         if (!result.success) {
           let errorMessage = result.error || 'Investment failed';
+
+          // Special handling for share availability errors
+          if (
+            errorMessage.includes('shares available') &&
+            result.data?.shares_available
+          ) {
+            const pricePerShare =
+              result.data.shares_available > 0
+                ? (totalAmount / result.data.shares_available).toFixed(2)
+                : 0;
+            errorMessage += `. Current share price: ${pricePerShare}`;
+          }
 
           if (result.validationErrors) {
             errorMessage = Object.entries(result.validationErrors)
