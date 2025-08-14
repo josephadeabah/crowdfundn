@@ -453,7 +453,7 @@ const RegisterForm: React.FC = () => {
                   </PopoverContent>
                 </Popover>
                 {errors.birthDate && (
-                  <p className="mt-1 text-sm text-red-500">
+                  <p className="mt-1 text-xs text-red-500">
                     {errors.birthDate}
                   </p>
                 )}
