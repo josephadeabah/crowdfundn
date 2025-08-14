@@ -448,10 +448,10 @@ const RegisterForm: React.FC = () => {
                           setErrors((prev) => ({ ...prev, birthDate: error }));
                         }
                       }}
-                      disabled={(date) =>
-                        date > getMinimumBirthDate() ||
-                        date < new Date('1900-01-01')
-                      }
+                      // disabled={(date) =>
+                      //   date > getMinimumBirthDate() ||
+                      //   date < new Date('1900-01-01')
+                      // }
                       initialFocus
                     />
                   </PopoverContent>
