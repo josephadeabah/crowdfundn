@@ -6,8 +6,10 @@ class EquityCampaign < Campaign
   has_many :founders, -> { where(campaign_team_members: { role: 'founder' }) },
            through: :campaign_team_members, source: :user
 
+  before_validation :set_default_total_shares, unless: :total_shares?
   validates :valuation, :equity_offered, :minimum_investment, :maximum_investment,
             presence: true, numericality: { greater_than: 0 }
+  validates :total_shares, numericality: { greater_than: 0, message: "must be set based on valuation" }, unless: -> { valuation.blank? }
   validates :equity_offered, numericality: { less_than_or_equal_to: 100 }
   validate :equity_issued_within_limits
   validate :founders_equity_allocation
@@ -211,6 +213,12 @@ class EquityCampaign < Campaign
   end
 
   private
+
+  def set_default_total_shares
+    # Default to 10 million shares for a $1M valuation, scaled accordingly
+    # This gives a nice round number where 1 share = $0.10 at $1M valuation
+    self.total_shares ||= (valuation.to_f * 10).round(0) if valuation.present?
+  end
 
   def calculate_founder_shares
     return 0 unless founder_equity_percentage > 0
