@@ -73,12 +73,11 @@ module Api
               end
 
             # Generate callback URL similar to donations
-            secure_uuid = SecureRandom.uuid
-            campaign_identifier = @campaign.slug || @campaign.id
-            redirect_url = Rails.application.routes.url_helpers.campaign_url(
-              campaign_identifier,
-              host: Rails.application.config.app_domain
-            ) + "?#{secure_uuid}"
+            secure_random_uuid = SecureRandom.uuid
+            # Use campaign.slug if available, otherwise fall back to id
+            campaign_identifier = campaign.slug || campaign.id
+            redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign_identifier,
+                                                                           host: 'bantuhive.com') + "?#{secure_random_uuid}"
 
             # Prepare metadata (similar structure to donations but with equity-specific fields)
             metadata = build_metadata(investment, redirect_url)
