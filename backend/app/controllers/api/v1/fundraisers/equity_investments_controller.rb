@@ -2,10 +2,9 @@ module Api
   module V1
     module Fundraisers
       class EquityInvestmentsController < ApplicationController
-        before_action :authenticate_request, only: %i[index create]
-        before_action :set_campaign, only: [:public_investments]
+        before_action :authenticate_request, except: [:public_investments]
+        before_action :set_campaign, only: [:create, :public_investments]
 
-        # Public investments list for a campaign
         def public_investments
           investments = @campaign.equity_investments.successful
                                .order(created_at: :desc)
@@ -34,112 +33,185 @@ module Api
         end
 
         def create
-          campaign = Campaign.find_by(id: params[:equity_campaign_id])
-          unless campaign
-            return render json: { error: 'The campaign you are trying to invest in no longer exists.' },
-                          status: :not_found
-          end
+          # First validate the investment parameters
+          investment_params = equity_investment_params
+          amount = investment_params[:amount].to_f
+          reward_id = investment_params[:reward_id]
 
-          subaccount = Subaccount.find_by(user_id: campaign.fundraiser_id)
-
-          if subaccount.nil? || subaccount.subaccount_code.blank?
-            return render json: { error: 'Fundraiser does not meet requirements for raising funds.' },
-                          status: :unprocessable_entity
-          end
-
-          # Validate investment amount first
-          amount = equity_investment_params[:amount].to_f
-          validation_result = validate_investment_amount(amount, campaign)
-          unless validation_result == true
+          # Maintain all existing equity validations
+          validation_result = validate_investment(amount, reward_id)
+          unless validation_result[:valid]
             return render json: { 
               success: false, 
-              error: validation_result[:error],
-              validationErrors: { amount: [validation_result[:error]] }
+              error: validation_result[:message],
+              validationErrors: validation_result[:errors]
             }, status: :unprocessable_entity
           end
 
-          # Create new investment
-          investment = EquityInvestment.new(equity_investment_params)
-          investment.campaign = campaign
-          investment.user = @current_user
-          investment.status = 'pending'
-          investment.full_name = equity_investment_params[:full_name].presence || @current_user&.full_name || 'Anonymous'
+          ActiveRecord::Base.transaction do
+            # Create the investment with all equity-specific attributes
+            investment = @campaign.equity_investments.new(
+              user: @current_user,
+              amount: amount,
+              reward_id: reward_id,
+              status: EquityInvestment::STATUS_PENDING,
+              email: investment_params[:email],
+              phone: investment_params[:phone],
+              full_name: investment_params[:full_name],
+              metadata: investment_params[:metadata] || {}
+            )
 
-          # Generate callback URL
-          secure_uuid = SecureRandom.uuid
-          campaign_identifier = campaign.slug || campaign.id
-          redirect_url = Rails.application.routes.url_helpers.campaign_url(
-            campaign_identifier,
-            host: Rails.application.config.app_domain
-          ) + "?#{secure_uuid}"
+            # Maintain equity-specific callbacks
+            unless investment.save
+              return render json: { 
+                success: false, 
+                error: "Validation failed: #{investment.errors.full_messages.join(', ')}",
+                validationErrors: investment.errors.to_hash
+              }, status: :unprocessable_entity
+            end
 
-          # Prepare metadata (similar to donations)
-          metadata = {
-            user_id: @current_user&.id,
-            campaign_id: campaign.id,
+            # Generate callback URL similar to donations
+            secure_uuid = SecureRandom.uuid
+            campaign_identifier = @campaign.slug || @campaign.id
+            redirect_url = Rails.application.routes.url_helpers.campaign_url(
+              campaign_identifier,
+              host: Rails.application.config.app_domain
+            ) + "?#{secure_uuid}"
+
+            # Prepare metadata (similar structure to donations but with equity-specific fields)
+            metadata = build_metadata(investment, redirect_url)
+
+            # Initialize payment (same pattern as donations)
+            initialize_payment(investment, metadata, redirect_url)
+          end
+        rescue StandardError => e
+          render json: { 
+            success: false, 
+            error: e.message,
+            code: e.try(:code)
+          }, status: :unprocessable_entity
+        end
+
+        private
+
+        def validate_investment(amount, reward_id)
+          result = { valid: true }
+          
+          # Maintain all equity-specific validations
+          if amount < @campaign.minimum_investment
+            result = {
+              valid: false,
+              message: "Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}",
+              errors: { amount: ["Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}"] }
+            }
+          elsif @campaign.maximum_investment > 0 && amount > @campaign.maximum_investment
+            result = {
+              valid: false,
+              message: "Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}",
+              errors: { amount: ["Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}"] }
+            }
+          elsif reward_id && !@campaign.rewards.available.exists?(id: reward_id)
+            result = {
+              valid: false,
+              message: "Selected reward is no longer available",
+              errors: { reward_id: ["Selected reward is no longer available"] }
+            }
+          end
+
+          # Shares validation (equity-specific)
+          if result[:valid]
+            price_per_share = @campaign.valuation.to_f / @campaign.total_shares.to_f
+            requested_shares = (amount / price_per_share).round(4)
+
+            if requested_shares > @campaign.shares_available
+              available_amount = (@campaign.shares_available * price_per_share).floor
+              result = {
+                valid: false,
+                message: "Not enough shares available. Maximum investment possible: #{@campaign.currency_symbol}#{available_amount}",
+                errors: { amount: ["Not enough shares available"] }
+              }
+            end
+          end
+
+          result
+        end
+
+        def build_metadata(investment, redirect_url)
+          {
+            user_id: @current_user.id,
+            campaign_id: @campaign.id,
             investment_id: investment.id,
             shares: investment.shares,
             percentage: investment.percentage,
             type: 'equity_investment',
             redirect_url: redirect_url,
-            title: campaign.title,
-            currency: campaign.currency,
-            currency_symbol: campaign.currency_symbol,
-            valuation: campaign.valuation,
-            equity_offered: campaign.equity_offered,
+            title: @campaign.title,
+            currency: @campaign.currency,
+            currency_symbol: @campaign.currency_symbol,
+            valuation: @campaign.valuation,
+            equity_offered: @campaign.equity_offered,
             investor_name: investment.full_name,
-            investor_email: equity_investment_params[:email],
-            phone: equity_investment_params[:phone],
-            reward: if equity_investment_params[:reward_id]
-                       {
-                         id: equity_investment_params[:reward_id],
-                         title: campaign.rewards.find_by(id: equity_investment_params[:reward_id])&.title
-                       }
-                     end,
-            metadata: equity_investment_params[:metadata] || {}
+            investor_email: investment.email,
+            phone: investment.phone,
+            reward: if investment.reward_id
+                      {
+                        id: investment.reward_id,
+                        title: investment.reward&.title,
+                        description: investment.reward&.description,
+                        delivery_date: investment.reward&.delivery_date
+                      }
+                    end,
+            metadata: investment.metadata
           }
+        end
 
-          # Initialize Paystack transaction
+        def initialize_payment(investment, metadata, redirect_url)
+          subaccount = Subaccount.find_by(user_id: @campaign.fundraiser_id)
+
+          unless subaccount&.subaccount_code.present?
+            render json: { 
+              success: false, 
+              error: 'Fundraiser does not meet requirements for raising funds',
+              code: 'MISSING_SUBACCOUNT'
+            }, status: :unprocessable_entity
+            return
+          end
+
           paystack_service = PaystackService.new
           response = paystack_service.initialize_transaction(
-            email: equity_investment_params[:email],
-            amount: investment.amount * 100, # Convert to kobo
+            email: investment.email,
+            amount: investment.amount * 100,
             callback_url: redirect_url,
             metadata: metadata,
             subaccount: subaccount.subaccount_code
           )
 
           if response[:status]
-            investment.transaction_reference = response[:data][:reference]
-            investment.metadata = metadata
-            
-            if investment.save
-              render json: {
-                success: true,
-                data: {
-                  authorization_url: response[:data][:authorization_url],
-                  redirect_url: redirect_url,
-                  investment: {
-                    id: investment.id,
-                    amount: investment.amount,
-                    shares: investment.shares,
-                    percentage: investment.percentage,
-                    campaign: {
-                      id: campaign.id,
-                      title: campaign.title
-                    }
-                  },
-                  total_investors: campaign.equity_investments.successful.count
-                }
-              }, status: :created
-            else
-              render json: { 
-                success: false, 
-                error: investment.errors.full_messages.join(', '),
-                validationErrors: investment.errors.to_hash
-              }, status: :unprocessable_entity
-            end
+            investment.update!(
+              transaction_reference: response[:data][:reference],
+              metadata: metadata
+            )
+
+            render json: {
+              success: true,
+              data: {
+                authorization_url: response[:data][:authorization_url],
+                redirect_url: redirect_url,
+                investment: {
+                  id: investment.id,
+                  amount: investment.amount,
+                  shares: investment.shares,
+                  percentage: investment.percentage,
+                  campaign: {
+                    id: @campaign.id,
+                    title: @campaign.title
+                  }
+                },
+                total_investors: @campaign.equity_investments.successful.count
+              }
+            }, status: :created
           else
+            investment.update!(status: EquityInvestment::STATUS_FAILED)
             render json: { 
               success: false, 
               error: response[:message],
@@ -147,8 +219,6 @@ module Api
             }, status: :unprocessable_entity
           end
         end
-
-        private
 
         def equity_investment_params
           params.require(:equity_investment).permit(
@@ -164,28 +234,6 @@ module Api
         def set_campaign
           @campaign = Campaign.find_by(id: params[:equity_campaign_id] || params[:campaign_id])
           render json: { error: 'Campaign not found' }, status: :not_found unless @campaign
-        end
-
-        def validate_investment_amount(amount, campaign)
-          if amount < campaign.minimum_investment
-            return { error: "Minimum investment is #{campaign.currency_symbol}#{campaign.minimum_investment}" }
-          end
-
-          if campaign.maximum_investment > 0 && amount > campaign.maximum_investment
-            return { error: "Maximum investment is #{campaign.currency_symbol}#{campaign.maximum_investment}" }
-          end
-
-          price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
-          requested_shares = (amount / price_per_share).round(4)
-
-          if requested_shares > campaign.shares_available
-            available_amount = (campaign.shares_available * price_per_share).floor
-            return { 
-              error: "Not enough shares available. Maximum investment possible: #{campaign.currency_symbol}#{available_amount}" 
-            }
-          end
-
-          true
         end
 
         def campaign_summary
