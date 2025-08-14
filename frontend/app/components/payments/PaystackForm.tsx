@@ -35,19 +35,12 @@ interface PaystackFormProps {
 interface InvestmentResponse {
   success: boolean;
   data?: {
-    investment?: {
-      id: string;
-      amount: number;
-      shares: number;
-      percentage: number;
-    };
+    investment?: EquityInvestment;
     authorization_url?: string;
-    reference?: string;
-    code?: string;
+    code?: string; // For Paystack error codes
   };
   error?: string;
-  validationErrors?: Record<string, string | string[]>;
-  code?: string;
+  validationErrors?: Record<string, string | string[]>; // For backend validation errors
 }
 
 const PaystackForm: React.FC<PaystackFormProps> = ({
@@ -105,17 +98,10 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   const handlePayment = async () => {
     setShowToast(false);
     setInvestmentError('');
-    
-    if (!validatePaystackForm()) {
-      return;
-    }
+    if (!validatePaystackForm()) return;
 
     const amount = parseFloat(paymentAmount);
-    if (isNaN(amount) || amount <= 0) {
-      setInvestmentError('Please enter a valid amount');
-      setShowToast(true);
-      return;
-    }
+    if (isNaN(amount) || amount <= 0) return;
 
     if (isEquityCampaign) {
       try {
@@ -128,9 +114,6 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
             ...(combinedMetadata || {}),
             processingFee,
             originalAmount: amount,
-            shippingData: combinedMetadata?.shippingData,
-            selectedRewards: combinedMetadata?.selectedRewards,
-            deliveryOption: combinedMetadata?.deliveryOption,
           },
         };
 
@@ -148,49 +131,36 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
                 const message = Array.isArray(messages)
                   ? messages.join(', ')
                   : messages;
-                // Map backend field names to frontend names
-                const displayField = field === 'full_name' ? 'name' : 
-                                  field === 'metadata.email' ? 'email' : 
-                                  field === 'metadata.phone' ? 'phone' : field;
-                return `${displayField.charAt(0).toUpperCase() + displayField.slice(1)}: ${message}`;
+                return `${field.charAt(0).toUpperCase() + field.slice(1)}: ${message}`;
               })
               .join('\n');
           }
 
-          if (result.code) {
-            errorMessage += ` (Code: ${result.code})`;
+          if (result.data?.code) {
+            errorMessage += ` (Code: ${result.data.code})`;
           }
 
           setInvestmentError(errorMessage);
           setShowToast(true);
         } else if (result.data?.authorization_url) {
           window.location.href = result.data.authorization_url;
-        } else {
-          setInvestmentError('No authorization URL received from server');
-          setShowToast(true);
         }
-      } catch (error: any) {
-        const errorMessage = error.message || 'An unexpected error occurred. Please try again.';
-        setInvestmentError(errorMessage);
+      } catch (error) {
+        setInvestmentError('An unexpected error occurred. Please try again.');
         setShowToast(true);
         console.error('Investment error:', error);
       }
     } else {
-      try {
-        await createDonationTransaction(
-          paymentEmail,
-          cardholderName,
-          paymentPhone,
-          Number(paymentAmount),
-          campaignId,
-          campaignTitle,
-          billingFrequency,
-          combinedMetadata,
-        );
-      } catch (error: any) {
-        setInvestmentError(error.message || 'Donation processing failed');
-        setShowToast(true);
-      }
+      createDonationTransaction(
+        paymentEmail,
+        cardholderName,
+        paymentPhone,
+        Number(paymentAmount),
+        campaignId,
+        campaignTitle,
+        billingFrequency,
+        combinedMetadata,
+      );
     }
   };
 
@@ -201,12 +171,12 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
     <div className="flex flex-col h-full">
       {/* Scrollable form content */}
       <div className="flex-grow overflow-y-auto p-4">
-        {showToast && error && (
+        {showToast && (error || investmentError) && (
           <ToastComponent
             type="error"
             isOpen={showToast}
             onClose={() => setShowToast(false)}
-            description={error}
+            description={(isEquityCampaign ? investmentError : error) || ''}
           />
         )}
 
@@ -216,14 +186,12 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
               htmlFor="cardholderName"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              Full Name
+              Name
             </label>
             <input
               type="text"
               id="cardholderName"
-              className={`w-full px-4 py-3 border rounded-lg ${
-                errors.cardholderName ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg ${errors.cardholderName ? 'border-red-500' : 'border-gray-300'}`}
               placeholder="John Doe"
               value={cardholderName}
               onChange={(e) => setCardholderName(e.target.value)}
@@ -231,10 +199,12 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
               aria-describedby={
                 errors.cardholderName ? 'cardholderName-error' : undefined
               }
-              required
             />
             {errors.cardholderName && (
-              <p id="cardholderName-error" className="mt-1 text-sm text-red-500">
+              <p
+                id="cardholderName-error"
+                className="mt-1 text-sm text-red-500"
+              >
                 {errors.cardholderName}
               </p>
             )}
@@ -245,14 +215,12 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
               htmlFor="paymentEmail"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              Email Address
+              Email
             </label>
             <input
               type="email"
               id="paymentEmail"
-              className={`w-full px-4 py-3 border ${
-                errors.paymentEmail ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg`}
+              className={`w-full px-4 py-3 border ${errors.paymentEmail ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
               placeholder="you@example.com"
               value={paymentEmail}
               onChange={(e) => setPaymentEmail(e.target.value)}
@@ -274,27 +242,16 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
               htmlFor="paymentPhone"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              Phone Number
+              Phone
             </label>
             <input
-              type="tel"
+              type="text"
               id="paymentPhone"
-              className={`w-full px-4 py-3 border ${
-                errors.paymentPhone ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg`}
-              placeholder="+233XXXXXXXXX"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+              placeholder="Enter your phone number"
               value={paymentPhone}
               onChange={(e) => setPaymentPhone(e.target.value)}
-              aria-invalid={!!errors.paymentPhone}
-              aria-describedby={
-                errors.paymentPhone ? 'paymentPhone-error' : undefined
-              }
             />
-            {errors.paymentPhone && (
-              <p id="paymentPhone-error" className="mt-1 text-sm text-red-500">
-                {errors.paymentPhone}
-              </p>
-            )}
           </div>
 
           <div>
@@ -302,24 +259,15 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
               htmlFor="paymentAmount"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              Amount (GHS)
+              Amount
             </label>
             <input
-              type="number"
+              type="text"
               id="paymentAmount"
-              className={`w-full px-4 py-3 border ${
-                errors.paymentAmount ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg`}
-              placeholder="Enter amount"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+              placeholder="Enter your amount"
               value={paymentAmount}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value)) {
-                  setPaymentAmount(value);
-                }
-              }}
-              min="1"
-              step="0.01"
+              onChange={(e) => setPaymentAmount(e.target.value)}
               aria-invalid={!!errors.paymentAmount}
               aria-describedby={
                 errors.paymentAmount ? 'paymentAmount-error' : undefined
@@ -358,36 +306,10 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         <button
           type="button"
           onClick={handlePayment}
-          className="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 disabled:bg-gray-400 text-lg font-medium transition-colors duration-200"
+          className="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 disabled:bg-gray-400 text-lg font-medium"
           disabled={loading}
         >
-          {loading ? (
-            <span className="flex items-center justify-center">
-              <svg
-                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Processing...
-            </span>
-          ) : (
-            'Proceed to Pay'
-          )}
+          {loading ? 'Processing...' : 'Proceed to Pay'}
         </button>
       </div>
     </div>
