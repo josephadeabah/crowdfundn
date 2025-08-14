@@ -113,7 +113,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
           phone: paymentPhone,
           full_name: cardholderName,
           metadata: {
-            ...(combinedMetadata || {}),
+            ...combinedMetadata,
             processingFee,
             originalAmount: amount,
           },
@@ -124,8 +124,11 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
           investmentData,
         )) as InvestmentResponse;
 
-        if (!result.success) {
-          let errorMessage = result.error || 'Investment failed';
+        if (result.success) {
+           window.location.href = result.data.authorization_url;
+          return;
+        } else if (!result?.success) {
+            let errorMessage = result.error || 'Investment failed';
 
           // Special handling for share availability errors
           if (
@@ -156,9 +159,6 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
 
           setInvestmentError(errorMessage);
           setShowToast(true);
-        } else if (result?.success && result.data?.authorization_url) {
-           window.location.href = result.data.authorization_url;
-          return;
         }
       } catch (error) {
         setInvestmentError('An unexpected error occurred. Please try again.');
