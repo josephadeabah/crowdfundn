@@ -88,17 +88,33 @@ class EquityInvestment < ApplicationRecord
 
   private
 
+  # app/models/equity_investment.rb
   def calculate_shares_and_percentage
-    Rails.logger.debug "Calculating shares for amount: #{amount}, campaign: #{campaign.id}"
-    return unless campaign && amount.present? && amount.positive?
+    unless campaign && amount.present? && amount.positive?
+      errors.add(:amount, "must be positive")
+      return
+    end
+
+    if campaign.valuation.to_f <= 0
+      errors.add(:base, "Campaign valuation must be greater than 0")
+      return
+    end
+
+    if campaign.total_shares.to_f <= 0
+      errors.add(:base, "Campaign must have shares available")
+      return
+    end
+
+    if campaign.equity_offered.to_f <= 0
+      errors.add(:base, "Campaign must offer equity")
+      return
+    end
 
     price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
     self.shares = (amount / price_per_share).round(4)
-    Rails.logger.debug "Calculated shares: #{shares}"
 
     total_equity_value = (campaign.valuation.to_f * campaign.equity_offered.to_f / 100)
     self.percentage = ((amount / total_equity_value) * 100).round(4)
-    Rails.logger.debug "Calculated percentage: #{percentage}"
   end
 
   def generate_certificate_number

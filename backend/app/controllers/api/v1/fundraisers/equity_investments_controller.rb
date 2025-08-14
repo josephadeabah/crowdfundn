@@ -34,9 +34,20 @@ module Api
 
         def create
           # First validate the investment parameters
-            investment_params = equity_investment_params
-            amount = investment_params[:amount].to_f
-            reward_id = investment_params[:reward_id]
+              investment_params = equity_investment_params
+              amount = investment_params[:amount].to_f
+              reward_id = investment_params[:reward_id]
+
+              # First validate campaign financials
+              unless @campaign.valid_financials?
+                return render json: {
+                  success: false,
+                  error: "Campaign financial values are invalid",
+                  validationErrors: {
+                    campaign: @campaign.errors.full_messages
+                  }
+                }, status: :unprocessable_entity
+              end
 
             # First validate basic parameters
             validation_result = validate_investment(amount, reward_id)
