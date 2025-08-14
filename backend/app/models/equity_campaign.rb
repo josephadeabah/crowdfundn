@@ -16,7 +16,7 @@ class EquityCampaign < Campaign
   validate :maximum_greater_than_minimum
   validate :type_cannot_change, on: :update
   validate :shares_within_equity_limits
-  alidate :total_shares_must_be_set
+  validate :total_shares_must_be_set
 
 
   attribute :equity_status, :integer, default: 0
@@ -195,7 +195,7 @@ class EquityCampaign < Campaign
         contract_term: contract_term
       },
       shares_available: shares_available,
-      total_equity_shares: self[:total_shares] || calculate_default_shares
+      total_equity_shares: self[:total_shares] || calculate_default_shares,
       percentage_raised: percentage_raised,
       equity_status: equity_status,
       maximum_investment: maximum_investment,
