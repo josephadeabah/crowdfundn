@@ -31,7 +31,7 @@ class InvestmentCertificateService
     Prawn::Document.new(
       page_size: 'A4',
       page_layout: :portrait,
-      margin: [1.inch, 1.inch, 1.inch, 1.inch],
+      margin: [72, 72, 72, 72], # Convert 1 inch to points (72 points = 1 inch)
       info: {
         Title: 'Investment Certificate',
         Creator: 'Bantuhive',

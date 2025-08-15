@@ -241,6 +241,22 @@ class Campaign < ApplicationRecord
     investor_documents.required
   end
 
+  def shares_issued
+  0
+  end
+
+  def equity_issued
+    0
+  end
+
+  def shares_available
+    0
+  end
+
+  def percentage_raised
+    0
+  end
+
   private
 
   def generate_slug
