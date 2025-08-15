@@ -275,7 +275,7 @@ module Api
             category location currency currency_code currency_symbol status
             fundraiser_id created_at updated_at valuation equity_offered minimum_investment maximum_investment
           ],
-          methods: %i[media_url media_filename total_days remaining_days],
+          methods: %i[media_url media_filename total_days remaining_days percentage_raised],
           include: {
             rewards: {},
             updates: {},

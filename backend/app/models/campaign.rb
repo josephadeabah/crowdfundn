@@ -76,6 +76,11 @@ class Campaign < ApplicationRecord
     is_a?(EquityCampaign) ? equity_investments.successful.sum(:amount) : 0
   end
 
+  def percentage_raised
+    return 0 if goal_amount.to_f <= 0
+    (current_amount.to_f / goal_amount.to_f * 100).round(2)
+  end
+
   # Method to return media URL (you can adjust this to return an array for multiple attachments)
   def media_url
     return unless media.attached?
@@ -97,17 +102,16 @@ class Campaign < ApplicationRecord
         category location currency currency_code currency_symbol status
         fundraiser_id created_at updated_at valuation equity_offered minimum_investment
       ],
-      methods: %i[media_url media_filename total_days remaining_days]
+      methods: %i[media_url media_filename total_days remaining_days percentage_raised]
     }.merge(options))
 
-    # Add additional fields
+    # Only include equity-specific fields if this is an equity campaign
     equity_fields = if is_a?(EquityCampaign)
       {
         total_shares: total_shares,
         shares_issued: shares_issued,
         equity_issued: equity_issued,
         shares_available: shares_available,
-        percentage_raised: percentage_raised,
         equity_status: equity_status,
         maximum_investment: maximum_investment
       }

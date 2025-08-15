@@ -159,6 +159,11 @@ class EquityCampaign < Campaign
     self[:total_equity_invested] || equity_investments.successful.sum(:amount)
   end
 
+  def percentage_raised
+    return 0 if equity_offered.to_f <= 0 || equity_investments.successful.none?
+    (equity_investments.successful.sum(:percentage) / equity_offered.to_f * 100).round(2)
+  end
+
   def create_investment(user, amount)
     price_per_share = valuation.to_f / total_shares.to_f
     shares = (amount / price_per_share).round(4)
