@@ -41,8 +41,8 @@ module PaystackWebhook::Handlers
         update_investment(investment, response, metadata, gross_amount, net_amount, adjusted_platform_fee)
         update_campaign(investment)
         create_pledge_if_needed(investment)
-        handle_certificate_generation(investment, response)
-        InvestmentUpdateJob.perform_later(investment.id)
+        # handle_certificate_generation(investment, response)
+        # InvestmentUpdateJob.perform_later(investment.id)
       else
         log_invalid_investment(metadata)
       end
