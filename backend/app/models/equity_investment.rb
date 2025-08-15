@@ -43,6 +43,7 @@ class EquityInvestment < ApplicationRecord
   after_commit :update_investor_portfolios, on: [:create, :update], if: :successful?
   after_commit :update_campaign_totals, on: [:create, :update], if: :saved_change_to_status?
   after_update :update_campaign_leaderboard, if: :saved_change_to_status?
+  after_commit :generate_certificate_after_commit, on: [:create, :update], if: :should_generate_certificate?
 
   # Status query methods
   def pending?
@@ -155,11 +156,6 @@ class EquityInvestment < ApplicationRecord
     )
   end
 
-  def should_generate_certificate?
-    successful? && certificate_number.present? && 
-    (certificate.blank? || certificate_needs_update?)
-  end
-
   def generate_certificate_after_commit
     if InvestmentCertificateService.generate_certificate(self)
       Rails.logger.info "Successfully generated certificate for investment #{id}"
@@ -167,6 +163,14 @@ class EquityInvestment < ApplicationRecord
       Rails.logger.error "Failed to generate certificate for investment #{id}"
       CertificateGenerationJob.set(wait: 5.minutes).perform_later(id)
     end
+  rescue => e
+    Rails.logger.error "Certificate generation error: #{e.message}"
+    CertificateGenerationJob.set(wait: 5.minutes).perform_later(id)
+  end
+
+  def should_generate_certificate?
+    successful? && certificate_number.present? && 
+    (certificate.blank? || certificate_needs_update?)
   end
 
   def certificate_needs_update?
