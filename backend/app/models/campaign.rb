@@ -107,7 +107,6 @@ class Campaign < ApplicationRecord
         shares_issued: shares_issued,
         equity_issued: equity_issued,
         shares_available: shares_available,
-        percentage_raised: percentage_raised,
         equity_status: equity_status,
         maximum_investment: maximum_investment
       }
