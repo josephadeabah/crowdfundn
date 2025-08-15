@@ -313,7 +313,7 @@ module Api
         if campaign.is_a?(EquityCampaign)
           json.merge!(
             shares_available: campaign.shares_available,
-            percentage_raised: campaign.percentage,
+            percentage_raised: campaign.percentage_raised,
             total_investors: campaign.equity_investments.count,
             equity_status: campaign.equity_status,
             investment_range: {
