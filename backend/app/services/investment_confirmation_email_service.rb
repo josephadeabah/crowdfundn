@@ -153,7 +153,7 @@ class InvestmentConfirmationEmailService
                 <a href="#{certificate_url}" class="button">Download Certificate</a>
                 <p style="margin-top: 15px; font-size: 14px;">
                   You can also access this certificate anytime from your 
-                  <a href="#{Rails.application.routes.url_helpers.portfolio_url(host: 'bantuhive.com')}">investment portfolio</a>.
+                  <a href="#{Rails.application.routes.url_helpers.campaign_url(host: 'bantuhive.com')}">investment portfolio</a>.
                 </p>
               </div>
 
