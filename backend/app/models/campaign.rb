@@ -109,7 +109,7 @@ class Campaign < ApplicationRecord
       equity_issued: equity_issued,
       total_equity_invested: total_equity_invested,
       shares_available: shares_available,
-      percentage_raised: percentage_raised
+      percentage_raised: percentage_raised,
       donations_over_time: donations_over_time,
       permissions: {
         accept_donations: accept_donations,
