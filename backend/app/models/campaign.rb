@@ -101,14 +101,25 @@ class Campaign < ApplicationRecord
     }.merge(options))
 
     # Add additional fields
+    equity_fields = if is_a?(EquityCampaign)
+      {
+        total_shares: total_shares,
+        shares_issued: shares_issued,
+        equity_issued: equity_issued,
+        shares_available: shares_available,
+        percentage_raised: percentage_raised,
+        equity_status: equity_status,
+        maximum_investment: maximum_investment
+      }
+    else
+      {}
+    end
+
     json.merge!(
       type: self.class.name,
       description: description.as_json,
       total_shares: total_social_media_shares,
-      shares_issued: shares_issued,
-      equity_issued: equity_issued,
       total_equity_invested: total_equity_invested,
-      shares_available: shares_available,
       percentage_raised: percentage_raised,
       donations_over_time: donations_over_time,
       permissions: {
@@ -163,7 +174,7 @@ class Campaign < ApplicationRecord
       total_days: total_days,
       remaining_days: remaining_days,
       favorited: options[:user] ? options[:user].favorited_campaigns.include?(self) : false
-    )
+    ).merge(equity_fields)
   end
 
   def total_days
