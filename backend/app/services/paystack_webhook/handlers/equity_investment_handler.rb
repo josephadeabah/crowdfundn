@@ -143,10 +143,12 @@ module PaystackWebhook::Handlers
 
     def update_campaign(investment)
       campaign = investment.campaign
+      campaign.update_shares_available
+      
+      # Update campaign's total raised amount
       campaign.update!(
-        total_equity_invested: campaign.total_equity_invested + investment.net_amount,
-        shares_issued: campaign.shares_issued + investment.shares,
-        equity_issued: campaign.equity_issued + investment.percentage
+        current_amount: campaign.current_amount + investment.net_amount,
+        total_successful_donations: campaign.total_successful_donations + investment.net_amount
       )
     end
 

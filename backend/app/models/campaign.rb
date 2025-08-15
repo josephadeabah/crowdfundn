@@ -71,6 +71,11 @@ class Campaign < ApplicationRecord
     update!(transferred_amount: updated_transferred_amount)
   end
 
+  # Add method to handle equity-specific calculations
+  def total_equity_invested
+    is_a?(EquityCampaign) ? equity_investments.successful.sum(:amount) : 0
+  end
+
   # Method to return media URL (you can adjust this to return an array for multiple attachments)
   def media_url
     return unless media.attached?
@@ -100,6 +105,11 @@ class Campaign < ApplicationRecord
       type: self.class.name,
       description: description.as_json,
       total_shares: total_social_media_shares,
+      shares_issued: shares_issued,
+      equity_issued: equity_issued,
+      total_equity_invested: total_equity_invested,
+      shares_available: shares_available,
+      percentage_raised: percentage_raised
       donations_over_time: donations_over_time,
       permissions: {
         accept_donations: accept_donations,

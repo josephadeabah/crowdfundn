@@ -149,8 +149,14 @@ class EquityCampaign < Campaign
   def update_shares_available
     update_columns(
       shares_issued: equity_investments.successful.sum(:shares),
-      equity_issued: equity_investments.successful.sum(:percentage)
+      equity_issued: equity_investments.successful.sum(:percentage),
+      total_equity_invested: equity_investments.successful.sum(:amount)
     )
+  end
+
+    # Add method to calculate total equity invested
+  def total_equity_invested
+    self[:total_equity_invested] || equity_investments.successful.sum(:amount)
   end
 
   def create_investment(user, amount)

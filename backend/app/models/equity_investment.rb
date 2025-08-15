@@ -39,9 +39,9 @@ class EquityInvestment < ApplicationRecord
   before_validation :calculate_shares_and_percentage, on: :create
   before_create :generate_certificate_number
   before_create :set_investment_date
-  after_commit :update_campaign_equity, on: [:create, :update], if: :saved_change_to_amount?
   after_commit :generate_certificate_after_commit, on: [:create, :update], if: :should_generate_certificate?
   after_commit :update_investor_portfolios, on: [:create, :update], if: :successful?
+  after_commit :update_campaign_totals, on: [:create, :update], if: :saved_change_to_status?
   after_update :update_campaign_leaderboard, if: :saved_change_to_status?
 
   # Status query methods
@@ -145,8 +145,14 @@ class EquityInvestment < ApplicationRecord
     self.investment_date ||= Date.current
   end
 
-  def update_campaign_equity
+  def update_campaign_totals
+    return unless successful?
+    
     campaign.update_shares_available
+    campaign.update!(
+      current_amount: campaign.current_amount + net_amount,
+      total_successful_donations: campaign.total_successful_donations + net_amount
+    )
   end
 
   def should_generate_certificate?
