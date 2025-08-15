@@ -194,7 +194,7 @@ module Api
 
         # Set the campaign based on the campaign_id parameter
         def set_campaign
-          @campaign = Campaign.find_by(id: params[:campaign_id])
+          @campaign = Campaign.find_by(id: params[:equity_campaign_id] || params[:campaign_id])
           return render json: { error: 'Campaign not found' }, status: :not_found unless @campaign
         end
       end

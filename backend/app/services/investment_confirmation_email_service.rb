@@ -7,6 +7,7 @@ class InvestmentConfirmationEmailService
     percentage = investment.percentage.round(4)
     amount = investment.amount.round(2)
     currency_symbol = campaign.currency_symbol
+    campaign_url = Rails.application.routes.url_helpers.campaign_url(campaign.id, host: 'bantuhive.com')
 
     subject = "Your investment in #{campaign.company_name} is confirmed!"
     
@@ -153,7 +154,7 @@ class InvestmentConfirmationEmailService
                 <a href="#{certificate_url}" class="button">Download Certificate</a>
                 <p style="margin-top: 15px; font-size: 14px;">
                   You can also access this certificate anytime from your 
-                  <a href="#{Rails.application.routes.url_helpers.campaign_url(host: 'bantuhive.com')}">investment portfolio</a>.
+                  <a href="#{campaign_url}">investment portfolio</a>.
                 </p>
               </div>
 

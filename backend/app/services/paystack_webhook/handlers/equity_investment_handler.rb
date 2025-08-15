@@ -41,8 +41,8 @@ module PaystackWebhook::Handlers
         update_investment(investment, response, metadata, gross_amount, net_amount, adjusted_platform_fee)
         update_campaign(investment)
         create_pledge_if_needed(investment)
-        handle_certificate_generation(investment, response)
-        InvestmentUpdateJob.perform_later(investment.id)
+        # handle_certificate_generation(investment, response)
+        # InvestmentUpdateJob.perform_later(investment.id)
       else
         log_invalid_investment(metadata)
       end
@@ -167,18 +167,18 @@ module PaystackWebhook::Handlers
       end
     end
 
-    def handle_certificate_generation(investment, response)
-      if InvestmentCertificateService.generate_certificate(investment)
-        investment.reload
-        if investment.certificate_present?
-          send_confirmation_email(investment, response)
-        else
-          retry_certificate_generation(investment.id)
-        end
-      else
-        retry_certificate_generation(investment.id)
-      end
-    end
+    # def handle_certificate_generation(investment, response)
+    #   if InvestmentCertificateService.generate_certificate(investment)
+    #     investment.reload
+    #     if investment.certificate_present?
+    #       send_confirmation_email(investment, response)
+    #     else
+    #       retry_certificate_generation(investment.id)
+    #     end
+    #   else
+    #     retry_certificate_generation(investment.id)
+    #   end
+    # end
 
     def send_confirmation_email(investment, response)
       InvestmentConfirmationEmailService.send_confirmation_email(
@@ -191,10 +191,10 @@ module PaystackWebhook::Handlers
       Rails.logger.error "Failed to send confirmation email: #{e.message}"
     end
 
-    def retry_certificate_generation(investment_id)
-      Rails.logger.error "Certificate generation failed for investment #{investment_id}"
-      CertificateGenerationJob.set(wait: 5.minutes).perform_later(investment_id)
-    end
+    # def retry_certificate_generation(investment_id)
+    #   Rails.logger.error "Certificate generation failed for investment #{investment_id}"
+    #   CertificateGenerationJob.set(wait: 5.minutes).perform_later(investment_id)
+    # end
 
     def log_invalid_investment(metadata)
       Rails.logger.error "Equity investment not found or invalid state: #{metadata[:investment_id]}"
