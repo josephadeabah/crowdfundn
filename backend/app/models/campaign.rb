@@ -3,6 +3,7 @@ class Campaign < ApplicationRecord
   has_many :rewards, dependent: :destroy
   has_many :updates, dependent: :destroy
   has_many :comments, dependent: :destroy
+  has_one :subaccount, dependent: :destroy 
   has_many :backers, through: :donations # assuming a Backer model related to donations
   has_many :donations, dependent: :destroy
   has_many :transfers, dependent: :destroy
@@ -71,11 +72,6 @@ class Campaign < ApplicationRecord
     update!(transferred_amount: updated_transferred_amount)
   end
 
-  # Add method to handle equity-specific calculations
-  def total_equity_invested
-    is_a?(EquityCampaign) ? equity_investments.successful.sum(:amount) : 0
-  end
-
   # Method to return media URL (you can adjust this to return an array for multiple attachments)
   def media_url
     return unless media.attached?
@@ -87,6 +83,11 @@ class Campaign < ApplicationRecord
 
   def media_filename
     media.attached? ? media.filename.to_s : nil
+  end
+
+  # Add method to handle equity-specific calculations
+  def total_equity_invested
+    is_a?(EquityCampaign) ? equity_investments.successful.sum(:amount) : 0
   end
 
   # app/models/campaign.rb
