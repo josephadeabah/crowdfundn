@@ -4,7 +4,6 @@ class AddIndexesForCampaignsPerformance < ActiveRecord::Migration[7.1]
       [:fundraiser_id],
       [:status],
       [:end_date],
-      [:target_amount],
       [:created_at],
       [:status, :end_date] # compound index
     ]
