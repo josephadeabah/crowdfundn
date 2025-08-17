@@ -1,4 +1,3 @@
-# app/models/equity_investment.rb
 class EquityInvestment < ApplicationRecord
   belongs_to :user
   belongs_to :campaign, class_name: 'EquityCampaign'
@@ -38,17 +37,8 @@ class EquityInvestment < ApplicationRecord
   before_validation :calculate_shares_and_percentage, on: :create
   before_create :generate_certificate_number
   before_create :set_investment_date
-  after_commit :handle_successful_investment, on: :update, if: :became_successful?
   after_commit :update_campaign_totals, on: [:create, :update], if: :saved_change_to_status?
   after_update :update_campaign_leaderboard, if: :saved_change_to_status?
-
-  def became_successful?
-    saved_change_to_status? && successful?
-  end
-
-  def handle_successful_investment
-    CertificateGenerationJob.perform_later(id)
-  end
 
   # Status query methods
   def pending?
@@ -159,21 +149,6 @@ class EquityInvestment < ApplicationRecord
       current_amount: campaign.current_amount + net_amount,
       total_successful_donations: campaign.total_successful_donations + net_amount
     )
-  end
-
-
-  def should_generate_certificate?
-    successful? && certificate_number.present? && 
-    (certificate.blank? || certificate_needs_update?)
-  end
-
-  def certificate_needs_update?
-    saved_change_to_amount? || saved_change_to_shares? || saved_change_to_percentage? ||
-    saved_change_to_certificate_number?
-  end
-
-  def schedule_certificate_generation
-    CertificateGenerationJob.perform_later(id)
   end
 
   def update_campaign_leaderboard

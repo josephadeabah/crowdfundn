@@ -1,6 +1,5 @@
-# app/services/investment_confirmation_email_service.rb
 class InvestmentConfirmationEmailService
-  def self.send_confirmation_email(investment:, certificate_url:, recipient_email:, recipient_name:, metadata: {})
+  def self.send_confirmation_email(investment:, recipient_email:, recipient_name:, metadata: {})
     return false unless investment.is_a?(EquityInvestment) && investment.successful?
 
     campaign = investment.campaign
@@ -13,15 +12,15 @@ class InvestmentConfirmationEmailService
 
     subject = "Your investment in #{campaign.company_name} is confirmed!"
     
-    html_content = build_html_content(campaign, certificate_url, campaign_url, recipient_name, currency_symbol, amount, shares, percentage, investment_date, investment)
-    text_content = build_text_content(campaign, certificate_url, campaign_url, recipient_name, currency_symbol, amount, shares, percentage, investment_date, investment)
+    html_content = build_html_content(campaign, campaign_url, recipient_name, currency_symbol, amount, shares, percentage, investment_date, investment)
+    text_content = build_text_content(campaign, campaign_url, recipient_name, currency_symbol, amount, shares, percentage, investment_date, investment)
 
     send_email(investment, recipient_email, recipient_name, subject, html_content, text_content)
   end
 
   private
 
-  def self.build_html_content(campaign, certificate_url, campaign_url, recipient_name, currency_symbol, amount, shares, percentage, investment_date, investment)
+  def self.build_html_content(campaign, campaign_url, recipient_name, currency_symbol, amount, shares, percentage, investment_date, investment)
     <<~HTML
       <!DOCTYPE html>
       <html>
@@ -83,19 +82,6 @@ class InvestmentConfirmationEmailService
             .detail-value {
               flex: 1;
             }
-            .certificate-cta {
-              text-align: center;
-              margin: 30px 0;
-            }
-            .button {
-              display: inline-block;
-              padding: 12px 24px;
-              background-color: #3498db;
-              color: white;
-              text-decoration: none;
-              border-radius: 4px;
-              font-weight: 600;
-            }
             .footer {
               background-color: #f0f2f5;
               padding: 20px;
@@ -129,7 +115,7 @@ class InvestmentConfirmationEmailService
             <div class="content">
               <p class="greeting">Hello #{recipient_name},</p>
               <p>Thank you for your investment in <strong>#{campaign.company_name}</strong>. 
-              Your transaction has been successfully processed and your ownership certificate is ready.</p>
+              Your transaction has been successfully processed.</p>
 
               <div class="investment-details">
                 <div class="detail-row">
@@ -158,15 +144,8 @@ class InvestmentConfirmationEmailService
                 </div>
               </div>
 
-              <div class="certificate-cta">
-                <p>Your official investment certificate is attached to this email and available for download:</p>
-                <a href="#{certificate_url}" class="button">Download Certificate</a>
-                <p style="margin-top: 15px; font-size: 14px;">
-                  You can also access this certificate anytime from your 
-                  <a href="#{campaign_url}">investment portfolio</a>.
-                </p>
-              </div>
-
+              <p>Your investment certificate will be available shortly. We'll notify you once it's ready for download.</p>
+              
               <p>As a shareholder, you'll receive regular updates about the company's progress and any changes to your investment value.</p>
               
               <p>If you have any questions about your investment, please don't hesitate to contact our support team.</p>
@@ -198,12 +177,12 @@ class InvestmentConfirmationEmailService
     HTML
   end
 
- def self.build_text_content(campaign, certificate_url, campaign_url, recipient_name, currency_symbol, amount, shares, percentage, investment_date, investment)
+  def self.build_text_content(campaign, campaign_url, recipient_name, currency_symbol, amount, shares, percentage, investment_date, investment)
     <<~TEXT
       Hello #{recipient_name},
 
       Thank you for your investment in #{campaign.company_name}. 
-      Your transaction has been successfully processed and your ownership certificate is ready.
+      Your transaction has been successfully processed.
 
       Investment Details:
       - Amount: #{currency_symbol}#{investment.amount.round(2)}
@@ -213,7 +192,7 @@ class InvestmentConfirmationEmailService
       - Date: #{investment.created_at.strftime('%B %d, %Y')}
       - Certificate Number: #{investment.certificate_number}
 
-      Download your certificate: #{certificate_url}
+      Your investment certificate will be available shortly. We'll notify you once it's ready for download.
 
       View your portfolio: #{campaign_url}
 
@@ -231,28 +210,8 @@ class InvestmentConfirmationEmailService
     TEXT
   end
 
- def self.send_email(investment, recipient_email, recipient_name, subject, html_content, text_content)
-    return false unless investment.certificate.attached?
-
+  def self.send_email(investment, recipient_email, recipient_name, subject, html_content, text_content)
     begin
-      # Verify the blob exists in storage
-      unless investment.certificate.blob.service.exist?(investment.certificate.blob.key)
-        raise ActiveStorage::FileNotFoundError, "Certificate file not found in storage"
-      end
-
-      # Download certificate with verification
-      temp_file = Tempfile.new(["certificate_#{investment.id}", ".pdf"], binmode: true)
-      certificate_data = investment.certificate.download
-      temp_file.write(certificate_data)
-      temp_file.rewind
-      temp_file.flush
-      FileUtils.sync
-
-      if temp_file.size.zero?
-        raise "Downloaded certificate file is empty"
-      end
-
-      # Prepare email
       send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
         to: [{
           email: recipient_email,
@@ -267,11 +226,7 @@ class InvestmentConfirmationEmailService
         },
         headers: {
           'X-Mailin-custom' => 'investment_confirmation'
-        },
-        attachment: [{
-          content: Base64.encode64(temp_file.read),
-          name: "investment_certificate_#{investment.certificate_number}.pdf"
-        }]
+        }
       )
 
       # Send email
@@ -280,15 +235,9 @@ class InvestmentConfirmationEmailService
       
       Rails.logger.info "Successfully sent confirmation email to #{recipient_email}"
       response
-    rescue ActiveStorage::FileNotFoundError => e
-      Rails.logger.error "Certificate file missing: #{e.message}"
-      raise
     rescue => e
       Rails.logger.error "Failed to send confirmation email: #{e.message}"
       false
-    ensure
-      temp_file.close if temp_file && !temp_file.closed?
-      temp_file.unlink if temp_file
     end
   end
 end

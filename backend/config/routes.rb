@@ -105,6 +105,12 @@ Rails.application.routes.draw do
           resources :donations, only: [:create]
           namespace :documents do
             resources :investor_documents, only: [:index, :show, :create, :update, :destroy]
+            resources :investment_certificates, only: [] do
+             member do
+              post :generate
+              get :download
+             end
+            end
           end
         end
 

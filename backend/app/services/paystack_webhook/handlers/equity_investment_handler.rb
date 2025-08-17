@@ -42,8 +42,11 @@ module PaystackWebhook::Handlers
           update_campaign(investment)
           create_pledge_if_needed(investment)
           
-          # Just update status - the after_commit hook will handle certificate generation
+          # Update status to successful
           investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
+          
+          # Send confirmation email without certificate
+          send_confirmation_email(investment, response, metadata)
         end
       else
         log_invalid_investment(metadata)
@@ -163,42 +166,18 @@ module PaystackWebhook::Handlers
       end
     end
 
-    def handle_certificate_generation(investment, response, metadata)
-      if investment.certificate.attached?
-        send_confirmation_email(investment, response, metadata)
-      else
-        if InvestmentCertificateService.generate_certificate(investment)
-          send_confirmation_email(investment, response, metadata)
-        else
-          CertificateGenerationJob.set(wait: 5.minutes).perform_later(
-            investment.id,
-            recipient_email: response.dig(:data, :customer, :email) || investment.email,
-            recipient_name: investment.user&.full_name || investment.full_name || metadata[:investor_name] || 'Investor',
-            metadata: metadata
-          )
-        end
-      end
-    end
-
-    # In EquityInvestmentHandler, modify the send_confirmation_email method:
     def send_confirmation_email(investment, response, metadata)
       recipient_email = response.dig(:data, :customer, :email) || investment.email
       recipient_name = investment.user&.full_name || investment.full_name || metadata[:investor_name] || 'Investor'
       
       InvestmentConfirmationEmailService.send_confirmation_email(
         investment: investment,
-        certificate_url: investment.certificate_url,
         recipient_email: recipient_email,
         recipient_name: recipient_name,
         metadata: metadata
       )
     rescue => e
       Rails.logger.error "Failed to send confirmation email: #{e.message}"
-    end
-
-    def retry_certificate_generation(investment_id)
-      Rails.logger.error "Certificate generation failed for investment #{investment_id}"
-      CertificateGenerationJob.set(wait: 5.minutes).perform_later(investment_id)
     end
 
     def log_invalid_investment(metadata)
