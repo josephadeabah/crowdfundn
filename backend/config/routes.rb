@@ -119,8 +119,9 @@ Rails.application.routes.draw do
         resources :equity_investments, only: [:index, :create, :update, :destroy] do
           collection do
             get :public_investments
-            get :my_investments
+            # get :my_investments
             get :portfolio
+            get 'my_investments', to: 'equity_investments#my_investments'
           end
           
           member do

@@ -3,6 +3,7 @@ module Api
     module Fundraisers
       class EquityInvestmentsController < ApplicationController
         before_action :authenticate_request, except: [:public_investments]
+        before_action :authenticate_request, only: [:my_investments, :portfolio]
         before_action :set_campaign, only: [:create, :public_investments]
         before_action :set_investment, only: [:show, :update, :destroy, :certificate_status]
 
@@ -113,6 +114,35 @@ module Api
               active_investments: investments.count,
               campaigns_invested: investments.select(:campaign_id).distinct.count
             },
+            investments: investments.map do |investment|
+              {
+                id: investment.id,
+                amount: investment.amount,
+                shares: investment.shares,
+                percentage: investment.percentage,
+                status: investment.status,
+                created_at: investment.created_at,
+                current_value: investment.current_value,
+                campaign: {
+                  id: investment.campaign_id,
+                  title: investment.campaign.title,
+                  status: investment.campaign.status,
+                  valuation: investment.campaign.valuation,
+                  equity_offered: investment.campaign.equity_offered
+                },
+                certificate_url: investment.certificate_url,
+                certificate_exists: investment.certificate_present?
+              }
+            end
+          }
+        end
+
+        def my_investments
+          investments = @current_user.equity_investments
+                                    .includes(:campaign)
+                                    .order(created_at: :desc)
+
+          render json: {
             investments: investments.map do |investment|
               {
                 id: investment.id,
@@ -296,10 +326,16 @@ module Api
           end
         end
 
-        def set_investment
+        def set_campaign
           @campaign = Campaign.find_by(id: params[:equity_campaign_id] || params[:campaign_id])
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'Campaign not found' }, status: :not_found unless @campaign
+        end
+
+        def set_investment
+          @investment = @current_user.equity_investments.find(params[:id])
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: 'Investment not found' }, status: :not_found
         end
 
         def equity_investment_update_params
