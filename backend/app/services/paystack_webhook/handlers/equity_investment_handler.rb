@@ -167,15 +167,16 @@ module PaystackWebhook::Handlers
     end
 
     def handle_certificate_generation(investment, response)
-      if InvestmentCertificateService.generate_certificate(investment)
-        investment.reload
-        if investment.certificate_present?
-          send_confirmation_email(investment, response)
-        else
-          retry_certificate_generation(investment.id)
-        end
+      if investment.certificate.attached?
+        # Certificate already exists
+        send_confirmation_email(investment, response, metadata)
       else
-        retry_certificate_generation(investment.id)
+        # Try to generate certificate
+        if InvestmentCertificateService.generate_certificate(investment)
+          send_confirmation_email(investment, response, metadata)
+        else
+          CertificateGenerationJob.set(wait: 5.minutes).perform_later(investment.id)
+        end
       end
     end
 
