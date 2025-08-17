@@ -69,11 +69,14 @@ export interface EquityInvestment {
   id: number;
   amount: number;
   shares: number;
+  percentage: number;
   investor_id: number;
   campaign_id: number;
   created_at: string;
   updated_at: string;
-  status: 'pending' | 'completed' | 'cancelled' | 'refunded';
+  certificate_exists?: boolean;
+  certificate_url?: string;
+  status: 'pending' | 'successful' | 'failed' | 'cancelled' | 'refunded';
   payment_method?: string;
   transaction_id?: string;
   investor_details?: {
@@ -100,6 +103,8 @@ export interface InvestmentPortfolio {
   total_value?: number;
   active_investments: number;
   campaigns_invested: number;
+  total_return?: number;
+  return_percentage?: number;
   investments: EquityInvestment[];
 }
 

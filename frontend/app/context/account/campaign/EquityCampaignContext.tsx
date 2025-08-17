@@ -18,6 +18,7 @@ import {
   InvestmentPortfolio,
   InvestmentCreatePayload,
   InvestmentCreateResponse,
+  InvestmentUpdatePayload,
 } from '@/app/types/equityCampaigns.types';
 import { getDetailedErrorMessage } from '@/app/types/campaign.error.messages.types';
 
@@ -891,10 +892,11 @@ export const EquityCampaignProvider = ({
     }
   }, [token]);
 
+  // In your EquityCampaignContext.tsx
   const updateInvestment = useCallback(
     async (
       investmentId: string,
-      updates: Partial<EquityInvestment>,
+      updates: InvestmentUpdatePayload, // Now using the correct type
     ): Promise<{
       success: boolean;
       data?: EquityInvestment;

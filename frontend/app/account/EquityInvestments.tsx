@@ -1,4 +1,3 @@
-// app/account/EquityInvestments.tsx
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '../components/ui/button';
@@ -153,23 +152,13 @@ const PortfolioView = ({
     );
   }
 
-  // Calculate totals if not provided by API
-  const totalValue =
-    portfolio?.total_value ||
-    portfolio?.investments?.reduce(
-      (sum, inv) => sum + (inv.current_value || inv.amount),
-      0,
-    ) ||
-    0;
-
-  const totalInvested =
-    portfolio?.total_invested ||
-    portfolio?.investments?.reduce((sum, inv) => sum + inv.amount, 0) ||
-    0;
-
-  const totalReturn = totalValue - totalInvested;
-  const returnPercentage =
-    totalInvested > 0 ? (totalReturn / totalInvested) * 100 : 0;
+  // Use API-provided values
+  const totalValue = parseFloat(portfolio.total_value?.toString() || '0');
+  const totalInvested = parseFloat(portfolio.total_invested?.toString() || '0');
+  const totalReturn = parseFloat(portfolio.total_return?.toString() || '0');
+  const returnPercentage = parseFloat(
+    portfolio.return_percentage?.toString() || '0',
+  );
 
   return (
     <div>
@@ -179,7 +168,11 @@ const PortfolioView = ({
             Total Portfolio Value
           </h3>
           <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-            ${totalValue.toLocaleString()}
+            $
+            {totalValue.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
@@ -187,7 +180,11 @@ const PortfolioView = ({
             Total Invested
           </h3>
           <p className="text-3xl font-bold">
-            ${totalInvested.toLocaleString()}
+            $
+            {totalInvested.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
@@ -197,7 +194,12 @@ const PortfolioView = ({
           <p
             className={`text-3xl font-bold ${totalReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
           >
-            ${totalReturn.toLocaleString()} ({returnPercentage.toFixed(2)}%)
+            $
+            {totalReturn.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}{' '}
+            ({returnPercentage.toFixed(2)}%)
           </p>
         </div>
       </div>
@@ -234,42 +236,60 @@ const PortfolioView = ({
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {portfolio?.investments?.map((investment) => {
-                  const investmentReturn =
-                    (investment.current_value || investment.amount) -
-                    investment.amount;
-                  const returnPercentage =
-                    investment.amount > 0
-                      ? (investmentReturn / investment.amount) * 100
+                  const investmentAmount = parseFloat(
+                    investment.amount?.toString() || '0',
+                  );
+                  const currentValue = parseFloat(
+                    investment.current_value?.toString() ||
+                      investment.amount?.toString() ||
+                      '0',
+                  );
+                  const investmentReturn = currentValue - investmentAmount;
+                  const returnPct =
+                    investmentAmount > 0
+                      ? (investmentReturn / investmentAmount) * 100
                       : 0;
 
                   return (
                     <tr key={investment.id}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="font-medium text-gray-900 dark:text-white">
-                          {investment.campaign?.title || investment.campaign_id}
+                          {investment.campaign?.title ||
+                            `Campaign ${investment.campaign_id}`}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        ${investment.amount.toLocaleString()}
+                        $
+                        {investmentAmount.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {investment.shares?.toLocaleString()}
+                        {parseFloat(
+                          investment.shares?.toString() || '0',
+                        ).toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         $
-                        {(
-                          investment.current_value || investment.amount
-                        ).toLocaleString()}
+                        {currentValue.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                       </td>
                       <td
                         className={`px-6 py-4 whitespace-nowrap ${investmentReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
                       >
-                        ${investmentReturn.toLocaleString()} (
-                        {returnPercentage.toFixed(2)}%)
+                        $
+                        {investmentReturn.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}{' '}
+                        ({returnPct.toFixed(2)}%)
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${investment.status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'}`}
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${investment.status === 'successful' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'}`}
                         >
                           {investment.status}
                         </span>
@@ -282,15 +302,17 @@ const PortfolioView = ({
                             View
                           </button>
                         </Link>
-                        <button
-                          className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
-                          onClick={() =>
-                            onDownloadCertificate(investment.id.toString())
-                          }
-                          disabled={certificateLoading}
-                        >
-                          {certificateLoading ? 'Loading...' : 'Certificate'}
-                        </button>
+                        {investment.certificate_exists && (
+                          <button
+                            className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
+                            onClick={() =>
+                              onDownloadCertificate(investment.id.toString())
+                            }
+                            disabled={certificateLoading}
+                          >
+                            {certificateLoading ? 'Loading...' : 'Certificate'}
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );
@@ -319,8 +341,13 @@ const PortfolioView = ({
                 className="border-b border-gray-200 dark:border-gray-700 pb-4"
               >
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Invested ${investment.amount} in{' '}
-                  {investment.campaign?.title || investment.campaign_id}
+                  Invested $
+                  {parseFloat(
+                    investment.amount?.toString() || '0',
+                  ).toLocaleString()}{' '}
+                  in{' '}
+                  {investment.campaign?.title ||
+                    `Campaign ${investment.campaign_id}`}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-500">
                   {format(new Date(investment.created_at), 'MMM dd, yyyy')}
@@ -363,7 +390,7 @@ const MyInvestmentsView = ({
           <div className="flex space-x-2">
             <select className="border border-gray-300 dark:border-gray-600 rounded px-3 py-1 bg-white dark:bg-gray-700 text-sm">
               <option>All Status</option>
-              <option>Completed</option>
+              <option>Successful</option>
               <option>Pending</option>
               <option>Failed</option>
             </select>
@@ -403,75 +430,94 @@ const MyInvestmentsView = ({
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {investments.map((investment) => (
-                <tr key={investment.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-medium text-gray-900 dark:text-white">
-                      {investment.campaign?.title || investment.campaign_id}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    ${investment.amount.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {investment.shares?.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {format(new Date(investment.created_at), 'MMM dd, yyyy')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        investment.status === 'completed'
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                          : investment.status === 'pending'
-                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                      }`}
-                    >
-                      {investment.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        investment.campaign?.status === 'live'
-                          ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                          : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-                      }`}
-                    >
-                      {investment.campaign?.status || 'unknown'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    {investment.status === 'completed' && (
-                      <>
-                        <Link
-                          href={`/campaign/${investment.campaign?.slug || investment.campaign_id}`}
-                        >
-                          <button className="text-orange-600 hover:text-orange-900 dark:hover:text-orange-400 mr-4">
-                            View
-                          </button>
-                        </Link>
-                        <button
-                          className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
-                          onClick={() =>
-                            onDownloadCertificate(investment.id.toString())
-                          }
-                          disabled={certificateLoading}
-                        >
-                          {certificateLoading ? 'Loading...' : 'Certificate'}
+              {investments.map((investment) => {
+                const investmentAmount = parseFloat(
+                  investment.amount?.toString() || '0',
+                );
+                const shares = parseFloat(investment.shares?.toString() || '0');
+                const percentage = parseFloat(
+                  investment.percentage?.toString() || '0',
+                );
+
+                return (
+                  <tr key={investment.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="font-medium text-gray-900 dark:text-white">
+                        {investment.campaign?.title ||
+                          `Campaign ${investment.campaign_id}`}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      $
+                      {investmentAmount.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {shares.toLocaleString()} ({percentage.toFixed(2)}%)
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {format(new Date(investment.created_at), 'MMM dd, yyyy')}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          investment.status === 'successful'
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                            : investment.status === 'pending'
+                              ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                        }`}
+                      >
+                        {investment.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          investment.campaign?.status === 'active'
+                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                            : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        {investment.campaign?.status || 'unknown'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      {investment.status === 'successful' && (
+                        <>
+                          <Link
+                            href={`/campaign/${investment.campaign?.slug || investment.campaign_id}`}
+                          >
+                            <button className="text-orange-600 hover:text-orange-900 dark:hover:text-orange-400 mr-4">
+                              View
+                            </button>
+                          </Link>
+                          {investment.certificate_exists && (
+                            <button
+                              className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
+                              onClick={() =>
+                                onDownloadCertificate(investment.id.toString())
+                              }
+                              disabled={certificateLoading}
+                            >
+                              {certificateLoading
+                                ? 'Loading...'
+                                : 'Certificate'}
+                            </button>
+                          )}
+                        </>
+                      )}
+                      {investment.status === 'pending' && (
+                        <button className="text-green-600 hover:text-green-900 dark:hover:text-green-400">
+                          Complete Payment
                         </button>
-                      </>
-                    )}
-                    {investment.status === 'pending' && (
-                      <button className="text-green-600 hover:text-green-900 dark:hover:text-green-400">
-                        Complete Payment
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
