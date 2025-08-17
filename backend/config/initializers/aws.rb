@@ -7,3 +7,9 @@ Aws.config.update({
                     endpoint: Rails.application.credentials.dig(:digitalocean, :endpoint),
                     force_path_style: true # Necessary for Spaces
                   })
+
+                  # Add retry configuration
+Aws.config.update(
+  retry_limit: 3, # Default is 3
+  retry_base_delay: 0.3 # Default is 0.3 seconds
+) rescue nil # Don't fail if AWS config is already set

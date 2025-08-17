@@ -41,6 +41,7 @@ class Campaign < ApplicationRecord
   # Attachments for images or videos
   has_one_attached :media # Use `has_many_attached` if there are multiple files
 
+  before_destroy :safe_purge_media
   after_initialize :set_default_status, if: :new_record?
   before_validation :generate_slug, if: -> { slug.blank? && title.present? }
   after_update :send_status_update_webhook, if: :status_changed?
@@ -74,15 +75,44 @@ class Campaign < ApplicationRecord
 
   # Method to return media URL (you can adjust this to return an array for multiple attachments)
   def media_url
-    return unless media.attached?
-
-    "#{Rails.application.credentials.dig(:digitalocean,
-                                         :endpoint)}/#{Rails.application.credentials.dig(:digitalocean,
-                                                                                         :bucket)}/#{media.blob.key}"
+    return unless media_attached?
+    
+    if Rails.env.production?
+      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{media.blob.key}"
+    else
+      Rails.application.routes.url_helpers.rails_blob_url(media, only_path: true)
+    end
   end
 
   def media_filename
     media.attached? ? media.filename.to_s : nil
+  end
+
+  # Add these methods to your Campaign model
+  def media_attached?
+    media.attached? && blob_exists?(media)
+  rescue Aws::S3::Errors::NoSuchKey
+    false
+  end
+
+  def blob_exists?(attachment)
+    return false unless attachment.attached?
+    attachment.blob.service.exist?(attachment.blob.key)
+  end
+
+  def safe_purge_media
+    return unless media.attached?
+    
+    begin
+      if blob_exists?(media)
+        media.purge
+      else
+        media.detach # Remove the association if file doesn't exist
+      end
+    rescue Aws::S3::Errors::NoSuchKey => e
+      Rails.logger.error "Failed to purge media for campaign #{id}: #{e.message}"
+      media.detach
+    end
   end
 
   # Add method to handle equity-specific calculations
