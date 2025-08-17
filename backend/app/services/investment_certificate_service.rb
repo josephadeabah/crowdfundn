@@ -30,22 +30,27 @@ class InvestmentCertificateService
 
       # Attach the file
       investment.certificate.attach(
-        io: temp_file,
+        io: File.open(temp_file.path),  # Use File.open instead of temp_file directly
         filename: "investment_certificate_#{investment.certificate_number}.pdf",
         content_type: 'application/pdf'
       )
 
-      # Ensure file is properly closed
-      temp_file.close
-      temp_file.unlink
-
-      investment.certificate.attached?
+      # Verify attachment
+      if investment.certificate.attached?
+        Rails.logger.info "Certificate successfully attached to investment #{investment.id}"
+        true
+      else
+        Rails.logger.error "Failed to attach certificate to investment #{investment.id}"
+        false
+      end
     rescue => e
       Rails.logger.error "Certificate generation failed: #{e.message}\n#{e.backtrace.join("\n")}"
       false
     ensure
-      temp_file.close if temp_file && !temp_file.closed?
-      temp_file.unlink if temp_file
+      if temp_file
+        temp_file.close unless temp_file.closed?
+        temp_file.unlink
+      end
     end
   end
 

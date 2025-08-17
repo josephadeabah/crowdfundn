@@ -13,15 +13,15 @@ class InvestmentConfirmationEmailService
 
     subject = "Your investment in #{campaign.company_name} is confirmed!"
     
-    html_content = build_html_content(investment, campaign, certificate_url, campaign_url)
-    text_content = build_text_content(investment, campaign, certificate_url, campaign_url)
+    html_content = build_html_content(campaign, certificate_url, campaign_url, recipient_name, currency_symbol, amount, shares, percentage, investment_date, investment)
+    text_content = build_text_content(campaign, certificate_url, campaign_url, recipient_name, currency_symbol, amount, shares, percentage, investment_date, investment)
 
-    send_email(recipient_email, recipient_name, subject, html_content, text_content)
+    send_email(investment, recipient_email, recipient_name, subject, html_content, text_content)
   end
 
   private
 
-  def self.build_html_content(investment, campaign, certificate_url, campaign_url)
+  def self.build_html_content(campaign, certificate_url, campaign_url, recipient_name, currency_symbol, amount, shares, percentage, investment_date, investment)
     <<~HTML
       <!DOCTYPE html>
       <html>
@@ -198,7 +198,7 @@ class InvestmentConfirmationEmailService
     HTML
   end
 
-  def self.build_text_content(investment, campaign, certificate_url, campaign_url)
+ def self.build_text_content(campaign, certificate_url, campaign_url, recipient_name, currency_symbol, amount, shares, percentage, investment_date, investment)
     <<~TEXT
       Hello #{recipient_name},
 
@@ -231,36 +231,47 @@ class InvestmentConfirmationEmailService
     TEXT
   end
 
-  def self.send_email(recipient_email, recipient_name, subject, html_content, text_content)
-    send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
-      to: [{
-        email: recipient_email,
-        name: recipient_name
-      }],
-      subject: subject,
-      htmlContent: html_content,
-      textContent: text_content,
-      sender: {
-        name: 'Bantuhive Investments',
-        email: 'help@bantuhive.com'
-      },
-      headers: {
-        'X-Mailin-custom' => 'investment_confirmation'
-      },
-      attachment: [{
-        content: Base64.encode64(File.read(investment.certificate_path)),
-        name: "investment_certificate_#{investment.certificate_number}.pdf"
-      }]
-    )
+  def self.send_email(investment, recipient_email, recipient_name, subject, html_content, text_content)
+    return unless investment.certificate.attached?
 
     begin
+      # Download certificate to temp file
+      temp_file = Tempfile.new(["certificate_#{investment.id}", ".pdf"], binmode: true)
+      temp_file.write(investment.certificate.download)
+      temp_file.rewind
+
+      send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
+        to: [{
+          email: recipient_email,
+          name: recipient_name
+        }],
+        subject: subject,
+        htmlContent: html_content,
+        textContent: text_content,
+        sender: {
+          name: 'Bantuhive Investments',
+          email: 'help@bantuhive.com'
+        },
+        headers: {
+          'X-Mailin-custom' => 'investment_confirmation'
+        },
+        attachment: [{
+          content: Base64.encode64(temp_file.read),
+          name: "investment_certificate_#{investment.certificate_number}.pdf"
+        }]
+      )
+
       api_instance = SibApiV3Sdk::TransactionalEmailsApi.new
       response = api_instance.send_transac_email(send_smtp_email)
       Rails.logger.info "Investment confirmation email sent to #{recipient_email}"
       response
-    rescue SibApiV3Sdk::ApiError => e
+    rescue => e
       Rails.logger.error "Failed to send investment confirmation email: #{e.message}"
       false
+    ensure
+      temp_file.close if temp_file && !temp_file.closed?
+      temp_file.unlink if temp_file
     end
   end
+end
 end
