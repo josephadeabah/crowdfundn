@@ -125,6 +125,7 @@ module Api
                 campaign: {
                   id: investment.campaign_id,
                   title: investment.campaign.title,
+                  slug: investment.campaign.slug,
                   status: investment.campaign.status,
                   valuation: investment.campaign.valuation,
                   equity_offered: investment.campaign.equity_offered
