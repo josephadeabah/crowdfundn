@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '../components/ui/button';
 import { format } from 'date-fns';
 import { useEquityCampaignContext } from '../context/account/campaign/EquityCampaignContext';
@@ -11,6 +12,8 @@ import {
 } from '../types/equityCampaigns.types';
 import Pagination from '../components/pagination/Pagination';
 import EquityInvestmentsLoader from '../loaders/EquityInvestmentsLoader'; // Fixed missing 'from' here
+import { CampaignResponseDataType } from '../types/campaigns.types';
+import { generateRandomString } from '../utils/helpers/generate.random-string';
 
 const EquityInvestments = () => {
   const {
@@ -25,6 +28,7 @@ const EquityInvestments = () => {
     certificateError,
   } = useEquityCampaignContext();
   const { user } = useAuth();
+  const router  = useRouter();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -61,6 +65,11 @@ const EquityInvestments = () => {
 
   // Change page
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+    const handleViewCampaignDetails = (campaign: EquityInvestment) => {
+      const identifier = campaign?.campaign?.slug || campaign.id;
+      router.push(`/campaign/${identifier}?${generateRandomString()}`);
+    };
 
   if (loading) {
     return <EquityInvestmentsLoader />;
@@ -275,13 +284,14 @@ const EquityInvestments = () => {
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <Link
-                              href={`/campaign/${investment.campaign?.slug || investment.campaign_id}`}
-                            >
-                              <button className="text-orange-600 hover:text-orange-900 dark:hover:text-orange-400 mr-4">
+                             <Button
+                                className="text-orange-600 hover:text-orange-900 dark:hover:text-orange-400 mr-4"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleViewCampaignDetails(investment)}
+                              >
                                 View
-                              </button>
-                            </Link>
+                              </Button>
                             {investment.certificate_exists && (
                               <button
                                 className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
