@@ -54,7 +54,7 @@ module Api
           end
 
           def certificate_download_url
-            api_v1_fundraisers_documents_investment_certificate_download_url(
+            api_v1_fundraisers_documents_investment_certificates_download_url(
               investment_id: @investment.id,
               host: Rails.application.config.action_mailer.default_url_options[:host]
             )

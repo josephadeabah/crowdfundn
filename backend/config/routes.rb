@@ -106,10 +106,10 @@ Rails.application.routes.draw do
           namespace :documents do
             resources :investor_documents, only: [:index, :show, :create, :update, :destroy]
             resources :investment_certificates, only: [] do
-             member do
-              post :generate
-              get :download
-             end
+              member do
+                post :generate
+                get :download
+              end
             end
           end
         end
