@@ -1,3 +1,4 @@
+'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '../components/ui/button';
@@ -134,7 +135,7 @@ const EquityInvestments = () => {
           <h3 className="text-gray-500 dark:text-gray-400 mb-2">
             Total Portfolio Value
           </h3>
-          <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+          <p className="text-lg font-bold text-green-600 dark:text-green-400">
             $
             {totalValue.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -146,7 +147,7 @@ const EquityInvestments = () => {
           <h3 className="text-gray-500 dark:text-gray-400 mb-2">
             Total Invested
           </h3>
-          <p className="text-3xl font-bold">
+          <p className="text-lg font-bold">
             $
             {totalInvested.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -159,7 +160,7 @@ const EquityInvestments = () => {
             Total Return
           </h3>
           <p
-            className={`text-3xl font-bold ${
+            className={`text-lg font-bold ${
               totalReturn >= 0
                 ? 'text-green-600 dark:text-green-400'
                 : 'text-red-600 dark:text-red-400'
