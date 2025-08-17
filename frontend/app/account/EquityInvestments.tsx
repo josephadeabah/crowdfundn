@@ -55,7 +55,7 @@ const EquityInvestments = () => {
     return <NoPortfolioData />;
   }
 
-  console.log('Portfolio data:', portfolio.investments); // Debugging line
+  console.log('Portfolio data:', portfolio); // Debugging line
 
   const parseNumber = (value: string | number | undefined, fallback = 0): number => {
     if (typeof value === 'number') return value;
