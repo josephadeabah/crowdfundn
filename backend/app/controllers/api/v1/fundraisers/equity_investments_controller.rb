@@ -4,6 +4,7 @@ module Api
       class EquityInvestmentsController < ApplicationController
         before_action :authenticate_request, except: [:public_investments]
         before_action :set_campaign, only: [:create, :public_investments]
+        before_action :set_investment, only: [:show, :update, :destroy, :certificate_status]
 
         def public_investments
           investments = @campaign.equity_investments.successful
@@ -91,6 +92,80 @@ module Api
             error: e.message,
             code: e.try(:code)
           }, status: :unprocessable_entity
+        end
+
+        def portfolio
+          investments = @current_user.equity_investments
+                                  .includes(:campaign)
+                                  .order(created_at: :desc)
+
+          total_invested = investments.sum(:amount)
+          total_value = investments.sum { |i| i.current_value || i.amount }
+          total_return = total_value - total_invested
+          return_percentage = total_invested > 0 ? (total_return / total_invested * 100) : 0
+
+          render json: {
+            portfolio: {
+              total_invested: total_invested,
+              total_value: total_value,
+              total_return: total_return,
+              return_percentage: return_percentage,
+              active_investments: investments.count,
+              campaigns_invested: investments.select(:campaign_id).distinct.count
+            },
+            investments: investments.map do |investment|
+              {
+                id: investment.id,
+                amount: investment.amount,
+                shares: investment.shares,
+                percentage: investment.percentage,
+                status: investment.status,
+                created_at: investment.created_at,
+                current_value: investment.current_value,
+                campaign: {
+                  id: investment.campaign_id,
+                  title: investment.campaign.title,
+                  status: investment.campaign.status,
+                  valuation: investment.campaign.valuation,
+                  equity_offered: investment.campaign.equity_offered
+                },
+                certificate_url: investment.certificate_url,
+                certificate_exists: investment.certificate_present?
+              }
+            end
+          }
+        end
+
+        def certificate_status
+          render json: {
+            exists: @investment.certificate_present?,
+            url: @investment.certificate_url
+          }
+        end
+
+        def update
+          if @investment.update(equity_investment_update_params)
+            render json: {
+              success: true,
+              investment: @investment
+            }
+          else
+            render json: {
+              success: false,
+              errors: @investment.errors.full_messages
+            }, status: :unprocessable_entity
+          end
+        end
+
+        def destroy
+          if @investment.destroy
+            render json: { success: true }
+          else
+            render json: {
+              success: false,
+              errors: @investment.errors.full_messages
+            }, status: :unprocessable_entity
+          end
         end
 
         private
@@ -221,20 +296,19 @@ module Api
           end
         end
 
-        def equity_investment_params
-          params.require(:equity_investment).permit(
-            :amount,
-            :reward_id,
-            :email,
-            :phone,
-            :full_name,
-            metadata: {}
-          )
+        def set_investment
+          @campaign = Campaign.find_by(id: params[:equity_campaign_id] || params[:campaign_id])
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: 'Campaign not found' }, status: :not_found unless @campaign
         end
 
-        def set_campaign
-          @campaign = Campaign.find_by(id: params[:equity_campaign_id] || params[:campaign_id])
-          render json: { error: 'Campaign not found' }, status: :not_found unless @campaign
+        def equity_investment_update_params
+          params.require(:equity_investment).permit(
+            :status,
+            :amount,
+            :shares,
+            metadata: {}
+          )
         end
 
         def campaign_summary

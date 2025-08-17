@@ -131,6 +131,16 @@ class EquityInvestment < ApplicationRecord
     self.percentage = ((amount / total_equity_value) * 100).round(4)
   end
 
+  def self.portfolio_for(user)
+    investments = user.equity_investments.includes(:campaign)
+    
+    {
+      total_invested: investments.sum(:amount),
+      total_value: investments.sum { |i| i.current_value || i.amount },
+      investments: investments
+    }
+  end
+
   private
 
   def generate_certificate_number
