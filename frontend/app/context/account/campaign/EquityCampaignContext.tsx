@@ -826,7 +826,7 @@ export const EquityCampaignProvider = ({
     setError(null);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/fundraisers/equity_investments/portfolio`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_investments/portfolio`,
         {
           method: 'GET',
           headers: {
@@ -864,7 +864,7 @@ export const EquityCampaignProvider = ({
     setError(null);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/fundraisers/equity_investments/my_investments`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_investments/my_investments`,
         {
           method: 'GET',
           headers: {
@@ -1029,7 +1029,6 @@ export const EquityCampaignProvider = ({
     }
   }, [token]);
 
-  // Certificate Generation
   // Certificate API methods
   const generateCertificate = useCallback(
     async (
@@ -1039,7 +1038,7 @@ export const EquityCampaignProvider = ({
       setCertificateError(null);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/fundraisers/documents/investment_certificates/${investmentId}/generate`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/documents/investment_certificates/${investmentId}/generate`,
           {
             method: 'POST',
             headers: {
@@ -1084,7 +1083,7 @@ export const EquityCampaignProvider = ({
       setCertificateError(null);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/fundraisers/documents/investment_certificates/${investmentId}/download`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/documents/investment_certificates/${investmentId}/download`,
           {
             method: 'GET',
             headers: {
@@ -1127,7 +1126,7 @@ export const EquityCampaignProvider = ({
     ): Promise<{ exists: boolean; url?: string }> => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/fundraisers/documents/investment_certificates/${investmentId}/status`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/documents/investment_certificates/${investmentId}/status`,
           {
             method: 'GET',
             headers: {
