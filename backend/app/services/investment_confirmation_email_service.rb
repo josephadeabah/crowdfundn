@@ -274,4 +274,3 @@ class InvestmentConfirmationEmailService
     end
   end
 end
-end
