@@ -90,9 +90,9 @@ export interface EquityInvestment {
     valuation: number;
   };
   current_value?: number;
-  campaign?: {
+  campaign: {
     title: string;
-    slug?: string;
+    slug: string;
     status: string;
   };
 }

@@ -67,7 +67,7 @@ const EquityInvestments = () => {
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     const handleViewCampaignDetails = (campaign: EquityInvestment) => {
-      const identifier = campaign?.campaign?.slug;
+      const identifier = campaign.campaign.slug;
       router.push(`/campaign/${identifier}?${generateRandomString()}`);
     };
 
