@@ -10,7 +10,7 @@ import {
   InvestmentPortfolio,
 } from '../types/equityCampaigns.types';
 import Pagination from '../components/pagination/Pagination';
-import EquityInvestmentsLoader from './loaders/EquityInvestmentsLoader'; // Fixed missing 'from' here
+import EquityInvestmentsLoader from '../loaders/EquityInvestmentsLoader'; // Fixed missing 'from' here
 
 const EquityInvestments = () => {
   const {
