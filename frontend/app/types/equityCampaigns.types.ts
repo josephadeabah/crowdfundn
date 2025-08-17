@@ -1,6 +1,6 @@
+// app/types/equityCampaigns.types.ts
 import { CampaignResponseDataType, CampaignState } from './campaigns.types';
 
-// app/types/equityCampaigns.types.ts
 export interface InvestorDocument {
   id: number;
   user_id: number;
@@ -86,11 +86,18 @@ export interface EquityInvestment {
     equity_offered: number;
     valuation: number;
   };
+  current_value?: number;
+  campaign?: {
+    title: string;
+    slug?: string;
+    status: string;
+  };
 }
 
 export interface InvestmentPortfolio {
   total_invested: number;
   total_shares: number;
+  total_value?: number;
   active_investments: number;
   campaigns_invested: number;
   investments: EquityInvestment[];
@@ -117,7 +124,6 @@ export interface InvestmentCreatePayload {
   payment_method?: string;
 }
 
-// Add this interface for the investment response data
 export interface InvestmentResponseData {
   investment?: EquityInvestment;
   authorization_url?: string;
@@ -126,7 +132,6 @@ export interface InvestmentResponseData {
   shares_available?: number;
 }
 
-// Update the InvestmentCreateResponse interface
 export interface InvestmentCreateResponse {
   success: boolean;
   data?: InvestmentResponseData;
@@ -148,7 +153,18 @@ export interface EquityCampaignState extends CampaignState {
   documents: InvestorDocument[];
   currentDocument: InvestorDocument | null;
   portfolio: InvestmentPortfolio | null;
-  shareCertificates: ShareCertificate[];
+  certificateLoading: boolean;
+  certificateError: string | null;
+  certificateUrl: string | null;
+
+  // Certificate actions
+  generateCertificate: (
+    investmentId: string,
+  ) => Promise<{ success: boolean; url?: string; error?: string }>;
+  downloadCertificate: (investmentId: string) => Promise<void>;
+  checkCertificateStatus: (
+    investmentId: string,
+  ) => Promise<{ exists: boolean; url?: string }>;
 
   // Campaign actions
   fetchPendingReviewCampaigns: () => Promise<EquityCampaignResponseDataType[]>;
@@ -215,11 +231,4 @@ export interface EquityCampaignState extends CampaignState {
   // Portfolio actions
   fetchPortfolio: () => Promise<void>;
   fetchMyInvestments: () => Promise<void>;
-
-  // Share certificate actions
-  fetchShareCertificates: (campaignId: string) => Promise<void>;
-  fetchShareCertificateById: (
-    campaignId: string,
-    certificateId: string,
-  ) => Promise<ShareCertificate | null>;
 }

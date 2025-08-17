@@ -16,7 +16,6 @@ import {
   EquityCampaignState,
   InvestorDocument,
   InvestmentPortfolio,
-  ShareCertificate,
   InvestmentCreatePayload,
   InvestmentCreateResponse,
 } from '@/app/types/equityCampaigns.types';
@@ -49,9 +48,9 @@ export const EquityCampaignProvider = ({
   const [currentDocument, setCurrentDocument] =
     useState<InvestorDocument | null>(null);
   const [portfolio, setPortfolio] = useState<InvestmentPortfolio | null>(null);
-  const [shareCertificates, setShareCertificates] = useState<
-    ShareCertificate[]
-  >([]);
+  const [certificateLoading, setCertificateLoading] = useState<boolean>(false);
+  const [certificateError, setCertificateError] = useState<string | null>(null);
+  const [certificateUrl, setCertificateUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { fetchUserCampaigns } = useCampaignContext();
@@ -630,7 +629,6 @@ export const EquityCampaignProvider = ({
     [token],
   );
 
-  // Investment Management
   // Equity Investment Management
   const fetchInvestments = useCallback(
     async (campaignId: string): Promise<void> => {
@@ -823,12 +821,50 @@ export const EquityCampaignProvider = ({
     [token],
   );
 
+  const fetchPortfolio = useCallback(async (): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/fundraisers/equity_investments/portfolio`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        handleApiError(errorData);
+        return;
+      }
+
+      const data = await response.json();
+      setPortfolio(
+        data.portfolio || {
+          total_invested: 0,
+          total_shares: 0,
+          active_investments: 0,
+          campaigns_invested: 0,
+          investments: [],
+        },
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error fetching portfolio');
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
   const fetchMyInvestments = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_investments/my_investments`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/fundraisers/equity_investments/my_investments`,
         {
           method: 'GET',
           headers: {
@@ -848,38 +884,8 @@ export const EquityCampaignProvider = ({
       setInvestments(data.investments || []);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Error fetching your investments',
+        err instanceof Error ? err.message : 'Error fetching investments',
       );
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
-
-  const fetchPortfolio = useCallback(async (): Promise<void> => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_investments/portfolio`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        handleApiError(errorData);
-        return;
-      }
-
-      const data = await response.json();
-      setInvestments(data.investments || []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error fetching portfolio');
     } finally {
       setLoading(false);
     }
@@ -985,85 +991,6 @@ export const EquityCampaignProvider = ({
     [token],
   );
 
-  // Share Certificates
-  const fetchShareCertificates = useCallback(
-    async (campaignId: string): Promise<void> => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${campaignId}/share_certificates`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
-
-        if (!response.ok) {
-          handleApiError(
-            "Couldn't fetch share certificates. Please try again.",
-          );
-          return;
-        }
-
-        const data = await response.json();
-        // Handle share certificates data as needed
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : 'Error fetching share certificates',
-        );
-      } finally {
-        setLoading(false);
-      }
-    },
-    [token],
-  );
-
-  const fetchShareCertificateById = useCallback(
-    async (
-      campaignId: string,
-      certificateId: string,
-    ): Promise<ShareCertificate | null> => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/equity/campaigns/${campaignId}/share_certificates/${certificateId}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
-
-        if (!response.ok) {
-          handleApiError("Couldn't fetch share certificate. Please try again.");
-          return null;
-        }
-
-        const data = await response.json();
-        return data.certificate || null; // Return the certificate or null if not found
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : 'Error fetching share certificate',
-        );
-        return null;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [token],
-  );
-
   // Add the fetch function
   const fetchPendingReviewCampaigns = useCallback(async (): Promise<
     EquityCampaignResponseDataType[]
@@ -1102,6 +1029,131 @@ export const EquityCampaignProvider = ({
     }
   }, [token]);
 
+  // Certificate Generation
+  // Certificate API methods
+  const generateCertificate = useCallback(
+    async (
+      investmentId: string,
+    ): Promise<{ success: boolean; url?: string; error?: string }> => {
+      setCertificateLoading(true);
+      setCertificateError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/fundraisers/documents/investment_certificates/${investmentId}/generate`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          return {
+            success: false,
+            error: data.error || 'Certificate generation failed',
+          };
+        }
+
+        setCertificateUrl(data.certificate_url);
+        return {
+          success: true,
+          url: data.certificate_url,
+        };
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Certificate generation failed';
+        setCertificateError(errorMessage);
+        return {
+          success: false,
+          error: errorMessage,
+        };
+      } finally {
+        setCertificateLoading(false);
+      }
+    },
+    [token],
+  );
+
+  const downloadCertificate = useCallback(
+    async (investmentId: string): Promise<void> => {
+      setCertificateLoading(true);
+      setCertificateError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/fundraisers/documents/investment_certificates/${investmentId}/download`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || 'Certificate download failed');
+        }
+
+        // Handle the PDF download
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `investment_certificate_${investmentId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Certificate download failed';
+        setCertificateError(errorMessage);
+        throw err;
+      } finally {
+        setCertificateLoading(false);
+      }
+    },
+    [token],
+  );
+
+  const checkCertificateStatus = useCallback(
+    async (
+      investmentId: string,
+    ): Promise<{ exists: boolean; url?: string }> => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/fundraisers/documents/investment_certificates/${investmentId}/status`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          return { exists: false };
+        }
+
+        return {
+          exists: data.exists,
+          url: data.url,
+        };
+      } catch (err) {
+        return { exists: false };
+      }
+    },
+    [token],
+  );
+
   // Combine with base campaign context
   const contextValue = useMemo(
     () => ({
@@ -1111,7 +1163,9 @@ export const EquityCampaignProvider = ({
       documents,
       currentDocument,
       portfolio, // Add this
-      shareCertificates, // Add this
+      certificateLoading,
+      certificateError,
+      certificateUrl,
       loading,
       error,
 
@@ -1148,8 +1202,9 @@ export const EquityCampaignProvider = ({
       deleteDocument,
 
       // Share certificate actions
-      fetchShareCertificates,
-      fetchShareCertificateById,
+      generateCertificate,
+      downloadCertificate,
+      checkCertificateStatus,
     }),
     [
       campaignContext,
@@ -1158,7 +1213,9 @@ export const EquityCampaignProvider = ({
       documents,
       currentDocument,
       portfolio, // Add this
-      shareCertificates, // Add this
+      certificateLoading,
+      certificateError,
+      certificateUrl,
       loading,
       error,
       pendingCampaigns,
@@ -1187,8 +1244,9 @@ export const EquityCampaignProvider = ({
       deleteDocument,
       fetchPortfolio,
       fetchMyInvestments,
-      fetchShareCertificates,
-      fetchShareCertificateById,
+      generateCertificate,
+      downloadCertificate,
+      checkCertificateStatus,
     ],
   );
 

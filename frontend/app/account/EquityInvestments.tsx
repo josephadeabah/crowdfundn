@@ -1,12 +1,83 @@
 // app/account/EquityInvestments.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '../components/ui/button';
+import { format } from 'date-fns';
+import { useEquityCampaignContext } from '../context/account/campaign/EquityCampaignContext';
+import { useAuth } from '../context/auth/AuthContext';
+import {
+  EquityInvestment,
+  InvestmentPortfolio,
+} from '../types/equityCampaigns.types';
 
 const EquityInvestments = () => {
   const [activeView, setActiveView] = useState<'portfolio' | 'my_investments'>(
     'portfolio',
   );
+  const {
+    fetchPortfolio,
+    fetchMyInvestments,
+    portfolio,
+    investments,
+    loading,
+    error,
+    generateCertificate,
+    downloadCertificate,
+    checkCertificateStatus,
+    certificateLoading,
+    certificateError,
+  } = useEquityCampaignContext();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (activeView === 'portfolio') {
+      fetchPortfolio();
+    } else {
+      fetchMyInvestments();
+    }
+  }, [activeView, fetchPortfolio, fetchMyInvestments]);
+
+  const handleDownloadCertificate = async (investmentId: string) => {
+    try {
+      // First check if certificate exists
+      const status = await checkCertificateStatus(investmentId);
+      if (status.exists && status.url) {
+        await downloadCertificate(investmentId);
+      } else {
+        // If certificate doesn't exist, generate it first
+        const genResult = await generateCertificate(investmentId);
+        if (genResult.success && genResult.url) {
+          await downloadCertificate(investmentId);
+        }
+      }
+    } catch (err) {
+      console.error('Error downloading certificate:', err);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="px-2 py-4">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="px-2 py-4">
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
+          <strong className="font-bold">Error: </strong>
+          <span className="block sm:inline">{error}</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-2 py-4">
@@ -41,41 +112,64 @@ const EquityInvestments = () => {
         </button>
       </div>
 
-      {activeView === 'portfolio' ? <PortfolioView /> : <MyInvestmentsView />}
+      {activeView === 'portfolio' ? (
+        <PortfolioView
+          portfolio={portfolio}
+          user={user}
+          onDownloadCertificate={handleDownloadCertificate}
+          certificateLoading={certificateLoading}
+        />
+      ) : (
+        <MyInvestmentsView
+          investments={investments}
+          onDownloadCertificate={handleDownloadCertificate}
+          certificateLoading={certificateLoading}
+        />
+      )}
     </div>
   );
 };
 
-const PortfolioView = () => {
-  // Mock data - replace with real data from your API
-  const portfolioData = {
-    totalValue: 12500,
-    totalInvested: 8500,
-    totalReturn: 4000,
-    returnPercentage: 47.06,
-    investments: [
-      {
-        id: 1,
-        campaign: 'Solar Tech Startup',
-        amount: 5000,
-        shares: 1000,
-        currentValue: 7500,
-        return: 2500,
-        returnPercentage: 50,
-        status: 'active',
-      },
-      {
-        id: 2,
-        campaign: 'AI Healthcare',
-        amount: 3500,
-        shares: 700,
-        currentValue: 5000,
-        return: 1500,
-        returnPercentage: 42.86,
-        status: 'active',
-      },
-    ],
-  };
+interface PortfolioViewProps {
+  portfolio: InvestmentPortfolio | null;
+  user: any;
+  onDownloadCertificate: (investmentId: string) => Promise<void>;
+  certificateLoading: boolean;
+}
+
+const PortfolioView = ({
+  portfolio,
+  user,
+  onDownloadCertificate,
+  certificateLoading,
+}: PortfolioViewProps) => {
+  if (!portfolio) {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <p className="text-gray-600 dark:text-gray-300">
+          No portfolio data available
+        </p>
+      </div>
+    );
+  }
+
+  // Calculate totals if not provided by API
+  const totalValue =
+    portfolio?.total_value ||
+    portfolio?.investments?.reduce(
+      (sum, inv) => sum + (inv.current_value || inv.amount),
+      0,
+    ) ||
+    0;
+
+  const totalInvested =
+    portfolio?.total_invested ||
+    portfolio?.investments?.reduce((sum, inv) => sum + inv.amount, 0) ||
+    0;
+
+  const totalReturn = totalValue - totalInvested;
+  const returnPercentage =
+    totalInvested > 0 ? (totalReturn / totalInvested) * 100 : 0;
 
   return (
     <div>
@@ -85,7 +179,7 @@ const PortfolioView = () => {
             Total Portfolio Value
           </h3>
           <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-            ${portfolioData.totalValue.toLocaleString()}
+            ${totalValue.toLocaleString()}
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
@@ -93,7 +187,7 @@ const PortfolioView = () => {
             Total Invested
           </h3>
           <p className="text-3xl font-bold">
-            ${portfolioData.totalInvested.toLocaleString()}
+            ${totalInvested.toLocaleString()}
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
@@ -101,10 +195,9 @@ const PortfolioView = () => {
             Total Return
           </h3>
           <p
-            className={`text-3xl font-bold ${portfolioData.totalReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
+            className={`text-3xl font-bold ${totalReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
           >
-            ${portfolioData.totalReturn.toLocaleString()} (
-            {portfolioData.returnPercentage}%)
+            ${totalReturn.toLocaleString()} ({returnPercentage.toFixed(2)}%)
           </p>
         </div>
       </div>
@@ -140,45 +233,68 @@ const PortfolioView = () => {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {portfolioData.investments.map((investment) => (
-                  <tr key={investment.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium text-gray-900 dark:text-white">
-                        {investment.campaign}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      ${investment.amount.toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {investment.shares.toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      ${investment.currentValue.toLocaleString()}
-                    </td>
-                    <td
-                      className={`px-6 py-4 whitespace-nowrap ${investment.return >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
-                    >
-                      ${investment.return.toLocaleString()} (
-                      {investment.returnPercentage}%)
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${investment.status === 'active' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'}`}
+                {portfolio?.investments?.map((investment) => {
+                  const investmentReturn =
+                    (investment.current_value || investment.amount) -
+                    investment.amount;
+                  const returnPercentage =
+                    investment.amount > 0
+                      ? (investmentReturn / investment.amount) * 100
+                      : 0;
+
+                  return (
+                    <tr key={investment.id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="font-medium text-gray-900 dark:text-white">
+                          {investment.campaign?.title || investment.campaign_id}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        ${investment.amount.toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {investment.shares?.toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        $
+                        {(
+                          investment.current_value || investment.amount
+                        ).toLocaleString()}
+                      </td>
+                      <td
+                        className={`px-6 py-4 whitespace-nowrap ${investmentReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
                       >
-                        {investment.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button className="text-orange-600 hover:text-orange-900 dark:hover:text-orange-400 mr-4">
-                        View
-                      </button>
-                      <button className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400">
-                        Certificate
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                        ${investmentReturn.toLocaleString()} (
+                        {returnPercentage.toFixed(2)}%)
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${investment.status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'}`}
+                        >
+                          {investment.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <Link
+                          href={`/campaign/${investment.campaign?.slug || investment.campaign_id}`}
+                        >
+                          <button className="text-orange-600 hover:text-orange-900 dark:hover:text-orange-400 mr-4">
+                            View
+                          </button>
+                        </Link>
+                        <button
+                          className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
+                          onClick={() =>
+                            onDownloadCertificate(investment.id.toString())
+                          }
+                          disabled={certificateLoading}
+                        >
+                          {certificateLoading ? 'Loading...' : 'Certificate'}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -197,16 +313,17 @@ const PortfolioView = () => {
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
           <div className="space-y-4">
-            {[1, 2, 3].map((item) => (
+            {portfolio?.investments?.slice(0, 3).map((investment) => (
               <div
-                key={item}
+                key={investment.id}
                 className="border-b border-gray-200 dark:border-gray-700 pb-4"
               >
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Invested $500 in Solar Tech Startup
+                  Invested ${investment.amount} in{' '}
+                  {investment.campaign?.title || investment.campaign_id}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-500">
-                  2 days ago
+                  {format(new Date(investment.created_at), 'MMM dd, yyyy')}
                 </p>
               </div>
             ))}
@@ -217,37 +334,26 @@ const PortfolioView = () => {
   );
 };
 
-const MyInvestmentsView = () => {
-  // Mock data - replace with real data from your API
-  const investments = [
-    {
-      id: 1,
-      campaign: 'Solar Tech Startup',
-      amount: 5000,
-      shares: 1000,
-      date: '2023-06-15',
-      status: 'completed',
-      campaignStatus: 'live',
-    },
-    {
-      id: 2,
-      campaign: 'AI Healthcare',
-      amount: 3500,
-      shares: 700,
-      date: '2023-05-20',
-      status: 'completed',
-      campaignStatus: 'live',
-    },
-    {
-      id: 3,
-      campaign: 'Eco Fashion',
-      amount: 2000,
-      shares: 500,
-      date: '2023-04-10',
-      status: 'pending',
-      campaignStatus: 'closed',
-    },
-  ];
+interface MyInvestmentsViewProps {
+  investments: EquityInvestment[];
+  onDownloadCertificate: (investmentId: string) => Promise<void>;
+  certificateLoading: boolean;
+}
+
+const MyInvestmentsView = ({
+  investments,
+  onDownloadCertificate,
+  certificateLoading,
+}: MyInvestmentsViewProps) => {
+  if (!investments || investments.length === 0) {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <p className="text-gray-600 dark:text-gray-300">
+          You haven't made any investments yet
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
@@ -301,17 +407,17 @@ const MyInvestmentsView = () => {
                 <tr key={investment.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="font-medium text-gray-900 dark:text-white">
-                      {investment.campaign}
+                      {investment.campaign?.title || investment.campaign_id}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     ${investment.amount.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {investment.shares.toLocaleString()}
+                    {investment.shares?.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {investment.date}
+                    {format(new Date(investment.created_at), 'MMM dd, yyyy')}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
@@ -329,22 +435,32 @@ const MyInvestmentsView = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        investment.campaignStatus === 'live'
+                        investment.campaign?.status === 'live'
                           ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
                           : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
                       }`}
                     >
-                      {investment.campaignStatus}
+                      {investment.campaign?.status || 'unknown'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     {investment.status === 'completed' && (
                       <>
-                        <button className="text-orange-600 hover:text-orange-900 dark:hover:text-orange-400 mr-4">
-                          View
-                        </button>
-                        <button className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400">
-                          Certificate
+                        <Link
+                          href={`/campaign/${investment.campaign?.slug || investment.campaign_id}`}
+                        >
+                          <button className="text-orange-600 hover:text-orange-900 dark:hover:text-orange-400 mr-4">
+                            View
+                          </button>
+                        </Link>
+                        <button
+                          className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
+                          onClick={() =>
+                            onDownloadCertificate(investment.id.toString())
+                          }
+                          disabled={certificateLoading}
+                        >
+                          {certificateLoading ? 'Loading...' : 'Certificate'}
                         </button>
                       </>
                     )}
