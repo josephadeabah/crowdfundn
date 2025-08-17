@@ -41,6 +41,7 @@ class EquityInvestment < ApplicationRecord
   before_create :set_investment_date
   # after_commit :generate_certificate_after_commit, on: [:create, :update], if: :should_generate_certificate?
   # after_commit :update_investor_portfolios, on: [:create, :update], if: :successful?
+    after_commit :handle_post_success_actions, on: :update, if: :saved_change_to_status?
   after_commit :update_campaign_totals, on: [:create, :update], if: :saved_change_to_status?
   after_update :update_campaign_leaderboard, if: :saved_change_to_status?
 
@@ -153,6 +154,22 @@ class EquityInvestment < ApplicationRecord
       current_amount: campaign.current_amount + net_amount,
       total_successful_donations: campaign.total_successful_donations + net_amount
     )
+  end
+
+    def handle_post_success_actions
+    return unless successful?
+
+    # Generate certificate and send email in transaction
+    if InvestmentCertificateService.generate_certificate(self)
+      InvestmentConfirmationEmailService.send_confirmation_email(
+        investment: self,
+        certificate_url: certificate_url,
+        recipient_email: email,
+        recipient_name: user&.full_name || full_name || 'Investor'
+      )
+    else
+      CertificateGenerationJob.set(wait: 5.minutes).perform_later(id)
+    end
   end
 
   # def generate_certificate_after_commit

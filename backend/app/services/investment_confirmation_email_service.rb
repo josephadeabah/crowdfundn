@@ -1,17 +1,28 @@
 # app/services/investment_confirmation_email_service.rb
 class InvestmentConfirmationEmailService
-  def self.send_confirmation_email(investment:, certificate_url:, recipient_email:, recipient_name:)
+  def self.send_confirmation_email(investment:, certificate_url:, recipient_email:, recipient_name:, metadata: {})
+    return false unless investment.is_a?(EquityInvestment) && investment.successful?
+
     campaign = investment.campaign
     investment_date = investment.created_at.strftime('%B %d, %Y')
     shares = investment.shares.round(4)
     percentage = investment.percentage.round(4)
     amount = investment.amount.round(2)
     currency_symbol = campaign.currency_symbol
-    campaign_url = Rails.application.routes.url_helpers.campaign_url(campaign.id, host: 'bantuhive.com')
+    campaign_url = metadata[:redirect_url] || Rails.application.routes.url_helpers.campaign_url(campaign, host: 'bantuhive.com')
 
     subject = "Your investment in #{campaign.company_name} is confirmed!"
     
-    html_content = <<~HTML
+    html_content = build_html_content(investment, campaign, certificate_url, campaign_url)
+    text_content = build_text_content(investment, campaign, certificate_url, campaign_url)
+
+    send_email(recipient_email, recipient_name, subject, html_content, text_content)
+  end
+
+  private
+
+  def self.build_html_content(investment, campaign, certificate_url, campaign_url)
+    <<~HTML
       <!DOCTYPE html>
       <html>
         <head>
@@ -111,12 +122,10 @@ class InvestmentConfirmationEmailService
         </head>
         <body>
           <div class="email-container">
-            <!-- Header -->
             <div class="header">
               <h1>Investment Confirmation</h1>
             </div>
 
-            <!-- Content -->
             <div class="content">
               <p class="greeting">Hello #{recipient_name},</p>
               <p>Thank you for your investment in <strong>#{campaign.company_name}</strong>. 
@@ -166,7 +175,6 @@ class InvestmentConfirmationEmailService
               <strong>The Bantuhive Investments Team</strong></p>
             </div>
 
-            <!-- Footer -->
             <div class="footer">
               <p>You are receiving this email because you made an investment through Bantuhive.</p>
               
@@ -188,29 +196,42 @@ class InvestmentConfirmationEmailService
         </body>
       </html>
     HTML
+  end
 
-    text_content = <<~TEXT
+  def self.build_text_content(investment, campaign, certificate_url, campaign_url)
+    <<~TEXT
       Hello #{recipient_name},
 
       Thank you for your investment in #{campaign.company_name}. 
       Your transaction has been successfully processed and your ownership certificate is ready.
 
       Investment Details:
-      - Amount: #{currency_symbol}#{amount}
-      - Shares: #{shares}
-      - Ownership: #{percentage}%
+      - Amount: #{currency_symbol}#{investment.amount.round(2)}
+      - Shares: #{investment.shares.round(4)}
+      - Ownership: #{investment.percentage.round(4)}%
       - Company Valuation: #{currency_symbol}#{campaign.valuation.to_f.round(2)}
-      - Date: #{investment_date}
+      - Date: #{investment.created_at.strftime('%B %d, %Y')}
       - Certificate Number: #{investment.certificate_number}
 
       Download your certificate: #{certificate_url}
 
-      View your portfolio: #{Rails.application.routes.url_helpers.portfolio_url(host: 'bantuhive.com')}
+      View your portfolio: #{campaign_url}
+
+      As a shareholder, you'll receive regular updates about the company's progress 
+      and any changes to your investment value.
+
+      If you have any questions about your investment, please don't hesitate 
+      to contact our support team at help@bantuhive.com.
 
       Warm regards,
       The Bantuhive Investments Team
-    TEXT
 
+      IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana
+      © #{Time.current.year} Bantuhive Ltd. All rights reserved.
+    TEXT
+  end
+
+  def self.send_email(recipient_email, recipient_name, subject, html_content, text_content)
     send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
       to: [{
         email: recipient_email,
@@ -225,7 +246,11 @@ class InvestmentConfirmationEmailService
       },
       headers: {
         'X-Mailin-custom' => 'investment_confirmation'
-      }
+      },
+      attachment: [{
+        content: Base64.encode64(File.read(investment.certificate_path)),
+        name: "investment_certificate_#{investment.certificate_number}.pdf"
+      }]
     )
 
     begin
@@ -235,7 +260,6 @@ class InvestmentConfirmationEmailService
       response
     rescue SibApiV3Sdk::ApiError => e
       Rails.logger.error "Failed to send investment confirmation email: #{e.message}"
-      Rails.logger.error "Response body: #{e.response_body}" if e.response_body
       false
     end
   end

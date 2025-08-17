@@ -1,3 +1,4 @@
+# app/services/investment_certificate_service.rb
 class InvestmentCertificateService
   require 'prawn'
   require 'prawn/table'
@@ -5,63 +6,69 @@ class InvestmentCertificateService
   require 'open-uri'
 
   def self.generate_certificate(investment)
-    return nil unless investment.is_a?(EquityInvestment) && investment.successful?
+    return false unless investment.is_a?(EquityInvestment) && investment.successful?
 
     begin
-      pdf = initialize_pdf
-      campaign = investment.campaign
-      kyc = investment.user.latest_kyc
+      pdf = Prawn::Document.new(
+        page_size: 'A4',
+        page_layout: :portrait,
+        margin: [72, 72, 72, 72],
+        info: {
+          Title: 'Investment Certificate',
+          Creator: 'Bantuhive',
+          CreationDate: Time.now
+        }
+      )
 
-      add_certificate_header(pdf)
-      add_investor_details(pdf, investment, campaign)
-      add_investment_details(pdf, investment, campaign)
-      add_signatures(pdf, kyc) if kyc&.verified?
-      add_footer(pdf, campaign)
+      # Add content to PDF
+      add_certificate_content(pdf, investment)
 
-      attach_certificate(pdf, investment)
+      # Save to temp file and attach
+      filename = "investment_certificate_#{investment.certificate_number}.pdf"
+      temp_file = Tempfile.new(filename, binmode: true)
+      
+      pdf.render_file(temp_file.path)
+      temp_file.rewind
+
+      investment.certificate.attach(
+        io: temp_file,
+        filename: filename,
+        content_type: 'application/pdf'
+      )
+
+      temp_file.close
+      temp_file.unlink
+
+      investment.certificate.attached?
     rescue => e
-      Rails.logger.error "Certificate generation failed: #{e.message}"
-      nil
+      Rails.logger.error "Certificate generation failed: #{e.message}\n#{e.backtrace.join("\n")}"
+      false
     end
   end
 
   private
 
-  def self.initialize_pdf
-    Prawn::Document.new(
-      page_size: 'A4',
-      page_layout: :portrait,
-      margin: [72, 72, 72, 72], # Convert 1 inch to points (72 points = 1 inch)
-      info: {
-        Title: 'Investment Certificate',
-        Creator: 'Bantuhive',
-        CreationDate: Time.now
-      }
-    )
-  end
-
-  def self.add_certificate_header(pdf)
-    pdf.text 'BANTUHIVE INVESTMENT CERTIFICATE',
-             size: 24, align: :center, style: :bold
+  def self.add_certificate_content(pdf, investment)
+    campaign = investment.campaign
+    
+    # Header
+    pdf.text 'BANTUHIVE INVESTMENT CERTIFICATE', size: 24, align: :center, style: :bold
     pdf.move_down 30
     pdf.stroke_horizontal_rule
     pdf.move_down 30
-  end
 
-  def self.add_investor_details(pdf, investment, campaign)
-    pdf.text "This certifies that #{sanitize_text(investment.user.full_name)}",
-             size: 16, align: :center
-    pdf.text "has invested #{campaign.currency_symbol}#{investment.amount.round(2)}",
+    # Investor details
+    investor_name = investment.user&.full_name || investment.full_name || 'Investor'
+    pdf.text "This certifies that #{investor_name}", size: 16, align: :center
+    pdf.text "has invested #{campaign.currency_symbol}#{investment.amount.round(2)}", 
              size: 24, align: :center, style: :bold
     pdf.move_down 20
-    pdf.text "in #{sanitize_text(campaign.company_name)}",
-             size: 16, align: :center
+    pdf.text "in #{campaign.company_name}", size: 16, align: :center
     pdf.move_down 30
     pdf.stroke_horizontal_rule
     pdf.move_down 30
-  end
 
-  def self.add_investment_details(pdf, investment, campaign)
+    # Investment details
     pdf.text 'Investment Details:', size: 16, style: :bold
     pdf.move_down 15
 
@@ -83,64 +90,14 @@ class InvestmentCertificateService
     end
 
     pdf.move_down 40
-  end
 
-  def self.add_signatures(pdf, investment)
-    kyc = investment.user.latest_kyc
-    
-    if kyc&.verified? && kyc.signature_image.attached?
-      pdf.bounding_box([0, pdf.cursor], width: pdf.bounds.width) do
-        # Investor signature
-        pdf.bounding_box([0, pdf.cursor], width: pdf.bounds.width / 2 - 20) do
-          pdf.text "Investor Signature:", size: 10, style: :bold
-          pdf.move_down 5
-          pdf.image open(kyc.signature_image.url), width: 120
-        end
-
-        # Issuer signature (if available)
-        if kyc.issuer_signature.attached?
-          pdf.bounding_box([pdf.bounds.width / 2 + 20, pdf.cursor], width: pdf.bounds.width / 2 - 20) do
-            pdf.text "Authorized Signatory:", size: 10, style: :bold
-            pdf.move_down 5
-            pdf.image open(kyc.issuer_signature.url), width: 120
-          end
-        end
-      end
-
-      pdf.move_down 20
-      pdf.stroke_horizontal_rule
-    end
-  end
-
-  def self.add_footer(pdf, campaign)
-    pdf.move_down 20
-    pdf.text "This certificate represents a legal ownership stake in #{sanitize_text(campaign.company_name)}",
+    # Footer
+    pdf.text "This certificate represents a legal ownership stake in #{campaign.company_name}",
              size: 12, align: :center
     pdf.text 'as per the terms outlined in the investment agreement.',
              size: 12, align: :center
     pdf.move_down 20
     pdf.text "Issued by Bantuhive on #{Time.current.strftime('%B %d, %Y')}",
              size: 12, align: :center
-  end
-
-  def self.attach_certificate(pdf, investment)
-    filename = "investment_certificate_#{investment.certificate_number}.pdf"
-    
-    Tempfile.create(filename, binmode: true) do |temp_file|
-      pdf.render_file(temp_file.path)
-      temp_file.rewind
-
-      investment.certificate.attach(
-        io: temp_file,
-        filename: filename,
-        content_type: 'application/pdf'
-      )
-
-      investment.certificate.attached?
-    end
-  end
-
-  def self.sanitize_text(text)
-    ActionController::Base.helpers.sanitize(text.to_s, tags: []).strip
   end
 end
