@@ -236,6 +236,6 @@ export interface EquityCampaignState extends CampaignState {
   deleteDocument: (campaignId: string, documentId: number) => Promise<void>;
 
   // Portfolio actions
-  fetchPortfolio: () => Promise<void>;
+  fetchPortfolio: (page: number, perPage: number) => Promise<void>;
   fetchMyInvestments: () => Promise<void>;
 }
