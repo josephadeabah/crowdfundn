@@ -822,35 +822,41 @@ export const EquityCampaignProvider = ({
     [token],
   );
 
-  const fetchPortfolio = useCallback(async (): Promise<void> => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_investments/portfolio`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+  // In your context
+  const fetchPortfolio = useCallback(
+    async (page = 1, perPage = 10): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_investments/portfolio?page=${page}&per_page=${perPage}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
           },
-        },
-      );
+        );
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        handleApiError(errorData);
-        return;
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          handleApiError(errorData);
+          return;
+        }
+
+        const data = await response.json();
+        setPortfolio(data);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error fetching portfolio',
+        );
+      } finally {
+        setLoading(false);
       }
-
-      const data = await response.json();
-      setPortfolio(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error fetching portfolio');
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
+    },
+    [token],
+  );
 
   const fetchMyInvestments = useCallback(async (): Promise<void> => {
     setLoading(true);
