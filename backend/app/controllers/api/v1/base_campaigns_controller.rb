@@ -137,44 +137,25 @@ module Api
       end
 
       def destroy
-        if @campaign.fundraiser == @current_user
-          ActiveRecord::Base.transaction do
-            begin
-              # Handle different campaign types
-              if @campaign.is_a?(EquityCampaign)
-                # Clear points associations first
-                @campaign.equity_investments.find_each do |investment|
-                  investment.points.update_all(equity_investment_id: nil)
-                end
-                
-                # Then destroy investments
-                @campaign.equity_investments.destroy_all
-              else
-                # For regular campaigns, clear donation points
-                @campaign.donations.find_each do |donation|
-                  donation.points.update_all(donation_id: nil)
-                end
-              end
-
-              # Purge attachments asynchronously but ensure records are destroyed
-              @campaign.media.purge_later if @campaign.media.attached?
-
-              # Destroy all associated records
-              @campaign.destroy!
-              
-              head :no_content
-            rescue ActiveRecord::RecordNotDestroyed => e
-              Rails.logger.error "Failed to destroy campaign #{@campaign.id}: #{e.message}"
-              raise ActiveRecord::Rollback, e.message
+      # Ensure the campaign belongs to the current user
+      if @campaign.fundraiser == @current_user
+        ActiveRecord::Base.transaction do
+          if @campaign.is_a?(EquityCampaign)
+            # Handle equity investments first
+            @campaign.equity_investments.find_each do |investment|
+              investment.points.update_all(equity_investment_id: nil) # Clear the association
+              investment.destroy!
             end
           end
-        else
-          render json: { error: 'You are not authorized to delete this campaign' }, status: :forbidden
+          @campaign.destroy!
         end
-      rescue => e
-        Rails.logger.error "Campaign deletion failed: #{e.message}"
-        render json: { error: "Failed to delete campaign: #{e.message}" }, status: :unprocessable_entity
+        head :no_content
+      else
+        render json: { error: 'You are not authorized to delete this campaign' }, status: :forbidden
       end
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render json: { error: "Failed to delete campaign: #{e.message}" }, status: :unprocessable_entity
+    end
 
       def statistics
         user = @current_user
