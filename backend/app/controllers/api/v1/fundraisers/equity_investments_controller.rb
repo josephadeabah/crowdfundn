@@ -327,7 +327,7 @@ module Api
         end
 
         def set_campaign
-          @campaign = Campaign.find_by(id: params[:equity_campaign_id] || params[:campaign_id])
+          @campaign = EquityCampaign.find_by(id: params[:equity_campaign_id] || params[:campaign_id])
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'Campaign not found' }, status: :not_found unless @campaign
         end
@@ -338,11 +338,15 @@ module Api
           render json: { error: 'Investment not found' }, status: :not_found
         end
 
-        def equity_investment_update_params
+        def equity_investment_params
           params.require(:equity_investment).permit(
-            :status,
             :amount,
-            :shares,
+            :reward_id,
+            :email,
+            :phone,
+            :full_name,
+            :ip_address,
+            :country,
             metadata: {}
           )
         end
