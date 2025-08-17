@@ -844,15 +844,7 @@ export const EquityCampaignProvider = ({
       }
 
       const data = await response.json();
-      setPortfolio(
-        data.portfolio || {
-          total_invested: 0,
-          total_shares: 0,
-          active_investments: 0,
-          campaigns_invested: 0,
-          investments: [],
-        },
-      );
+      setPortfolio(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error fetching portfolio');
     } finally {
