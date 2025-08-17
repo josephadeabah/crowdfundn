@@ -98,6 +98,7 @@ export interface EquityInvestment {
 }
 
 export interface InvestmentPortfolio {
+  portfolio: {
   total_invested: number;
   total_shares: number;
   total_value?: number;
@@ -105,6 +106,7 @@ export interface InvestmentPortfolio {
   campaigns_invested: number;
   total_return?: number;
   return_percentage?: number;
+  }
   investments: EquityInvestment[];
 }
 

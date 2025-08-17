@@ -63,10 +63,10 @@ const EquityInvestments = () => {
     return fallback;
   };
 
-  const totalValue = parseNumber(portfolio.total_value);
-  const totalInvested = parseNumber(portfolio.total_invested);
-  const totalReturn = parseNumber(portfolio.total_return);
-  const returnPercentage = parseNumber(portfolio.return_percentage);
+  const totalValue = parseNumber(portfolio.portfolio.total_value);
+  const totalInvested = parseNumber(portfolio.portfolio.total_invested);
+  const totalReturn = parseNumber(portfolio.portfolio.total_return);
+  const returnPercentage = parseNumber(portfolio.portfolio.return_percentage);
 
   return (
     <div className="px-2 py-4">
