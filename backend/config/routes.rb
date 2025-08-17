@@ -93,10 +93,10 @@ Rails.application.routes.draw do
             post :favorite
             delete :unfavorite
             post 'contact', to: 'campaigns#contact_fundraiser'
+            get 'public_donations', to: 'donations#public_donations'
           end
           post 'webhook_status_update', on: :collection  # Defines a route for webhook status update
           get 'my_campaigns', on: :collection
-          get 'public_donations', to: 'donations#public_donations'
           get 'group_by_category', on: :collection
           get 'statistics', on: :collection
           resources :updates, only: %i[create update destroy]

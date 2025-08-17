@@ -194,8 +194,21 @@ module Api
 
         # Set the campaign based on the campaign_id parameter
         def set_campaign
-          @campaign = Campaign.find_by(id: params[:equity_campaign_id] || params[:campaign_id])
-          return render json: { error: 'Campaign not found' }, status: :not_found unless @campaign
+          # For public_donations action, the campaign_id comes from the URL path
+          campaign_identifier = params[:campaign_id] || params[:id]
+          
+          # First try to find by slug if the identifier contains letters/dashes
+          if campaign_identifier && campaign_identifier.match?(/[a-zA-Z\-]/)
+            @campaign = Campaign.find_by(slug: campaign_identifier)
+          else
+            # Fall back to finding by ID
+            @campaign = Campaign.find_by(id: campaign_identifier)
+          end
+          
+          unless @campaign
+            render json: { error: 'Campaign not found' }, status: :not_found 
+            return
+          end
         end
       end
     end
