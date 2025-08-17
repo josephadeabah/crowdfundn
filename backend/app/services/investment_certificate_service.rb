@@ -5,6 +5,7 @@ class InvestmentCertificateService
   require 'prawn/measurement_extensions'
   require 'open-uri'
 
+  # In InvestmentCertificateService, modify the generate_certificate method:
   def self.generate_certificate(investment)
     return false unless investment.is_a?(EquityInvestment) && investment.successful?
 
@@ -20,22 +21,21 @@ class InvestmentCertificateService
         }
       )
 
-      # Add content to PDF
       add_certificate_content(pdf, investment)
 
-      # Save to temp file and attach
-      filename = "investment_certificate_#{investment.certificate_number}.pdf"
-      temp_file = Tempfile.new(filename, binmode: true)
-      
+      # Create temp file with unique name
+      temp_file = Tempfile.new(["investment_certificate_#{investment.certificate_number}", ".pdf"], binmode: true)
       pdf.render_file(temp_file.path)
       temp_file.rewind
 
+      # Attach the file
       investment.certificate.attach(
         io: temp_file,
-        filename: filename,
+        filename: "investment_certificate_#{investment.certificate_number}.pdf",
         content_type: 'application/pdf'
       )
 
+      # Ensure file is properly closed
       temp_file.close
       temp_file.unlink
 
@@ -43,6 +43,9 @@ class InvestmentCertificateService
     rescue => e
       Rails.logger.error "Certificate generation failed: #{e.message}\n#{e.backtrace.join("\n")}"
       false
+    ensure
+      temp_file.close if temp_file && !temp_file.closed?
+      temp_file.unlink if temp_file
     end
   end
 

@@ -166,23 +166,27 @@ module PaystackWebhook::Handlers
       end
     end
 
-    def handle_certificate_generation(investment, response)
+    def handle_certificate_generation(investment, response, metadata)
       if investment.certificate.attached?
-        # Certificate already exists
         send_confirmation_email(investment, response, metadata)
       else
-        # Try to generate certificate
         if InvestmentCertificateService.generate_certificate(investment)
           send_confirmation_email(investment, response, metadata)
         else
-          CertificateGenerationJob.set(wait: 5.minutes).perform_later(investment.id)
+          CertificateGenerationJob.set(wait: 5.minutes).perform_later(
+            investment.id,
+            recipient_email: response.dig(:data, :customer, :email) || investment.email,
+            recipient_name: investment.user&.full_name || investment.full_name || metadata[:investor_name] || 'Investor',
+            metadata: metadata
+          )
         end
       end
     end
 
+    # In EquityInvestmentHandler, modify the send_confirmation_email method:
     def send_confirmation_email(investment, response, metadata)
       recipient_email = response.dig(:data, :customer, :email) || investment.email
-      recipient_name = investment.user&.full_name || investment.full_name || 'Investor'
+      recipient_name = investment.user&.full_name || investment.full_name || metadata[:investor_name] || 'Investor'
       
       InvestmentConfirmationEmailService.send_confirmation_email(
         investment: investment,
