@@ -99,18 +99,6 @@ module PaystackWebhook::Handlers
       investment.update!(update_attributes)
     end
 
-    def send_confirmation_email(investment, response, metadata)
-      InvestmentConfirmationEmailService.send_confirmation_email(
-        investment: investment,
-        certificate_url: investment.certificate_url,
-        recipient_email: response.dig(:data, :customer, :email) || investment.email,
-        recipient_name: investment.user&.full_name || investment.full_name || 'Investor',
-        metadata: metadata
-      )
-    rescue => e
-      Rails.logger.error "Failed to send confirmation email: #{e.message}"
-    end
-    
     def build_metadata(metadata, response)
       {
         user_id: metadata[:user_id],
