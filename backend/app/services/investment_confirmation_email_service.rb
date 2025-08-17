@@ -232,14 +232,15 @@ class InvestmentConfirmationEmailService
   end
 
   def self.send_email(investment, recipient_email, recipient_name, subject, html_content, text_content)
-    return unless investment.certificate.attached?
+    return false unless investment.certificate.attached?
 
     begin
-      # Download certificate to temp file
+      # Download certificate
       temp_file = Tempfile.new(["certificate_#{investment.id}", ".pdf"], binmode: true)
       temp_file.write(investment.certificate.download)
       temp_file.rewind
 
+      # Prepare email
       send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
         to: [{
           email: recipient_email,
@@ -261,10 +262,12 @@ class InvestmentConfirmationEmailService
         }]
       )
 
+      # Send email
       api_instance = SibApiV3Sdk::TransactionalEmailsApi.new
-      response = api_instance.send_transac_email(send_smtp_email)
-      Rails.logger.info "Investment confirmation email sent to #{recipient_email}"
-      response
+      api_instance.send_transac_email(send_smtp_email).tap do
+        Rails.logger.info "Investment confirmation email sent to #{recipient_email}"
+      end
+
     rescue => e
       Rails.logger.error "Failed to send investment confirmation email: #{e.message}"
       false

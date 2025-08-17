@@ -39,9 +39,7 @@ class EquityInvestment < ApplicationRecord
   before_validation :calculate_shares_and_percentage, on: :create
   before_create :generate_certificate_number
   before_create :set_investment_date
-  # after_commit :generate_certificate_after_commit, on: [:create, :update], if: :should_generate_certificate?
-  # after_commit :update_investor_portfolios, on: [:create, :update], if: :successful?
-    after_commit :handle_post_success_actions, on: :update, if: :saved_change_to_status?
+  after_commit :schedule_certificate_generation, on: :update, if: :should_generate_certificate?
   after_commit :update_campaign_totals, on: [:create, :update], if: :saved_change_to_status?
   after_update :update_campaign_leaderboard, if: :saved_change_to_status?
 
@@ -156,49 +154,20 @@ class EquityInvestment < ApplicationRecord
     )
   end
 
-    def handle_post_success_actions
-    return unless successful?
 
-    # Generate certificate and send email in transaction
-    if InvestmentCertificateService.generate_certificate(self)
-      InvestmentConfirmationEmailService.send_confirmation_email(
-        investment: self,
-        certificate_url: certificate_url,
-        recipient_email: email,
-        recipient_name: user&.full_name || full_name || 'Investor'
-      )
-    else
-      CertificateGenerationJob.set(wait: 5.minutes).perform_later(id)
-    end
+  def should_generate_certificate?
+    successful? && certificate_number.present? && 
+    (certificate.blank? || certificate_needs_update?)
   end
 
-  # def generate_certificate_after_commit
-  #   if InvestmentCertificateService.generate_certificate(self)
-  #     Rails.logger.info "Successfully generated certificate for investment #{id}"
-  #   else
-  #     Rails.logger.error "Failed to generate certificate for investment #{id}"
-  #     CertificateGenerationJob.set(wait: 5.minutes).perform_later(id)
-  #   end
-  # rescue => e
-  #   Rails.logger.error "Certificate generation error: #{e.message}"
-  #   CertificateGenerationJob.set(wait: 5.minutes).perform_later(id)
-  # end
+  def certificate_needs_update?
+    saved_change_to_amount? || saved_change_to_shares? || saved_change_to_percentage? ||
+    saved_change_to_certificate_number?
+  end
 
-  # def should_generate_certificate?
-  #   successful? && certificate_number.present? && 
-  #   (certificate.blank? || certificate_needs_update?)
-  # end
-
-  # def certificate_needs_update?
-  #   saved_change_to_amount? || saved_change_to_shares? || saved_change_to_percentage? ||
-  #   saved_change_to_certificate_number? || certificate.blob.blank?
-  # end
-
-  # def update_investor_portfolios
-  #   campaign.equity_investments.successful.each do |inv|
-  #     InvestmentUpdateJob.perform_later(inv.id)
-  #   end
-  # end
+  def schedule_certificate_generation
+    CertificateGenerationJob.perform_later(id)
+  end
 
   def update_campaign_leaderboard
     campaign.update_fundraiser_leaderboard if successful?
