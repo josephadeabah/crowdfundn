@@ -73,46 +73,58 @@ class Campaign < ApplicationRecord
     update!(transferred_amount: updated_transferred_amount)
   end
 
-  # Method to return media URL (you can adjust this to return an array for multiple attachments)
-  def media_url
-    return unless media_attached?
+   def media_attached?
+    return false unless media.attached?
     
-    if Rails.env.production?
-      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{media.blob.key}"
-    else
-      Rails.application.routes.url_helpers.rails_blob_url(media, only_path: true)
-    end
-  end
-
-  def media_filename
-    media.attached? ? media.filename.to_s : nil
-  end
-
-  # Add these methods to your Campaign model
-  def media_attached?
-    media.attached? && blob_exists?(media)
-  rescue Aws::S3::Errors::NoSuchKey
+    # Check if blob record exists in database
+    return false unless media.blob.present?
+    
+    # Check if file exists in storage
+    blob_exists?(media)
+  rescue Aws::S3::Errors::NoSuchKey, ActiveRecord::RecordNotFound => e
+    Rails.logger.warn "Media attachment check failed for campaign #{id}: #{e.message}"
     false
   end
 
   def blob_exists?(attachment)
-    return false unless attachment.attached?
     attachment.blob.service.exist?(attachment.blob.key)
+  rescue => e
+    Rails.logger.error "Failed to check blob existence for campaign #{id}: #{e.message}"
+    false
   end
 
   def safe_purge_media
     return unless media.attached?
-    
+
     begin
-      if blob_exists?(media)
-        media.purge
-      else
-        media.detach # Remove the association if file doesn't exist
-      end
-    rescue Aws::S3::Errors::NoSuchKey => e
-      Rails.logger.error "Failed to purge media for campaign #{id}: #{e.message}"
+      # First try to detach to remove the association
       media.detach
+      
+      # Then try to purge if detach didn't work
+      media.purge if media.attached?
+    rescue Aws::S3::Errors::NoSuchKey, ActiveRecord::RecordNotFound => e
+      Rails.logger.warn "Safe purge failed for campaign #{id}: #{e.message}"
+      # Ensure the association is cleared even if purge fails
+      media.detach if media.attached?
     end
+  end
+
+  def media_url
+    return unless media_attached?
+    
+    if Rails.env.production?
+      # For DigitalOcean Spaces
+      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{media.blob.key}"
+    else
+      Rails.application.routes.url_helpers.rails_blob_url(media)
+    end
+  rescue => e
+    Rails.logger.error "Failed to generate media URL for campaign #{id}: #{e.message}"
+    nil
+  end
+
+  def media_filename
+    media.attached? ? media.filename.to_s : nil
   end
 
   # Add method to handle equity-specific calculations
@@ -148,6 +160,9 @@ class Campaign < ApplicationRecord
       description: description.as_json,
       total_shares: total_social_media_shares,
       donations_over_time: donations_over_time,
+      media_attached: media_attached?,
+      media_content_type: media_attached? ? media.content_type : nil,
+      media_file_size: media_attached? ? media.byte_size : nil,
       permissions: {
         accept_donations: accept_donations,
         leave_words_of_support: leave_words_of_support,
@@ -289,6 +304,12 @@ class Campaign < ApplicationRecord
   end
 
   private
+
+  def enqueue_media_cleanup
+    MediaCleanupJob.perform_later(media.blob.id) if media.attached?
+  rescue => e
+    Rails.logger.error "Failed to enqueue media cleanup for campaign #{id}: #{e.message}"
+  end
 
   def generate_slug
     self.slug = title.parameterize
