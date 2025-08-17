@@ -97,14 +97,20 @@ class Campaign < ApplicationRecord
     return unless media.attached?
 
     begin
-      # First try to detach to remove the association
-      media.detach
-      
-      # Then try to purge if detach didn't work
-      media.purge if media.attached?
-    rescue Aws::S3::Errors::NoSuchKey, ActiveRecord::RecordNotFound => e
+      # First check if the file exists in storage
+      if blob_exists?(media)
+        # Try to purge (delete from storage and remove association)
+        media.purge
+      else
+        # If file doesn't exist, just detach
+        media.detach
+      end
+    rescue Aws::S3::Errors::ServiceError, ActiveRecord::RecordNotFound => e
       Rails.logger.warn "Safe purge failed for campaign #{id}: #{e.message}"
       # Ensure the association is cleared even if purge fails
+      media.detach
+    ensure
+      # Double check the association is cleared
       media.detach if media.attached?
     end
   end
@@ -302,6 +308,27 @@ class Campaign < ApplicationRecord
   def percentage_raised
     0
   end
+
+  def cleanup_associations
+  # Handle points for donations
+  donations.find_each { |d| d.points.update_all(donation_id: nil) }
+  
+  # Handle points for equity investments if this is an equity campaign
+  if is_a?(EquityCampaign)
+    equity_investments.find_each { |i| i.points.update_all(equity_investment_id: nil) }
+  end
+  
+  # Clean up rich text associations
+  description.body.attachments.each(&:purge) if description.present?
+  
+  # Purge any other attachments
+  media.purge_later if media.attached?
+  
+  # Clean up ActiveStorage blobs for other attachments
+  investor_documents.each do |doc|
+    doc.files.each { |file| file.purge_later }
+  end
+end
 
   private
 
