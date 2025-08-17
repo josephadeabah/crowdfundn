@@ -1,9 +1,17 @@
 class InvestmentConfirmationEmailJob < ApplicationJob
   queue_as :default
+  retry_on ActiveStorage::FileNotFoundError, wait: 5.seconds, attempts: 3
+  retry_on RuntimeError, wait: 5.seconds, attempts: 3
 
   def perform(investment_id)
     investment = EquityInvestment.find_by(id: investment_id)
-    return unless investment&.successful? && investment.certificate.attached?
+    return unless investment&.successful?
+
+    Rails.logger.info "Sending confirmation email for investment #{investment_id}"
+
+    unless investment.certificate.attached?
+      raise ActiveStorage::FileNotFoundError, "Certificate not attached for investment #{investment_id}"
+    end
 
     InvestmentConfirmationEmailService.send_confirmation_email(
       investment: investment,
@@ -11,8 +19,5 @@ class InvestmentConfirmationEmailJob < ApplicationJob
       recipient_email: investment.email,
       recipient_name: investment.user&.full_name || investment.full_name || 'Investor'
     )
-  rescue => e
-    Rails.logger.error "Failed to send confirmation email for investment #{investment_id}: #{e.message}"
-    retry_job(wait: 5.minutes) if executions < 3
   end
 end

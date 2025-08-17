@@ -8,7 +8,6 @@ class EquityInvestment < ApplicationRecord
 
   has_one_attached :certificate
 
-  # Status constants matching Paystack
   STATUS_PENDING = 'pending'
   STATUS_INITIALIZED = 'initialized'
   STATUS_SUCCESSFUL = 'successful'
@@ -39,9 +38,17 @@ class EquityInvestment < ApplicationRecord
   before_validation :calculate_shares_and_percentage, on: :create
   before_create :generate_certificate_number
   before_create :set_investment_date
-  after_commit :schedule_certificate_generation, on: :update, if: :should_generate_certificate?
+  after_commit :handle_successful_investment, on: :update, if: :became_successful?
   after_commit :update_campaign_totals, on: [:create, :update], if: :saved_change_to_status?
   after_update :update_campaign_leaderboard, if: :saved_change_to_status?
+
+  def became_successful?
+    saved_change_to_status? && successful?
+  end
+
+  def handle_successful_investment
+    CertificateGenerationJob.perform_later(id)
+  end
 
   # Status query methods
   def pending?

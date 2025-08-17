@@ -42,11 +42,8 @@ module PaystackWebhook::Handlers
           update_campaign(investment)
           create_pledge_if_needed(investment)
           
-          if InvestmentCertificateService.generate_certificate(investment)
-            send_confirmation_email(investment, response, metadata)
-          else
-            CertificateGenerationJob.set(wait: 5.minutes).perform_later(investment.id)
-          end
+          # Just update status - the after_commit hook will handle certificate generation
+          investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
         end
       else
         log_invalid_investment(metadata)

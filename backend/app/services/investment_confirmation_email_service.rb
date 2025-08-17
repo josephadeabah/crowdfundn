@@ -231,14 +231,26 @@ class InvestmentConfirmationEmailService
     TEXT
   end
 
-  def self.send_email(investment, recipient_email, recipient_name, subject, html_content, text_content)
+ def self.send_email(investment, recipient_email, recipient_name, subject, html_content, text_content)
     return false unless investment.certificate.attached?
 
     begin
-      # Download certificate
+      # Verify the blob exists in storage
+      unless investment.certificate.blob.service.exist?(investment.certificate.blob.key)
+        raise ActiveStorage::FileNotFoundError, "Certificate file not found in storage"
+      end
+
+      # Download certificate with verification
       temp_file = Tempfile.new(["certificate_#{investment.id}", ".pdf"], binmode: true)
-      temp_file.write(investment.certificate.download)
+      certificate_data = investment.certificate.download
+      temp_file.write(certificate_data)
       temp_file.rewind
+      temp_file.flush
+      FileUtils.sync
+
+      if temp_file.size.zero?
+        raise "Downloaded certificate file is empty"
+      end
 
       # Prepare email
       send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
@@ -264,12 +276,15 @@ class InvestmentConfirmationEmailService
 
       # Send email
       api_instance = SibApiV3Sdk::TransactionalEmailsApi.new
-      api_instance.send_transac_email(send_smtp_email).tap do
-        Rails.logger.info "Investment confirmation email sent to #{recipient_email}"
-      end
-
+      response = api_instance.send_transac_email(send_smtp_email)
+      
+      Rails.logger.info "Successfully sent confirmation email to #{recipient_email}"
+      response
+    rescue ActiveStorage::FileNotFoundError => e
+      Rails.logger.error "Certificate file missing: #{e.message}"
+      raise
     rescue => e
-      Rails.logger.error "Failed to send investment confirmation email: #{e.message}"
+      Rails.logger.error "Failed to send confirmation email: #{e.message}"
       false
     ensure
       temp_file.close if temp_file && !temp_file.closed?
