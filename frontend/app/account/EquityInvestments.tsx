@@ -10,8 +10,7 @@ import {
   InvestmentPortfolio,
 } from '../types/equityCampaigns.types';
 import Pagination from '../components/pagination/Pagination';
-import EquityInvestmentsLoader '../loaders/EquityInvestmentsLoader';
-
+import EquityInvestmentsLoader from '../loaders/EquityInvestmentsLoader'; // Fixed missing 'from' here
 
 const EquityInvestments = () => {
   const {
@@ -102,10 +101,10 @@ const EquityInvestments = () => {
     return fallback;
   };
 
-  const totalValue = parseNumber(portfolio.portfolio.total_value);
-  const totalInvested = parseNumber(portfolio.portfolio.total_invested);
-  const totalReturn = parseNumber(portfolio.portfolio.total_return);
-  const returnPercentage = parseNumber(portfolio.portfolio.return_percentage);
+  const totalValue = parseNumber(portfolio.portfolio?.total_value);
+  const totalInvested = parseNumber(portfolio.portfolio?.total_invested);
+  const totalReturn = parseNumber(portfolio.portfolio?.total_return);
+  const returnPercentage = parseNumber(portfolio.portfolio?.return_percentage);
 
   return (
     <div className="px-2 py-4">
