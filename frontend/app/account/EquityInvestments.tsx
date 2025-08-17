@@ -10,6 +10,8 @@ import {
   InvestmentPortfolio,
 } from '../types/equityCampaigns.types';
 import Pagination from '../components/pagination/Pagination';
+import EquityInvestmentsLoader '../loaders/EquityInvestmentsLoader'
+
 
 const EquityInvestments = () => {
   const {
@@ -27,7 +29,7 @@ const EquityInvestments = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10); // You can make this configurable
+  const [itemsPerPage] = useState(10);
 
   useEffect(() => {
     fetchPortfolio(currentPage, itemsPerPage);
@@ -49,27 +51,20 @@ const EquityInvestments = () => {
     }
   };
 
-  // Calculate pagination data (client-side pagination)
+  // Calculate pagination data
   const totalItems = portfolio?.investments?.length || 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-
+  
   // Get current items
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentInvestments =
-    portfolio?.investments?.slice(indexOfFirstItem, indexOfLastItem) || [];
+  const currentInvestments = portfolio?.investments?.slice(indexOfFirstItem, indexOfLastItem) || [];
 
   // Change page
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   if (loading) {
-    return (
-      <div className="px-2 py-4">
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
-        </div>
-      </div>
-    );
+    return <EquityInvestmentsLoader />;
   }
 
   if (error) {
