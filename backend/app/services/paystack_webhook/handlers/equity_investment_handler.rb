@@ -27,9 +27,8 @@ module PaystackWebhook::Handlers
     private
 
     def process_successful_transaction(response)
-      # Convert amount from kobo to currency
       gross_amount = response.dig(:data, :amount).to_f / 100.0
-      net_amount = gross_amount * 0.93 # Assuming 7% platform fee
+      net_amount = gross_amount * 0.93 # 7% platform fee
       platform_fee = gross_amount * 0.07
       paystack_fee = platform_fee * 0.0195 # Paystack's 1.95% fee
       adjusted_platform_fee = platform_fee - paystack_fee
@@ -43,15 +42,12 @@ module PaystackWebhook::Handlers
           update_campaign(investment)
           create_pledge_if_needed(investment)
           
-          # Generate certificate immediately
           if InvestmentCertificateService.generate_certificate(investment)
-            send_confirmation_email(investment, response)
+            send_confirmation_email(investment, response, metadata)
           else
             CertificateGenerationJob.set(wait: 5.minutes).perform_later(investment.id)
           end
         end
-        
-        InvestmentUpdateJob.perform_later(investment.id)
       else
         log_invalid_investment(metadata)
       end
@@ -80,7 +76,6 @@ module PaystackWebhook::Handlers
       donor_country = response.dig(:data, :authorization, :country_code)
       final_country = donor_country.presence || Geocoder.search(donor_ip).first&.country || 'Unknown'
 
-      # Extract all relevant data from the response
       update_attributes = {
         status: EquityInvestment::STATUS_SUCCESSFUL,
         transaction_reference: response[:data][:reference],
@@ -97,18 +92,25 @@ module PaystackWebhook::Handlers
         metadata: build_metadata(metadata, response)
       }
 
-      # Handle shares and percentage from metadata
-      if metadata[:shares].present?
-        update_attributes[:shares] = metadata[:shares].to_f
-      end
-
-      if metadata[:percentage].present?
-        update_attributes[:percentage] = metadata[:percentage].to_f
-      end
+      # Update shares and percentage if they exist in metadata
+      update_attributes[:shares] = metadata[:shares].to_f if metadata[:shares].present?
+      update_attributes[:percentage] = metadata[:percentage].to_f if metadata[:percentage].present?
 
       investment.update!(update_attributes)
     end
 
+    def send_confirmation_email(investment, response, metadata)
+      InvestmentConfirmationEmailService.send_confirmation_email(
+        investment: investment,
+        certificate_url: investment.certificate_url,
+        recipient_email: response.dig(:data, :customer, :email) || investment.email,
+        recipient_name: investment.user&.full_name || investment.full_name || 'Investor',
+        metadata: metadata
+      )
+    rescue => e
+      Rails.logger.error "Failed to send confirmation email: #{e.message}"
+    end
+    
     def build_metadata(metadata, response)
       {
         user_id: metadata[:user_id],

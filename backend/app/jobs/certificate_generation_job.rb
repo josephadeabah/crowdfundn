@@ -7,16 +7,16 @@ class CertificateGenerationJob < ApplicationJob
     return unless investment&.successful?
 
     if InvestmentCertificateService.generate_certificate(investment)
-      # If certificate generated successfully, send email
+      metadata = investment.metadata || {}
       InvestmentConfirmationEmailService.send_confirmation_email(
         investment: investment,
         certificate_url: investment.certificate_url,
         recipient_email: investment.email,
-        recipient_name: investment.user&.full_name || investment.full_name || 'Investor'
+        recipient_name: investment.user&.full_name || investment.full_name || 'Investor',
+        metadata: metadata
       )
     else
-      # Retry if still unsuccessful
-      retry_job(wait: 10.minutes) if execution_count < 3
+      retry_job(wait: 5.minutes) if executions < 3
     end
   end
 end
