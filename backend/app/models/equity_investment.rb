@@ -4,7 +4,7 @@ class EquityInvestment < ApplicationRecord
   belongs_to :campaign, class_name: 'EquityCampaign'
   belongs_to :reward, optional: true
   has_many :pledges, dependent: :destroy
-  has_many :points, dependent: :destroy
+  has_many :points, dependent: :nullify
 
   has_one_attached :certificate
 

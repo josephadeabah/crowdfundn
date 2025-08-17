@@ -139,11 +139,22 @@ module Api
       def destroy
         # Ensure the campaign belongs to the current user
         if @campaign.fundraiser == @current_user
-          @campaign.destroy
+          ActiveRecord::Base.transaction do
+            if @campaign.is_a?(EquityCampaign)
+              # Handle equity investments first
+              @campaign.equity_investments.find_each do |investment|
+                investment.points.update_all(equity_investment_id: nil) # Clear the association
+                investment.destroy!
+              end
+            end
+            @campaign.destroy!
+          end
           head :no_content
         else
           render json: { error: 'You are not authorized to delete this campaign' }, status: :forbidden
         end
+      rescue ActiveRecord::RecordNotDestroyed => e
+        render json: { error: "Failed to delete campaign: #{e.message}" }, status: :unprocessable_entity
       end
 
       def statistics
