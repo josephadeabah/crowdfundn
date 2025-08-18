@@ -369,7 +369,7 @@ module Api
             equity_remaining: @campaign.percentage_available,
             valuation: @campaign.valuation,
             currency_symbol: @campaign.currency_symbol,
-            rewards: @campaign.rewards.available.as_json(only: %i[id title description amount delivery_date])
+            # rewards: @campaign.rewards.available.as_json(only: %i[id title description amount delivery_date])
           }
         end
 
