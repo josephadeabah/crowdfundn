@@ -168,7 +168,7 @@ export interface InvestmentUpdatePayload {
   metadata?: any;
 }
 
-export interface EquityCampaignState extends CampaignState {
+export interface EquityCampaignState extends Omit<CampaignState, 'pagination'> {
   teamMembers: CampaignTeamMember[];
   investments: EquityInvestment[];
   documents: InvestorDocument[];
@@ -177,6 +177,7 @@ export interface EquityCampaignState extends CampaignState {
   certificateLoading: boolean;
   certificateError: string | null;
   certificateUrl: string | null;
+  pagination: PaginationData;
 
   // Certificate actions
   generateCertificate: (
@@ -222,13 +223,8 @@ export interface EquityCampaignState extends CampaignState {
     page: number,
     perPage: number,
   ) => Promise<{
-    investments: Investment[]; // Changed from EquityInvestment[] to Investment[]
-    pagination: {
-      current_page: number;
-      total_pages: number;
-      per_page: number;
-      total_count: number;
-    };
+    investments: Investment[];
+    pagination: PaginationData;
   }>;
   createInvestment: (
     campaignId: string,

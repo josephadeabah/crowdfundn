@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { FaUser } from 'react-icons/fa';
+'use client';
+import React, { useEffect } from 'react';
+import { FaChartLine } from 'react-icons/fa';
 import moment from 'moment';
 import Pagination from '@/app/components/pagination/Pagination';
-import { Investment } from '@/app/types/equityCampaigns.types';
 import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
 
 interface InvestmentListProps {
@@ -14,118 +14,72 @@ const InvestmentList: React.FC<InvestmentListProps> = ({
   currencySymbol = 'GHS',
   campaignId,
 }) => {
-  const { fetchPublicInvestments } = useEquityCampaignContext();
-  const [investments, setInvestments] = useState<Investment[]>([]);
-  const [pagination, setPagination] = useState({
-    current_page: 1,
-    total_pages: 1,
-    per_page: 10,
-    total_count: 0,
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { pagination, investments, fetchPublicInvestments } =
+    useEquityCampaignContext();
 
-  const loadInvestments = async (page: number) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchPublicInvestments(
-        campaignId,
-        page,
-        pagination.per_page,
-      );
-      setInvestments(data.investments);
-      setPagination(data.pagination);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to load investments',
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Initial load
   useEffect(() => {
-    loadInvestments(1);
+    fetchPublicInvestments(campaignId, 1, 10);
   }, [campaignId]);
 
-  const handlePageChange = (page: number) => {
-    loadInvestments(page);
+  // Handle page changes
+  const handlePageChange = async (page: number) => {
+    await fetchPublicInvestments(campaignId, page, pagination?.per_page || 10);
   };
 
-  if (loading && investments.length === 0) {
-    return <div className="text-center py-8">Loading investments...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className="text-center text-red-500 py-8">
-        Error: {error}
-        <button
-          onClick={() => loadInvestments(1)}
-          className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-4">
-      <h3 className="font-semibold text-lg">Investments</h3>
-
-      {investments.length > 0 ? (
-        <div className="divide-y divide-gray-200 dark:divide-gray-700">
-          {investments.map((investment, index) => (
+    <div className="space-y-8">
+      {/* Investment List */}
+      <div className="space-y-4">
+        {investments.length > 0 ? (
+          investments.map((investment) => (
             <div
-              key={`${investment.investor_name}-${index}`}
-              className="py-4 flex items-center justify-between"
+              key={investment.investor_name}
+              className="flex items-center justify-between border-b border-gray-200 py-4"
             >
+              {/* Investor Info */}
               <div className="flex items-center space-x-4">
-                <div className="bg-gray-100 dark:bg-gray-600 h-10 w-10 flex items-center justify-center rounded-full">
-                  <FaUser className="text-blue-500 text-lg" />
+                <div className="bg-gray-100 h-10 w-10 flex items-center justify-center rounded-full">
+                  <FaChartLine className="text-blue-500 text-lg" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-800 dark:text-gray-200">
-                    {investment.investor_name || 'Anonymous Investor'}
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                    {investment.investor_name || 'Anonymous'}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {moment(investment.date).format('MMM D, YYYY [at] h:mm A')}
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {moment(investment.date).format('MMM DD, YYYY, hh:mm:ss A')}
                   </p>
                 </div>
               </div>
+
+              {/* Investment Amount */}
               <div className="text-right">
-                <p className="font-bold text-blue-600 dark:text-blue-400">
+                <p className="text-sm font-bold text-blue-600 dark:text-blue-400">
                   {currencySymbol}
-                  {investment.amount.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  {parseFloat(
+                    investment.amount.toString() || '0.0',
+                  ).toLocaleString()}
                 </p>
-                {investment.email && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[150px]">
-                    {investment.email}
-                  </p>
-                )}
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Thank you for investing!
+                </p>
               </div>
             </div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-8 bg-gray-50 dark:bg-gray-700 rounded-lg">
-          <p className="text-gray-500 dark:text-gray-400">No investments yet</p>
-        </div>
-      )}
+          ))
+        ) : (
+          <p className="text-center text-gray-500 dark:text-gray-400">
+            No investors yet. Be the first to invest!
+          </p>
+        )}
+      </div>
 
-      {pagination.total_pages > 1 && (
-        <div className="flex justify-center mt-4">
-          <Pagination
-            currentPage={pagination.current_page}
-            totalPages={pagination.total_pages}
-            onPageChange={handlePageChange}
-          />
-        </div>
+      {/* Pagination */}
+      {pagination && pagination.total_pages > 1 && (
+        <Pagination
+          currentPage={pagination.current_page}
+          totalPages={pagination.total_pages}
+          onPageChange={handlePageChange}
+        />
       )}
     </div>
   );

@@ -57,6 +57,12 @@ export const EquityCampaignProvider = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { fetchUserCampaigns } = useCampaignContext();
+  const [pagination, setPagination] = useState<PaginationData>({
+    current_page: 1,
+    total_pages: 1,
+    per_page: 10,
+    total_count: 0,
+  });
 
   const handleApiError = (errorData: any) => {
     if (typeof errorData === 'string') {
@@ -706,6 +712,14 @@ export const EquityCampaignProvider = ({
         }
 
         const data = await response.json();
+        setPagination(
+          data.pagination || {
+            current_page: 1,
+            total_pages: 1,
+            per_page: perPage,
+            total_count: 0,
+          },
+        );
         return {
           investments: data.investments || [],
           pagination: data.pagination || {
@@ -1201,6 +1215,12 @@ export const EquityCampaignProvider = ({
       certificateUrl,
       loading,
       error,
+      pagination: {
+        current_page: pagination?.current_page || 1,
+        total_pages: pagination?.total_pages || 1,
+        per_page: pagination?.per_page || 10,
+        total_count: pagination?.total_count || 0,
+      },
 
       pendingCampaigns,
       fetchPendingReviewCampaigns,
