@@ -104,13 +104,13 @@ export const dropdownLinks: DropdownLinks = {
   Events: [
     {
       label: 'Upcoming Events',
-      href: '/events/upcoming',
+      href: 'https://www.pnpmmedia.com/journal',
       icon: CalendarIcon, // Standard icon for events
       description: 'Stay updated with our upcoming events and workshops.',
     },
     {
       label: 'Seminars',
-      href: '/events/seminars',
+      href: 'https://www.pnpmmedia.com/podcasts',
       icon: MicrophoneIcon, // Represents speaking/presentation events
       description: 'Join our seminars to learn from industry experts.',
     },
