@@ -92,7 +92,7 @@ export const dropdownLinks: DropdownLinks = {
   Education: [
     {
       label: 'Scholarships',
-      href: '/info/education/scholarships',
+      href: '/info/education/schorlaships',
       icon: AcademicCapIcon, // Better represents academic achievements
       description: 'Learn about available scholarships for brilliant minds.',
     },
