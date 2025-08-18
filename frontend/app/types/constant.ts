@@ -8,6 +8,8 @@ import {
   CreditCardIcon,
   UserIcon,
   AcademicCapIcon,
+  IdentificationIcon, // For Mentorship
+  BookOpenIcon,
   TrophyIcon,
   CalendarIcon,
   MicrophoneIcon,
@@ -135,18 +137,18 @@ export const dropdownLinks: DropdownLinks = {
       description:
         'Get personalized guidance during our office hours with industry experts.',
     },
-    {
-      label: 'Training',
-      href: '/info/events/training',
-      icon: UsersIcon,
-      description: ''
-    },
-    {
-      label: 'Mentorship',
-      href: '/info/events/mentorship',
-      icon: UsersIcon,
-      description: ''
-    }
+  {
+    label: 'Training',
+    href: '/info/events/training',
+    icon: BookOpenIcon, // Represents learning and education
+    description: 'Structured programs to develop essential business and technical skills for entrepreneurs.',
+  },
+  {
+    label: 'Mentorship',
+    href: '/info/events/mentorship',
+    icon: IdentificationIcon, // Represents guidance and personal development
+    description: 'One-on-one guidance from experienced entrepreneurs to help you navigate business challenges.',
+  }
   ],
   Fund: [
     {
