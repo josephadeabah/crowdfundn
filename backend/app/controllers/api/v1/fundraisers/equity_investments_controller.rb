@@ -2,9 +2,9 @@ module Api
   module V1
     module Fundraisers
       class EquityInvestmentsController < ApplicationController
-        before_action :authenticate_request, except: %i[public_investments, index]
-        before_action :set_campaign, only: %i[create, public_investments]
-        before_action :set_investment, only: %i[show, update, destroy, certificate_status]
+        before_action :authenticate_request, except: [:public_investments, :index]
+        before_action :set_campaign, only: [:create, :public_investments]
+        before_action :set_investment, only: [:show, :update, :destroy, :certificate_status]
 
         def public_investments
           Rails.logger.info "Public investments requested for campaign #{@campaign.id}"
