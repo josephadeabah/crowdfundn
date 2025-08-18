@@ -90,13 +90,13 @@ export const dropdownLinks: DropdownLinks = {
   Education: [
     {
       label: 'Scholarships',
-      href: '/education/scholarships',
+      href: '/info/education/scholarships',
       icon: AcademicCapIcon, // Better represents academic achievements
       description: 'Learn about available scholarships for brilliant minds.',
     },
     {
       label: 'Grants',
-      href: '/education/grants',
+      href: '/info/education/grants',
       icon: TrophyIcon, // Represents awards and achievements
       description: 'Explore various grants available to support you.',
     },
@@ -116,25 +116,37 @@ export const dropdownLinks: DropdownLinks = {
     },
     {
       label: 'Workshops',
-      href: '/events/workshops',
+      href: '/info/events/workshops',
       icon: PuzzlePieceIcon, // Represents hands-on, interactive sessions
       description:
         'Participate in hands-on workshops to enhance your skills with expert mentorship.',
     },
     {
       label: 'Group Meetings',
-      href: '/events/group-meetings',
+      href: '/info/events/group-meetings',
       icon: UsersIcon, // Represents group interactions
       description:
         'Join our group meetings to network and collaborate with like-minded individuals.',
     },
     {
       label: 'Office Hours',
-      href: '/events/office-hours',
+      href: '/info/events/office-hours',
       icon: ClockIcon, // Represents scheduled time slots
       description:
         'Get personalized guidance during our office hours with industry experts.',
     },
+    {
+      label: 'Training',
+      href: '/info/events/training',
+      icon: UsersIcon,
+      description: ''
+    },
+    {
+      label: 'Mentorship',
+      href: '/info/events/mentorship',
+      icon: UsersIcon,
+      description: ''
+    }
   ],
   Fund: [
     {
