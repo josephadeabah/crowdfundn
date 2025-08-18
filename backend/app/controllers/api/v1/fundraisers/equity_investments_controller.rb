@@ -7,7 +7,6 @@ module Api
         before_action :set_investment, only: [:show, :update, :destroy, :certificate_status]
 
         def public_investments
-          Rails.logger.info "Public investments requested for campaign #{@campaign.id}"
           investments = @campaign.equity_investments.successful
                               .order(created_at: :desc)
 
