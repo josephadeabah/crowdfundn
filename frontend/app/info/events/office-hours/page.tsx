@@ -1,161 +1,229 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { Button } from "@/app/components/ui/button";
-import { Badge } from "@/app/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
-import { Clock, Calendar, User, Video, MapPin, Star, CheckCircle } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
+import { Button } from '@/app/components/ui/button';
+import { Badge } from '@/app/components/ui/badge';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/app/components/ui/tabs';
+import {
+  Clock,
+  Calendar,
+  User,
+  Video,
+  MapPin,
+  Star,
+  CheckCircle,
+} from 'lucide-react';
 
 const OfficeHours = () => {
   const mentors = [
     {
       id: 1,
-      name: "Dr. Kwame Asante",
-      title: "Serial Entrepreneur & Business Strategy Expert",
-      company: "African Ventures Ltd",
-      expertise: ["Business Strategy", "Scaling", "Market Entry", "Fundraising"],
-      experience: "15+ years",
-      successStories: "50+ startups mentored",
+      name: 'Dr. Kwame Asante',
+      title: 'Serial Entrepreneur & Business Strategy Expert',
+      company: 'African Ventures Ltd',
+      expertise: [
+        'Business Strategy',
+        'Scaling',
+        'Market Entry',
+        'Fundraising',
+      ],
+      experience: '15+ years',
+      successStories: '50+ startups mentored',
       rating: 4.9,
       reviews: 127,
       availability: [
-        { day: "Monday", time: "2:00 PM - 6:00 PM", timezone: "GMT" },
-        { day: "Wednesday", time: "10:00 AM - 2:00 PM", timezone: "GMT" },
-        { day: "Friday", time: "3:00 PM - 7:00 PM", timezone: "GMT" }
+        { day: 'Monday', time: '2:00 PM - 6:00 PM', timezone: 'GMT' },
+        { day: 'Wednesday', time: '10:00 AM - 2:00 PM', timezone: 'GMT' },
+        { day: 'Friday', time: '3:00 PM - 7:00 PM', timezone: 'GMT' },
       ],
-      sessionTypes: ["30-min consultation", "60-min deep dive", "Follow-up session"],
-      bio: "Former CEO of three successful African startups, now helping the next generation of entrepreneurs scale their businesses across the continent.",
-      languages: ["English", "Twi", "French"],
-      bookingFee: "GHS 150/hour"
+      sessionTypes: [
+        '30-min consultation',
+        '60-min deep dive',
+        'Follow-up session',
+      ],
+      bio: 'Former CEO of three successful African startups, now helping the next generation of entrepreneurs scale their businesses across the continent.',
+      languages: ['English', 'Twi', 'French'],
+      bookingFee: 'GHS 150/hour',
     },
     {
       id: 2,
-      name: "Sarah Okonkwo",
-      title: "Digital Marketing & Growth Specialist",
-      company: "GrowthHack Africa",
-      expertise: ["Digital Marketing", "Growth Hacking", "Social Media", "Brand Building"],
-      experience: "10+ years",
-      successStories: "100+ campaigns launched",
+      name: 'Sarah Okonkwo',
+      title: 'Digital Marketing & Growth Specialist',
+      company: 'GrowthHack Africa',
+      expertise: [
+        'Digital Marketing',
+        'Growth Hacking',
+        'Social Media',
+        'Brand Building',
+      ],
+      experience: '10+ years',
+      successStories: '100+ campaigns launched',
       rating: 4.8,
       reviews: 89,
       availability: [
-        { day: "Tuesday", time: "9:00 AM - 1:00 PM", timezone: "WAT" },
-        { day: "Thursday", time: "2:00 PM - 6:00 PM", timezone: "WAT" },
-        { day: "Saturday", time: "10:00 AM - 2:00 PM", timezone: "WAT" }
+        { day: 'Tuesday', time: '9:00 AM - 1:00 PM', timezone: 'WAT' },
+        { day: 'Thursday', time: '2:00 PM - 6:00 PM', timezone: 'WAT' },
+        { day: 'Saturday', time: '10:00 AM - 2:00 PM', timezone: 'WAT' },
       ],
-      sessionTypes: ["Marketing audit", "Strategy session", "Campaign review"],
-      bio: "Led marketing teams at top African tech companies, specializing in user acquisition and retention strategies for emerging markets.",
-      languages: ["English", "Igbo", "French"],
-      bookingFee: "GHS 120/hour"
+      sessionTypes: ['Marketing audit', 'Strategy session', 'Campaign review'],
+      bio: 'Led marketing teams at top African tech companies, specializing in user acquisition and retention strategies for emerging markets.',
+      languages: ['English', 'Igbo', 'French'],
+      bookingFee: 'GHS 120/hour',
     },
     {
       id: 3,
-      name: "Michael Adebayo",
-      title: "Financial Planning & Investment Expert",
-      company: "FinTech Capital Partners",
-      expertise: ["Financial Planning", "Investment Strategy", "Due Diligence", "Exit Planning"],
-      experience: "12+ years",
-      successStories: "GHS 50M+ raised for clients",
+      name: 'Michael Adebayo',
+      title: 'Financial Planning & Investment Expert',
+      company: 'FinTech Capital Partners',
+      expertise: [
+        'Financial Planning',
+        'Investment Strategy',
+        'Due Diligence',
+        'Exit Planning',
+      ],
+      experience: '12+ years',
+      successStories: 'GHS 50M+ raised for clients',
       rating: 4.9,
       reviews: 156,
       availability: [
-        { day: "Monday", time: "9:00 AM - 12:00 PM", timezone: "WAT" },
-        { day: "Wednesday", time: "2:00 PM - 5:00 PM", timezone: "WAT" },
-        { day: "Friday", time: "10:00 AM - 1:00 PM", timezone: "WAT" }
+        { day: 'Monday', time: '9:00 AM - 12:00 PM', timezone: 'WAT' },
+        { day: 'Wednesday', time: '2:00 PM - 5:00 PM', timezone: 'WAT' },
+        { day: 'Friday', time: '10:00 AM - 1:00 PM', timezone: 'WAT' },
       ],
-      sessionTypes: ["Financial health check", "Fundraising prep", "Investor pitch review"],
-      bio: "Former investment banker turned entrepreneur, helping African startups prepare for and secure funding from local and international investors.",
-      languages: ["English", "Yoruba"],
-      bookingFee: "GHS 180/hour"
+      sessionTypes: [
+        'Financial health check',
+        'Fundraising prep',
+        'Investor pitch review',
+      ],
+      bio: 'Former investment banker turned entrepreneur, helping African startups prepare for and secure funding from local and international investors.',
+      languages: ['English', 'Yoruba'],
+      bookingFee: 'GHS 180/hour',
     },
     {
       id: 4,
-      name: "Grace Mwangi",
-      title: "Legal & Compliance Specialist",
-      company: "Mwangi & Associates",
-      expertise: ["Corporate Law", "IP Protection", "Regulatory Compliance", "Contract Law"],
-      experience: "8+ years",
-      successStories: "200+ legal matters resolved",
+      name: 'Grace Mwangi',
+      title: 'Legal & Compliance Specialist',
+      company: 'Mwangi & Associates',
+      expertise: [
+        'Corporate Law',
+        'IP Protection',
+        'Regulatory Compliance',
+        'Contract Law',
+      ],
+      experience: '8+ years',
+      successStories: '200+ legal matters resolved',
       rating: 4.7,
       reviews: 73,
       availability: [
-        { day: "Tuesday", time: "1:00 PM - 5:00 PM", timezone: "EAT" },
-        { day: "Thursday", time: "9:00 AM - 1:00 PM", timezone: "EAT" },
-        { day: "Friday", time: "2:00 PM - 6:00 PM", timezone: "EAT" }
+        { day: 'Tuesday', time: '1:00 PM - 5:00 PM', timezone: 'EAT' },
+        { day: 'Thursday', time: '9:00 AM - 1:00 PM', timezone: 'EAT' },
+        { day: 'Friday', time: '2:00 PM - 6:00 PM', timezone: 'EAT' },
       ],
-      sessionTypes: ["Legal consultation", "Document review", "Compliance audit"],
-      bio: "Specialized in startup law and intellectual property protection, helping entrepreneurs navigate the legal landscape across East Africa.",
-      languages: ["English", "Swahili"],
-      bookingFee: "GHS 200/hour"
+      sessionTypes: [
+        'Legal consultation',
+        'Document review',
+        'Compliance audit',
+      ],
+      bio: 'Specialized in startup law and intellectual property protection, helping entrepreneurs navigate the legal landscape across East Africa.',
+      languages: ['English', 'Swahili'],
+      bookingFee: 'GHS 200/hour',
     },
     {
       id: 5,
-      name: "James Mutua",
-      title: "Technology & Product Development Expert",
-      company: "TechBuild Solutions",
-      expertise: ["Product Development", "Tech Architecture", "MVP Development", "Team Building"],
-      experience: "14+ years",
-      successStories: "80+ products launched",
+      name: 'James Mutua',
+      title: 'Technology & Product Development Expert',
+      company: 'TechBuild Solutions',
+      expertise: [
+        'Product Development',
+        'Tech Architecture',
+        'MVP Development',
+        'Team Building',
+      ],
+      experience: '14+ years',
+      successStories: '80+ products launched',
       rating: 4.8,
       reviews: 94,
       availability: [
-        { day: "Monday", time: "6:00 PM - 9:00 PM", timezone: "EAT" },
-        { day: "Wednesday", time: "7:00 AM - 11:00 AM", timezone: "EAT" },
-        { day: "Saturday", time: "9:00 AM - 1:00 PM", timezone: "EAT" }
+        { day: 'Monday', time: '6:00 PM - 9:00 PM', timezone: 'EAT' },
+        { day: 'Wednesday', time: '7:00 AM - 11:00 AM', timezone: 'EAT' },
+        { day: 'Saturday', time: '9:00 AM - 1:00 PM', timezone: 'EAT' },
       ],
-      sessionTypes: ["Technical review", "Architecture planning", "Team scaling advice"],
-      bio: "Former CTO at leading African tech companies, specializing in building scalable technology solutions for emerging markets.",
-      languages: ["English", "Swahili"],
-      bookingFee: "GHS 160/hour"
+      sessionTypes: [
+        'Technical review',
+        'Architecture planning',
+        'Team scaling advice',
+      ],
+      bio: 'Former CTO at leading African tech companies, specializing in building scalable technology solutions for emerging markets.',
+      languages: ['English', 'Swahili'],
+      bookingFee: 'GHS 160/hour',
     },
     {
       id: 6,
-      name: "Dr. Fatima Hassan",
-      title: "Impact & Sustainability Consultant",
-      company: "Impact Ventures Africa",
-      expertise: ["Impact Measurement", "Sustainability", "Social Enterprise", "ESG Compliance"],
-      experience: "11+ years",
-      successStories: "40+ impact reports created",
+      name: 'Dr. Fatima Hassan',
+      title: 'Impact & Sustainability Consultant',
+      company: 'Impact Ventures Africa',
+      expertise: [
+        'Impact Measurement',
+        'Sustainability',
+        'Social Enterprise',
+        'ESG Compliance',
+      ],
+      experience: '11+ years',
+      successStories: '40+ impact reports created',
       rating: 4.9,
       reviews: 68,
       availability: [
-        { day: "Tuesday", time: "8:00 AM - 12:00 PM", timezone: "CAT" },
-        { day: "Thursday", time: "1:00 PM - 5:00 PM", timezone: "CAT" },
-        { day: "Saturday", time: "10:00 AM - 2:00 PM", timezone: "CAT" }
+        { day: 'Tuesday', time: '8:00 AM - 12:00 PM', timezone: 'CAT' },
+        { day: 'Thursday', time: '1:00 PM - 5:00 PM', timezone: 'CAT' },
+        { day: 'Saturday', time: '10:00 AM - 2:00 PM', timezone: 'CAT' },
       ],
-      sessionTypes: ["Impact assessment", "Sustainability planning", "ESG audit"],
-      bio: "Leading expert in impact measurement and sustainable business practices, helping organizations create positive change while building profitable businesses.",
-      languages: ["English", "Arabic", "French"],
-      bookingFee: "GHS 140/hour"
-    }
+      sessionTypes: [
+        'Impact assessment',
+        'Sustainability planning',
+        'ESG audit',
+      ],
+      bio: 'Leading expert in impact measurement and sustainable business practices, helping organizations create positive change while building profitable businesses.',
+      languages: ['English', 'Arabic', 'French'],
+      bookingFee: 'GHS 140/hour',
+    },
   ];
 
   const upcomingSessions = [
     {
-      mentor: "Dr. Kwame Asante",
-      topic: "Scaling Your Business Across African Markets",
-      date: "March 29, 2024",
-      time: "3:00 PM GMT",
-      type: "Group Session",
-      spots: "3 spots left",
-      price: "GHS 50"
+      mentor: 'Dr. Kwame Asante',
+      topic: 'Scaling Your Business Across African Markets',
+      date: 'March 29, 2024',
+      time: '3:00 PM GMT',
+      type: 'Group Session',
+      spots: '3 spots left',
+      price: 'GHS 50',
     },
     {
-      mentor: "Sarah Okonkwo",
-      topic: "Digital Marketing for Mobile-First Markets",
-      date: "March 31, 2024",
-      time: "11:00 AM WAT",
-      type: "Group Session",
-      spots: "5 spots left",
-      price: "GHS 40"
+      mentor: 'Sarah Okonkwo',
+      topic: 'Digital Marketing for Mobile-First Markets',
+      date: 'March 31, 2024',
+      time: '11:00 AM WAT',
+      type: 'Group Session',
+      spots: '5 spots left',
+      price: 'GHS 40',
     },
     {
-      mentor: "Michael Adebayo",
-      topic: "Preparing for Your First Fundraising Round",
-      date: "April 3, 2024",
-      time: "2:00 PM WAT",
-      type: "Group Session",
-      spots: "2 spots left",
-      price: "GHS 60"
-    }
+      mentor: 'Michael Adebayo',
+      topic: 'Preparing for Your First Fundraising Round',
+      date: 'April 3, 2024',
+      time: '2:00 PM WAT',
+      type: 'Group Session',
+      spots: '2 spots left',
+      price: 'GHS 60',
+    },
   ];
 
   return (
@@ -171,7 +239,8 @@ const OfficeHours = () => {
               Office Hours
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Get personalized guidance from experienced entrepreneurs and industry experts through one-on-one mentorship sessions.
+              Get personalized guidance from experienced entrepreneurs and
+              industry experts through one-on-one mentorship sessions.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-primary hover:bg-primary/90">
@@ -213,25 +282,37 @@ const OfficeHours = () => {
       <section className="py-16">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Upcoming Group Office Hours</h2>
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              Upcoming Group Office Hours
+            </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Join group sessions for focused learning at a lower cost, perfect for common entrepreneurial challenges.
+              Join group sessions for focused learning at a lower cost, perfect
+              for common entrepreneurial challenges.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
             {upcomingSessions.map((session, index) => (
-              <Card key={index} className="border-border hover:shadow-lg transition-shadow">
+              <Card
+                key={index}
+                className="border-border hover:shadow-lg transition-shadow"
+              >
                 <CardHeader>
                   <div className="flex justify-between items-start mb-4">
                     <Badge variant="outline">{session.type}</Badge>
                     <div className="text-right">
-                      <div className="text-lg font-bold text-primary">{session.price}</div>
-                      <div className="text-xs text-muted-foreground">{session.spots}</div>
+                      <div className="text-lg font-bold text-primary">
+                        {session.price}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {session.spots}
+                      </div>
                     </div>
                   </div>
                   <CardTitle className="text-lg">{session.topic}</CardTitle>
-                  <p className="text-sm text-muted-foreground">with {session.mentor}</p>
+                  <p className="text-sm text-muted-foreground">
+                    with {session.mentor}
+                  </p>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -243,9 +324,7 @@ const OfficeHours = () => {
                       <Clock className="h-4 w-4 text-primary" />
                       <span>{session.time}</span>
                     </div>
-                    <Button className="w-full">
-                      Join Session
-                    </Button>
+                    <Button className="w-full">Join Session</Button>
                   </div>
                 </CardContent>
               </Card>
@@ -258,9 +337,12 @@ const OfficeHours = () => {
       <section className="py-16 bg-card">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Book 1-on-1 Sessions</h2>
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              Book 1-on-1 Sessions
+            </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Choose from our roster of experienced mentors and book personalized sessions tailored to your specific needs.
+              Choose from our roster of experienced mentors and book
+              personalized sessions tailored to your specific needs.
             </p>
           </div>
 
@@ -277,33 +359,52 @@ const OfficeHours = () => {
             <TabsContent value="all" className="mt-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {mentors.map((mentor) => (
-                  <Card key={mentor.id} className="border-border hover:shadow-lg transition-shadow">
+                  <Card
+                    key={mentor.id}
+                    className="border-border hover:shadow-lg transition-shadow"
+                  >
                     <CardHeader>
                       <div className="flex justify-between items-start mb-4">
                         <div>
-                          <CardTitle className="text-xl">{mentor.name}</CardTitle>
-                          <p className="text-sm text-muted-foreground">{mentor.title}</p>
-                          <p className="text-xs text-muted-foreground">{mentor.company}</p>
+                          <CardTitle className="text-xl">
+                            {mentor.name}
+                          </CardTitle>
+                          <p className="text-sm text-muted-foreground">
+                            {mentor.title}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {mentor.company}
+                          </p>
                         </div>
                         <div className="text-right">
                           <div className="flex items-center gap-1 mb-1">
                             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            <span className="font-semibold">{mentor.rating}</span>
-                            <span className="text-xs text-muted-foreground">({mentor.reviews})</span>
+                            <span className="font-semibold">
+                              {mentor.rating}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              ({mentor.reviews})
+                            </span>
                           </div>
-                          <div className="text-sm font-semibold text-primary">{mentor.bookingFee}</div>
+                          <div className="text-sm font-semibold text-primary">
+                            {mentor.bookingFee}
+                          </div>
                         </div>
                       </div>
-                      <p className="text-sm text-muted-foreground">{mentor.bio}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {mentor.bio}
+                      </p>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                           <div>
-                            <span className="font-semibold">Experience:</span> {mentor.experience}
+                            <span className="font-semibold">Experience:</span>{' '}
+                            {mentor.experience}
                           </div>
                           <div>
-                            <span className="font-semibold">Track Record:</span> {mentor.successStories}
+                            <span className="font-semibold">Track Record:</span>{' '}
+                            {mentor.successStories}
                           </div>
                         </div>
 
@@ -322,7 +423,10 @@ const OfficeHours = () => {
                           <h4 className="font-semibold mb-2">Session Types</h4>
                           <ul className="space-y-1">
                             {mentor.sessionTypes.map((type, index) => (
-                              <li key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <li
+                                key={index}
+                                className="flex items-center gap-2 text-sm text-muted-foreground"
+                              >
                                 <CheckCircle className="h-4 w-4 text-primary" />
                                 {type}
                               </li>
@@ -331,23 +435,26 @@ const OfficeHours = () => {
                         </div>
 
                         <div>
-                          <h4 className="font-semibold mb-2">Available Times</h4>
+                          <h4 className="font-semibold mb-2">
+                            Available Times
+                          </h4>
                           <div className="space-y-1">
-                            {mentor.availability.slice(0, 2).map((slot, index) => (
-                              <div key={index} className="text-sm text-muted-foreground">
-                                {slot.day}: {slot.time} ({slot.timezone})
-                              </div>
-                            ))}
+                            {mentor.availability
+                              .slice(0, 2)
+                              .map((slot, index) => (
+                                <div
+                                  key={index}
+                                  className="text-sm text-muted-foreground"
+                                >
+                                  {slot.day}: {slot.time} ({slot.timezone})
+                                </div>
+                              ))}
                           </div>
                         </div>
 
                         <div className="flex gap-3 pt-4">
-                          <Button className="flex-1">
-                            Book Session
-                          </Button>
-                          <Button variant="outline">
-                            View Profile
-                          </Button>
+                          <Button className="flex-1">Book Session</Button>
+                          <Button variant="outline">View Profile</Button>
                         </div>
                       </div>
                     </CardContent>
@@ -358,86 +465,173 @@ const OfficeHours = () => {
 
             <TabsContent value="business" className="mt-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {mentors.filter(m => m.expertise.some(e => ["Business Strategy", "Scaling", "Market Entry"].includes(e))).map((mentor) => (
-                  <Card key={mentor.id} className="border-border hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <CardTitle className="text-xl">{mentor.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground">{mentor.title}</p>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-muted-foreground mb-4">{mentor.bio}</p>
-                      <Button className="w-full">Book Session</Button>
-                    </CardContent>
-                  </Card>
-                ))}
+                {mentors
+                  .filter((m) =>
+                    m.expertise.some((e) =>
+                      ['Business Strategy', 'Scaling', 'Market Entry'].includes(
+                        e,
+                      ),
+                    ),
+                  )
+                  .map((mentor) => (
+                    <Card
+                      key={mentor.id}
+                      className="border-border hover:shadow-lg transition-shadow"
+                    >
+                      <CardHeader>
+                        <CardTitle className="text-xl">{mentor.name}</CardTitle>
+                        <p className="text-sm text-muted-foreground">
+                          {mentor.title}
+                        </p>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground mb-4">
+                          {mentor.bio}
+                        </p>
+                        <Button className="w-full">Book Session</Button>
+                      </CardContent>
+                    </Card>
+                  ))}
               </div>
             </TabsContent>
 
             <TabsContent value="marketing" className="mt-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {mentors.filter(m => m.expertise.some(e => ["Digital Marketing", "Growth Hacking", "Social Media", "Brand Building"].includes(e))).map((mentor) => (
-                  <Card key={mentor.id} className="border-border hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <CardTitle className="text-xl">{mentor.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground">{mentor.title}</p>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-muted-foreground mb-4">{mentor.bio}</p>
-                      <Button className="w-full">Book Session</Button>
-                    </CardContent>
-                  </Card>
-                ))}
+                {mentors
+                  .filter((m) =>
+                    m.expertise.some((e) =>
+                      [
+                        'Digital Marketing',
+                        'Growth Hacking',
+                        'Social Media',
+                        'Brand Building',
+                      ].includes(e),
+                    ),
+                  )
+                  .map((mentor) => (
+                    <Card
+                      key={mentor.id}
+                      className="border-border hover:shadow-lg transition-shadow"
+                    >
+                      <CardHeader>
+                        <CardTitle className="text-xl">{mentor.name}</CardTitle>
+                        <p className="text-sm text-muted-foreground">
+                          {mentor.title}
+                        </p>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground mb-4">
+                          {mentor.bio}
+                        </p>
+                        <Button className="w-full">Book Session</Button>
+                      </CardContent>
+                    </Card>
+                  ))}
               </div>
             </TabsContent>
 
             <TabsContent value="finance" className="mt-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {mentors.filter(m => m.expertise.some(e => ["Financial Planning", "Investment Strategy", "Due Diligence", "Exit Planning"].includes(e))).map((mentor) => (
-                  <Card key={mentor.id} className="border-border hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <CardTitle className="text-xl">{mentor.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground">{mentor.title}</p>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-muted-foreground mb-4">{mentor.bio}</p>
-                      <Button className="w-full">Book Session</Button>
-                    </CardContent>
-                  </Card>
-                ))}
+                {mentors
+                  .filter((m) =>
+                    m.expertise.some((e) =>
+                      [
+                        'Financial Planning',
+                        'Investment Strategy',
+                        'Due Diligence',
+                        'Exit Planning',
+                      ].includes(e),
+                    ),
+                  )
+                  .map((mentor) => (
+                    <Card
+                      key={mentor.id}
+                      className="border-border hover:shadow-lg transition-shadow"
+                    >
+                      <CardHeader>
+                        <CardTitle className="text-xl">{mentor.name}</CardTitle>
+                        <p className="text-sm text-muted-foreground">
+                          {mentor.title}
+                        </p>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground mb-4">
+                          {mentor.bio}
+                        </p>
+                        <Button className="w-full">Book Session</Button>
+                      </CardContent>
+                    </Card>
+                  ))}
               </div>
             </TabsContent>
 
             <TabsContent value="legal" className="mt-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {mentors.filter(m => m.expertise.some(e => ["Corporate Law", "IP Protection", "Regulatory Compliance", "Contract Law"].includes(e))).map((mentor) => (
-                  <Card key={mentor.id} className="border-border hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <CardTitle className="text-xl">{mentor.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground">{mentor.title}</p>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-muted-foreground mb-4">{mentor.bio}</p>
-                      <Button className="w-full">Book Session</Button>
-                    </CardContent>
-                  </Card>
-                ))}
+                {mentors
+                  .filter((m) =>
+                    m.expertise.some((e) =>
+                      [
+                        'Corporate Law',
+                        'IP Protection',
+                        'Regulatory Compliance',
+                        'Contract Law',
+                      ].includes(e),
+                    ),
+                  )
+                  .map((mentor) => (
+                    <Card
+                      key={mentor.id}
+                      className="border-border hover:shadow-lg transition-shadow"
+                    >
+                      <CardHeader>
+                        <CardTitle className="text-xl">{mentor.name}</CardTitle>
+                        <p className="text-sm text-muted-foreground">
+                          {mentor.title}
+                        </p>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground mb-4">
+                          {mentor.bio}
+                        </p>
+                        <Button className="w-full">Book Session</Button>
+                      </CardContent>
+                    </Card>
+                  ))}
               </div>
             </TabsContent>
 
             <TabsContent value="tech" className="mt-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {mentors.filter(m => m.expertise.some(e => ["Product Development", "Tech Architecture", "MVP Development", "Team Building"].includes(e))).map((mentor) => (
-                  <Card key={mentor.id} className="border-border hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <CardTitle className="text-xl">{mentor.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground">{mentor.title}</p>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-muted-foreground mb-4">{mentor.bio}</p>
-                      <Button className="w-full">Book Session</Button>
-                    </CardContent>
-                  </Card>
-                ))}
+                {mentors
+                  .filter((m) =>
+                    m.expertise.some((e) =>
+                      [
+                        'Product Development',
+                        'Tech Architecture',
+                        'MVP Development',
+                        'Team Building',
+                      ].includes(e),
+                    ),
+                  )
+                  .map((mentor) => (
+                    <Card
+                      key={mentor.id}
+                      className="border-border hover:shadow-lg transition-shadow"
+                    >
+                      <CardHeader>
+                        <CardTitle className="text-xl">{mentor.name}</CardTitle>
+                        <p className="text-sm text-muted-foreground">
+                          {mentor.title}
+                        </p>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground mb-4">
+                          {mentor.bio}
+                        </p>
+                        <Button className="w-full">Book Session</Button>
+                      </CardContent>
+                    </Card>
+                  ))}
               </div>
             </TabsContent>
           </Tabs>
@@ -449,7 +643,9 @@ const OfficeHours = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-foreground mb-4">How Office Hours Work</h2>
+              <h2 className="text-3xl font-bold text-foreground mb-4">
+                How Office Hours Work
+              </h2>
               <p className="text-muted-foreground">
                 Simple steps to get the mentorship you need
               </p>
@@ -460,9 +656,12 @@ const OfficeHours = () => {
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl font-bold text-primary">1</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Choose Your Mentor</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Choose Your Mentor
+                </h3>
                 <p className="text-muted-foreground">
-                  Browse our expert mentors and select based on your specific needs
+                  Browse our expert mentors and select based on your specific
+                  needs
                 </p>
               </div>
 
@@ -470,9 +669,12 @@ const OfficeHours = () => {
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl font-bold text-primary">2</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Book Your Session</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Book Your Session
+                </h3>
                 <p className="text-muted-foreground">
-                  Schedule a convenient time and prepare your questions or challenges
+                  Schedule a convenient time and prepare your questions or
+                  challenges
                 </p>
               </div>
 
@@ -480,9 +682,12 @@ const OfficeHours = () => {
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl font-bold text-primary">3</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Get Expert Guidance</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Get Expert Guidance
+                </h3>
                 <p className="text-muted-foreground">
-                  Receive personalized advice and actionable insights for your business
+                  Receive personalized advice and actionable insights for your
+                  business
                 </p>
               </div>
             </div>
@@ -498,7 +703,8 @@ const OfficeHours = () => {
               Accelerate Your Growth
             </h2>
             <p className="text-muted-foreground mb-8">
-              Don't navigate your entrepreneurial journey alone. Get expert guidance from mentors who've been where you want to go.
+              Don't navigate your entrepreneurial journey alone. Get expert
+              guidance from mentors who've been where you want to go.
             </p>
             <Button size="lg" className="bg-primary hover:bg-primary/90">
               Book Your First Session
