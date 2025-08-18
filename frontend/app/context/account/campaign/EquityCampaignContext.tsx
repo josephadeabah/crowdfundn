@@ -675,66 +675,31 @@ export const EquityCampaignProvider = ({
   );
 
   // In EquityCampaignContext.tsx
-  const fetchPublicInvestments = useCallback(
-    async (
-      campaignId: string,
-      page = 1,
-      perPage = 10,
-    ): Promise<{
-      investments: Investment[];
-      pagination: PaginationData;
-    }> => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_campaigns/${campaignId}/equity_investments/public_investments?page=${page}&per_page=${perPage}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+const fetchPublicInvestments = useCallback(
+  async (
+    campaignId: string,
+    page = 1,
+    perPage = 10,
+  ): Promise<{
+    investments: Investment[];
+    pagination: PaginationData;
+  }> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_campaigns/${campaignId}/equity_investments/public_investments?page=${page}&per_page=${perPage}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
           },
-        );
+        },
+      );
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          handleApiError(errorData);
-          return {
-            investments: [],
-            pagination: {
-              current_page: 1,
-              total_pages: 1,
-              per_page: perPage,
-              total_count: 0,
-            },
-          };
-        }
-
-        const data = await response.json();
-        setPagination(
-          data.pagination || {
-            current_page: 1,
-            total_pages: 1,
-            per_page: perPage,
-            total_count: 0,
-          },
-        );
-        return {
-          investments: data.investments || [],
-          pagination: data.pagination || {
-            current_page: 1,
-            total_pages: 1,
-            per_page: perPage,
-            total_count: 0,
-          },
-        };
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : 'Error fetching public investments',
-        );
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        handleApiError(errorData);
         return {
           investments: [],
           pagination: {
@@ -744,12 +709,54 @@ export const EquityCampaignProvider = ({
             total_count: 0,
           },
         };
-      } finally {
-        setLoading(false);
       }
-    },
-    [],
-  );
+
+      const data = await response.json();
+
+      // 🔥 Update investments state here
+      setInvestments(data.investments || []);
+
+      // 🔥 Update pagination state
+      setPagination(
+        data.pagination || {
+          current_page: 1,
+          total_pages: 1,
+          per_page: perPage,
+          total_count: 0,
+        },
+      );
+
+      return {
+        investments: data.investments || [],
+        pagination: data.pagination || {
+          current_page: 1,
+          total_pages: 1,
+          per_page: perPage,
+          total_count: 0,
+        },
+      };
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Error fetching public investments',
+      );
+      return {
+        investments: [],
+        pagination: {
+          current_page: 1,
+          total_pages: 1,
+          per_page: perPage,
+          total_count: 0,
+        },
+      };
+    } finally {
+      setLoading(false);
+    }
+  },
+  [],
+);
+
 
   const createInvestment = useCallback(
     async (
