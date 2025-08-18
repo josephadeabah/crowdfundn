@@ -7,6 +7,13 @@ import {
   BanknotesIcon,
   CreditCardIcon,
   UserIcon,
+  AcademicCapIcon,
+  TrophyIcon,
+  CalendarIcon,
+  MicrophoneIcon,
+  PuzzlePieceIcon,
+  ClockIcon,
+  UsersIcon,
 } from '@heroicons/react/24/outline';
 import { DropdownLinks } from './navbar.types';
 import {
@@ -78,6 +85,55 @@ export const dropdownLinks: DropdownLinks = {
       href: '/info/contactus',
       icon: PhoneIcon,
       description: 'Reach out to our Eswatini office.',
+    },
+  ],
+  Education: [
+    {
+      label: 'Scholarships',
+      href: '/education/scholarships',
+      icon: AcademicCapIcon, // Better represents academic achievements
+      description: 'Learn about available scholarships for brilliant minds.',
+    },
+    {
+      label: 'Grants',
+      href: '/education/grants',
+      icon: TrophyIcon, // Represents awards and achievements
+      description: 'Explore various grants available to support you.',
+    },
+  ],
+  Events: [
+    {
+      label: 'Upcoming Events',
+      href: '/events/upcoming',
+      icon: CalendarIcon, // Standard icon for events
+      description: 'Stay updated with our upcoming events and workshops.',
+    },
+    {
+      label: 'Seminars',
+      href: '/events/seminars',
+      icon: MicrophoneIcon, // Represents speaking/presentation events
+      description: 'Join our seminars to learn from industry experts.',
+    },
+    {
+      label: 'Workshops',
+      href: '/events/workshops',
+      icon: PuzzlePieceIcon, // Represents hands-on, interactive sessions
+      description:
+        'Participate in hands-on workshops to enhance your skills with expert mentorship.',
+    },
+    {
+      label: 'Group Meetings',
+      href: '/events/group-meetings',
+      icon: UsersIcon, // Represents group interactions
+      description:
+        'Join our group meetings to network and collaborate with like-minded individuals.',
+    },
+    {
+      label: 'Office Hours',
+      href: '/events/office-hours',
+      icon: ClockIcon, // Represents scheduled time slots
+      description:
+        'Get personalized guidance during our office hours with industry experts.',
     },
   ],
   Fund: [
