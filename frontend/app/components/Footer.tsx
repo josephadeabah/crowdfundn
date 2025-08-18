@@ -34,8 +34,8 @@ const Footer = () => {
         { name: 'Careers', path: '/info/careers' },
         { name: 'Team', path: '/info/team' },
         { name: 'Contact', path: '/info/contactus' },
-        { name: 'Press', path: '/info/press' },
-        { name: 'Newsroom', path: '/info/newsroom' },
+        { name: 'Press', path: 'https://www.pnpmmedia.com/journal' },
+        { name: 'Newsroom', path: 'https://www.pnpmmedia.com/journal' },
       ],
     },
     {
