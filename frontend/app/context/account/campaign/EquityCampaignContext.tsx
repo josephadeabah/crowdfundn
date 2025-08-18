@@ -19,6 +19,8 @@ import {
   InvestmentCreatePayload,
   InvestmentCreateResponse,
   InvestmentUpdatePayload,
+  Investment,
+  PaginationData,
 } from '@/app/types/equityCampaigns.types';
 import { getDetailedErrorMessage } from '@/app/types/campaign.error.messages.types';
 
@@ -666,18 +668,25 @@ export const EquityCampaignProvider = ({
     [token],
   );
 
+  // In EquityCampaignContext.tsx
   const fetchPublicInvestments = useCallback(
-    async (campaignId: string): Promise<void> => {
+    async (
+      campaignId: string,
+      page = 1,
+      perPage = 10,
+    ): Promise<{
+      investments: Investment[];
+      pagination: PaginationData;
+    }> => {
       setLoading(true);
       setError(null);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_campaigns/${campaignId}/equity_investments/public_investments`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_campaigns/${campaignId}/equity_investments/public_investments?page=${page}&per_page=${perPage}`,
           {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
             },
           },
         );
@@ -685,22 +694,47 @@ export const EquityCampaignProvider = ({
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           handleApiError(errorData);
-          return;
+          return {
+            investments: [],
+            pagination: {
+              current_page: 1,
+              total_pages: 1,
+              per_page: perPage,
+              total_count: 0,
+            },
+          };
         }
 
         const data = await response.json();
-        setInvestments(data.investments || []);
+        return {
+          investments: data.investments || [],
+          pagination: data.pagination || {
+            current_page: 1,
+            total_pages: 1,
+            per_page: perPage,
+            total_count: 0,
+          },
+        };
       } catch (err) {
         setError(
           err instanceof Error
             ? err.message
             : 'Error fetching public investments',
         );
+        return {
+          investments: [],
+          pagination: {
+            current_page: 1,
+            total_pages: 1,
+            per_page: perPage,
+            total_count: 0,
+          },
+        };
       } finally {
         setLoading(false);
       }
     },
-    [token],
+    [],
   );
 
   const createInvestment = useCallback(
@@ -823,40 +857,40 @@ export const EquityCampaignProvider = ({
   );
 
   // In your context
-const fetchPortfolio = useCallback(
-  async (page = 1, perPage = 10): Promise<void> => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_investments/portfolio?page=${page}&per_page=${perPage}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+  const fetchPortfolio = useCallback(
+    async (page = 1, perPage = 10): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_investments/portfolio?page=${page}&per_page=${perPage}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
           },
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          handleApiError(errorData);
+          return;
         }
-      );
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        handleApiError(errorData);
-        return;
+        const data = await response.json();
+        setPortfolio(data);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error fetching portfolio',
+        );
+      } finally {
+        setLoading(false);
       }
-
-      const data = await response.json();
-      setPortfolio(data);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Error fetching portfolio'
-      );
-    } finally {
-      setLoading(false);
-    }
-  },
-  [token]
-);
+    },
+    [token],
+  );
 
   const fetchMyInvestments = useCallback(async (): Promise<void> => {
     setLoading(true);

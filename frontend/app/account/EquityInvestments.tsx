@@ -28,7 +28,7 @@ const EquityInvestments = () => {
     certificateError,
   } = useEquityCampaignContext();
   const { user } = useAuth();
-  const router  = useRouter();
+  const router = useRouter();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -57,19 +57,20 @@ const EquityInvestments = () => {
   // Calculate pagination data
   const totalItems = portfolio?.investments?.length || 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-  
+
   // Get current items
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentInvestments = portfolio?.investments?.slice(indexOfFirstItem, indexOfLastItem) || [];
+  const currentInvestments =
+    portfolio?.investments?.slice(indexOfFirstItem, indexOfLastItem) || [];
 
   // Change page
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
-    const handleViewCampaignDetails = (campaign: EquityInvestment) => {
-      const identifier = campaign.campaign.slug;
-      router.push(`/campaign/${identifier}?${generateRandomString()}`);
-    };
+  const handleViewCampaignDetails = (campaign: EquityInvestment) => {
+    const identifier = campaign.campaign.slug;
+    router.push(`/campaign/${identifier}?${generateRandomString()}`);
+  };
 
   if (loading) {
     return <EquityInvestmentsLoader />;
@@ -284,14 +285,16 @@ const EquityInvestments = () => {
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                             <Button
-                                className="text-orange-600 hover:text-orange-900 dark:hover:text-orange-400 mr-4"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleViewCampaignDetails(investment)}
-                              >
-                                View
-                              </Button>
+                            <Button
+                              className="text-orange-600 hover:text-orange-900 dark:hover:text-orange-400 mr-4"
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                handleViewCampaignDetails(investment)
+                              }
+                            >
+                              View
+                            </Button>
                             {investment.certificate_exists && (
                               <button
                                 className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"

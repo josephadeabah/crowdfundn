@@ -65,7 +65,21 @@ export interface EquityCampaignResponseDataType
   };
 }
 
-export interface EquityInvestment {
+export interface PaginationData {
+  current_page: number;
+  total_pages: number;
+  per_page: number;
+  total_count: number;
+}
+
+export interface Investment {
+  investor_name: string;
+  amount: number;
+  email?: string;
+  date: string;
+}
+
+export interface EquityInvestment extends Investment {
   id: number;
   amount: number;
   shares: number;
@@ -203,7 +217,19 @@ export interface EquityCampaignState extends CampaignState {
 
   // Investment actions
   fetchInvestments: (campaignId: string) => Promise<void>;
-  fetchPublicInvestments: (campaignId: string) => Promise<void>;
+  fetchPublicInvestments: (
+    campaignId: string,
+    page: number,
+    perPage: number,
+  ) => Promise<{
+    investments: Investment[]; // Changed from EquityInvestment[] to Investment[]
+    pagination: {
+      current_page: number;
+      total_pages: number;
+      per_page: number;
+      total_count: number;
+    };
+  }>;
   createInvestment: (
     campaignId: string,
     investment: InvestmentCreatePayload,
