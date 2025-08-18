@@ -3,22 +3,20 @@ module Api
     module Fundraisers
       class EquityInvestmentsController < ApplicationController
         before_action :authenticate_request, except: %i[public_investments, index]
-        before_action :set_campaign, only: %i[create]
+        before_action :set_campaign, only: %i[create, public_investments]
         before_action :set_investment, only: %i[show, update, destroy, certificate_status]
 
         def public_investments
+          Rails.logger.info "Public investments requested for campaign #{@campaign.id}"
           investments = @campaign.equity_investments.successful
-                               .order(created_at: :desc)
+                              .order(created_at: :desc)
 
           investors = investments.map do |investment|
             {
               investor_name: investment.user&.full_name || investment.full_name || 'Anonymous',
               amount: investment.amount,
-              shares: investment.shares,
-              ownership_percentage: investment.percentage,
+              email: investment.email,
               date: investment.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-              certificate_url: investment.certificate_url,
-              reward: investment.reward&.as_json(only: %i[title description delivery_date])
             }
           end
 
