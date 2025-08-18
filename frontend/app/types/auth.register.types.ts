@@ -11,7 +11,7 @@ export interface UserRegistrationData {
   currency: string;
   currency_symbol: string;
   phone_code: string;
-  birth_date: string;
+  birth_date: string | null;
   category: string | null;
   target_amount: number;
   user_type: string;

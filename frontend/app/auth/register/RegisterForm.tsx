@@ -164,6 +164,7 @@ const RegisterForm: React.FC = () => {
       }
       case 'birthDate':
         if (value) {
+          // Only validate if value exists
           const birthDate = new Date(value);
           const minDate = getMinimumBirthDate();
           if (birthDate > minDate) {
@@ -185,6 +186,21 @@ const RegisterForm: React.FC = () => {
         error = value.trim() === '' ? 'This field is required' : '';
     }
     return error;
+  };
+
+  const handleBirthDateChange = (date: Date | undefined) => {
+    if (date) {
+      const isoDate = date.toISOString().split('T')[0];
+      setFormData((prev) => ({
+        ...prev,
+        birthDate: isoDate,
+      }));
+      const error = validateField('birthDate', isoDate);
+      setErrors((prev) => ({ ...prev, birthDate: error }));
+    } else {
+      setFormData((prev) => ({ ...prev, birthDate: '' }));
+      setErrors((prev) => ({ ...prev, birthDate: '' }));
+    }
   };
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -210,6 +226,7 @@ const RegisterForm: React.FC = () => {
 
     const newErrors: Errors = {};
     Object.keys(formData).forEach((key) => {
+      if (key === 'birthDate') return; // Skip birthdate validation
       const error = validateField(
         key as keyof FormData,
         formData[key as keyof FormData],
@@ -236,7 +253,7 @@ const RegisterForm: React.FC = () => {
         currency: formData.currency,
         currency_symbol: formData.currencySymbol,
         phone_code: formData.phoneCode,
-        birth_date: formData.birthDate,
+        birth_date: formData.birthDate || null, // Send null if empty
         category: formData.category,
         target_amount: parseInt(formData.targetAmount, 10),
         user_type: formData.userType,
@@ -437,17 +454,7 @@ const RegisterForm: React.FC = () => {
                           ? new Date(formData.birthDate)
                           : undefined
                       }
-                      onSelect={(date) => {
-                        if (date) {
-                          const isoDate = date.toISOString().split('T')[0];
-                          setFormData((prev) => ({
-                            ...prev,
-                            birthDate: isoDate,
-                          }));
-                          const error = validateField('birthDate', isoDate);
-                          setErrors((prev) => ({ ...prev, birthDate: error }));
-                        }
-                      }}
+                      onSelect={handleBirthDateChange}
                       initialFocus
                     />
                   </PopoverContent>
