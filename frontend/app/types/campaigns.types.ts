@@ -224,6 +224,7 @@ export interface SingleCampaignResponseDataType {
   media: string;
   media_filename: string;
   total_shares: string;
+  shares_issued: string;
   description: CampaignDescription;
   permissions: CampaignPermissions;
   promotions: CampaignPromotions;

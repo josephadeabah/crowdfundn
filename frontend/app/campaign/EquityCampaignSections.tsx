@@ -8,6 +8,7 @@ import {
   FaBuilding,
   FaLink,
   FaFileContract,
+  FaShareAlt, // Added icon for shares issued
 } from 'react-icons/fa';
 import Avatar from '@/app/components/avatar/Avatar';
 import { SingleCampaignResponseDataType } from '../types/campaigns.types';
@@ -88,13 +89,30 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
             </p>
           </div>
 
+          {/* New: Shares Issued Card */}
+          <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
+            <div className="flex items-center mb-2">
+              <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-full mr-3">
+                <FaShareAlt className="text-orange-600 dark:text-orange-300" />
+              </div>
+              <h3 className="font-medium text-gray-500 dark:text-gray-400">
+                Shares Issued
+              </h3>
+            </div>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              {parseFloat(
+                campaign?.shares_issued?.toString() || '0',
+              ).toLocaleString()}
+            </p>
+          </div>
+
           <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
             <div className="flex items-center mb-2">
               <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-full mr-3">
                 <FaUsers className="text-yellow-600 dark:text-yellow-300" />
               </div>
               <h3 className="font-medium text-gray-500 dark:text-gray-400">
-                Shares Available
+                Shares Available For Investment
               </h3>
             </div>
             <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -103,6 +121,25 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
               ).toLocaleString()}
             </p>
           </div>
+
+          {/* Total Shares Card (if available in your API) */}
+          {campaign?.total_shares && (
+            <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
+              <div className="flex items-center mb-2">
+                <div className="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-full mr-3">
+                  <FaShareAlt className="text-indigo-600 dark:text-indigo-300" />
+                </div>
+                <h3 className="font-medium text-gray-500 dark:text-gray-400">
+                  Total Shares
+                </h3>
+              </div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {parseFloat(
+                  campaign?.total_shares.toString(),
+                ).toLocaleString()}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
