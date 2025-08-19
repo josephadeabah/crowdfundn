@@ -79,6 +79,7 @@ export interface Investment {
   date: string;
 }
 
+// app/types/equityCampaigns.types.ts
 export interface EquityInvestment extends Investment {
   id: number;
   amount: number;
@@ -88,9 +89,19 @@ export interface EquityInvestment extends Investment {
   campaign_id: number;
   created_at: string;
   updated_at: string;
+
+  // Keep the flat property for backward compatibility
   certificate_exists?: boolean;
   certificate_url?: string;
-  certificate_number?: string; // Add this
+  certificate_number?: string;
+
+  // Add the nested certificate object that your backend returns
+  certificate?: {
+    exists: boolean;
+    url: string | null;
+    number: string;
+  };
+
   status: 'pending' | 'successful' | 'failed' | 'cancelled' | 'refunded';
   payment_method?: string;
   transaction_id?: string;
@@ -109,8 +120,8 @@ export interface EquityInvestment extends Investment {
     title: string;
     slug: string;
     status: string;
-    valuation: number; // Add this
-    equity_offered: number; // Add this
+    valuation: number;
+    equity_offered: number;
   };
 }
 

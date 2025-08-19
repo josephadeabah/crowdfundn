@@ -54,8 +54,12 @@ const EquityInvestments = () => {
     setCertificateOperations((prev) => ({ ...prev, [investmentId]: true }));
 
     try {
-      const status = await checkCertificateStatus(investmentId);
-      if (status.exists && status.url) {
+      // Find the investment from the portfolio data
+      const investment = portfolio?.investments?.find(
+        (inv) => inv.id.toString() === investmentId,
+      );
+
+      if (investment?.certificate?.exists && investment.certificate.url) {
         await downloadCertificate(investmentId);
       } else {
         const genResult = await generateCertificate(investmentId);
@@ -304,7 +308,7 @@ const EquityInvestments = () => {
                             >
                               View
                             </Button>
-                            {investment.certificate_exists && (
+                            {investment.status === 'successful' && (
                               <Button
                                 variant="outline"
                                 size="sm"
@@ -322,7 +326,10 @@ const EquityInvestments = () => {
                                 {certificateOperations[investment.id] ||
                                 certificateLoading
                                   ? 'Loading...'
-                                  : 'Certificate'}
+                                  : investment.certificate_exists ||
+                                      investment.certificate?.exists
+                                    ? 'Certificate'
+                                    : 'Generate Certificate'}
                               </Button>
                             )}
                           </td>
