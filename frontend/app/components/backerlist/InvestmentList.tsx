@@ -40,7 +40,7 @@ const InvestmentList: React.FC<InvestmentListProps> = ({
               {/* Investor Info */}
               <div className="flex items-center space-x-4">
                 <div className="bg-gray-100 h-10 w-10 flex items-center justify-center rounded-full">
-                  <FaChartLine className="text-blue-500 text-lg" />
+                  <FaChartLine className="text-orange-500 text-lg" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
@@ -54,7 +54,7 @@ const InvestmentList: React.FC<InvestmentListProps> = ({
 
               {/* Investment Amount */}
               <div className="text-right">
-                <p className="text-sm font-bold text-blue-600 dark:text-blue-400">
+                <p className="text-sm font-bold text-orange-600 dark:text-orange-400">
                   {currencySymbol}
                   {parseFloat(
                     investment.amount.toString() || '0.0',
