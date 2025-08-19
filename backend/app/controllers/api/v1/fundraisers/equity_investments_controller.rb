@@ -324,13 +324,8 @@ module Api
         end
 
         def set_campaign
-          campaign_identifier = params[:equity_campaign_id] || params[:campaign_id] || params[:id]
-          @campaign = Campaign.find_by(id: campaign_identifier)
-          
-          unless @campaign
-            render json: { error: 'Campaign not found' }, status: :not_found
-            return
-          end
+          @campaign = Campaign.find_by(id: params[:equity_campaign_id] || params[:campaign_id])
+          render json: { error: 'Campaign not found' }, status: :not_found unless @campaign
           
           unless @campaign.live?
             render json: { error: 'Campaign is not currently accepting investments' }, status: :unprocessable_entity
