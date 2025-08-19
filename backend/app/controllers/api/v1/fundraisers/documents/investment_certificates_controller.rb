@@ -71,7 +71,9 @@ module Api
           private
 
           def set_investment
-            @investment = current_user.equity_investments.find(params[:investment_id])
+            # Find investment within the context of the campaign
+            @campaign = Campaign.find(params[:campaign_id])
+            @investment = @campaign.equity_investments.find(params[:id])
           rescue ActiveRecord::RecordNotFound
             render json: { 
               success: false, 
