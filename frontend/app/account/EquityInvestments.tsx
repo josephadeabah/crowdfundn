@@ -1,19 +1,19 @@
+// app/components/equity/EquityInvestments.tsx
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Button } from '../components/ui/button';
+import { Button } from '@/app/components/ui/button';
 import { format } from 'date-fns';
-import { useEquityCampaignContext } from '../context/account/campaign/EquityCampaignContext';
-import { useAuth } from '../context/auth/AuthContext';
 import {
   EquityInvestment,
   InvestmentPortfolio,
-} from '../types/equityCampaigns.types';
-import Pagination from '../components/pagination/Pagination';
-import EquityInvestmentsLoader from '../loaders/EquityInvestmentsLoader'; // Fixed missing 'from' here
-import { CampaignResponseDataType } from '../types/campaigns.types';
-import { generateRandomString } from '../utils/helpers/generate.random-string';
+} from '@/app/types/equityCampaigns.types';
+import Pagination from '@/app/components/pagination/Pagination';
+import EquityInvestmentsLoader from '@/app/loaders/EquityInvestmentsLoader';
+import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
+import { useEquityCampaignContext } from '../context/account/campaign/EquityCampaignContext';
+import { useAuth } from '../context/auth/AuthContext';
 
 const EquityInvestments = () => {
   const {
@@ -33,12 +33,26 @@ const EquityInvestments = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const [certificateOperations, setCertificateOperations] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   useEffect(() => {
     fetchPortfolio(currentPage, itemsPerPage);
   }, [fetchPortfolio, currentPage, itemsPerPage]);
 
+  const parseNumber = (
+    value: string | number | undefined,
+    fallback = 0,
+  ): number => {
+    if (typeof value === 'number') return value;
+    if (typeof value === 'string') return parseFloat(value) || fallback;
+    return fallback;
+  };
+
   const handleDownloadCertificate = async (investmentId: string) => {
+    setCertificateOperations((prev) => ({ ...prev, [investmentId]: true }));
+
     try {
       const status = await checkCertificateStatus(investmentId);
       if (status.exists && status.url) {
@@ -47,10 +61,14 @@ const EquityInvestments = () => {
         const genResult = await generateCertificate(investmentId);
         if (genResult.success && genResult.url) {
           await downloadCertificate(investmentId);
+        } else {
+          console.error('Certificate generation failed:', genResult.error);
         }
       }
     } catch (err) {
       console.error('Error downloading certificate:', err);
+    } finally {
+      setCertificateOperations((prev) => ({ ...prev, [investmentId]: false }));
     }
   };
 
@@ -101,15 +119,6 @@ const EquityInvestments = () => {
       </div>
     );
   }
-
-  const parseNumber = (
-    value: string | number | undefined,
-    fallback = 0,
-  ): number => {
-    if (typeof value === 'number') return value;
-    if (typeof value === 'string') return parseFloat(value) || fallback;
-    return fallback;
-  };
 
   const totalValue = parseNumber(portfolio.portfolio?.total_value);
   const totalInvested = parseNumber(portfolio.portfolio?.total_invested);
@@ -296,19 +305,25 @@ const EquityInvestments = () => {
                               View
                             </Button>
                             {investment.certificate_exists && (
-                              <button
-                                className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
+                              <Button
+                                variant="outline"
+                                size="sm"
                                 onClick={() =>
                                   handleDownloadCertificate(
                                     investment.id.toString(),
                                   )
                                 }
-                                disabled={certificateLoading}
+                                disabled={
+                                  certificateOperations[investment.id] ||
+                                  certificateLoading
+                                }
+                                className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
                               >
-                                {certificateLoading
+                                {certificateOperations[investment.id] ||
+                                certificateLoading
                                   ? 'Loading...'
                                   : 'Certificate'}
-                              </button>
+                              </Button>
                             )}
                           </td>
                         </tr>

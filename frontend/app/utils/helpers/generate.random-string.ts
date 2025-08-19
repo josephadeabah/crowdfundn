@@ -9,3 +9,13 @@ export function generateRandomString() {
   }
   return result;
 }
+
+// Add this utility function to your context file
+export const parseNumber = (
+  value: string | number | undefined,
+  fallback = 0,
+): number => {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') return parseFloat(value) || fallback;
+  return fallback;
+};

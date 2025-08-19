@@ -123,19 +123,21 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
           </div>
 
           {/* Total Shares Card (if available in your API) */}
-            <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
-              <div className="flex items-center mb-2">
-                <div className="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-full mr-3">
-                  <FaShareAlt className="text-indigo-600 dark:text-indigo-300" />
-                </div>
-                <h3 className="font-medium text-gray-500 dark:text-gray-400">
-                  Total Shares
-                </h3>
+          <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
+            <div className="flex items-center mb-2">
+              <div className="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-full mr-3">
+                <FaShareAlt className="text-indigo-600 dark:text-indigo-300" />
               </div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {parseFloat(campaign?.total_equity_shares.toString() || '0').toLocaleString()}
-              </p>
+              <h3 className="font-medium text-gray-500 dark:text-gray-400">
+                Total Shares
+              </h3>
             </div>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              {parseFloat(
+                campaign?.total_equity_shares.toString() || '0',
+              ).toLocaleString()}
+            </p>
+          </div>
         </div>
       </div>
 

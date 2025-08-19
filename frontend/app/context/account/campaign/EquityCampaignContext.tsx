@@ -23,6 +23,7 @@ import {
   PaginationData,
 } from '@/app/types/equityCampaigns.types';
 import { getDetailedErrorMessage } from '@/app/types/campaign.error.messages.types';
+import { parseNumber } from '@/app/utils/helpers/generate.random-string';
 
 const EquityCampaignContext = createContext<EquityCampaignState | undefined>(
   undefined,
@@ -876,7 +877,6 @@ export const EquityCampaignProvider = ({
     [token],
   );
 
-  // In your context
   const fetchPortfolio = useCallback(
     async (page = 1, perPage = 10): Promise<void> => {
       setLoading(true);
@@ -911,7 +911,7 @@ export const EquityCampaignProvider = ({
     },
     [token],
   );
-
+  // My investments endpoint - FIXED URL
   const fetchMyInvestments = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
@@ -1084,6 +1084,7 @@ export const EquityCampaignProvider = ({
   }, [token]);
 
   // Certificate API methods
+  // Certificate endpoints - FIXED URLs
   const generateCertificate = useCallback(
     async (
       investmentId: string,
@@ -1092,7 +1093,7 @@ export const EquityCampaignProvider = ({
       setCertificateError(null);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/documents/investment_certificates/${investmentId}/generate`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_investments/${investmentId}/generate_certificate`,
           {
             method: 'POST',
             headers: {
@@ -1137,11 +1138,10 @@ export const EquityCampaignProvider = ({
       setCertificateError(null);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/documents/investment_certificates/${investmentId}/download`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_investments/${investmentId}/download_certificate`,
           {
             method: 'GET',
             headers: {
-              'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
           },
@@ -1180,7 +1180,7 @@ export const EquityCampaignProvider = ({
     ): Promise<{ exists: boolean; url?: string }> => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/documents/investment_certificates/${investmentId}/status`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_investments/${investmentId}/certificate_status`,
           {
             method: 'GET',
             headers: {

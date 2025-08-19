@@ -90,6 +90,7 @@ export interface EquityInvestment extends Investment {
   updated_at: string;
   certificate_exists?: boolean;
   certificate_url?: string;
+  certificate_number?: string; // Add this
   status: 'pending' | 'successful' | 'failed' | 'cancelled' | 'refunded';
   payment_method?: string;
   transaction_id?: string;
@@ -108,13 +109,16 @@ export interface EquityInvestment extends Investment {
     title: string;
     slug: string;
     status: string;
+    valuation: number; // Add this
+    equity_offered: number; // Add this
   };
 }
 
+// In equityCampaigns.types.ts
 export interface InvestmentPortfolio {
   portfolio: {
     total_invested: number;
-    total_shares: number;
+    total_shares?: number; // Make this optional
     total_value?: number;
     active_investments: number;
     campaigns_invested: number;
