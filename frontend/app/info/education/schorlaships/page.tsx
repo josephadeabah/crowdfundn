@@ -283,7 +283,7 @@ const Scholarship = () => {
             <div className="bg-gray-50 rounded-lg overflow-hidden">
               <div className="relative h-64 w-full">
                 <Image
-                  src="https://images.pexels.com/photos/6000068/pexels-photo-6000068.jpeg"
+                  src="https://images.pexels.com/photos/5999918/pexels-photo-5999918.jpeg"
                   alt="Scholarship recipient"
                   fill
                   className="object-cover"
