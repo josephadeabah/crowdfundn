@@ -299,16 +299,90 @@ module Api
         end
 
         def initialize_payment(investment, metadata, redirect_url)
+          Rails.logger.info "Initializing payment for investment #{investment.id}"
+          Rails.logger.info "Payment details - Amount: #{investment.amount}, Email: #{investment.email}"
+          
           subaccount = Subaccount.find_by(user_id: @campaign.fundraiser_id)
+          Rails.logger.info "Subaccount lookup result: #{subaccount.inspect}"
 
           unless subaccount&.subaccount_code.present?
+            error_msg = 'Fundraiser does not meet requirements for raising funds'
+            Rails.logger.error error_msg
             render json: { 
               success: false, 
-              error: 'Fundraiser does not meet requirements for raising funds',
+              error: error_msg,
               code: 'MISSING_SUBACCOUNT'
             }, status: :unprocessable_entity
             return
           end
+
+          paystack_service = PaystackService.new
+          Rails.logger.info "Initializing Paystack transaction with:"
+          Rails.logger.info "Email: #{investment.email}"
+          Rails.logger.info "Amount: #{investment.amount}"
+          Rails.logger.info "Callback URL: #{redirect_url}"
+          Rails.logger.info "Subaccount: #{subaccount.subaccount_code}"
+
+          begin
+            response = paystack_service.initialize_transaction(
+              email: investment.email,
+              amount: investment.amount,
+              callback_url: redirect_url,
+              metadata: metadata,
+              subaccount: subaccount.subaccount_code
+            )
+            Rails.logger.info "Paystack response: #{response.inspect}"
+
+            if response[:status]
+              investment.update!(
+                transaction_reference: response[:data][:reference],
+                metadata: metadata
+              )
+              Rails.logger.info "Payment initialized successfully"
+
+              render json: {
+                success: true,
+                data: {
+                  authorization_url: response[:data][:authorization_url],
+                  redirect_url: redirect_url,
+                  investment: {
+                    id: investment.id,
+                    amount: investment.amount,
+                    shares: investment.shares,
+                    percentage: investment.percentage,
+                    campaign: {
+                      id: @campaign.id,
+                      title: @campaign.title
+                    }
+                  },
+                  total_investors: @campaign.equity_investments.successful.count
+                }
+              }, status: :created
+            else
+              error_msg = response[:message] || "Payment initialization failed"
+              Rails.logger.error "Paystack error: #{error_msg}"
+              investment.update!(status: EquityInvestment::STATUS_FAILED)
+              
+              render json: { 
+                success: false, 
+                error: error_msg,
+                code: response[:data]&.[](:code),
+                paystack_response: response
+              }, status: :unprocessable_entity
+            end
+          rescue StandardError => e
+            error_msg = "Payment initialization error: #{e.message}"
+            Rails.logger.error error_msg
+            Rails.logger.error e.backtrace.join("\n")
+            
+            render json: {
+              success: false,
+              error: error_msg,
+              code: 'PAYMENT_INIT_ERROR',
+              exception: Rails.env.development? ? e.class.name : nil
+            }, status: :unprocessable_entity
+          end
+        end
 
           paystack_service = PaystackService.new
           response = paystack_service.initialize_transaction(
