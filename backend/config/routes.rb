@@ -119,14 +119,13 @@ Rails.application.routes.draw do
           resources :equity_investments, only: [:index, :create, :update, :destroy] do
             collection do
               get :public_investments
-              get :portfolio
+              # get :portfolio
               get :my_investments
             end
             
             member do
               get :certificate_status
               post :generate_certificate
-              get 'public_investments', to: 'equity_investments#public_investments'
             end
           end
         end

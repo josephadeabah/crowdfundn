@@ -2,8 +2,8 @@ module Api
   module V1
     module Fundraisers
       class EquityInvestmentsController < ApplicationController
-        before_action :authenticate_request, except: [:public_investments]
-        before_action :set_campaign, only: [:create]
+        before_action :authenticate_request
+        before_action :set_campaign, only: [:create, :public_investments, :certificate_status, :generate_certificate,:show, :update,   :destroy]
         before_action :set_investment, only: [:show, :update, :destroy, :certificate_status]
 
         def public_investments
