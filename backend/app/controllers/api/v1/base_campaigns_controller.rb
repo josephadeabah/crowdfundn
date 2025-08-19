@@ -306,7 +306,6 @@ module Api
           type: campaign.class.name,
           media: campaign.media_url,
           total_donors: campaign.total_donors,
-          total_equity_shares: campaign.total_shares,
           company_info: {
             name: campaign.company_name,
             description: campaign.company_description,
@@ -327,6 +326,7 @@ module Api
             shares_available: campaign.shares_available,
             percentage_raised: campaign.percentage_raised,
             total_investors: campaign.total_investors,
+            total_equity_shares: campaign.total_shares,
             equity_status: campaign.equity_status,
             investment_range: {
               minimum: campaign.minimum_investment,
