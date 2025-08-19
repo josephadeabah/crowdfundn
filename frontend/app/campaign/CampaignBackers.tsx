@@ -14,7 +14,8 @@ const CampaignBackers: React.FC<CampaignBackersProps> = ({
   campaign,
   isEquityCampaign,
 }) => {
-  const { fetchPublicInvestments, investments, pagination } = useEquityCampaignContext();
+  const { fetchPublicInvestments, investments, pagination } =
+    useEquityCampaignContext();
   const fundraiserCurrency =
     campaign?.fundraiser?.currency_symbol ||
     campaign?.fundraiser?.currency?.toUpperCase();
@@ -28,7 +29,11 @@ const CampaignBackers: React.FC<CampaignBackersProps> = ({
 
   const handlePageChange = async (page: number) => {
     if (campaign?.id) {
-      await fetchPublicInvestments(String(campaign.id), page, pagination?.per_page || 10);
+      await fetchPublicInvestments(
+        String(campaign.id),
+        page,
+        pagination?.per_page || 10,
+      );
     }
   };
 
