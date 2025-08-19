@@ -105,7 +105,7 @@ const Scholarship = () => {
               <Button size="lg" className="bg-yellow-500 hover:bg-yellow-600 text-black">
                 Apply Now
               </Button>
-              <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
+              <Button size="lg" variant="outline" className="text-white/10 border-white hover:bg-white/10">
                 Learn More
               </Button>
             </div>
