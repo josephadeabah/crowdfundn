@@ -22,7 +22,9 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
     : campaign?.total_donors || 0;
 
   const progressPercentage = Math.round(
-    (Number(campaign?.transferred_amount) / Number(campaign?.goal_amount || 1)) * 100,
+    (Number(campaign?.transferred_amount) /
+      Number(campaign?.goal_amount || 1)) *
+      100,
   );
 
   return (
@@ -84,8 +86,9 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
                 <div className="font-medium text-sm">
                   <span
                     className={`${
-                      parseFloat((campaign?.transferred_amount ?? '0').toString()) >=
-                      parseFloat((campaign?.goal_amount ?? '0').toString())
+                      parseFloat(
+                        (campaign?.transferred_amount ?? '0').toString(),
+                      ) >= parseFloat((campaign?.goal_amount ?? '0').toString())
                         ? 'text-green-600'
                         : 'text-orange-500'
                     }`}
@@ -93,7 +96,9 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
                     <span className="text-gray-600 dark:text-gray-100 mr-1">
                       {fundraiserCurrency}
                     </span>
-                    {parseFloat((campaign?.transferred_amount ?? '0').toString()).toLocaleString()}
+                    {parseFloat(
+                      (campaign?.transferred_amount ?? '0').toString(),
+                    ).toLocaleString()}
                   </span>{' '}
                 </div>
                 <div className="flex justify-between gap-3 items-center text-gray-600 dark:text-gray-400">

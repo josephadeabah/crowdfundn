@@ -134,9 +134,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
                 </h3>
               </div>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {parseFloat(
-                  campaign?.total_shares.toString(),
-                ).toLocaleString()}
+                {parseFloat(campaign?.total_shares.toString()).toLocaleString()}
               </p>
             </div>
           )}
