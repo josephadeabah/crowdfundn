@@ -105,12 +105,13 @@ Rails.application.routes.draw do
           resources :donations, only: [:create]
           namespace :documents do
             resources :investor_documents, only: [:index, :show, :create, :update, :destroy]
-            resources :investment_certificates, only: [] do
-              member do
-                post :generate
-                get :download
+               resources :investment_certificates, only: [] do
+                member do
+                  get :status
+                  post :generate
+                  get :download
+                end
               end
-            end
           end
         end
 
@@ -122,9 +123,6 @@ Rails.application.routes.draw do
             end
             
             member do
-              get :certificate_status
-              post :generate_certificate
-              get :download_certificate
               put :update
               delete :destroy
             end

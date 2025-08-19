@@ -14,7 +14,7 @@ class EquityInvestmentSerializer
       created_at: @investment.created_at,
       current_value: @investment.current_value,
       campaign: {
-        id: @investment.campaign_id,
+        id: @investment.campaign.id,
         title: @investment.campaign.title,
         slug: @investment.campaign.slug,
         status: @investment.campaign.status,

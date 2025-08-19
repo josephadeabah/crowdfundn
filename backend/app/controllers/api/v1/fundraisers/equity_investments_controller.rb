@@ -5,8 +5,8 @@ module Api
         before_action :authenticate_request
         # Only set campaign for actions that need it
         before_action :set_campaign, only: [:create, :public_investments]
-        # Set investment for all actions that work with specific investments
-        before_action :set_investment, only: [:show, :update, :destroy, :certificate_status, :generate_certificate, :download_certificate]
+        # Set investment for actions that work with specific investments
+        before_action :set_investment, only: [:show, :update, :destroy]
 
         def public_investments
           # This action needs @campaign, which is set by set_campaign
@@ -35,50 +35,50 @@ module Api
 
         def create
           # First validate the investment parameters
-            investment_params = equity_investment_params
-            amount = investment_params[:amount].to_f
-            reward_id = investment_params[:reward_id]
+          investment_params = equity_investment_params
+          amount = investment_params[:amount].to_f
+          reward_id = investment_params[:reward_id]
 
-            # First validate basic parameters
-            validation_result = validate_investment(amount, reward_id)
-            unless validation_result[:valid]
+          # First validate basic parameters
+          validation_result = validate_investment(amount, reward_id)
+          unless validation_result[:valid]
+            return render json: { 
+              success: false, 
+              error: validation_result[:message],
+              validationErrors: validation_result[:errors]
+            }, status: :unprocessable_entity
+          end
+
+          ActiveRecord::Base.transaction do
+            # Create the investment first to trigger share calculation
+            investment = @campaign.equity_investments.new(
+              user: @current_user,
+              amount: amount,
+              reward_id: reward_id,
+              status: EquityInvestment::STATUS_PENDING,
+              email: investment_params[:email],
+              phone: investment_params[:phone],
+              full_name: investment_params[:full_name],
+              metadata: investment_params[:metadata] || {}
+            )
+
+            # Manually trigger share calculation before validation
+            investment.calculate_shares_and_percentage
+
+            unless investment.save
               return render json: { 
                 success: false, 
-                error: validation_result[:message],
-                validationErrors: validation_result[:errors]
+                error: "Validation failed: #{investment.errors.full_messages.join(', ')}",
+                validationErrors: investment.errors.to_hash
               }, status: :unprocessable_entity
             end
-
-            ActiveRecord::Base.transaction do
-              # Create the investment first to trigger share calculation
-              investment = @campaign.equity_investments.new(
-                user: @current_user,
-                amount: amount,
-                reward_id: reward_id,
-                status: EquityInvestment::STATUS_PENDING,
-                email: investment_params[:email],
-                phone: investment_params[:phone],
-                full_name: investment_params[:full_name],
-                metadata: investment_params[:metadata] || {}
-              )
-
-              # Manually trigger share calculation before validation
-              investment.calculate_shares_and_percentage
-
-              unless investment.save
-                return render json: { 
-                  success: false, 
-                  error: "Validation failed: #{investment.errors.full_messages.join(', ')}",
-                  validationErrors: investment.errors.to_hash
-                }, status: :unprocessable_entity
-              end
 
             # Generate callback URL similar to donations
             secure_random_uuid = SecureRandom.uuid
             # Use campaign.slug if available, otherwise fall back to id
             campaign_identifier = @campaign.slug || @campaign.id
             redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign_identifier,
-                                                                           host: 'bantuhive.com') + "?#{secure_random_uuid}"
+                                                                          host: 'bantuhive.com') + "?#{secure_random_uuid}"
 
             # Prepare metadata (similar structure to donations but with equity-specific fields)
             metadata = build_metadata(investment, redirect_url)
@@ -129,6 +129,12 @@ module Api
           }
         end
 
+        def show
+          render json: {
+            investment: EquityInvestmentSerializer.new(@investment).as_json
+          }
+        end
+
         def update
           if @investment.update(equity_investment_update_params)
             render json: {
@@ -152,65 +158,6 @@ module Api
               errors: @investment.errors.full_messages
             }, status: :unprocessable_entity
           end
-        end
-
-        # Member actions (need specific investment)
-        def certificate_status
-          render json: {
-            exists: @investment.certificate_present?,
-            url: @investment.certificate_url
-          }
-        end
-
-        def generate_certificate
-          # Only allow certificate generation for successful investments
-          unless @investment.successful?
-            render json: { 
-              success: false, 
-              error: 'Certificate can only be generated for successful investments' 
-            }, status: :unprocessable_entity
-            return
-          end
-
-          # Check if certificate already exists
-          if @investment.certificate_present?
-            render json: { 
-              success: false, 
-              error: 'Certificate already exists for this investment',
-              certificate_url: @investment.certificate_url
-            }, status: :conflict
-            return
-          end
-
-          # Generate certificate
-          if InvestmentCertificateService.generate_certificate(@investment)
-            render json: { 
-              success: true, 
-              message: 'Certificate generated successfully',
-              certificate_url: @investment.reload.certificate_url
-            }, status: :created
-          else
-            render json: { 
-              success: false, 
-              error: 'Failed to generate certificate' 
-            }, status: :unprocessable_entity
-          end
-        end
-
-        def download_certificate
-          unless @investment.certificate_present?
-            render json: { 
-              success: false, 
-              error: 'Certificate not found' 
-            }, status: :not_found
-            return
-          end
-
-          # Stream the PDF file
-          send_data @investment.certificate.download,
-                    filename: "investment_certificate_#{@investment.certificate_number}.pdf",
-                    type: 'application/pdf',
-                    disposition: 'attachment'
         end
 
         private
@@ -418,6 +365,15 @@ module Api
           )
         end
 
+        def equity_investment_update_params
+          params.require(:equity_investment).permit(
+            :status,
+            :email,
+            :phone,
+            :full_name
+          )
+        end
+
         def campaign_summary
           {
             total_shares: @campaign.total_shares,
@@ -426,7 +382,6 @@ module Api
             equity_remaining: @campaign.percentage_available,
             valuation: @campaign.valuation,
             currency_symbol: @campaign.currency_symbol,
-            # rewards: @campaign.rewards.available.as_json(only: %i[id title description amount delivery_date])
           }
         end
 

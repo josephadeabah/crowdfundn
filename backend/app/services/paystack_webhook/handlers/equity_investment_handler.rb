@@ -97,6 +97,9 @@ module PaystackWebhook::Handlers
       update_attributes[:percentage] = metadata[:percentage].to_f if metadata[:percentage].present?
 
       investment.update!(update_attributes)
+        
+      # Trigger certificate generation after successful payment
+     InvestmentCertificateJob.perform_later(investment.id) if investment.successful?
     end
 
     def build_metadata(metadata, response)
