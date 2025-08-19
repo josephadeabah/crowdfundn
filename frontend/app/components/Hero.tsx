@@ -163,7 +163,7 @@ const Hero = () => {
                     </button>
                   </Link>
 
-                  <Link href="https://www.bantuhive.com">
+                  <Link href="https://www.bantuhive.com" target="_blank" rel="noopener noreferrer">
                     <button className="px-6 py-3 bg-transparent border border-border text-foreground rounded-md hover:bg-muted transition-colors">
                       Read Our Latest Happenings
                     </button>
