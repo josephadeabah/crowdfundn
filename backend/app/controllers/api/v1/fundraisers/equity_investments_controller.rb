@@ -323,7 +323,7 @@ module Api
                     title: @campaign.title
                   }
                 },
-                total_investors: @campaign.equity_investments.successful.count
+                total_investors: @campaign.total_investors
               }
             }, status: :created
           else

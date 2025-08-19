@@ -159,6 +159,13 @@ class EquityCampaign < Campaign
     self[:total_equity_invested] || equity_investments.successful.sum(:amount)
   end
 
+  # Calculate the total number of unique investors (authenticated + anonymous)
+  def total_investors
+    authenticated_investors = equity_investments.successful.where.not(user_id: nil).distinct.count(:user_id)
+    anonymous_investors = equity_investments.successful.where(user_id: nil).count
+    authenticated_investors + anonymous_investors
+  end
+
   def create_investment(user, amount)
     price_per_share = valuation.to_f / total_shares.to_f
     shares = (amount / price_per_share).round(4)
@@ -193,6 +200,7 @@ class EquityCampaign < Campaign
   def as_json(options = {})
     super.merge(
       type: 'EquityCampaign',
+      total_investors: total_investors,
       company_info: {
         name: company_name,
         description: company_description,
