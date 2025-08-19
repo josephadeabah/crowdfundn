@@ -247,7 +247,7 @@ const Scholarship = () => {
             <div className="bg-gray-50 rounded-lg overflow-hidden">
               <div className="relative h-64 w-full">
                 <Image
-                  src="https://images.pexels.com/photos/4587189/pexels-photo-4587189.jpeg"
+                  src="https://images.pexels.com/photos/19218034/pexels-photo-19218034.jpeg"
                   alt="Scholarship recipient"
                   fill
                   className="object-cover"
@@ -265,7 +265,7 @@ const Scholarship = () => {
             <div className="bg-gray-50 rounded-lg overflow-hidden">
               <div className="relative h-64 w-full">
                 <Image
-                  src="/images/success-student-2.jpg"
+                  src="https://images.pexels.com/photos/9301463/pexels-photo-9301463.jpeg"
                   alt="Scholarship recipient"
                   fill
                   className="object-cover"
@@ -283,7 +283,7 @@ const Scholarship = () => {
             <div className="bg-gray-50 rounded-lg overflow-hidden">
               <div className="relative h-64 w-full">
                 <Image
-                  src="/images/success-student-3.jpg"
+                  src="https://images.pexels.com/photos/6000068/pexels-photo-6000068.jpeg"
                   alt="Scholarship recipient"
                   fill
                   className="object-cover"
