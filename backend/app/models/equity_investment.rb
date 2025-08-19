@@ -151,6 +151,10 @@ class EquityInvestment < ApplicationRecord
 
   def generate_certificate_if_successful
     return unless successful? && saved_change_to_status? 
+    
+    # Always generate certificate number if missing
+    generate_certificate_number if certificate_number.blank?
+    
     return if certificate_present? # Don't regenerate if already exists
     
     # Generate certificate asynchronously

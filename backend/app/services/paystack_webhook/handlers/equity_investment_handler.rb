@@ -97,9 +97,13 @@ module PaystackWebhook::Handlers
       update_attributes[:percentage] = metadata[:percentage].to_f if metadata[:percentage].present?
 
       investment.update!(update_attributes)
-        
-      # Trigger certificate generation after successful payment
-     InvestmentCertificateJob.perform_later(investment.id) if investment.successful?
+      # Trigger certificate generation with error handling
+      begin
+        InvestmentCertificateJob.perform_later(investment.id) if investment.successful?
+      rescue => e
+        Rails.logger.info "Failed to enqueue certificate job: #{e.message}"
+        # Continue anyway - user can generate manually
+      end
     end
 
     def build_metadata(metadata, response)
