@@ -59,12 +59,27 @@ const EquityInvestments = () => {
         (inv) => inv.id.toString() === investmentId,
       );
 
-      if (investment?.certificate?.exists && investment.certificate.url) {
-        await downloadCertificate(investmentId);
+      if (!investment) {
+        console.error('Investment not found');
+        return;
+      }
+
+      // Get the campaign ID from the investment
+      const campaignId =
+        investment.campaign_id?.toString() ||
+        investment.campaign?.id?.toString();
+
+      if (!campaignId) {
+        console.error('Campaign ID not found for investment');
+        return;
+      }
+
+      if (investment.certificate?.exists && investment.certificate.url) {
+        await downloadCertificate(investmentId, campaignId);
       } else {
-        const genResult = await generateCertificate(investmentId);
+        const genResult = await generateCertificate(investmentId, campaignId);
         if (genResult.success && genResult.url) {
-          await downloadCertificate(investmentId);
+          await downloadCertificate(investmentId, campaignId);
         } else {
           console.error('Certificate generation failed:', genResult.error);
         }

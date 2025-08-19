@@ -1084,16 +1084,17 @@ export const EquityCampaignProvider = ({
   }, [token]);
 
   // Certificate API methods
-  // Certificate API methods - UPDATED to use dedicated endpoints
+  // Certificate API methods - UPDATED to include campaign_id
   const generateCertificate = useCallback(
     async (
       investmentId: string,
+      campaignId: string, // Add campaignId parameter
     ): Promise<{ success: boolean; url?: string; error?: string }> => {
       setCertificateLoading(true);
       setCertificateError(null);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/documents/investment_certificates/${investmentId}/generate`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/documents/investment_certificates/${investmentId}/generate`,
           {
             method: 'POST',
             headers: {
@@ -1133,12 +1134,12 @@ export const EquityCampaignProvider = ({
   );
 
   const downloadCertificate = useCallback(
-    async (investmentId: string): Promise<void> => {
+    async (investmentId: string, campaignId: string): Promise<void> => {
       setCertificateLoading(true);
       setCertificateError(null);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/documents/investment_certificates/${investmentId}/download`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/documents/investment_certificates/${investmentId}/download`,
           {
             method: 'GET',
             headers: {
@@ -1177,10 +1178,11 @@ export const EquityCampaignProvider = ({
   const checkCertificateStatus = useCallback(
     async (
       investmentId: string,
+      campaignId: string,
     ): Promise<{ exists: boolean; url?: string }> => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/documents/investment_certificates/${investmentId}/status`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/documents/investment_certificates/${investmentId}/status`,
           {
             method: 'GET',
             headers: {

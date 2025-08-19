@@ -79,7 +79,6 @@ export interface Investment {
   date: string;
 }
 
-// app/types/equityCampaigns.types.ts
 export interface EquityInvestment extends Investment {
   id: number;
   amount: number;
@@ -117,6 +116,7 @@ export interface EquityInvestment extends Investment {
   };
   current_value?: number;
   campaign: {
+    id: number; // Added campaign id
     title: string;
     slug: string;
     status: string;
@@ -125,11 +125,10 @@ export interface EquityInvestment extends Investment {
   };
 }
 
-// In equityCampaigns.types.ts
 export interface InvestmentPortfolio {
   portfolio: {
     total_invested: number;
-    total_shares?: number; // Make this optional
+    total_shares?: number;
     total_value?: number;
     active_investments: number;
     campaigns_invested: number;
@@ -194,13 +193,18 @@ export interface EquityCampaignState extends Omit<CampaignState, 'pagination'> {
   certificateUrl: string | null;
   pagination: PaginationData;
 
-  // Certificate actions
+  // Certificate actions - UPDATED to include campaignId parameter
   generateCertificate: (
     investmentId: string,
+    campaignId: string,
   ) => Promise<{ success: boolean; url?: string; error?: string }>;
-  downloadCertificate: (investmentId: string) => Promise<void>;
+  downloadCertificate: (
+    investmentId: string,
+    campaignId: string,
+  ) => Promise<void>;
   checkCertificateStatus: (
     investmentId: string,
+    campaignId: string,
   ) => Promise<{ exists: boolean; url?: string }>;
 
   // Campaign actions
