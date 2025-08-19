@@ -382,7 +382,7 @@ module Api
               exception: Rails.env.development? ? e.class.name : nil
             }, status: :unprocessable_entity
           end
-        end
+        
 
           paystack_service = PaystackService.new
           response = paystack_service.initialize_transaction(
