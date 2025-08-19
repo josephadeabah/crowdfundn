@@ -27,6 +27,7 @@ class EquityInvestment < ApplicationRecord
   ].freeze
 
   validates :amount, :shares, :percentage, presence: true, numericality: { greater_than: 0 }
+  validate :certificate_only_for_successful_investments
   validates :certificate_number, uniqueness: true, allow_nil: true
   validates :transaction_reference, uniqueness: true, allow_nil: true
   validates :email, presence: true
@@ -39,6 +40,7 @@ class EquityInvestment < ApplicationRecord
   before_create :generate_certificate_number
   before_create :set_investment_date
   after_commit :update_campaign_leaderboard, if: :saved_change_to_status?
+  after_update :generate_certificate_if_successful, if: :saved_change_to_status?
 
   # Status query methods
   def pending?
@@ -145,6 +147,20 @@ class EquityInvestment < ApplicationRecord
 
   def generate_certificate_number
     self.certificate_number ||= "BHV-#{SecureRandom.alphanumeric(10).upcase}"
+  end
+
+  def generate_certificate_if_successful
+    return unless successful? && saved_change_to_status? 
+    return if certificate_present? # Don't regenerate if already exists
+    
+    # Generate certificate asynchronously
+    InvestmentCertificateJob.perform_later(id)
+  end
+
+  def certificate_only_for_successful_investments
+    if certificate.attached? && !successful?
+      errors.add(:certificate, "can only be attached to successful investments")
+    end
   end
 
   def set_investment_date

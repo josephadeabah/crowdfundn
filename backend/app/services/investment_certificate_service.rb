@@ -68,27 +68,33 @@ class InvestmentCertificateService
       pdf.text "Issued by Bantuhive on #{Time.current.strftime('%B %d, %Y')}",
                size: 12, align: :center
 
-      # Create and verify temp file
+     # Create and verify temp file
       temp_file = Tempfile.new(["certificate_#{investment.certificate_number}", ".pdf"], binmode: true)
       pdf.render_file(temp_file.path)
-      temp_file.rewind
-      temp_file.flush
-      FileUtils.sync
-
+      
+      # Ensure file is properly written
+      temp_file.close
+      temp_file.open if temp_file.closed?
+      
       unless File.exist?(temp_file.path) && File.size(temp_file.path) > 0
         raise "Failed to generate PDF file"
       end
 
-      # Attach certificate
+      # Attach certificate - use the proper method
       investment.certificate.attach(
         io: File.open(temp_file.path),
         filename: "investment_certificate_#{investment.certificate_number}.pdf",
-        content_type: 'application/pdf'
+        content_type: 'application/pdf',
+        identify: false # Skip image analysis for PDFs
       )
 
+      # Verify attachment was successful
       unless investment.certificate.attached?
         raise "Failed to attach certificate"
       end
+
+      # Save the investment to persist the attachment
+      investment.save! if investment.changed?
 
       Rails.logger.info "Successfully generated and attached certificate for investment #{investment.id}"
       true
@@ -96,7 +102,7 @@ class InvestmentCertificateService
       Rails.logger.error "Certificate generation failed: #{e.message}\n#{e.backtrace.join("\n")}"
       false
     ensure
-      temp_file.close if temp_file && !temp_file.closed?
+      temp_file.close! if temp_file && !temp_file.closed?
       temp_file.unlink if temp_file
     end
   end

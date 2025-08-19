@@ -3,10 +3,13 @@ module Api
     module Fundraisers
       class EquityInvestmentsController < ApplicationController
         before_action :authenticate_request
-        before_action :set_campaign, only: [:create, :public_investments, :certificate_status, :generate_certificate,:show, :update,   :destroy]
-        before_action :set_investment, only: [:show, :update, :destroy, :certificate_status]
+        # Only set campaign for actions that need it
+        before_action :set_campaign, only: [:create, :public_investments]
+        # Set investment for all actions that work with specific investments
+        before_action :set_investment, only: [:show, :update, :destroy, :certificate_status, :generate_certificate, :download_certificate]
 
         def public_investments
+          # This action needs @campaign, which is set by set_campaign
           investments = @campaign.equity_investments.successful
                               .order(created_at: :desc)
 
@@ -92,6 +95,7 @@ module Api
         end
 
         def portfolio
+          # This is a collection action that doesn't need @campaign
           investments = @current_user.equity_investments
                                   .includes(:campaign)
                                   .order(created_at: :desc)
@@ -110,63 +114,18 @@ module Api
               active_investments: investments.count,
               campaigns_invested: investments.select(:campaign_id).distinct.count
             },
-            investments: investments.map do |investment|
-              {
-                id: investment.id,
-                amount: investment.amount,
-                shares: investment.shares,
-                percentage: investment.percentage,
-                status: investment.status,
-                created_at: investment.created_at,
-                current_value: investment.current_value,
-                campaign: {
-                  id: investment.campaign_id,
-                  title: investment.campaign.title,
-                  slug: investment.campaign.slug,
-                  status: investment.campaign.status,
-                  valuation: investment.campaign.valuation,
-                  equity_offered: investment.campaign.equity_offered
-                },
-                certificate_url: investment.certificate_url,
-                certificate_exists: investment.certificate_present?
-              }
-            end
+            investments: investments.map { |investment| EquityInvestmentSerializer.new(investment).as_json }
           }
         end
 
         def my_investments
+          # This is a collection action that doesn't need @campaign
           investments = @current_user.equity_investments
                                     .includes(:campaign)
                                     .order(created_at: :desc)
 
           render json: {
-            investments: investments.map do |investment|
-              {
-                id: investment.id,
-                amount: investment.amount,
-                shares: investment.shares,
-                percentage: investment.percentage,
-                status: investment.status,
-                created_at: investment.created_at,
-                current_value: investment.current_value,
-                campaign: {
-                  id: investment.campaign_id,
-                  title: investment.campaign.title,
-                  status: investment.campaign.status,
-                  valuation: investment.campaign.valuation,
-                  equity_offered: investment.campaign.equity_offered
-                },
-                certificate_url: investment.certificate_url,
-                certificate_exists: investment.certificate_present?
-              }
-            end
-          }
-        end
-
-        def certificate_status
-          render json: {
-            exists: @investment.certificate_present?,
-            url: @investment.certificate_url
+            investments: investments.map { |investment| EquityInvestmentSerializer.new(investment).as_json }
           }
         end
 
@@ -193,6 +152,65 @@ module Api
               errors: @investment.errors.full_messages
             }, status: :unprocessable_entity
           end
+        end
+
+        # Member actions (need specific investment)
+        def certificate_status
+          render json: {
+            exists: @investment.certificate_present?,
+            url: @investment.certificate_url
+          }
+        end
+
+        def generate_certificate
+          # Only allow certificate generation for successful investments
+          unless @investment.successful?
+            render json: { 
+              success: false, 
+              error: 'Certificate can only be generated for successful investments' 
+            }, status: :unprocessable_entity
+            return
+          end
+
+          # Check if certificate already exists
+          if @investment.certificate_present?
+            render json: { 
+              success: false, 
+              error: 'Certificate already exists for this investment',
+              certificate_url: @investment.certificate_url
+            }, status: :conflict
+            return
+          end
+
+          # Generate certificate
+          if InvestmentCertificateService.generate_certificate(@investment)
+            render json: { 
+              success: true, 
+              message: 'Certificate generated successfully',
+              certificate_url: @investment.reload.certificate_url
+            }, status: :created
+          else
+            render json: { 
+              success: false, 
+              error: 'Failed to generate certificate' 
+            }, status: :unprocessable_entity
+          end
+        end
+
+        def download_certificate
+          unless @investment.certificate_present?
+            render json: { 
+              success: false, 
+              error: 'Certificate not found' 
+            }, status: :not_found
+            return
+          end
+
+          # Stream the PDF file
+          send_data @investment.certificate.download,
+                    filename: "investment_certificate_#{@investment.certificate_number}.pdf",
+                    type: 'application/pdf',
+                    disposition: 'attachment'
         end
 
         private
@@ -376,6 +394,9 @@ module Api
         end
 
         def set_investment
+          # For collection actions that don't have investment_id, skip this
+          return unless params[:id].present?
+          
           @investment = @current_user.equity_investments.find(params[:id])
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'Investment not found' }, status: :not_found

@@ -116,20 +116,27 @@ Rails.application.routes.draw do
 
         # Fundraiser-facing equity operations
         resources :equity_campaigns, only: [], constraints: { id: /[0-9]+|[a-zA-Z0-9\-]+/ } do
-          resources :equity_investments, only: [:index, :create, :update, :destroy] do
+          resources :equity_investments, only: [:index, :create] do
             collection do
               get :public_investments
-              get :my_investments
             end
             
             member do
               get :certificate_status
               post :generate_certificate
+              get :download_certificate
+              put :update
+              delete :destroy
             end
           end
         end
-        # Portfolio route (matches your controller action)
-        get 'equity_investments/portfolio', to: 'equity_investments#portfolio'
+          # Collection routes (don't need specific campaign)
+        resources :equity_investments, only: [] do
+          collection do
+            get :portfolio
+            get :my_investments
+          end
+        end
       end
 
       # Leaderboard routes
