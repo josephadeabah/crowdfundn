@@ -1,32 +1,24 @@
 'use client';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FaChartLine } from 'react-icons/fa';
 import moment from 'moment';
 import Pagination from '@/app/components/pagination/Pagination';
-import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
+import { Investment, PaginationData } from '@/app/types/equityCampaigns.types';
 
 interface InvestmentListProps {
   currencySymbol?: string;
   campaignId: string;
+  investments: Investment[];
+  pagination: PaginationData;
+  onPageChange: (page: number) => void;
 }
 
 const InvestmentList: React.FC<InvestmentListProps> = ({
   currencySymbol = 'GHS',
-  campaignId,
+  investments,
+  pagination,
+  onPageChange,
 }) => {
-  const { pagination, investments, fetchPublicInvestments } =
-    useEquityCampaignContext();
-
-  // Initial load
-  useEffect(() => {
-    fetchPublicInvestments(campaignId, 1, 10);
-  }, [campaignId]);
-
-  // Handle page changes
-  const handlePageChange = async (page: number) => {
-    await fetchPublicInvestments(campaignId, page, pagination?.per_page || 10);
-  };
-
   return (
     <div className="space-y-8">
       {/* Investment List */}
@@ -78,7 +70,7 @@ const InvestmentList: React.FC<InvestmentListProps> = ({
         <Pagination
           currentPage={pagination.current_page}
           totalPages={pagination.total_pages}
-          onPageChange={handlePageChange}
+          onPageChange={onPageChange}
         />
       )}
     </div>
