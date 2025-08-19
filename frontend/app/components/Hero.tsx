@@ -163,9 +163,9 @@ const Hero = () => {
                     </button>
                   </Link>
 
-                  <Link href="/info/how-it-works">
+                  <Link href="https://www.bantuhive.com">
                     <button className="px-6 py-3 bg-transparent border border-border text-foreground rounded-md hover:bg-muted transition-colors">
-                      How It Works
+                      Read Our Latest Happenings
                     </button>
                   </Link>
                 </div>
