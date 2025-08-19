@@ -37,13 +37,12 @@ module Api
             reward_id = investment_params[:reward_id]
 
             # First validate basic parameters
-              validation_result = validate_investment(amount, reward_id)
+            validation_result = validate_investment(amount, reward_id)
             unless validation_result[:valid]
               return render json: { 
                 success: false, 
                 error: validation_result[:message],
-                validationErrors: validation_result[:errors],
-                code: validation_result[:code] # This will include 'MISSING_SUBACCOUNT' if applicable
+                validationErrors: validation_result[:errors]
               }, status: :unprocessable_entity
             end
 
@@ -199,51 +198,54 @@ module Api
         private
 
         def validate_investment(amount, reward_id)
-          result = { valid: true, errors: {} }
+          result = { valid: true }
           
-          # Validate minimum investment
+          # Maintain all equity-specific validations
           if amount < @campaign.minimum_investment
-            result[:valid] = false
-            result[:message] = "Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}"
-            result[:errors][:amount] = ["Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}"]
+            result = {
+              valid: false,
+              message: "Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}",
+              errors: { amount: ["Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}"] }
+            }
+          elsif @campaign.maximum_investment > 0 && amount > @campaign.maximum_investment
+            result = {
+              valid: false,
+              message: "Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}",
+              errors: { amount: ["Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}"] }
+            }
+          elsif reward_id && !@campaign.rewards.available.exists?(id: reward_id)
+            result = {
+              valid: false,
+              message: "Selected reward is no longer available",
+              errors: { reward_id: ["Selected reward is no longer available"] }
+            }
           end
 
-          # Validate maximum investment if set
-          if result[:valid] && @campaign.maximum_investment > 0 && amount > @campaign.maximum_investment
-            result[:valid] = false
-            result[:message] = "Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}"
-            result[:errors][:amount] = ["Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}"]
-          end
-
-          # Validate subaccount exists and is properly configured
+          # Subaccount validation - check if fundraiser has valid subaccount
           if result[:valid]
             subaccount = Subaccount.find_by(user_id: @campaign.fundraiser_id)
             unless subaccount&.subaccount_code.present?
-              result[:valid] = false
-              result[:message] = 'Fundraiser does not meet requirements for raising funds'
-              result[:errors][:base] = ['Fundraiser does not meet requirements for raising funds']
-              result[:code] = 'MISSING_ACCOUNT_NUMBER'
+              result = {
+                valid: false,
+                message: 'Fundraiser does not meet requirements for raising funds',
+                errors: { base: ['Fundraiser does not meet requirements for raising funds'] },
+                code: 'MISSING_ACCOUNT_NUMBER'
+              }
             end
           end
 
-          # Validate reward availability
-          if result[:valid] && reward_id && !@campaign.rewards.available.exists?(id: reward_id)
-            result[:valid] = false
-            result[:message] = "Selected reward is no longer available"
-            result[:errors][:reward_id] = ["Selected reward is no longer available"]
-          end
-
-          # Validate shares availability (equity-specific)
+          # Shares validation (equity-specific)
           if result[:valid]
             price_per_share = @campaign.valuation.to_f / @campaign.total_shares.to_f
             requested_shares = (amount / price_per_share).round(4)
 
             if requested_shares > @campaign.shares_available
               available_amount = (@campaign.shares_available * price_per_share).floor
-              result[:valid] = false
-              result[:message] = "Not enough shares available. Maximum investment possible: #{@campaign.currency_symbol}#{available_amount}"
-              result[:errors][:amount] = ["Not enough shares available"]
-              result[:available_amount] = available_amount
+              result = {
+                valid: false,
+                message: "Not enough shares available. Maximum investment possible: #{@campaign.currency_symbol}#{available_amount}",
+                errors: { amount: ["Not enough shares available"] }
+              }
             end
           end
 
