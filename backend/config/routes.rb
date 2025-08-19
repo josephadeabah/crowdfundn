@@ -115,7 +115,7 @@ Rails.application.routes.draw do
         end
 
         # Fundraiser-facing equity operations
-        resources :equity_campaigns, only: [] do
+        resources :equity_campaigns, only: [:create] do
           resources :equity_investments, only: [:index, :create, :update, :destroy] do
             collection do
               get :public_investments
