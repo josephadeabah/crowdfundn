@@ -293,42 +293,26 @@ class Campaign < ApplicationRecord
     investor_documents.required
   end
 
-  def shares_issued
-  0
-  end
-
-  def equity_issued
-    0
-  end
-
-  def shares_available
-    0
-  end
-
-  def percentage_raised
-    0
-  end
-
   def cleanup_associations
-  # Handle points for donations
-  donations.find_each { |d| d.points.update_all(donation_id: nil) }
-  
-  # Handle points for equity investments if this is an equity campaign
-  if is_a?(EquityCampaign)
-    equity_investments.find_each { |i| i.points.update_all(equity_investment_id: nil) }
+    # Handle points for donations
+    donations.find_each { |d| d.points.update_all(donation_id: nil) }
+    
+    # Handle points for equity investments if this is an equity campaign
+    if is_a?(EquityCampaign)
+      equity_investments.find_each { |i| i.points.update_all(equity_investment_id: nil) }
+    end
+    
+    # Clean up rich text associations
+    description.body.attachments.each(&:purge) if description.present?
+    
+    # Purge any other attachments
+    media.purge_later if media.attached?
+    
+    # Clean up ActiveStorage blobs for other attachments
+    investor_documents.each do |doc|
+      doc.files.each { |file| file.purge_later }
+    end
   end
-  
-  # Clean up rich text associations
-  description.body.attachments.each(&:purge) if description.present?
-  
-  # Purge any other attachments
-  media.purge_later if media.attached?
-  
-  # Clean up ActiveStorage blobs for other attachments
-  investor_documents.each do |doc|
-    doc.files.each { |file| file.purge_later }
-  end
-end
 
   private
 

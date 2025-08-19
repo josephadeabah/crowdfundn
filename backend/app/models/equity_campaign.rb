@@ -18,7 +18,6 @@ class EquityCampaign < Campaign
   validate :shares_within_equity_limits
   validate :total_shares_must_be_set
 
-
   attribute :equity_status, :integer, default: 0
 
   enum :equity_status, {
@@ -32,14 +31,13 @@ class EquityCampaign < Campaign
   }
 
   after_update :update_investments_valuation, if: :saved_change_to_valuation?
-
   
   def total_shares_must_be_set
     errors.add(:total_shares, "must be set") if total_shares.to_i <= 0
   end
 
   def total_shares
-  self[:total_shares] || calculate_default_shares
+    self[:total_shares] || calculate_default_shares
   end
 
   def update_all_investment_values
@@ -139,27 +137,21 @@ class EquityCampaign < Campaign
     return 0 if equity_offered.nil? || valuation.nil? || total_shares.nil?
 
     total_equity_shares = (equity_offered.to_f / 100) * total_shares.to_f
-    issued_shares = equity_investments.successful.sum(:shares)
+    issued_shares = shares_issued
     founder_shares = calculate_founder_shares
     
     available = total_equity_shares - issued_shares - founder_shares
     available.positive? ? available.round(4) : 0
   end
 
-  def update_shares_available
-    update_columns(
-      shares_issued: equity_investments.successful.sum(:shares),
-      equity_issued: equity_investments.successful.sum(:percentage),
-      total_equity_invested: equity_investments.successful.sum(:amount)
-    )
+  def shares_issued
+    equity_investments.successful.sum(:shares)
   end
 
-    # Add method to calculate total equity invested
   def total_equity_invested
-    self[:total_equity_invested] || equity_investments.successful.sum(:amount)
+    equity_investments.successful.sum(:amount)
   end
 
-  # Calculate the total number of unique investors (authenticated + anonymous)
   def total_investors
     authenticated_investors = equity_investments.successful.where.not(user_id: nil).distinct.count(:user_id)
     anonymous_investors = equity_investments.successful.where(user_id: nil).count
@@ -209,7 +201,8 @@ class EquityCampaign < Campaign
         contract_term: contract_term
       },
       shares_available: shares_available,
-      total_equity_shares: self[:total_shares] || calculate_default_shares,
+      shares_issued: shares_issued,  # Add this line
+      total_equity_shares: total_shares,
       percentage_raised: percentage_raised,
       equity_status: equity_status,
       maximum_investment: maximum_investment,
@@ -241,14 +234,12 @@ class EquityCampaign < Campaign
   private
 
   def calculate_default_shares
-  (valuation.to_f * 10).round(0) if valuation.present?
+    (valuation.to_f * 10).round(0) if valuation.present?
   end
 
   def set_default_total_shares
-    # Default to 10 million shares for a $1M valuation, scaled accordingly
-    # This gives a nice round number where 1 share = $0.10 at $1M valuation
-  return if total_shares.present? || valuation.blank?
-  self.total_shares = calculate_default_shares
+    return if total_shares.present? || valuation.blank?
+    self.total_shares = calculate_default_shares
   end
 
   def calculate_founder_shares
@@ -257,8 +248,10 @@ class EquityCampaign < Campaign
   end
 
   def equity_issued_within_limits
-    return unless equity_issued.to_f > equity_offered.to_f
-    errors.add(:equity_issued, 'cannot exceed equity offered')
+    # Since we removed the equity_issued column, we need to calculate dynamically
+    issued_percentage = equity_investments.successful.sum(:percentage)
+    return unless issued_percentage > equity_offered.to_f
+    errors.add(:base, 'Total equity issued cannot exceed equity offered')
   end
 
   def update_investments_valuation

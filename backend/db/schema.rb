@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_15_000641) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_19_160419) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -143,12 +143,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_15_000641) do
     t.decimal "maximum_investment"
     t.string "slug", null: false
     t.integer "total_shares", default: 1000000
-    t.integer "shares_issued", default: 0
     t.decimal "equity_issued", precision: 5, scale: 2, default: "0.0"
+    t.decimal "total_equity_invested", precision: 15, scale: 2, default: "0.0"
     t.index ["category", "status"], name: "index_campaigns_on_category_and_status"
     t.index ["category"], name: "index_campaigns_on_category"
+    t.index ["created_at"], name: "index_campaigns_on_created_at"
+    t.index ["end_date"], name: "index_campaigns_on_end_date"
     t.index ["fundraiser_id"], name: "index_campaigns_on_fundraiser_id"
     t.index ["slug"], name: "index_campaigns_on_slug", unique: true
+    t.index ["status", "end_date"], name: "index_campaigns_on_status_and_end_date"
     t.index ["status"], name: "index_campaigns_on_status"
     t.index ["type"], name: "index_campaigns_on_type"
   end
@@ -329,7 +332,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_15_000641) do
     t.string "reason"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "equity_investment_id"
     t.index ["donation_id"], name: "index_points_on_donation_id"
+    t.index ["equity_investment_id"], name: "index_points_on_equity_investment_id"
     t.index ["user_id"], name: "index_points_on_user_id"
   end
 
@@ -541,6 +546,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_15_000641) do
   add_foreign_key "pledges", "donations"
   add_foreign_key "pledges", "rewards"
   add_foreign_key "points", "donations"
+  add_foreign_key "points", "equity_investments"
   add_foreign_key "points", "users"
   add_foreign_key "premium_subscriptions", "users"
   add_foreign_key "profiles", "users"

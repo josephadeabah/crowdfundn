@@ -1,3 +1,4 @@
+# app/models/equity_investment.rb
 class EquityInvestment < ApplicationRecord
   belongs_to :user
   belongs_to :campaign, class_name: 'EquityCampaign'
@@ -37,8 +38,7 @@ class EquityInvestment < ApplicationRecord
   before_validation :calculate_shares_and_percentage, on: :create
   before_create :generate_certificate_number
   before_create :set_investment_date
-  after_commit :update_campaign_totals, on: [:create, :update], if: :saved_change_to_status?
-  after_update :update_campaign_leaderboard, if: :saved_change_to_status?
+  after_commit :update_campaign_leaderboard, if: :saved_change_to_status?
 
   # Status query methods
   def pending?
@@ -149,16 +149,6 @@ class EquityInvestment < ApplicationRecord
 
   def set_investment_date
     self.investment_date ||= Date.current
-  end
-
-  def update_campaign_totals
-    return unless successful?
-    
-    campaign.update_shares_available
-    campaign.update!(
-      current_amount: campaign.current_amount + net_amount,
-      total_successful_donations: campaign.total_successful_donations + net_amount
-    )
   end
 
   def update_campaign_leaderboard
