@@ -327,9 +327,8 @@ module Api
           campaign_identifier = params[:equity_campaign_id] || params[:campaign_id] || params[:id]
           @campaign = Campaign.find_by(id: campaign_identifier)
           
-          unless @campaign
-            render json: { error: 'Campaign not found' }, status: :not_found 
-            return
+          rescue ActiveRecord::RecordNotFound
+            render json: { error: 'Campaign not found' }, status: :not_found unless @campaign
           end
           
           unless @campaign.live?
