@@ -1084,7 +1084,7 @@ export const EquityCampaignProvider = ({
   }, [token]);
 
   // Certificate API methods
-  // Certificate endpoints - FIXED URLs
+  // Certificate API methods - UPDATED to use dedicated endpoints
   const generateCertificate = useCallback(
     async (
       investmentId: string,
@@ -1093,7 +1093,7 @@ export const EquityCampaignProvider = ({
       setCertificateError(null);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_investments/${investmentId}/generate_certificate`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/documents/investment_certificates/${investmentId}/generate`,
           {
             method: 'POST',
             headers: {
@@ -1138,7 +1138,7 @@ export const EquityCampaignProvider = ({
       setCertificateError(null);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_investments/${investmentId}/download_certificate`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/documents/investment_certificates/${investmentId}/download`,
           {
             method: 'GET',
             headers: {
@@ -1180,7 +1180,7 @@ export const EquityCampaignProvider = ({
     ): Promise<{ exists: boolean; url?: string }> => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_investments/${investmentId}/certificate_status`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/documents/investment_certificates/${investmentId}/status`,
           {
             method: 'GET',
             headers: {
