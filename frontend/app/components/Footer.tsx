@@ -24,7 +24,7 @@ const Footer = () => {
         { name: 'Investor Guide', path: '/info/investor-guide' },
         { name: 'Partners', path: '/info/partnerships' },
         { name: 'Case Studies', path: '/info/case-studies' },
-        { name: 'Webinars', path: '/info/webinars' },
+        { name: 'Webinars', path: 'https://www.pnpmmedia.com' },
       ],
     },
     {
