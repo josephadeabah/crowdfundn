@@ -2,9 +2,9 @@ module Api
   module V1
     module Fundraisers
       class EquityInvestmentsController < ApplicationController
-        before_action :authenticate_request, except: [:public_investments, :index]
+        before_action :authenticate_request, except: %i[public_investments, index]
         before_action :set_campaign, only: %i[create, public_investments]
-        before_action :set_investment, only: [:show, :update, :destroy, :certificate_status]
+        before_action :set_investment, only: %i[show, update, destroy, certificate_status]
 
         def public_investments
           investments = @campaign.equity_investments.successful
@@ -325,7 +325,7 @@ module Api
 
         def set_campaign
           campaign_identifier = params[:equity_campaign_id] || params[:campaign_id] || params[:id]
-          @campaign = EquityCampaign.find_by(id: campaign_identifier)
+          @campaign = Campaign.find_by(id: campaign_identifier)
           
           unless @campaign
             render json: { error: 'Campaign not found' }, status: :not_found 
