@@ -94,11 +94,10 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
                 <FaUsers className="text-yellow-600 dark:text-yellow-300" />
               </div>
               <h3 className="font-medium text-gray-500 dark:text-gray-400">
-                Shares in amount vailable
+                Shares Available
               </h3>
             </div>
             <p className="text-2xl font-bold text-gray-900 dark:text-white">
-              {fundraiserCurrency}
               {parseFloat(
                 campaign?.shares_available?.toString() || '0',
               ).toLocaleString()}
