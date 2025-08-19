@@ -31,32 +31,23 @@ module Api
         end
 
         def create
-          Rails.logger.info "Starting investment creation for campaign #{@campaign.id}"
-          
-          begin
+          # First validate the investment parameters
             investment_params = equity_investment_params
             amount = investment_params[:amount].to_f
             reward_id = investment_params[:reward_id]
 
-            # Log the incoming parameters for debugging
-            Rails.logger.info "Investment params: #{investment_params.inspect}"
-            Rails.logger.info "Current user: #{@current_user.id}"
-
-            # Validate the investment
+            # First validate basic parameters
             validation_result = validate_investment(amount, reward_id)
             unless validation_result[:valid]
-              Rails.logger.error "Validation failed: #{validation_result.inspect}"
               return render json: { 
                 success: false, 
                 error: validation_result[:message],
-                validationErrors: validation_result[:errors],
-                details: "Campaign ID: #{@campaign.id}, Amount: #{amount}"
+                validationErrors: validation_result[:errors]
               }, status: :unprocessable_entity
             end
 
             ActiveRecord::Base.transaction do
-              Rails.logger.info "Creating new investment record"
-              
+              # Create the investment first to trigger share calculation
               investment = @campaign.equity_investments.new(
                 user: @current_user,
                 amount: amount,
@@ -68,50 +59,36 @@ module Api
                 metadata: investment_params[:metadata] || {}
               )
 
-              # Calculate shares and percentage
+              # Manually trigger share calculation before validation
               investment.calculate_shares_and_percentage
-              Rails.logger.info "Calculated shares: #{investment.shares}, percentage: #{investment.percentage}"
 
               unless investment.save
-                Rails.logger.error "Investment save failed: #{investment.errors.full_messages}"
                 return render json: { 
                   success: false, 
                   error: "Validation failed: #{investment.errors.full_messages.join(', ')}",
-                  validationErrors: investment.errors.to_hash,
-                  campaign_details: {
-                    id: @campaign.id,
-                    valuation: @campaign.valuation,
-                    total_shares: @campaign.total_shares,
-                    shares_available: @campaign.shares_available
-                  }
+                  validationErrors: investment.errors.to_hash
                 }, status: :unprocessable_entity
               end
 
-              Rails.logger.info "Investment created successfully, initializing payment"
+            # Generate callback URL similar to donations
+            secure_random_uuid = SecureRandom.uuid
+            # Use campaign.slug if available, otherwise fall back to id
+            campaign_identifier = @campaign.slug || @campaign.id
+            redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign_identifier,
+                                                                           host: 'bantuhive.com') + "?#{secure_random_uuid}"
 
-              # Generate callback URL
-              secure_random_uuid = SecureRandom.uuid
-              campaign_identifier = @campaign.slug || @campaign.id
-              redirect_url = Rails.application.routes.url_helpers.campaign_url(
-                campaign_identifier,
-                host: 'bantuhive.com'
-              ) + "?#{secure_random_uuid}"
+            # Prepare metadata (similar structure to donations but with equity-specific fields)
+            metadata = build_metadata(investment, redirect_url)
 
-              # Prepare metadata
-              metadata = build_metadata(investment, redirect_url)
-
-              # Initialize payment
-              initialize_payment(investment, metadata, redirect_url)
-            end
-          rescue StandardError => e
-            Rails.logger.error "Error in investment creation: #{e.message}\n#{e.backtrace.join("\n")}"
-            render json: { 
-              success: false, 
-              error: e.message,
-              code: e.try(:code),
-              backtrace: Rails.env.development? ? e.backtrace : nil
-            }, status: :unprocessable_entity
+            # Initialize payment (same pattern as donations)
+            initialize_payment(investment, metadata, redirect_url)
           end
+        rescue StandardError => e
+          render json: { 
+            success: false, 
+            error: e.message,
+            code: e.try(:code)
+          }, status: :unprocessable_entity
         end
 
         def portfolio
@@ -221,48 +198,41 @@ module Api
         private
 
         def validate_investment(amount, reward_id)
-          result = { valid: true, errors: {} }
+          result = { valid: true }
           
-          # Validate amount is positive
-          if amount <= 0
-            result[:valid] = false
-            result[:message] = "Investment amount must be positive"
-            result[:errors][:amount] = ["must be greater than 0"]
-            return result
-          end
-
-          # Validate against campaign minimum
+          # Maintain all equity-specific validations
           if amount < @campaign.minimum_investment
-            result[:valid] = false
-            result[:message] = "Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}"
-            result[:errors][:amount] = ["Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}"]
+            result = {
+              valid: false,
+              message: "Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}",
+              errors: { amount: ["Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}"] }
+            }
+          elsif @campaign.maximum_investment > 0 && amount > @campaign.maximum_investment
+            result = {
+              valid: false,
+              message: "Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}",
+              errors: { amount: ["Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}"] }
+            }
+          elsif reward_id && !@campaign.rewards.available.exists?(id: reward_id)
+            result = {
+              valid: false,
+              message: "Selected reward is no longer available",
+              errors: { reward_id: ["Selected reward is no longer available"] }
+            }
           end
 
-          # Validate against campaign maximum if set
-          if @campaign.maximum_investment > 0 && amount > @campaign.maximum_investment
-            result[:valid] = false
-            result[:message] = "Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}"
-            result[:errors][:amount] = ["Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}"]
-          end
-
-          # Validate reward if specified
-          if reward_id && !@campaign.rewards.available.exists?(id: reward_id)
-            result[:valid] = false
-            result[:message] = "Selected reward is no longer available"
-            result[:errors][:reward_id] = ["Selected reward is no longer available"]
-          end
-
-          # Validate shares availability if other validations passed
+          # Shares validation (equity-specific)
           if result[:valid]
             price_per_share = @campaign.valuation.to_f / @campaign.total_shares.to_f
             requested_shares = (amount / price_per_share).round(4)
 
             if requested_shares > @campaign.shares_available
               available_amount = (@campaign.shares_available * price_per_share).floor
-              result[:valid] = false
-              result[:message] = "Not enough shares available. Maximum investment possible: #{@campaign.currency_symbol}#{available_amount}"
-              result[:errors][:amount] = ["Not enough shares available"]
-              result[:available_amount] = available_amount
+              result = {
+                valid: false,
+                message: "Not enough shares available. Maximum investment possible: #{@campaign.currency_symbol}#{available_amount}",
+                errors: { amount: ["Not enough shares available"] }
+              }
             end
           end
 
@@ -299,90 +269,16 @@ module Api
         end
 
         def initialize_payment(investment, metadata, redirect_url)
-          Rails.logger.info "Initializing payment for investment #{investment.id}"
-          Rails.logger.info "Payment details - Amount: #{investment.amount}, Email: #{investment.email}"
-          
           subaccount = Subaccount.find_by(user_id: @campaign.fundraiser_id)
-          Rails.logger.info "Subaccount lookup result: #{subaccount.inspect}"
 
           unless subaccount&.subaccount_code.present?
-            error_msg = 'Fundraiser does not meet requirements for raising funds'
-            Rails.logger.error error_msg
             render json: { 
               success: false, 
-              error: error_msg,
+              error: 'Fundraiser does not meet requirements for raising funds',
               code: 'MISSING_SUBACCOUNT'
             }, status: :unprocessable_entity
             return
           end
-
-          paystack_service = PaystackService.new
-          Rails.logger.info "Initializing Paystack transaction with:"
-          Rails.logger.info "Email: #{investment.email}"
-          Rails.logger.info "Amount: #{investment.amount}"
-          Rails.logger.info "Callback URL: #{redirect_url}"
-          Rails.logger.info "Subaccount: #{subaccount.subaccount_code}"
-
-          begin
-            response = paystack_service.initialize_transaction(
-              email: investment.email,
-              amount: investment.amount,
-              callback_url: redirect_url,
-              metadata: metadata,
-              subaccount: subaccount.subaccount_code
-            )
-            Rails.logger.info "Paystack response: #{response.inspect}"
-
-            if response[:status]
-              investment.update!(
-                transaction_reference: response[:data][:reference],
-                metadata: metadata
-              )
-              Rails.logger.info "Payment initialized successfully"
-
-              render json: {
-                success: true,
-                data: {
-                  authorization_url: response[:data][:authorization_url],
-                  redirect_url: redirect_url,
-                  investment: {
-                    id: investment.id,
-                    amount: investment.amount,
-                    shares: investment.shares,
-                    percentage: investment.percentage,
-                    campaign: {
-                      id: @campaign.id,
-                      title: @campaign.title
-                    }
-                  },
-                  total_investors: @campaign.equity_investments.successful.count
-                }
-              }, status: :created
-            else
-              error_msg = response[:message] || "Payment initialization failed"
-              Rails.logger.error "Paystack error: #{error_msg}"
-              investment.update!(status: EquityInvestment::STATUS_FAILED)
-              
-              render json: { 
-                success: false, 
-                error: error_msg,
-                code: response[:data]&.[](:code),
-                paystack_response: response
-              }, status: :unprocessable_entity
-            end
-          rescue StandardError => e
-            error_msg = "Payment initialization error: #{e.message}"
-            Rails.logger.error error_msg
-            Rails.logger.error e.backtrace.join("\n")
-            
-            render json: {
-              success: false,
-              error: error_msg,
-              code: 'PAYMENT_INIT_ERROR',
-              exception: Rails.env.development? ? e.class.name : nil
-            }, status: :unprocessable_entity
-          end
-        
 
           paystack_service = PaystackService.new
           response = paystack_service.initialize_transaction(
