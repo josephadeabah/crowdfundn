@@ -16,18 +16,13 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
 
   const isEquityCampaign = campaign?.type === 'EquityCampaign';
 
-  // Use current_amount for equity campaigns, transferred_amount for others
-  const amountRaised = isEquityCampaign
-    ? campaign?.current_amount || 0
-    : campaign?.transferred_amount || 0;
-
   // Use total_investors for equity campaigns, total_donors for others
   const backersCount = isEquityCampaign
     ? campaign?.total_investors || 0
     : campaign?.total_donors || 0;
 
   const progressPercentage = Math.round(
-    (Number(amountRaised) / Number(campaign?.goal_amount || 1)) * 100,
+    (Number(campaign?.transferred_amount) / Number(campaign?.goal_amount || 1)) * 100,
   );
 
   return (
@@ -89,8 +84,8 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
                 <div className="font-medium text-sm">
                   <span
                     className={`${
-                      parseFloat(amountRaised.toString()) >=
-                      parseFloat(campaign?.goal_amount?.toString() || '0')
+                      parseFloat((campaign?.transferred_amount ?? '0').toString()) >=
+                      parseFloat((campaign?.goal_amount ?? '0').toString())
                         ? 'text-green-600'
                         : 'text-orange-500'
                     }`}
@@ -98,7 +93,7 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
                     <span className="text-gray-600 dark:text-gray-100 mr-1">
                       {fundraiserCurrency}
                     </span>
-                    {parseFloat(amountRaised.toString()).toLocaleString()}
+                    {parseFloat((campaign?.transferred_amount ?? '0').toString()).toLocaleString()}
                   </span>{' '}
                 </div>
                 <div className="flex justify-between gap-3 items-center text-gray-600 dark:text-gray-400">
