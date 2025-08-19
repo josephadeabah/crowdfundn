@@ -123,7 +123,6 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
           </div>
 
           {/* Total Shares Card (if available in your API) */}
-          {campaign?.total_equity_shares && (
             <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
               <div className="flex items-center mb-2">
                 <div className="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-full mr-3">
@@ -134,10 +133,9 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
                 </h3>
               </div>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {parseFloat(campaign?.total_equity_shares.toString()).toLocaleString()}
+                {parseFloat(campaign?.total_equity_shares.toString() || '0').toLocaleString()}
               </p>
             </div>
-          )}
         </div>
       </div>
 
