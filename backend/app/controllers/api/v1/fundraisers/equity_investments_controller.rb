@@ -324,7 +324,10 @@ module Api
         end
 
         def set_campaign
-          campaign_identifier = params[:equity_campaign_id] || params[:campaign_id] || params[:id]
+          # Get the identifier from the correct parameter based on your routes
+          campaign_identifier = params[:equity_campaign_id]
+          
+          Rails.logger.info "Attempting to find campaign with identifier: #{campaign_identifier}"
           
           # First try to find by ID if identifier is numeric
           if campaign_identifier.to_s.match?(/^\d+$/)
@@ -334,17 +337,19 @@ module Api
             @campaign = EquityCampaign.find_by(slug: campaign_identifier)
           end
 
-          unless @campaign
+          if @campaign.nil?
+            Rails.logger.error "Campaign not found with identifier: #{campaign_identifier}"
             render json: { 
               success: false,
               error: 'Equity campaign not found',
               code: 'EQUITY_CAMPAIGN_NOT_FOUND',
-              details: "No campaign found with identifier: #{campaign_identifier}"
+              attempted_identifier: campaign_identifier
             }, status: :not_found
             return false
           end
 
           unless @campaign.live?
+            Rails.logger.warn "Campaign found but not live: #{@campaign.id} (status: #{@campaign.equity_status})"
             render json: { 
               success: false,
               error: 'Campaign is not currently accepting investments',
@@ -353,6 +358,8 @@ module Api
             }, status: :unprocessable_entity
             return false
           end
+          
+          Rails.logger.info "Successfully found campaign: #{@campaign.id}"
         end
 
         def set_investment
