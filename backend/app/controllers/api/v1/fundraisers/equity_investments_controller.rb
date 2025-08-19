@@ -4,7 +4,7 @@ module Api
       class EquityInvestmentsController < ApplicationController
         before_action :authenticate_request, except: [:public_investments]
         before_action :set_campaign, only: [:create]
-        # before_action :set_investment, only: [:show, :update, :destroy, :certificate_status]
+        before_action :set_investment, only: [:show, :update, :destroy, :certificate_status]
 
         def public_investments
           investments = @campaign.equity_investments.successful
@@ -372,6 +372,9 @@ module Api
           params.require(:equity_investment).permit(
             :amount,
             :reward_id,
+            :transaction_reference,
+            :shares,
+            :percentage,
             :email,
             :phone,
             :full_name,
