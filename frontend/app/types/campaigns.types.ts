@@ -223,7 +223,7 @@ export interface SingleCampaignResponseDataType {
   updated_at: string;
   media: string;
   media_filename: string;
-  total_shares: string;
+  total_equity_shares: string;
   shares_issued: string;
   description: CampaignDescription;
   permissions: CampaignPermissions;
