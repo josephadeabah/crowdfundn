@@ -74,7 +74,7 @@ class InvestmentCertificateService
       
       # Investment amount with brand orange - Reduced font size
       pdf.fill_color BRAND_ORANGE
-      pdf.text "#{campaign.currency_symbol}#{investment.amount.round(2)}", 
+      pdf.text "#{campaign.currency}#{investment.amount.round(2)}", 
                size: 22, align: :center, style: :bold # Reduced from 28
       pdf.move_down 12 # Reduced from 15
       
