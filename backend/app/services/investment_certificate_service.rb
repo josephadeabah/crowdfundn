@@ -15,7 +15,7 @@ class InvestmentCertificateService
       pdf = Prawn::Document.new(
         page_size: 'A4',
         page_layout: :portrait,
-        margin: [72, 72, 72, 72],
+        margin: [50, 50, 50, 50], # Reduced margins
         info: {
           Title: 'Investment Certificate',
           Creator: 'Bantuhive',
@@ -32,20 +32,20 @@ class InvestmentCertificateService
       # Decorative header border with brand colors
       pdf.stroke do
         pdf.stroke_color BRAND_GREEN
-        pdf.line_width 3
-        pdf.horizontal_line 0, pdf.bounds.width, at: pdf.cursor + 10
+        pdf.line_width 2 # Reduced from 3
+        pdf.horizontal_line 0, pdf.bounds.width, at: pdf.cursor + 5 # Reduced spacing
       end
-      pdf.move_down 20
+      pdf.move_down 15 # Reduced from 20
 
-      # Header with brand colors
+      # Header with brand colors - Reduced font sizes
       pdf.fill_color BRAND_GREEN
-      pdf.text 'BANTUHIVE INVESTMENT CERTIFICATE', size: 28, align: :center, style: :bold
-      pdf.move_down 15
+      pdf.text 'BANTUHIVE INVESTMENT CERTIFICATE', size: 22, align: :center, style: :bold # Reduced from 28
+      pdf.move_down 10 # Reduced from 15
       
-      # Subtitle with orange accent
+      # Subtitle with orange accent - Reduced font size
       pdf.fill_color BRAND_ORANGE
-      pdf.text 'OFFICIAL CERTIFICATE OF OWNERSHIP', size: 14, align: :center, style: :italic
-      pdf.move_down 30
+      pdf.text 'OFFICIAL CERTIFICATE OF OWNERSHIP', size: 12, align: :center, style: :italic # Reduced from 14
+      pdf.move_down 20 # Reduced from 30
 
       # Decorative separator
       pdf.stroke do
@@ -53,52 +53,52 @@ class InvestmentCertificateService
         pdf.line_width 1
         pdf.horizontal_line pdf.bounds.width / 4, pdf.bounds.width * 3 / 4, at: pdf.cursor
       end
-      pdf.move_down 30
+      pdf.move_down 20 # Reduced from 30
 
-      # Investor details
+      # Investor details - Reduced font sizes
       pdf.fill_color '000000' # Black for main text
       investor_name = investment.user&.full_name || investment.full_name || 'Investor'
       campaign = investment.campaign
       
-      pdf.text "This is to certify that", size: 16, align: :center
-      pdf.move_down 10
+      pdf.text "This is to certify that", size: 14, align: :center # Reduced from 16
+      pdf.move_down 8 # Reduced from 10
       
-      # Investor name with emphasis
+      # Investor name with emphasis - Reduced font size
       pdf.fill_color BRAND_GREEN
-      pdf.text investor_name.upcase, size: 20, align: :center, style: :bold
-      pdf.move_down 10
+      pdf.text investor_name.upcase, size: 16, align: :center, style: :bold # Reduced from 20
+      pdf.move_down 8 # Reduced from 10
       
       pdf.fill_color '000000'
-      pdf.text "has successfully invested", size: 16, align: :center
-      pdf.move_down 10
+      pdf.text "has successfully invested", size: 14, align: :center # Reduced from 16
+      pdf.move_down 8 # Reduced from 10
       
-      # Investment amount with brand orange
+      # Investment amount with brand orange - Reduced font size
       pdf.fill_color BRAND_ORANGE
       pdf.text "#{campaign.currency_symbol}#{investment.amount.round(2)}", 
-               size: 28, align: :center, style: :bold
-      pdf.move_down 15
+               size: 22, align: :center, style: :bold # Reduced from 28
+      pdf.move_down 12 # Reduced from 15
       
       pdf.fill_color '000000'
-      pdf.text "in", size: 16, align: :center
-      pdf.move_down 10
+      pdf.text "in", size: 14, align: :center # Reduced from 16
+      pdf.move_down 8 # Reduced from 10
       
-      # Company name with brand green
+      # Company name with brand green - Reduced font size
       pdf.fill_color BRAND_GREEN
-      pdf.text campaign.company_name.to_s.upcase, size: 20, align: :center, style: :bold
-      pdf.move_down 30
+      pdf.text campaign.company_name.to_s.upcase, size: 16, align: :center, style: :bold # Reduced from 20
+      pdf.move_down 20 # Reduced from 30
 
       # Decorative separator
       pdf.stroke do
         pdf.stroke_color BRAND_GREEN
-        pdf.line_width 2
-        pdf.horizontal_line 50, pdf.bounds.width - 50, at: pdf.cursor
+        pdf.line_width 1.5 # Reduced from 2
+        pdf.horizontal_line 40, pdf.bounds.width - 40, at: pdf.cursor # Reduced width
       end
-      pdf.move_down 30
+      pdf.move_down 20 # Reduced from 30
 
-      # Investment details section
+      # Investment details section - Reduced font sizes
       pdf.fill_color '000000'
-      pdf.text 'INVESTMENT DETAILS', size: 18, align: :center, style: :bold
-      pdf.move_down 20
+      pdf.text 'INVESTMENT DETAILS', size: 16, align: :center, style: :bold # Reduced from 18
+      pdf.move_down 15 # Reduced from 20
 
       details = [
         ['Certificate Number:', { content: investment.certificate_number, color: BRAND_GREEN }],
@@ -112,9 +112,10 @@ class InvestmentCertificateService
       ]
 
       pdf.table(details.map { |label, data| [label, data[:content]] }, 
-                width: pdf.bounds.width - 100, 
-                cell_style: { borders: [], padding: [8, 15, 8, 0] }) do |t|
-        t.column(0).style(align: :right, font_style: :bold, width: 200, text_color: '000000')
+                width: pdf.bounds.width - 80, # Reduced width
+                cell_style: { borders: [], padding: [6, 12, 6, 0], size: 10 } # Reduced padding and font size
+               ) do |t|
+        t.column(0).style(align: :right, font_style: :bold, width: 180, text_color: '000000') # Reduced width
         t.column(1).style(align: :left)
         
         # Apply colors to specific cells
@@ -124,44 +125,44 @@ class InvestmentCertificateService
         end
       end
 
-      pdf.move_down 40
+      pdf.move_down 30 # Reduced from 40
 
-      # Official footer section
+      # Official footer section - Reduced font sizes
       pdf.stroke do
         pdf.stroke_color BRAND_ORANGE
         pdf.line_width 1
         pdf.horizontal_line 0, pdf.bounds.width, at: pdf.cursor
       end
-      pdf.move_down 20
+      pdf.move_down 15 # Reduced from 20
 
       pdf.fill_color '000000'
       pdf.text "This certificate represents a legal ownership stake in #{campaign.company_name}", 
-               size: 12, align: :center
+               size: 10, align: :center # Reduced from 12
       pdf.text "as per the terms outlined in the investment agreement and governed by the laws of the jurisdiction.", 
-               size: 12, align: :center
-      pdf.move_down 15
+               size: 10, align: :center # Reduced from 12
+      pdf.move_down 12 # Reduced from 15
 
-      # Issuance details with brand colors
+      # Issuance details with brand colors - Reduced font sizes
       pdf.fill_color BRAND_GREEN
-      pdf.text "ISSUED BY BANTUHIVE LIMITED", size: 14, align: :center, style: :bold
-      pdf.move_down 5
+      pdf.text "ISSUED BY BANTUHIVE LIMITED", size: 12, align: :center, style: :bold # Reduced from 14
+      pdf.move_down 4 # Reduced from 5
       pdf.fill_color BRAND_ORANGE
-      pdf.text "on #{Time.current.strftime('%B %d, %Y')}", size: 12, align: :center, style: :italic
+      pdf.text "on #{Time.current.strftime('%B %d, %Y')}", size: 10, align: :center, style: :italic # Reduced from 12
 
-      pdf.move_down 30
+      pdf.move_down 20 # Reduced from 30
 
       # Final decorative border
       pdf.stroke do
         pdf.stroke_color BRAND_GREEN
-        pdf.line_width 3
+        pdf.line_width 2 # Reduced from 3
         pdf.horizontal_line 0, pdf.bounds.width, at: pdf.cursor
       end
 
-      # Add company registration footnote
-      pdf.move_down 20
+      # Add company registration footnote - Reduced font size
+      pdf.move_down 15 # Reduced from 20
       pdf.fill_color '666666'
       pdf.text "Bantuhive Limited • Registered Investment Platform • www.bantuhive.com", 
-               size: 10, align: :center
+               size: 8, align: :center # Reduced from 10
 
       # Create and verify temp file
       temp_file = Tempfile.new(["certificate_#{investment.certificate_number}", ".pdf"], binmode: true)
@@ -225,17 +226,17 @@ class InvestmentCertificateService
   end
 
   def self.add_watermark(pdf)
-    # Simple, reliable watermark
+    # Simple, reliable watermark with reduced size
     pdf.transparent(0.03) do
       pdf.fill_color 'DDDDDD'
       
-      # Single centered watermark
+      # Single centered watermark - Reduced size
       pdf.text_box "BANTUHIVE",
-                   at: [pdf.bounds.width / 2 - 100, pdf.bounds.height / 2],
-                   size: 60,
+                   at: [pdf.bounds.width / 2 - 80, pdf.bounds.height / 2], # Adjusted position
+                   size: 48, # Reduced from 60
                    style: :bold,
-                   width: 200,
-                   height: 100,
+                   width: 160, # Reduced from 200
+                   height: 80, # Reduced from 100
                    align: :center,
                    valign: :center
     end
