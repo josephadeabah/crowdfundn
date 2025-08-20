@@ -205,52 +205,22 @@ class InvestmentCertificateService
 
   def self.add_background_image(pdf)
     background_path = Rails.root.join('app', 'assets', 'images', 'certificate.png')
-    
-    unless File.exist?(background_path)
-      Rails.logger.warn "Background image not found: #{background_path}"
-      return
-    end
-
-    pdf.transparent(0.1) do
-      # Calculate position to center the image
-      image_info = pdf.build_image_object(background_path)
-      image_width = image_info.width
-      image_height = image_info.height
-      aspect_ratio = image_width.to_f / image_height.to_f
       
-      # Calculate dimensions that maintain aspect ratio
-      if aspect_ratio > (pdf.bounds.width / pdf.bounds.height)
-        # Image is wider than page
-        width = pdf.bounds.width
-        height = width / aspect_ratio
-      else
-        # Image is taller than page
-        height = pdf.bounds.height
-        width = height * aspect_ratio
+      unless File.exist?(background_path)
+        Rails.logger.warn "Background image not found: #{background_path}"
+        return
       end
-      
-      # Center the image
-      x = (pdf.bounds.width - width) / 2
-      y = (pdf.bounds.height - height) / 2 + height
-      
-      pdf.image background_path,
-                at: [x, y],
-                width: width,
-                height: height,
-                position: :absolute
-  end
 
-    # Get the page dimensions (A4 size in points: 595.28 x 841.89)
-    page_width = 595.28
-    page_height = 841.89
-
-    # Add background with transparency for a subtle overlay effect
-    pdf.transparent(0.1) do  # Adjust transparency (0.0 to 1.0) - 0.1 = 10% opacity
-      pdf.image background_path,
-                at: [0, page_height],  # Start from top-left corner
-                width: page_width,
-                height: page_height
-    end
+      pdf.transparent(0.1) do
+        pdf.canvas do
+          # This will fill the background without stretching, may crop edges
+          pdf.image background_path,
+                    at: [0, pdf.bounds.top],
+                    width: pdf.bounds.width,
+                    height: pdf.bounds.height,
+                    position: :absolute
+        end
+      end
   end
 
   def self.add_watermark(pdf)
