@@ -149,11 +149,6 @@ const EquityInvestments = () => {
     );
   }
 
-  const totalValue = parseNumber(portfolio.portfolio?.total_value);
-  const totalInvested = parseNumber(portfolio.portfolio?.total_invested);
-  const totalReturn = parseNumber(portfolio.portfolio?.total_return);
-  const returnPercentage = parseNumber(portfolio.portfolio?.return_percentage);
-
   return (
     <div className="px-2 py-4">
       <div className="flex justify-between items-center mb-8">
@@ -172,7 +167,10 @@ const EquityInvestments = () => {
         </div>
       </div>
 
-      <PortfolioSummary portfolio={portfolio.portfolio} investments={portfolio.investments} />
+      <PortfolioSummary
+        portfolio={portfolio.portfolio}
+        investments={portfolio.investments}
+      />
 
       {/* Performance Charts Section */}
       <PerformanceCharts investments={portfolio.investments || []} />

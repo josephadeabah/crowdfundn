@@ -1,17 +1,20 @@
 // app/components/equity/PortfolioSummary.tsx
 'use client';
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
-import { TrendingUp, DollarSign, PieChart, Target } from "lucide-react";
-import { InvestmentPortfolio } from "@/app/types/equityCampaigns.types";
-
-
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
+import { Badge } from '@/app/components/ui/badge';
+import { TrendingUp, DollarSign, PieChart, Target } from 'lucide-react';
+import { InvestmentPortfolio } from '@/app/types/equityCampaigns.types';
 
 export const PortfolioSummary = ({ portfolio }: InvestmentPortfolio) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(amount);
   };
 
@@ -69,8 +72,8 @@ export const PortfolioSummary = ({ portfolio }: InvestmentPortfolio) => {
             {formatCurrency(portfolio?.total_return ?? 0)}
           </div>
           <div className="flex items-center mt-2">
-            <Badge 
-              variant={badgeVariant} 
+            <Badge
+              variant={badgeVariant}
               className={`${isPositiveReturn ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200'} dark:${isPositiveReturn ? 'bg-green-900/20 text-green-300 border-green-800' : 'bg-red-900/20 text-red-300 border-red-800'}`}
             >
               {badgeText}
