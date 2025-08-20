@@ -31,10 +31,11 @@ export const PortfolioSummary = ({ portfolio }: PortfolioSummaryProps) => {
 
   const formatPercentage = (percentage: number | string | null | undefined) => {
     // Convert to number if it's a string, or use 0 if null/undefined
-    const numPercentage = typeof percentage === 'string' 
-      ? parseFloat(percentage) 
-      : Number(percentage) || 0;
-    
+    const numPercentage =
+      typeof percentage === 'string'
+        ? parseFloat(percentage)
+        : Number(percentage) || 0;
+
     return `${numPercentage.toFixed(2)}%`;
   };
 
@@ -43,11 +44,12 @@ export const PortfolioSummary = ({ portfolio }: PortfolioSummaryProps) => {
   const totalValue = Number(portfolio?.total_value) || 0;
   const totalReturn = Number(portfolio?.total_return) || 0;
   const totalShares = Number(portfolio?.total_shares) || 0;
-  
+
   // Parse return percentage safely
-  const returnPercentageValue = typeof portfolio?.return_percentage === 'string'
-    ? parseFloat(portfolio.return_percentage)
-    : Number(portfolio?.return_percentage) || 0;
+  const returnPercentageValue =
+    typeof portfolio?.return_percentage === 'string'
+      ? parseFloat(portfolio.return_percentage)
+      : Number(portfolio?.return_percentage) || 0;
 
   // Determine if return is positive or negative for styling
   const isPositiveReturn = totalReturn >= 0;

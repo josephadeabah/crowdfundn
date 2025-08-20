@@ -55,10 +55,10 @@ const EquityInvestments = () => {
     setCertificateOperations((prev) => ({ ...prev, [investmentId]: true }));
 
     try {
-
-      const investment: EquityInvestment | undefined = portfolio?.investments?.find(
-        (inv: EquityInvestment) => inv.id.toString() === investmentId,
-      );
+      const investment: EquityInvestment | undefined =
+        portfolio?.investments?.find(
+          (inv: EquityInvestment) => inv.id.toString() === investmentId,
+        );
 
       if (!investment) {
         console.error('Investment not found');

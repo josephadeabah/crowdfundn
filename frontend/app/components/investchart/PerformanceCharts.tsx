@@ -38,7 +38,10 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
     (acc, investment) => {
       const campaignName =
         investment.campaign?.title || `Campaign ${investment.campaign_id}`;
-      const currentValue = parseNumber(investment.current_value, parseNumber(investment.amount));
+      const currentValue = parseNumber(
+        investment.current_value,
+        parseNumber(investment.amount),
+      );
 
       const existing = acc.find((item) => item.name === campaignName);
       if (existing) {
@@ -106,9 +109,13 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
 
   const PieTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
-      const totalValue = portfolioData.reduce((sum, item) => sum + item.value, 0);
-      const percentage = totalValue > 0 ? (payload[0].value / totalValue) * 100 : 0;
-      
+      const totalValue = portfolioData.reduce(
+        (sum, item) => sum + item.value,
+        0,
+      );
+      const percentage =
+        totalValue > 0 ? (payload[0].value / totalValue) * 100 : 0;
+
       return (
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-lg">
           <p className="text-gray-900 dark:text-white font-medium">
