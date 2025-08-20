@@ -200,30 +200,23 @@ class InvestmentCertificateService
 
   private
 
-  def self.add_watermark(pdf)
-    # Light watermark in the background
-    pdf.transparent(0.1) do
-      pdf.fill_color 'CCCCCC'
-      pdf.text_box "BANTUHIVE LIMITED",
-                   at: [50, pdf.bounds.height - 100],
-                   size: 48,
-                   style: :bold,
-                   rotate: 45,
-                   width: pdf.bounds.width,
-                   height: pdf.bounds.height
-      
-      # Additional subtle watermark pattern
-      5.times do |i|
-        pdf.text_box "OFFICIAL DOCUMENT",
-                     at: [100 + i * 150, 200 + i * 100],
-                     size: 24,
-                     style: :italic,
-                     rotate: -30,
-                     transparent: 0.05
-      end
-    end
-    pdf.fill_color '000000' # Reset to black
+def self.add_watermark(pdf)
+  # Simple, reliable watermark
+  pdf.transparent(0.03) do
+    pdf.fill_color 'DDDDDD'
+    
+    # Single centered watermark
+    pdf.text_box "BANTUHIVE",
+                 at: [pdf.bounds.width / 2 - 100, pdf.bounds.height / 2],
+                 size: 60,
+                 style: :bold,
+                 width: 200,
+                 height: 100,
+                 align: :center,
+                 valign: :center
   end
+  pdf.fill_color '000000'
+end
 
   def self.certificate_url(investment)
     return unless investment.certificate.attached?
