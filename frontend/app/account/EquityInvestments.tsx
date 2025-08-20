@@ -55,9 +55,9 @@ const EquityInvestments = () => {
     setCertificateOperations((prev) => ({ ...prev, [investmentId]: true }));
 
     try {
-      // Find the investment from the portfolio data
-      const investment = portfolio?.investments?.find(
-        (inv) => inv.id.toString() === investmentId,
+
+      const investment: EquityInvestment | undefined = portfolio?.investments?.find(
+        (inv: EquityInvestment) => inv.id.toString() === investmentId,
       );
 
       if (!investment) {
@@ -167,10 +167,10 @@ const EquityInvestments = () => {
         </div>
       </div>
 
-      <PortfolioSummary portfolio={portfolio.portfolio} />
+      <PortfolioSummary portfolio={portfolio?.portfolio} />
 
       {/* Performance Charts Section */}
-      <PerformanceCharts investments={portfolio.investments || []} />
+      <PerformanceCharts investments={portfolio?.investments || []} />
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-8 mt-8">
         <div className="px-2 py-4">
