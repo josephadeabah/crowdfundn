@@ -238,7 +238,6 @@ class InvestmentCertificateService
                 width: width,
                 height: height,
                 position: :absolute
-    end
   end
 
     # Get the page dimensions (A4 size in points: 595.28 x 841.89)
