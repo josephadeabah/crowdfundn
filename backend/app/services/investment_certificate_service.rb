@@ -23,7 +23,7 @@ class InvestmentCertificateService
         }
       )
 
-      # Add background image with transparent overlay - FIXED
+      # Add background image with transparent overlay
       add_background_image(pdf)
 
       # Add watermark background
@@ -212,13 +212,26 @@ class InvestmentCertificateService
       return
     end
 
-    # Use canvas to ensure proper positioning across the entire page
-    pdf.canvas do
+    # Add background with original transparency
+    pdf.transparent(0.1) do  # Keep original 10% opacity
+      # Use fit option to maintain aspect ratio while making width 100%
       pdf.image background_path,
-                at: [0, pdf.bounds.top],  # Start from bottom-left (0,0) to top-right
-                width: pdf.bounds.width,
-                height: pdf.bounds.height,
-                position: :absolute
+                at: [0, pdf.bounds.top],  # Position from bottom-left
+                width: pdf.bounds.width,  # 100% width
+                position: :absolute       # Ensure proper positioning
+    end
+  end
+
+    # Get the page dimensions (A4 size in points: 595.28 x 841.89)
+    page_width = 595.28
+    page_height = 841.89
+
+    # Add background with transparency for a subtle overlay effect
+    pdf.transparent(0.1) do  # Adjust transparency (0.0 to 1.0) - 0.1 = 10% opacity
+      pdf.image background_path,
+                at: [0, page_height],  # Start from top-left corner
+                width: page_width,
+                height: page_height
     end
   end
 
@@ -235,8 +248,7 @@ class InvestmentCertificateService
                    width: 160, # Reduced from 200
                    height: 80, # Reduced from 100
                    align: :center,
-                   valign: :center,
-                   position: :absolute
+                   valign: :center
     end
     pdf.fill_color '000000'
   end
