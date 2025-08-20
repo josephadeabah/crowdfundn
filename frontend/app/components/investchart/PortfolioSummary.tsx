@@ -8,9 +8,20 @@ import {
 } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
 import { TrendingUp, DollarSign, PieChart, Target } from 'lucide-react';
-import { InvestmentPortfolio } from '@/app/types/equityCampaigns.types';
 
-export const PortfolioSummary = ({ portfolio }: { portfolio: InvestmentPortfolio['portfolio'] }) => {
+interface PortfolioSummaryProps {
+  portfolio: {
+    total_invested: number;
+    total_shares?: number;
+    total_value?: number;
+    active_investments: number;
+    campaigns_invested: number;
+    total_return?: number;
+    return_percentage?: number;
+  };
+}
+
+export const PortfolioSummary = ({ portfolio }: PortfolioSummaryProps) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',

@@ -167,10 +167,7 @@ const EquityInvestments = () => {
         </div>
       </div>
 
-      <PortfolioSummary
-        portfolio={portfolio.portfolio}
-        investments={portfolio.investments}
-      />
+      <PortfolioSummary portfolio={portfolio.portfolio} />
 
       {/* Performance Charts Section */}
       <PerformanceCharts investments={portfolio.investments || []} />
