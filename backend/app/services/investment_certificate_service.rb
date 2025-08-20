@@ -20,9 +20,11 @@ class InvestmentCertificateService
           Title: 'Investment Certificate',
           Creator: 'Bantuhive',
           CreationDate: Time.now
-        },
-        background: Rails.root.join('app', 'assets', 'images', 'certificate.png') # Optional: Add a background image
+        }
       )
+
+      # Add background image that covers the entire page
+      add_background_image(pdf)
 
       # Add watermark background
       add_watermark(pdf)
@@ -200,23 +202,43 @@ class InvestmentCertificateService
 
   private
 
-def self.add_watermark(pdf)
-  # Simple, reliable watermark
-  pdf.transparent(0.03) do
-    pdf.fill_color 'DDDDDD'
+  def self.add_background_image(pdf)
+    background_path = Rails.root.join('app', 'assets', 'images', 'certificate.png')
     
-    # Single centered watermark
-    pdf.text_box "BANTUHIVE",
-                 at: [pdf.bounds.width / 2 - 100, pdf.bounds.height / 2],
-                 size: 60,
-                 style: :bold,
-                 width: 200,
-                 height: 100,
-                 align: :center,
-                 valign: :center
+    # Check if the background image exists
+    unless File.exist?(background_path)
+      Rails.logger.warn "Background image not found: #{background_path}"
+      return
+    end
+
+    # Get the page dimensions (A4 size in points: 595.28 x 841.89)
+    page_width = 595.28
+    page_height = 841.89
+
+    # Add the background image to cover the entire page
+    pdf.image background_path,
+              at: [0, page_height],  # Start from top-left corner
+              width: page_width,
+              height: page_height
   end
-  pdf.fill_color '000000'
-end
+
+  def self.add_watermark(pdf)
+    # Simple, reliable watermark
+    pdf.transparent(0.03) do
+      pdf.fill_color 'DDDDDD'
+      
+      # Single centered watermark
+      pdf.text_box "BANTUHIVE",
+                   at: [pdf.bounds.width / 2 - 100, pdf.bounds.height / 2],
+                   size: 60,
+                   style: :bold,
+                   width: 200,
+                   height: 100,
+                   align: :center,
+                   valign: :center
+    end
+    pdf.fill_color '000000'
+  end
 
   def self.certificate_url(investment)
     return unless investment.certificate.attached?
