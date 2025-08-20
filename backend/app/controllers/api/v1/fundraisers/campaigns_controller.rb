@@ -18,7 +18,7 @@ module Api
             # Equity-specific fields
             :valuation, :equity_offered, :minimum_investment, :maximum_investment,
             :company_name, :company_description, :company_headquarters,
-            :company_website, :contract_term
+            :company_website, :contract_term, :total_shares 
           ).tap do |whitelisted|
             # Set the type based on params key
             if action_name == 'create' || params[params_key][:type]
@@ -26,7 +26,7 @@ module Api
             end
 
             # Convert numeric fields
-            %i[valuation equity_offered minimum_investment maximum_investment].each do |field|
+            %i[valuation equity_offered minimum_investment maximum_investment total_shares].each do |field|
               whitelisted[field] = whitelisted[field].to_f if whitelisted[field]
             end
           end

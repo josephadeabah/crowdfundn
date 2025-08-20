@@ -284,7 +284,8 @@ module Api
           only: %i[
             id title slug goal_amount current_amount transferred_amount start_date end_date
             category location currency currency_code currency_symbol status
-            fundraiser_id created_at updated_at valuation equity_offered minimum_investment maximum_investment
+            fundraiser_id created_at updated_at valuation equity_offered minimum_investment maximum_investment 
+            total_shares 
           ],
           methods: %i[media_url media_filename total_days remaining_days],
           include: {

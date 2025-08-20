@@ -33,7 +33,10 @@ class EquityCampaign < Campaign
   after_update :update_investments_valuation, if: :saved_change_to_valuation?
   
   def total_shares_must_be_set
-    errors.add(:total_shares, "must be set") if total_shares.to_i <= 0
+    # Only validate if it's a new record OR if total_shares is being set/changed
+    if (new_record? || total_shares_changed?) && total_shares.to_i <= 0
+      errors.add(:total_shares, "must be set and greater than 0")
+    end
   end
 
   def total_shares
