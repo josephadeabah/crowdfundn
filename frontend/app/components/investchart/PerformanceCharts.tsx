@@ -26,12 +26,19 @@ interface PerformanceChartsProps {
 }
 
 export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
+  // Safe number parsing function
+  const parseNumber = (value: any, fallback = 0): number => {
+    if (typeof value === 'number') return value;
+    if (typeof value === 'string') return parseFloat(value) || fallback;
+    return fallback;
+  };
+
   // Prepare data for portfolio composition pie chart
   const portfolioData = investments.reduce(
     (acc, investment) => {
       const campaignName =
         investment.campaign?.title || `Campaign ${investment.campaign_id}`;
-      const currentValue = investment.current_value || investment.amount;
+      const currentValue = parseNumber(investment.current_value, parseNumber(investment.amount));
 
       const existing = acc.find((item) => item.name === campaignName);
       if (existing) {
@@ -49,8 +56,8 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
 
   // Prepare data for returns bar chart
   const returnsData = investments.map((investment, index) => {
-    const invested = investment.amount;
-    const currentValue = investment.current_value || invested;
+    const invested = parseNumber(investment.amount);
+    const currentValue = parseNumber(investment.current_value, invested);
     const returnAmount = currentValue - invested;
     const returnPercentage = invested > 0 ? (returnAmount / invested) * 100 : 0;
     const campaignName =
@@ -84,11 +91,11 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
-          <p className="text-foreground font-medium">{`${label}`}</p>
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-lg">
+          <p className="text-gray-900 dark:text-white font-medium">{`${label}`}</p>
           {payload.map((entry: any, index: number) => (
-            <p key={index} className="text-sm" style={{ color: entry.color }}>
-              {`${entry.dataKey}: ${formatCurrency(entry.value)}`}
+            <p key={index} className="text-sm text-gray-600 dark:text-gray-300">
+              {`${entry.name || entry.dataKey}: ${formatCurrency(entry.value)}`}
             </p>
           ))}
         </div>
@@ -99,21 +106,19 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
 
   const PieTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
+      const totalValue = portfolioData.reduce((sum, item) => sum + item.value, 0);
+      const percentage = totalValue > 0 ? (payload[0].value / totalValue) * 100 : 0;
+      
       return (
-        <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
-          <p className="text-foreground font-medium">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-lg">
+          <p className="text-gray-900 dark:text-white font-medium">
             {payload[0].payload.name}
           </p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
             {formatCurrency(payload[0].value)}
           </p>
-          <p className="text-sm text-muted-foreground">
-            {(
-              (payload[0].value /
-                portfolioData.reduce((sum, item) => sum + item.value, 0)) *
-              100
-            ).toFixed(1)}
-            % of portfolio
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            {percentage.toFixed(1)}% of portfolio
           </p>
         </div>
       );
@@ -124,9 +129,9 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
   if (investments.length === 0) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-        <Card className="bg-gradient-card shadow-card">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-foreground">
+            <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
               Portfolio Composition
             </CardTitle>
           </CardHeader>
@@ -139,9 +144,9 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-card shadow-card">
+        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-foreground">
+            <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
               Investment Returns
             </CardTitle>
           </CardHeader>
@@ -159,9 +164,9 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-      <Card className="bg-gradient-card shadow-card">
+      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-foreground">
+          <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
             Portfolio Composition
           </CardTitle>
         </CardHeader>
@@ -195,9 +200,9 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-card shadow-card">
+      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-foreground">
+          <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
             Investment Returns
           </CardTitle>
         </CardHeader>
