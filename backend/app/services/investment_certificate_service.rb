@@ -206,19 +206,39 @@ class InvestmentCertificateService
   def self.add_background_image(pdf)
     background_path = Rails.root.join('app', 'assets', 'images', 'certificate.png')
     
-    # Check if the background image exists
     unless File.exist?(background_path)
       Rails.logger.warn "Background image not found: #{background_path}"
       return
     end
 
-    # Add background with original transparency
-    pdf.transparent(0.1) do  # Keep original 10% opacity
-      # Use fit option to maintain aspect ratio while making width 100%
+    pdf.transparent(0.1) do
+      # Calculate position to center the image
+      image_info = pdf.build_image_object(background_path)
+      image_width = image_info.width
+      image_height = image_info.height
+      aspect_ratio = image_width.to_f / image_height.to_f
+      
+      # Calculate dimensions that maintain aspect ratio
+      if aspect_ratio > (pdf.bounds.width / pdf.bounds.height)
+        # Image is wider than page
+        width = pdf.bounds.width
+        height = width / aspect_ratio
+      else
+        # Image is taller than page
+        height = pdf.bounds.height
+        width = height * aspect_ratio
+      end
+      
+      # Center the image
+      x = (pdf.bounds.width - width) / 2
+      y = (pdf.bounds.height - height) / 2 + height
+      
       pdf.image background_path,
-                at: [0, pdf.bounds.top],  # Position from bottom-left
-                width: pdf.bounds.width,  # 100% width
-                position: :absolute       # Ensure proper positioning
+                at: [x, y],
+                width: width,
+                height: height,
+                position: :absolute
+    end
   end
 
     # Get the page dimensions (A4 size in points: 595.28 x 841.89)
