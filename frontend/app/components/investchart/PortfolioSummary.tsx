@@ -10,7 +10,7 @@ import { Badge } from '@/app/components/ui/badge';
 import { TrendingUp, DollarSign, PieChart, Target } from 'lucide-react';
 import { InvestmentPortfolio } from '@/app/types/equityCampaigns.types';
 
-export const PortfolioSummary = ({ portfolio }: InvestmentPortfolio) => {
+export const PortfolioSummary = ({ portfolio }: { portfolio: InvestmentPortfolio['portfolio'] }) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -74,7 +74,7 @@ export const PortfolioSummary = ({ portfolio }: InvestmentPortfolio) => {
           <div className="flex items-center mt-2">
             <Badge
               variant={badgeVariant}
-              className={`${isPositiveReturn ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200'} dark:${isPositiveReturn ? 'bg-green-900/20 text-green-300 border-green-800' : 'bg-red-900/20 text-red-300 border-red-800'}`}
+              className={`${isPositiveReturn ? 'bg-green-100 text-green-800 border-0' : 'bg-red-100 text-red-800 border-0'} dark:${isPositiveReturn ? 'bg-green-900/20 text-green-300 border-0' : 'bg-red-900/20 text-red-300 border-0'}`}
             >
               {badgeText}
             </Badge>
