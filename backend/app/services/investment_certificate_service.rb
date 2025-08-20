@@ -23,7 +23,7 @@ class InvestmentCertificateService
         }
       )
 
-      # Add background image that covers the entire page
+      # Add background image with transparent overlay
       add_background_image(pdf)
 
       # Add watermark background
@@ -215,11 +215,13 @@ class InvestmentCertificateService
     page_width = 595.28
     page_height = 841.89
 
-    # Add the background image to cover the entire page
-    pdf.image background_path,
-              at: [0, page_height],  # Start from top-left corner
-              width: page_width,
-              height: page_height
+    # Add background with transparency for a subtle overlay effect
+    pdf.transparent(0.1) do  # Adjust transparency (0.0 to 1.0) - 0.1 = 10% opacity
+      pdf.image background_path,
+                at: [0, page_height],  # Start from top-left corner
+                width: page_width,
+                height: page_height
+    end
   end
 
   def self.add_watermark(pdf)
