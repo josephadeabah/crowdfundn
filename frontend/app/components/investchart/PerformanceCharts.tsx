@@ -94,7 +94,7 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-lg">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
           <p className="text-gray-900 dark:text-white font-medium">{`${label}`}</p>
           {payload.map((entry: any, index: number) => (
             <p key={index} className="text-sm text-gray-600 dark:text-gray-300">
@@ -117,7 +117,7 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
         totalValue > 0 ? (payload[0].value / totalValue) * 100 : 0;
 
       return (
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-lg">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
           <p className="text-gray-900 dark:text-white font-medium">
             {payload[0].payload.name}
           </p>
@@ -136,7 +136,7 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
   if (investments.length === 0) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0">
+        <Card className="bg-white dark:bg-gray-800 border-0">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
               Portfolio Composition
@@ -151,7 +151,7 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
           </CardContent>
         </Card>
 
-        <Card className="bg-white dark:bg-gray-800 shadow-lg border-0">
+        <Card className="bg-white dark:bg-gray-800 border-0">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
               Investment Returns
@@ -171,7 +171,7 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0">
+      <Card className="bg-white dark:bg-gray-800 border-0">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
             Portfolio Composition
@@ -207,7 +207,7 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
         </CardContent>
       </Card>
 
-      <Card className="bg-white dark:bg-gray-800 shadow-lg border-0">
+      <Card className="bg-white dark:bg-gray-800 border-0">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
             Investment Returns
