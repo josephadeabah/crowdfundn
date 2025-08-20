@@ -17,7 +17,7 @@ interface PortfolioSummaryProps {
     active_investments: number;
     campaigns_invested: number;
     total_return?: number;
-    return_percentage?: number;
+    return_percentage?: number | string | null;
   };
 }
 
@@ -29,17 +29,33 @@ export const PortfolioSummary = ({ portfolio }: PortfolioSummaryProps) => {
     }).format(amount);
   };
 
-  const formatPercentage = (percentage: number) => {
-    return `${percentage.toFixed(2)}%`;
+  const formatPercentage = (percentage: number | string | null | undefined) => {
+    // Convert to number if it's a string, or use 0 if null/undefined
+    const numPercentage = typeof percentage === 'string' 
+      ? parseFloat(percentage) 
+      : Number(percentage) || 0;
+    
+    return `${numPercentage.toFixed(2)}%`;
   };
 
+  // Safely parse numeric values with fallbacks
+  const totalInvested = Number(portfolio?.total_invested) || 0;
+  const totalValue = Number(portfolio?.total_value) || 0;
+  const totalReturn = Number(portfolio?.total_return) || 0;
+  const totalShares = Number(portfolio?.total_shares) || 0;
+  
+  // Parse return percentage safely
+  const returnPercentageValue = typeof portfolio?.return_percentage === 'string'
+    ? parseFloat(portfolio.return_percentage)
+    : Number(portfolio?.return_percentage) || 0;
+
   // Determine if return is positive or negative for styling
-  const isPositiveReturn = (portfolio?.total_return ?? 0) >= 0;
+  const isPositiveReturn = totalReturn >= 0;
   const returnColorClass = isPositiveReturn ? 'text-green-600' : 'text-red-600';
   const badgeVariant = isPositiveReturn ? 'default' : 'destructive';
   const badgeText = isPositiveReturn
-    ? `+${formatPercentage(portfolio?.return_percentage ?? 0)}`
-    : `${formatPercentage(portfolio?.return_percentage ?? 0)}`;
+    ? `+${formatPercentage(returnPercentageValue)}`
+    : `${formatPercentage(returnPercentageValue)}`;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -52,7 +68,7 @@ export const PortfolioSummary = ({ portfolio }: PortfolioSummaryProps) => {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-gray-800 dark:text-white">
-            {formatCurrency(portfolio?.total_invested ?? 0)}
+            {formatCurrency(totalInvested)}
           </div>
         </CardContent>
       </Card>
@@ -66,7 +82,7 @@ export const PortfolioSummary = ({ portfolio }: PortfolioSummaryProps) => {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-gray-800 dark:text-white">
-            {formatCurrency(portfolio?.total_value ?? 0)}
+            {formatCurrency(totalValue)}
           </div>
         </CardContent>
       </Card>
@@ -80,7 +96,7 @@ export const PortfolioSummary = ({ portfolio }: PortfolioSummaryProps) => {
         </CardHeader>
         <CardContent>
           <div className={`text-2xl font-bold ${returnColorClass}`}>
-            {formatCurrency(portfolio?.total_return ?? 0)}
+            {formatCurrency(totalReturn)}
           </div>
           <div className="flex items-center mt-2">
             <Badge
@@ -102,7 +118,7 @@ export const PortfolioSummary = ({ portfolio }: PortfolioSummaryProps) => {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-gray-800 dark:text-white">
-            {(portfolio?.total_shares ?? 0).toLocaleString(undefined, {
+            {totalShares.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
