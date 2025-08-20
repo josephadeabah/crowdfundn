@@ -32,17 +32,20 @@ module Api
               render json: { 
                 success: true, 
                 message: 'Certificate already exists',
-                certificate_url: certificate_download_url
+                certificate_url: @investment.certificate_url
               }, status: :ok
               return
             end
 
             # Generate certificate
             if InvestmentCertificateService.generate_certificate(@investment)
+              # Reload the investment to get the attached certificate
+              @investment.reload
+              
               render json: { 
                 success: true, 
                 message: 'Certificate generated successfully',
-                certificate_url: certificate_download_url
+                certificate_url: @investment.certificate_url
               }, status: :created
             else
               render json: { 
@@ -79,13 +82,6 @@ module Api
               success: false, 
               error: 'Investment not found or not authorized' 
             }, status: :not_found
-          end
-
-          def certificate_download_url
-            api_v1_fundraisers_documents_investment_certificate_download_url(
-              investment_id: @investment.id,
-              host: Rails.application.config.action_mailer.default_url_options[:host]
-            )
           end
         end
       end
