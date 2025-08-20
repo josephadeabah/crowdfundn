@@ -15,6 +15,7 @@ import { generateRandomString } from '@/app/utils/helpers/generate.random-string
 import { useEquityCampaignContext } from '../context/account/campaign/EquityCampaignContext';
 import { useAuth } from '../context/auth/AuthContext';
 import { PerformanceCharts } from '../components/investchart/PerformanceCharts';
+import { PortfolioSummary } from '../components/investchart/PortfolioSummary';
 
 const EquityInvestments = () => {
   const {
@@ -171,51 +172,7 @@ const EquityInvestments = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-gray-500 dark:text-gray-400 mb-2">
-            Total Portfolio Value
-          </h3>
-          <p className="text-lg font-bold text-green-600 dark:text-green-400">
-            $
-            {totalValue.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </p>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-gray-500 dark:text-gray-400 mb-2">
-            Total Invested
-          </h3>
-          <p className="text-lg font-bold">
-            $
-            {totalInvested.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </p>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-gray-500 dark:text-gray-400 mb-2">
-            Total Return
-          </h3>
-          <p
-            className={`text-lg font-bold ${
-              totalReturn >= 0
-                ? 'text-green-600 dark:text-green-400'
-                : 'text-red-600 dark:text-red-400'
-            }`}
-          >
-            $
-            {totalReturn.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}{' '}
-            ({returnPercentage.toFixed(2)}%)
-          </p>
-        </div>
-      </div>
+      <PortfolioSummary portfolio={portfolio.portfolio} investments={portfolio.investments} />
 
       {/* Performance Charts Section */}
       <PerformanceCharts investments={portfolio.investments || []} />
