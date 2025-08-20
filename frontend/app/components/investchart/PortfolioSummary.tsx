@@ -43,7 +43,7 @@ export const PortfolioSummary = ({ portfolio }: PortfolioSummaryProps) => {
   const totalInvested = Number(portfolio?.total_invested) || 0;
   const totalValue = Number(portfolio?.total_value) || 0;
   const totalReturn = Number(portfolio?.total_return) || 0;
-  const totalShares = Number(portfolio?.total_shares) || 0;
+  const distinctCampaignsInvested = Number(portfolio?.campaigns_invested) || 0;
 
   // Parse return percentage safely
   const returnPercentageValue =
@@ -114,13 +114,13 @@ export const PortfolioSummary = ({ portfolio }: PortfolioSummaryProps) => {
       <Card className="bg-white dark:bg-gray-800 border-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            Total Shares
+            Different Campaigns Invested
           </CardTitle>
           <PieChart className="h-4 w-4 text-gray-400" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-gray-800 dark:text-white">
-            {totalShares.toLocaleString(undefined, {
+            {distinctCampaignsInvested.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
