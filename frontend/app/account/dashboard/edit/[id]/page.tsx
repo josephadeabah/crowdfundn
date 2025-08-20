@@ -43,6 +43,9 @@ const EditCampaign = () => {
   const [currencyCode, setCurrencyCode] = useState<string | null>(null);
   const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  // Equity campaign specific fields
+  const [valuation, setValuation] = useState('');
+  const [totalShares, setTotalShares] = useState('');
 
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
 
@@ -64,6 +67,12 @@ const EditCampaign = () => {
             setCurrencyCode(campaignData.currency_code);
             setCurrencySymbol(campaignData.currency_symbol);
             setStatus(campaignData.status);
+
+            // Set equity campaign specific fields
+            if (campaignData.type === 'EquityCampaign') {
+              setValuation(campaignData.valuation?.toString() || '');
+              setTotalShares(campaignData.total_shares?.toString() || '');
+            }
           }
         })
         .catch(() => setFetchError('Error fetching campaign details.'));
@@ -198,6 +207,44 @@ const EditCampaign = () => {
           />
         </div>
 
+        {/* Valuation (only for equity campaigns) */}
+        {currentCampaign?.type === 'EquityCampaign' && (
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
+            <button
+              onClick={() => openEditModal('valuation', valuation)}
+              className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            >
+              <FaEdit />
+            </button>
+            <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
+              Company Valuation
+            </h3>
+            <p className="text-gray-700 dark:text-gray-400">
+              {currentCampaign?.currency_symbol ||
+                currentCampaign?.currency.toLocaleUpperCase()}
+              {currentCampaign?.valuation?.toLocaleString()}
+            </p>
+          </div>
+        )}
+
+        {/* Total Shares (only for equity campaigns) */}
+        {currentCampaign?.type === 'EquityCampaign' && (
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
+            <button
+              onClick={() => openEditModal('total_shares', totalShares)}
+              className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            >
+              <FaEdit />
+            </button>
+            <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
+              Total Shares
+            </h3>
+            <p className="text-gray-700 dark:text-gray-400">
+              {currentCampaign?.total_shares?.toLocaleString()}
+            </p>
+          </div>
+        )}
+
         {/* Dropdown for Campaign Permissions and Promotion Settings */}
         {id != null && (
           <div className="col-span-full">
@@ -297,6 +344,38 @@ const EditCampaign = () => {
                     className="mt-4 w-full h-40 object-cover rounded-lg"
                   />
                 )}
+              </>
+            )}
+
+            {/* Valuation field for equity campaigns */}
+            {editMode.field === 'valuation' && (
+              <>
+                <h3 className="text-lg font-semibold mb-2">Edit Valuation</h3>
+                <input
+                  type="number"
+                  value={editMode.value}
+                  onChange={(e) =>
+                    setEditMode({ ...editMode, value: e.target.value })
+                  }
+                  className="w-full border border-gray-300 p-2 rounded-lg"
+                />
+              </>
+            )}
+
+            {/* Total Shares field for equity campaigns */}
+            {editMode.field === 'total_shares' && (
+              <>
+                <h3 className="text-lg font-semibold mb-2">
+                  Edit Total Shares
+                </h3>
+                <input
+                  type="number"
+                  value={editMode.value}
+                  onChange={(e) =>
+                    setEditMode({ ...editMode, value: e.target.value })
+                  }
+                  className="w-full border border-gray-300 p-2 rounded-lg"
+                />
               </>
             )}
 
