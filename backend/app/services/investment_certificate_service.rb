@@ -205,22 +205,23 @@ class InvestmentCertificateService
 
   def self.add_background_image(pdf)
     background_path = Rails.root.join('app', 'assets', 'images', 'certificate.png')
-      
-      unless File.exist?(background_path)
-        Rails.logger.warn "Background image not found: #{background_path}"
-        return
-      end
+    
+    # Check if the background image exists
+    unless File.exist?(background_path)
+      Rails.logger.warn "Background image not found: #{background_path}"
+      return
+    end
 
-      pdf.transparent(0.1) do
-        pdf.canvas do
-          # This will fill the background without stretching, may crop edges
-          pdf.image background_path,
-                    at: [0, pdf.bounds.top],
-                    width: pdf.bounds.width,
-                    height: pdf.bounds.height,
-                    position: :absolute
-        end
+    # Add background with original transparency
+    pdf.transparent(0.1) do  # Keep original 10% opacity
+      # Use canvas for proper positioning and fit to maintain aspect ratio
+      pdf.canvas do
+        pdf.image background_path,
+                  at: [0, pdf.bounds.top],
+                  fit: [pdf.bounds.width, pdf.bounds.height],  # This maintains aspect ratio
+                  position: :absolute
       end
+    end
   end
 
   def self.add_watermark(pdf)
