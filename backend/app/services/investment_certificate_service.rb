@@ -21,7 +21,7 @@ class InvestmentCertificateService
           Creator: 'Bantuhive',
           CreationDate: Time.now
         },
-        background: Rails.root.join('app', 'assets', 'images', 'thank-you.png') # Optional: Add a background image
+        background: Rails.root.join('app', 'assets', 'images', 'certificate.png') # Optional: Add a background image
       )
 
       # Add watermark background
