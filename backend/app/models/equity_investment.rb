@@ -90,7 +90,16 @@ class EquityInvestment < ApplicationRecord
 
   def certificate_url
     return unless certificate.attached?
-    Rails.application.routes.url_helpers.url_for(certificate)
+    
+    if Rails.env.production?
+      # For DigitalOcean Spaces - same pattern as Campaign#media_url
+      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{certificate.blob.key}"
+    else
+      Rails.application.routes.url_helpers.rails_blob_url(certificate)
+    end
+  rescue => e
+    Rails.logger.error "Failed to generate certificate URL for investment #{id}: #{e.message}"
+    nil
   end
 
   def certificate_present?

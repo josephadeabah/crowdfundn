@@ -1,3 +1,4 @@
+# app/services/investment_certificate_service.rb
 class InvestmentCertificateService
   require 'prawn'
   require 'prawn/table'
@@ -68,7 +69,7 @@ class InvestmentCertificateService
       pdf.text "Issued by Bantuhive on #{Time.current.strftime('%B %d, %Y')}",
                size: 12, align: :center
 
-     # Create and verify temp file
+      # Create and verify temp file
       temp_file = Tempfile.new(["certificate_#{investment.certificate_number}", ".pdf"], binmode: true)
       pdf.render_file(temp_file.path)
       
@@ -105,5 +106,21 @@ class InvestmentCertificateService
       temp_file.close! if temp_file && !temp_file.closed?
       temp_file.unlink if temp_file
     end
+  end
+
+  # Add a method to generate the proper URL for DigitalOcean Spaces
+  def self.certificate_url(investment)
+    return unless investment.certificate.attached?
+    
+    if Rails.env.production?
+      # For DigitalOcean Spaces - same pattern as your media_url method
+      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{investment.certificate.blob.key}"
+    else
+      # For development/test environments
+      Rails.application.routes.url_helpers.rails_blob_url(investment.certificate)
+    end
+  rescue => e
+    Rails.logger.error "Failed to generate certificate URL for investment #{investment.id}: #{e.message}"
+    nil
   end
 end
