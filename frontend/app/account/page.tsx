@@ -48,7 +48,6 @@ const ProfileTabs = () => {
       icon: <MaskOffIcon />,
       component: <EquityInvestments />,
       description: 'Manage your equity investments and portfolio.',
-      isNew: true,
     },
     {
       label: 'Backers',
@@ -155,7 +154,7 @@ const ProfileTabs = () => {
               className="flex lg:flex-col overflow-x-auto lg:overflow-visible p-2 space-x-1 lg:space-x-0 lg:space-y-1"
               aria-label="Tabs"
             >
-              {tabs.map(({ label, icon, isNew }, index) => {
+              {tabs.map(({ label, icon }, index) => {
                 const isActive = activeTab === label;
                 const isOnboarding = showOnboarding && currentStep === index;
 
@@ -183,9 +182,9 @@ const ProfileTabs = () => {
                   >
                     <span className="mr-2">{icon}</span>
                     {label}
-                    {isNew && (
+                    {isActive && ( // GRAY DOT SHOWS ONLY ON ACTIVE TAB
                       <span className="ml-2 relative">
-                        <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-blue-500"></span>
+                        <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-gray-300"></span>
                       </span>
                     )}
                   </a>
