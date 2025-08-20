@@ -114,7 +114,7 @@ export const PortfolioSummary = ({ portfolio }: PortfolioSummaryProps) => {
       <Card className="bg-white dark:bg-gray-800 border-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            Different Campaigns Invested
+            Ventures
           </CardTitle>
           <PieChart className="h-4 w-4 text-gray-400" />
         </CardHeader>
