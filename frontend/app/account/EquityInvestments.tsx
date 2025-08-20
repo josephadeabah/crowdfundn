@@ -24,7 +24,6 @@ const EquityInvestments = () => {
     generateCertificate,
     downloadCertificate,
     checkCertificateStatus,
-    certificateLoading,
     certificateError,
   } = useEquityCampaignContext();
   const { user } = useAuth();
@@ -74,11 +73,20 @@ const EquityInvestments = () => {
         return;
       }
 
-      if (investment.certificate?.exists && investment.certificate.url) {
+      // First check certificate status
+      const statusResult = await checkCertificateStatus(
+        investmentId,
+        campaignId,
+      );
+
+      if (statusResult.exists && statusResult.url) {
+        // Certificate exists, download it
         await downloadCertificate(investmentId, campaignId);
       } else {
+        // Certificate doesn't exist, generate it first
         const genResult = await generateCertificate(investmentId, campaignId);
         if (genResult.success && genResult.url) {
+          // After generation, download it
           await downloadCertificate(investmentId, campaignId);
         } else {
           console.error('Certificate generation failed:', genResult.error);
@@ -259,6 +267,12 @@ const EquityInvestments = () => {
                           ? (investmentReturn / investmentAmount) * 100
                           : 0;
 
+                      const isCertificateLoading =
+                        certificateOperations[investment.id];
+                      const hasCertificate =
+                        investment.certificate_exists ||
+                        investment.certificate?.exists;
+
                       return (
                         <tr key={investment.id}>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -332,17 +346,12 @@ const EquityInvestments = () => {
                                     investment.id.toString(),
                                   )
                                 }
-                                disabled={
-                                  certificateOperations[investment.id] ||
-                                  certificateLoading
-                                }
+                                disabled={isCertificateLoading}
                                 className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
                               >
-                                {certificateOperations[investment.id] ||
-                                certificateLoading
+                                {isCertificateLoading
                                   ? 'Loading...'
-                                  : investment.certificate_exists ||
-                                      investment.certificate?.exists
+                                  : hasCertificate
                                     ? 'Certificate'
                                     : 'Generate Certificate'}
                               </Button>
