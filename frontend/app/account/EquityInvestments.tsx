@@ -14,6 +14,7 @@ import EquityInvestmentsLoader from '@/app/loaders/EquityInvestmentsLoader';
 import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
 import { useEquityCampaignContext } from '../context/account/campaign/EquityCampaignContext';
 import { useAuth } from '../context/auth/AuthContext';
+import { PerformanceCharts } from '../components/investchart/PerformanceCharts';
 
 const EquityInvestments = () => {
   const {
@@ -216,7 +217,10 @@ const EquityInvestments = () => {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-8">
+      {/* Performance Charts Section */}
+      <PerformanceCharts investments={portfolio.investments || []} />
+
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-8 mt-8">
         <div className="px-2 py-4">
           <h2 className="text-xl font-semibold mb-4">Your Investments</h2>
           {portfolio.investments?.length === 0 ? (
@@ -373,37 +377,26 @@ const EquityInvestments = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Performance Chart</h3>
-          <div className="h-64 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center">
-            <p className="text-gray-500 dark:text-gray-400">
-              Chart visualization would appear here
-            </p>
-          </div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
-          <div className="space-y-4">
-            {portfolio.investments
-              ?.slice(0, 3)
-              .map((investment: EquityInvestment) => (
-                <div
-                  key={investment.id}
-                  className="border-b border-gray-200 dark:border-gray-700 pb-4"
-                >
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Invested ${parseNumber(investment.amount).toLocaleString()}{' '}
-                    in{' '}
-                    {investment.campaign?.title ||
-                      `Campaign ${investment.campaign_id}`}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-500">
-                    {format(new Date(investment.created_at), 'MMM dd, yyyy')}
-                  </p>
-                </div>
-              ))}
-          </div>
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow mt-8">
+        <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
+        <div className="space-y-4">
+          {portfolio.investments
+            ?.slice(0, 3)
+            .map((investment: EquityInvestment) => (
+              <div
+                key={investment.id}
+                className="border-b border-gray-200 dark:border-gray-700 pb-4"
+              >
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Invested ${parseNumber(investment.amount).toLocaleString()} in{' '}
+                  {investment.campaign?.title ||
+                    `Campaign ${investment.campaign_id}`}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-500">
+                  {format(new Date(investment.created_at), 'MMM dd, yyyy')}
+                </p>
+              </div>
+            ))}
         </div>
       </div>
     </div>
