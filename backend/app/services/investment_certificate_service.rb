@@ -219,7 +219,6 @@ class InvestmentCertificateService
                 at: [0, pdf.bounds.top],  # Position from bottom-left
                 width: pdf.bounds.width,  # 100% width
                 position: :absolute       # Ensure proper positioning
-    end
   end
 
     # Get the page dimensions (A4 size in points: 595.28 x 841.89)
