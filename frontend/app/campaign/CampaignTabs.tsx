@@ -49,7 +49,9 @@ const CampaignTabs: React.FC<CampaignTabsProps> = ({
               } else if (tab === 'comments') {
                 count = campaign?.comments?.length || 0;
               } else if (tab === 'backers') {
-                count = campaign?.total_donors || 0;
+                count = isEquityCampaign
+                  ? campaign?.total_investors || 0
+                  : campaign?.total_donors || 0;
               }
 
               const isDonateTabDisabled =
@@ -65,7 +67,13 @@ const CampaignTabs: React.FC<CampaignTabsProps> = ({
               return (
                 <button
                   key={tab}
-                  className={`px-4 py-2 font-semibold ${selectedTab === tab ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-600'} ${isDonateTabDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`px-4 py-2 font-semibold ${
+                    selectedTab === tab
+                      ? 'border-b-2 border-green-600 text-green-600'
+                      : 'text-gray-600'
+                  } ${
+                    isDonateTabDisabled ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
                   onClick={() => {
                     if (!isDonateTabDisabled) {
                       setSelectedTab(tab as any);
