@@ -320,7 +320,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       nationality: formData.nationality || '',
       occupation: formData.occupation || '',
       source_of_funds: formData.sourceOfFunds || 'Salary',
-      addresses: [
+      addresses_attributes: [
         {
           address_type: 'residential',
           street: formData.address || '',

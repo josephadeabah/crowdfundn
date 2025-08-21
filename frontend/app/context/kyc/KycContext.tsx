@@ -387,7 +387,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
         formData.append('file', file);
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${kycId}/documents`,
+           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${kycId}/documents`,
           {
             method: 'POST',
             headers: {

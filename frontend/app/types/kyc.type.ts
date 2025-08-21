@@ -83,7 +83,7 @@ export interface KycFormData {
   business_tax_id?: string;
   business_industry?: string;
   business_established_date?: string;
-  addresses: KycAddress[];
+  addresses_attributes: KycAddress[];
   signature_data?: any;
   investor_signature_data?: any;
   issuer_accepted_terms?: boolean;
