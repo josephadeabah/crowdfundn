@@ -67,7 +67,7 @@ class InvestmentCertificateService
       
       # Investment amount with brand orange
       pdf.fill_color BRAND_ORANGE
-      pdf.text "#{campaign.currency} #{investment.amount.round(2)}", 
+      pdf.text "#{campaign.currency}#{investment.amount.round(2)}", 
                size: 20, align: :center, style: :bold
       pdf.move_down 10
       
@@ -88,12 +88,12 @@ class InvestmentCertificateService
       # Company details in a compact table
       company_details = [
         ['Company:', campaign.company_name],
-        ['Description:', campaign.company_info.description.to_s.truncate(100)],
-        ['Headquarters:', campaign.company_info.headquarters],
-        ['Website:', campaign.company_info.website],
+        ['Description:', campaign.company_description.to_s.truncate(100)],
+        ['Headquarters:', campaign.company_headquarters],
+        ['Website:', campaign.company_website],
         ['Valuation:', "#{campaign.currency} #{campaign.valuation.to_f.round(2)}"],
         ['Equity Offered:', "#{campaign.equity_offered}%"],
-        ['Contract Terms:', campaign.company_info.contract_term || 'N/A'],
+        ['Contract Terms:', campaign.contract_term || 'N/A'],
       ]
 
       pdf.table(company_details, 
