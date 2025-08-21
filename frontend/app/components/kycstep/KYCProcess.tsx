@@ -100,6 +100,40 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       ? investorKycSteps
       : mentorKycSteps;
 
+
+ const sanitizeFormData = (data: any): any => {
+  if (data === null || data === undefined) return data;
+  
+  if (Array.isArray(data)) {
+    return data.map(item => sanitizeFormData(item));
+  }
+  
+  if (typeof data === 'object' && !(data instanceof Date) && !(data instanceof File)) {
+    const sanitized: any = {};
+    for (const key in data) {
+      sanitized[key] = sanitizeFormData(data[key]);
+    }
+    return sanitized;
+  }
+  
+  // Convert Dates to ISO strings
+  if (data instanceof Date) {
+    return data.toISOString();
+  }
+  
+  // Handle Files - we only need metadata, not the full file object
+  if (data instanceof File) {
+    return {
+      name: data.name,
+      size: data.size,
+      type: data.type,
+      lastModified: data.lastModified,
+    };
+  }
+  
+  return data;
+};
+
   // Get current step type based on user type and current step index
   const getCurrentStepType = () => {
     return stepDefinitions[userType][currentStep];
@@ -231,53 +265,64 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     }
   };
 
-  const prepareKycData = (): KycFormData => {
-    const baseData = {
-      kyc_type: userType === 'creator' ? 'issuer' : 'investor',
-      verification_type: formData.idType as
-        | 'national_id'
-        | 'passport'
-        | 'drivers_license'
-        | 'voter_id',
-      id_number: formData.idNumber || '',
-      id_expiry_date: new Date().toISOString().split('T')[0], // Default to today
-      date_of_birth: formData.dateOfBirth || '',
-      nationality: formData.nationality || '',
-      occupation: formData.occupation || '',
-      source_of_funds: formData.sourceOfFunds || 'Salary',
-      addresses: [
-        {
-          address_type: 'residential',
-          street: formData.address || '',
-          city: formData.city || '',
-          state: formData.state || '',
-          postal_code: formData.postalCode || '',
-          country: formData.country || '',
-          is_primary: true,
-        } as KycAddress,
-      ],
-      signature_data: signature,
-    };
+const prepareKycData = (): KycFormData => {
+  // Format date of birth correctly
+  const formatDate = (date: any): string => {
+    if (!date) return '';
+    if (typeof date === 'string') return date;
+    if (date instanceof Date) return date.toISOString().split('T')[0];
+    
+    // Handle other date formats if needed
+    console.warn('Unexpected date format:', date);
+    return '';
+  };
 
-    if (userType === 'creator' || userType === 'mentor') {
-      return {
-        ...baseData,
-        kyc_type: 'issuer',
-        business_name: (formData as CreatorKYCFormData).businessName || '',
-        business_registration_number:
-          (formData as CreatorKYCFormData).businessRegistration || '',
-        business_tax_id: (formData as CreatorKYCFormData).taxId || '',
-        business_industry: (formData as CreatorKYCFormData).businessType || '',
-        issuer_accepted_terms: true,
-      } as KycFormData;
-    }
+  const baseData = {
+    kyc_type: userType === 'creator' ? 'issuer' : 'investor',
+    verification_type: formData.idType as
+      | 'national_id'
+      | 'passport'
+      | 'drivers_license'
+      | 'voter_id',
+    id_number: formData.idNumber || '',
+    id_expiry_date: new Date().toISOString().split('T')[0], // Default to today
+    date_of_birth: formatDate(formData.dateOfBirth),
+    nationality: formData.nationality || '',
+    occupation: formData.occupation || '',
+    source_of_funds: formData.sourceOfFunds || 'Salary',
+    addresses: [
+      {
+        address_type: 'residential',
+        street: formData.address || '',
+        city: formData.city || '',
+        state: formData.state || '',
+        postal_code: formData.postalCode || '',
+        country: formData.country || '',
+        is_primary: true,
+      } as KycAddress,
+    ],
+    signature_data: signature,
+  };
 
+  if (userType === 'creator' || userType === 'mentor') {
     return {
       ...baseData,
-      kyc_type: 'investor',
-      investor_signature_data: signature,
+      kyc_type: 'issuer',
+      business_name: (formData as CreatorKYCFormData).businessName || '',
+      business_registration_number:
+        (formData as CreatorKYCFormData).businessRegistration || '',
+      business_tax_id: (formData as CreatorKYCFormData).taxId || '',
+      business_industry: (formData as CreatorKYCFormData).businessType || '',
+      issuer_accepted_terms: true,
     } as KycFormData;
-  };
+  }
+
+  return {
+    ...baseData,
+    kyc_type: 'investor',
+    investor_signature_data: signature,
+  } as KycFormData;
+};
 
   const uploadAllDocuments = async (kycId: number) => {
     const uploadPromises = Object.entries(uploadedDocuments).map(
@@ -297,10 +342,13 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     await Promise.all(uploadPromises);
   };
 
-  const onSubmit = async (data: any) => {
-    setIsSubmitting(true);
-    const updatedFormData = { ...formData, ...data };
-    setFormData(updatedFormData);
+const onSubmit = async (data: any) => {
+  setIsSubmitting(true);
+  
+  // Sanitize the data before storing it
+  const sanitizedData = sanitizeFormData(data);
+  const updatedFormData = { ...formData, ...sanitizedData };
+  setFormData(updatedFormData);
 
     const stepType = getCurrentStepType();
 
