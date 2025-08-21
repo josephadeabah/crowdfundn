@@ -1,4 +1,4 @@
-// app/components/admin/kyc/KYCReview.tsx
+// app/components/admin/kyc/KYCReview.tsx (complete fixed version)
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useKycReview } from '@/app/context/kyc/KycReviewContext';
@@ -87,7 +87,14 @@ const KYCReview = () => {
   }, [fetchReviews, fetchStats]);
 
   const handleFilterChange = (key: string, value: string) => {
-    updateFilters({ ...filters, [key]: value });
+    if (value === '') {
+      // Remove the filter when empty string is selected (All)
+      const newFilters = { ...filters };
+      delete newFilters[key as keyof typeof filters];
+      updateFilters(newFilters);
+    } else {
+      updateFilters({ ...filters, [key]: value });
+    }
   };
 
   const handleSearch = () => {
@@ -98,11 +105,9 @@ const KYCReview = () => {
     if (!selectedReview || !actionDialog.action) return;
 
     try {
-      // Use the correct function signature
       await updateReview(selectedReview.id, {
         action: actionDialog.action,
-        rejection_reason:
-          actionDialog.action === 'reject' ? rejectionReason : undefined,
+        rejection_reason: actionDialog.action === 'reject' ? rejectionReason : undefined,
         notes: actionDialog.action === 'verify' ? reviewNotes : undefined,
       });
 
@@ -124,15 +129,11 @@ const KYCReview = () => {
       expired: { variant: 'outline', icon: Clock },
     };
 
-    const config =
-      statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
     const Icon = config.icon;
 
     return (
-      <Badge
-        variant={config.variant as any}
-        className="flex items-center gap-1"
-      >
+      <Badge variant={config.variant as any} className="flex items-center gap-1">
         <Icon className="h-3 w-3" />
         {status.replace('_', ' ').toUpperCase()}
       </Badge>
@@ -246,7 +247,9 @@ const KYCReview = () => {
               onValueChange={(value) => handleFilterChange('status', value)}
             >
               <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder="Status">
+                  {filters.status ? filters.status.replace('_', ' ') : 'All Status'}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">All Status</SelectItem>
@@ -262,7 +265,9 @@ const KYCReview = () => {
               onValueChange={(value) => handleFilterChange('kyc_type', value)}
             >
               <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="KYC Type" />
+                <SelectValue placeholder="KYC Type">
+                  {filters.kyc_type ? filters.kyc_type : 'All Types'}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">All Types</SelectItem>
@@ -319,9 +324,7 @@ const KYCReview = () => {
               ) : (
                 reviews.map((review) => (
                   <TableRow key={review.id}>
-                    <TableCell className="font-mono">
-                      {review.reference}
-                    </TableCell>
+                    <TableCell className="font-mono">{review.reference}</TableCell>
                     <TableCell>
                       <div>
                         <div className="font-medium">{review.user_name}</div>
@@ -353,23 +356,18 @@ const KYCReview = () => {
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
                             onClick={() => {
-                              // View details logic
                               window.open(`/admin/kyc/${review.id}`, '_blank');
                             }}
                           >
                             <Eye className="h-4 w-4 mr-2" />
                             View Details
                           </DropdownMenuItem>
-                          {review.status === 'pending' ||
-                          review.status === 'in_review' ? (
+                          {review.status === 'pending' || review.status === 'in_review' ? (
                             <>
                               <DropdownMenuItem
                                 onClick={() => {
                                   setSelectedReview(review);
-                                  setActionDialog({
-                                    open: true,
-                                    action: 'verify',
-                                  });
+                                  setActionDialog({ open: true, action: 'verify' });
                                 }}
                               >
                                 <CheckCircle className="h-4 w-4 mr-2" />
@@ -378,10 +376,7 @@ const KYCReview = () => {
                               <DropdownMenuItem
                                 onClick={() => {
                                   setSelectedReview(review);
-                                  setActionDialog({
-                                    open: true,
-                                    action: 'reject',
-                                  });
+                                  setActionDialog({ open: true, action: 'reject' });
                                 }}
                               >
                                 <XCircle className="h-4 w-4 mr-2" />
@@ -390,10 +385,7 @@ const KYCReview = () => {
                               <DropdownMenuItem
                                 onClick={() => {
                                   setSelectedReview(review);
-                                  setActionDialog({
-                                    open: true,
-                                    action: 'request_info',
-                                  });
+                                  setActionDialog({ open: true, action: 'request_info' });
                                 }}
                               >
                                 <FileText className="h-4 w-4 mr-2" />
@@ -426,8 +418,7 @@ const KYCReview = () => {
             <DialogTitle>
               {actionDialog.action === 'verify' && 'Verify KYC Application'}
               {actionDialog.action === 'reject' && 'Reject KYC Application'}
-              {actionDialog.action === 'request_info' &&
-                'Request Additional Information'}
+              {actionDialog.action === 'request_info' && 'Request Additional Information'}
             </DialogTitle>
             <DialogDescription>
               {actionDialog.action === 'verify' &&
@@ -463,8 +454,7 @@ const KYCReview = () => {
           {actionDialog.action === 'request_info' && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                An email will be sent to the user requesting additional
-                information.
+                An email will be sent to the user requesting additional information.
               </p>
             </div>
           )}
@@ -478,9 +468,7 @@ const KYCReview = () => {
             </Button>
             <Button
               onClick={handleAction}
-              disabled={
-                actionDialog.action === 'reject' && !rejectionReason.trim()
-              }
+              disabled={actionDialog.action === 'reject' && !rejectionReason.trim()}
             >
               Confirm
             </Button>
