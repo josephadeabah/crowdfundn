@@ -105,14 +105,35 @@ class Kyc < ApplicationRecord
   end
 
   def signature_image_url
-    return unless signature_image.attached?
-    Rails.application.routes.url_helpers.url_for(signature_image)
+    return unless signature.attached?
+
+    if Rails.env.production?
+      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/"\
+      "#{Rails.application.credentials.dig(:digitalocean, :bucket)}/"\
+      "#{signature.blob.key}"
+    else
+      Rails.application.routes.url_helpers.rails_blob_url(signature, only_path: false)
+    end
+  rescue => e
+    Rails.logger.error "Failed to generate signature URL for KYC #{id}: #{e.message}"
+    nil
   end
 
   def issuer_signature_url
     return unless issuer_signature.attached?
-    Rails.application.routes.url_helpers.url_for(issuer_signature)
+
+    if Rails.env.production?
+      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/"\
+      "#{Rails.application.credentials.dig(:digitalocean, :bucket)}/"\
+      "#{issuer_signature.blob.key}"
+    else
+      Rails.application.routes.url_helpers.rails_blob_url(issuer_signature, only_path: false)
+    end
+  rescue => e
+    Rails.logger.error "Failed to generate issuer signature URL for KYC #{id}: #{e.message}"
+    nil
   end
+
 
   def to_frontend_format
     {

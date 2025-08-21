@@ -9,7 +9,6 @@ class KycDocument < ApplicationRecord
     rejected: 'rejected'
   }, default: 'pending'
 
-  # ActiveStorage attachment
   has_one_attached :file
 
   validates :document_type, presence: true
@@ -17,7 +16,22 @@ class KycDocument < ApplicationRecord
 
   def file_url
     return unless file.attached?
-    Rails.application.routes.url_helpers.url_for(file)
+
+    if Rails.env.production?
+      # Generate DigitalOcean Spaces URL
+      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/" \
+      "#{Rails.application.credentials.dig(:digitalocean, :bucket)}/" \
+      "#{file.blob.key}"
+    else
+      Rails.application.routes.url_helpers.rails_blob_url(file, only_path: false)
+    end
+  rescue => e
+    Rails.logger.error "Failed to generate file URL for KycDocument #{id}: #{e.message}"
+    nil
+  end
+
+  def file_name
+    file.attached? ? file.filename.to_s : nil
   end
 
   def to_frontend_format
