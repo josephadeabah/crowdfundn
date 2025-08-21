@@ -1,14 +1,14 @@
-// components/ReviewStep.tsx
+// ReviewStep.tsx
+'use client';
 import React from 'react';
-import { Check, AlertCircle } from 'lucide-react';
 import {
   Card,
+  CardContent,
   CardHeader,
   CardTitle,
-  CardContent,
-  CardDescription,
 } from '@/app/components/ui/card';
-import { availableStartups, quizQuestions } from '@/app/types/constant';
+import { Badge } from '@/app/components/ui/badge';
+import { FileText, CheckCircle, XCircle } from 'lucide-react';
 
 interface ReviewStepProps {
   formData: any;
@@ -20,6 +20,7 @@ interface ReviewStepProps {
   isCreator: boolean;
   isInvestor: boolean;
   isMentor: boolean;
+  uploadedDocuments: { [key: string]: File };
 }
 
 export const ReviewStep: React.FC<ReviewStepProps> = ({
@@ -30,187 +31,136 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
   isCreator,
   isInvestor,
   isMentor,
+  uploadedDocuments,
 }) => {
-  const getIncorrectQuestionsDetails = () => {
-    return Object.entries(incorrectAnswers).map(([questionKey, details]) => ({
-      question:
-        quizQuestions[questionKey as keyof typeof quizQuestions].question,
-      userAnswer: details.userAnswer,
-      correctAnswer: details.correctAnswer,
-      questionKey,
-    }));
-  };
-
   return (
     <div className="space-y-6">
-      <div className="bg-green-50 p-4 rounded-lg">
-        <h3 className="font-semibold text-green-800 mb-2">
-          Review Your Information
-        </h3>
-        <p className="text-green-700 text-sm">
-          Please review all the information you've provided before submitting
-          your verification request.
-        </p>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Personal Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <strong>Full Name:</strong> {formData.fullName}
+            </div>
+            <div>
+              <strong>Email:</strong> {formData.email}
+            </div>
+            <div>
+              <strong>Phone:</strong> {formData.phone}
+            </div>
+            <div>
+              <strong>Date of Birth:</strong> {formData.dateOfBirth}
+            </div>
+            <div>
+              <strong>Nationality:</strong> {formData.nationality}
+            </div>
+            <div>
+              <strong>Address:</strong> {formData.address}, {formData.city},{' '}
+              {formData.country}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {isCreator && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Personal Information</CardTitle>
+            <CardTitle>Business Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Name:</span>
-              <span>{formData.fullName}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Email:</span>
-              <span>{formData.email}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Phone:</span>
-              <span>{formData.phone}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Country:</span>
-              <span>{formData.country}</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Verification Status</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Documents:</span>
-              <Check className="h-5 w-5 text-green-600" />
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Certificate:</span>
-              {isSigned ? (
-                <Check className="h-5 w-5 text-green-600" />
-              ) : (
-                <AlertCircle className="h-5 w-5 text-red-600" />
-              )}
-            </div>
-            {isInvestor && (
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Quiz:</span>
-                {isQuizPassed ? (
-                  <Check className="h-5 w-5 text-green-600" />
-                ) : (
-                  <AlertCircle className="h-5 w-5 text-red-600" />
-                )}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <strong>Business Name:</strong> {formData.businessName}
               </div>
-            )}
-            {isMentor && (
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Experience:</span>
-                <Check className="h-5 w-5 text-green-600" />
+              <div>
+                <strong>Business Type:</strong> {formData.businessType}
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {isMentor && formData.selectedStartup && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Mentorship Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Professional Title:</span>
-              <span>{formData.professionalTitle}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Experience:</span>
-              <span>{formData.yearsOfExperience}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Selected Startup:</span>
-              <span>
-                {availableStartups.find(
-                  (s) => s.id === formData.selectedStartup,
-                )?.name || 'Unknown'}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Availability:</span>
-              <span className="capitalize">{formData.availability}</span>
+              <div>
+                <strong>Tax ID:</strong> {formData.taxId}
+              </div>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {isInvestor &&
-        !isQuizPassed &&
-        Object.keys(incorrectAnswers).length > 0 && (
-          <Card className="border-red-200">
-            <CardHeader>
-              <CardTitle className="text-lg text-red-800">
-                Quiz Corrections Required
-              </CardTitle>
-              <CardDescription className="text-red-600">
-                Please go back and correct the following answers before
-                submission:
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {getIncorrectQuestionsDetails().map(
-                  ({ question, userAnswer, correctAnswer, questionKey }) => (
-                    <div key={questionKey} className="bg-red-50 p-4 rounded-lg">
-                      <h4 className="font-medium text-red-800 mb-2">
-                        {question}
-                      </h4>
-                      <div className="space-y-1 text-sm">
-                        <p className="text-red-600">
-                          <span className="font-medium">Your answer:</span>{' '}
-                          {userAnswer}
-                        </p>
-                        <p className="text-green-600">
-                          <span className="font-medium">Correct answer:</span>{' '}
-                          {correctAnswer}
-                        </p>
-                      </div>
-                    </div>
-                  ),
-                )}
-                <div className="bg-yellow-50 p-3 rounded-lg">
-                  <p className="text-yellow-800 text-sm">
-                    <AlertCircle className="h-4 w-4 inline mr-2" />
-                    Go back to the Quiz step to update your answers before
-                    proceeding.
-                  </p>
-                </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Documents</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            {Object.entries(uploadedDocuments).map(([docType, file]) => (
+              <div key={docType} className="flex items-center space-x-2">
+                <FileText className="h-4 w-4" />
+                <span className="capitalize">{docType.replace('_', ' ')}:</span>
+                <span className="text-sm text-green-600">{file.name}</span>
               </div>
-            </CardContent>
-          </Card>
-        )}
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
-      {isCreator && formData.businessName && (
+      {isInvestor && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Business Information</CardTitle>
+            <CardTitle>Investor Quiz Results</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Business Name:</span>
-              <span>{formData.businessName}</span>
+          <CardContent>
+            <div className="flex items-center space-x-2 mb-4">
+              {isQuizPassed ? (
+                <CheckCircle className="h-5 w-5 text-green-500" />
+              ) : (
+                <XCircle className="h-5 w-5 text-red-500" />
+              )}
+              <span>Quiz Status: {isQuizPassed ? 'Passed' : 'Failed'}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Business Type:</span>
-              <span>{formData.businessType}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Tax ID:</span>
-              <span>{formData.taxId}</span>
-            </div>
+            {!isQuizPassed && Object.keys(incorrectAnswers).length > 0 && (
+              <div className="space-y-2">
+                <strong>Incorrect Answers:</strong>
+                {Object.entries(incorrectAnswers).map(([question, answers]) => (
+                  <div key={question} className="text-sm text-red-500">
+                    <div>Your answer: {answers.userAnswer}</div>
+                    <div>Correct answer: {answers.correctAnswer}</div>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
+      )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Signature Status</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center space-x-2">
+            {isSigned ? (
+              <CheckCircle className="h-5 w-5 text-green-500" />
+            ) : (
+              <XCircle className="h-5 w-5 text-red-500" />
+            )}
+            <span>Certificate {isSigned ? 'Signed' : 'Not Signed'}</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {!isSigned && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <p className="text-yellow-800">
+            Please sign your certificate before submitting the verification.
+          </p>
+        </div>
+      )}
+
+      {isInvestor && !isQuizPassed && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-800">
+            Please complete the investor quiz correctly before submitting.
+          </p>
+        </div>
       )}
     </div>
   );

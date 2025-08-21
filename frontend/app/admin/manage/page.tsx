@@ -39,6 +39,7 @@ import PromotionScheduler from './promotions/Promotions';
 import CampaignManager from './campaigns/CampaignsManager';
 import ContentManagerAdminPage from './content/ContentManager';
 import { CampaignReview } from './equitycampaigns/CampaignReview';
+import KYCReview from './kyc/KYCReview';
 
 // Type definitions for better type safety
 type TabGroup = {
@@ -146,6 +147,13 @@ const AdminDashboard = () => {
           label: 'Campaign Review',
           icon: <ClipboardDocumentCheckIcon className="h-5 w-5" />,
           component: <CampaignReview />,
+          badgeCount: 5, // Pending reviews
+        },
+        {
+          id: 'kycReview',
+          label: 'KYC Review',
+          icon: <ClipboardDocumentCheckIcon className="h-5 w-5" />,
+          component: <KYCReview />,
           badgeCount: 5, // Pending reviews
         },
         {

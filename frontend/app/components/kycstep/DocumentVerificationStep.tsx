@@ -1,18 +1,41 @@
-import React from 'react';
+// DocumentVerificationStep.tsx
+'use client';
+import React, { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import {
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
+  FormControl,
   FormMessage,
-  FormDescription,
 } from '@/app/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/app/components/ui/select';
 import { Input } from '@/app/components/ui/input';
-import { RadioGroup, RadioGroupItem } from '@/app/components/ui/radio-group';
+import { Button } from '@/app/components/ui/button';
+import { Upload, FileText } from 'lucide-react';
 
-export const DocumentVerificationStep: React.FC = () => {
+interface DocumentVerificationStepProps {
+  onDocumentUpload: (documentType: string, file: File) => void;
+}
+
+export const DocumentVerificationStep: React.FC<
+  DocumentVerificationStepProps
+> = ({ onDocumentUpload }) => {
   const form = useFormContext();
+  const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: File }>(
+    {},
+  );
+
+  const handleFileUpload = (documentType: string, file: File) => {
+    setUploadedFiles((prev) => ({ ...prev, [documentType]: file }));
+    onDocumentUpload(documentType, file);
+  };
 
   return (
     <div className="space-y-6">
@@ -22,33 +45,26 @@ export const DocumentVerificationStep: React.FC = () => {
         render={({ field }) => (
           <FormItem>
             <FormLabel>ID Type</FormLabel>
-            <FormControl>
-              <RadioGroup
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                className="flex flex-col space-y-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="passport" id="passport" />
-                  <label htmlFor="passport">Passport</label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="national-id" id="national-id" />
-                  <label htmlFor="national-id">National ID</label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem
-                    value="drivers-license"
-                    id="drivers-license"
-                  />
-                  <label htmlFor="drivers-license">Driver's License</label>
-                </div>
-              </RadioGroup>
-            </FormControl>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select ID type" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="national_id">National ID</SelectItem>
+                <SelectItem value="passport">Passport</SelectItem>
+                <SelectItem value="drivers_license">
+                  Driver's License
+                </SelectItem>
+                <SelectItem value="voter_id">Voter ID</SelectItem>
+              </SelectContent>
+            </Select>
             <FormMessage />
           </FormItem>
         )}
       />
+
       <FormField
         control={form.control}
         name="idNumber"
@@ -62,39 +78,76 @@ export const DocumentVerificationStep: React.FC = () => {
           </FormItem>
         )}
       />
-      <FormField
-        control={form.control}
-        name="idDocument"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Upload ID Document</FormLabel>
-            <FormControl>
-              <Input type="file" accept="image/*,.pdf" {...field} />
-            </FormControl>
-            <FormDescription>
-              Upload a clear photo or scan of your ID document
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="proofOfAddress"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Proof of Address</FormLabel>
-            <FormControl>
-              <Input type="file" accept="image/*,.pdf" {...field} />
-            </FormControl>
-            <FormDescription>
-              Upload a utility bill, bank statement, or other proof of address
-              (not older than 3 months)
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+
+      <div className="space-y-4">
+        <FormLabel>Upload Documents</FormLabel>
+
+        {/* ID Document Upload */}
+        <div className="space-y-2">
+          <FormLabel>ID Document</FormLabel>
+          <div className="flex items-center space-x-4">
+            <Input
+              type="file"
+              accept="image/*,.pdf"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  handleFileUpload('id_document', file);
+                }
+              }}
+              className="hidden"
+              id="id-document"
+            />
+            <label htmlFor="id-document">
+              <Button type="button" variant="outline" asChild>
+                <span>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload ID
+                </span>
+              </Button>
+            </label>
+            {uploadedFiles['id_document'] && (
+              <div className="flex items-center text-sm text-green-600">
+                <FileText className="mr-2 h-4 w-4" />
+                {uploadedFiles['id_document'].name}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Proof of Address Upload */}
+        <div className="space-y-2">
+          <FormLabel>Proof of Address</FormLabel>
+          <div className="flex items-center space-x-4">
+            <Input
+              type="file"
+              accept="image/*,.pdf"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  handleFileUpload('proof_of_address', file);
+                }
+              }}
+              className="hidden"
+              id="proof-of-address"
+            />
+            <label htmlFor="proof-of-address">
+              <Button type="button" variant="outline" asChild>
+                <span>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload Proof
+                </span>
+              </Button>
+            </label>
+            {uploadedFiles['proof_of_address'] && (
+              <div className="flex items-center text-sm text-green-600">
+                <FileText className="mr-2 h-4 w-4" />
+                {uploadedFiles['proof_of_address'].name}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

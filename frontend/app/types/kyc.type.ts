@@ -1,7 +1,117 @@
 // types.ts
 import { z } from 'zod';
 
-export type CreatorKYCFormData = {
+// app/types/kyc.types.ts
+export interface KycAddress {
+  id?: number;
+  address_type: 'residential' | 'mailing' | 'business';
+  street: string;
+  city: string;
+  state?: string;
+  postal_code: string;
+  country: string;
+  is_primary: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface KycDocument {
+  id?: number;
+  document_type: string;
+  file_name?: string;
+  file_url?: string;
+  verification_status: 'pending' | 'verified' | 'rejected';
+  rejection_reason?: string;
+  verified_at?: string;
+  verified_by?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Kyc {
+  id?: number;
+  reference: string;
+  kyc_type: 'investor' | 'issuer' | 'both';
+  status: 'pending' | 'in_review' | 'verified' | 'rejected' | 'expired';
+  verification_type:
+    | 'national_id'
+    | 'passport'
+    | 'drivers_license'
+    | 'voter_id';
+  id_number: string;
+  id_expiry_date: string;
+  date_of_birth?: string;
+  nationality?: string;
+  occupation?: string;
+  source_of_funds?: string;
+  risk_level?: number;
+  business_name?: string;
+  business_registration_number?: string;
+  business_tax_id?: string;
+  business_industry?: string;
+  business_established_date?: string;
+  addresses: KycAddress[];
+  documents: KycDocument[];
+  signature_data?: any;
+  investor_signature_data?: any;
+  issuer_accepted_terms?: boolean;
+  signature_completed_at?: string;
+  issuer_signature_completed_at?: string;
+  verified_at?: string;
+  verified_by?: string;
+  rejection_reason?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// app/types/kyc.types.ts (add these)
+export interface KycFormData {
+  kyc_type: 'investor' | 'issuer' | 'both';
+  verification_type:
+    | 'national_id'
+    | 'passport'
+    | 'drivers_license'
+    | 'voter_id';
+  id_number: string;
+  id_expiry_date: string;
+  date_of_birth?: string;
+  nationality?: string;
+  occupation?: string;
+  source_of_funds?: string;
+  business_name?: string;
+  business_registration_number?: string;
+  business_tax_id?: string;
+  business_industry?: string;
+  business_established_date?: string;
+  addresses: KycAddress[];
+  signature_data?: any;
+  investor_signature_data?: any;
+  issuer_accepted_terms?: boolean;
+}
+
+export interface KycState {
+  kycs: Kyc[];
+  currentKyc: Kyc | null;
+  loading: boolean;
+  error: string | null;
+  fetchKycs: () => Promise<void>;
+  fetchKyc: (id: number) => Promise<void>;
+  createKyc: (kycData: KycFormData) => Promise<Kyc>;
+  updateKyc: (id: number, kycData: Partial<KycFormData>) => Promise<Kyc>;
+  deleteKyc: (id: number) => Promise<void>;
+  submitKyc: (id: number) => Promise<void>;
+  verifyKyc: (id: number, reviewNotes?: string) => Promise<void>;
+  rejectKyc: (id: number, rejectionReason: string) => Promise<void>;
+  fetchKycDocuments: (id: number) => Promise<KycDocument[]>;
+  uploadDocument: (
+    kycId: number,
+    documentType: string,
+    file: File,
+  ) => Promise<KycDocument>;
+}
+
+// app/types/kyc.types.ts
+export interface BaseKYCFormData {
   fullName: string;
   email: string;
   phone: string;
@@ -15,6 +125,12 @@ export type CreatorKYCFormData = {
   idNumber: string;
   idDocument: string;
   proofOfAddress: string;
+  occupation?: string;
+  sourceOfFunds?: string;
+  state?: string;
+}
+
+export type CreatorKYCFormData = BaseKYCFormData & {
   businessName: string;
   businessType: string;
   businessDescription: string;
@@ -22,20 +138,7 @@ export type CreatorKYCFormData = {
   taxId: string;
 };
 
-export type InvestorKYCFormData = {
-  fullName: string;
-  email: string;
-  phone: string;
-  dateOfBirth: string;
-  nationality: string;
-  address: string;
-  city: string;
-  postalCode: string;
-  country: string;
-  idType: string;
-  idNumber: string;
-  idDocument: string;
-  proofOfAddress: string;
+export type InvestorKYCFormData = BaseKYCFormData & {
   startupRisk: string;
   liquidityRisk: string;
   dilutionRisk: string;
@@ -50,20 +153,7 @@ export type InvestorKYCFormData = {
   dataConsent: boolean;
 };
 
-export type MentorKYCFormData = {
-  fullName: string;
-  email: string;
-  phone: string;
-  dateOfBirth: string;
-  nationality: string;
-  address: string;
-  city: string;
-  postalCode: string;
-  country: string;
-  idType: string;
-  idNumber: string;
-  idDocument: string;
-  proofOfAddress: string;
+export type MentorKYCFormData = BaseKYCFormData & {
   professionalTitle: string;
   yearsOfExperience: string;
   industryExpertise: string[];
@@ -74,6 +164,11 @@ export type MentorKYCFormData = {
   mentorshipApproach: string;
   availability: string;
 };
+
+// Add this type for the form data state
+export type KYCFormDataUnion = Partial<
+  BaseKYCFormData & CreatorKYCFormData & InvestorKYCFormData & MentorKYCFormData
+>;
 
 export type UserType = 'creator' | 'investor' | 'mentor';
 

@@ -231,7 +231,10 @@ const EquityInvestments = () => {
                         investment.certificate?.exists;
 
                       return (
-                        <tr key={investment.id} className="hover:bg-muted/50 transition-colors">
+                        <tr
+                          key={investment.id}
+                          className="hover:bg-muted/50 transition-colors"
+                        >
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="font-medium text-gray-900 dark:text-white">
                               {investment.campaign?.title ||

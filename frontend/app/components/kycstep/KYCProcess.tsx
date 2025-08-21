@@ -44,11 +44,14 @@ import { Point } from '@/app/account/settings/kyc/signature/signatureUtils';
 import { z } from 'zod';
 import { Loader2 } from 'lucide-react';
 import { convertSignatureToBlob } from '@/app/account/settings/kyc/signature/signatureUtils';
+import { useKyc } from '@/app/context/kyc/KycContext';
+import { KycFormData, KycAddress } from '@/app/types/kyc.type';
 
 const KYCProcess: React.FC<KYCProcessProps> = ({
   userType,
   onUserTypeChange,
 }) => {
+  const { createKyc, uploadDocument, loading: kycLoading } = useKyc();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<
     Partial<CreatorKYCFormData | InvestorKYCFormData | MentorKYCFormData>
@@ -63,6 +66,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const [isSigned, setIsSigned] = useState(false);
   const [signature, setSignature] = useState<Point[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadedDocuments, setUploadedDocuments] = useState<{
+    [key: string]: File;
+  }>({});
 
   const isCreator = userType === 'creator';
   const isInvestor = userType === 'investor';
@@ -215,6 +221,82 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     })(),
   });
 
+  const handleDocumentUpload = async (documentType: string, file: File) => {
+    try {
+      setUploadedDocuments((prev) => ({ ...prev, [documentType]: file }));
+      toast.success(`${documentType.replace('_', ' ')} uploaded successfully`);
+    } catch (error) {
+      toast.error(`Failed to upload ${documentType.replace('_', ' ')}`);
+      console.error('Upload error:', error);
+    }
+  };
+
+  const prepareKycData = (): KycFormData => {
+    const baseData = {
+      kyc_type: userType === 'creator' ? 'issuer' : 'investor',
+      verification_type: formData.idType as
+        | 'national_id'
+        | 'passport'
+        | 'drivers_license'
+        | 'voter_id',
+      id_number: formData.idNumber || '',
+      id_expiry_date: new Date().toISOString().split('T')[0], // Default to today
+      date_of_birth: formData.dateOfBirth || '',
+      nationality: formData.nationality || '',
+      occupation: formData.occupation || '',
+      source_of_funds: formData.sourceOfFunds || 'Salary',
+      addresses: [
+        {
+          address_type: 'residential',
+          street: formData.address || '',
+          city: formData.city || '',
+          state: formData.state || '',
+          postal_code: formData.postalCode || '',
+          country: formData.country || '',
+          is_primary: true,
+        } as KycAddress,
+      ],
+      signature_data: signature,
+    };
+
+    if (userType === 'creator' || userType === 'mentor') {
+      return {
+        ...baseData,
+        kyc_type: 'issuer',
+        business_name: (formData as CreatorKYCFormData).businessName || '',
+        business_registration_number:
+          (formData as CreatorKYCFormData).businessRegistration || '',
+        business_tax_id: (formData as CreatorKYCFormData).taxId || '',
+        business_industry: (formData as CreatorKYCFormData).businessType || '',
+        issuer_accepted_terms: true,
+      } as KycFormData;
+    }
+
+    return {
+      ...baseData,
+      kyc_type: 'investor',
+      investor_signature_data: signature,
+    } as KycFormData;
+  };
+
+  const uploadAllDocuments = async (kycId: number) => {
+    const uploadPromises = Object.entries(uploadedDocuments).map(
+      async ([documentType, file]) => {
+        try {
+          await uploadDocument(kycId, documentType, file);
+          toast.success(
+            `${documentType.replace('_', ' ')} uploaded successfully`,
+          );
+        } catch (error) {
+          console.error(`Failed to upload ${documentType}:`, error);
+          toast.error(`Failed to upload ${documentType.replace('_', ' ')}`);
+        }
+      },
+    );
+
+    await Promise.all(uploadPromises);
+  };
+
   const onSubmit = async (data: any) => {
     setIsSubmitting(true);
     const updatedFormData = { ...formData, ...data };
@@ -280,21 +362,16 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       }
 
       try {
-        const signatureBlob = await convertSignatureToBlob(signature);
-        const formDataToSubmit = new FormData();
+        // Prepare KYC data for API
+        const kycData = prepareKycData();
 
-        // Append all form data
-        Object.entries(updatedFormData).forEach(([key, value]) => {
-          if (value instanceof File) {
-            formDataToSubmit.append(key, value);
-          } else if (typeof value === 'object' && value !== null) {
-            formDataToSubmit.append(key, JSON.stringify(value));
-          } else {
-            formDataToSubmit.append(key, String(value));
-          }
-        });
+        // Create KYC record
+        const newKyc = await createKyc(kycData);
 
-        formDataToSubmit.append('signature', signatureBlob, 'signature.png');
+        // Upload all documents
+        if (Object.keys(uploadedDocuments).length > 0) {
+          await uploadAllDocuments(newKyc.id!);
+        }
 
         const userTypeLabel = isCreator
           ? 'Campaign creator'
@@ -302,18 +379,19 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             ? 'Investor'
             : 'Mentor';
 
-        // API submission would go here
         toast.success(`${userTypeLabel} verification submitted successfully`);
-        console.log('Final form data:', updatedFormData);
-        console.log('Signature blob:', signatureBlob);
 
-        // Debugging
-        for (const [key, value] of formDataToSubmit.entries()) {
-          console.log(key, value);
-        }
+        // Clear local storage
+        localStorage.removeItem(`${userType}Signature`);
+
+        // Reset form
+        setFormData({});
+        setSignature([]);
+        setIsSigned(false);
+        setUploadedDocuments({});
       } catch (error) {
-        console.error('Error converting signature:', error);
-        toast.error('Failed to process signature. Please try again.');
+        console.error('Error submitting KYC:', error);
+        toast.error('Failed to submit verification. Please try again.');
       } finally {
         setIsSubmitting(false);
       }
@@ -368,7 +446,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       case 'personalInfo':
         return <PersonalInfoStep />;
       case 'documents':
-        return <DocumentVerificationStep />;
+        return (
+          <DocumentVerificationStep onDocumentUpload={handleDocumentUpload} />
+        );
       case 'experience':
         return <MentorExperienceStep />;
       case 'quiz':
@@ -401,6 +481,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             isCreator={isCreator}
             isInvestor={isInvestor}
             isMentor={isMentor}
+            uploadedDocuments={uploadedDocuments}
           />
         );
       default:
@@ -415,6 +496,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       <Card className="bg-white shadow-sm">
         <CardHeader>
           <CardTitle>{kycSteps[currentStep]?.title}</CardTitle>
+          {/* <CardDescription>
+            {kycSteps[currentStep]?.description}
+          </CardDescription> */}
         </CardHeader>
 
         <CardContent>
@@ -433,6 +517,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
                       type="button"
                       variant="outline"
                       onClick={goToPreviousStep}
+                      disabled={kycLoading}
                     >
                       Previous
                     </Button>
@@ -440,9 +525,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
                   <Button
                     type="submit"
                     className="bg-bantu-green hover:bg-bantu-dark-green ml-auto"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || kycLoading}
                   >
-                    {isSubmitting ? (
+                    {isSubmitting || kycLoading ? (
                       <span className="flex items-center">
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Processing...

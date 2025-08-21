@@ -1,4 +1,4 @@
-// context/GlobalProvider.tsx
+// app/context/GlobalProvider.tsx (update)
 'use client';
 import { ReactNode } from 'react';
 import { UserProfileProvider } from './users/UserContext';
@@ -17,6 +17,8 @@ import { PointRewardProvider } from './pointreward/PointRewardContext';
 import { ArticlesProvider } from './admin/articles/ArticlesContext';
 import { PledgesProvider } from './pledges/PledgesContext';
 import { DrawerProvider } from './drawer/DrawerContext';
+import { KycProvider } from './kyc/KycContext';
+import { KycReviewProvider } from './kyc/KycReviewContext';
 
 export const GlobalContextProvider = ({
   children,
@@ -27,31 +29,37 @@ export const GlobalContextProvider = ({
     <DrawerProvider>
       <AuthProvider>
         <UserProfileProvider>
-          <DonationsProvider>
-            <RewardProvider>
-              <CampaignProvider>
-                <EquityCampaignProvider>
-                  <CampaignUpdatesProvider>
-                    <TransferProvider>
-                      <CampaignCommentsProvider>
-                        <CategoryProvider>
-                          <MetricsProvider>
-                            <ArticlesProvider>
-                              <LeaderboardProvider>
-                                <PointRewardProvider>
-                                  <PledgesProvider>{children}</PledgesProvider>
-                                </PointRewardProvider>
-                              </LeaderboardProvider>
-                            </ArticlesProvider>
-                          </MetricsProvider>
-                        </CategoryProvider>
-                      </CampaignCommentsProvider>
-                    </TransferProvider>
-                  </CampaignUpdatesProvider>
-                </EquityCampaignProvider>
-              </CampaignProvider>
-            </RewardProvider>
-          </DonationsProvider>
+          <KycProvider>
+            <KycReviewProvider>
+              <DonationsProvider>
+                <RewardProvider>
+                  <CampaignProvider>
+                    <EquityCampaignProvider>
+                      <CampaignUpdatesProvider>
+                        <TransferProvider>
+                          <CampaignCommentsProvider>
+                            <CategoryProvider>
+                              <MetricsProvider>
+                                <ArticlesProvider>
+                                  <LeaderboardProvider>
+                                    <PointRewardProvider>
+                                      <PledgesProvider>
+                                        {children}
+                                      </PledgesProvider>
+                                    </PointRewardProvider>
+                                  </LeaderboardProvider>
+                                </ArticlesProvider>
+                              </MetricsProvider>
+                            </CategoryProvider>
+                          </CampaignCommentsProvider>
+                        </TransferProvider>
+                      </CampaignUpdatesProvider>
+                    </EquityCampaignProvider>
+                  </CampaignProvider>
+                </RewardProvider>
+              </DonationsProvider>
+            </KycReviewProvider>
+          </KycProvider>
         </UserProfileProvider>
       </AuthProvider>
     </DrawerProvider>
