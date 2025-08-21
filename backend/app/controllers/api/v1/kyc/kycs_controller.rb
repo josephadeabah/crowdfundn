@@ -3,7 +3,6 @@ module Api
   module V1
     module Kyc
       class KycsController < ApplicationController
-        include Authenticable
         before_action :authenticate_request
         before_action :set_kyc, only: [:show, :update, :destroy, :submit, :documents, :verify, :reject, :request_info]
 

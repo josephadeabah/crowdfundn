@@ -223,19 +223,6 @@ class Kyc < ApplicationRecord
     end
   end
 
-  def process_signature
-    return unless signature_data.present?
-
-    image_data = SignatureImageGenerator.generate(signature_data)
-    signature_image.attach(
-      io: StringIO.new(image_data),
-      filename: "signature-#{reference}.png",
-      content_type: 'image/png'
-    )
-  rescue => e
-    Rails.logger.error "Failed to process signature: #{e.message}"
-  end
-
   def create_required_documents
     document_types = if issuer? || both?
       investor_documents + issuer_documents
