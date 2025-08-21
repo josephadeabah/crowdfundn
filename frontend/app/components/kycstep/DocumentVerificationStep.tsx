@@ -1,6 +1,5 @@
-// DocumentVerificationStep.tsx
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import {
   FormField,
@@ -31,13 +30,24 @@ export const DocumentVerificationStep: React.FC<
   const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: File }>(
     {},
   );
+  
+  // Create refs for file inputs
+  const idDocumentRef = useRef<HTMLInputElement>(null);
+  const proofOfAddressRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (documentType: string, file: File) => {
     setUploadedFiles((prev) => ({ ...prev, [documentType]: file }));
     onDocumentUpload(documentType, file);
     
-    // Update form state to mark the field as filled
-    form.setValue(documentType, file.name, { shouldValidate: true });
+    // Update form state - use the correct field names
+    const formFieldName = documentType === 'id_document' ? 'idDocument' : 'proofOfAddress';
+    form.setValue(formFieldName, file, { shouldValidate: true });
+  };
+
+  const triggerFileInput = (ref: React.RefObject<HTMLInputElement>) => {
+    if (ref.current) {
+      ref.current.click();
+    }
   };
 
   return (
@@ -104,13 +114,16 @@ export const DocumentVerificationStep: React.FC<
                   }}
                   className="hidden"
                   id="id-document"
+                  ref={idDocumentRef}
                 />
-                <label htmlFor="id-document">
-                  <Button type="button" variant="outline">
-                    <Upload className="mr-2 h-4 w-4" />
-                    Upload ID
-                  </Button>
-                </label>
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  onClick={() => triggerFileInput(idDocumentRef)}
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload ID
+                </Button>
                 {uploadedFiles['id_document'] && (
                   <div className="flex items-center text-sm text-green-600">
                     <FileText className="mr-2 h-4 w-4" />
@@ -142,13 +155,16 @@ export const DocumentVerificationStep: React.FC<
                   }}
                   className="hidden"
                   id="proof-of-address"
+                  ref={proofOfAddressRef}
                 />
-                <label htmlFor="proof-of-address">
-                  <Button type="button" variant="outline">
-                    <Upload className="mr-2 h-4 w-4" />
-                    Upload Proof
-                  </Button>
-                </label>
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  onClick={() => triggerFileInput(proofOfAddressRef)}
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload Proof
+                </Button>
                 {uploadedFiles['proof_of_address'] && (
                   <div className="flex items-center text-sm text-green-600">
                     <FileText className="mr-2 h-4 w-4" />
