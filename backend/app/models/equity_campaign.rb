@@ -31,8 +31,7 @@ class EquityCampaign < Campaign
     failed: 5,
     closed: 6
   }
-
-  after_update :update_investments_valuation, if: :saved_change_to_valuation?
+  
   
   def total_shares_must_be_set
     # Only validate if it's a new record OR if total_shares is being set/changed
