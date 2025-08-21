@@ -8,8 +8,6 @@ class KycAddress < ApplicationRecord
     business: 'business'
   }, default: 'residential'
 
-  accepts_nested_attributes_for :kyc_addresses, allow_destroy: true
-
 
   validates :address_type, presence: true
   validates :address_type, uniqueness: { scope: :kyc_id }

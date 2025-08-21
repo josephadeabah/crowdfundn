@@ -1,7 +1,7 @@
 # app/models/kyc.rb
 class Kyc < ApplicationRecord
   belongs_to :user, class_name: '::User'
-  belongs_to :verified_by, class_name: '::User', optional: true
+  belongs_to :verified_by, class_name: 'User', optional: true
 
   # Associations
   has_many :kyc_documents, dependent: :destroy
@@ -31,7 +31,7 @@ class Kyc < ApplicationRecord
     voter_id: 'voter_id'
   }, _prefix: :verification
 
-  accepts_nested_attributes_for :kyc_documents, allow_destroy: true
+  # REMOVED: accepts_nested_attributes_for declarations
 
   # ActiveStorage attachments
   has_one_attached :id_image
@@ -62,7 +62,6 @@ class Kyc < ApplicationRecord
   before_validation :set_default_kyc_type, on: :create
   after_save :process_signature, if: :saved_change_to_signature_data?
   after_create :create_required_documents
-  after_save :process_signature, if: :saved_change_to_signature_data?
 
   # Scopes
   scope :for_investors, -> { where(kyc_type: [:investor, :both]) }
@@ -108,14 +107,14 @@ class Kyc < ApplicationRecord
   end
 
   def signature_image_url
-    return unless signature.attached?
+    return unless signature_image.attached?
 
     if Rails.env.production?
       "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/"\
       "#{Rails.application.credentials.dig(:digitalocean, :bucket)}/"\
-      "#{signature.blob.key}"
+      "#{signature_image.blob.key}"
     else
-      Rails.application.routes.url_helpers.rails_blob_url(signature, only_path: false)
+      Rails.application.routes.url_helpers.rails_blob_url(signature_image, only_path: false)
     end
   rescue => e
     Rails.logger.error "Failed to generate signature URL for KYC #{id}: #{e.message}"
@@ -155,7 +154,6 @@ class Kyc < ApplicationRecord
     Rails.logger.error "Failed to generate issuer signature URL for KYC #{id}: #{e.message}"
     nil
   end
-
 
   def to_frontend_format
     {

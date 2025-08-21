@@ -4,9 +4,7 @@ module Api
     module Kyc
       class KycsController < ApplicationController
         before_action :authenticate_request
-        # Add :upload_document to the set_kyc before_action
         before_action :set_kyc, only: [:show, :update, :destroy, :submit, :documents, :verify, :reject, :request_info, :upload_document]
-        # Add :upload_document to authorize_user_access since only the KYC owner should upload documents
         before_action :authorize_user_access, only: [:show, :update, :destroy, :submit, :documents, :upload_document]
         before_action :authorize_admin, only: [:all_needs_review, :verify, :reject, :request_info]
 
@@ -29,8 +27,24 @@ module Api
             return render json: { errors: ['You already have a KYC submission in progress or verified'] }, status: :unprocessable_entity
           end
 
-          @kyc = @current_user.kycs.build(kyc_params)
+          # Build KYC without addresses first
+          @kyc = @current_user.kycs.build(kyc_params.except(:addresses_attributes))
           
+          # Manually handle addresses
+          if params[:kyc][:addresses_attributes].present?
+            params[:kyc][:addresses_attributes].each do |address_params|
+              @kyc.kyc_addresses.build(
+                address_type: address_params[:address_type],
+                street: address_params[:street],
+                city: address_params[:city],
+                state: address_params[:state],
+                postal_code: address_params[:postal_code],
+                country: address_params[:country],
+                is_primary: address_params[:is_primary] || false
+              )
+            end
+          end
+
           if @kyc.save
             if @kyc.signature_data.present? && !@kyc.signature_image.attached?
               Rails.logger.warn "Signature data was provided but image processing may have failed"
@@ -48,7 +62,23 @@ module Api
             return render json: { errors: ['KYC cannot be updated in its current state'] }, status: :unprocessable_entity
           end
           
-          if @kyc.update(kyc_params)
+          # Handle addresses manually if provided
+          if params[:kyc][:addresses_attributes].present?
+            @kyc.kyc_addresses.destroy_all # Remove existing addresses
+            params[:kyc][:addresses_attributes].each do |address_params|
+              @kyc.kyc_addresses.build(
+                address_type: address_params[:address_type],
+                street: address_params[:street],
+                city: address_params[:city],
+                state: address_params[:state],
+                postal_code: address_params[:postal_code],
+                country: address_params[:country],
+                is_primary: address_params[:is_primary] || false
+              )
+            end
+          end
+          
+          if @kyc.update(kyc_params.except(:addresses_attributes))
             render json: { kyc: @kyc.to_frontend_format }
           else
             render json: { errors: @kyc.errors.full_messages }, status: :unprocessable_entity
@@ -159,7 +189,6 @@ module Api
             :business_name, :business_registration_number, :business_tax_id,
             :business_industry, :business_established_date,
             :signature_data, :investor_signature_data, :issuer_accepted_terms,
-            addresses_attributes: [:id, :address_type, :street, :city, :state, :postal_code, :country, :is_primary, :_destroy],
             kyc_documents_attributes: [:id, :document_type, :file, :file_name, :_destroy]
           )
         end
