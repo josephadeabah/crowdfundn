@@ -34,9 +34,9 @@ export const ProgressSteps: React.FC<ProgressStepsProps> = ({
                 }`}
               >
                 {index < currentStep ? (
-                  <Check className="w-4 h-4" />
+                  <Check className="w-2 h-2" />
                 ) : (
-                  <step.icon className="w-4 h-4" />
+                  <step.icon className="w-2 h-2" />
                 )}
               </div>
               <div className="ml-2">
@@ -72,9 +72,9 @@ export const ProgressSteps: React.FC<ProgressStepsProps> = ({
                   }`}
                 >
                   {index < currentStep ? (
-                    <Check className="w-4 h-4" />
+                    <Check className="w-2 h-2" />
                   ) : (
-                    <step.icon className="w-4 h-4" />
+                    <step.icon className="w-2 h-2" />
                   )}
                 </div>
                 {index < steps.length - 1 && (
