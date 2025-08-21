@@ -16,6 +16,7 @@ import { useEquityCampaignContext } from '../context/account/campaign/EquityCamp
 import { useAuth } from '../context/auth/AuthContext';
 import { PerformanceCharts } from '../components/investchart/PerformanceCharts';
 import { PortfolioSummary } from '../components/investchart/PortfolioSummary';
+import { Badge } from '../components/ui/badge';
 
 const EquityInvestments = () => {
   const {
@@ -255,20 +256,34 @@ const EquityInvestments = () => {
                               maximumFractionDigits: 2,
                             })}
                           </td>
-                          <td
-                            className={`px-6 py-4 whitespace-nowrap ${
-                              investmentReturn >= 0
-                                ? 'text-green-600 dark:text-green-400'
-                                : 'text-red-600 dark:text-red-400'
-                            }`}
-                          >
-                            $
-                            {investmentReturn.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}{' '}
-                            ({returnPct.toFixed(2)}%)
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex flex-col">
+                              <span
+                                className={`font-medium ${
+                                  investmentReturn >= 0
+                                    ? 'text-green-600 dark:text-green-400'
+                                    : 'text-red-600 dark:text-red-400'
+                                }`}
+                              >
+                                ${investmentReturn.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })}
+                              </span>
+                              <Badge
+                                variant="secondary"
+                                className={`w-fit mt-1 border ${
+                                  investmentReturn >= 0
+                                    ? 'bg-green-100 text-green-700 border-green-300 dark:bg-green-900/20 dark:text-green-400 dark:border-green-700'
+                                    : 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/20 dark:text-red-400 dark:border-red-700'
+                                }`}
+                              >
+                                {investmentReturn >= 0 ? '+' : ''}
+                                {returnPct.toFixed(2)}%
+                              </Badge>
+                            </div>
                           </td>
+
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span
                               className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
