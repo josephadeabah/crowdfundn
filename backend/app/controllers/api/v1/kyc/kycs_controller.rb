@@ -27,6 +27,12 @@ module Api
             return render json: { errors: ['You already have a KYC submission in progress or verified'] }, status: :unprocessable_entity
           end
 
+            # Check if business_tax_id already exists (for issuers)
+          if params[:kyc][:business_tax_id].present? && 
+            Kyc.where(business_tax_id: params[:kyc][:business_tax_id]).exists?
+            return render json: { errors: ['Business tax ID already exists'] }, status: :unprocessable_entity
+          end
+
           # Build KYC without addresses first
           @kyc = @current_user.kycs.build(kyc_params.except(:addresses_attributes))
           
