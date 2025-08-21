@@ -161,13 +161,13 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             postalCode: formData.postalCode || '',
             country: formData.country || '',
           };
-        case 'documents':
-          return {
-            idType: formData.idType || '',
-            idNumber: formData.idNumber || '',
-            idDocument: formData.idDocument || '',
-            proofOfAddress: formData.proofOfAddress || '',
-          };
+      case 'documents':
+        return {
+          idType: formData.idType || '',
+          idNumber: formData.idNumber || '',
+          idDocument: formData.idDocument || undefined,
+          proofOfAddress: formData.proofOfAddress || undefined,
+        };
         case 'experience':
           return {
             professionalTitle:

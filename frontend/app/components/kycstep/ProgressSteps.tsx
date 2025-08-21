@@ -1,4 +1,4 @@
-// ProgressSteps.tsx
+// ProgressSteps.tsx - Make sure it's properly receiving and displaying the current step
 'use client';
 import React from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
@@ -8,7 +8,6 @@ interface Step {
   id: string;
   title: string;
   icon: React.ComponentType<any>;
-  description?: string; // Add description property
 }
 
 interface ProgressStepsProps {
@@ -16,10 +15,7 @@ interface ProgressStepsProps {
   currentStep: number;
 }
 
-export const ProgressSteps: React.FC<ProgressStepsProps> = ({
-  steps,
-  currentStep,
-}) => {
+export const ProgressSteps: React.FC<ProgressStepsProps> = ({ steps, currentStep }) => {
   return (
     <Card className="mb-6">
       <CardContent className="p-4">
@@ -47,11 +43,6 @@ export const ProgressSteps: React.FC<ProgressStepsProps> = ({
                 >
                   {step.title}
                 </div>
-                {step.description && (
-                  <div className="text-xs text-gray-500">
-                    {step.description}
-                  </div>
-                )}
               </div>
               {index < steps.length - 1 && (
                 <div
