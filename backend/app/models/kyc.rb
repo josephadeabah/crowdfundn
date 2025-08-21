@@ -31,6 +31,9 @@ class Kyc < ApplicationRecord
     voter_id: 'voter_id'
   }, _prefix: :verification
 
+  accepts_nested_attributes_for :kyc_addresses, allow_destroy: true
+  accepts_nested_attributes_for :kyc_documents, allow_destroy: true
+
   # ActiveStorage attachments
   has_one_attached :id_image
   has_one_attached :address_proof
