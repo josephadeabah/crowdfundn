@@ -5,24 +5,31 @@ module Api
       class KycsController < ApplicationController
         before_action :authenticate_request
         before_action :set_kyc, only: [:show, :update, :destroy, :submit, :documents, :verify, :reject, :request_info]
+        before_action :authorize_user_access, only: [:show, :update, :destroy, :submit, :documents]
+        before_action :authorize_admin, only: [:all_needs_review, :verify, :reject, :request_info]
 
         def index
-          authorize Kyc
-          @kycs = policy_scope(Kyc).order(created_at: :desc)
+          @kycs = if @current_user.admin?
+            Kyc.all.order(created_at: :desc)
+          else
+            @current_user.kycs.order(created_at: :desc)
+          end
           render json: { kycs: @kycs.map(&:to_frontend_format) }
         end
 
         def show
-          authorize @kyc
           render json: { kyc: @kyc.to_frontend_format }
         end
 
         def create
-          authorize Kyc
+          # Check if user can create KYC (no pending or verified ones)
+          if @current_user.kycs.where(status: ['pending', 'in_review', 'verified']).exists?
+            return render json: { errors: ['You already have a KYC submission in progress or verified'] }, status: :unprocessable_entity
+          end
+
           @kyc = @current_user.kycs.build(kyc_params)
           
           if @kyc.save
-            # Check if signature was processed successfully
             if @kyc.signature_data.present? && !@kyc.signature_image.attached?
               Rails.logger.warn "Signature data was provided but image processing may have failed"
             end
@@ -34,7 +41,10 @@ module Api
         end
 
         def update
-          authorize @kyc
+          # Check if user can update (must be owner and in pending/in_review status)
+          unless @kyc.pending? || @kyc.in_review?
+            return render json: { errors: ['KYC cannot be updated in its current state'] }, status: :unprocessable_entity
+          end
           
           if @kyc.update(kyc_params)
             render json: { kyc: @kyc.to_frontend_format }
@@ -44,14 +54,21 @@ module Api
         end
 
         def destroy
-          authorize @kyc
+          # Check if user can destroy (must be in pending/in_review status)
+          unless @kyc.pending? || @kyc.in_review?
+            return render json: { errors: ['KYC cannot be deleted in its current state'] }, status: :unprocessable_entity
+          end
+
           @kyc.destroy
           head :no_content
         end
 
         def submit
-          authorize @kyc
-          
+          # Check if user can submit (must be in pending status)
+          unless @kyc.pending?
+            return render json: { errors: ['KYC cannot be submitted in its current state'] }, status: :unprocessable_entity
+          end
+
           if @kyc.update(status: 'in_review')
             render json: { message: 'KYC submitted for review', kyc: @kyc.to_frontend_format }
           else
@@ -60,19 +77,16 @@ module Api
         end
 
         def documents
-          authorize @kyc
           @documents = @kyc.kyc_documents
           render json: { documents: @documents.map(&:to_frontend_format) }
         end
 
         def all_needs_review
-          authorize Kyc, :admin_review?
           @kycs = Kyc.needs_review.order(created_at: :desc)
           render json: { kycs: @kycs.map(&:to_frontend_format) }
         end
 
         def show_documents
-          authorize @kyc
           render json: { 
             kyc: @kyc.to_frontend_format,
             documents: @kyc.kyc_documents.map(&:to_frontend_format)
@@ -80,8 +94,11 @@ module Api
         end
 
         def verify
-          authorize @kyc, :admin_verify?
-          if @kyc.verify!(current_user, params[:review_notes])
+          unless @kyc.pending? || @kyc.in_review?
+            return render json: { errors: ['KYC cannot be verified in its current state'] }, status: :unprocessable_entity
+          end
+
+          if @kyc.verify!(@current_user, params[:review_notes])
             render json: { message: 'KYC verified successfully', kyc: @kyc.to_frontend_format }
           else
             render json: { errors: @kyc.errors.full_messages }, status: :unprocessable_entity
@@ -89,7 +106,10 @@ module Api
         end
 
         def reject
-          authorize @kyc, :admin_reject?
+          unless @kyc.pending? || @kyc.in_review?
+            return render json: { errors: ['KYC cannot be rejected in its current state'] }, status: :unprocessable_entity
+          end
+
           if @kyc.reject!(params[:rejection_reason])
             render json: { message: 'KYC rejected', kyc: @kyc.to_frontend_format }
           else
@@ -98,7 +118,6 @@ module Api
         end
 
         def request_info
-          authorize @kyc, :admin_review?
           # Implement info request logic
           render json: { message: 'Information requested from user' }
         end
@@ -107,6 +126,11 @@ module Api
 
         def set_kyc
           @kyc = Kyc.find(params[:id])
+        end
+
+        def authorize_user_access
+          # Use your existing authorize_user! method
+          authorize_user!(@kyc)
         end
 
         def kyc_params
