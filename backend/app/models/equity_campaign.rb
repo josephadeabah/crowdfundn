@@ -7,6 +7,8 @@ class EquityCampaign < Campaign
            through: :campaign_team_members, source: :user
 
   before_validation :set_default_total_shares, unless: :total_shares?
+  after_update :update_investments_valuation, if: -> { saved_change_to_valuation? || saved_change_to_total_shares? }
+
   validates :valuation, :equity_offered, :minimum_investment, :maximum_investment,
             presence: true, numericality: { greater_than: 0 }
   validates :total_shares, numericality: { greater_than: 0, message: "must be set based on valuation" }, unless: -> { valuation.blank? }

@@ -5,18 +5,20 @@ class UpdateCampaignInvestmentsJob < ApplicationJob
   def perform(campaign_id)
     campaign = EquityCampaign.find(campaign_id)
     
-    # Update all successful investments for this campaign
-    campaign.equity_investments.successful.each do |investment|
-      # Recalculate shares and percentage based on new valuation
+    campaign.equity_investments.successful.find_each do |investment|
+      # Recalculate shares based on new valuation/total_shares
       price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
       new_shares = (investment.amount / price_per_share).round(4)
-      new_percentage = ((investment.amount / (campaign.valuation.to_f * campaign.equity_offered.to_f / 100)) * 100).round(6)
       
+      # Maintain the original ownership percentage
       investment.update_columns(
-        shares: new_shares,
-        percentage: new_percentage
+        shares: new_shares
+        # percentage remains unchanged to preserve ownership stake
       )
     end
+    
+    # Optional: Recalculate campaign statistics if needed
+    campaign.touch # Force cache invalidation
   rescue ActiveRecord::RecordNotFound => e
     Rails.logger.error "Campaign not found: #{e.message}"
   end
