@@ -153,10 +153,6 @@ module Api
         end
 
         def kyc_params
-          # Convert addresses to addresses_attributes if needed
-          if params[:kyc][:addresses].present?
-            params[:kyc][:addresses_attributes] = params[:kyc].delete(:addresses)
-          end
           
           params.require(:kyc).permit(
             :kyc_type, :verification_type, :id_number, :id_expiry_date,
