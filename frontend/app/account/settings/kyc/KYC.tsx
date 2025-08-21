@@ -24,7 +24,7 @@ const KYC = () => {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">
             {userType === 'creator'
-              ? 'Fundriaser'
+              ? 'Fundraiser'
               : userType === 'investor'
                 ? 'Investor'
                 : 'Mentor'}{' '}
