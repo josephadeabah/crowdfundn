@@ -1,36 +1,52 @@
+# app/services/signature_image_generator.rb
 class SignatureImageGenerator
-  def self.generate(signature_points, width: 400, height: 150, color: '000000')
-    require 'chunky_png'
-
-    png = ChunkyPNG::Image.new(width, height, ChunkyPNG::Color::TRANSPARENT)
-    rgb = color.match(/^#?(..)(..)(..)$/).captures.map(&:hex)
-
-    signature_points.each_cons(2) do |point1, point2|
-      x1 = (point1['x'] * width).to_i
-      y1 = (point1['y'] * height).to_i
-      x2 = (point2['x'] * width).to_i
-      y2 = (point2['y'] * height).to_i
+  def self.generate(signature_data, width: 400, height: 200)
+    require 'rmagick'
+    
+    # Create a new image with white background
+    image = Magick::Image.new(width, height) { |img| img.background_color = 'white' }
+    draw = Magick::Draw.new
+    
+    # Set drawing properties
+    draw.stroke('black')
+    draw.stroke_width(2)
+    draw.fill('transparent')
+    draw.stroke_linejoin('round')
+    draw.stroke_linecap('round')
+    
+    # Draw the signature if we have data
+    if signature_data.is_a?(Array) && signature_data.any?
+      # Convert to array of points
+      points = signature_data.map { |point| [point['x'].to_f, point['y'].to_f] }
       
-      png.line(x1, y1, x2, y2, ChunkyPNG::Color.rgb(*rgb))
+      # Find min/max to normalize coordinates
+      min_x = points.map(&:first).min
+      max_x = points.map(&:first).max
+      min_y = points.map(&:last).min
+      max_y = points.map(&:last).max
+      
+      # Scale points to fit canvas if needed
+      if max_x - min_x > 0 && max_y - min_y > 0
+        points = points.map do |x, y|
+          [
+            ((x - min_x) / (max_x - min_x)) * (width - 20) + 10,
+            ((y - min_y) / (max_y - min_y)) * (height - 20) + 10
+          ]
+        end
+      end
+      
+      # Draw the signature path
+      draw.path("M #{points.first.join(',')} #{points[1..-1].map { |p| "L #{p.join(',')}" }.join(' ')}")
     end
-
-    png.to_blob
-  end
-
-  def self.generate_issuer_signature
-    # This would generate your organization's official signature
-    # Could be loaded from a file or generated dynamically
-    issuer_name = "Bantuhive Ltd"
-    width = 300
-    height = 100
     
-    require 'chunky_png'
-    png = ChunkyPNG::Image.new(width, height, ChunkyPNG::Color::TRANSPARENT)
+    # Draw on the image
+    draw.draw(image)
     
-    # Draw a simple signature line with text
-    png.line(10, 80, width-10, 80, ChunkyPNG::Color.rgb(0, 0, 0))
-    png.compose!(ChunkyPNG::Image.from_text(issuer_name, width: width))
-    
-    png.to_blob
+    # Convert to blob
+    image.to_blob { |img| img.format = 'PNG' }
+  rescue => e
+    Rails.logger.error "Signature generation failed: #{e.message}"
+    # Return a simple placeholder if generation fails
+    Magick::Image.new(width, height) { |img| img.background_color = 'white' }.to_blob
   end
 end

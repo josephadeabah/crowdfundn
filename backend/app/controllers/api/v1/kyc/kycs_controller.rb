@@ -23,6 +23,11 @@ module Api
           @kyc = @current_user.kycs.build(kyc_params)
           
           if @kyc.save
+            # Check if signature was processed successfully
+            if @kyc.signature_data.present? && !@kyc.signature_image.attached?
+              Rails.logger.warn "Signature data was provided but image processing may have failed"
+            end
+            
             render json: { kyc: @kyc.to_frontend_format }, status: :created
           else
             render json: { errors: @kyc.errors.full_messages }, status: :unprocessable_entity

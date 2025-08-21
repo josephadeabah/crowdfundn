@@ -60,6 +60,7 @@ class Kyc < ApplicationRecord
   before_validation :set_default_kyc_type, on: :create
   after_save :process_signature, if: :saved_change_to_signature_data?
   after_create :create_required_documents
+  after_save :process_signature, if: :saved_change_to_signature_data?
 
   # Scopes
   scope :for_investors, -> { where(kyc_type: [:investor, :both]) }
@@ -117,6 +118,23 @@ class Kyc < ApplicationRecord
   rescue => e
     Rails.logger.error "Failed to generate signature URL for KYC #{id}: #{e.message}"
     nil
+  end
+
+    def process_signature
+    return unless signature_data.present?
+    
+    # Convert signature data to image using our service
+    image_data = SignatureImageGenerator.generate(signature_data)
+    
+    # Attach the generated image
+    signature_image.attach(
+      io: StringIO.new(image_data),
+      filename: "signature-#{reference}.png",
+      content_type: 'image/png'
+    )
+  rescue => e
+    Rails.logger.error "Failed to process signature: #{e.message}"
+    # You might want to add error handling here
   end
 
   def issuer_signature_url
