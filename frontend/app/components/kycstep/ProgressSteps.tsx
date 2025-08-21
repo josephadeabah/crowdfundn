@@ -15,7 +15,10 @@ interface ProgressStepsProps {
   currentStep: number;
 }
 
-export const ProgressSteps: React.FC<ProgressStepsProps> = ({ steps, currentStep }) => {
+export const ProgressSteps: React.FC<ProgressStepsProps> = ({
+  steps,
+  currentStep,
+}) => {
   return (
     <Card className="mb-6">
       <CardContent className="p-4">
@@ -91,9 +94,7 @@ export const ProgressSteps: React.FC<ProgressStepsProps> = ({ steps, currentStep
                   Step {index + 1}: {step.title}
                 </div>
                 {index === currentStep && (
-                  <div className="text-xs text-gray-500 mt-1">
-                    Current step
-                  </div>
+                  <div className="text-xs text-gray-500 mt-1">Current step</div>
                 )}
               </div>
             </div>

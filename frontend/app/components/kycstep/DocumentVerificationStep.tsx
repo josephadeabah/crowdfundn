@@ -30,7 +30,7 @@ export const DocumentVerificationStep: React.FC<
   const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: File }>(
     {},
   );
-  
+
   // Create refs for file inputs
   const idDocumentRef = useRef<HTMLInputElement>(null);
   const proofOfAddressRef = useRef<HTMLInputElement>(null);
@@ -38,9 +38,10 @@ export const DocumentVerificationStep: React.FC<
   const handleFileUpload = (documentType: string, file: File) => {
     setUploadedFiles((prev) => ({ ...prev, [documentType]: file }));
     onDocumentUpload(documentType, file);
-    
+
     // Update form state - use the correct field names
-    const formFieldName = documentType === 'id_document' ? 'idDocument' : 'proofOfAddress';
+    const formFieldName =
+      documentType === 'id_document' ? 'idDocument' : 'proofOfAddress';
     form.setValue(formFieldName, file, { shouldValidate: true });
   };
 
@@ -116,8 +117,8 @@ export const DocumentVerificationStep: React.FC<
                   id="id-document"
                   ref={idDocumentRef}
                 />
-                <Button 
-                  type="button" 
+                <Button
+                  type="button"
                   variant="outline"
                   onClick={() => triggerFileInput(idDocumentRef)}
                 >
@@ -157,8 +158,8 @@ export const DocumentVerificationStep: React.FC<
                   id="proof-of-address"
                   ref={proofOfAddressRef}
                 />
-                <Button 
-                  type="button" 
+                <Button
+                  type="button"
                   variant="outline"
                   onClick={() => triggerFileInput(proofOfAddressRef)}
                 >

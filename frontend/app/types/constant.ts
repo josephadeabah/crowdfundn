@@ -191,6 +191,7 @@ export interface Partner {
 
 export const creatorKycSteps = [
   { id: 'personal', title: 'Personal Information', icon: UserCheck },
+  { id: 'businessInfo', title: 'Business Information', icon: Building },
   { id: 'document', title: 'Document Verification', icon: FileText },
   { id: 'certificate', title: 'Certificate Signing', icon: Pencil },
   { id: 'review', title: 'Review & Submit', icon: Shield },

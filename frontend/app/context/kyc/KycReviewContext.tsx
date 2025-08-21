@@ -121,7 +121,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-    // Fetch KYC review statistics
+  // Fetch KYC review statistics
   const fetchStats = useCallback(async () => {
     setLoading(true);
     setError(null);
