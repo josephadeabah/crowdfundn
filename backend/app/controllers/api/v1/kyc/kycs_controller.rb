@@ -1,138 +1,120 @@
+# app/controllers/api/v1/kyc/kycs_controller.rb
 module Api
   module V1
     module Kyc
       class KycsController < ApplicationController
+        include Authenticable
         before_action :authenticate_request
-        before_action :set_kyc, only: [:show, :update, :verify, :reject]
-        before_action :authorize_kyc, only: [:update, :verify, :reject]
+        before_action :set_kyc, only: [:show, :update, :destroy, :submit, :documents, :verify, :reject, :request_info]
 
-        # GET /api/v1/kyc/kycs
         def index
-          @kycs = policy_scope(::Kyc).includes(:user)
-          render json: @kycs, include: [:user]
+          authorize Kyc
+          @kycs = policy_scope(Kyc).order(created_at: :desc)
+          render json: { kycs: @kycs.map(&:to_frontend_format) }
         end
 
-        # GET /api/v1/kyc/kycs/:id
         def show
-          render json: @kyc, include: [:user, :verified_by]
+          authorize @kyc
+          render json: { kyc: @kyc.to_frontend_format }
         end
 
-        # POST /api/v1/kyc/kycs
         def create
-          @kyc = current_user.kycs.new(kyc_params)
-          @kyc.kyc_type = determine_kyc_type
-
+          authorize Kyc
+          @kyc = current_user.kycs.build(kyc_params)
+          
           if @kyc.save
-            attach_files(@kyc)
-            process_signature(@kyc)
-            
-            KycEmailService.send_submission_received_email(
-              kyc: @kyc,
-              recipient_email: current_user.email,
-              recipient_name: current_user.full_name
-            )
-            
-            render json: @kyc, status: :created, include: [:user]
+            render json: { kyc: @kyc.to_frontend_format }, status: :created
           else
             render json: { errors: @kyc.errors.full_messages }, status: :unprocessable_entity
           end
         end
 
-        # PATCH/PUT /api/v1/kyc/kycs/:id
         def update
-          if @kyc.update(kyc_update_params)
-            process_signature(@kyc) if params[:kyc][:signature_data].present?
-            render json: @kyc, include: [:user, :verified_by]
+          authorize @kyc
+          
+          if @kyc.update(kyc_params)
+            render json: { kyc: @kyc.to_frontend_format }
           else
             render json: { errors: @kyc.errors.full_messages }, status: :unprocessable_entity
           end
         end
 
-        # POST /api/v1/kyc/kycs/:id/verify
+        def destroy
+          authorize @kyc
+          @kyc.destroy
+          head :no_content
+        end
+
+        def submit
+          authorize @kyc
+          
+          if @kyc.update(status: 'in_review')
+            render json: { message: 'KYC submitted for review', kyc: @kyc.to_frontend_format }
+          else
+            render json: { errors: @kyc.errors.full_messages }, status: :unprocessable_entity
+          end
+        end
+
+        def documents
+          authorize @kyc
+          @documents = @kyc.kyc_documents
+          render json: { documents: @documents.map(&:to_frontend_format) }
+        end
+
+        def all_needs_review
+          authorize Kyc, :admin_review?
+          @kycs = Kyc.needs_review.order(created_at: :desc)
+          render json: { kycs: @kycs.map(&:to_frontend_format) }
+        end
+
+        def show_documents
+          authorize @kyc
+          render json: { 
+            kyc: @kyc.to_frontend_format,
+            documents: @kyc.kyc_documents.map(&:to_frontend_format)
+          }
+        end
+
         def verify
-          if @kyc.verify!(current_user)
-            KycEmailService.send_verification_approved_email(
-              kyc: @kyc,
-              recipient_email: @kyc.user.email,
-              recipient_name: @kyc.user.full_name,
-              verified_by_name: current_user.full_name
-            )
-            render json: { message: 'KYC successfully verified', kyc: @kyc }, status: :ok
+          authorize @kyc, :admin_verify?
+          if @kyc.verify!(current_user, params[:review_notes])
+            render json: { message: 'KYC verified successfully', kyc: @kyc.to_frontend_format }
           else
             render json: { errors: @kyc.errors.full_messages }, status: :unprocessable_entity
           end
         end
 
-        # POST /api/v1/kyc/kycs/:id/reject
         def reject
-          if @kyc.reject!
-            KycEmailService.send_verification_rejected_email(
-              kyc: @kyc,
-              recipient_email: @kyc.user.email,
-              recipient_name: @kyc.user.full_name,
-              rejected_by_name: current_user.full_name,
-              rejection_reason: params[:kyc][:rejection_reason] || "Required documents were unclear or incomplete"
-            )
-            render json: { message: 'KYC rejected', kyc: @kyc }, status: :ok
+          authorize @kyc, :admin_reject?
+          if @kyc.reject!(params[:rejection_reason])
+            render json: { message: 'KYC rejected', kyc: @kyc.to_frontend_format }
           else
             render json: { errors: @kyc.errors.full_messages }, status: :unprocessable_entity
           end
+        end
+
+        def request_info
+          authorize @kyc, :admin_review?
+          # Implement info request logic
+          render json: { message: 'Information requested from user' }
         end
 
         private
 
         def set_kyc
-          @kyc = ::Kyc.find(params[:id])
-        end
-
-        def authorize_kyc
-          authorize @kyc
+          @kyc = Kyc.find(params[:id])
         end
 
         def kyc_params
           params.require(:kyc).permit(
-            :verification_type,
-            :id_number,
-            :id_expiry_date,
-            :id_image,
-            :address_proof,
-            :signature_data
+            :kyc_type, :verification_type, :id_number, :id_expiry_date,
+            :date_of_birth, :nationality, :occupation, :source_of_funds,
+            :business_name, :business_registration_number, :business_tax_id,
+            :business_industry, :business_established_date,
+            :signature_data, :investor_signature_data, :issuer_accepted_terms,
+            addresses_attributes: [:id, :address_type, :street, :city, :state, :postal_code, :country, :is_primary, :_destroy],
+            kyc_documents_attributes: [:id, :document_type, :file, :file_name, :_destroy]
           )
-        end
-
-        def kyc_update_params
-          params.require(:kyc).permit(
-            :status,
-            :rejection_reason,
-            :kyc_type,
-            :signature_data
-          )
-        end
-
-        def determine_kyc_type
-          if current_user.investor? && current_user.campaigns.any?
-            :both
-          elsif current_user.investor?
-            :investor
-          else
-            :issuer
-          end
-        end
-
-        def attach_files(kyc)
-          kyc.id_image.attach(params[:kyc][:id_image]) if params[:kyc][:id_image]
-          kyc.address_proof.attach(params[:kyc][:address_proof]) if params[:kyc][:address_proof]
-        end
-
-        def process_signature(kyc)
-          return unless params[:kyc][:signature_data].present?
-          
-          begin
-            signature_points = JSON.parse(params[:kyc][:signature_data])
-            kyc.update(signature_data: signature_points)
-          rescue JSON::ParserError => e
-            Rails.logger.error "Failed to parse signature data: #{e.message}"
-          end
         end
       end
     end

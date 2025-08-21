@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_19_160419) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_21_030146) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -271,6 +271,35 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_19_160419) do
     t.index ["user_id"], name: "index_investor_documents_on_user_id"
   end
 
+  create_table "kyc_addresses", force: :cascade do |t|
+    t.bigint "kyc_id", null: false
+    t.string "address_type", null: false
+    t.string "street"
+    t.string "city"
+    t.string "state"
+    t.string "postal_code"
+    t.string "country"
+    t.boolean "is_primary", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["kyc_id", "address_type"], name: "index_kyc_addresses_on_kyc_id_and_address_type", unique: true
+    t.index ["kyc_id"], name: "index_kyc_addresses_on_kyc_id"
+  end
+
+  create_table "kyc_documents", force: :cascade do |t|
+    t.bigint "kyc_id", null: false
+    t.string "document_type", null: false
+    t.string "file_name"
+    t.string "verification_status", default: "pending"
+    t.text "rejection_reason"
+    t.datetime "verified_at"
+    t.bigint "verified_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["kyc_id", "document_type"], name: "index_kyc_documents_on_kyc_id_and_document_type", unique: true
+    t.index ["kyc_id"], name: "index_kyc_documents_on_kyc_id"
+  end
+
   create_table "kycs", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "verified_by_id"
@@ -289,6 +318,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_19_160419) do
     t.boolean "issuer_accepted_terms", default: false
     t.datetime "signature_completed_at"
     t.datetime "issuer_signature_completed_at"
+    t.date "date_of_birth"
+    t.string "nationality"
+    t.string "occupation"
+    t.string "source_of_funds"
+    t.integer "risk_level", default: 0
+    t.string "business_name"
+    t.string "business_registration_number"
+    t.string "business_tax_id"
+    t.string "business_industry"
+    t.date "business_established_date"
+    t.date "next_review_date"
+    t.text "review_notes"
+    t.index ["business_registration_number"], name: "index_kycs_on_business_registration_number", unique: true
+    t.index ["business_tax_id"], name: "index_kycs_on_business_tax_id", unique: true
     t.index ["id_number"], name: "index_kycs_on_id_number", unique: true
     t.index ["reference"], name: "index_kycs_on_reference", unique: true
     t.index ["user_id", "status"], name: "index_kycs_on_user_id_and_status"
@@ -540,6 +583,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_19_160419) do
   add_foreign_key "fundraisers", "users"
   add_foreign_key "investor_documents", "campaigns"
   add_foreign_key "investor_documents", "users"
+  add_foreign_key "kyc_addresses", "kycs"
+  add_foreign_key "kyc_documents", "kycs"
   add_foreign_key "kycs", "users"
   add_foreign_key "kycs", "users", column: "verified_by_id"
   add_foreign_key "leaderboard_entries", "users"

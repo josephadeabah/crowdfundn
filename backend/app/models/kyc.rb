@@ -1,7 +1,12 @@
+# app/models/kyc.rb
 class Kyc < ApplicationRecord
   belongs_to :user, class_name: '::User'
   belongs_to :verified_by, class_name: '::User', optional: true
 
+  # Associations
+  has_many :kyc_documents, dependent: :destroy
+  has_many :kyc_addresses, dependent: :destroy
+  
   # KYC types - explicitly string-based enum
   enum :kyc_type, {
     investor: 'investor',
@@ -12,6 +17,7 @@ class Kyc < ApplicationRecord
   # Statuses - explicitly string-based enum
   enum :status, {
     pending: 'pending',
+    in_review: 'in_review',
     verified: 'verified',
     rejected: 'rejected',
     expired: 'expired'
@@ -35,39 +41,67 @@ class Kyc < ApplicationRecord
   validates :verification_type, presence: true
   validates :id_number, presence: true, uniqueness: true
   validates :id_expiry_date, presence: true
+  validates :date_of_birth, presence: true, if: -> { investor? || both? }
+  validates :nationality, presence: true, if: -> { investor? || both? }
+  validates :occupation, presence: true, if: -> { investor? || both? }
+  validates :source_of_funds, presence: true, if: -> { investor? || both? }
+  
+  # Business validations for issuers
+  validates :business_name, presence: true, if: -> { issuer? || both? }
+  validates :business_registration_number, presence: true, if: -> { issuer? || both? }
+  validates :business_tax_id, presence: true, if: -> { issuer? || both? }
+
   validate :expiry_date_cannot_be_in_past
   validate :validate_kyc_type_based_on_user
+  validate :validate_minimum_age
 
   # Callbacks
   before_validation :generate_kyc_reference, on: :create
   before_validation :set_default_kyc_type, on: :create
   after_save :process_signature, if: :saved_change_to_signature_data?
+  after_create :create_required_documents
 
   # Scopes
   scope :for_investors, -> { where(kyc_type: [:investor, :both]) }
   scope :for_issuers, -> { where(kyc_type: [:issuer, :both]) }
   scope :verified, -> { where(status: :verified) }
-  scope :pending_review, -> { where(status: :pending) }
+  scope :pending_review, -> { where(status: [:pending, :in_review]) }
+  scope :needs_review, -> { where(status: [:pending, :in_review]) }
 
+  # Instance methods
   def verified?
     status == 'verified' && verified_at.present?
   end
 
   def expired?
-    id_expiry_date.past?
+    id_expiry_date.past? || (verified_at && verified_at < 1.year.ago)
   end
 
-  def verify!(verified_by_user)
+  def residential_address
+    kyc_addresses.find_by(address_type: 'residential')
+  end
+
+  def mailing_address
+    kyc_addresses.find_by(address_type: 'mailing') || residential_address
+  end
+
+  def business_address
+    kyc_addresses.find_by(address_type: 'business')
+  end
+
+  def verify!(verified_by_user, notes = nil)
     update!(
       status: :verified,
       verified_at: Time.current,
-      verified_by: verified_by_user
+      verified_by: verified_by_user,
+      review_notes: notes,
+      next_review_date: 1.year.from_now
     )
     attach_issuer_signature_if_needed
   end
 
-  def reject!
-    update!(status: :rejected, verified_at: nil)
+  def reject!(reason)
+    update!(status: :rejected, verified_at: nil, rejection_reason: reason)
   end
 
   def signature_image_url
@@ -80,11 +114,51 @@ class Kyc < ApplicationRecord
     Rails.application.routes.url_helpers.url_for(issuer_signature)
   end
 
+  def to_frontend_format
+    {
+      id: id,
+      reference: reference,
+      kyc_type: kyc_type,
+      status: status,
+      verification_type: verification_type,
+      id_number: id_number,
+      id_expiry_date: id_expiry_date,
+      date_of_birth: date_of_birth,
+      nationality: nationality,
+      occupation: occupation,
+      source_of_funds: source_of_funds,
+      risk_level: risk_level,
+      business_name: business_name,
+      business_registration_number: business_registration_number,
+      business_tax_id: business_tax_id,
+      business_industry: business_industry,
+      business_established_date: business_established_date,
+      addresses: kyc_addresses.map(&:to_frontend_format),
+      documents: kyc_documents.map(&:to_frontend_format),
+      signature_data: signature_data,
+      investor_signature_data: investor_signature_data,
+      issuer_accepted_terms: issuer_accepted_terms,
+      signature_completed_at: signature_completed_at,
+      issuer_signature_completed_at: issuer_signature_completed_at,
+      verified_at: verified_at,
+      verified_by: verified_by&.full_name,
+      rejection_reason: rejection_reason,
+      created_at: created_at,
+      updated_at: updated_at
+    }
+  end
+
   private
 
   def expiry_date_cannot_be_in_past
     if id_expiry_date.present? && id_expiry_date < Date.today
       errors.add(:id_expiry_date, "can't be in the past")
+    end
+  end
+
+  def validate_minimum_age
+    if date_of_birth.present? && date_of_birth > 18.years.ago
+      errors.add(:date_of_birth, "must be at least 18 years old")
     end
   end
 
@@ -123,6 +197,26 @@ class Kyc < ApplicationRecord
     Rails.logger.error "Failed to process signature: #{e.message}"
   end
 
+  def create_required_documents
+    document_types = if issuer? || both?
+      investor_documents + issuer_documents
+    else
+      investor_documents
+    end
+
+    document_types.each do |doc_type|
+      kyc_documents.create!(document_type: doc_type)
+    end
+  end
+
+  def investor_documents
+    ['id_front', 'id_back', 'proof_of_address', 'selfie_with_id']
+  end
+
+  def issuer_documents
+    ['business_registration', 'tax_clearance', 'financial_statements']
+  end
+
   def attach_issuer_signature_if_needed
     return unless (issuer? || both?) && !issuer_signature.attached?
 
@@ -136,7 +230,7 @@ class Kyc < ApplicationRecord
 
   def generate_issuer_signature
     # This would be your organization's digital signature
-    # Could be generated or loaded from a file
-    SignatureImageGenerator.generate_issuer_signature
+    # For now, return a placeholder
+    "placeholder_signature_data"
   end
 end

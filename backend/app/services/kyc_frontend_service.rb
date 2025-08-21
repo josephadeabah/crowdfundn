@@ -1,0 +1,107 @@
+# app/services/kyc_frontend_service.rb
+class KycFrontendService
+  def self.format_for_frontend(kyc)
+    return nil unless kyc
+    
+    {
+      id: kyc.id,
+      reference: kyc.reference,
+      kyc_type: kyc.kyc_type,
+      status: kyc.status,
+      verification_type: kyc.verification_type,
+      id_number: kyc.id_number,
+      id_expiry_date: kyc.id_expiry_date,
+      date_of_birth: kyc.date_of_birth,
+      nationality: kyc.nationality,
+      occupation: kyc.occupation,
+      source_of_funds: kyc.source_of_funds,
+      risk_level: kyc.risk_level,
+      business_name: kyc.business_name,
+      business_registration_number: kyc.business_registration_number,
+      business_tax_id: kyc.business_tax_id,
+      business_industry: kyc.business_industry,
+      business_established_date: kyc.business_established_date,
+      addresses: kyc.kyc_addresses.map { |a| format_address(a) },
+      documents: kyc.kyc_documents.map { |d| format_document(d) },
+      signature_data: kyc.signature_data,
+      investor_signature_data: kyc.investor_signature_data,
+      issuer_accepted_terms: kyc.issuer_accepted_terms,
+      signature_completed_at: kyc.signature_completed_at,
+      issuer_signature_completed_at: kyc.issuer_signature_completed_at,
+      verified_at: kyc.verified_at,
+      verified_by: kyc.verified_by&.full_name,
+      rejection_reason: kyc.rejection_reason,
+      created_at: kyc.created_at,
+      updated_at: kyc.updated_at
+    }
+  end
+
+  def self.format_address(address)
+    return nil unless address
+    
+    {
+      id: address.id,
+      address_type: address.address_type,
+      street: address.street,
+      city: address.city,
+      state: address.state,
+      postal_code: address.postal_code,
+      country: address.country,
+      is_primary: address.is_primary,
+      full_address: address.full_address
+    }
+  end
+
+  def self.format_document(document)
+    return nil unless document
+    
+    {
+      id: document.id,
+      document_type: document.document_type,
+      file_name: document.file_name,
+      file_url: document.file_url,
+      verification_status: document.verification_status,
+      rejection_reason: document.rejection_reason,
+      verified_at: document.verified_at,
+      verified_by: document.verified_by&.full_name
+    }
+  end
+
+  def self.create_from_frontend(user, frontend_data)
+    kyc = user.kycs.build(
+      kyc_type: frontend_data[:kyc_type],
+      verification_type: frontend_data[:verification_type],
+      id_number: frontend_data[:id_number],
+      id_expiry_date: frontend_data[:id_expiry_date],
+      date_of_birth: frontend_data[:date_of_birth],
+      nationality: frontend_data[:nationality],
+      occupation: frontend_data[:occupation],
+      source_of_funds: frontend_data[:source_of_funds],
+      business_name: frontend_data[:business_name],
+      business_registration_number: frontend_data[:business_registration_number],
+      business_tax_id: frontend_data[:business_tax_id],
+      business_industry: frontend_data[:business_industry],
+      business_established_date: frontend_data[:business_established_date],
+      signature_data: frontend_data[:signature_data],
+      investor_signature_data: frontend_data[:investor_signature_data],
+      issuer_accepted_terms: frontend_data[:issuer_accepted_terms]
+    )
+
+    # Create addresses
+    if frontend_data[:addresses]
+      frontend_data[:addresses].each do |address_data|
+        kyc.kyc_addresses.build(
+          address_type: address_data[:address_type],
+          street: address_data[:street],
+          city: address_data[:city],
+          state: address_data[:state],
+          postal_code: address_data[:postal_code],
+          country: address_data[:country],
+          is_primary: address_data[:is_primary]
+        )
+      end
+    end
+
+    kyc
+  end
+end

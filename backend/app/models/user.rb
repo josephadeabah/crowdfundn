@@ -142,6 +142,14 @@ class User < ApplicationRecord
     (investor? || campaigns.any?) && !kyc_verified?
   end
 
+  def pending_kyc?
+    latest_kyc&.pending? || latest_kyc&.in_review?
+  end
+
+  def admin?
+    has_role?('Admin')
+  end
+
   private
 
   def set_default_status
