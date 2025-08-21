@@ -153,7 +153,6 @@ module Api
         end
 
         def kyc_params
-          
           params.require(:kyc).permit(
             :kyc_type, :verification_type, :id_number, :id_expiry_date,
             :date_of_birth, :nationality, :occupation, :source_of_funds,
