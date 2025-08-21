@@ -1,45 +1,50 @@
-# app/policies/kyc_policy.rb
-class KycPolicy < ApplicationPolicy
+# app/policies/application_policy.rb
+class ApplicationPolicy
+  attr_reader :user, :record
+
+  def initialize(user, record)
+    @user = user
+    @record = record
+  end
+
+  def index?
+    false
+  end
+
   def show?
-    record.user == user || user.admin?
+    false
   end
 
   def create?
-    # User can create KYC if they don't have a pending or verified one
-    user.kycs.where(status: ['pending', 'in_review', 'verified']).empty?
+    false
+  end
+
+  def new?
+    create?
   end
 
   def update?
-    record.user == user && (record.pending? || record.in_review?)
+    false
   end
 
-  def submit?
-    record.user == user && record.pending?
+  def edit?
+    update?
   end
 
   def destroy?
-    record.user == user && (record.pending? || record.in_review?)
+    false
   end
 
-  def admin_review?
-    user.admin?
-  end
+  class Scope
+    attr_reader :user, :scope
 
-  def admin_verify?
-    user.admin? && (record.pending? || record.in_review?)
-  end
+    def initialize(user, scope)
+      @user = user
+      @scope = scope
+    end
 
-  def admin_reject?
-    user.admin? && (record.pending? || record.in_review?)
-  end
-
-  class Scope < Scope
     def resolve
-      if user.admin?
-        scope.all
-      else
-        scope.where(user: user)
-      end
+      scope.all
     end
   end
 end
