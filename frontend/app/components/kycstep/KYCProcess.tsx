@@ -77,22 +77,28 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
   // Define step types and their order for each user type
   const stepDefinitions = {
-  creator: ['personalInfo', 'businessInfo', 'documents', 'certificate', 'review'],
-  investor: [
-    'personalInfo',
-    'documents',
-    'quiz',
-    'declaration',
-    'certificate',
-    'review',
-  ],
-  mentor: [
-    'personalInfo',
-    'documents',
-    'experience',
-    'certificate',
-    'review',
-  ],
+    creator: [
+      'personalInfo',
+      'businessInfo',
+      'documents',
+      'certificate',
+      'review',
+    ],
+    investor: [
+      'personalInfo',
+      'documents',
+      'quiz',
+      'declaration',
+      'certificate',
+      'review',
+    ],
+    mentor: [
+      'personalInfo',
+      'documents',
+      'experience',
+      'certificate',
+      'review',
+    ],
   };
 
   const kycSteps = isCreator
@@ -205,8 +211,10 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           return {
             businessName: (formData as CreatorKYCFormData).businessName || '',
             businessType: (formData as CreatorKYCFormData).businessType || '',
-            businessDescription: (formData as CreatorKYCFormData).businessDescription || '',
-            businessRegistration: (formData as CreatorKYCFormData).businessRegistration || '',
+            businessDescription:
+              (formData as CreatorKYCFormData).businessDescription || '',
+            businessRegistration:
+              (formData as CreatorKYCFormData).businessRegistration || '',
             taxId: (formData as CreatorKYCFormData).taxId || '',
           };
         case 'documents':

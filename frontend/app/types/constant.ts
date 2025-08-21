@@ -191,7 +191,7 @@ export interface Partner {
 }
 
 export const creatorKycSteps = [
-  { id: 'personal', title: 'Personal Information', icon: UserCheck },
+  { id: 'personalInfo', title: 'Personal Information', icon: UserCheck },
   { id: 'businessInfo', title: 'Business Information', icon: Building },
   { id: 'document', title: 'Document Verification', icon: FileText },
   { id: 'certificate', title: 'Certificate Signing', icon: Pencil },
@@ -199,7 +199,7 @@ export const creatorKycSteps = [
 ];
 
 export const investorKycSteps = [
-  { id: 'personal', title: 'Personal Information', icon: UserCheck },
+  { id: 'personalInfo', title: 'Personal Information', icon: UserCheck },
   { id: 'document', title: 'Document Verification', icon: FileText },
   { id: 'quiz', title: 'Investor Quiz', icon: BookOpen },
   { id: 'declaration', title: 'Declaration', icon: FileCheck },
@@ -208,7 +208,7 @@ export const investorKycSteps = [
 ];
 
 export const mentorKycSteps = [
-  { id: 'personal', title: 'Personal Information', icon: UserCheck },
+  { id: 'personalInfo', title: 'Personal Information', icon: UserCheck },
   { id: 'document', title: 'Document Verification', icon: FileText },
   { id: 'experience', title: 'Experience & Expertise', icon: Users },
   { id: 'certificate', title: 'Certificate Signing', icon: Pencil },

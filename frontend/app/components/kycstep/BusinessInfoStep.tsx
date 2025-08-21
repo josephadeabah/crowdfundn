@@ -52,11 +52,17 @@ export const BusinessInfoStep: React.FC = () => {
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="sole_proprietorship">Sole Proprietorship</SelectItem>
+                <SelectItem value="sole_proprietorship">
+                  Sole Proprietorship
+                </SelectItem>
                 <SelectItem value="partnership">Partnership</SelectItem>
-                <SelectItem value="llc">Limited Liability Company (LLC)</SelectItem>
+                <SelectItem value="llc">
+                  Limited Liability Company (LLC)
+                </SelectItem>
                 <SelectItem value="corporation">Corporation</SelectItem>
-                <SelectItem value="nonprofit">Non-Profit Organization</SelectItem>
+                <SelectItem value="nonprofit">
+                  Non-Profit Organization
+                </SelectItem>
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
