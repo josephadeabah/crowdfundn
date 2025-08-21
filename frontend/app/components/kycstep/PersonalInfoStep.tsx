@@ -61,25 +61,31 @@ export const PersonalInfoStep: React.FC = () => {
         control={form.control}
         name="dateOfBirth"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>Date of Birth</FormLabel>
-            <FormControl>
-              <Input
-                type="date"
-                {...field}
-                max={getMinimumBirthDate().toISOString().split('T')[0]}
-                className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${
-                  form.formState.errors.dateOfBirth 
-                    ? 'border-red-500' 
-                    : 'border-gray-300'
-                }`}
-              />
-            </FormControl>
-            <FormDescription>
-              You must be at least 18 years old to participate.
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
+          <FormField
+        control={form.control}
+        name="dateOfBirth"
+        render={({ field }) => (
+        <FormItem>
+          <FormLabel>Date of Birth</FormLabel>
+          <FormControl>
+            <Input
+              type="date"
+              value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+              onChange={(e) => field.onChange(new Date(e.target.value))}
+              max={getMinimumBirthDate().toISOString().split("T")[0]}
+              className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${
+                form.formState.errors.dateOfBirth 
+                  ? 'border-red-500' 
+                  : 'border-gray-300'
+              }`}
+            />
+          </FormControl>
+          <FormDescription>You must be at least 18 years old to participate.</FormDescription>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+
         )}
       />
       <FormField
