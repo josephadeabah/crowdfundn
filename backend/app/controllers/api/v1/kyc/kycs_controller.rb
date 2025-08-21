@@ -20,7 +20,7 @@ module Api
 
         def create
           authorize Kyc
-          @kyc = current_user.kycs.build(kyc_params)
+          @kyc = @current_user.kycs.build(kyc_params)
           
           if @kyc.save
             render json: { kyc: @kyc.to_frontend_format }, status: :created
