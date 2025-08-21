@@ -4,8 +4,10 @@ module Api
     module Kyc
       class KycsController < ApplicationController
         before_action :authenticate_request
-        before_action :set_kyc, only: [:show, :update, :destroy, :submit, :documents, :verify, :reject, :request_info]
-        before_action :authorize_user_access, only: [:show, :update, :destroy, :submit, :documents]
+        # Add :upload_document to the set_kyc before_action
+        before_action :set_kyc, only: [:show, :update, :destroy, :submit, :documents, :verify, :reject, :request_info, :upload_document]
+        # Add :upload_document to authorize_user_access since only the KYC owner should upload documents
+        before_action :authorize_user_access, only: [:show, :update, :destroy, :submit, :documents, :upload_document]
         before_action :authorize_admin, only: [:all_needs_review, :verify, :reject, :request_info]
 
         def index
@@ -61,6 +63,23 @@ module Api
 
           @kyc.destroy
           head :no_content
+        end
+
+        def upload_document
+          # Find the document by type or create a new one
+          document = @kyc.kyc_documents.find_or_initialize_by(document_type: params[:document_type])
+          
+          # Attach the file
+          document.file.attach(params[:file])
+          
+          if document.save
+            render json: { 
+              message: 'Document uploaded successfully', 
+              document: document.to_frontend_format 
+            }
+          else
+            render json: { errors: document.errors.full_messages }, status: :unprocessable_entity
+          end
         end
 
         def submit
@@ -134,6 +153,11 @@ module Api
         end
 
         def kyc_params
+          # Convert addresses to addresses_attributes if needed
+          if params[:kyc][:addresses].present?
+            params[:kyc][:addresses_attributes] = params[:kyc].delete(:addresses)
+          end
+          
           params.require(:kyc).permit(
             :kyc_type, :verification_type, :id_number, :id_expiry_date,
             :date_of_birth, :nationality, :occupation, :source_of_funds,

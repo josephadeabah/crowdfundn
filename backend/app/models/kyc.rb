@@ -120,21 +120,23 @@ class Kyc < ApplicationRecord
     nil
   end
 
-    def process_signature
+  def process_signature
     return unless signature_data.present?
     
-    # Convert signature data to image using our service
-    image_data = SignatureImageGenerator.generate(signature_data)
-    
-    # Attach the generated image
-    signature_image.attach(
-      io: StringIO.new(image_data),
-      filename: "signature-#{reference}.png",
-      content_type: 'image/png'
-    )
-  rescue => e
-    Rails.logger.error "Failed to process signature: #{e.message}"
-    # You might want to add error handling here
+    begin
+      # Convert signature data to image using our service
+      image_data = SignatureImageGenerator.generate(signature_data)
+      
+      # Attach the generated image
+      signature_image.attach(
+        io: StringIO.new(image_data),
+        filename: "signature-#{reference}.png",
+        content_type: 'image/png'
+      )
+    rescue => e
+      Rails.logger.error "Failed to process signature: #{e.message}"
+      # You might want to add error handling here
+    end
   end
 
   def issuer_signature_url
@@ -196,7 +198,7 @@ class Kyc < ApplicationRecord
   end
 
   def validate_minimum_age
-    if date_of_birth.present? && date_of_birth > 18.years.ago
+    if date_of_birth.present? && date_of_birth > 18.years.ago.to_date
       errors.add(:date_of_birth, "must be at least 18 years old")
     end
   end
