@@ -4,7 +4,7 @@ module Api
     module Kyc
       class KycsController < ApplicationController
         before_action :authenticate_request
-        before_action :set_kyc, only: [:create, :show, :update, :destroy, :submit, :documents, :verify, :reject, :request_info]
+        before_action :set_kyc, only: [:show, :update, :destroy, :submit, :documents, :verify, :reject, :request_info]
 
         def index
           authorize Kyc
