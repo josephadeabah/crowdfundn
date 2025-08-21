@@ -50,7 +50,7 @@ export const ProgressSteps: React.FC<ProgressStepsProps> = ({
               </div>
               {index < steps.length - 1 && (
                 <div
-                  className={`mx-4 h-0.5 w-8 ${
+                  className={`mx-2 h-0.5 w-4 ${
                     index < currentStep ? 'bg-bantu-green' : 'bg-gray-200'
                   }`}
                 />
