@@ -1,8 +1,6 @@
 // components/PersonalInfoStep.tsx
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
-import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
 import {
   FormControl,
   FormField,
@@ -13,14 +11,6 @@ import {
 } from '@/app/components/ui/form';
 import { Input } from '@/app/components/ui/input';
 import { Textarea } from '@/app/components/ui/textarea';
-import { Button } from '@/app/components/ui/button';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/app/components/ui/popover';
-import { cn } from '@/app/lib/utils';
-import { Calendar } from '../ui/calender';
 import { getMinimumBirthDate } from '@/app/types/kyc.type';
 
 export const PersonalInfoStep: React.FC = () => {
@@ -71,41 +61,20 @@ export const PersonalInfoStep: React.FC = () => {
         control={form.control}
         name="dateOfBirth"
         render={({ field }) => (
-          <FormItem className="flex flex-col">
+          <FormItem>
             <FormLabel>Date of Birth</FormLabel>
-            <Popover>
-              <PopoverTrigger asChild>
-                <FormControl>
-                  <Button
-                    variant={'outline'}
-                    className={cn(
-                      'w-full pl-3 text-left font-normal',
-                      !field.value && 'text-muted-foreground',
-                    )}
-                  >
-                    {field.value ? (
-                      format(field.value, 'PPP')
-                    ) : (
-                      <span>Pick your date of birth</span>
-                    )}
-                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                  </Button>
-                </FormControl>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={field.value}
-                  onSelect={field.onChange}
-                  disabled={(date: Date) =>
-                    date > getMinimumBirthDate() ||
-                    date < new Date('1900-01-01')
-                  }
-                  initialFocus
-                  className={cn('p-3 pointer-events-auto')}
-                />
-              </PopoverContent>
-            </Popover>
+            <FormControl>
+              <Input
+                type="date"
+                {...field}
+                max={getMinimumBirthDate().toISOString().split('T')[0]}
+                className={`mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white ${
+                  form.formState.errors.dateOfBirth 
+                    ? 'border-red-500' 
+                    : 'border-gray-300'
+                }`}
+              />
+            </FormControl>
             <FormDescription>
               You must be at least 18 years old to participate.
             </FormDescription>
