@@ -26,6 +26,7 @@ import {
   FileCheck,
   Pencil,
   Users,
+  Building,
 } from 'lucide-react';
 
 export const dropdownLinks: DropdownLinks = {
