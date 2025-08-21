@@ -286,7 +286,7 @@ const prepareKycData = (): KycFormData => {
       | 'voter_id',
     id_number: formData.idNumber || '',
     id_expiry_date: new Date().toISOString().split('T')[0], // Default to today
-    date_of_birth: formatDate(formData.dateOfBirth),
+    date_of_birth: formData.dateOfBirth instanceof Date ? formData.dateOfBirth.toISOString().split('T')[0] : formData.dateOfBirth || '',
     nationality: formData.nationality || '',
     occupation: formData.occupation || '',
     source_of_funds: formData.sourceOfFunds || 'Salary',
