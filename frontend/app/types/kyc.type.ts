@@ -196,8 +196,8 @@ export const personalInfoSchema = z.object({
 export const documentSchema = z.object({
   idType: z.string().min(1, 'Please select an ID type'),
   idNumber: z.string().min(5, 'ID number must be at least 5 characters'),
-  idDocument: z.string().min(1, 'Please upload your ID document'),
-  proofOfAddress: z.string().min(1, 'Please upload proof of address'),
+  idDocument: z.any().optional(),
+  proofOfAddress: z.any().optional(),
 });
 
 export const creatorBusinessSchema = z.object({
