@@ -67,7 +67,7 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
       investment.campaign?.title || `Campaign ${investment.campaign_id}`;
 
     return {
-      name: `Investment ${index + 1}`,
+      name: campaignName,
       campaign: campaignName,
       invested: invested,
       currentValue: currentValue,
