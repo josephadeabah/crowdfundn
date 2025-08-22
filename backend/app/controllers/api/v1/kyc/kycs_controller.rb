@@ -101,20 +101,57 @@ module Api
           head :no_content
         end
 
+        # app/controllers/api/v1/kyc/kycs_controller.rb
         def upload_document
-          # Find the document by type or create a new one
-          document = @kyc.kyc_documents.find_or_initialize_by(document_type: params[:document_type])
-          
-          # Attach the file
-          document.file.attach(params[:file])
-          
-          if document.save
-            render json: { 
-              message: 'Document uploaded successfully', 
-              document: document.to_frontend_format 
-            }
-          else
-            render json: { errors: document.errors.full_messages }, status: :unprocessable_entity
+          begin
+            # Find the document by type or create a new one
+            document = @kyc.kyc_documents.find_or_initialize_by(document_type: params[:document_type])
+            
+            # Validate document type
+            unless KycDocument::DOCUMENT_TYPES.include?(params[:document_type])
+              return render json: { errors: ['Invalid document type'] }, status: :unprocessable_entity
+            end
+
+            # Validate file presence
+            unless params[:file].present?
+              return render json: { errors: ['No file provided'] }, status: :unprocessable_entity
+            end
+
+            # Validate file type and size
+            file = params[:file]
+            if file.size > 10.megabytes
+              return render json: { errors: ['File size must be less than 10MB'] }, status: :unprocessable_entity
+            end
+
+            allowed_content_types = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg']
+            unless allowed_content_types.include?(file.content_type)
+              return render json: { errors: ['File must be PDF, JPEG, or PNG'] }, status: :unprocessable_entity
+            end
+
+            # Attach the file
+            document.file.attach(file)
+            
+            if document.save
+              # Force processing and analysis
+              KycDocumentProcessingJob.perform_later(document.id)
+              if document.file.attached?
+                document.file.blob.analyze if document.file.blob.analyzed?
+                
+                # Update filename in database
+                document.update_column(:file_name, document.file.filename.to_s)
+              end
+              
+              render json: { 
+                message: 'Document uploaded successfully', 
+                document: document.to_frontend_format 
+              }
+            else
+              render json: { errors: document.errors.full_messages }, status: :unprocessable_entity
+            end
+            
+          rescue => e
+            Rails.logger.error "Document upload failed: #{e.message}"
+            render json: { errors: ['Failed to upload document'] }, status: :internal_server_error
           end
         end
 
@@ -180,7 +217,7 @@ module Api
         private
 
         def set_kyc
-          @kyc = Kyc.find(params[:id])
+          @kyc = ::Kyc.find(params[:id]) # Use :: to specify global namespace
         end
 
         def authorize_user_access
