@@ -41,7 +41,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs`,
         {
           method: 'GET',
           headers: {
@@ -73,7 +73,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs/${id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}`,
           {
             method: 'GET',
             headers: {
@@ -107,7 +107,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs`,
           {
             method: 'POST',
             headers: {
@@ -157,7 +157,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs/${id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}`,
           {
             method: 'PUT',
             headers: {
@@ -207,7 +207,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs/${id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}`,
           {
             method: 'DELETE',
             headers: {
@@ -243,7 +243,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs/${id}/submit`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}/submit`,
           {
             method: 'POST',
             headers: {
@@ -290,7 +290,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs/${id}/verify`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}/verify`,
           {
             method: 'POST',
             headers: {
@@ -338,7 +338,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs/${id}/reject`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}/reject`,
           {
             method: 'POST',
             headers: {
@@ -386,7 +386,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs/${id}/documents`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}/documents`,
           {
             method: 'GET',
             headers: {
@@ -431,7 +431,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
         formData.append('file', file);
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs/${kycId}/upload_document`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${kycId}/upload_document`,
           {
             method: 'POST',
             headers: {
