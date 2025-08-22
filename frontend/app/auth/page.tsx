@@ -19,10 +19,10 @@ const Index = () => {
             </p>
 
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-8 font-normal">
-              The all-in-one, gamified crowdfunding and micro-investment
-              platform giving individuals and organizations across Ghana and its
-              diaspora the power to fund and co-own high-impact startups and
-              projects that shape the country's future.
+              Revolutionizing Ghana's startup ecosystem through equity
+              crowdfunding. Invest in tomorrow's unicorns, earn rewards, and
+              grow wealth while fueling Africa's next generation of innovative
+              businesses.
             </p>
           </div>
         </div>
