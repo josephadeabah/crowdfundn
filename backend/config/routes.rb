@@ -47,6 +47,7 @@ Rails.application.routes.draw do
           end
           collection do
             get :all_needs_review
+            get :stats 
           end
         end
       end

@@ -214,6 +214,19 @@ module Api
           render json: { message: 'Information requested from user' }
         end
 
+        def stats
+          stats = {
+            total: Kyc.count,
+            pending: Kyc.where(status: 'pending').count,
+            in_review: Kyc.where(status: 'in_review').count,
+            verified: Kyc.where(status: 'verified').count,
+            rejected: Kyc.where(status: 'rejected').count,
+            expired: Kyc.where(status: 'expired').count
+          }
+          
+          render json: { stats: stats }
+        end
+
         private
 
         def set_kyc
