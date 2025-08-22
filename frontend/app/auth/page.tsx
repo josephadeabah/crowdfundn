@@ -34,8 +34,8 @@ const Index = () => {
           </div>
 
           <div className="flex gap-4 justify-center">
-            <Button asChild variant="default" size="lg">
-              <Link href="/auth/signup">Get Started</Link>
+            <Button asChild variant="ghost" size="lg" className="bg-bantu-green">
+              <Link href="/auth/register">Get Started</Link>
             </Button>
             <Button asChild variant="outline" size="lg">
               <Link href="/auth/login">Sign In</Link>
