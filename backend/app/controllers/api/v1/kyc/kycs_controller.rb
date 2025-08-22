@@ -6,7 +6,7 @@ module Api
         before_action :authenticate_request
         before_action :set_kyc, only: [:show, :update, :destroy, :submit, :documents, :verify, :reject, :request_info, :upload_document]
         before_action :authorize_user_access, only: [:show, :update, :destroy, :submit, :documents]
-        before_action :authorize_admin, only: [:all_needs_review, :verify, :reject, :request_info]
+        before_action :authorize_admin, only: [ :verify, :reject, :request_info]
 
         def index
           @kycs = if @current_user.admin?
@@ -173,10 +173,10 @@ module Api
           render json: { documents: @documents.map(&:to_frontend_format) }
         end
 
-        def all_needs_review
-          @kycs = Kyc.needs_review.order(created_at: :desc)
-          render json: { kycs: @kycs.map(&:to_frontend_format) }
-        end
+        # def all_needs_review
+        #   @kycs = Kyc.needs_review.order(created_at: :desc)
+        #   render json: { kycs: @kycs.map(&:to_frontend_format) }
+        # end
 
         def show_documents
           render json: { 
