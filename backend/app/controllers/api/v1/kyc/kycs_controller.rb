@@ -6,7 +6,7 @@ module Api
         before_action :authenticate_request
         before_action :set_kyc, only: [:show, :update, :destroy, :submit, :documents, :verify, :reject, :request_info, :upload_document]
         before_action :authorize_user_access, only: [:update, :destroy, :submit, :documents]
-        before_action :authorize_admin, only: [:show, :all_needs_review, :stats, :verify, :reject, :request_info]
+        before_action :authorize_admin, only: [:all_needs_review, :stats, :verify, :reject, :request_info]
 
         # Set default pagination values
         DEFAULT_PER_PAGE = 25
@@ -29,6 +29,11 @@ module Api
         end
 
         def show
+          # Allow admin OR the owner of the KYC to view
+          unless @current_user.admin? || @kyc.user_id == @current_user.id
+            return render json: { error: 'Unauthorized' }, status: :unauthorized
+          end
+          
           render json: { kyc: @kyc.to_frontend_format }
         end
 
