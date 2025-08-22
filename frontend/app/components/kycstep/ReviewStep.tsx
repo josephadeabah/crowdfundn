@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/components/ui/card';
-import { Badge } from '@/app/components/ui/badge';
 import { FileText, CheckCircle, XCircle } from 'lucide-react';
 import { CreatorKYCFormData } from '@/app/types/kyc.type';
 
