@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_21_030146) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_22_033405) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -296,6 +296,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_21_030146) do
     t.bigint "verified_by_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["document_type"], name: "index_kyc_documents_on_document_type"
     t.index ["kyc_id", "document_type"], name: "index_kyc_documents_on_kyc_id_and_document_type", unique: true
     t.index ["kyc_id"], name: "index_kyc_documents_on_kyc_id"
   end
@@ -332,8 +333,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_21_030146) do
     t.text "review_notes"
     t.index ["business_registration_number"], name: "index_kycs_on_business_registration_number", unique: true
     t.index ["business_tax_id"], name: "index_kycs_on_business_tax_id", unique: true
+    t.index ["created_at"], name: "index_kycs_on_created_at"
     t.index ["id_number"], name: "index_kycs_on_id_number", unique: true
+    t.index ["kyc_type"], name: "index_kycs_on_kyc_type"
     t.index ["reference"], name: "index_kycs_on_reference", unique: true
+    t.index ["status", "kyc_type"], name: "index_kycs_on_status_and_kyc_type"
+    t.index ["status"], name: "index_kycs_on_status"
     t.index ["user_id", "status"], name: "index_kycs_on_user_id_and_status"
     t.index ["user_id"], name: "index_kycs_on_user_id"
     t.index ["verified_by_id"], name: "index_kycs_on_verified_by_id"
