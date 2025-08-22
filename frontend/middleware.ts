@@ -15,7 +15,7 @@ const protectedRoutes = [
   '/account/messages',
 ];
 const adminRoutes = ['/admin', '/admin/manage'];
-const publicRoutes = ['/auth/login', '/auth/register', '/'];
+const publicRoutes = ['/auth', '/auth/login', '/auth/register', '/'];
 
 // Helper function to parse cookies from the request header
 const parseCookies = (cookieHeader: string | undefined): ParsedCookies => {
