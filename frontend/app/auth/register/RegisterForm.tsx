@@ -612,7 +612,7 @@ const RegisterForm: React.FC = () => {
           description={success}
         />
       )}
-      <div className="min-h-screen py-0 px-2 lg:px-0">
+      <div className="">
         <div className="max-w-2xl mx-auto bg-white shadow p-2">
           <StepIndicator />
           <div className="mb-6 p-4 bg-blue-50 rounded-lg">
@@ -621,7 +621,7 @@ const RegisterForm: React.FC = () => {
               {formData.currencySymbol})
             </p>
           </div>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="">
             {renderStep()}
             {currentStep === 3 && (
               <div className="mt-4">
