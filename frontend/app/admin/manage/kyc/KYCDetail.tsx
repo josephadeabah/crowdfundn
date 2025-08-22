@@ -1,6 +1,6 @@
 // app/components/admin/kyc/KYCDetail.tsx
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useKycReview } from '@/app/context/kyc/KycReviewContext';
 import {
@@ -13,6 +13,7 @@ import {
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
 import { Separator } from '@/app/components/ui/seperator';
+import { Textarea } from '@/app/components/ui/textarea';
 import {
   User,
   Building,
@@ -22,12 +23,20 @@ import {
   XCircle,
   Clock,
   Mail,
-  Phone,
-  MapPin,
   Calendar,
-  IdCard,
+  MapPin,
+  FileQuestion,
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { toast } from '@/app/components/ui/sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/app/components/ui/dialog';
 
 const KYCDetail = () => {
   const params = useParams();
@@ -35,11 +44,86 @@ const KYCDetail = () => {
     useKycReview();
   const kycId = parseInt(params.id as string);
 
+  const [actionDialog, setActionDialog] = useState<{
+    open: boolean;
+    action: 'verify' | 'reject' | 'request_info' | null;
+  }>({ open: false, action: null });
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [reviewNotes, setReviewNotes] = useState('');
+
   useEffect(() => {
     if (kycId) {
       fetchReview(kycId);
     }
   }, [kycId, fetchReview]);
+
+  const handleAction = async () => {
+    if (!currentReview || !actionDialog.action) return;
+
+    try {
+      await updateReview(currentReview.id, {
+        action: actionDialog.action,
+        rejection_reason:
+          actionDialog.action === 'reject' ? rejectionReason : undefined,
+        notes: actionDialog.action === 'verify' ? reviewNotes : undefined,
+      });
+
+      toast.success(`KYC ${actionDialog.action}ed successfully`);
+      setActionDialog({ open: false, action: null });
+      setRejectionReason('');
+      setReviewNotes('');
+    } catch (error) {
+      toast.error('Failed to update KYC review');
+    }
+  };
+
+  const handleDownloadDocument = (documentType: string) => {
+    const document = currentReview?.documents?.find(
+      (doc: any) => doc.document_type === documentType,
+    );
+
+    if (document?.file_url) {
+      window.open(document.file_url, '_blank');
+    } else {
+      toast.error('Document not available for download');
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    const statusConfig = {
+      pending: { variant: 'secondary', icon: Clock },
+      in_review: { variant: 'default', icon: Clock },
+      verified: { variant: 'success', icon: CheckCircle },
+      rejected: { variant: 'destructive', icon: XCircle },
+      expired: { variant: 'outline', icon: Clock },
+    };
+
+    const config =
+      statusConfig[currentReview?.status as keyof typeof statusConfig] ||
+      statusConfig.pending;
+    const Icon = config.icon;
+
+    return (
+      <Badge
+        variant={config.variant as any}
+        className="flex items-center gap-1"
+      >
+        <Icon className="h-3 w-3" />
+        {currentReview?.status.replace('_', ' ').toUpperCase()}
+      </Badge>
+    );
+  };
+
+  const getKycTypeIcon = () => {
+    const icons = {
+      investor: User,
+      issuer: Building,
+      both: FileText,
+    };
+
+    const Icon = icons[currentReview?.kyc_type as keyof typeof icons] || User;
+    return <Icon className="h-5 w-5" />;
+  };
 
   if (loading) {
     return (
@@ -67,41 +151,9 @@ const KYCDetail = () => {
     );
   }
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      pending: { variant: 'secondary', icon: Clock },
-      in_review: { variant: 'default', icon: Clock },
-      verified: { variant: 'success', icon: CheckCircle },
-      rejected: { variant: 'destructive', icon: XCircle },
-      expired: { variant: 'outline', icon: Clock },
-    };
-
-    const config =
-      statusConfig[currentReview.status as keyof typeof statusConfig] ||
-      statusConfig.pending;
-    const Icon = config.icon;
-
-    return (
-      <Badge
-        variant={config.variant as any}
-        className="flex items-center gap-1"
-      >
-        <Icon className="h-3 w-3" />
-        {currentReview.status.replace('_', ' ').toUpperCase()}
-      </Badge>
-    );
-  };
-
-  const getKycTypeIcon = () => {
-    const icons = {
-      investor: User,
-      issuer: Building,
-      both: FileText,
-    };
-
-    const Icon = icons[currentReview.kyc_type as keyof typeof icons] || User;
-    return <Icon className="h-5 w-5" />;
-  };
+  const residentialAddress = currentReview.addresses?.find(
+    (addr: any) => addr.address_type === 'residential',
+  );
 
   return (
     <div className="p-6 space-y-6">
@@ -115,10 +167,6 @@ const KYCDetail = () => {
         </div>
         <div className="flex items-center gap-2">
           {getStatusBadge(currentReview.status)}
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Download Documents
-          </Button>
         </div>
       </div>
 
@@ -149,6 +197,23 @@ const KYCDetail = () => {
                 </div>
               </div>
             </div>
+
+            <Separator />
+
+            {residentialAddress && (
+              <div>
+                <div className="text-sm font-medium text-muted-foreground mb-2">
+                  Address
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <MapPin className="h-4 w-4" />
+                  {residentialAddress.street}, {residentialAddress.city},{' '}
+                  {residentialAddress.country}
+                  {residentialAddress.postal_code &&
+                    `, ${residentialAddress.postal_code}`}
+                </div>
+              </div>
+            )}
 
             <Separator />
 
@@ -303,56 +368,42 @@ const KYCDetail = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm">ID Document</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Button variant="outline" size="sm">
-                    <Download className="h-4 w-4 mr-2" />
-                    Download ID
-                  </Button>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm">Proof of Address</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Button variant="outline" size="sm">
-                    <Download className="h-4 w-4 mr-2" />
-                    Download Proof
-                  </Button>
-                </CardContent>
-              </Card>
-              {currentReview.kyc_type !== 'investor' && (
-                <>
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-sm">
-                        Business Registration
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <Button variant="outline" size="sm">
-                        <Download className="h-4 w-4 mr-2" />
-                        Download Registration
-                      </Button>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-sm">Tax Documents</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <Button variant="outline" size="sm">
-                        <Download className="h-4 w-4 mr-2" />
-                        Download Tax Docs
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </>
-              )}
+              {currentReview.documents?.map((document: any) => (
+                <Card key={document.id}>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm capitalize">
+                      {document.document_type.replace('_', ' ')}
+                    </CardTitle>
+                    <CardDescription>
+                      Status: {document.verification_status}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="text-sm">
+                        File: {document.file_name || 'No file uploaded'}
+                      </div>
+                      {document.file_url && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            handleDownloadDocument(document.document_type)
+                          }
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Download
+                        </Button>
+                      )}
+                      {document.rejection_reason && (
+                        <div className="text-sm text-red-500">
+                          Reason: {document.rejection_reason}
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </CardContent>
         </Card>
@@ -432,9 +483,9 @@ const KYCDetail = () => {
           <CardContent>
             <div className="flex gap-4">
               <Button
-                onClick={() => {
-                  // Implement verify action
-                }}
+                onClick={() =>
+                  setActionDialog({ open: true, action: 'verify' })
+                }
                 className="bg-green-600 hover:bg-green-700"
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
@@ -442,21 +493,98 @@ const KYCDetail = () => {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => {
-                  // Implement reject action
-                }}
+                onClick={() =>
+                  setActionDialog({ open: true, action: 'reject' })
+                }
               >
                 <XCircle className="h-4 w-4 mr-2" />
                 Reject
               </Button>
-              <Button variant="outline">
-                <FileText className="h-4 w-4 mr-2" />
+              <Button
+                variant="outline"
+                onClick={() =>
+                  setActionDialog({ open: true, action: 'request_info' })
+                }
+              >
+                <FileQuestion className="h-4 w-4 mr-2" />
                 Request Information
               </Button>
             </div>
           </CardContent>
         </Card>
       )}
+
+      {/* Action Dialogs */}
+      <Dialog
+        open={actionDialog.open}
+        onOpenChange={(open) => setActionDialog({ open, action: null })}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {actionDialog.action === 'verify' && 'Verify KYC Application'}
+              {actionDialog.action === 'reject' && 'Reject KYC Application'}
+              {actionDialog.action === 'request_info' &&
+                'Request Additional Information'}
+            </DialogTitle>
+            <DialogDescription>
+              {actionDialog.action === 'verify' &&
+                'Are you sure you want to verify this KYC application?'}
+              {actionDialog.action === 'reject' &&
+                'Please provide a reason for rejecting this KYC application.'}
+              {actionDialog.action === 'request_info' &&
+                'Request additional information from the user.'}
+            </DialogDescription>
+          </DialogHeader>
+
+          {actionDialog.action === 'verify' && (
+            <div className="space-y-4">
+              <Textarea
+                placeholder="Add review notes (optional)"
+                value={reviewNotes}
+                onChange={(e) => setReviewNotes(e.target.value)}
+              />
+            </div>
+          )}
+
+          {actionDialog.action === 'reject' && (
+            <div className="space-y-4">
+              <Textarea
+                placeholder="Reason for rejection *"
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                required
+              />
+            </div>
+          )}
+
+          {actionDialog.action === 'request_info' && (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                An email will be sent to the user requesting additional
+                information.
+              </p>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setActionDialog({ open: false, action: null })}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAction}
+              disabled={
+                actionDialog.action === 'reject' && !rejectionReason.trim()
+              }
+            >
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

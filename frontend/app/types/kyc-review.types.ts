@@ -1,20 +1,14 @@
-// app/types/kyc-review.types.ts
 export interface KycReview {
   id: number;
   reference: string;
-  user_id: number;
-  user_name: string;
-  user_email: string;
   kyc_type: 'investor' | 'issuer' | 'both';
   status: 'pending' | 'in_review' | 'verified' | 'rejected' | 'expired';
-  verification_type:
-    | 'national_id'
-    | 'passport'
-    | 'drivers_license'
-    | 'voter_id';
+  verification_type: string;
   id_number: string;
-  id_expiry_date: string;
+  user_name: string;
+  user_email: string;
   date_of_birth?: string;
+  id_expiry_date: string;
   nationality?: string;
   occupation?: string;
   source_of_funds?: string;
@@ -28,15 +22,14 @@ export interface KycReview {
   verified_at?: string;
   verified_by?: string;
   rejection_reason?: string;
+  addresses: any[];
+  documents: any[];
 }
 
 export interface KycReviewFilters {
   status?: string;
   kyc_type?: string;
-  verification_type?: string;
   search?: string;
-  date_from?: string;
-  date_to?: string;
 }
 
 export interface KycReviewStats {
@@ -50,14 +43,6 @@ export interface KycReviewStats {
 
 export interface KycReviewAction {
   action: 'verify' | 'reject' | 'request_info';
-  notes?: string;
   rejection_reason?: string;
-}
-
-// Add this if you want the object syntax
-export interface KycReviewActionParams {
-  id: number;
-  action: 'verify' | 'reject' | 'request_info';
   notes?: string;
-  rejection_reason?: string;
 }

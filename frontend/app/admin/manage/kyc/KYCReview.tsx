@@ -87,8 +87,8 @@ const KYCReview = () => {
   }, [fetchReviews, fetchStats]);
 
   const handleFilterChange = (key: string, value: string) => {
-    if (value === '') {
-      // Remove the filter when empty string is selected (All)
+    if (value === 'all') {
+      // Remove the filter when 'all' is selected
       const newFilters = { ...filters };
       delete newFilters[key as keyof typeof filters];
       updateFilters(newFilters);
@@ -259,7 +259,7 @@ const KYCReview = () => {
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Status</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="in_review">In Review</SelectItem>
                 <SelectItem value="verified">Verified</SelectItem>
@@ -267,6 +267,7 @@ const KYCReview = () => {
                 <SelectItem value="expired">Expired</SelectItem>
               </SelectContent>
             </Select>
+
             <Select
               value={filters.kyc_type || ''}
               onValueChange={(value) => handleFilterChange('kyc_type', value)}
@@ -277,7 +278,7 @@ const KYCReview = () => {
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="investor">Investor</SelectItem>
                 <SelectItem value="issuer">Issuer</SelectItem>
                 <SelectItem value="both">Both</SelectItem>

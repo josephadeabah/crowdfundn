@@ -58,7 +58,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
         const queryParams = new URLSearchParams();
         if (newFilters) {
           Object.entries(newFilters).forEach(([key, value]) => {
-            if (value) queryParams.append(key, value);
+            if (value && value !== 'all') queryParams.append(key, value);
           });
         }
 
