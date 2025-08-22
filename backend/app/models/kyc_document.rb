@@ -21,6 +21,7 @@ class KycDocument < ApplicationRecord
     id_front
     id_back
     proof_of_address
+    id_document
     selfie_with_id
     business_registration
     tax_clearance

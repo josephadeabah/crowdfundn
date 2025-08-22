@@ -238,7 +238,7 @@ class Kyc < ApplicationRecord
   end
 
   def investor_documents
-    ['id_front', 'id_back', 'proof_of_address', 'selfie_with_id']
+    ['id_front', 'id_back', 'proof_of_address', 'id_document', 'selfie_with_id']
   end
 
   def issuer_documents
