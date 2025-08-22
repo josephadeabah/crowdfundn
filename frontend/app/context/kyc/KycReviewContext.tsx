@@ -108,7 +108,9 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
 
         if (response.status === 403) {
           // Forbidden - user doesn't have access to this specific KYC
-          throw new Error('You do not have permission to view this KYC application');
+          throw new Error(
+            'You do not have permission to view this KYC application',
+          );
         }
 
         if (!response.ok) {
