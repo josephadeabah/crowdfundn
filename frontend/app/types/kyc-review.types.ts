@@ -24,7 +24,7 @@ export interface KycReview {
   rejection_reason?: string;
   addresses: any[];
   documents: any[];
-  user?:{
+  user?: {
     email: string;
     full_name: string;
     profile: {
@@ -34,8 +34,8 @@ export interface KycReview {
     fundraiser_info?: {
       has_campaigns?: boolean;
       active_campaigns?: number;
-    }
-  }
+    };
+  };
 }
 
 export interface KycReviewFilters {
