@@ -49,13 +49,32 @@ class Kyc < ApplicationRecord
   validates :source_of_funds, presence: true, if: -> { investor? || both? }
   
   # Business validations for issuers
-  validates :business_name, presence: true, if: -> { issuer? || both? }
-  validates :business_registration_number, presence: true, if: -> { issuer? || both? }
-  validates :business_tax_id, presence: true, if: -> { issuer? || both? }
+  validates :business_name, 
+            presence: true, 
+            uniqueness: { 
+              case_sensitive: false, 
+              message: "has already been taken. Please use a different business name." 
+            }, 
+            if: -> { issuer? || both? }
+  
+  validates :business_registration_number, 
+            presence: true, 
+            uniqueness: { 
+              message: "has already been registered. Please check your registration number." 
+            }, 
+            if: -> { issuer? || both? }
+  
+  validates :business_tax_id, 
+            presence: true, 
+            uniqueness: { 
+              message: "has already been registered. Please check your tax identification number." 
+            }, 
+            if: -> { issuer? || both? }
 
   validate :expiry_date_cannot_be_in_past
   validate :validate_kyc_type_based_on_user
   validate :validate_minimum_age
+  validate :validate_business_uniqueness, if: -> { issuer? || both? }
 
   # Callbacks
   before_validation :generate_kyc_reference, on: :create
@@ -200,6 +219,18 @@ class Kyc < ApplicationRecord
   def validate_minimum_age
     if date_of_birth.present? && date_of_birth > 18.years.ago.to_date
       errors.add(:date_of_birth, "must be at least 18 years old")
+    end
+  end
+
+  def validate_business_uniqueness
+    # Check if any other KYC has the same business details (excluding current record)
+    existing_kyc = Kyc.where.not(id: id)
+                     .where('business_name ILIKE ? OR business_registration_number = ? OR business_tax_id = ?', 
+                            business_name, business_registration_number, business_tax_id)
+                     .first
+
+    if existing_kyc
+      errors.add(:base, "Business details conflict with an existing registration. Please verify your information.")
     end
   end
 

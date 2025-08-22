@@ -35,7 +35,7 @@ module Api
         def create
           # Check if user can create KYC (no pending or verified ones)
           if @current_user.kycs.where(status: ['pending', 'in_review', 'verified']).exists?
-            return render json: { errors: ['You already have a KYC submission in progress or verified'] }, status: :unprocessable_entity
+            return render_kyc_error('You already have a KYC submission in progress or verified')
           end
 
           # Build KYC without addresses first
@@ -63,14 +63,14 @@ module Api
             
             render json: { kyc: @kyc.to_frontend_format }, status: :created
           else
-            render json: { errors: @kyc.errors.full_messages }, status: :unprocessable_entity
+            render_kyc_errors(@kyc.errors)
           end
         end
 
         def update
           # Check if user can update (must be owner and in pending/in_review status)
           unless @kyc.pending? || @kyc.in_review?
-            return render json: { errors: ['KYC cannot be updated in its current state'] }, status: :unprocessable_entity
+            return render_kyc_error('KYC cannot be updated in its current state')
           end
           
           # Handle addresses manually if provided
@@ -92,7 +92,7 @@ module Api
           if @kyc.update(kyc_params.except(:addresses_attributes))
             render json: { kyc: @kyc.to_frontend_format }
           else
-            render json: { errors: @kyc.errors.full_messages }, status: :unprocessable_entity
+            render_kyc_errors(@kyc.errors)
           end
         end
 
@@ -270,6 +270,38 @@ module Api
             :signature_data, :investor_signature_data, :issuer_accepted_terms,
             kyc_documents_attributes: [:id, :document_type, :file, :file_name, :_destroy]
           )
+        end
+
+                def render_kyc_errors(errors)
+          # Format errors for frontend display
+          formatted_errors = errors.full_messages.map do |message|
+            if message.include?('has already been taken')
+              # Extract field name from error message
+              field = message.split(' ').first
+              {
+                field: field.underscore,
+                message: message,
+                type: 'uniqueness'
+              }
+            else
+              {
+                message: message,
+                type: 'validation'
+              }
+            end
+          end
+
+          render json: { 
+            errors: formatted_errors,
+            full_messages: errors.full_messages 
+          }, status: :unprocessable_entity
+        end
+
+        def render_kyc_error(message)
+          render json: { 
+            errors: [{ message: message, type: 'general' }],
+            full_messages: [message]
+          }, status: :unprocessable_entity
         end
 
         # Pagination helper methods
