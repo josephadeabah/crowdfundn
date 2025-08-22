@@ -365,7 +365,7 @@ const KYCReview = () => {
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
                             onClick={() => {
-                              window.open(`/admin/kyc/${review.id}`, '_blank');
+                              window.open(`/admin/manage/kyc/${review.id}`, '_blank');
                             }}
                           >
                             <Eye className="h-4 w-4 mr-2" />
