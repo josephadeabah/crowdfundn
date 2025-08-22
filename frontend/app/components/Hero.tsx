@@ -147,9 +147,10 @@ const Hero = () => {
                 </h1>
 
                 <p className="text-lg md:text-xl text-gray-600 mb-8 animate-fade-up delay-200">
-  Revolutionizing Ghana's startup ecosystem through smart equity crowdfunding. 
-  Invest in tomorrow's unicorns, earn exclusive rewards, and build wealth while 
-  fueling Africa's most innovative businesses and driving economic growth.
+                  Revolutionizing Ghana's startup ecosystem through smart equity
+                  crowdfunding. Invest in tomorrow's unicorns, earn exclusive
+                  rewards, and build wealth while fueling Africa's most
+                  innovative businesses and driving economic growth.
                 </p>
 
                 <div className="flex flex-row gap-4 animate-fade-up animate-delay-300">
