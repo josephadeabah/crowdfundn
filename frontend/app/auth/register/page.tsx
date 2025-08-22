@@ -146,7 +146,7 @@ const Signup = () => {
                 Already have an account?{' '}
                 <Link
                   href="/auth/login"
-                  className="font-medium text-primary hover:text-primary/80 transition-colors"
+                  className="font-medium text-bantu-green hover:text-bantu-green/80 transition-colors"
                 >
                   Sign in
                 </Link>

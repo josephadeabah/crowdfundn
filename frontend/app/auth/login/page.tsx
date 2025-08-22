@@ -276,7 +276,7 @@ const LoginPage = () => {
                   Don't have an account?{' '}
                   <Link
                     href="/auth/signup"
-                    className="font-medium text-primary hover:text-primary/80 transition-colors"
+                    className="font-medium text-bantu-green hover:text-bantu-green/80 transition-colors"
                   >
                     Sign up
                   </Link>
