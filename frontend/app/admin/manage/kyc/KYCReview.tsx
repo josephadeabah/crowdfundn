@@ -318,11 +318,10 @@ const KYCReview = () => {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center">
-                    Loading...
-                  </TableCell>
-                </TableRow>
+                  <div className="flex items-center justify-center p-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <span className="ml-2">Loading KYC applications...</span>
+                  </div>
               ) : reviews.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center">
