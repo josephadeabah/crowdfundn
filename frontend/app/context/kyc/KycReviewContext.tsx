@@ -128,7 +128,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/stats`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/stats`,
         {
           method: 'GET',
           headers: {
