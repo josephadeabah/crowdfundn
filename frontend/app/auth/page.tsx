@@ -21,21 +21,25 @@ const Index = () => {
         </div>
 
         <div className="space-y-4">
-                    <div className="flex flex-wrap gap-4 text-xs">
-                    <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full font-semibold">
-                      💝 Donation|Grant-Based
-                    </div>
-                    <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-semibold">
-                      🎁 Reward-Based
-                    </div>
-                    <div className="bg-purple-100 text-purple-800 px-4 py-2 rounded-full font-semibold">
-                      📈 Equity Investment
-                    </div>
-                  </div>
-
+          <div className="flex flex-wrap gap-4 text-xs">
+            <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full font-semibold">
+              💝 Donation|Grant-Based
+            </div>
+            <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-semibold">
+              🎁 Reward-Based
+            </div>
+            <div className="bg-purple-100 text-purple-800 px-4 py-2 rounded-full font-semibold">
+              📈 Equity Investment
+            </div>
+          </div>
           <div className="flex gap-4 justify-center">
-            <Button asChild variant="ghost" size="lg" className="bg-bantu-green">
-              <Link href="/auth/register">Get Started</Link>
+            <Button
+              asChild
+              variant="ghost"
+              size="lg"
+              className="bg-bantu-green"
+            >
+              <Link href="/auth/register" className="text-white">Get Started</Link>
             </Button>
             <Button asChild variant="outline" size="lg">
               <Link href="/auth/login">Sign In</Link>
