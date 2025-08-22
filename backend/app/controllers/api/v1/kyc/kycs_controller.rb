@@ -30,14 +30,12 @@ module Api
 
         def show
           if @current_user.admin?
-            # Admin can only view KYCs that need review (same scope as all_needs_review)
-            unless @kyc.pending? || @kyc.in_review?
-              return render json: { error: 'Admin can only view KYCs pending review' }, status: :unauthorized
-            end
+            # Admin can view any KYC (removed the restriction)
+            # No need for the unless check
           else
             # Regular users can only view their own KYCs
             unless @kyc.user_id == @current_user.id
-              return render json: { error: 'Unauthorized' }, status: :unauthorized
+              return render json: { error: 'Unauthorized' }, status: :forbidden
             end
           end
           
