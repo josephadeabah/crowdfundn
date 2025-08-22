@@ -62,7 +62,7 @@ const Teams = () => {
     {
       id: '5',
       name: 'Nqoba Manana',
-      position: 'Chief Executive Officer',
+      position: 'Chief Operating Officer',
       image: nqobaMananaHeadshot,
       email: 'nqoba.manana@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/nqoba-g-manana/',
@@ -71,7 +71,7 @@ const Teams = () => {
     {
       id: '6',
       name: 'Sadat Adams',
-      position: 'Director of Partnerships',
+      position: 'Partner Relationship Manager',
       image: ctoHeadshot,
       email: 'sadat.adams@bantuhive.com',
       linkedin: 'https://linkedin.com/in/sadatadams',
