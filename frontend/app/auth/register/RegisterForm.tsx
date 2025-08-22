@@ -613,7 +613,7 @@ const RegisterForm: React.FC = () => {
         />
       )}
       <div className="">
-        <div className="max-w-2xl mx-auto bg-white shadow p-2">
+        <div className="max-w-full mx-auto bg-white">
           <StepIndicator />
           <div className="mb-6 p-4 bg-blue-50 rounded-lg">
             <p className="text-violet-600">
