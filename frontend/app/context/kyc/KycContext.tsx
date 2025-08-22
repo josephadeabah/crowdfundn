@@ -8,9 +8,20 @@ import React, {
   useCallback,
 } from 'react';
 import { useAuth } from '@/app/context/auth/AuthContext';
-import { Kyc, KycFormData, KycDocument, KycState } from '@/app/types/kyc.type';
+import {
+  Kyc,
+  KycFormData,
+  KycDocument,
+  KycState,
+  KycError,
+} from '@/app/types/kyc.type';
 
-const KycContext = createContext<KycState | undefined>(undefined);
+interface KycContextType extends KycState {
+  errors: KycError[];
+  clearErrors: () => void;
+}
+
+const KycContext = createContext<KycContextType | undefined>(undefined);
 
 export const KycProvider = ({ children }: { children: ReactNode }) => {
   const { token } = useAuth();
@@ -18,15 +29,19 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
   const [currentKyc, setCurrentKyc] = useState<Kyc | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<KycError[]>([]);
+
+  const clearErrors = () => setErrors([]);
 
   // Fetch all KYCs for the current user
   const fetchKycs = useCallback(async () => {
     setLoading(true);
     setError(null);
+    clearErrors();
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs`,
         {
           method: 'GET',
           headers: {
@@ -54,10 +69,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
     async (id: number) => {
       setLoading(true);
       setError(null);
+      clearErrors();
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs/${id}`,
           {
             method: 'GET',
             headers: {
@@ -87,10 +103,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
     async (kycData: KycFormData): Promise<Kyc> => {
       setLoading(true);
       setError(null);
+      clearErrors();
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs`,
           {
             method: 'POST',
             headers: {
@@ -101,16 +118,20 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        const data = await response.json();
+
         if (!response.ok) {
-          const errorData = await response.json();
+          if (data.errors) {
+            setErrors(data.errors);
+          }
           throw new Error(
-            errorData.errors?.join(', ') || 'Failed to create KYC',
+            data.errors?.[0]?.message ||
+              data.full_messages?.[0] ||
+              'Failed to create KYC',
           );
         }
 
-        const data = await response.json();
         const newKyc = data.kyc;
-
         setKycs((prev) => [...prev, newKyc]);
         setCurrentKyc(newKyc);
 
@@ -119,7 +140,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
         const errorMessage =
           err instanceof Error ? err.message : 'Unknown error';
         setError(errorMessage);
-        throw new Error(errorMessage);
+        throw err; // Re-throw to let component handle
       } finally {
         setLoading(false);
       }
@@ -132,10 +153,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
     async (id: number, kycData: Partial<KycFormData>): Promise<Kyc> => {
       setLoading(true);
       setError(null);
+      clearErrors();
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs/${id}`,
           {
             method: 'PUT',
             headers: {
@@ -146,16 +168,20 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        const data = await response.json();
+
         if (!response.ok) {
-          const errorData = await response.json();
+          if (data.errors) {
+            setErrors(data.errors);
+          }
           throw new Error(
-            errorData.errors?.join(', ') || 'Failed to update KYC',
+            data.errors?.[0]?.message ||
+              data.full_messages?.[0] ||
+              'Failed to update KYC',
           );
         }
 
-        const data = await response.json();
         const updatedKyc = data.kyc;
-
         setKycs((prev) => prev.map((k) => (k.id === id ? updatedKyc : k)));
         setCurrentKyc(updatedKyc);
 
@@ -164,7 +190,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
         const errorMessage =
           err instanceof Error ? err.message : 'Unknown error';
         setError(errorMessage);
-        throw new Error(errorMessage);
+        throw err;
       } finally {
         setLoading(false);
       }
@@ -177,10 +203,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
     async (id: number) => {
       setLoading(true);
       setError(null);
+      clearErrors();
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs/${id}`,
           {
             method: 'DELETE',
             headers: {
@@ -212,10 +239,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
     async (id: number) => {
       setLoading(true);
       setError(null);
+      clearErrors();
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}/submit`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs/${id}/submit`,
           {
             method: 'POST',
             headers: {
@@ -225,23 +253,27 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        const data = await response.json();
+
         if (!response.ok) {
-          const errorData = await response.json();
+          if (data.errors) {
+            setErrors(data.errors);
+          }
           throw new Error(
-            errorData.errors?.join(', ') || 'Failed to submit KYC',
+            data.errors?.[0]?.message ||
+              data.full_messages?.[0] ||
+              'Failed to submit KYC',
           );
         }
 
-        const data = await response.json();
         const updatedKyc = data.kyc;
-
         setKycs((prev) => prev.map((k) => (k.id === id ? updatedKyc : k)));
         setCurrentKyc(updatedKyc);
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Unknown error';
         setError(errorMessage);
-        throw new Error(errorMessage);
+        throw err;
       } finally {
         setLoading(false);
       }
@@ -254,10 +286,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
     async (id: number, reviewNotes?: string) => {
       setLoading(true);
       setError(null);
+      clearErrors();
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}/verify`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs/${id}/verify`,
           {
             method: 'POST',
             headers: {
@@ -268,23 +301,27 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        const data = await response.json();
+
         if (!response.ok) {
-          const errorData = await response.json();
+          if (data.errors) {
+            setErrors(data.errors);
+          }
           throw new Error(
-            errorData.errors?.join(', ') || 'Failed to verify KYC',
+            data.errors?.[0]?.message ||
+              data.full_messages?.[0] ||
+              'Failed to verify KYC',
           );
         }
 
-        const data = await response.json();
         const updatedKyc = data.kyc;
-
         setKycs((prev) => prev.map((k) => (k.id === id ? updatedKyc : k)));
         setCurrentKyc(updatedKyc);
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Unknown error';
         setError(errorMessage);
-        throw new Error(errorMessage);
+        throw err;
       } finally {
         setLoading(false);
       }
@@ -297,10 +334,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
     async (id: number, rejectionReason: string) => {
       setLoading(true);
       setError(null);
+      clearErrors();
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}/reject`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs/${id}/reject`,
           {
             method: 'POST',
             headers: {
@@ -311,23 +349,27 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        const data = await response.json();
+
         if (!response.ok) {
-          const errorData = await response.json();
+          if (data.errors) {
+            setErrors(data.errors);
+          }
           throw new Error(
-            errorData.errors?.join(', ') || 'Failed to reject KYC',
+            data.errors?.[0]?.message ||
+              data.full_messages?.[0] ||
+              'Failed to reject KYC',
           );
         }
 
-        const data = await response.json();
         const updatedKyc = data.kyc;
-
         setKycs((prev) => prev.map((k) => (k.id === id ? updatedKyc : k)));
         setCurrentKyc(updatedKyc);
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Unknown error';
         setError(errorMessage);
-        throw new Error(errorMessage);
+        throw err;
       } finally {
         setLoading(false);
       }
@@ -340,10 +382,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
     async (id: number): Promise<KycDocument[]> => {
       setLoading(true);
       setError(null);
+      clearErrors();
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}/documents`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs/${id}/documents`,
           {
             method: 'GET',
             headers: {
@@ -380,6 +423,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
     ): Promise<KycDocument> => {
       setLoading(true);
       setError(null);
+      clearErrors();
 
       try {
         const formData = new FormData();
@@ -387,7 +431,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
         formData.append('file', file);
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${kycId}/documents`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/kyc/kycs/${kycId}/upload_document`,
           {
             method: 'POST',
             headers: {
@@ -397,20 +441,25 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        const data = await response.json();
+
         if (!response.ok) {
-          const errorData = await response.json();
+          if (data.errors) {
+            setErrors(data.errors);
+          }
           throw new Error(
-            errorData.errors?.join(', ') || 'Failed to upload document',
+            data.errors?.[0]?.message ||
+              data.full_messages?.[0] ||
+              'Failed to upload document',
           );
         }
 
-        const data = await response.json();
         return data.document;
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Unknown error';
         setError(errorMessage);
-        throw new Error(errorMessage);
+        throw err;
       } finally {
         setLoading(false);
       }
@@ -418,12 +467,14 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  const contextValue: KycState = React.useMemo(
+  const contextValue: KycContextType = React.useMemo(
     () => ({
       kycs,
       currentKyc,
       loading,
       error,
+      errors,
+      clearErrors,
       fetchKycs,
       fetchKyc,
       createKyc,
@@ -440,6 +491,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
       currentKyc,
       loading,
       error,
+      errors,
       fetchKycs,
       fetchKyc,
       createKyc,

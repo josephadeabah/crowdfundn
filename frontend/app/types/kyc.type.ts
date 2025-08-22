@@ -1,7 +1,12 @@
 // types.ts
 import { z } from 'zod';
 
-// app/types/kyc.types.ts
+export interface KycError {
+  field?: string;
+  message: string;
+  type: 'uniqueness' | 'validation' | 'general';
+}
+
 export interface KycAddress {
   id?: number;
   address_type: 'residential' | 'mailing' | 'business';
@@ -64,7 +69,6 @@ export interface Kyc {
   updated_at?: string;
 }
 
-// app/types/kyc.types.ts (add these)
 export interface KycFormData {
   kyc_type: 'investor' | 'issuer' | 'both';
   verification_type:
@@ -94,6 +98,8 @@ export interface KycState {
   currentKyc: Kyc | null;
   loading: boolean;
   error: string | null;
+  errors: KycError[];
+  clearErrors: () => void;
   fetchKycs: () => Promise<void>;
   fetchKyc: (id: number) => Promise<void>;
   createKyc: (kycData: KycFormData) => Promise<Kyc>;

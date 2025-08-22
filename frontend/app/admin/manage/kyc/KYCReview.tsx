@@ -318,10 +318,10 @@ const KYCReview = () => {
             </TableHeader>
             <TableBody>
               {loading ? (
-                  <div className="flex items-center justify-center p-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                    <span className="ml-2">Loading KYC applications...</span>
-                  </div>
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  <span className="ml-2">Loading KYC applications...</span>
+                </div>
               ) : reviews.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center">
@@ -365,7 +365,10 @@ const KYCReview = () => {
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
                             onClick={() => {
-                              window.open(`/admin/manage/kyc/${review.id}`, '_blank');
+                              window.open(
+                                `/admin/manage/kyc/${review.id}`,
+                                '_blank',
+                              );
                             }}
                           >
                             <Eye className="h-4 w-4 mr-2" />

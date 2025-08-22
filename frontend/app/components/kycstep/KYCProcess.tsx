@@ -9,7 +9,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Form } from '@/app/components/ui/form';
@@ -43,16 +42,23 @@ import { ProgressSteps } from './ProgressSteps';
 import { Point } from '@/app/account/settings/kyc/signature/signatureUtils';
 import { z } from 'zod';
 import { Loader2 } from 'lucide-react';
-import { convertSignatureToBlob } from '@/app/account/settings/kyc/signature/signatureUtils';
 import { useKyc } from '@/app/context/kyc/KycContext';
 import { KycFormData, KycAddress } from '@/app/types/kyc.type';
 import { BusinessInfoStep } from './BusinessInfoStep';
+import { FaExclamationTriangle } from 'react-icons/fa';
+import AlertPopup from '../alertpopup/AlertPopup';
 
 const KYCProcess: React.FC<KYCProcessProps> = ({
   userType,
   onUserTypeChange,
 }) => {
-  const { createKyc, uploadDocument, loading: kycLoading } = useKyc();
+  const {
+    createKyc,
+    uploadDocument,
+    loading: kycLoading,
+    errors: kycErrors,
+    clearErrors,
+  } = useKyc();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<
     Partial<CreatorKYCFormData | InvestorKYCFormData | MentorKYCFormData>
@@ -70,6 +76,8 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const [uploadedDocuments, setUploadedDocuments] = useState<{
     [key: string]: File;
   }>({});
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
+  const [currentError, setCurrentError] = useState<string>('');
 
   const isCreator = userType === 'creator';
   const isInvestor = userType === 'investor';
@@ -107,6 +115,24 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       ? investorKycSteps
       : mentorKycSteps;
 
+  useEffect(() => {
+    // Show alert when there are KYC errors
+    if (kycErrors.length > 0) {
+      const businessErrors = kycErrors.filter(
+        (error) =>
+          error.field?.includes('business') || error.type === 'uniqueness',
+      );
+
+      if (businessErrors.length > 0) {
+        setCurrentError(businessErrors[0].message);
+        setShowErrorAlert(true);
+      } else if (kycErrors[0]) {
+        setCurrentError(kycErrors[0].message);
+        setShowErrorAlert(true);
+      }
+    }
+  }, [kycErrors]);
+
   const sanitizeFormData = (data: any): any => {
     if (data === null || data === undefined) return data;
 
@@ -126,12 +152,10 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       return sanitized;
     }
 
-    // Convert Dates to ISO strings
     if (data instanceof Date) {
       return data.toISOString();
     }
 
-    // Handle Files - we only need metadata, not the full file object
     if (data instanceof File) {
       return {
         name: data.name,
@@ -144,7 +168,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     return data;
   };
 
-  // Get current step type based on user type and current step index
   const getCurrentStepType = () => {
     return stepDefinitions[userType][currentStep];
   };
@@ -168,7 +191,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     switch (stepType) {
       case 'personalInfo':
         return personalInfoSchema;
-      case 'businessInfo': // Add this case
+      case 'businessInfo':
         return creatorBusinessSchema;
       case 'documents':
         return documentSchema;
@@ -179,7 +202,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       case 'experience':
         return mentorExperienceSchema;
       case 'certificate':
-        return z.object({}); // No validation needed for certificate step
+        return z.object({});
       case 'review':
         return isCreator ? creatorBusinessSchema : z.object({});
       default:
@@ -207,7 +230,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             postalCode: formData.postalCode || '',
             country: formData.country || '',
           };
-        case 'businessInfo': // Add this case
+        case 'businessInfo':
           return {
             businessName: (formData as CreatorKYCFormData).businessName || '',
             businessType: (formData as CreatorKYCFormData).businessType || '',
@@ -288,13 +311,10 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   };
 
   const prepareKycData = (): KycFormData => {
-    // Format date of birth correctly
     const formatDate = (date: any): string => {
       if (!date) return '';
       if (typeof date === 'string') return date;
       if (date instanceof Date) return date.toISOString().split('T')[0];
-
-      // Handle other date formats if needed
       console.warn('Unexpected date format:', date);
       return '';
     };
@@ -307,7 +327,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         | 'drivers_license'
         | 'voter_id',
       id_number: formData.idNumber || '',
-      id_expiry_date: new Date().toISOString().split('T')[0], // Default to today
+      id_expiry_date: new Date().toISOString().split('T')[0],
       date_of_birth:
         formData.dateOfBirth &&
         typeof formData.dateOfBirth === 'object' &&
@@ -374,15 +394,14 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
   const onSubmit = async (data: any) => {
     setIsSubmitting(true);
+    clearErrors();
 
-    // Sanitize the data before storing it
     const sanitizedData = sanitizeFormData(data);
     const updatedFormData = { ...formData, ...sanitizedData };
     setFormData(updatedFormData);
 
     const stepType = getCurrentStepType();
 
-    // Handle quiz results for investor
     if (stepType === 'quiz') {
       const results: { [key: string]: boolean } = {};
       const incorrect: {
@@ -414,7 +433,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       setIncorrectAnswers(incorrect);
     }
 
-    // Handle certificate step validation
     if (stepType === 'certificate') {
       if (!isSigned) {
         toast.error('Please sign your certificate before proceeding.');
@@ -423,7 +441,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       }
     }
 
-    // Handle review step submission
     if (stepType === 'review') {
       if (!isSigned) {
         toast.error('Please sign your certificate before submitting.');
@@ -440,13 +457,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       }
 
       try {
-        // Prepare KYC data for API
         const kycData = prepareKycData();
-
-        // Create KYC record
         const newKyc = await createKyc(kycData);
 
-        // Upload all documents
         if (Object.keys(uploadedDocuments).length > 0) {
           await uploadAllDocuments(newKyc.id!);
         }
@@ -459,22 +472,18 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
         toast.success(`${userTypeLabel} verification submitted successfully`);
 
-        // Clear local storage
         localStorage.removeItem(`${userType}Signature`);
-
-        // Reset form
         setFormData({});
         setSignature([]);
         setIsSigned(false);
         setUploadedDocuments({});
       } catch (error) {
         console.error('Error submitting KYC:', error);
-        toast.error('Failed to submit verification. Please try again.');
+        // Error handling is done through context errors
       } finally {
         setIsSubmitting(false);
       }
     } else if (currentStep < kycSteps.length - 1) {
-      // Move to next step if not on review step
       setCurrentStep(currentStep + 1);
       setIsSubmitting(false);
     }
@@ -523,7 +532,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     switch (stepType) {
       case 'personalInfo':
         return <PersonalInfoStep />;
-      case 'businessInfo': // Add this case
+      case 'businessInfo':
         return <BusinessInfoStep />;
       case 'documents':
         return (
@@ -576,9 +585,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       <Card className="bg-white shadow-sm">
         <CardHeader>
           <CardTitle>{kycSteps[currentStep]?.title}</CardTitle>
-          {/* <CardDescription>
-            {kycSteps[currentStep]?.description}
-          </CardDescription> */}
         </CardHeader>
 
         <CardContent>
@@ -630,6 +636,24 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         onOpenChange={setIsSignDialogOpen}
         onSave={handleSaveSignature}
         onCancel={handleCancelSignature}
+      />
+
+      <AlertPopup
+        title="Business Registration Error"
+        message={currentError}
+        isOpen={showErrorAlert}
+        setIsOpen={setShowErrorAlert}
+        onConfirm={() => {
+          setShowErrorAlert(false);
+          clearErrors();
+        }}
+        onCancel={() => {
+          setShowErrorAlert(false);
+          clearErrors();
+        }}
+        icon={<FaExclamationTriangle className="w-6 h-6 text-red-600" />}
+        confirmText="OK"
+        confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
       />
     </div>
   );

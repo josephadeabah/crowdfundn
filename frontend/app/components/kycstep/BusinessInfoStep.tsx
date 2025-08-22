@@ -1,6 +1,6 @@
 // components/BusinessInfoStep.tsx
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import {
   FormField,
@@ -19,20 +19,38 @@ import {
   SelectValue,
 } from '@/app/components/ui/select';
 import { Textarea } from '@/app/components/ui/textarea';
+import { useKyc } from '@/app/context/kyc/KycContext';
 
 export const BusinessInfoStep: React.FC = () => {
   const form = useFormContext();
+  const { errors: kycErrors } = useKyc();
+
+  useEffect(() => {
+    // Set field-specific errors from KYC context
+    kycErrors.forEach((error) => {
+      if (error.field) {
+        form.setError(error.field as any, {
+          type: 'server',
+          message: error.message,
+        });
+      }
+    });
+  }, [kycErrors, form]);
 
   return (
     <div className="space-y-6">
       <FormField
         control={form.control}
         name="businessName"
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FormItem>
             <FormLabel>Business Name</FormLabel>
             <FormControl>
-              <Input placeholder="Enter your business name" {...field} />
+              <Input
+                placeholder="Enter your business name"
+                {...field}
+                className={fieldState.error ? 'border-red-500' : ''}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -42,12 +60,14 @@ export const BusinessInfoStep: React.FC = () => {
       <FormField
         control={form.control}
         name="businessType"
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FormItem>
             <FormLabel>Business Type</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger
+                  className={fieldState.error ? 'border-red-500' : ''}
+                >
                   <SelectValue placeholder="Select business type" />
                 </SelectTrigger>
               </FormControl>
@@ -74,13 +94,13 @@ export const BusinessInfoStep: React.FC = () => {
       <FormField
         control={form.control}
         name="businessDescription"
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FormItem>
             <FormLabel>Business Description</FormLabel>
             <FormControl>
               <Textarea
                 placeholder="Describe your business, products, or services"
-                className="resize-none"
+                className={`resize-none ${fieldState.error ? 'border-red-500' : ''}`}
                 {...field}
               />
             </FormControl>
@@ -95,11 +115,15 @@ export const BusinessInfoStep: React.FC = () => {
       <FormField
         control={form.control}
         name="businessRegistration"
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FormItem>
             <FormLabel>Business Registration Number</FormLabel>
             <FormControl>
-              <Input placeholder="Enter registration number" {...field} />
+              <Input
+                placeholder="Enter registration number"
+                {...field}
+                className={fieldState.error ? 'border-red-500' : ''}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -109,11 +133,15 @@ export const BusinessInfoStep: React.FC = () => {
       <FormField
         control={form.control}
         name="taxId"
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FormItem>
             <FormLabel>Tax ID Number</FormLabel>
             <FormControl>
-              <Input placeholder="Enter tax ID number" {...field} />
+              <Input
+                placeholder="Enter tax ID number"
+                {...field}
+                className={fieldState.error ? 'border-red-500' : ''}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
