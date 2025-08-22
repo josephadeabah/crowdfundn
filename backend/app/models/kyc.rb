@@ -90,6 +90,14 @@ class Kyc < ApplicationRecord
   scope :needs_review, -> { where(status: [:pending, :in_review]) }
 
   # Instance methods
+  def pending?
+    status == 'pending'
+  end
+
+  def in_review?
+    status == 'in_review'
+  end
+  
   def verified?
     status == 'verified' && verified_at.present?
   end
