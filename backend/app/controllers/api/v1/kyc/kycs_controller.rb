@@ -8,13 +8,24 @@ module Api
         before_action :authorize_user_access, only: [:show, :update, :destroy, :submit, :documents]
         before_action :authorize_admin, only: [:all_needs_review, :stats, :verify, :reject, :request_info]
 
+        # Set default pagination values
+        DEFAULT_PER_PAGE = 25
+        MAX_PER_PAGE = 100
+
         def index
           @kycs = if @current_user.admin?
             Kyc.all.order(created_at: :desc)
           else
             @current_user.kycs.order(created_at: :desc)
           end
-          render json: { kycs: @kycs.map(&:to_frontend_format) }
+          
+          # Apply pagination
+          @kycs = paginate_collection(@kycs)
+          
+          render json: { 
+            kycs: @kycs.map(&:to_frontend_format),
+            pagination: pagination_meta(@kycs)
+          }
         end
 
         def show
@@ -95,7 +106,6 @@ module Api
           head :no_content
         end
 
-        # app/controllers/api/v1/kyc/kycs_controller.rb
         def upload_document
           begin
             # Find the document by type or create a new one
@@ -171,20 +181,17 @@ module Api
           @kycs = ::Kyc.includes(:user, :kyc_documents, :kyc_addresses)
                       .needs_review
                       .order(created_at: :desc)
-                      .page(params[:page] || 1)
-                      .per(params[:per_page] || 25)
           
-          # Apply filters...
+          # Apply filters
           @kycs = @kycs.where(status: params[:status]) if params[:status].present?
           @kycs = @kycs.where(kyc_type: params[:kyc_type]) if params[:kyc_type].present?
           
+          # Apply pagination
+          @kycs = paginate_collection(@kycs)
+          
           render json: { 
             kycs: @kycs.map(&:to_frontend_format),
-            pagination: {
-              current_page: @kycs.current_page,
-              total_pages: @kycs.total_pages,
-              total_count: @kycs.total_count
-            }
+            pagination: pagination_meta(@kycs)
           }
         end
 
@@ -224,7 +231,7 @@ module Api
           render json: { message: 'Information requested from user' }
         end
 
-       def stats
+        def stats
           cache_key = "kyc_stats_#{Date.today}"
 
           stats = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
@@ -244,15 +251,13 @@ module Api
           render json: { error: 'Could not fetch KYC stats' }, status: :internal_server_error
         end
 
-
         private
 
         def set_kyc
-          @kyc = ::Kyc.find(params[:id]) # Use :: to specify global namespace
+          @kyc = ::Kyc.find(params[:id])
         end
 
         def authorize_user_access
-          # Use your existing authorize_user! method
           authorize_user!(@kyc)
         end
 
@@ -265,6 +270,23 @@ module Api
             :signature_data, :investor_signature_data, :issuer_accepted_terms,
             kyc_documents_attributes: [:id, :document_type, :file, :file_name, :_destroy]
           )
+        end
+
+        # Pagination helper methods
+        def paginate_collection(collection)
+          per_page = params[:per_page].to_i.positive? ? [params[:per_page].to_i, MAX_PER_PAGE].min : DEFAULT_PER_PAGE
+          collection.page(params[:page] || 1).per(per_page)
+        end
+
+        def pagination_meta(collection)
+          {
+            current_page: collection.current_page,
+            next_page: collection.next_page,
+            prev_page: collection.prev_page,
+            total_pages: collection.total_pages,
+            total_count: collection.total_count,
+            per_page: collection.limit_value
+          }
         end
       end
     end
