@@ -344,8 +344,7 @@ const KYCReview = () => {
                         </div>
                         {review?.user?.fundraiser_info?.has_campaigns && (
                           <div className="text-xs text-green-500">
-                            Fundraiser (
-                            {review?.user?.fundraiser_info?.active_campaigns}{' '}
+                            ({review?.user?.fundraiser_info?.active_campaigns}{' '}
                             active campaigns)
                           </div>
                         )}

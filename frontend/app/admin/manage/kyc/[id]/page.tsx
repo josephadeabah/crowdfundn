@@ -185,7 +185,9 @@ const KYCDetail = () => {
                 <div className="text-sm font-medium text-muted-foreground">
                   Name
                 </div>
-                <div className="font-medium">{currentReview.user?.full_name}</div>
+                <div className="font-medium">
+                  {currentReview.user?.full_name}
+                </div>
               </div>
               <div>
                 <div className="text-sm font-medium text-muted-foreground">
