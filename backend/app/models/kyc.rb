@@ -210,11 +210,6 @@ class Kyc < ApplicationRecord
         id: user.id,
         email: user.email,
         full_name: user.full_name,
-        profile: user.profile ? {
-          first_name: user.profile.first_name,
-          last_name: user.profile.last_name,
-          phone_number: user.profile.phone_number
-        } : nil,
         # Add fundraiser-specific information if available
         fundraiser_info: user.campaigns.any? ? {
           has_campaigns: true,
