@@ -239,6 +239,8 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             city: formData.city || '',
             postalCode: formData.postalCode || '',
             country: formData.country || '',
+            occupation: formData.occupation || '', // Added
+            sourceOfFunds: formData.sourceOfFunds || '', // Added
           };
         case 'businessInfo':
           return {
@@ -249,6 +251,11 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             businessRegistration:
               (formData as CreatorKYCFormData).businessRegistration || '',
             taxId: (formData as CreatorKYCFormData).taxId || '',
+            businessIndustry:
+              (formData as CreatorKYCFormData).businessIndustry || '', // Added
+            businessEstablishedDate:
+              (formData as CreatorKYCFormData).businessEstablishedDate ||
+              undefined, // Added
           };
         case 'documents':
           return {
@@ -322,6 +329,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     }
   };
 
+  // In KYCProcess.tsx, update the prepareKycData function
   const prepareKycData = (): KycFormData => {
     const baseData = {
       kyc_type: userType === 'creator' ? 'issuer' : 'investor',
@@ -342,8 +350,8 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             ? formData.dateOfBirth
             : '',
       nationality: formData.nationality || '',
-      occupation: formData.occupation || '',
-      source_of_funds: formData.sourceOfFunds || 'Salary',
+      occupation: formData.occupation || '', // Added
+      source_of_funds: formData.sourceOfFunds || 'Salary', // Added
       addresses_attributes: [
         {
           address_type: 'residential',
@@ -367,6 +375,23 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           (formData as CreatorKYCFormData).businessRegistration || '',
         business_tax_id: (formData as CreatorKYCFormData).taxId || '',
         business_industry: (formData as CreatorKYCFormData).businessType || '',
+        business_established_date:
+          (formData as CreatorKYCFormData).businessEstablishedDate &&
+          typeof (formData as CreatorKYCFormData).businessEstablishedDate ===
+            'object' &&
+          (formData as CreatorKYCFormData).businessEstablishedDate !== null &&
+          ((formData as CreatorKYCFormData)
+            .businessEstablishedDate as unknown as Date) instanceof Date
+            ? (
+                (formData as CreatorKYCFormData)
+                  .businessEstablishedDate as unknown as Date
+              )
+                .toISOString()
+                .split('T')[0]
+            : typeof (formData as CreatorKYCFormData)
+                  .businessEstablishedDate === 'string'
+              ? (formData as CreatorKYCFormData).businessEstablishedDate
+              : '',
         issuer_accepted_terms: true,
       } as KycFormData;
     }

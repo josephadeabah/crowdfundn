@@ -141,6 +141,8 @@ export type CreatorKYCFormData = BaseKYCFormData & {
   businessType: string;
   businessDescription: string;
   businessRegistration: string;
+  businessIndustry: string;
+  businessEstablishedDate: string;
   taxId: string;
 };
 
@@ -197,6 +199,8 @@ export const personalInfoSchema = z.object({
   city: z.string().min(2, 'City is required'),
   postalCode: z.string().min(3, 'Postal code is required'),
   country: z.string().min(1, 'Country is required'),
+  occupation: z.string().min(1, 'Occupation is required'), // Added
+  sourceOfFunds: z.string().min(1, 'Source of funds is required'), // Added
 });
 
 export const documentSchema = z.object({
@@ -216,6 +220,10 @@ export const creatorBusinessSchema = z.object({
     .string()
     .min(1, 'Business registration document is required'),
   taxId: z.string().min(5, 'Tax ID is required'),
+  businessIndustry: z.string().min(1, 'Business industry is required'), // Added
+  businessEstablishedDate: z.date().refine((date) => {
+    return date <= new Date();
+  }, 'Business established date cannot be in the future'), // Added
 });
 
 export const mentorExperienceSchema = z.object({

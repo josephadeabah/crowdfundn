@@ -21,6 +21,33 @@ import {
 import { Textarea } from '@/app/components/ui/textarea';
 import { useKyc } from '@/app/context/kyc/KycContext';
 
+// Common business industries
+const BUSINESS_INDUSTRIES = [
+  'Technology',
+  'Finance',
+  'Healthcare',
+  'Education',
+  'Retail',
+  'Manufacturing',
+  'Real Estate',
+  'Entertainment',
+  'Food & Beverage',
+  'Transportation',
+  'Energy',
+  'Agriculture',
+  'Other',
+];
+
+// Business types
+const BUSINESS_TYPES = [
+  'Sole Proprietorship',
+  'Partnership',
+  'Limited Liability Company (LLC)',
+  'Corporation',
+  'Non-Profit Organization',
+  'Other',
+];
+
 export const BusinessInfoStep: React.FC = () => {
   const form = useFormContext();
   const { errors: kycErrors } = useKyc();
@@ -57,39 +84,61 @@ export const BusinessInfoStep: React.FC = () => {
         )}
       />
 
-      <FormField
-        control={form.control}
-        name="businessType"
-        render={({ field, fieldState }) => (
-          <FormItem>
-            <FormLabel>Business Type</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger
-                  className={fieldState.error ? 'border-red-500' : ''}
-                >
-                  <SelectValue placeholder="Select business type" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value="sole_proprietorship">
-                  Sole Proprietorship
-                </SelectItem>
-                <SelectItem value="partnership">Partnership</SelectItem>
-                <SelectItem value="llc">
-                  Limited Liability Company (LLC)
-                </SelectItem>
-                <SelectItem value="corporation">Corporation</SelectItem>
-                <SelectItem value="nonprofit">
-                  Non-Profit Organization
-                </SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <FormField
+          control={form.control}
+          name="businessType"
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel>Business Type</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger
+                    className={fieldState.error ? 'border-red-500' : ''}
+                  >
+                    <SelectValue placeholder="Select business type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {BUSINESS_TYPES.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="businessIndustry"
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel>Business Industry</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger
+                    className={fieldState.error ? 'border-red-500' : ''}
+                  >
+                    <SelectValue placeholder="Select business industry" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {BUSINESS_INDUSTRIES.map((industry) => (
+                    <SelectItem key={industry} value={industry}>
+                      {industry}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
 
       <FormField
         control={form.control}
@@ -112,37 +161,66 @@ export const BusinessInfoStep: React.FC = () => {
         )}
       />
 
-      <FormField
-        control={form.control}
-        name="businessRegistration"
-        render={({ field, fieldState }) => (
-          <FormItem>
-            <FormLabel>Business Registration Number</FormLabel>
-            <FormControl>
-              <Input
-                placeholder="Enter registration number"
-                {...field}
-                className={fieldState.error ? 'border-red-500' : ''}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <FormField
+          control={form.control}
+          name="businessRegistration"
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel>Business Registration Number</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter registration number"
+                  {...field}
+                  className={fieldState.error ? 'border-red-500' : ''}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="taxId"
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel>Tax ID Number</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter tax ID number"
+                  {...field}
+                  className={fieldState.error ? 'border-red-500' : ''}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
 
       <FormField
         control={form.control}
-        name="taxId"
+        name="businessEstablishedDate"
         render={({ field, fieldState }) => (
           <FormItem>
-            <FormLabel>Tax ID Number</FormLabel>
+            <FormLabel>Business Established Date</FormLabel>
             <FormControl>
               <Input
-                placeholder="Enter tax ID number"
+                type="date"
                 {...field}
+                value={
+                  field.value instanceof Date
+                    ? field.value.toISOString().split('T')[0]
+                    : field.value
+                }
+                onChange={(e) => field.onChange(new Date(e.target.value))}
                 className={fieldState.error ? 'border-red-500' : ''}
               />
             </FormControl>
+            <FormDescription>
+              When was your business officially established?
+            </FormDescription>
             <FormMessage />
           </FormItem>
         )}

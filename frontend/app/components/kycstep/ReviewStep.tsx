@@ -9,6 +9,7 @@ import {
 } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
 import { FileText, CheckCircle, XCircle } from 'lucide-react';
+import { CreatorKYCFormData } from '@/app/types/kyc.type';
 
 interface ReviewStepProps {
   formData: any;
@@ -57,6 +58,12 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
               <strong>Nationality:</strong> {formData.nationality}
             </div>
             <div>
+              <strong>Occupation:</strong> {formData.occupation}
+            </div>
+            <div>
+              <strong>Source of Funds:</strong> {formData.sourceOfFunds}
+            </div>
+            <div className="col-span-2">
               <strong>Address:</strong> {formData.address}, {formData.city},{' '}
               {formData.country}
             </div>
@@ -64,7 +71,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
         </CardContent>
       </Card>
 
-      {isCreator && (
+      {(isCreator || isMentor) && (
         <Card>
           <CardHeader>
             <CardTitle>Business Information</CardTitle>
@@ -72,13 +79,32 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
           <CardContent className="space-y-2">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <strong>Business Name:</strong> {formData.businessName}
+                <strong>Business Name:</strong>{' '}
+                {(formData as CreatorKYCFormData).businessName}
               </div>
               <div>
-                <strong>Business Type:</strong> {formData.businessType}
+                <strong>Business Type:</strong>{' '}
+                {(formData as CreatorKYCFormData).businessType}
               </div>
               <div>
-                <strong>Tax ID:</strong> {formData.taxId}
+                <strong>Business Industry:</strong>{' '}
+                {(formData as CreatorKYCFormData).businessIndustry}
+              </div>
+              <div>
+                <strong>Registration Number:</strong>{' '}
+                {(formData as CreatorKYCFormData).businessRegistration}
+              </div>
+              <div>
+                <strong>Tax ID:</strong>{' '}
+                {(formData as CreatorKYCFormData).taxId}
+              </div>
+              <div>
+                <strong>Established Date:</strong>{' '}
+                {(formData as CreatorKYCFormData).businessEstablishedDate}
+              </div>
+              <div className="col-span-2">
+                <strong>Business Description:</strong>{' '}
+                {(formData as CreatorKYCFormData).businessDescription}
               </div>
             </div>
           </CardContent>
