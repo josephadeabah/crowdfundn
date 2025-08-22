@@ -6,15 +6,18 @@ module Authenticable
     token = header.split(' ').last
     begin
       decoded = decode_token(token)
-      @current_user = User.find(decoded[:user_id]) if decoded[:user_id]
+      if decoded && decoded[:user_id]
+        @current_user = User.find(decoded[:user_id])
+      else
+        render json: { error: 'Invalid or expired token' }, status: :unauthorized
+      end
     rescue ActiveRecord::RecordNotFound
       render json: { error: 'User not found' }, status: :not_found
-      nil
     rescue JWT::DecodeError
       render json: { error: 'Invalid token' }, status: :unauthorized
-      nil
     end
   end
+
 
   def authorize_role(role_name)
     render json: { error: 'Forbidden' }, status: :forbidden unless @current_user&.has_role?(role_name)
