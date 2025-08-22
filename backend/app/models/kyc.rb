@@ -204,7 +204,27 @@ class Kyc < ApplicationRecord
       verified_by: verified_by&.full_name,
       rejection_reason: rejection_reason,
       created_at: created_at,
-      updated_at: updated_at
+      updated_at: updated_at,
+      # Add user/fundraiser information
+      user: {
+        id: user.id,
+        email: user.email,
+        full_name: user.full_name,
+        profile: user.profile ? {
+          first_name: user.profile.first_name,
+          last_name: user.profile.last_name,
+          phone_number: user.profile.phone_number
+        } : nil,
+        # Add fundraiser-specific information if available
+        fundraiser_info: user.campaigns.any? ? {
+          has_campaigns: true,
+          total_campaigns: user.campaigns.count,
+          active_campaigns: user.campaigns.active.count,
+          campaign_titles: user.campaigns.pluck(:title)
+        } : {
+          has_campaigns: false
+        }
+      }
     }
   end
 

@@ -14,9 +14,9 @@ module Api
 
         def index
           @kycs = if @current_user.admin?
-            Kyc.all.order(created_at: :desc)
+            Kyc.includes(:user, :kyc_documents, :kyc_addresses, user: [:profile, :campaigns]).all.order(created_at: :desc)
           else
-            @current_user.kycs.order(created_at: :desc)
+            @current_user.kycs.includes(:kyc_documents, :kyc_addresses).order(created_at: :desc)
           end
           
           # Apply pagination
@@ -40,6 +40,9 @@ module Api
               return render json: { error: 'Unauthorized' }, status: :unauthorized
             end
           end
+          
+          # Eager load user associations for the response
+          @kyc = ::Kyc.includes(:user, :kyc_documents, :kyc_addresses, user: [:profile, :campaigns]).find(params[:id])
           
           render json: { kyc: @kyc.to_frontend_format }
         end
@@ -190,7 +193,7 @@ module Api
         end
 
         def all_needs_review
-          @kycs = ::Kyc.includes(:user, :kyc_documents, :kyc_addresses)
+          @kycs = ::Kyc.includes(:user, :kyc_documents, :kyc_addresses, user: [:profile, :campaigns])
                       .needs_review
                       .order(created_at: :desc)
           
