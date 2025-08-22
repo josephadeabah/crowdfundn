@@ -9,8 +9,7 @@ import {
   CardTitle,
 } from '@/app/components/ui/card';
 import { Separator } from '@/app/components/ui/seperator';
-import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from 'lucide-react';
-import { useToast } from '@/app/hooks/use-toast';
+import { ArrowLeft } from 'lucide-react';
 import RegisterForm from '@/app/auth/register/RegisterForm';
 
 const Signup = () => {

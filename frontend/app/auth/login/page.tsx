@@ -16,7 +16,7 @@ import {
   CardTitle,
 } from '@/app/components/ui/card';
 import { Separator } from '@/app/components/ui/seperator';
-import { Eye, EyeOff, Mail, Lock, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');

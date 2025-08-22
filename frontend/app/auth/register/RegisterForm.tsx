@@ -10,16 +10,6 @@ import { registerUser } from '@/app/utils/api/api.register';
 import ToastComponent from '@/app/components/toast/Toast';
 import { categories } from '@/app/utils/helpers/categories';
 import { useAuth } from '@/app/context/auth/AuthContext';
-import { format } from 'date-fns';
-import { Calendar as CalendarIcon } from 'lucide-react';
-import { cn } from '@/app/lib/utils';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/app/components/ui/popover';
-import { Button } from '@/app/components/ui/button';
-import { Calendar } from '@/app/components/ui/calender';
 import { getMinimumBirthDate } from '@/app/types/kyc.type';
 
 type FormData = {
