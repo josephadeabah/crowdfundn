@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from '@/app/components/ui/sonner';
 import {
   Card,
   CardContent,
@@ -41,11 +40,10 @@ import { SignatureDialog } from './SignatureDialog';
 import { ProgressSteps } from './ProgressSteps';
 import { Point } from '@/app/account/settings/kyc/signature/signatureUtils';
 import { z } from 'zod';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { useKyc } from '@/app/context/kyc/KycContext';
 import { KycFormData, KycAddress } from '@/app/types/kyc.type';
 import { BusinessInfoStep } from './BusinessInfoStep';
-import { FaExclamationTriangle } from 'react-icons/fa';
 import AlertPopup from '../alertpopup/AlertPopup';
 
 const KYCProcess: React.FC<KYCProcessProps> = ({
@@ -77,7 +75,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     [key: string]: File;
   }>({});
   const [showErrorAlert, setShowErrorAlert] = useState(false);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [currentError, setCurrentError] = useState<string>('');
+  const [currentSuccess, setCurrentSuccess] = useState<string>('');
 
   const isCreator = userType === 'creator';
   const isInvestor = userType === 'investor';
@@ -132,6 +132,16 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       }
     }
   }, [kycErrors]);
+
+  const showSuccessMessage = (message: string) => {
+    setCurrentSuccess(message);
+    setShowSuccessAlert(true);
+  };
+
+  const showErrorMessage = (message: string) => {
+    setCurrentError(message);
+    setShowErrorAlert(true);
+  };
 
   const sanitizeFormData = (data: any): any => {
     if (data === null || data === undefined) return data;
@@ -303,22 +313,16 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const handleDocumentUpload = async (documentType: string, file: File) => {
     try {
       setUploadedDocuments((prev) => ({ ...prev, [documentType]: file }));
-      toast.success(`${documentType.replace('_', ' ')} uploaded successfully`);
+      showSuccessMessage(
+        `${documentType.replace('_', ' ')} uploaded successfully`,
+      );
     } catch (error) {
-      toast.error(`Failed to upload ${documentType.replace('_', ' ')}`);
+      showErrorMessage(`Failed to upload ${documentType.replace('_', ' ')}`);
       console.error('Upload error:', error);
     }
   };
 
   const prepareKycData = (): KycFormData => {
-    const formatDate = (date: any): string => {
-      if (!date) return '';
-      if (typeof date === 'string') return date;
-      if (date instanceof Date) return date.toISOString().split('T')[0];
-      console.warn('Unexpected date format:', date);
-      return '';
-    };
-
     const baseData = {
       kyc_type: userType === 'creator' ? 'issuer' : 'investor',
       verification_type: formData.idType as
@@ -379,12 +383,14 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       async ([documentType, file]) => {
         try {
           await uploadDocument(kycId, documentType, file);
-          toast.success(
+          showSuccessMessage(
             `${documentType.replace('_', ' ')} uploaded successfully`,
           );
         } catch (error) {
           console.error(`Failed to upload ${documentType}:`, error);
-          toast.error(`Failed to upload ${documentType.replace('_', ' ')}`);
+          showErrorMessage(
+            `Failed to upload ${documentType.replace('_', ' ')}`,
+          );
         }
       },
     );
@@ -435,7 +441,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
     if (stepType === 'certificate') {
       if (!isSigned) {
-        toast.error('Please sign your certificate before proceeding.');
+        showErrorMessage('Please sign your certificate before proceeding.');
         setIsSubmitting(false);
         return;
       }
@@ -443,13 +449,13 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
     if (stepType === 'review') {
       if (!isSigned) {
-        toast.error('Please sign your certificate before submitting.');
+        showErrorMessage('Please sign your certificate before submitting.');
         setIsSubmitting(false);
         return;
       }
 
       if (isInvestor && !isQuizPassed()) {
-        toast.error(
+        showErrorMessage(
           'Please complete the investor quiz correctly before submitting.',
         );
         setIsSubmitting(false);
@@ -470,7 +476,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             ? 'Investor'
             : 'Mentor';
 
-        toast.success(`${userTypeLabel} verification submitted successfully`);
+        showSuccessMessage(
+          `${userTypeLabel} verification submitted successfully`,
+        );
 
         localStorage.removeItem(`${userType}Signature`);
         setFormData({});
@@ -505,7 +513,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
   const handleSaveSignature = (newSignature: Point[]) => {
     if (newSignature.length < 5) {
-      toast.error('Please add a valid signature');
+      showErrorMessage('Please add a valid signature');
       return;
     }
 
@@ -513,7 +521,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     setIsSigned(true);
     setIsSignDialogOpen(false);
     localStorage.setItem(`${userType}Signature`, JSON.stringify(newSignature));
-    toast.success('Certificate signed successfully!');
+    showSuccessMessage('Certificate signed successfully!');
   };
 
   const handleRemoveSignature = () => {
@@ -638,8 +646,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         onCancel={handleCancelSignature}
       />
 
+      {/* Error Alert Popup */}
       <AlertPopup
-        title="Business Registration Error"
+        title="Error"
         message={currentError}
         isOpen={showErrorAlert}
         setIsOpen={setShowErrorAlert}
@@ -651,9 +660,26 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           setShowErrorAlert(false);
           clearErrors();
         }}
-        icon={<FaExclamationTriangle className="w-6 h-6 text-red-600" />}
+        icon={<AlertCircle className="w-6 h-6 text-red-600" />}
         confirmText="OK"
         confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
+      />
+
+      {/* Success Alert Popup */}
+      <AlertPopup
+        title="Success"
+        message={currentSuccess}
+        isOpen={showSuccessAlert}
+        setIsOpen={setShowSuccessAlert}
+        onConfirm={() => {
+          setShowSuccessAlert(false);
+        }}
+        onCancel={() => {
+          setShowSuccessAlert(false);
+        }}
+        icon={<CheckCircle className="w-6 h-6 text-green-600" />}
+        confirmText="OK"
+        confirmButtonClass="bg-green-600 hover:bg-green-700 focus:ring-green-500"
       />
     </div>
   );
