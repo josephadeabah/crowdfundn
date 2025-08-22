@@ -21,17 +21,17 @@ const Index = () => {
         </div>
 
         <div className="space-y-4">
-          <div className="flex flex-wrap justify-center gap-4 text-sm">
-            <span className="bg-trust/10 text-trust px-3 py-1 rounded-full">
-              💝 Donation|Grant-Based
-            </span>
-            <span className="bg-growth/10 text-growth px-3 py-1 rounded-full">
-              🎁 Reward-Based
-            </span>
-            <span className="bg-accent/10 text-accent px-3 py-1 rounded-full">
-              📈 Equity Investment
-            </span>
-          </div>
+                    <div className="flex flex-wrap gap-4 text-xs">
+                    <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full font-semibold">
+                      💝 Donation|Grant-Based
+                    </div>
+                    <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-semibold">
+                      🎁 Reward-Based
+                    </div>
+                    <div className="bg-purple-100 text-purple-800 px-4 py-2 rounded-full font-semibold">
+                      📈 Equity Investment
+                    </div>
+                  </div>
 
           <div className="flex gap-4 justify-center">
             <Button asChild variant="ghost" size="lg" className="bg-bantu-green">
