@@ -27,10 +27,6 @@ export interface KycReview {
   user?: {
     email: string;
     full_name: string;
-    profile: {
-      full_name: string;
-      phone: string;
-    };
     fundraiser_info?: {
       has_campaigns?: boolean;
       active_campaigns?: number;
