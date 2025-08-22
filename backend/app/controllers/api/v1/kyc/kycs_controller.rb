@@ -6,7 +6,7 @@ module Api
         before_action :authenticate_request
         before_action :set_kyc, only: [:show, :update, :destroy, :submit, :documents, :verify, :reject, :request_info, :upload_document]
         before_action :authorize_user_access, only: [:show, :update, :destroy, :submit, :documents]
-        before_action :authorize_admin, only: [:all_needs_review, :verify, :reject, :request_info]
+        before_action :authorize_admin, only: [:all_needs_review, :stats, :verify, :reject, :request_info]
 
         def index
           @kycs = if @current_user.admin?
@@ -26,12 +26,6 @@ module Api
           if @current_user.kycs.where(status: ['pending', 'in_review', 'verified']).exists?
             return render json: { errors: ['You already have a KYC submission in progress or verified'] }, status: :unprocessable_entity
           end
-
-            # Check if business_tax_id already exists (for issuers)
-          # if params[:kyc][:business_tax_id].present? && 
-          #   Kyc.where(business_tax_id: params[:kyc][:business_tax_id]).exists?
-          #   return render json: { errors: ['Business tax ID already exists'] }, status: :unprocessable_entity
-          # end
 
           # Build KYC without addresses first
           @kyc = @current_user.kycs.build(kyc_params.except(:addresses_attributes))
@@ -173,26 +167,26 @@ module Api
           render json: { documents: @documents.map(&:to_frontend_format) }
         end
 
-          def all_needs_review
-            @kycs = ::Kyc.includes(:user, :kyc_documents, :kyc_addresses)
-                        .needs_review
-                        .order(created_at: :desc)
-                        .page(params[:page] || 1)
-                        .per(params[:per_page] || 25)
-            
-            # Apply filters...
-            @kycs = @kycs.where(status: params[:status]) if params[:status].present?
-            @kycs = @kycs.where(kyc_type: params[:kyc_type]) if params[:kyc_type].present?
-            
-            render json: { 
-              kycs: @kycs.map(&:to_frontend_format),
-              pagination: {
-                current_page: @kycs.current_page,
-                total_pages: @kycs.total_pages,
-                total_count: @kycs.total_count
-              }
+        def all_needs_review
+          @kycs = ::Kyc.includes(:user, :kyc_documents, :kyc_addresses)
+                      .needs_review
+                      .order(created_at: :desc)
+                      .page(params[:page] || 1)
+                      .per(params[:per_page] || 25)
+          
+          # Apply filters...
+          @kycs = @kycs.where(status: params[:status]) if params[:status].present?
+          @kycs = @kycs.where(kyc_type: params[:kyc_type]) if params[:kyc_type].present?
+          
+          render json: { 
+            kycs: @kycs.map(&:to_frontend_format),
+            pagination: {
+              current_page: @kycs.current_page,
+              total_pages: @kycs.total_pages,
+              total_count: @kycs.total_count
             }
-          end
+          }
+        end
 
         def show_documents
           render json: { 
