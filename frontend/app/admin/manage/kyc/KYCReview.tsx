@@ -335,13 +335,18 @@ const KYCReview = () => {
                       {review.reference}
                     </TableCell>
                     <TableCell>
-                      <div>
-                        <div className="font-medium">{review.user_name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {review.user_email}
-                        </div>
+                    <div>
+                      <div className="font-medium">{review?.user?.full_name}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {review?.user?.email}
                       </div>
-                    </TableCell>
+                      {review?.user?.fundraiser_info?.has_campaigns && (
+                        <div className="text-xs text-green-500">
+                          Fundraiser ({review?.user?.fundraiser_info?.active_campaigns} active campaigns)
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         {getKycTypeIcon(review.kyc_type)}
