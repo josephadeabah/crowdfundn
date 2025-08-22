@@ -173,21 +173,26 @@ module Api
           render json: { documents: @documents.map(&:to_frontend_format) }
         end
 
-       # app/controllers/api/v1/kyc/kycs_controller.rb
-        def all_needs_review
-          @kycs = ::Kyc.needs_review.order(created_at: :desc) # Add :: to specify global namespace
-          
-          # Apply filters if needed
-          if params[:status].present?
-            @kycs = @kycs.where(status: params[:status])
+          def all_needs_review
+            @kycs = ::Kyc.includes(:user, :kyc_documents, :kyc_addresses)
+                        .needs_review
+                        .order(created_at: :desc)
+                        .page(params[:page] || 1)
+                        .per(params[:per_page] || 25)
+            
+            # Apply filters...
+            @kycs = @kycs.where(status: params[:status]) if params[:status].present?
+            @kycs = @kycs.where(kyc_type: params[:kyc_type]) if params[:kyc_type].present?
+            
+            render json: { 
+              kycs: @kycs.map(&:to_frontend_format),
+              pagination: {
+                current_page: @kycs.current_page,
+                total_pages: @kycs.total_pages,
+                total_count: @kycs.total_count
+              }
+            }
           end
-          
-          if params[:kyc_type].present?
-            @kycs = @kycs.where(kyc_type: params[:kyc_type])
-          end
-          
-          render json: { kycs: @kycs.map(&:to_frontend_format) }
-        end
 
         def show_documents
           render json: { 
@@ -226,14 +231,18 @@ module Api
         end
 
         def stats
-          stats = {
-            total: Kyc.count,
-            pending: Kyc.where(status: 'pending').count,
-            in_review: Kyc.where(status: 'in_review').count,
-            verified: Kyc.where(status: 'verified').count,
-            rejected: Kyc.where(status: 'rejected').count,
-            expired: Kyc.where(status: 'expired').count
-          }
+          cache_key = "kyc_stats_#{Date.today}"
+          
+          stats = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
+            {
+              total: Kyc.count,
+              pending: Kyc.where(status: 'pending').count,
+              in_review: Kyc.where(status: 'in_review').count,
+              verified: Kyc.where(status: 'verified').count,
+              rejected: Kyc.where(status: 'rejected').count,
+              expired: Kyc.where(status: 'expired').count
+            }
+          end
           
           render json: { stats: stats }
         end
