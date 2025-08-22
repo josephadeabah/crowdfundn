@@ -31,7 +31,7 @@ module Api
         def show
           if @current_user.admin?
             # Admin can only view KYCs that need review (same scope as all_needs_review)
-            unless @kyc.needs_review?
+            unless @kyc.pending? || @kyc.in_review?
               return render json: { error: 'Admin can only view KYCs pending review' }, status: :unauthorized
             end
           else
@@ -40,9 +40,6 @@ module Api
               return render json: { error: 'Unauthorized' }, status: :unauthorized
             end
           end
-          
-          # Eager load user associations for the response
-          @kyc = ::Kyc.includes(:user, :kyc_documents, :kyc_addresses, user: [:profile, :campaigns]).find(params[:id])
           
           render json: { kyc: @kyc.to_frontend_format }
         end
@@ -269,7 +266,7 @@ module Api
         private
 
         def set_kyc
-          @kyc = ::Kyc.find(params[:id])
+          @kyc = ::Kyc.includes(:user, :kyc_documents, :kyc_addresses, user: [:profile, :campaigns]).find(params[:id])
         end
 
         def authorize_user_access
