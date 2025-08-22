@@ -63,7 +63,7 @@ const Index = () => {
         </div>
 
         {/* Additional decorative elements */}
-        <div className="pt-2 md:pt-8">
+        <div className="pt-2 md:pt-8 mb-4">
           <div className="flex justify-center space-x-2 opacity-60">
             <div
               className="w-2 h-2 bg-trust rounded-full animate-bounce"
