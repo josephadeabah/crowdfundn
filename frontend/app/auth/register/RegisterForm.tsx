@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { FaSpinner, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
