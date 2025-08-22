@@ -37,16 +37,7 @@ const Teams = () => {
       email: 'nqoba.manana@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/nqoba-g-manana/',
       level: 'board' as const,
-    },
-    {
-      id: '4',
-      name: 'Moses Onyeke',
-      position: 'Advisor',
-      image: ceoHeadshot,
-      email: 'john.harrison@company.com',
-      linkedin: 'https://linkedin.com/in/moses-onyeka-50505b2a0',
-      level: 'board' as const,
-    },
+    }
   ];
 
   const executiveLeadership = [
