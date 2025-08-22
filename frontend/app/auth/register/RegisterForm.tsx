@@ -417,7 +417,7 @@ const RegisterForm: React.FC = () => {
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Birth Date <span className="text-red-500">*</span>
+                  Birth Date
                 </label>
                 <input
                   type="date"
