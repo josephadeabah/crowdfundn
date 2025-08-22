@@ -12,17 +12,17 @@ const Index = () => {
               BantuHive
             </h1>
           </div>
-          
+
           <div className="space-y-4">
             <p className="text-2xl md:text-3xl text-muted-foreground font-light leading-relaxed">
               The All-in-One Fundraiser Management Software Platform
             </p>
-            
+
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-8 font-normal">
-              The all-in-one, gamified crowdfunding and micro-investment platform
-              giving individuals and organizations across Ghana and its diaspora
-              the power to fund and co-own high-impact startups and projects that
-              shape the country's future.
+              The all-in-one, gamified crowdfunding and micro-investment
+              platform giving individuals and organizations across Ghana and its
+              diaspora the power to fund and co-own high-impact startups and
+              projects that shape the country's future.
             </p>
           </div>
         </div>
@@ -40,7 +40,7 @@ const Index = () => {
               📈 Equity Investment
             </div>
           </div>
-          
+
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
             <Button
@@ -48,20 +48,16 @@ const Index = () => {
               size="lg"
               className="bg-bantu-green text-white px-8 py-6 text-lg font-semibold hover:bg-bantu-green/90 transition-colors shadow-lg hover:shadow-xl"
             >
-              <Link href="/auth/register">
-                Get Started
-              </Link>
+              <Link href="/auth/register">Get Started</Link>
             </Button>
-            
-            <Button 
-              asChild 
-              variant="outline" 
+
+            <Button
+              asChild
+              variant="outline"
               size="lg"
               className="px-8 py-6 text-lg font-semibold border-2 hover:bg-accent transition-colors"
             >
-              <Link href="/auth/login">
-                Sign In
-              </Link>
+              <Link href="/auth/login">Sign In</Link>
             </Button>
           </div>
         </div>
@@ -69,9 +65,18 @@ const Index = () => {
         {/* Additional decorative elements */}
         <div className="pt-8">
           <div className="flex justify-center space-x-2 opacity-60">
-            <div className="w-2 h-2 bg-trust rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-            <div className="w-2 h-2 bg-growth rounded-full animate-bounce" style={{ animationDelay: '200ms' }} />
-            <div className="w-2 h-2 bg-bantu-green rounded-full animate-bounce" style={{ animationDelay: '400ms' }} />
+            <div
+              className="w-2 h-2 bg-trust rounded-full animate-bounce"
+              style={{ animationDelay: '0ms' }}
+            />
+            <div
+              className="w-2 h-2 bg-growth rounded-full animate-bounce"
+              style={{ animationDelay: '200ms' }}
+            />
+            <div
+              className="w-2 h-2 bg-bantu-green rounded-full animate-bounce"
+              style={{ animationDelay: '400ms' }}
+            />
           </div>
         </div>
       </div>

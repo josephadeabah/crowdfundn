@@ -612,79 +612,77 @@ const RegisterForm: React.FC = () => {
           description={success}
         />
       )}
-      <div className="">
-        <div className="max-w-full mx-auto bg-white">
-          <StepIndicator />
-          <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-            <p className="text-violet-600">
-              Location detected: {formData.country} ({formData.currency} -{' '}
-              {formData.currencySymbol})
-            </p>
-          </div>
-          <form onSubmit={handleSubmit} className="">
-            {renderStep()}
-            {currentStep === 3 && (
-              <div className="mt-4">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={termsAccepted}
-                    onChange={handleCheckboxChange}
-                    className="h-4 w-4 text-green-600 border-gray-300 rounded checked:bg-green-600"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">
-                    I agree to the{' '}
-                    <a
-                      href="/terms"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-green-700 hover:underline"
-                    >
-                      Terms and Conditions
-                    </a>
-                  </span>
-                </label>
-              </div>
-            )}
-            <div className="flex justify-between mt-8">
-              {currentStep > 1 && (
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep(currentStep - 1)}
-                  className="px-4 py-2 text-sm font-medium text-green-600 bg-white border border-green-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all"
-                >
-                  Previous
-                </button>
-              )}
-              {currentStep < 3 && (
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep(currentStep + 1)}
-                  disabled={!isStepValid()}
-                  className="ml-auto px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next
-                </button>
-              )}
-              {currentStep === 3 && (
-                <button
-                  type="submit"
-                  disabled={isLoading || !isStepValid() || !termsAccepted}
-                  className="ml-auto px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? (
-                    <span className="flex items-center">
-                      <FaSpinner className="animate-spin mr-2" />
-                      Registering...
-                    </span>
-                  ) : (
-                    "Let's Go!"
-                  )}
-                </button>
-              )}
-            </div>
-          </form>
+      <div className="max-w-full mx-auto bg-white">
+        <StepIndicator />
+        <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+          <p className="text-violet-600">
+            Location detected: {formData.country} ({formData.currency} -{' '}
+            {formData.currencySymbol})
+          </p>
         </div>
+        <form onSubmit={handleSubmit} className="">
+          {renderStep()}
+          {currentStep === 3 && (
+            <div className="mt-4">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={termsAccepted}
+                  onChange={handleCheckboxChange}
+                  className="h-4 w-4 text-green-600 border-gray-300 rounded checked:bg-green-600"
+                />
+                <span className="ml-2 text-sm text-gray-700">
+                  I agree to the{' '}
+                  <a
+                    href="/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-green-700 hover:underline"
+                  >
+                    Terms and Conditions
+                  </a>
+                </span>
+              </label>
+            </div>
+          )}
+          <div className="flex justify-between mt-8">
+            {currentStep > 1 && (
+              <button
+                type="button"
+                onClick={() => setCurrentStep(currentStep - 1)}
+                className="px-4 py-2 text-sm font-medium text-green-600 bg-white border border-green-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all"
+              >
+                Previous
+              </button>
+            )}
+            {currentStep < 3 && (
+              <button
+                type="button"
+                onClick={() => setCurrentStep(currentStep + 1)}
+                disabled={!isStepValid()}
+                className="ml-auto px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            )}
+            {currentStep === 3 && (
+              <button
+                type="submit"
+                disabled={isLoading || !isStepValid() || !termsAccepted}
+                className="ml-auto px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <span className="flex items-center">
+                    <FaSpinner className="animate-spin mr-2" />
+                    Registering...
+                  </span>
+                ) : (
+                  "Let's Go!"
+                )}
+              </button>
+            )}
+          </div>
+        </form>
       </div>
     </>
   );
