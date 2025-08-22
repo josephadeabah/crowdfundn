@@ -224,22 +224,26 @@ module Api
           render json: { message: 'Information requested from user' }
         end
 
-        def stats
+       def stats
           cache_key = "kyc_stats_#{Date.today}"
-          
+
           stats = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
             {
-              total: Kyc.count,
-              pending: Kyc.where(status: 'pending').count,
-              in_review: Kyc.where(status: 'in_review').count,
-              verified: Kyc.where(status: 'verified').count,
-              rejected: Kyc.where(status: 'rejected').count,
-              expired: Kyc.where(status: 'expired').count
+              total: ::Kyc.count,
+              pending: ::Kyc.where(status: 'pending').count,
+              in_review: ::Kyc.where(status: 'in_review').count,
+              verified: ::Kyc.where(status: 'verified').count,
+              rejected: ::Kyc.where(status: 'rejected').count,
+              expired: ::Kyc.where(status: 'expired').count
             }
           end
-          
+
           render json: { stats: stats }
+        rescue => e
+          Rails.logger.error "KYC stats failed: #{e.message}"
+          render json: { error: 'Could not fetch KYC stats' }, status: :internal_server_error
         end
+
 
         private
 
