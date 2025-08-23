@@ -37,7 +37,7 @@ const Teams = () => {
       email: 'nqoba.manana@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/nqoba-g-manana/',
       level: 'board' as const,
-    }
+    },
   ];
 
   const executiveLeadership = [

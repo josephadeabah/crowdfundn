@@ -1,9 +1,17 @@
+'use client';
 import React, { useEffect, useState } from 'react';
-import { FaPlus } from 'react-icons/fa';
 import Modal from '@/app/components/modal/Modal';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '@/app/components/toast/Toast';
 import BankAccountLoader from '@/app/loaders/BankAccountLoader';
+import {
+  Plus,
+  CreditCard,
+  Building2,
+  User,
+  Edit3,
+  CheckCircle,
+} from 'lucide-react';
 
 type Bank = {
   display_name: string;
@@ -228,190 +236,273 @@ const PaymentMethod = () => {
         description={toast.description}
         type={toast.type}
       />
+      <div className="max-w-2xl mx-auto p-6 space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
+            <div className="p-2 bg-gradient-primary rounded-xl">
+              <CreditCard className="h-6 w-6 text-white" />
+            </div>
+            Bank Account Information
+          </h2>
+          <p className="text-success font-medium flex items-center gap-2">
+            <CheckCircle className="h-4 w-4" />
+            You'll receive your payout through this account
+          </p>
+        </div>
 
-      <h2 className="text-xl font-semibold">Bank Account Information</h2>
-      <span className="font-normal text-green-500 py-2">
-        You'll receive your money through this account
-      </span>
+        {isLoading ? (
+          <BankAccountLoader />
+        ) : subaccountData ? (
+          <div className="space-y-4">
+            <div className="p-6 bg-gradient-card rounded-xl shadow-card border border-border">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-4 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <User className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="font-medium text-muted-foreground">
+                      Name
+                    </span>
+                  </div>
+                  <span className="font-semibold text-foreground">
+                    {subaccountData.business_name}
+                  </span>
+                </div>
 
-      {isLoading ? (
-        <BankAccountLoader />
-      ) : subaccountData ? (
-        <div>
-          <div className="p-4 max-w-md bg-white rounded-sm shadow-sm">
-            <div className="flex flex-col gap-2">
-              <div className="flex justify-between items-center">
-                <span className="font-medium text-gray-600 bg-gray-50 p-2 rounded-full">
-                  Name
-                </span>
-                <span className="text-gray-800">
-                  {subaccountData.business_name}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="font-medium text-gray-600 bg-gray-50 p-2 rounded-full">
-                  Account Number
-                </span>
-                <span className="text-gray-800">
-                  {maskAccountNumber(subaccountData.account_number)}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="font-medium text-gray-600 bg-gray-50 p-2 rounded-full">
-                  Bank
-                </span>
-                <span className="text-gray-800">
-                  {subaccountData.metadata?.custom_fields?.[0]?.display_name}
-                </span>
+                <div className="flex justify-between items-center p-4 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <CreditCard className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="font-medium text-muted-foreground">
+                      Account Number
+                    </span>
+                  </div>
+                  <span className="font-mono font-semibold text-foreground tracking-wider">
+                    {maskAccountNumber(subaccountData.account_number)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center p-4 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <Building2 className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="font-medium text-muted-foreground">
+                      Bank
+                    </span>
+                  </div>
+                  <span className="font-semibold text-foreground">
+                    {subaccountData.metadata?.custom_fields?.[0]?.display_name}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
+            <button
+              className="flex items-center justify-center gap-3 w-full p-4 bg-primary hover:bg-primary-hover text-primary-foreground rounded-xl font-semibold shadow-button transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+              onClick={() => setIsUpdateModalOpen(true)}
+            >
+              <Edit3 className="h-5 w-5" />
+              Update Bank Account
+            </button>
+          </div>
+        ) : (
           <button
-            className="flex items-center gap-2 p-3 my-3 shadow-sm"
-            onClick={() => setIsUpdateModalOpen(true)}
+            className="flex items-center justify-center gap-3 w-full p-6 bg-gradient-primary hover:opacity-90 text-white rounded-xl font-semibold shadow-button transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] border-2 border-dashed border-primary/30"
+            onClick={() => setIsAddModalOpen(true)}
           >
-            Update Bank Account
+            <Plus className="h-6 w-6" />
+            Add Bank Account
           </button>
-        </div>
-      ) : (
-        <button
-          className="flex items-center gap-2 p-3 my-3 shadow-sm"
-          onClick={() => setIsAddModalOpen(true)}
+        )}
+
+        {/* Add Modal */}
+        <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
+          <div className="space-y-6">
+            <div className="text-center">
+              <div className="mx-auto w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center mb-4">
+                <Plus className="h-6 w-6 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-foreground">
+                Add Bank Account
+              </h2>
+              <p className="text-muted-foreground">
+                Enter your bank details to receive payments
+              </p>
+            </div>
+
+            <form
+              onSubmit={(e) => handleSubmitSubaccount(e, false)}
+              className="space-y-4"
+            >
+              <div className="space-y-2">
+                <label
+                  htmlFor="bank-select"
+                  className="block text-sm font-semibold text-foreground"
+                >
+                  Select Bank
+                </label>
+                <select
+                  id="bank-select"
+                  value={selectedBank?.value || ''}
+                  onChange={(e) =>
+                    setSelectedBank(
+                      banks.find((bank) => bank.value === e.target.value) ||
+                        null,
+                    )
+                  }
+                  required
+                  className="w-full px-4 py-3 bg-card border-2 border-input rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-foreground placeholder-muted-foreground appearance-none cursor-pointer relative z-10"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                    backgroundPosition: 'right 0.75rem center',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: '1.5em 1.5em',
+                  }}
+                >
+                  <option value="">Choose your bank</option>
+                  {banks.map((bank) => (
+                    <option key={bank.value} value={bank.value}>
+                      {bank.display_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="account-number"
+                  className="block text-sm font-semibold text-foreground"
+                >
+                  Account Number
+                </label>
+                <input
+                  id="account-number"
+                  type="text"
+                  placeholder="Enter your account number"
+                  value={accountNumber}
+                  onChange={(e) => setAccountNumber(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-background border-2 border-input rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-foreground placeholder-muted-foreground font-mono"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3 bg-success hover:bg-success-hover disabled:opacity-50 disabled:cursor-not-allowed text-success-foreground rounded-lg font-semibold shadow-button transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-success-foreground/30 border-t-success-foreground rounded-full animate-spin"></div>
+                    Adding Account...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-4 w-4" />
+                    Add Account
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+        </Modal>
+
+        {/* Update Modal */}
+        <Modal
+          isOpen={isUpdateModalOpen}
+          onClose={() => setIsUpdateModalOpen(false)}
         >
-          <FaPlus /> Add Bank Account
-        </button>
-      )}
+          <div className="space-y-6">
+            <div className="text-center">
+              <div className="mx-auto w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center mb-4">
+                <Edit3 className="h-6 w-6 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-foreground">
+                Update Bank Account
+              </h2>
+              <p className="text-muted-foreground">Modify your bank details</p>
+            </div>
 
-      {/* Add Modal */}
-      <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
-        <h2>Add Bank Account</h2>
-        <form
-          onSubmit={(e) => handleSubmitSubaccount(e, !!subaccountData)}
-          className="w-full max-w-md mx-auto p-6 bg-white shadow-sm space-y-4"
-        >
-          {/* Select Input */}
-          <div>
-            <label
-              htmlFor="bank-select"
-              className="block text-sm font-medium text-gray-700 mb-1"
+            <form
+              onSubmit={(e) => handleSubmitSubaccount(e, true)}
+              className="space-y-4"
             >
-              Select Bank
-            </label>
-            <select
-              id="bank-select"
-              value={selectedBank?.value || ''}
-              onChange={(e) =>
-                setSelectedBank(
-                  banks.find((bank) => bank.value === e.target.value) || null,
-                )
-              }
-              required
-              className="block mt-1 w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-            >
-              <option value="">Select Bank</option>
-              {banks.map((bank) => (
-                <option key={bank.value} value={bank.value}>
-                  {bank.display_name}
-                </option>
-              ))}
-            </select>
+              <div className="space-y-2">
+                <label
+                  htmlFor="bank-select-update"
+                  className="block text-sm font-semibold text-foreground"
+                >
+                  Select Bank
+                </label>
+                <select
+                  id="bank-select-update"
+                  value={selectedBank?.value || ''}
+                  onChange={(e) =>
+                    setSelectedBank(
+                      banks.find((bank) => bank.value === e.target.value) ||
+                        null,
+                    )
+                  }
+                  required
+                  className="w-full px-4 py-3 bg-card border-2 border-input rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-foreground placeholder-muted-foreground appearance-none cursor-pointer relative z-10"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                    backgroundPosition: 'right 0.75rem center',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: '1.5em 1.5em',
+                  }}
+                >
+                  <option value="">Choose your bank</option>
+                  {banks.map((bank) => (
+                    <option key={bank.value} value={bank.value}>
+                      {bank.display_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="account-number-update"
+                  className="block text-sm font-semibold text-foreground"
+                >
+                  Account Number
+                </label>
+                <input
+                  id="account-number-update"
+                  type="text"
+                  placeholder="Enter your account number"
+                  value={accountNumber}
+                  onChange={(e) => setAccountNumber(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-background border-2 border-input rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-foreground placeholder-muted-foreground font-mono"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3 bg-success hover:bg-success-hover disabled:opacity-50 disabled:cursor-not-allowed text-success-foreground rounded-lg font-semibold shadow-button transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-success-foreground/30 border-t-success-foreground rounded-full animate-spin"></div>
+                    Updating Account...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-4 w-4" />
+                    Update Account
+                  </>
+                )}
+              </button>
+            </form>
           </div>
-
-          {/* Account Number Input */}
-          <div>
-            <label
-              htmlFor="account-number"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Account Number
-            </label>
-            <input
-              id="account-number"
-              type="text"
-              placeholder="Enter Account Number"
-              value={accountNumber}
-              onChange={(e) => setAccountNumber(e.target.value)}
-              required
-              className="block mt-1 w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-            />
-          </div>
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full py-2 bg-green-500 text-white rounded shadow-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all"
-          >
-            {isLoading ? 'Adding...' : 'Add Account'}
-          </button>
-        </form>
-      </Modal>
-
-      {/* Update Modal */}
-      <Modal
-        isOpen={isUpdateModalOpen}
-        onClose={() => setIsUpdateModalOpen(false)}
-      >
-        <h2>Update Bank Account</h2>
-        <form
-          onSubmit={(e) => handleSubmitSubaccount(e, true)}
-          className="w-full max-w-md mx-auto p-6 bg-white shadow-sm space-y-4"
-        >
-          {/* Select Input */}
-          <div>
-            <label
-              htmlFor="bank-select"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Select Bank
-            </label>
-            <select
-              id="bank-select"
-              value={selectedBank?.value || ''}
-              onChange={(e) =>
-                setSelectedBank(
-                  banks.find((bank) => bank.value === e.target.value) || null,
-                )
-              }
-              required
-              className="block mt-1 w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-            >
-              <option value="">Select Bank</option>
-              {banks.map((bank) => (
-                <option key={bank.value} value={bank.value}>
-                  {bank.display_name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Account Number Input */}
-          <div>
-            <label
-              htmlFor="account-number"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Account Number
-            </label>
-            <input
-              id="account-number"
-              type="text"
-              placeholder="Enter Account Number"
-              value={accountNumber}
-              onChange={(e) => setAccountNumber(e.target.value)}
-              required
-              className="block mt-1 w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
-            />
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full py-2 bg-green-500 text-white rounded shadow-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all"
-          >
-            {isLoading ? 'Updating...' : 'Update Account'}
-          </button>
-        </form>
-      </Modal>
+        </Modal>
+      </div>
     </div>
   );
 };
