@@ -45,7 +45,7 @@ class EquityCampaign < Campaign
   end
 
   def update_all_investment_values
-    equity_investments.completed.each do |investment|
+    equity_investments.successful.each do |investment|
       InvestmentUpdateJob.perform_later(investment.id)
     end
   end
@@ -260,6 +260,13 @@ class EquityCampaign < Campaign
 
   def update_investments_valuation
     UpdateCampaignInvestmentsJob.perform_later(id)
+  end
+
+  def update_investments_valuation
+    # Update all successful investments when valuation changes
+    equity_investments.successful.find_each do |investment|
+      UpdateCampaignInvestmentsJob.perform_later(investment.id)
+    end
   end
 
   def shares_within_equity_limits

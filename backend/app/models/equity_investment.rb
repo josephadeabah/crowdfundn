@@ -72,7 +72,13 @@ class EquityInvestment < ApplicationRecord
   end
 
   def current_value
-    (campaign.valuation * percentage / 100).round(2)
+    # This will trigger the current_value calculation based on the latest campaign valuation
+    # You might want to add this to a after_save callback on campaign valuation changes
+    # or call this method manually when needed
+    # Force recalculation of current_value
+    current_value = (campaign.valuation * percentage / 100).round(2)
+    
+    current_value
   end
 
   def total_returns
@@ -85,7 +91,33 @@ class EquityInvestment < ApplicationRecord
   end
 
   def self.total_invested(campaign_id)
-    where(campaign_id: campaign_id, status: :successful).sum(:amount)
+    where(campaign_id: campaign_id, status: STATUS_SUCCESSFUL).sum(:amount)
+  end
+
+  def self.portfolio_for(user)
+    investments = user.equity_investments.includes(:campaign)
+    
+    # Use the existing successful scope to filter investments
+    successful_investments = investments.successful
+    
+    {
+      total_invested: successful_investments.sum(:amount),
+      total_value: successful_investments.sum { |i| i.current_value || i.amount },
+      investments: investments,
+      successful_count: successful_investments.count
+    }
+  end
+
+  def self.total_investment_value(user_id = nil)
+    scope = successful
+    scope = scope.where(user_id: user_id) if user_id
+    scope.sum(:amount)
+  end
+
+  def self.total_portfolio_value(user_id = nil)
+    scope = successful.includes(:campaign)
+    scope = scope.where(user_id: user_id) if user_id
+    scope.sum { |investment| investment.current_value || investment.amount }
   end
 
   def certificate_url

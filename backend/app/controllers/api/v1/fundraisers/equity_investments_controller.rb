@@ -94,27 +94,21 @@ module Api
           }, status: :unprocessable_entity
         end
 
+        # app/controllers/api/v1/fundraisers/equity_investments_controller.rb
         def portfolio
-          # This is a collection action that doesn't need @campaign
-          investments = @current_user.equity_investments
-                                  .includes(:campaign)
-                                  .order(created_at: :desc)
-
-          total_invested = investments.sum(:amount)
-          total_value = investments.sum { |i| i.current_value || i.amount }
-          total_return = total_value - total_invested
-          return_percentage = total_invested > 0 ? (total_return / total_invested * 100) : 0
-
+          portfolio_data = EquityInvestment.portfolio_for(@current_user)
+          
           render json: {
             portfolio: {
-              total_invested: total_invested,
-              total_value: total_value,
-              total_return: total_return,
-              return_percentage: return_percentage,
-              active_investments: investments.count,
-              campaigns_invested: investments.select(:campaign_id).distinct.count
+              total_invested: portfolio_data[:total_invested],
+              total_value: portfolio_data[:total_value],
+              total_return: portfolio_data[:total_value] - portfolio_data[:total_invested],
+              return_percentage: portfolio_data[:total_invested] > 0 ? 
+                ((portfolio_data[:total_value] - portfolio_data[:total_invested]) / portfolio_data[:total_invested] * 100).round(2) : 0,
+              active_investments: portfolio_data[:successful_count],
+              campaigns_invested: portfolio_data[:investments].select(:campaign_id).distinct.count
             },
-            investments: investments.map { |investment| EquityInvestmentSerializer.new(investment).as_json }
+            investments: portfolio_data[:investments].map { |investment| EquityInvestmentSerializer.new(investment).as_json }
           }
         end
 

@@ -2,24 +2,16 @@
 class UpdateCampaignInvestmentsJob < ApplicationJob
   queue_as :default
 
-  def perform(campaign_id)
-    campaign = EquityCampaign.find(campaign_id)
+  def perform(investment_id)
+    investment = EquityInvestment.find_by(id: investment_id)
     
-    campaign.equity_investments.successful.find_each do |investment|
-      # Recalculate shares based on new valuation/total_shares
-      price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
-      new_shares = (investment.amount / price_per_share).round(4)
-      
-      # Maintain the original ownership percentage
-      investment.update_columns(
-        shares: new_shares
-        # percentage remains unchanged to preserve ownership stake
-      )
-    end
+    return unless investment && investment.successful?
     
-    # Optional: Recalculate campaign statistics if needed
-    campaign.touch # Force cache invalidation
+    investment.current_value
   rescue ActiveRecord::RecordNotFound => e
-    Rails.logger.error "Campaign not found: #{e.message}"
+    Rails.logger.error "InvestmentUpdateJob: Investment #{investment_id} not found - #{e.message}"
+  rescue StandardError => e
+    Rails.logger.error "InvestmentUpdateJob: Error updating investment #{investment_id} - #{e.message}"
+    # You might want to retry the job or send to error monitoring
   end
 end
