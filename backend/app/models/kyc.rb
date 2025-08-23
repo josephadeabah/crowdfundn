@@ -139,20 +139,35 @@ class Kyc < ApplicationRecord
   end
 
   def process_signature
+    Rails.logger.info "=== PROCESS SIGNATURE STARTED ==="
+    Rails.logger.info "KYC ID: #{id}"
+    Rails.logger.info "signature_data present: #{signature_data.present?}"
+    Rails.logger.info "investor_signature_data present: #{investor_signature_data.present?}"
+    Rails.logger.info "issuer_signature_data present: #{issuer_signature_data.present?}"
+    Rails.logger.info "saved_change_to_signature_data: #{saved_change_to_signature_data?}"
+    Rails.logger.info "saved_change_to_investor_signature_data: #{saved_change_to_investor_signature_data?}"
+    Rails.logger.info "saved_change_to_issuer_signature_data: #{saved_change_to_issuer_signature_data?}"
+    Rails.logger.info "new_record: #{new_record?}"
+    
     # Process main signature if provided
-    if signature_data.present? && saved_change_to_signature_data?
+    if signature_data.present? && (saved_change_to_signature_data? || new_record?)
+      Rails.logger.info "Processing main signature"
       process_signature_image(signature_data, :signature_image)
     end
     
     # Process investor signature if provided
-    if investor_signature_data.present? && saved_change_to_investor_signature_data?
+    if investor_signature_data.present? && (saved_change_to_investor_signature_data? || new_record?)
+      Rails.logger.info "Processing investor signature"
       process_signature_image(investor_signature_data, :signature_image)
     end
     
     # Process issuer signature if provided
-    if issuer_signature_data.present? && saved_change_to_issuer_signature_data?
+    if issuer_signature_data.present? && (saved_change_to_issuer_signature_data? || new_record?)
+      Rails.logger.info "Processing issuer signature"
       process_signature_image(issuer_signature_data, :issuer_signature)
     end
+    
+    Rails.logger.info "=== PROCESS SIGNATURE COMPLETED ==="
   end
 
   def process_signature_image(signature_points, attachment_name)

@@ -154,9 +154,13 @@ module Api
                 document.update_column(:file_name, document.file.filename.to_s)
               end
               
+              # Reload the KYC to include updated documents
+              @kyc.reload
+              
               render json: { 
                 message: 'Document uploaded successfully', 
-                document: document.to_frontend_format 
+                document: document.to_frontend_format,
+                kyc: @kyc.to_frontend_format # Include updated KYC in response
               }
             else
               render json: { errors: document.errors.full_messages }, status: :unprocessable_entity

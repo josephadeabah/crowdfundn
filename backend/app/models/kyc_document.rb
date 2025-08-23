@@ -73,7 +73,10 @@ class KycDocument < ApplicationRecord
       verified_at: verified_at,
       verified_by: verified_by&.full_name,
       created_at: created_at,
-      updated_at: updated_at
+      updated_at: updated_at,
+      file_attached: file.attached?,
+      file_size: file.attached? ? file.blob.byte_size : nil,
+      file_content_type: file.attached? ? file.blob.content_type : nil
     }
   end
 
