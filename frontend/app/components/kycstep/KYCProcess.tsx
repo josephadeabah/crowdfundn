@@ -407,6 +407,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     } as KycFormData;
   };
 
+  // In KYCProcess.tsx, update the uploadAllDocuments function
   const uploadAllDocuments = async (kycId: number) => {
     const uploadPromises = Object.entries(uploadedDocuments).map(
       async ([documentType, file]) => {
@@ -420,6 +421,8 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           showErrorMessage(
             `Failed to upload ${documentType.replace('_', ' ')}`,
           );
+          // Re-throw to stop the process if upload fails
+          throw error;
         }
       },
     );
