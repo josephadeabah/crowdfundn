@@ -53,6 +53,12 @@ module Api
           user = User.find(params[:user_id])
           raise 'User not found' unless user
 
+          # Check if user already has a subaccount
+          if user.subaccount.present?
+            # Update existing subaccount instead of creating new one
+            return update_existing_subaccount(user, user.subaccount)
+          end
+
           # Prepare metadata
           metadata = params[:subaccount][:metadata] || { custom_fields: [] }
 
@@ -65,12 +71,12 @@ module Api
 
           # Ensure custom_fields is an array
           metadata[:custom_fields] = if metadata[:custom_fields]
-                                       metadata[:custom_fields].map do |field|
-                                         field.slice(:display_name, :variable_name, :value, :type)
-                                       end
-                                     else
-                                       []
-                                     end
+                                      metadata[:custom_fields].map do |field|
+                                        field.slice(:display_name, :variable_name, :value, :type)
+                                      end
+                                    else
+                                      []
+                                    end
 
           ActiveRecord::Base.transaction do
             # Create a new subaccount via Paystack
@@ -103,7 +109,7 @@ module Api
               user_id: user.id
             )
 
-            # Update user's subaccount_id
+            # Update user's subaccount_id (maintains backward compatibility)
             user.update_columns(subaccount_id: subaccount.subaccount_code)
           end
 
@@ -131,7 +137,8 @@ module Api
           user = User.find(params[:user_id])
           raise 'User not found' unless user
 
-          subaccount = Subaccount.find_by(subaccount_code: params[:subaccount_code])
+          # Use the has_one association instead of searching by subaccount_code
+          subaccount = user.subaccount
           if subaccount.nil?
             render json: { success: false, error: 'Subaccount not found' }, status: :not_found
             return
@@ -173,7 +180,7 @@ module Api
                   raise StandardError, "Failed to recreate subaccount: #{create_response[:message]}"
                 end
 
-                # Update local record with new subaccount code (though it should be the same)
+                # Update local record with new subaccount code
                 subaccount.update!(
                   subaccount_code: create_response[:data][:subaccount_code],
                   business_name: params[:business_name],
@@ -186,6 +193,9 @@ module Api
                   subaccount_type: subaccount_type,
                   user_id: user.id
                 )
+                
+                # Update user's subaccount_id for backward compatibility
+                user.update_columns(subaccount_id: create_response[:data][:subaccount_code])
               else
                 # Subaccount exists - proceed with normal update
                 response = PaystackService.new.update_subaccount(
@@ -352,6 +362,69 @@ module Api
         end
 
         private
+
+        def update_existing_subaccount(user, existing_subaccount)
+          # Prepare metadata for update
+          metadata = params[:subaccount][:metadata] || { custom_fields: [] }
+          metadata.merge!(
+            user_id: user.id,
+            email: user.email,
+            user_name: user.full_name
+          )
+
+          metadata[:custom_fields] = if metadata[:custom_fields]
+                                      metadata[:custom_fields].map do |field|
+                                        field.slice(:display_name, :variable_name, :value, :type)
+                                      end
+                                    else
+                                      []
+                                    end
+
+          ActiveRecord::Base.transaction do
+            # Update the existing subaccount on Paystack
+            response = PaystackService.new.update_subaccount(
+              subaccount_code: existing_subaccount.subaccount_code,
+              business_name: params[:subaccount][:business_name],
+              settlement_bank: params[:subaccount][:settlement_bank],
+              account_number: params[:subaccount][:account_number],
+              bank_code: params[:subaccount][:bank_code] || params[:subaccount][:settlement_bank],
+              percentage_charge: params[:subaccount][:percentage_charge],
+              description: params[:subaccount][:description],
+              primary_contact_email: user.email,
+              primary_contact_name: user.full_name,
+              primary_contact_phone: user.phone_number,
+              metadata: metadata
+            )
+
+            unless response[:status] || response[:message] == 'Subaccount updated'
+              raise StandardError, response[:message] || 'Paystack update failed'
+            end
+
+            # Update the local subaccount record
+            existing_subaccount.update!(
+              business_name: params[:subaccount][:business_name],
+              bank_code: params[:subaccount][:bank_code],
+              account_number: params[:subaccount][:account_number],
+              percentage_charge: params[:subaccount][:percentage_charge],
+              description: params[:subaccount][:description],
+              settlement_bank: params[:subaccount][:settlement_bank],
+              metadata: metadata,
+              subaccount_type: metadata[:custom_fields].first[:type]
+            )
+
+            # Ensure user's subaccount_id is still set correctly (for backward compatibility)
+            user.update_columns(subaccount_id: existing_subaccount.subaccount_code) if user.subaccount_id != existing_subaccount.subaccount_code
+          end
+
+          render json: { 
+            success: true, 
+            message: 'Subaccount updated successfully',
+            subaccount_code: user.subaccount_id 
+          }, status: :ok
+        rescue StandardError => e
+          Rails.logger.error "Error during subaccount update: #{e.message}"
+          render json: { success: false, error: e.message }, status: :unprocessable_entity
+        end
 
         def record_not_found
           render json: { error: 'User not found' }, status: :not_found
