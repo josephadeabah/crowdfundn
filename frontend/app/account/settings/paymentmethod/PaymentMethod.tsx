@@ -254,7 +254,7 @@ const PaymentMethod = () => {
           <BankAccountLoader />
         ) : subaccountData ? (
           <div className="space-y-4">
-            <div className="p-6 bg-gradient-card rounded-xl shadow-card border border-border">
+            <div className="p-6 bg-gradient-card rounded-none shadow-card border border-border">
               <div className="space-y-4">
                 <div className="flex justify-between items-center p-4 bg-muted/50 rounded-lg">
                   <div className="flex items-center gap-3">
@@ -301,7 +301,7 @@ const PaymentMethod = () => {
             </div>
 
             <button
-              className="flex items-center justify-center gap-3 w-full p-4 bg-primary hover:bg-primary-hover text-primary-foreground rounded-xl font-semibold shadow-button transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+              className="flex items-center justify-center gap-3 w-full p-4 bg-primary hover:bg-primary-hover text-primary-foreground rounded-none font-semibold shadow-button transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
               onClick={() => setIsUpdateModalOpen(true)}
             >
               <Edit3 className="h-5 w-5" />
@@ -310,7 +310,7 @@ const PaymentMethod = () => {
           </div>
         ) : (
           <button
-            className="flex items-center justify-center gap-3 w-full p-6 bg-gradient-primary hover:opacity-90 text-white rounded-xl font-semibold shadow-button transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] border-2 border-dashed border-primary/30"
+            className="flex items-center justify-center gap-3 w-full p-6 bg-gradient-primary hover:opacity-90 text-white rounded-none font-semibold shadow-button transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] border-2 border-dashed border-primary/30"
             onClick={() => setIsAddModalOpen(true)}
           >
             <Plus className="h-6 w-6" />
