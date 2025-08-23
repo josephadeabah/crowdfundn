@@ -236,7 +236,7 @@ const PaymentMethod = () => {
   };
 
   return (
-    <div className="text-green-900">
+    <div className="">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={closeToast}
@@ -262,7 +262,7 @@ const PaymentMethod = () => {
           <BankAccountLoader />
         ) : subaccountData ? (
           <div className="space-y-4">
-            <div className="p-6 bg-green-50 rounded-none shadow-card border border-green-200">
+            <div className="p-6 bg-gray-50 rounded-none shadow-card border border-green-200">
               <div className="space-y-4">
                 <div className="flex justify-between items-center p-4 bg-green-100/50 rounded-lg">
                   <div className="flex items-center gap-3">
