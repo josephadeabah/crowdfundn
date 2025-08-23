@@ -236,7 +236,7 @@ const PaymentMethod = () => {
   };
 
   return (
-    <div className="">
+    <div className="text-gray-900">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={closeToast}
@@ -246,7 +246,7 @@ const PaymentMethod = () => {
       />
       <div className="max-w-2xl mx-auto p-6 space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold text-green-900 flex items-center gap-3">
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
             <div className="p-2 bg-green-500 rounded-xl">
               <CreditCard className="h-6 w-6 text-white" />
             </div>
@@ -262,42 +262,42 @@ const PaymentMethod = () => {
           <BankAccountLoader />
         ) : subaccountData ? (
           <div className="space-y-4">
-            <div className="p-6 bg-gray-50 rounded-none shadow-card border border-green-200">
+            <div className="p-6 bg-white rounded-none shadow-card border border-gray-200">
               <div className="space-y-4">
-                <div className="flex justify-between items-center p-4 bg-green-100/50 rounded-lg">
+                <div className="flex justify-between items-center p-4 bg-gray-100/50 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-500/10 rounded-lg">
+                    <div className="p-2 bg-blue-100 rounded-lg">
                       <User className="h-4 w-4 text-green-600" />
                     </div>
-                    <span className="font-medium text-green-700">Name</span>
+                    <span className="font-medium text-gray-600">Name</span>
                   </div>
-                  <span className="font-semibold text-green-900">
+                  <span className="font-semibold text-gray-900">
                     {subaccountData.business_name}
                   </span>
                 </div>
 
-                <div className="flex justify-between items-center p-4 bg-green-100/50 rounded-lg">
+                <div className="flex justify-between items-center p-4 bg-gray-100/50 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-500/10 rounded-lg">
+                    <div className="p-2 bg-blue-100 rounded-lg">
                       <CreditCard className="h-4 w-4 text-green-600" />
                     </div>
-                    <span className="font-medium text-green-700">
+                    <span className="font-medium text-gray-600">
                       Account Number
                     </span>
                   </div>
-                  <span className="font-mono font-semibold text-green-900 tracking-wider">
+                  <span className="font-mono font-semibold text-gray-900 tracking-wider">
                     {maskAccountNumber(subaccountData.account_number)}
                   </span>
                 </div>
 
-                <div className="flex justify-between items-center p-4 bg-green-100/50 rounded-lg">
+                <div className="flex justify-between items-center p-4 bg-gray-100/50 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-500/10 rounded-lg">
+                    <div className="p-2 bg-blue-100 rounded-lg">
                       <Building2 className="h-4 w-4 text-green-600" />
                     </div>
-                    <span className="font-medium text-green-700">Bank</span>
+                    <span className="font-medium text-gray-600">Bank</span>
                   </div>
-                  <span className="font-semibold text-green-900">
+                  <span className="font-semibold text-gray-900">
                     {subaccountData.metadata?.custom_fields?.[0]?.display_name}
                   </span>
                 </div>
@@ -324,15 +324,15 @@ const PaymentMethod = () => {
 
         {/* Add Modal */}
         <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
-          <div className="space-y-6 text-green-900">
+          <div className="space-y-6 text-gray-900">
             <div className="text-center">
               <div className="mx-auto w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mb-4">
                 <Plus className="h-6 w-6 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-green-900">
+              <h2 className="text-2xl font-bold text-gray-900">
                 Add Bank Account
               </h2>
-              <p className="text-green-700">
+              <p className="text-gray-600">
                 Enter your bank details to receive payments
               </p>
             </div>
@@ -344,7 +344,7 @@ const PaymentMethod = () => {
               <div className="space-y-2">
                 <label
                   htmlFor="bank-select"
-                  className="block text-sm font-semibold text-green-900"
+                  className="block text-sm font-semibold text-gray-900"
                 >
                   Select Bank
                 </label>
@@ -356,10 +356,10 @@ const PaymentMethod = () => {
                     )
                   }
                 >
-                  <SelectTrigger className="w-full bg-white border-green-300 text-green-900 focus:ring-green-500 focus:border-green-500">
+                  <SelectTrigger className="w-full bg-white border-gray-300 text-gray-900 focus:ring-green-500 focus:border-green-500">
                     <SelectValue placeholder="Choose your bank" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-green-200 text-green-900">
+                  <SelectContent className="bg-white border-gray-200 text-gray-900">
                     {banks.map((bank) => (
                       <SelectItem key={bank.value} value={bank.value}>
                         {bank.display_name}
@@ -372,7 +372,7 @@ const PaymentMethod = () => {
               <div className="space-y-2">
                 <label
                   htmlFor="account-number"
-                  className="block text-sm font-semibold text-green-900"
+                  className="block text-sm font-semibold text-gray-900"
                 >
                   Account Number
                 </label>
@@ -383,7 +383,7 @@ const PaymentMethod = () => {
                   value={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
                   required
-                  className="w-full px-4 py-3 bg-white border-2 border-green-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 text-green-900 placeholder-green-400 font-mono"
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 text-gray-900 placeholder-gray-400 font-mono"
                 />
               </div>
 
@@ -413,15 +413,15 @@ const PaymentMethod = () => {
           isOpen={isUpdateModalOpen}
           onClose={() => setIsUpdateModalOpen(false)}
         >
-          <div className="space-y-6 text-green-900">
+          <div className="space-y-6 text-gray-900">
             <div className="text-center">
               <div className="mx-auto w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mb-4">
                 <Edit3 className="h-6 w-6 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-green-900">
+              <h2 className="text-2xl font-bold text-gray-900">
                 Update Bank Account
               </h2>
-              <p className="text-green-700">Modify your bank details</p>
+              <p className="text-gray-600">Modify your bank details</p>
             </div>
 
             <form
@@ -431,7 +431,7 @@ const PaymentMethod = () => {
               <div className="space-y-2">
                 <label
                   htmlFor="bank-select-update"
-                  className="block text-sm font-semibold text-green-900"
+                  className="block text-sm font-semibold text-gray-900"
                 >
                   Select Bank
                 </label>
@@ -443,10 +443,10 @@ const PaymentMethod = () => {
                     )
                   }
                 >
-                  <SelectTrigger className="w-full bg-white border-green-300 text-green-900 focus:ring-green-500 focus:border-green-500">
+                  <SelectTrigger className="w-full bg-white border-gray-300 text-gray-900 focus:ring-green-500 focus:border-green-500">
                     <SelectValue placeholder="Choose your bank" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-green-200 text-green-900">
+                  <SelectContent className="bg-white border-gray-200 text-gray-900">
                     {banks.map((bank) => (
                       <SelectItem key={bank.value} value={bank.value}>
                         {bank.display_name}
@@ -459,7 +459,7 @@ const PaymentMethod = () => {
               <div className="space-y-2">
                 <label
                   htmlFor="account-number-update"
-                  className="block text-sm font-semibold text-green-900"
+                  className="block text-sm font-semibold text-gray-900"
                 >
                   Account Number
                 </label>
@@ -470,7 +470,7 @@ const PaymentMethod = () => {
                   value={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
                   required
-                  className="w-full px-4 py-3 bg-white border-2 border-green-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 text-green-900 placeholder-green-400 font-mono"
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 text-gray-900 placeholder-gray-400 font-mono"
                 />
               </div>
 
