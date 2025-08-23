@@ -1,5 +1,6 @@
 // types.ts
 import { z } from 'zod';
+import { Point } from '@/app/account/settings/kyc/signature/signatureUtils';
 
 export interface KycError {
   field?: string;
@@ -88,8 +89,9 @@ export interface KycFormData {
   business_industry?: string;
   business_established_date?: string;
   addresses_attributes: KycAddress[];
-  signature_data?: any;
-  investor_signature_data?: any;
+  signature_data?: Point[];
+  investor_signature_data?: Point[];
+  issuer_signature_data?: Point[];
   issuer_accepted_terms?: boolean;
 }
 

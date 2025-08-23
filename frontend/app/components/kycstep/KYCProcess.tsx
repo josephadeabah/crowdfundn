@@ -350,8 +350,8 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             ? formData.dateOfBirth
             : '',
       nationality: formData.nationality || '',
-      occupation: formData.occupation || '', // Added
-      source_of_funds: formData.sourceOfFunds || 'Salary', // Added
+      occupation: formData.occupation || '',
+      source_of_funds: formData.sourceOfFunds || 'Salary',
       addresses_attributes: [
         {
           address_type: 'residential',
@@ -363,7 +363,12 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           is_primary: true,
         } as KycAddress,
       ],
-      signature_data: signature,
+      // Store signature data in the appropriate field based on user type
+      signature_data:
+        userType === 'creator' || userType === 'mentor' ? signature : undefined,
+      investor_signature_data: userType === 'investor' ? signature : undefined,
+      issuer_signature_data:
+        userType === 'creator' || userType === 'mentor' ? signature : undefined,
     };
 
     if (userType === 'creator' || userType === 'mentor') {
@@ -399,7 +404,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     return {
       ...baseData,
       kyc_type: 'investor',
-      investor_signature_data: signature,
     } as KycFormData;
   };
 
@@ -604,6 +608,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             isInvestor={isInvestor}
             isMentor={isMentor}
             uploadedDocuments={uploadedDocuments}
+            signatureType={isInvestor ? 'Investor' : 'Issuer'}
           />
         );
       default:

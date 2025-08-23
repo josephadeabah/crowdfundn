@@ -46,7 +46,7 @@ const Index = () => {
             <Button
               asChild
               size="lg"
-              className="bg-bantu-green text-white px-8 py-6 text-lg font-semibold hover:bg-bantu-green/90 transition-colors shadow-lg hover:shadow-xl"
+              className="bg-bantu-green text-white px-8 py-6 text-lg font-semibold hover:bg-bantu-green/90 transition-colors shadow-sm hover:shadow-xl"
             >
               <Link href="/auth/register">Get Started</Link>
             </Button>

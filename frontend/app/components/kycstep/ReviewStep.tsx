@@ -21,6 +21,7 @@ interface ReviewStepProps {
   isInvestor: boolean;
   isMentor: boolean;
   uploadedDocuments: { [key: string]: File };
+  signatureType: string; // This is passed from KYCProcess
 }
 
 export const ReviewStep: React.FC<ReviewStepProps> = ({
@@ -32,7 +33,12 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
   isInvestor,
   isMentor,
   uploadedDocuments,
+  signatureType, // Use the prop instead of calculating internally
 }) => {
+  // Determine signature label based on signature type
+  const signatureLabel =
+    signatureType === 'Investor' ? 'Investment' : 'Certificate';
+
   return (
     <div className="space-y-6">
       <Card>
@@ -161,21 +167,30 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
           <CardTitle>Signature Status</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 mb-2">
             {isSigned ? (
               <CheckCircle className="h-5 w-5 text-green-500" />
             ) : (
               <XCircle className="h-5 w-5 text-red-500" />
             )}
-            <span>Certificate {isSigned ? 'Signed' : 'Not Signed'}</span>
+            <span>
+              {signatureType} Signature: {isSigned ? 'Provided' : 'Pending'}
+            </span>
           </div>
+          {isSigned && (
+            <p className="text-sm text-gray-600">
+              Your {signatureType.toLowerCase()} signature will be used for{' '}
+              {signatureLabel.toLowerCase()} verification and documents.
+            </p>
+          )}
         </CardContent>
       </Card>
 
       {!isSigned && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
           <p className="text-yellow-800">
-            Please sign your certificate before submitting the verification.
+            Please provide your {signatureType.toLowerCase()} signature before
+            submitting the verification.
           </p>
         </div>
       )}
