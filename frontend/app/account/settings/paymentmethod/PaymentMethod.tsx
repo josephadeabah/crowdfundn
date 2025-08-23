@@ -244,7 +244,7 @@ const PaymentMethod = () => {
         description={toast.description}
         type={toast.type}
       />
-      <div className="max-w-2xl mx-auto p-6 space-y-6">
+      <div className="max-w-xl mx-auto p-6 space-y-6">
         <div className="space-y-2">
           <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
             <div className="p-2 bg-green-500 rounded-xl">
@@ -261,7 +261,7 @@ const PaymentMethod = () => {
         {isLoading ? (
           <BankAccountLoader />
         ) : subaccountData ? (
-          <div className="max-w-2xl mx-auto space-y-4">
+          <div className="space-y-4">
             <div className="p-6 bg-gray-50 rounded-none shadow-sm">
               <div className="space-y-4">
                 <div className="flex justify-between items-center p-4 bg-gray-100/50 rounded-lg">
