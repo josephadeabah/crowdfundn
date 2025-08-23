@@ -314,7 +314,7 @@ const PaymentMethod = () => {
           </div>
         ) : (
           <Button
-            className="flex items-center justify-center gap-3 w-full p-6 bg-green-600 hover:bg-green-700 text-white rounded-none font-semibold shadow-button transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] border-2 border-dashed border-green-300"
+            className="flex items-center justify-center gap-3 w-full p-6 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold shadow-button transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] border-2 border-dashed border-green-300"
             onClick={() => setIsAddModalOpen(true)}
           >
             <Plus className="h-6 w-6" />
