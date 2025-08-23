@@ -56,13 +56,10 @@ const BankAccountLoader: React.FC = () => {
       </div>
 
       {/* Button Skeleton */}
-      <div className="flex items-center justify-center gap-3 w-full p-4 bg-gray-300 rounded-none font-semibold shadow-button">
-        <Button
-          type="submit"
-          disabled={true}
-          className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow-button transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
-        ></Button>
-      </div>
+      <Button
+        type="submit"
+        className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow-button transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
+      ></Button>
     </div>
   );
 };
