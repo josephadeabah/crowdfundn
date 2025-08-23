@@ -261,7 +261,7 @@ const PaymentMethod = () => {
         {isLoading ? (
           <BankAccountLoader />
         ) : subaccountData ? (
-          <div className="space-y-4">
+          <div className="max-w-2xl mx-auto space-y-4">
             <div className="p-6 bg-gray-50 rounded-none shadow-lg">
               <div className="space-y-4">
                 <div className="flex justify-between items-center p-4 bg-gray-100/50 rounded-lg">
