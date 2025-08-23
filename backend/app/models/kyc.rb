@@ -151,20 +151,20 @@ class Kyc < ApplicationRecord
     
     # Process main signature if provided
     if signature_data.present? && (saved_change_to_signature_data? || new_record?)
-      Rails.logger.info "Processing main signature"
       process_signature_image(signature_data, :signature_image)
+      update_column(:signature_completed_at, Time.current) if signature_image.attached?
     end
     
     # Process investor signature if provided
     if investor_signature_data.present? && (saved_change_to_investor_signature_data? || new_record?)
-      Rails.logger.info "Processing investor signature"
       process_signature_image(investor_signature_data, :signature_image)
+      update_column(:signature_completed_at, Time.current) if signature_image.attached?
     end
     
     # Process issuer signature if provided
     if issuer_signature_data.present? && (saved_change_to_issuer_signature_data? || new_record?)
-      Rails.logger.info "Processing issuer signature"
       process_signature_image(issuer_signature_data, :issuer_signature)
+      update_column(:issuer_signature_completed_at, Time.current) if issuer_signature.attached?
     end
     
     Rails.logger.info "=== PROCESS SIGNATURE COMPLETED ==="
@@ -174,10 +174,17 @@ class Kyc < ApplicationRecord
     return unless signature_points.present?
     
     begin
-      # Convert signature data to image using our service
-      image_data = SignatureImageGenerator.generate(signature_points)
+      # Ensure signature_points is properly formatted
+      points = if signature_points.is_a?(String)
+                JSON.parse(signature_points)
+              else
+                signature_points
+              end
       
-      # Attach the generated image to Digital Ocean Spaces
+      # Convert signature data to image using our service
+      image_data = SignatureImageGenerator.generate(points)
+      
+      # Attach the generated image
       public_send(attachment_name).attach(
         io: StringIO.new(image_data),
         filename: "#{attachment_name}-#{reference}.png",
