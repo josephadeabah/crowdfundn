@@ -77,7 +77,14 @@ class Kyc < ApplicationRecord
   # Callbacks
   before_validation :generate_kyc_reference, on: :create
   before_validation :set_default_kyc_type, on: :create
-  after_save :process_signature, if: -> { saved_change_to_signature_data? || saved_change_to_investor_signature_data? || saved_change_to_issuer_signature_data? }
+  after_save :process_signature, if: -> { 
+    (signature_data.present? && saved_change_to_signature_data?) ||
+    (investor_signature_data.present? && saved_change_to_investor_signature_data?) ||
+    (issuer_signature_data.present? && saved_change_to_issuer_signature_data?) ||
+    (signature_data.present? && new_record?) ||
+    (investor_signature_data.present? && new_record?) ||
+    (issuer_signature_data.present? && new_record?)
+  }
   after_create :create_required_documents
 
   # Scopes

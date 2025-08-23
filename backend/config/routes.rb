@@ -42,7 +42,7 @@ Rails.application.routes.draw do
             post :reject
             post :request_info
             get :documents
-            post :documents, to: 'kycs#upload_document'  # Add this line
+            post :upload_document
             get :show_documents
           end
           collection do

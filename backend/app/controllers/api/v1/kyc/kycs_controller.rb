@@ -48,7 +48,7 @@ module Api
             return render_kyc_error('You already have a KYC submission in progress or verified')
           end
 
-          # Build KYC without addresses first
+          # Use permitted parameters including signature data
           @kyc = @current_user.kycs.build(kyc_params.except(:addresses_attributes))
           
           # Manually handle addresses
@@ -67,9 +67,8 @@ module Api
           end
 
           if @kyc.save
-            if @kyc.signature_data.present? && !@kyc.signature_image.attached?
-              Rails.logger.warn "Signature data was provided but image processing may have failed"
-            end
+            # Process signature immediately after save
+            @kyc.process_signature
             
             render json: { kyc: @kyc.to_frontend_format }, status: :created
           else
@@ -277,8 +276,9 @@ module Api
             :date_of_birth, :nationality, :occupation, :source_of_funds,
             :business_name, :business_registration_number, :business_tax_id,
             :business_industry, :business_established_date,
-            :signature_data, :investor_signature_data, :issuer_accepted_terms,
-            kyc_documents_attributes: [:id, :document_type, :file, :file_name, :_destroy]
+            :signature_data, :investor_signature_data, :issuer_signature_data, # Add this
+            :issuer_accepted_terms,
+            addresses_attributes: [:id, :address_type, :street, :city, :state, :postal_code, :country, :is_primary, :_destroy]
           )
         end
 
