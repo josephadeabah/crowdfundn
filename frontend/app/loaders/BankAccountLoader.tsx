@@ -1,6 +1,7 @@
 import React from 'react';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import { Button } from '../components/ui/button';
 
 const BankAccountLoader: React.FC = () => {
   return (
@@ -56,8 +57,12 @@ const BankAccountLoader: React.FC = () => {
 
       {/* Button Skeleton */}
       <div className="flex items-center justify-center gap-3 w-full p-4 bg-gray-300 rounded-none font-semibold shadow-button">
-        <Skeleton width={20} height={20} />
-        <Skeleton width={150} height={20} />
+              <Button
+                type="submit"
+                disabled={true}
+                className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow-button transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
+              >
+              </Button>
       </div>
     </div>
   );
