@@ -620,7 +620,7 @@ const RegisterForm: React.FC = () => {
             {formData.currencySymbol})
           </p>
         </div>
-        <form onSubmit={handleSubmit} className="">
+        <form onSubmit={handleSubmit}>
           {renderStep()}
           {currentStep === 3 && (
             <div className="mt-4">
