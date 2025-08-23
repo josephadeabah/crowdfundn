@@ -45,7 +45,7 @@ module PaystackWebhook::Handlers
           # Update status to successful
           investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
           
-          # Send confirmation email without certificate
+          # Send confirmation email with certificate and signature info
           send_confirmation_email(investment, response, metadata)
         end
       else
@@ -97,7 +97,8 @@ module PaystackWebhook::Handlers
       update_attributes[:percentage] = metadata[:percentage].to_f if metadata[:percentage].present?
 
       investment.update!(update_attributes)
-      # Trigger certificate generation with error handling
+      
+      # Trigger certificate generation with signature inclusion
       begin
         InvestmentCertificateJob.perform_later(investment.id) if investment.successful?
       rescue => e
@@ -110,14 +111,20 @@ module PaystackWebhook::Handlers
       {
         user_id: metadata[:user_id],
         campaign_id: metadata[:campaign_id],
+        investment_id: metadata[:investment_id],
         shares: metadata[:shares],
         percentage: metadata[:percentage],
         type: 'equity_investment',
         redirect_url: metadata[:redirect_url],
         title: metadata[:title],
         currency: metadata[:currency],
+        currency_symbol: metadata[:currency_symbol],
         valuation: metadata[:valuation],
         equity_offered: metadata[:equity_offered],
+        investor_name: metadata[:investor_name],
+        investor_email: metadata[:investor_email],
+        phone: metadata[:phone],
+        investor_signature_data: metadata[:investor_signature_data],
         reward: metadata[:reward],
         processing_fee: metadata.dig(:metadata, :processingFee),
         original_amount: metadata.dig(:metadata, :originalAmount),
@@ -176,11 +183,17 @@ module PaystackWebhook::Handlers
       recipient_email = response.dig(:data, :customer, :email) || investment.email
       recipient_name = investment.user&.full_name || investment.full_name || metadata[:investor_name] || 'Investor'
       
+      # Include signature URLs in confirmation email
+      signature_info = {
+        investor_signature_url: investment.user&.latest_kyc&.signature_image_url,
+        issuer_signature_url: investment.campaign.fundraiser&.latest_kyc&.signature_image_url
+      }
+      
       InvestmentConfirmationEmailService.send_confirmation_email(
         investment: investment,
         recipient_email: recipient_email,
         recipient_name: recipient_name,
-        metadata: metadata
+        metadata: metadata.merge(signature_info)
       )
     rescue => e
       Rails.logger.error "Failed to send confirmation email: #{e.message}"

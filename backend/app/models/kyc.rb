@@ -7,14 +7,14 @@ class Kyc < ApplicationRecord
   has_many :kyc_documents, dependent: :destroy
   has_many :kyc_addresses, dependent: :destroy
   
-  # KYC types - explicitly string-based enum
+  # KYC types
   enum :kyc_type, {
     investor: 'investor',
     issuer: 'issuer',
     both: 'both'
   }, default: 'investor', _prefix: :kyc_type
 
-  # Statuses - explicitly string-based enum
+  # Statuses
   enum :status, {
     pending: 'pending',
     in_review: 'in_review',
@@ -23,15 +23,13 @@ class Kyc < ApplicationRecord
     expired: 'expired'
   }, default: 'pending', _prefix: true
 
-  # Verification document types - explicitly string-based enum
+  # Verification document types
   enum :verification_type, {
     national_id: 'national_id',
     passport: 'passport',
     drivers_license: 'drivers_license',
     voter_id: 'voter_id'
   }, _prefix: :verification
-
-  # REMOVED: accepts_nested_attributes_for declarations
 
   # ActiveStorage attachments
   has_one_attached :id_image
@@ -79,7 +77,7 @@ class Kyc < ApplicationRecord
   # Callbacks
   before_validation :generate_kyc_reference, on: :create
   before_validation :set_default_kyc_type, on: :create
-  after_save :process_signature, if: :saved_change_to_signature_data?
+  after_save :process_signature, if: -> { saved_change_to_signature_data? || saved_change_to_investor_signature_data? || saved_change_to_issuer_signature_data? }
   after_create :create_required_documents
 
   # Scopes
@@ -133,9 +131,47 @@ class Kyc < ApplicationRecord
     update!(status: :rejected, verified_at: nil, rejection_reason: reason)
   end
 
+  def process_signature
+    # Process main signature if provided
+    if signature_data.present? && saved_change_to_signature_data?
+      process_signature_image(signature_data, :signature_image)
+    end
+    
+    # Process investor signature if provided
+    if investor_signature_data.present? && saved_change_to_investor_signature_data?
+      process_signature_image(investor_signature_data, :signature_image)
+    end
+    
+    # Process issuer signature if provided
+    if issuer_signature_data.present? && saved_change_to_issuer_signature_data?
+      process_signature_image(issuer_signature_data, :issuer_signature)
+    end
+  end
+
+  def process_signature_image(signature_points, attachment_name)
+    return unless signature_points.present?
+    
+    begin
+      # Convert signature data to image using our service
+      image_data = SignatureImageGenerator.generate(signature_points)
+      
+      # Attach the generated image to Digital Ocean Spaces
+      public_send(attachment_name).attach(
+        io: StringIO.new(image_data),
+        filename: "#{attachment_name}-#{reference}.png",
+        content_type: 'image/png'
+      )
+      
+      Rails.logger.info "Successfully processed #{attachment_name} for KYC #{id}"
+      
+    rescue => e
+      Rails.logger.error "Failed to process #{attachment_name} for KYC #{id}: #{e.message}\n#{e.backtrace.join("\n")}"
+    end
+  end
+
   def signature_image_url
     return unless signature_image.attached?
-
+    
     if Rails.env.production?
       "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/"\
       "#{Rails.application.credentials.dig(:digitalocean, :bucket)}/"\
@@ -146,25 +182,6 @@ class Kyc < ApplicationRecord
   rescue => e
     Rails.logger.error "Failed to generate signature URL for KYC #{id}: #{e.message}"
     nil
-  end
-
-  def process_signature
-    return unless signature_data.present?
-    
-    begin
-      # Convert signature data to image using our service
-      image_data = SignatureImageGenerator.generate(signature_data)
-      
-      # Attach the generated image
-      signature_image.attach(
-        io: StringIO.new(image_data),
-        filename: "signature-#{reference}.png",
-        content_type: 'image/png'
-      )
-    rescue => e
-      Rails.logger.error "Failed to process signature: #{e.message}"
-      # You might want to add error handling here
-    end
   end
 
   def issuer_signature_url
@@ -205,6 +222,9 @@ class Kyc < ApplicationRecord
       documents: kyc_documents.map(&:to_frontend_format),
       signature_data: signature_data,
       investor_signature_data: investor_signature_data,
+      issuer_signature_data: issuer_signature_data,
+      signature_image_url: signature_image_url,
+      issuer_signature_url: issuer_signature_url,
       issuer_accepted_terms: issuer_accepted_terms,
       signature_completed_at: signature_completed_at,
       issuer_signature_completed_at: issuer_signature_completed_at,
@@ -213,12 +233,10 @@ class Kyc < ApplicationRecord
       rejection_reason: rejection_reason,
       created_at: created_at,
       updated_at: updated_at,
-      # Add user/fundraiser information
       user: {
         id: user.id,
         email: user.email,
         full_name: user.full_name,
-        # Add fundraiser-specific information if available
         fundraiser_info: user.campaigns.any? ? {
           has_campaigns: true,
           total_campaigns: user.campaigns.count,
@@ -246,7 +264,6 @@ class Kyc < ApplicationRecord
   end
 
   def validate_business_uniqueness
-    # Check if any other KYC has the same business details (excluding current record)
     existing_kyc = Kyc.where.not(id: id)
                      .where('business_name ILIKE ? OR business_registration_number = ? OR business_tax_id = ?', 
                             business_name, business_registration_number, business_tax_id)
@@ -302,17 +319,19 @@ class Kyc < ApplicationRecord
   def attach_issuer_signature_if_needed
     return unless (issuer? || both?) && !issuer_signature.attached?
 
-    signature = generate_issuer_signature
-    issuer_signature.attach(
-      io: StringIO.new(signature),
-      filename: "issuer-signature-#{id}.png",
-      content_type: 'image/png'
-    )
-  end
-
-  def generate_issuer_signature
-    # This would be your organization's digital signature
-    # For now, return a placeholder
-    "placeholder_signature_data"
+    # Generate issuer signature from signature data if available
+    if issuer_signature_data.present?
+      signature_image_data = SignatureImageGenerator.generate(
+        issuer_signature_data, 
+        background_color: 'transparent',
+        stroke_color: '2E8B57' # Brand green
+      )
+      
+      issuer_signature.attach(
+        io: StringIO.new(signature_image_data),
+        filename: "issuer-signature-#{id}.png",
+        content_type: 'image/png'
+      )
+    end
   end
 end

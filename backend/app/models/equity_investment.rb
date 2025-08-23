@@ -184,6 +184,49 @@ class EquityInvestment < ApplicationRecord
     }
   end
 
+  def investor_signature_url
+    return nil unless user
+    user.latest_kyc&.signature_image_url
+  end
+
+  def issuer_signature_url
+    issuer = campaign.fundraiser
+    return nil unless issuer
+    issuer.latest_kyc&.signature_image_url
+  end
+
+  def to_frontend_format
+    {
+      id: id,
+      amount: amount,
+      shares: shares,
+      percentage: percentage,
+      status: status,
+      certificate_url: certificate_url,
+      certificate_number: certificate_number,
+      investment_date: investment_date,
+      current_value: current_value,
+      total_returns: total_returns,
+      roi: roi,
+      campaign: {
+        id: campaign.id,
+        title: campaign.title,
+        company_name: campaign.company_name
+      },
+      user: user ? {
+        id: user.id,
+        full_name: user.full_name,
+        email: user.email
+      } : nil,
+      signatures: {
+        investor: investor_signature_url,
+        issuer: issuer_signature_url
+      },
+      created_at: created_at,
+      updated_at: updated_at
+    }
+  end
+
   private
 
   def generate_certificate_number

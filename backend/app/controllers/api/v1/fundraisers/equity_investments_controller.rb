@@ -19,6 +19,8 @@ module Api
               amount: investment.amount,
               email: investment.email,
               date: investment.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+              # Add signature URL if available
+              signature_url: investment.user&.latest_kyc&.signature_image_url
             }
           end
 
@@ -94,7 +96,6 @@ module Api
           }, status: :unprocessable_entity
         end
 
-        # app/controllers/api/v1/fundraisers/equity_investments_controller.rb
         def portfolio
           portfolio_data = EquityInvestment.portfolio_for(@current_user)
           
@@ -133,7 +134,7 @@ module Api
           if @investment.update(equity_investment_update_params)
             render json: {
               success: true,
-              investment: @investment
+              investment: EquityInvestmentSerializer.new(@investment).as_json
             }
           else
             render json: {
@@ -212,7 +213,7 @@ module Api
         end
 
         def build_metadata(investment, redirect_url)
-          {
+          metadata = {
             user_id: @current_user.id,
             campaign_id: @campaign.id,
             investment_id: investment.id,
@@ -228,16 +229,24 @@ module Api
             investor_name: investment.full_name,
             investor_email: investment.email,
             phone: investment.phone,
-            reward: if investment.reward_id
-                      {
-                        id: investment.reward_id,
-                        title: investment.reward&.title,
-                        description: investment.reward&.description,
-                        delivery_date: investment.reward&.delivery_date
-                      }
-                    end,
             metadata: investment.metadata
           }
+
+          # Add signature data if available
+          if @current_user.latest_kyc&.signature_data.present?
+            metadata[:investor_signature_data] = @current_user.latest_kyc.signature_data
+          end
+
+          if investment.reward_id
+            metadata[:reward] = {
+              id: investment.reward_id,
+              title: investment.reward&.title,
+              description: investment.reward&.description,
+              delivery_date: investment.reward&.delivery_date
+            }
+          end
+
+          metadata
         end
 
         def initialize_payment(investment, metadata, redirect_url)
@@ -272,16 +281,7 @@ module Api
               data: {
                 authorization_url: response[:data][:authorization_url],
                 redirect_url: redirect_url,
-                investment: {
-                  id: investment.id,
-                  amount: investment.amount,
-                  shares: investment.shares,
-                  percentage: investment.percentage,
-                  campaign: {
-                    id: @campaign.id,
-                    title: @campaign.title
-                  }
-                },
+                investment: EquityInvestmentSerializer.new(investment).as_json,
                 total_investors: @campaign.total_investors
               }
             }, status: :created
@@ -376,6 +376,7 @@ module Api
             equity_remaining: @campaign.percentage_available,
             valuation: @campaign.valuation,
             currency_symbol: @campaign.currency_symbol,
+            issuer_signature_url: @campaign.fundraiser&.latest_kyc&.signature_image_url
           }
         end
 
