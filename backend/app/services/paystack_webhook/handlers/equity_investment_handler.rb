@@ -42,10 +42,8 @@ module PaystackWebhook::Handlers
           update_campaign(investment)
           create_pledge_if_needed(investment)
           
-          # Update status to successful
           investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
           
-          # Send confirmation email with certificate and signature info
           send_confirmation_email(investment, response, metadata)
         end
       else
@@ -92,18 +90,12 @@ module PaystackWebhook::Handlers
         metadata: build_metadata(metadata, response)
       }
 
-      # Update shares and percentage if they exist in metadata
-      update_attributes[:shares] = metadata[:shares].to_f if metadata[:shares].present?
-      update_attributes[:percentage] = metadata[:percentage].to_f if metadata[:percentage].present?
-
       investment.update!(update_attributes)
       
-      # Trigger certificate generation with signature inclusion
       begin
         InvestmentCertificateJob.perform_later(investment.id) if investment.successful?
       rescue => e
         Rails.logger.info "Failed to enqueue certificate job: #{e.message}"
-        # Continue anyway - user can generate manually
       end
     end
 
@@ -157,7 +149,6 @@ module PaystackWebhook::Handlers
     def update_campaign(investment)
       campaign = investment.campaign
       
-      # Update campaign's total raised amount
       campaign.update!(
         current_amount: campaign.current_amount + investment.net_amount,
         total_successful_donations: campaign.total_successful_donations + investment.net_amount
@@ -183,7 +174,6 @@ module PaystackWebhook::Handlers
       recipient_email = response.dig(:data, :customer, :email) || investment.email
       recipient_name = investment.user&.full_name || investment.full_name || metadata[:investor_name] || 'Investor'
       
-      # Include signature URLs in confirmation email
       signature_info = {
         investor_signature_url: investment.user&.latest_kyc&.signature_image_url,
         issuer_signature_url: investment.campaign.fundraiser&.latest_kyc&.signature_image_url

@@ -35,7 +35,6 @@ class EquityCampaign < Campaign
   }
   
   def total_shares_must_be_set
-    # Only validate if it's a new record OR if total_shares is being set/changed
     if (new_record? || will_save_change_to_total_shares?) && total_shares.to_i <= 0
       errors.add(:total_shares, "must be set and greater than 0")
     end
@@ -138,9 +137,7 @@ class EquityCampaign < Campaign
     errors
   end
   
-  # Replace the method-based shares_available with database-backed version
   def shares_available
-    # Use database value for persisted records, calculate for new records
     if persisted? && !will_save_change_to_shares_available?
       self[:shares_available] || 0
     else
@@ -166,16 +163,13 @@ class EquityCampaign < Campaign
     authenticated_investors + anonymous_investors
   end
 
-  # Update the create_investment method to use database-level locking
   def create_investment(user, amount)
     ActiveRecord::Base.transaction do
-      # Lock the campaign to prevent race conditions
       campaign = EquityCampaign.lock.find(id)
       
       price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
       shares = (amount / price_per_share).round(4)
       
-      # Use database value for shares_available check
       if shares > campaign.shares_available
         errors.add(:base, "Not enough shares available for this investment")
         return nil
@@ -189,7 +183,6 @@ class EquityCampaign < Campaign
         status: EquityInvestment::STATUS_PENDING,
       )
       
-      # Update shares_available immediately
       if investment.persisted?
         campaign.update!(shares_available: campaign.shares_available - shares)
       end
@@ -216,7 +209,6 @@ class EquityCampaign < Campaign
     campaign_team_members.sum(:equity_percentage).to_f
   end
 
-  # app/models/equity_campaign.rb
   def as_json(options = {})
     super.merge(
       type: 'EquityCampaign',
@@ -277,7 +269,6 @@ class EquityCampaign < Campaign
   end
   
   def update_shares_available_from_investments
-    # This ensures the database value stays in sync with actual investments
     actual_shares_available = calculate_shares_available_value
     if self[:shares_available] != actual_shares_available
       update_column(:shares_available, actual_shares_available)
@@ -304,7 +295,6 @@ class EquityCampaign < Campaign
   end
 
   def equity_issued_within_limits
-    # Since we removed the equity_issued column, we need to calculate dynamically
     issued_percentage = equity_investments.successful.sum(:percentage)
     return unless issued_percentage > equity_offered.to_f
     errors.add(:base, 'Total equity issued cannot exceed equity offered')
@@ -315,7 +305,6 @@ class EquityCampaign < Campaign
   end
 
   def update_investments_valuation
-    # Update all successful investments when valuation changes
     equity_investments.successful.find_each do |investment|
       UpdateCampaignInvestmentsJob.perform_later(investment.id)
     end

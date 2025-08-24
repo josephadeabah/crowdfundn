@@ -40,8 +40,6 @@ class EquityInvestment < ApplicationRecord
   before_create :generate_certificate_number
   before_create :set_investment_date
   after_commit :update_campaign_leaderboard, if: :saved_change_to_status?
-  after_commit :update_campaign_shares_available, if: -> { saved_change_to_status? && (successful? || refunded?) }
-  after_update :generate_certificate_if_successful, if: :saved_change_to_status?
   after_save :update_campaign_shares, if: -> { saved_change_to_status? && successful? }
 
   # Status query methods
@@ -74,12 +72,7 @@ class EquityInvestment < ApplicationRecord
   end
 
   def current_value
-    # This will trigger the current_value calculation based on the latest campaign valuation
-    # You might want to add this to a after_save callback on campaign valuation changes
-    # or call this method manually when needed
-    # Force recalculation of current_value
     current_value = (campaign.valuation * percentage / 100).round(2)
-    
     current_value
   end
 
@@ -99,7 +92,6 @@ class EquityInvestment < ApplicationRecord
   def self.portfolio_for(user)
     investments = user.equity_investments.includes(:campaign)
     
-    # Use the existing successful scope to filter investments
     successful_investments = investments.successful
     
     {
@@ -126,7 +118,6 @@ class EquityInvestment < ApplicationRecord
     return unless certificate.attached?
     
     if Rails.env.production?
-      # For DigitalOcean Spaces - same pattern as Campaign#media_url
       "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{certificate.blob.key}"
     else
       Rails.application.routes.url_helpers.rails_blob_url(certificate)
@@ -231,36 +222,8 @@ class EquityInvestment < ApplicationRecord
 
   private
 
-  def update_campaign_shares_available
-    campaign.with_lock do
-      if successful? && previous_changes[:status]&.first != 'successful'
-        # Investment just became successful - deduct shares
-        campaign.decrement!(:shares_available, shares)
-      elsif refunded? && previous_changes[:status]&.first == 'successful'
-        # Investment was refunded - add shares back
-        campaign.increment!(:shares_available, shares)
-      end
-    end
-  rescue ActiveRecord::StaleObjectError => e
-    Rails.logger.error "Failed to update campaign shares available: #{e.message}"
-    # Retry or queue for background processing
-    UpdateCampaignSharesJob.perform_later(campaign_id, id)
-  end
-
   def generate_certificate_number
     self.certificate_number ||= "BHV-#{SecureRandom.alphanumeric(10).upcase}"
-  end
-
-  def generate_certificate_if_successful
-    return unless successful? && saved_change_to_status? 
-    
-    # Always generate certificate number if missing
-    generate_certificate_number if certificate_number.blank?
-    
-    return if certificate_present? # Don't regenerate if already exists
-    
-    # Generate certificate asynchronously
-    InvestmentCertificateJob.perform_later(id)
   end
 
   def certificate_only_for_successful_investments
@@ -278,10 +241,7 @@ class EquityInvestment < ApplicationRecord
   end
 
   def update_campaign_shares
-    # This method ensures campaign shares are updated atomically
-    # when an investment becomes successful
     campaign.with_lock do
-      # Recalculate to ensure consistency
       campaign.update!(
         current_amount: campaign.current_amount + amount,
         total_successful_donations: campaign.total_successful_donations + amount
@@ -289,7 +249,6 @@ class EquityInvestment < ApplicationRecord
     end
   rescue ActiveRecord::StaleObjectError => e
     Rails.logger.error "Failed to update campaign shares for investment #{id}: #{e.message}"
-    # Retry the update
     retry if (retries ||= 0) && (retries += 1) < 3
   end
 end
