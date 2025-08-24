@@ -3,10 +3,13 @@ module Api
     module Fundraisers
       class EquityInvestmentsController < ApplicationController
         before_action :authenticate_request
+        # Only set campaign for actions that need it
         before_action :set_campaign, only: [:create, :public_investments]
+        # Set investment for actions that work with specific investments
         before_action :set_investment, only: [:show, :update, :destroy]
 
         def public_investments
+          # This action needs @campaign, which is set by set_campaign
           investments = @campaign.equity_investments.successful
                               .order(created_at: :desc)
 
@@ -16,6 +19,7 @@ module Api
               amount: investment.amount,
               email: investment.email,
               date: investment.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+              # Add signature URL if available
               signature_url: investment.user&.latest_kyc&.signature_image_url
             }
           end
@@ -32,10 +36,12 @@ module Api
         end
 
         def create
+          # First validate the investment parameters
           investment_params = equity_investment_params
           amount = investment_params[:amount].to_f
           reward_id = investment_params[:reward_id]
 
+          # First validate basic parameters
           validation_result = validate_investment(amount, reward_id)
           unless validation_result[:valid]
             return render json: { 
@@ -46,6 +52,7 @@ module Api
           end
 
           ActiveRecord::Base.transaction do
+            # Use the campaign's create_investment method which handles locking
             investment = @campaign.create_investment(@current_user, amount)
             
             unless investment
@@ -64,12 +71,17 @@ module Api
               metadata: investment_params[:metadata] || {}
             )
 
+            # Generate callback URL similar to donations
             secure_random_uuid = SecureRandom.uuid
+            # Use campaign.slug if available, otherwise fall back to id
             campaign_identifier = @campaign.slug || @campaign.id
             redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign_identifier,
                                                                           host: 'bantuhive.com') + "?#{secure_random_uuid}"
 
+            # Prepare metadata (similar structure to donations but with equity-specific fields)
             metadata = build_metadata(investment, redirect_url)
+
+            # Initialize payment (same pattern as donations)
             initialize_payment(investment, metadata, redirect_url)
           end
         rescue ActiveRecord::StaleObjectError => e
@@ -104,6 +116,7 @@ module Api
         end
 
         def my_investments
+          # This is a collection action that doesn't need @campaign
           investments = @current_user.equity_investments
                                     .includes(:campaign)
                                     .order(created_at: :desc)
@@ -149,6 +162,7 @@ module Api
         def validate_investment(amount, reward_id)
           result = { valid: true }
           
+          # Maintain all equity-specific validations
           if amount < @campaign.minimum_investment
             result = {
               valid: false,
@@ -169,6 +183,7 @@ module Api
             }
           end
 
+          # Subaccount validation - check if fundraiser has valid subaccount
           if result[:valid]
             subaccount = Subaccount.find_by(user_id: @campaign.fundraiser_id)
             unless subaccount&.subaccount_code.present?
@@ -181,13 +196,11 @@ module Api
             end
           end
 
+          # Enhanced equity validation - check both shares AND percentage availability
           if result[:valid]
             price_per_share = @campaign.valuation.to_f / @campaign.total_shares.to_f
             requested_shares = (amount / price_per_share).round(4)
-            
-            # FIXED: Correct percentage calculation
-            total_equity_value = (@campaign.valuation.to_f * @campaign.equity_offered.to_f / 100)
-            requested_percentage = total_equity_value > 0 ? ((amount / total_equity_value) * 100).round(4) : 0
+            requested_percentage = ((amount / (@campaign.valuation.to_f * @campaign.equity_offered.to_f / 100)) * 100).round(4)
 
             if requested_shares > @campaign.shares_available
               available_amount = (@campaign.shares_available * price_per_share).floor
@@ -197,8 +210,7 @@ module Api
                 errors: { amount: ["Not enough shares available"] }
               }
             elsif requested_percentage > @campaign.percentage_available
-              # FIXED: Correct available amount calculation based on percentage
-              available_amount = (total_equity_value * (@campaign.percentage_available / 100)).floor
+              available_amount = ((@campaign.percentage_available / 100) * (@campaign.valuation.to_f * @campaign.equity_offered.to_f / 100)).floor
               result = {
                 valid: false,
                 message: "Not enough equity available. Maximum investment possible: #{@campaign.currency_symbol}#{available_amount}",
@@ -230,6 +242,7 @@ module Api
             metadata: investment.metadata
           }
 
+          # Add signature data if available
           if @current_user.latest_kyc&.signature_data.present?
             metadata[:investor_signature_data] = @current_user.latest_kyc.signature_data
           end
@@ -293,13 +306,16 @@ module Api
         end
 
         def set_campaign
+          # Get the identifier from the correct parameter based on your routes
           campaign_identifier = params[:equity_campaign_id]
           
           Rails.logger.info "Attempting to find campaign with identifier: #{campaign_identifier}"
           
+          # First try to find by ID if identifier is numeric
           if campaign_identifier.to_s.match?(/^\d+$/)
             @campaign = EquityCampaign.find_by(id: campaign_identifier)
           else
+            # Otherwise try to find by slug
             @campaign = EquityCampaign.find_by(slug: campaign_identifier)
           end
 
@@ -329,6 +345,7 @@ module Api
         end
 
         def set_investment
+          # For collection actions that don't have investment_id, skip this
           return unless params[:id].present?
           
           @investment = @current_user.equity_investments.find(params[:id])

@@ -168,10 +168,7 @@ class EquityCampaign < Campaign
       
       price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
       shares = (amount / price_per_share).round(4)
-      
-      # FIXED: Correct percentage calculation
-      total_equity_value = (campaign.valuation.to_f * campaign.equity_offered.to_f / 100)
-      percentage = total_equity_value > 0 ? ((amount / total_equity_value) * 100).round(4) : 0
+      percentage = ((amount / (campaign.valuation.to_f * campaign.equity_offered.to_f / 100)) * 100).round(4)
       
       # Double-check equity limits
       if shares > campaign.shares_available
@@ -211,7 +208,7 @@ class EquityCampaign < Campaign
   end
 
   def percentage_raised
-    equity_offered.to_f > 0 ? (equity_investments.successful.sum(:percentage) / equity_offered.to_f) * 100 : 0
+    (equity_investments.successful.sum(:percentage) / equity_offered.to_f) * 100
   end
 
   def founder_equity_percentage
@@ -286,7 +283,7 @@ class EquityCampaign < Campaign
   
   def calculate_percentage(amount)
     total_equity_value = (valuation.to_f * equity_offered.to_f / 100)
-    total_equity_value > 0 ? ((amount / total_equity_value) * 100).round(4) : 0
+    ((amount / total_equity_value) * 100).round(4)
   end
 
   def calculate_default_shares
