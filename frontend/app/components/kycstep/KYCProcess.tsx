@@ -187,10 +187,25 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     if (savedSignature) {
       try {
         const parsedSignature = JSON.parse(savedSignature);
-        setSignature(parsedSignature);
-        setIsSigned(parsedSignature.length > 0);
+        // Add validation to ensure it's a proper signature array
+        if (
+          Array.isArray(parsedSignature) &&
+          parsedSignature.every(
+            (point) =>
+              point &&
+              typeof point.x === 'number' &&
+              typeof point.y === 'number',
+          )
+        ) {
+          setSignature(parsedSignature);
+          setIsSigned(parsedSignature.length > 0);
+        } else {
+          console.warn('Invalid signature format in localStorage');
+          localStorage.removeItem(`${userType}Signature`);
+        }
       } catch (error) {
         console.error('Error loading signature:', error);
+        localStorage.removeItem(`${userType}Signature`);
       }
     }
   }, [userType]);
@@ -365,10 +380,24 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       ],
       // Store signature data in the appropriate field based on user type
       signature_data:
-        userType === 'creator' || userType === 'mentor' ? signature : undefined,
-      investor_signature_data: userType === 'investor' ? signature : undefined,
+        signature && Array.isArray(signature) && signature.length > 0
+          ? signature
+          : undefined,
+      investor_signature_data:
+        userType === 'investor' &&
+        signature &&
+        Array.isArray(signature) &&
+        signature.length > 0
+          ? signature
+          : undefined,
       issuer_signature_data:
-        userType === 'creator' || userType === 'mentor' ? signature : undefined,
+        (userType === 'creator' || userType === 'mentor') &&
+        signature &&
+        Array.isArray(signature) &&
+        signature.length > 0
+          ? signature
+          : undefined,
+      issuer_accepted_terms: true,
     };
 
     if (userType === 'creator' || userType === 'mentor') {
@@ -397,7 +426,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
                   .businessEstablishedDate === 'string'
               ? (formData as CreatorKYCFormData).businessEstablishedDate
               : '',
-        issuer_accepted_terms: true,
       } as KycFormData;
     }
 
@@ -496,6 +524,21 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
       try {
         const kycData = prepareKycData();
+
+        // Debug logging
+        console.log('KYC Data being sent:', {
+          ...kycData,
+          signature_data: kycData.signature_data
+            ? `Array with ${kycData.signature_data.length} points`
+            : 'undefined',
+          investor_signature_data: kycData.investor_signature_data
+            ? `Array with ${kycData.investor_signature_data.length} points`
+            : 'undefined',
+          issuer_signature_data: kycData.issuer_signature_data
+            ? `Array with ${kycData.issuer_signature_data.length} points`
+            : 'undefined',
+        });
+
         const newKyc = await createKyc(kycData);
 
         if (Object.keys(uploadedDocuments).length > 0) {
@@ -544,8 +587,24 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   };
 
   const handleSaveSignature = (newSignature: Point[]) => {
-    if (newSignature.length < 5) {
-      showErrorMessage('Please add a valid signature');
+    // More robust validation
+    if (
+      !newSignature ||
+      !Array.isArray(newSignature) ||
+      newSignature.length < 5
+    ) {
+      showErrorMessage('Please add a valid signature with at least 5 points');
+      return;
+    }
+
+    // Validate each point has x and y coordinates
+    const isValidSignature = newSignature.every(
+      (point) =>
+        point && typeof point.x === 'number' && typeof point.y === 'number',
+    );
+
+    if (!isValidSignature) {
+      showErrorMessage('Invalid signature format');
       return;
     }
 
