@@ -391,39 +391,6 @@ class InvestmentCertificateService
     puts "Certificate generation: #{success ? '✅ SUCCESS' : '❌ FAILED'}"
   end
 
-  private_class_method :add_background_image, :add_watermark
-
-  def self.add_background_image(pdf)
-    background_path = Rails.root.join('app', 'assets', 'images', 'certificate.png')
-    
-    return unless File.exist?(background_path)
-
-    pdf.transparent(0.1) do
-      pdf.canvas do
-        pdf.image background_path,
-                  at: [0, pdf.bounds.top],
-                  fit: [pdf.bounds.width, pdf.bounds.height],
-                  position: :absolute
-      end
-    end
-  end
-
-  def self.add_watermark(pdf)
-    pdf.transparent(0.03) do
-      pdf.fill_color 'DDDDDD'
-      
-      pdf.text_box "BANTUHIVE",
-                   at: [pdf.bounds.width / 2 - 70, pdf.bounds.height / 2],
-                   size: 45,
-                   style: :bold,
-                   width: 140,
-                   height: 70,
-                   align: :center,
-                   valign: :center
-    end
-    pdf.fill_color '000000'
-  end
-
   def self.certificate_url(investment)
     return unless investment.certificate.attached?
     
@@ -435,5 +402,40 @@ class InvestmentCertificateService
   rescue => e
     Rails.logger.error "Failed to generate certificate URL for investment #{investment.id}: #{e.message}"
     nil
+  end
+
+  class << self
+    private
+
+    def add_background_image(pdf)
+      background_path = Rails.root.join('app', 'assets', 'images', 'certificate.png')
+      
+      return unless File.exist?(background_path)
+
+      pdf.transparent(0.1) do
+        pdf.canvas do
+          pdf.image background_path,
+                    at: [0, pdf.bounds.top],
+                    fit: [pdf.bounds.width, pdf.bounds.height],
+                    position: :absolute
+        end
+      end
+    end
+
+    def add_watermark(pdf)
+      pdf.transparent(0.03) do
+        pdf.fill_color 'DDDDDD'
+        
+        pdf.text_box "BANTUHIVE",
+                     at: [pdf.bounds.width / 2 - 70, pdf.bounds.height / 2],
+                     size: 45,
+                     style: :bold,
+                     width: 140,
+                     height: 70,
+                     align: :center,
+                     valign: :center
+      end
+      pdf.fill_color '000000'
+    end
   end
 end

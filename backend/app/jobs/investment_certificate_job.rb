@@ -1,4 +1,3 @@
-# In InvestmentCertificateJob
 class InvestmentCertificateJob < ApplicationJob
   queue_as :default
 
