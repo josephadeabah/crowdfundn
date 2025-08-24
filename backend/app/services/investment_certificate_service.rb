@@ -13,6 +13,19 @@ class InvestmentCertificateService
     return false unless investment.is_a?(EquityInvestment) && investment.successful?
 
     begin
+      # Debug logging
+      Rails.logger.info "=== CERTIFICATE GENERATION STARTED ==="
+      Rails.logger.info "Investment ID: #{investment.id}"
+      Rails.logger.info "Investor: #{investment.user&.full_name}"
+      Rails.logger.info "Issuer: #{investment.campaign.fundraiser&.full_name}"
+
+      # Get signatures with debug info
+      investor_signature_url = get_investor_signature_url(investment)
+      issuer_signature_url = get_issuer_signature_url(investment)
+      
+      Rails.logger.info "Investor signature URL: #{investor_signature_url}"
+      Rails.logger.info "Issuer signature URL: #{issuer_signature_url}"
+
       pdf = Prawn::Document.new(
         page_size: 'A4',
         page_layout: :portrait,
@@ -27,10 +40,6 @@ class InvestmentCertificateService
       # Add background and watermark
       add_background_image(pdf)
       add_watermark(pdf)
-
-      # Get signatures
-      investor_signature_url = get_investor_signature_url(investment)
-      issuer_signature_url = get_issuer_signature_url(investment)
 
       # Decorative header
       pdf.stroke do
@@ -229,19 +238,22 @@ class InvestmentCertificateService
   def self.add_signatures_section(pdf, investor_sig_url, issuer_sig_url, investor_name, issuer_name)
     pdf.move_down 30
     
-    # Create a table for signatures
+    # Store the current Y position for signature placement
+    signature_base_y = pdf.cursor
+    
+    # Create signature table first
     signature_data = [
       [
-        { content: "INVESTOR SIGNATURE", align: :center, font_style: :bold },
-        { content: "ISSUER SIGNATURE", align: :center, font_style: :bold }
+        { content: "INVESTOR SIGNATURE", align: :center, font_style: :bold, size: 10 },
+        { content: "ISSUER SIGNATURE", align: :center, font_style: :bold, size: 10 }
       ],
       [
-        { content: "", height: 60 },
-        { content: "", height: 60 }
+        { content: "", height: 60 }, # Space for signature images
+        { content: "", height: 60 }  # Space for signature images
       ],
       [
-        { content: investor_name, align: :center, size: 9 },
-        { content: issuer_name, align: :center, size: 9 }
+        { content: investor_name, align: :center, size: 9, style: :italic },
+        { content: issuer_name, align: :center, size: 9, style: :italic }
       ],
       [
         { content: "_________________________", align: :center, size: 8 },
@@ -249,41 +261,137 @@ class InvestmentCertificateService
       ]
     ]
 
-    # Add signature images if available
-    if investor_sig_url
+    # Draw the signature table
+    pdf.table(signature_data, 
+              width: pdf.bounds.width,
+              cell_style: { 
+                borders: [], 
+                padding: [2, 0, 2, 0],
+                inline_format: true 
+              }
+             ) do |t|
+      t.column(0).style(align: :center, width: pdf.bounds.width / 2)
+      t.column(1).style(align: :center, width: pdf.bounds.width / 2)
+    end
+
+    # Now add signature images at the correct positions
+    signature_image_y = signature_base_y - 40 # Position above the signature lines
+    
+    # Add investor signature
+    if investor_sig_url.present?
       begin
-        signature_image = open(investor_sig_url)
-        pdf.image signature_image, width: 120, height: 40, at: [50, pdf.cursor - 20]
+        Rails.logger.info "Loading investor signature from: #{investor_sig_url}"
+        signature_image = URI.open(investor_sig_url)
+        # Position at left side (centered in left column)
+        pdf.image signature_image, 
+                  width: 100, 
+                  height: 40, 
+                  at: [pdf.bounds.width / 4 - 50, signature_image_y]
+        Rails.logger.info "Investor signature added successfully"
+      rescue OpenURI::HTTPError => e
+        Rails.logger.warn "HTTP Error loading investor signature: #{e.message}"
       rescue => e
         Rails.logger.warn "Could not load investor signature: #{e.message}"
       end
+    else
+      Rails.logger.warn "No investor signature URL provided"
     end
 
-    if issuer_sig_url
+    # Add issuer signature
+    if issuer_sig_url.present?
       begin
-        signature_image = open(issuer_sig_url)
-        pdf.image signature_image, width: 120, height: 40, at: [300, pdf.cursor - 20]
+        Rails.logger.info "Loading issuer signature from: #{issuer_sig_url}"
+        signature_image = URI.open(issuer_sig_url)
+        # Position at right side (centered in right column)
+        pdf.image signature_image, 
+                  width: 100, 
+                  height: 40, 
+                  at: [pdf.bounds.width * 3 / 4 - 50, signature_image_y]
+        Rails.logger.info "Issuer signature added successfully"
+      rescue OpenURI::HTTPError => e
+        Rails.logger.warn "HTTP Error loading issuer signature: #{e.message}"
       rescue => e
         Rails.logger.warn "Could not load issuer signature: #{e.message}"
       end
+    else
+      Rails.logger.warn "No issuer signature URL provided"
     end
 
-    pdf.move_down 80
+    pdf.move_down 60
   end
 
   def self.get_investor_signature_url(investment)
     return unless investment.user
-    investment.user.latest_kyc&.signature_image_url
+    
+    kyc = investment.user.latest_kyc
+    return unless kyc
+    
+    # For investors, use signature_image (general signature)
+    # For issuers acting as investors, they might have both
+    if kyc.kyc_type_investor? || kyc.kyc_type_both?
+      kyc.signature_image_url
+    else
+      nil
+    end
   end
 
   def self.get_issuer_signature_url(investment)
     issuer = investment.campaign.fundraiser
     return unless issuer
-    issuer.latest_kyc&.signature_image_url
+    
+    kyc = issuer.latest_kyc
+    return unless kyc
+    
+    # For issuers, prefer issuer_signature if available, otherwise use general signature
+    if kyc.issuer_signature.attached?
+      kyc.issuer_signature_url
+    elsif kyc.signature_image.attached?
+      kyc.signature_image_url
+    else
+      nil
+    end
   end
 
-  private_class_method :add_background_image, :add_watermark, :add_signatures_section,
-                       :get_investor_signature_url, :get_issuer_signature_url
+  def self.test_certificate_signatures(investment_id)
+    investment = EquityInvestment.find(investment_id)
+    
+    puts "=== CERTIFICATE SIGNATURE TEST ==="
+    puts "Investment: #{investment.id}"
+    puts "Investor: #{investment.user&.full_name}"
+    puts "Issuer: #{investment.campaign.fundraiser&.full_name}"
+    
+    investor_sig_url = get_investor_signature_url(investment)
+    issuer_sig_url = get_issuer_signature_url(investment)
+    
+    puts "Investor Signature URL: #{investor_sig_url}"
+    puts "Issuer Signature URL: #{issuer_sig_url}"
+    
+    # Test if URLs are accessible
+    if investor_sig_url
+      begin
+        URI.open(investor_sig_url).close
+        puts "✅ Investor signature URL is accessible"
+      rescue => e
+        puts "❌ Investor signature URL not accessible: #{e.message}"
+      end
+    end
+    
+    if issuer_sig_url
+      begin
+        URI.open(issuer_sig_url).close
+        puts "✅ Issuer signature URL is accessible"
+      rescue => e
+        puts "❌ Issuer signature URL not accessible: #{e.message}"
+      end
+    end
+    
+    # Generate a test certificate
+    puts "Generating test certificate..."
+    success = generate_certificate(investment)
+    puts "Certificate generation: #{success ? '✅ SUCCESS' : '❌ FAILED'}"
+  end
+
+  private_class_method :add_background_image, :add_watermark
 
   def self.add_background_image(pdf)
     background_path = Rails.root.join('app', 'assets', 'images', 'certificate.png')
