@@ -7,6 +7,9 @@ class Kyc < ApplicationRecord
   has_many :kyc_documents, dependent: :destroy
   has_many :kyc_addresses, dependent: :destroy
   
+  # Add this to accept nested attributes
+  accepts_nested_attributes_for :kyc_addresses, allow_destroy: true
+  
   # KYC types
   enum :kyc_type, {
     investor: 'investor',
