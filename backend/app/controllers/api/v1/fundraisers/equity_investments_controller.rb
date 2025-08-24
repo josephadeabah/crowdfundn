@@ -1,4 +1,3 @@
-# app/controllers/api/v1/fundraisers/equity_investments_controller.rb
 module Api
   module V1
     module Fundraisers
@@ -197,10 +196,11 @@ module Api
             end
           end
 
-          # Shares validation (equity-specific)
+          # Enhanced equity validation - check both shares AND percentage availability
           if result[:valid]
             price_per_share = @campaign.valuation.to_f / @campaign.total_shares.to_f
             requested_shares = (amount / price_per_share).round(4)
+            requested_percentage = ((amount / (@campaign.valuation.to_f * @campaign.equity_offered.to_f / 100)) * 100).round(4)
 
             if requested_shares > @campaign.shares_available
               available_amount = (@campaign.shares_available * price_per_share).floor
@@ -208,6 +208,13 @@ module Api
                 valid: false,
                 message: "Not enough shares available. Maximum investment possible: #{@campaign.currency_symbol}#{available_amount}",
                 errors: { amount: ["Not enough shares available"] }
+              }
+            elsif requested_percentage > @campaign.percentage_available
+              available_amount = ((@campaign.percentage_available / 100) * (@campaign.valuation.to_f * @campaign.equity_offered.to_f / 100)).floor
+              result = {
+                valid: false,
+                message: "Not enough equity available. Maximum investment possible: #{@campaign.currency_symbol}#{available_amount}",
+                errors: { amount: ["Not enough equity available"] }
               }
             end
           end

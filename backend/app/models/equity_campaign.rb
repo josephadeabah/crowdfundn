@@ -1,4 +1,3 @@
-# app/models/equity_campaign.rb
 class EquityCampaign < Campaign
   has_many :equity_investments, foreign_key: 'campaign_id', dependent: :destroy
   has_many :investors, through: :equity_investments, source: :user
@@ -169,9 +168,16 @@ class EquityCampaign < Campaign
       
       price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
       shares = (amount / price_per_share).round(4)
+      percentage = ((amount / (campaign.valuation.to_f * campaign.equity_offered.to_f / 100)) * 100).round(4)
       
+      # Double-check equity limits
       if shares > campaign.shares_available
-        errors.add(:base, "Not enough shares available for this investment")
+        campaign.errors.add(:base, "Not enough shares available for this investment")
+        return nil
+      end
+      
+      if percentage > campaign.percentage_available
+        campaign.errors.add(:base, "Not enough equity percentage available for this investment")
         return nil
       end
       
@@ -179,7 +185,7 @@ class EquityCampaign < Campaign
         user: user,
         amount: amount,
         shares: shares,
-        percentage: calculate_percentage(amount),
+        percentage: percentage,
         status: EquityInvestment::STATUS_PENDING,
       )
       
