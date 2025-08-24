@@ -23,15 +23,14 @@ module Api
           @kycs = paginate_collection(@kycs)
           
           render json: { 
-            kycs: @kycs.map(&:to_frontend_format),
+            kycs: @kycs.map { |kyc| KycFrontendService.format_for_frontend(kyc) },
             pagination: pagination_meta(@kycs)
           }
         end
 
         def show
           if @current_user.admin?
-            # Admin can view any KYC (removed the restriction)
-            # No need for the unless check
+            # Admin can view any KYC
           else
             # Regular users can only view their own KYCs
             unless @kyc.user_id == @current_user.id
@@ -39,7 +38,7 @@ module Api
             end
           end
           
-          render json: { kyc: @kyc.to_frontend_format }
+          render json: { kyc: KycFrontendService.format_for_frontend(@kyc) }
         end
 
         def create
@@ -68,9 +67,14 @@ module Api
 
           if @kyc.save
             # Process signature immediately after save
-            @kyc.process_signature
+            begin
+              @kyc.process_signature
+            rescue => e
+              Rails.logger.error "Signature processing failed: #{e.message}"
+              # Continue even if signature processing fails
+            end
             
-            render json: { kyc: @kyc.to_frontend_format }, status: :created
+            render json: { kyc: KycFrontendService.format_for_frontend(@kyc) }, status: :created
           else
             render_kyc_errors(@kyc.errors)
           end
@@ -99,7 +103,7 @@ module Api
           end
           
           if @kyc.update(kyc_params.except(:addresses_attributes))
-            render json: { kyc: @kyc.to_frontend_format }
+            render json: { kyc: KycFrontendService.format_for_frontend(@kyc) }
           else
             render_kyc_errors(@kyc.errors)
           end
@@ -159,8 +163,8 @@ module Api
               
               render json: { 
                 message: 'Document uploaded successfully', 
-                document: document.to_frontend_format,
-                kyc: @kyc.to_frontend_format # Include updated KYC in response
+                document: KycFrontendService.format_document(document),
+                kyc: KycFrontendService.format_for_frontend(@kyc)
               }
             else
               render json: { errors: document.errors.full_messages }, status: :unprocessable_entity
@@ -179,7 +183,7 @@ module Api
           end
 
           if @kyc.update(status: 'in_review')
-            render json: { message: 'KYC submitted for review', kyc: @kyc.to_frontend_format }
+            render json: { message: 'KYC submitted for review', kyc: KycFrontendService.format_for_frontend(@kyc) }
           else
             render json: { errors: @kyc.errors.full_messages }, status: :unprocessable_entity
           end
@@ -187,7 +191,7 @@ module Api
 
         def documents
           @documents = @kyc.kyc_documents
-          render json: { documents: @documents.map(&:to_frontend_format) }
+          render json: { documents: @documents.map { |doc| KycFrontendService.format_document(doc) } }
         end
 
         def all_needs_review
@@ -203,15 +207,15 @@ module Api
           @kycs = paginate_collection(@kycs)
           
           render json: { 
-            kycs: @kycs.map(&:to_frontend_format),
+            kycs: @kycs.map { |kyc| KycFrontendService.format_for_frontend(kyc) },
             pagination: pagination_meta(@kycs)
           }
         end
 
         def show_documents
           render json: { 
-            kyc: @kyc.to_frontend_format,
-            documents: @kyc.kyc_documents.map(&:to_frontend_format)
+            kyc: KycFrontendService.format_for_frontend(@kyc),
+            documents: @kyc.kyc_documents.map { |doc| KycFrontendService.format_document(doc) }
           }
         end
 
@@ -221,7 +225,7 @@ module Api
           end
 
           if @kyc.verify!(@current_user, params[:review_notes])
-            render json: { message: 'KYC verified successfully', kyc: @kyc.to_frontend_format }
+            render json: { message: 'KYC verified successfully', kyc: KycFrontendService.format_for_frontend(@kyc) }
           else
             render json: { errors: @kyc.errors.full_messages }, status: :unprocessable_entity
           end
@@ -233,7 +237,7 @@ module Api
           end
 
           if @kyc.reject!(params[:rejection_reason])
-            render json: { message: 'KYC rejected', kyc: @kyc.to_frontend_format }
+            render json: { message: 'KYC rejected', kyc: KycFrontendService.format_for_frontend(@kyc) }
           else
             render json: { errors: @kyc.errors.full_messages }, status: :unprocessable_entity
           end
@@ -291,7 +295,7 @@ module Api
           end
         end
 
-          def render_kyc_errors(errors)
+        def render_kyc_errors(errors)
           # Format errors for frontend display
           formatted_errors = errors.full_messages.map do |message|
             if message.include?('has already been taken')

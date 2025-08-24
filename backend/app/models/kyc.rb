@@ -148,7 +148,6 @@ class Kyc < ApplicationRecord
     Rails.logger.info "saved_change_to_investor_signature_data: #{saved_change_to_investor_signature_data?}"
     Rails.logger.info "saved_change_to_issuer_signature_data: #{saved_change_to_issuer_signature_data?}"
     Rails.logger.info "new_record: #{new_record?}"
-    
     # Process main signature if provided
     if signature_data.present? && (saved_change_to_signature_data? || new_record?)
       process_signature_image(signature_data, :signature_image)
@@ -166,8 +165,6 @@ class Kyc < ApplicationRecord
       process_signature_image(issuer_signature_data, :issuer_signature)
       update_column(:issuer_signature_completed_at, Time.current) if issuer_signature.attached?
     end
-    
-    Rails.logger.info "=== PROCESS SIGNATURE COMPLETED ==="
   end
 
   def process_signature_image(signature_points, attachment_name)
@@ -176,15 +173,15 @@ class Kyc < ApplicationRecord
     begin
       # Ensure signature_points is properly formatted
       points = if signature_points.is_a?(String)
-                JSON.parse(signature_points)
-              else
-                signature_points
-              end
+                 JSON.parse(signature_points)
+               else
+                 signature_points
+               end
       
       # Convert signature data to image using our service
       image_data = SignatureImageGenerator.generate(points)
       
-      # Attach the generated image
+      # Attach the generated image to Digital Ocean Spaces
       public_send(attachment_name).attach(
         io: StringIO.new(image_data),
         filename: "#{attachment_name}-#{reference}.png",
@@ -226,56 +223,6 @@ class Kyc < ApplicationRecord
   rescue => e
     Rails.logger.error "Failed to generate issuer signature URL for KYC #{id}: #{e.message}"
     nil
-  end
-
-  def to_frontend_format
-    {
-      id: id,
-      reference: reference,
-      kyc_type: kyc_type,
-      status: status,
-      verification_type: verification_type,
-      id_number: id_number,
-      id_expiry_date: id_expiry_date,
-      date_of_birth: date_of_birth,
-      nationality: nationality,
-      occupation: occupation,
-      source_of_funds: source_of_funds,
-      risk_level: risk_level,
-      business_name: business_name,
-      business_registration_number: business_registration_number,
-      business_tax_id: business_tax_id,
-      business_industry: business_industry,
-      business_established_date: business_established_date,
-      addresses: kyc_addresses.map(&:to_frontend_format),
-      documents: kyc_documents.map(&:to_frontend_format),
-      signature_data: signature_data,
-      investor_signature_data: investor_signature_data,
-      issuer_signature_data: issuer_signature_data,
-      signature_image_url: signature_image_url,
-      issuer_signature_url: issuer_signature_url,
-      issuer_accepted_terms: issuer_accepted_terms,
-      signature_completed_at: signature_completed_at,
-      issuer_signature_completed_at: issuer_signature_completed_at,
-      verified_at: verified_at,
-      verified_by: verified_by&.full_name,
-      rejection_reason: rejection_reason,
-      created_at: created_at,
-      updated_at: updated_at,
-      user: {
-        id: user.id,
-        email: user.email,
-        full_name: user.full_name,
-        fundraiser_info: user.campaigns.any? ? {
-          has_campaigns: true,
-          total_campaigns: user.campaigns.count,
-          active_campaigns: user.campaigns.active.count,
-          campaign_titles: user.campaigns.pluck(:title)
-        } : {
-          has_campaigns: false
-        }
-      }
-    }
   end
 
   private

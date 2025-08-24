@@ -25,6 +25,9 @@ class KycFrontendService
       documents: kyc.kyc_documents.map { |d| format_document(d) },
       signature_data: kyc.signature_data,
       investor_signature_data: kyc.investor_signature_data,
+      issuer_signature_data: kyc.issuer_signature_data,
+      signature_image_url: kyc.signature_image_url,
+      issuer_signature_url: kyc.issuer_signature_url,
       issuer_accepted_terms: kyc.issuer_accepted_terms,
       signature_completed_at: kyc.signature_completed_at,
       issuer_signature_completed_at: kyc.issuer_signature_completed_at,
@@ -32,7 +35,8 @@ class KycFrontendService
       verified_by: kyc.verified_by&.full_name,
       rejection_reason: kyc.rejection_reason,
       created_at: kyc.created_at,
-      updated_at: kyc.updated_at
+      updated_at: kyc.updated_at,
+      user: format_user(kyc.user)
     }
   end
 
@@ -48,7 +52,9 @@ class KycFrontendService
       postal_code: address.postal_code,
       country: address.country,
       is_primary: address.is_primary,
-      full_address: address.full_address
+      full_address: address.full_address,
+      created_at: address.created_at,
+      updated_at: address.updated_at
     }
   end
 
@@ -63,7 +69,27 @@ class KycFrontendService
       verification_status: document.verification_status,
       rejection_reason: document.rejection_reason,
       verified_at: document.verified_at,
-      verified_by: document.verified_by&.full_name
+      verified_by: document.verified_by&.full_name,
+      created_at: document.created_at,
+      updated_at: document.updated_at
+    }
+  end
+
+  def self.format_user(user)
+    return nil unless user
+    
+    {
+      id: user.id,
+      email: user.email,
+      full_name: user.full_name,
+      fundraiser_info: user.campaigns.any? ? {
+        has_campaigns: true,
+        total_campaigns: user.campaigns.count,
+        active_campaigns: user.campaigns.active.count,
+        campaign_titles: user.campaigns.pluck(:title)
+      } : {
+        has_campaigns: false
+      }
     }
   end
 
@@ -84,6 +110,7 @@ class KycFrontendService
       business_established_date: frontend_data[:business_established_date],
       signature_data: frontend_data[:signature_data],
       investor_signature_data: frontend_data[:investor_signature_data],
+      issuer_signature_data: frontend_data[:issuer_signature_data],
       issuer_accepted_terms: frontend_data[:issuer_accepted_terms]
     )
 

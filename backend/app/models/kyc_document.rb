@@ -62,24 +62,6 @@ class KycDocument < ApplicationRecord
     false
   end
 
-  def to_frontend_format
-    {
-      id: id,
-      document_type: document_type,
-      file_name: file_name,
-      file_url: file_url,
-      verification_status: verification_status,
-      rejection_reason: rejection_reason,
-      verified_at: verified_at,
-      verified_by: verified_by&.full_name,
-      created_at: created_at,
-      updated_at: updated_at,
-      file_attached: file.attached?,
-      file_size: file.attached? ? file.blob.byte_size : nil,
-      file_content_type: file.attached? ? file.blob.content_type : nil
-    }
-  end
-
   private
 
   def set_file_name
