@@ -348,7 +348,10 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const prepareKycData = (): KycFormData => {
     // Create properly formatted signature data
     const formattedSignature = signature && Array.isArray(signature) && signature.length > 0
-      ? signature.map(point => ({ x: Number(point.x), y: Number(point.y) }))
+      ? signature.map(point => ({ 
+          x: typeof point.x === 'string' ? parseFloat(point.x) : point.x,
+          y: typeof point.y === 'string' ? parseFloat(point.y) : point.y
+        }))
       : undefined;
 
     const baseData = {
@@ -383,12 +386,12 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           is_primary: true,
         } as KycAddress,
       ],
-      // Store signature data in the appropriate field based on user type
-      signature_data: formattedSignature,
+      // Store signature data - ensure we're not sending empty arrays
+      signature_data: formattedSignature && formattedSignature.length > 0 ? formattedSignature : null,
       investor_signature_data:
-        userType === 'investor' ? formattedSignature : undefined,
+        userType === 'investor' && formattedSignature && formattedSignature.length > 0 ? formattedSignature : null,
       issuer_signature_data:
-        (userType === 'creator' || userType === 'mentor') ? formattedSignature : undefined,
+        (userType === 'creator' || userType === 'mentor') && formattedSignature && formattedSignature.length > 0 ? formattedSignature : null,
       issuer_accepted_terms: true,
     };
 
