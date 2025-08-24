@@ -49,6 +49,10 @@ module Api
             Rails.logger.info "Signature data: #{params.dig(:kyc, :signature_data).inspect}"
             Rails.logger.info "Issuer signature data: #{params.dig(:kyc, :issuer_signature_data).inspect}"
             Rails.logger.info "Investor signature data: #{params.dig(:kyc, :investor_signature_data).inspect}"
+
+            if params.dig(:kyc, :signature_data).is_a?(Array)
+              Rails.logger.info "First signature point: #{params.dig(:kyc, :signature_data).first.inspect}"
+            end
           # Check if user can create KYC (no pending or verified ones)
           if @current_user.kycs.where(status: ['pending', 'in_review', 'verified']).exists?
             return render_kyc_error('You already have a KYC submission in progress or verified')
