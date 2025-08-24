@@ -284,15 +284,12 @@ module Api
             :date_of_birth, :nationality, :occupation, :source_of_funds,
             :business_name, :business_registration_number, :business_tax_id,
             :business_industry, :business_established_date,
-            :signature_data, :investor_signature_data, :issuer_signature_data,
             :issuer_accepted_terms,
+            signature_data: [],
+            investor_signature_data: [],
+            issuer_signature_data: [],
             addresses_attributes: [:id, :address_type, :street, :city, :state, :postal_code, :country, :is_primary, :_destroy]
-          ).tap do |whitelisted|
-            # Handle signature data which might be an array
-            whitelisted[:signature_data] = params[:kyc][:signature_data] if params[:kyc][:signature_data]
-            whitelisted[:investor_signature_data] = params[:kyc][:investor_signature_data] if params[:kyc][:investor_signature_data]
-            whitelisted[:issuer_signature_data] = params[:kyc][:issuer_signature_data] if params[:kyc][:issuer_signature_data]
-          end
+          )
         end
 
         def render_kyc_errors(errors)
