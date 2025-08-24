@@ -280,7 +280,6 @@ module Api
 
       # app/controllers/api/v1/base_campaigns_controller.rb
       def campaign_json(campaign)
-        # First get the basic JSON without calling the problematic methods
         json = campaign.as_json(
           only: %i[
             id title slug goal_amount current_amount transferred_amount start_date end_date
@@ -288,6 +287,7 @@ module Api
             fundraiser_id created_at updated_at valuation equity_offered minimum_investment maximum_investment 
             total_shares 
           ],
+          methods: %i[media_url media_filename total_days remaining_days],
           include: {
             rewards: {},
             updates: {},
@@ -315,15 +315,6 @@ module Api
             contract_term: campaign.contract_term
           }
         )
-        
-        # Add the methods separately to avoid argument passing issues
-        json.merge!(
-          media_url: campaign.media_url,
-          media_filename: campaign.media_filename,
-          total_days: campaign.total_days,
-          remaining_days: campaign.remaining_days
-        )
-        
         # Filter to only include contract documents
         if json[:investor_documents]
           json[:investor_documents] = json[:investor_documents].select do |doc|

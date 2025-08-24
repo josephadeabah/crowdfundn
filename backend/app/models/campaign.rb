@@ -143,45 +143,32 @@ class Campaign < ApplicationRecord
 
   # app/models/campaign.rb
   def as_json(options = {})
-    # Create a safe options hash without methods that might cause issues
-    safe_options = {
+    json = super({
       only: %i[
         id title goal_amount current_amount transferred_amount start_date end_date
         category location currency currency_code currency_symbol status
         fundraiser_id created_at updated_at valuation equity_offered minimum_investment 
-        total_shares lock_version
-      ]
-    }.merge(options)
-    
-    # Remove methods from options to avoid argument passing issues
-    safe_options.delete(:methods)
-    
-    json = super(safe_options)
-
-    # Manually add the methods that were removed
-    json.merge!(
-      media_url: media_url,
-      media_filename: media_filename,
-      total_days: total_days,
-      remaining_days: remaining_days
-    )
+        total_shares
+      ],
+      methods: %i[media_url media_filename total_days remaining_days]
+    }.merge(options))
 
     # Only include equity fields for EquityCampaign instances
     if is_a?(EquityCampaign)
       json.merge!(
         shares_issued: shares_issued,
-        equity_issued: equity_issued,
         total_equity_invested: total_equity_invested,
         shares_available: shares_available,
         percentage_raised: percentage_raised
       )
     end
 
-    # Add additional fields (rest of the original method remains exactly the same)
+    # Add additional fields
     json.merge!(
       type: self.class.name,
       description: description.as_json,
-      total_shares: total_social_media_shares,
+      # FIXED: Don't overwrite total_shares with social media shares
+      total_social_media_shares: total_social_media_shares, # Changed from total_shares
       donations_over_time: donations_over_time,
       media_attached: media_attached?,
       media_content_type: media_attached? ? media.content_type : nil,

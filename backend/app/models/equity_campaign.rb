@@ -136,21 +136,15 @@ class EquityCampaign < Campaign
     errors
   end
   
-  def shares_available(*args)
+  def shares_available
     return 0 if equity_offered.nil? || valuation.nil? || total_shares.nil?
 
-    # Use a single query to avoid multiple database calls and race conditions
     total_equity_shares = (equity_offered.to_f / 100) * total_shares.to_f
-    issued_shares = equity_investments.successful.sum(:shares)
-    founder_shares = campaign_team_members.where(role: 'founder').sum('equity_percentage / 100 * ?', total_shares)
-    
-    Rails.logger.debug "Shares Calculation: total_equity=#{total_equity_shares}, issued=#{issued_shares}, founder=#{founder_shares}"
+    issued_shares = shares_issued
+    founder_shares = calculate_founder_shares
     
     available = total_equity_shares - issued_shares - founder_shares
-    result = available.positive? ? available.round(4) : 0
-    
-    Rails.logger.debug "Shares Available: #{result}"
-    result
+    available.positive? ? available.round(4) : 0
   end
 
   def shares_issued
@@ -209,12 +203,9 @@ class EquityCampaign < Campaign
     campaign_team_members.sum(:equity_percentage).to_f
   end
 
+  # app/models/equity_campaign.rb
   def as_json(options = {})
-    # Call the parent's as_json but avoid the super call issues
-    json = super(options)
-    
-    # Add equity-specific fields
-    json.merge(
+    super.merge(
       type: 'EquityCampaign',
       total_investors: total_investors,
       company_info: {
