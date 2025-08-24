@@ -201,13 +201,14 @@ class InvestmentCertificateService
                size: 6, align: :center # Reduced from 7
 
       # Create temp file and attach
-      temp_file = Tempfile.new(["certificate_#{investment.certificate_number", ".pdf"], binmode: true)
+      temp_file = Tempfile.new(["certificate_#{investment.certificate_number}", ".pdf"], binmode: true)
       pdf.render_file(temp_file.path)
       
       temp_file.close
       temp_file.open if temp_file.closed?
       
-      unless File.exist?(temp_file.path) & File.size(temp_file.path) > 0
+      # FIXED: Changed & to && and fixed the condition
+      unless File.exist?(temp_file.path) && File.size(temp_file.path) > 0
         raise "Failed to generate PDF file"
       end
 
