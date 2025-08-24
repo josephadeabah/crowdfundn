@@ -29,7 +29,7 @@ class InvestmentCertificateService
       pdf = Prawn::Document.new(
         page_size: 'A4',
         page_layout: :portrait,
-        margin: [40, 40, 40, 40],
+        margin: [30, 40, 30, 40], # Reduced top and bottom margins
         info: {
           Title: 'Investment Certificate',
           Creator: 'Bantuhive',
@@ -47,16 +47,16 @@ class InvestmentCertificateService
         pdf.line_width 2
         pdf.horizontal_line 0, pdf.bounds.width, at: pdf.cursor + 3
       end
-      pdf.move_down 12
+      pdf.move_down 10 # Reduced from 12
 
       # Header
       pdf.fill_color BRAND_GREEN
       pdf.text 'BANTUHIVE INVESTMENT CERTIFICATE', size: 20, align: :center, style: :bold
-      pdf.move_down 8
+      pdf.move_down 6 # Reduced from 8
       
       pdf.fill_color BRAND_ORANGE
       pdf.text 'OFFICIAL CERTIFICATE OF OWNERSHIP', size: 11, align: :center, style: :italic
-      pdf.move_down 15
+      pdf.move_down 12 # Reduced from 15
 
       # Investor details
       pdf.fill_color '000000'
@@ -64,38 +64,38 @@ class InvestmentCertificateService
       campaign = investment.campaign
       fundraiser = campaign.fundraiser
       
-      pdf.text "This is to certify that", size: 13, align: :center
-      pdf.move_down 6
+      pdf.text "This is to certify that", size: 12, align: :center # Reduced from 13
+      pdf.move_down 4 # Reduced from 6
       
       pdf.fill_color BRAND_GREEN
-      pdf.text investor_name.upcase, size: 15, align: :center, style: :bold
-      pdf.move_down 6
+      pdf.text investor_name.upcase, size: 14, align: :center, style: :bold # Reduced from 15
+      pdf.move_down 4 # Reduced from 6
       
       pdf.fill_color '000000'
-      pdf.text "has successfully invested", size: 13, align: :center
-      pdf.move_down 6
+      pdf.text "has successfully invested", size: 12, align: :center # Reduced from 13
+      pdf.move_down 4 # Reduced from 6
       
       pdf.fill_color BRAND_ORANGE
       pdf.text "#{campaign.currency}#{investment.amount.round(2)}", 
-               size: 20, align: :center, style: :bold
-      pdf.move_down 10
+               size: 18, align: :center, style: :bold # Reduced from 20
+      pdf.move_down 8 # Reduced from 10
       
       pdf.fill_color '000000'
-      pdf.text "in", size: 13, align: :center
-      pdf.move_down 6
+      pdf.text "in", size: 12, align: :center # Reduced from 13
+      pdf.move_down 4 # Reduced from 6
       
       pdf.fill_color BRAND_GREEN
-      pdf.text campaign.company_name.to_s.upcase, size: 15, align: :center, style: :bold
-      pdf.move_down 15
+      pdf.text campaign.company_name.to_s.upcase, size: 14, align: :center, style: :bold # Reduced from 15
+      pdf.move_down 12 # Reduced from 15
 
       # Company information
       pdf.fill_color '000000'
-      pdf.text 'COMPANY INFORMATION', size: 14, align: :center, style: :bold
-      pdf.move_down 10
+      pdf.text 'COMPANY INFORMATION', size: 13, align: :center, style: :bold # Reduced from 14
+      pdf.move_down 8 # Reduced from 10
 
       company_details = [
         ['Company:', campaign.company_name],
-        ['Description:', campaign.company_description.to_s.truncate(100)],
+        ['Description:', campaign.company_description.to_s.truncate(80)], # Reduced truncation
         ['Headquarters:', campaign.company_headquarters],
         ['Website:', campaign.company_website],
         ['Valuation:', "#{campaign.currency} #{campaign.valuation.to_f.round(2)}"],
@@ -105,17 +105,17 @@ class InvestmentCertificateService
 
       pdf.table(company_details, 
                 width: pdf.bounds.width,
-                cell_style: { borders: [], padding: [4, 8, 4, 0], size: 9 }
+                cell_style: { borders: [], padding: [3, 6, 3, 0], size: 8 } # Reduced padding and size
                ) do |t|
-        t.column(0).style(align: :right, font_style: :bold, width: 100, text_color: '000000')
+        t.column(0).style(align: :right, font_style: :bold, width: 90, text_color: '000000') # Reduced width
         t.column(1).style(align: :left)
       end
 
-      pdf.move_down 12
+      pdf.move_down 10 # Reduced from 12
 
       # Fundraiser information
-      pdf.text 'FUNDRAISER INFORMATION', size: 14, align: :center, style: :bold
-      pdf.move_down 10
+      pdf.text 'FUNDRAISER INFORMATION', size: 13, align: :center, style: :bold # Reduced from 14
+      pdf.move_down 8 # Reduced from 10
 
       fundraiser_details = [
         ['Fundraiser:', fundraiser.full_name],
@@ -125,18 +125,18 @@ class InvestmentCertificateService
 
       pdf.table(fundraiser_details, 
                 width: pdf.bounds.width,
-                cell_style: { borders: [], padding: [4, 8, 4, 0], size: 9 }
+                cell_style: { borders: [], padding: [3, 6, 3, 0], size: 8 } # Reduced padding and size
                ) do |t|
-        t.column(0).style(align: :right, font_style: :bold, width: 100, text_color: '000000')
+        t.column(0).style(align: :right, font_style: :bold, width: 90, text_color: '000000') # Reduced width
         t.column(1).style(align: :left)
       end
 
-      pdf.move_down 15
+      pdf.move_down 12 # Reduced from 15
 
       # Investment details
       pdf.fill_color '000000'
-      pdf.text 'INVESTMENT DETAILS', size: 15, align: :center, style: :bold
-      pdf.move_down 12
+      pdf.text 'INVESTMENT DETAILS', size: 14, align: :center, style: :bold # Reduced from 15
+      pdf.move_down 10 # Reduced from 12
 
       details = [
         ['Certificate Number:', { content: investment.certificate_number, color: BRAND_GREEN }],
@@ -148,9 +148,9 @@ class InvestmentCertificateService
 
       pdf.table(details.map { |label, data| [label, data[:content]] }, 
                 width: pdf.bounds.width,
-                cell_style: { borders: [], padding: [5, 10, 5, 0], size: 9 }
+                cell_style: { borders: [], padding: [4, 8, 4, 0], size: 8 } # Reduced padding and size
                ) do |t|
-        t.column(0).style(align: :right, font_style: :bold, width: 150, text_color: '000000')
+        t.column(0).style(align: :right, font_style: :bold, width: 130, text_color: '000000') # Reduced width
         t.column(1).style(align: :left)
         
         details.each_with_index do |(_, data), i|
@@ -159,10 +159,10 @@ class InvestmentCertificateService
         end
       end
 
-      # Add signatures section
+      # Add signatures section with reduced spacing
       add_signatures_section(pdf, investor_signature_url, issuer_signature_url, investor_name, fundraiser.full_name)
 
-      pdf.move_down 20
+      pdf.move_down 15 # Reduced from 20
 
       # Official footer
       pdf.stroke do
@@ -170,22 +170,22 @@ class InvestmentCertificateService
         pdf.line_width 1
         pdf.horizontal_line 0, pdf.bounds.width, at: pdf.cursor
       end
-      pdf.move_down 12
+      pdf.move_down 10 # Reduced from 12
 
       pdf.fill_color '000000'
       pdf.text "This certificate represents a legal ownership stake in #{campaign.company_name}", 
-               size: 9, align: :center
+               size: 8, align: :center # Reduced from 9
       pdf.text "as per the terms outlined in the investment agreement and governed by the laws of the jurisdiction.", 
-               size: 9, align: :center
-      pdf.move_down 10
+               size: 8, align: :center # Reduced from 9
+      pdf.move_down 8 # Reduced from 10
 
       pdf.fill_color BRAND_GREEN
-      pdf.text "ISSUED BY BANTUHIVE LIMITED", size: 11, align: :center, style: :bold
-      pdf.move_down 3
+      pdf.text "ISSUED BY BANTUHIVE LIMITED", size: 10, align: :center, style: :bold # Reduced from 11
+      pdf.move_down 2 # Reduced from 3
       pdf.fill_color BRAND_ORANGE
-      pdf.text "on #{Time.current.strftime('%B %d, %Y')}", size: 9, align: :center, style: :italic
+      pdf.text "on #{Time.current.strftime('%B %d, %Y')}", size: 8, align: :center, style: :italic # Reduced from 9
 
-      pdf.move_down 15
+      pdf.move_down 12 # Reduced from 15
 
       # Final decorative border
       pdf.stroke do
@@ -195,10 +195,10 @@ class InvestmentCertificateService
       end
 
       # Footer
-      pdf.move_down 12
+      pdf.move_down 10 # Reduced from 12
       pdf.fill_color '666666'
       pdf.text "Bantuhive Limited • Registered Investment Platform • www.bantuhive.com", 
-               size: 7, align: :center
+               size: 6, align: :center # Reduced from 7
 
       # Create temp file and attach
       temp_file = Tempfile.new(["certificate_#{investment.certificate_number}", ".pdf"], binmode: true)
@@ -236,7 +236,7 @@ class InvestmentCertificateService
   end
 
   def self.add_signatures_section(pdf, investor_sig_url, issuer_sig_url, investor_name, issuer_name)
-    pdf.move_down 30
+    pdf.move_down 20 # Reduced from 30
     
     # Store the current Y position for signature placement
     signature_base_y = pdf.cursor
@@ -254,7 +254,7 @@ class InvestmentCertificateService
               width: pdf.bounds.width,
               cell_style: { 
                 borders: [], 
-                padding: [2, 0, 2, 0],
+                padding: [1, 0, 1, 0], # Reduced padding
                 align: :center
               }
             ) do |t|
@@ -264,21 +264,21 @@ class InvestmentCertificateService
       
       # Style the header row
       t.row(0).font_style = :bold
-      t.row(0).size = 10
+      t.row(0).size = 9 # Reduced from 10
       
       # Style the name row
       t.row(2).font_style = :italic
-      t.row(2).size = 9
+      t.row(2).size = 8 # Reduced from 9
       
       # Style the underline row
-      t.row(3).size = 8
+      t.row(3).size = 7 # Reduced from 8
       
       # Set row heights for signature space
-      t.row(1).height = 60
+      t.row(1).height = 50 # Reduced from 60
     end
 
     # Now add signature images at the correct positions
-    signature_image_y = signature_base_y - 40 # Position above the signature lines
+    signature_image_y = signature_base_y - 35 # Reduced from 40
     
     # Add investor signature
     if investor_sig_url.present?
@@ -287,9 +287,9 @@ class InvestmentCertificateService
         signature_image = URI.open(investor_sig_url)
         # Position at left side (centered in left column)
         pdf.image signature_image, 
-                  width: 100, 
-                  height: 40, 
-                  at: [pdf.bounds.width / 4 - 50, signature_image_y]
+                  width: 90,  # Reduced from 100
+                  height: 35, # Reduced from 40
+                  at: [pdf.bounds.width / 4 - 45, signature_image_y] # Adjusted position
         Rails.logger.info "Investor signature added successfully"
       rescue OpenURI::HTTPError => e
         Rails.logger.warn "HTTP Error loading investor signature: #{e.message}"
@@ -307,9 +307,9 @@ class InvestmentCertificateService
         signature_image = URI.open(issuer_sig_url)
         # Position at right side (centered in right column)
         pdf.image signature_image, 
-                  width: 100, 
-                  height: 40, 
-                  at: [pdf.bounds.width * 3 / 4 - 50, signature_image_y]
+                  width: 90,  # Reduced from 100
+                  height: 35, # Reduced from 40
+                  at: [pdf.bounds.width * 3 / 4 - 45, signature_image_y] # Adjusted position
         Rails.logger.info "Issuer signature added successfully"
       rescue OpenURI::HTTPError => e
         Rails.logger.warn "HTTP Error loading issuer signature: #{e.message}"
@@ -320,7 +320,7 @@ class InvestmentCertificateService
       Rails.logger.warn "No issuer signature URL provided"
     end
 
-    pdf.move_down 60
+    pdf.move_down 40 # Reduced from 60
   end
 
   def self.get_investor_signature_url(investment)
@@ -431,11 +431,11 @@ class InvestmentCertificateService
         pdf.fill_color 'DDDDDD'
         
         pdf.text_box "BANTUHIVE",
-                     at: [pdf.bounds.width / 2 - 70, pdf.bounds.height / 2],
-                     size: 45,
+                     at: [pdf.bounds.width / 2 - 60, pdf.bounds.height / 2], # Adjusted position
+                     size: 40, # Reduced from 45
                      style: :bold,
-                     width: 140,
-                     height: 70,
+                     width: 120, # Reduced from 140
+                     height: 60, # Reduced from 70
                      align: :center,
                      valign: :center
       end
