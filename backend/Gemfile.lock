@@ -467,6 +467,7 @@ DEPENDENCIES
   jwt
   kaminari
   mail
+  mini_magick
   pg (~> 1.1)
   prawn
   prawn-table
