@@ -95,7 +95,7 @@ const Signup = () => {
             <CardContent className="space-y-4">
               <RegisterForm />
 
-              <div className="relative">
+              {/* <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <Separator className="w-full" />
                 </div>
@@ -138,7 +138,7 @@ const Signup = () => {
                   </svg>
                   Facebook
                 </Button>
-              </div>
+              </div> */}
             </CardContent>
 
             <CardFooter>
