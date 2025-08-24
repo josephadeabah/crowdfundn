@@ -1,4 +1,3 @@
-# app/models/equity_investment.rb
 class EquityInvestment < ApplicationRecord
   belongs_to :user
   belongs_to :campaign, class_name: 'EquityCampaign'
@@ -72,8 +71,7 @@ class EquityInvestment < ApplicationRecord
   end
 
   def current_value
-    current_value = (campaign.valuation * percentage / 100).round(2)
-    current_value
+    (campaign.valuation.to_f * percentage.to_f / 100).round(2)
   end
 
   def total_returns
@@ -163,8 +161,9 @@ class EquityInvestment < ApplicationRecord
     price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
     self.shares = (amount / price_per_share).round(4)
 
+    # FIXED: Correct percentage calculation
     total_equity_value = (campaign.valuation.to_f * campaign.equity_offered.to_f / 100)
-    self.percentage = ((amount / total_equity_value) * 100).round(4)
+    self.percentage = total_equity_value > 0 ? ((amount / total_equity_value) * 100).round(4) : 0
   end
 
   def self.portfolio_for(user)
