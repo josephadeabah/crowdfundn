@@ -32,7 +32,6 @@ class EquityCampaign < Campaign
     closed: 6
   }
   
-  
   def total_shares_must_be_set
     # Only validate if it's a new record OR if total_shares is being set/changed
     if (new_record? || will_save_change_to_total_shares?) && total_shares.to_i <= 0
@@ -140,12 +139,18 @@ class EquityCampaign < Campaign
   def shares_available
     return 0 if equity_offered.nil? || valuation.nil? || total_shares.nil?
 
+    # Use a single query to avoid multiple database calls and race conditions
     total_equity_shares = (equity_offered.to_f / 100) * total_shares.to_f
-    issued_shares = shares_issued
-    founder_shares = calculate_founder_shares
+    issued_shares = equity_investments.successful.sum(:shares)
+    founder_shares = campaign_team_members.where(role: 'founder').sum('equity_percentage / 100 * ?', total_shares)
+    
+    Rails.logger.debug "Shares Calculation: total_equity=#{total_equity_shares}, issued=#{issued_shares}, founder=#{founder_shares}"
     
     available = total_equity_shares - issued_shares - founder_shares
-    available.positive? ? available.round(4) : 0
+    result = available.positive? ? available.round(4) : 0
+    
+    Rails.logger.debug "Shares Available: #{result}"
+    result
   end
 
   def shares_issued
@@ -163,22 +168,33 @@ class EquityCampaign < Campaign
   end
 
   def create_investment(user, amount)
-    price_per_share = valuation.to_f / total_shares.to_f
-    shares = (amount / price_per_share).round(4)
-    percentage = ((amount / (valuation.to_f * equity_offered.to_f / 100)) * 100).round(6)
+    ActiveRecord::Base.transaction do
+      # Lock the campaign to prevent race conditions
+      campaign = EquityCampaign.lock.find(id)
+      
+      price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
+      shares = (amount / price_per_share).round(4)
+      percentage = ((amount / (campaign.valuation.to_f * campaign.equity_offered.to_f / 100)) * 100).round(6)
 
-    if shares > shares_available
-      errors.add(:base, "Not enough shares available for this investment")
-      return nil
+      if shares > campaign.shares_available
+        errors.add(:base, "Not enough shares available for this investment")
+        return nil
+      end
+
+      campaign.equity_investments.create(
+        user: user,
+        amount: amount,
+        shares: shares,
+        percentage: percentage,
+        status: EquityInvestment::STATUS_PENDING,
+      )
     end
-
-    equity_investments.create(
-      user: user,
-      amount: amount,
-      shares: shares,
-      percentage: percentage,
-      status: 'pending',
-    )
+  rescue ActiveRecord::RecordNotFound => e
+    errors.add(:base, "Campaign not found: #{e.message}")
+    nil
+  rescue ActiveRecord::StaleObjectError => e
+    errors.add(:base, "Campaign was modified by another process. Please try again.")
+    nil
   end
 
   def percentage_available

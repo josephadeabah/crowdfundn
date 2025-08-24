@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_24_021215) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_24_170510) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -145,6 +145,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_24_021215) do
     t.integer "total_shares", default: 1000000
     t.decimal "equity_issued", precision: 5, scale: 2, default: "0.0"
     t.decimal "total_equity_invested", precision: 15, scale: 2, default: "0.0"
+    t.integer "lock_version", default: 0
     t.index ["category", "status"], name: "index_campaigns_on_category_and_status"
     t.index ["category"], name: "index_campaigns_on_category"
     t.index ["created_at"], name: "index_campaigns_on_created_at"

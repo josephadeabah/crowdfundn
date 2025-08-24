@@ -41,6 +41,7 @@ class EquityInvestment < ApplicationRecord
   before_create :set_investment_date
   after_commit :update_campaign_leaderboard, if: :saved_change_to_status?
   after_update :generate_certificate_if_successful, if: :saved_change_to_status?
+  after_save :update_campaign_shares, if: -> { saved_change_to_status? && successful? }
 
   # Status query methods
   def pending?
@@ -257,5 +258,21 @@ class EquityInvestment < ApplicationRecord
 
   def update_campaign_leaderboard
     campaign.update_fundraiser_leaderboard if successful?
+  end
+
+  def update_campaign_shares
+    # This method ensures campaign shares are updated atomically
+    # when an investment becomes successful
+    campaign.with_lock do
+      # Recalculate to ensure consistency
+      campaign.update!(
+        current_amount: campaign.current_amount + amount,
+        total_successful_donations: campaign.total_successful_donations + amount
+      )
+    end
+  rescue ActiveRecord::StaleObjectError => e
+    Rails.logger.error "Failed to update campaign shares for investment #{id}: #{e.message}"
+    # Retry the update
+    retry if (retries ||= 0) && (retries += 1) < 3
   end
 end

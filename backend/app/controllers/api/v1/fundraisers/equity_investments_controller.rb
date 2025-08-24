@@ -1,3 +1,4 @@
+# app/controllers/api/v1/fundraisers/equity_investments_controller.rb
 module Api
   module V1
     module Fundraisers
@@ -52,28 +53,24 @@ module Api
           end
 
           ActiveRecord::Base.transaction do
-            # Create the investment first to trigger share calculation
-            investment = @campaign.equity_investments.new(
-              user: @current_user,
-              amount: amount,
+            # Use the campaign's create_investment method which handles locking
+            investment = @campaign.create_investment(@current_user, amount)
+            
+            unless investment
+              return render json: { 
+                success: false, 
+                error: "Failed to create investment: #{@campaign.errors.full_messages.join(', ')}",
+                validationErrors: @campaign.errors.to_hash
+              }, status: :unprocessable_entity
+            end
+
+            investment.update!(
               reward_id: reward_id,
-              status: EquityInvestment::STATUS_PENDING,
               email: investment_params[:email],
               phone: investment_params[:phone],
               full_name: investment_params[:full_name],
               metadata: investment_params[:metadata] || {}
             )
-
-            # Manually trigger share calculation before validation
-            investment.calculate_shares_and_percentage
-
-            unless investment.save
-              return render json: { 
-                success: false, 
-                error: "Validation failed: #{investment.errors.full_messages.join(', ')}",
-                validationErrors: investment.errors.to_hash
-              }, status: :unprocessable_entity
-            end
 
             # Generate callback URL similar to donations
             secure_random_uuid = SecureRandom.uuid
@@ -88,6 +85,12 @@ module Api
             # Initialize payment (same pattern as donations)
             initialize_payment(investment, metadata, redirect_url)
           end
+        rescue ActiveRecord::StaleObjectError => e
+          render json: { 
+            success: false, 
+            error: 'Campaign was modified by another process. Please try again.',
+            code: 'STALE_OBJECT_ERROR'
+          }, status: :conflict
         rescue StandardError => e
           render json: { 
             success: false, 

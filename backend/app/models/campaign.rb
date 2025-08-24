@@ -1,4 +1,7 @@
 class Campaign < ApplicationRecord
+  # Add optimistic locking
+  self.locking_column = :lock_version
+  
   belongs_to :fundraiser, class_name: 'User', foreign_key: 'fundraiser_id'
   has_many :rewards, dependent: :destroy
   has_many :updates, dependent: :destroy
@@ -27,7 +30,7 @@ class Campaign < ApplicationRecord
   # Permissions settings
   attribute :accept_donations, :boolean, default: true
   attribute :leave_words_of_support, :boolean, default: true
-  attribute :appear_in_search_results, :boolean, default: true
+  attribute :appear_in search_results, :boolean, default: true
   attribute :suggested_fundraiser_lists, :boolean, default: true
   attribute :receive_donation_email, :boolean, default: true
   attribute :receive_daily_summary, :boolean, default: false
@@ -145,7 +148,7 @@ class Campaign < ApplicationRecord
         id title goal_amount current_amount transferred_amount start_date end_date
         category location currency currency_code currency_symbol status
         fundraiser_id created_at updated_at valuation equity_offered minimum_investment 
-        total_shares
+        total_shares lock_version
       ],
       methods: %i[media_url media_filename total_days remaining_days]
     }.merge(options))
