@@ -241,24 +241,12 @@ class InvestmentCertificateService
     # Store the current Y position for signature placement
     signature_base_y = pdf.cursor
     
-    # Create signature table first
+    # Create signature table with simpler formatting
     signature_data = [
-      [
-        { content: "INVESTOR SIGNATURE", align: :center, font_style: :bold, size: 10 },
-        { content: "ISSUER SIGNATURE", align: :center, font_style: :bold, size: 10 }
-      ],
-      [
-        { content: "", height: 60 }, # Space for signature images
-        { content: "", height: 60 }  # Space for signature images
-      ],
-      [
-        { content: investor_name, align: :center, size: 9, style: :italic },
-        { content: issuer_name, align: :center, size: 9, style: :italic }
-      ],
-      [
-        { content: "_________________________", align: :center, size: 8 },
-        { content: "_________________________", align: :center, size: 8 }
-      ]
+      ["INVESTOR SIGNATURE", "ISSUER SIGNATURE"],
+      ["", ""], # Space for signature images
+      [investor_name, issuer_name],
+      ["_________________________", "_________________________"]
     ]
 
     # Draw the signature table with proper styling
@@ -267,7 +255,6 @@ class InvestmentCertificateService
               cell_style: { 
                 borders: [], 
                 padding: [2, 0, 2, 0],
-                inline_format: true,
                 align: :center
               }
             ) do |t|
@@ -285,6 +272,9 @@ class InvestmentCertificateService
       
       # Style the underline row
       t.row(3).size = 8
+      
+      # Set row heights for signature space
+      t.row(1).height = 60
     end
 
     # Now add signature images at the correct positions
