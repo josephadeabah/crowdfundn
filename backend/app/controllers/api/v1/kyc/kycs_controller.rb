@@ -258,7 +258,7 @@ module Api
             signature_data: {},
             investor_signature_data: {},
             issuer_signature_data: {},
-            addresses_attributes: [:id, :address_type, :street, :city, :state, :postal_code, :country, :is_primary, :_destroy]
+            kyc_addresses_attributes: [:id, :address_type, :street, :city, :state, :postal_code, :country, :is_primary, :_destroy]
           )
         end
 
