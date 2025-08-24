@@ -261,17 +261,30 @@ class InvestmentCertificateService
       ]
     ]
 
-    # Draw the signature table
+    # Draw the signature table with proper styling
     pdf.table(signature_data, 
               width: pdf.bounds.width,
               cell_style: { 
                 borders: [], 
                 padding: [2, 0, 2, 0],
-                inline_format: true 
+                inline_format: true,
+                align: :center
               }
-             ) do |t|
-      t.column(0).style(align: :center, width: pdf.bounds.width / 2)
-      t.column(1).style(align: :center, width: pdf.bounds.width / 2)
+            ) do |t|
+      # Set column widths properly
+      t.column(0).width = pdf.bounds.width / 2
+      t.column(1).width = pdf.bounds.width / 2
+      
+      # Style the header row
+      t.row(0).font_style = :bold
+      t.row(0).size = 10
+      
+      # Style the name row
+      t.row(2).font_style = :italic
+      t.row(2).size = 9
+      
+      # Style the underline row
+      t.row(3).size = 8
     end
 
     # Now add signature images at the correct positions
