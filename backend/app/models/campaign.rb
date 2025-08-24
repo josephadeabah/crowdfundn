@@ -143,29 +143,33 @@ class Campaign < ApplicationRecord
 
   # app/models/campaign.rb
   def as_json(options = {})
-    json = super({
-      only: %i[
-        id title goal_amount current_amount transferred_amount start_date end_date
-        category location currency currency_code currency_symbol status
-        fundraiser_id created_at updated_at valuation equity_offered minimum_investment 
-        total_shares lock_version
-      ],
-      methods: %i[media_url media_filename total_days remaining_days]
-    }.merge(options))
-
-      # Only include equity fields for EquityCampaign instances
-    if is_a?(EquityCampaign)
-      json.merge!(
-        shares_issued: shares_issued,
-        equity_issued: equity_issued,
-        total_equity_invested: total_equity_invested,
-        shares_available: shares_available,
-        percentage_raised: percentage_raised
-      )
-    end
-
-    # Add additional fields
-    json.merge!(
+    # Build the JSON manually to avoid the super call issues
+    json = {
+      id: id,
+      title: title,
+      goal_amount: goal_amount,
+      current_amount: current_amount,
+      transferred_amount: transferred_amount,
+      start_date: start_date,
+      end_date: end_date,
+      category: category,
+      location: location,
+      currency: currency,
+      currency_code: currency_code,
+      currency_symbol: currency_symbol,
+      status: status,
+      fundraiser_id: fundraiser_id,
+      created_at: created_at,
+      updated_at: updated_at,
+      valuation: valuation,
+      equity_offered: equity_offered,
+      minimum_investment: minimum_investment,
+      total_shares: total_shares,
+      lock_version: lock_version,
+      media_url: media_url,
+      media_filename: media_filename,
+      total_days: total_days,
+      remaining_days: remaining_days,
       type: self.class.name,
       description: description.as_json,
       total_shares: total_social_media_shares,
@@ -188,9 +192,32 @@ class Campaign < ApplicationRecord
         promotion_frequency: promotion_frequency,
         promotion_duration: promotion_duration
       },
-      rewards: rewards,
-      updates: updates,
-      comments: comments,
+      total_donors: total_donors,
+      company_info: {
+        name: company_name,
+        description: company_description,
+        headquarters: company_headquarters,
+        website: company_website,
+        contract_term: contract_term
+      }
+    }
+
+    # Only include equity fields for EquityCampaign instances
+    if is_a?(EquityCampaign)
+      json.merge!(
+        shares_issued: shares_issued,
+        equity_issued: equity_issued,
+        total_equity_invested: total_equity_invested,
+        shares_available: shares_available,
+        percentage_raised: percentage_raised
+      )
+    end
+
+    # Add associations
+    json.merge!(
+      rewards: rewards.as_json,
+      updates: updates.as_json,
+      comments: comments.as_json,
       investor_documents: investor_documents.map(&:as_json),
       required_documents: required_documents.map(&:as_json),
       team_members: campaign_team_members.includes(:user).map do |member|
@@ -222,10 +249,10 @@ class Campaign < ApplicationRecord
         currency_symbol: fundraiser.currency_symbol,
         profile: fundraiser.profile
       },
-      total_days: total_days,
-      remaining_days: remaining_days,
       favorited: options[:user] ? options[:user].favorited_campaigns.include?(self) : false
     )
+
+    json
   end
 
   def total_days

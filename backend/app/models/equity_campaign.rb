@@ -210,7 +210,11 @@ class EquityCampaign < Campaign
   end
 
   def as_json(options = {})
-    super.merge(
+    # Call the parent's as_json but avoid the super call issues
+    json = super(options)
+    
+    # Add equity-specific fields
+    json.merge(
       type: 'EquityCampaign',
       total_investors: total_investors,
       company_info: {
@@ -221,7 +225,7 @@ class EquityCampaign < Campaign
         contract_term: contract_term
       },
       shares_available: shares_available,
-      shares_issued: shares_issued,  # Add this line
+      shares_issued: shares_issued,
       total_equity_shares: total_shares,
       percentage_raised: percentage_raised,
       equity_status: equity_status,
