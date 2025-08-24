@@ -42,17 +42,6 @@ module Api
         end
 
         def create
-            Rails.logger.info "=== KYC CREATE PARAMS DEBUG ==="
-            Rails.logger.info "Full params: #{params.to_json}"
-            Rails.logger.info "KYC params: #{params[:kyc].to_json}"
-            Rails.logger.info "Signature data type: #{params.dig(:kyc, :signature_data).class}"
-            Rails.logger.info "Signature data: #{params.dig(:kyc, :signature_data).inspect}"
-            Rails.logger.info "Issuer signature data: #{params.dig(:kyc, :issuer_signature_data).inspect}"
-            Rails.logger.info "Investor signature data: #{params.dig(:kyc, :investor_signature_data).inspect}"
-
-            if params.dig(:kyc, :signature_data).is_a?(Array)
-              Rails.logger.info "First signature point: #{params.dig(:kyc, :signature_data).first.inspect}"
-            end
           # Check if user can create KYC (no pending or verified ones)
           if @current_user.kycs.where(status: ['pending', 'in_review', 'verified']).exists?
             return render_kyc_error('You already have a KYC submission in progress or verified')
