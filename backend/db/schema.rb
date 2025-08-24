@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_23_213436) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_24_021215) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -312,10 +312,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_23_213436) do
     t.date "id_expiry_date", null: false
     t.text "rejection_reason"
     t.datetime "verified_at"
-    t.jsonb "signature_data"
+    t.json "signature_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.jsonb "investor_signature_data"
+    t.json "investor_signature_data"
     t.boolean "issuer_accepted_terms", default: false
     t.datetime "signature_completed_at"
     t.datetime "issuer_signature_completed_at"
@@ -331,7 +331,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_23_213436) do
     t.date "business_established_date"
     t.date "next_review_date"
     t.text "review_notes"
-    t.jsonb "issuer_signature_data"
+    t.json "issuer_signature_data"
     t.index ["business_registration_number"], name: "index_kycs_on_business_registration_number", unique: true
     t.index ["business_tax_id"], name: "index_kycs_on_business_tax_id", unique: true
     t.index ["created_at"], name: "index_kycs_on_created_at"

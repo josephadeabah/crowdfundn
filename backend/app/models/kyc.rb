@@ -1,8 +1,5 @@
 # app/models/kyc.rb
 class Kyc < ApplicationRecord
-  serialize :signature_data, Array
-  serialize :investor_signature_data, Array  
-  serialize :issuer_signature_data, Array
   belongs_to :user, class_name: '::User'
   belongs_to :verified_by, class_name: 'User', optional: true
 

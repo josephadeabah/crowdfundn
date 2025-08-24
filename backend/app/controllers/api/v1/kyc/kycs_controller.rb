@@ -285,9 +285,9 @@ module Api
             :business_name, :business_registration_number, :business_tax_id,
             :business_industry, :business_established_date,
             :issuer_accepted_terms,
-            signature_data: [],
-            investor_signature_data: [],
-            issuer_signature_data: [],
+            signature_data: {},
+            investor_signature_data: {},
+            issuer_signature_data: {},
             addresses_attributes: [:id, :address_type, :street, :city, :state, :postal_code, :country, :is_primary, :_destroy]
           )
         end
