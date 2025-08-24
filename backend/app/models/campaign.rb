@@ -41,6 +41,8 @@ class Campaign < ApplicationRecord
   attribute :schedule_promotion, :boolean, default: false
   attribute :promotion_frequency, :string, default: 'daily'
   attribute :promotion_duration, :integer, default: 1
+  # Add shares_available to the database schema
+  attribute :shares_available, :decimal, precision: 20, scale: 4, default: 0.0
   # Attachments for images or videos
   has_one_attached :media # Use `has_many_attached` if there are multiple files
 

@@ -8,6 +8,8 @@ class EquityCampaign < Campaign
 
   before_validation :set_default_total_shares, unless: :total_shares?
   after_update :update_investments_valuation, if: -> { saved_change_to_valuation? || saved_change_to_total_shares? }
+  before_validation :calculate_shares_available, if: -> { new_record? || will_save_change_to_equity_offered? || will_save_change_to_total_shares? }
+  after_save :update_shares_available_from_investments, if: -> { saved_change_to_shares_available? }
 
   validates :valuation, :equity_offered, :minimum_investment, :maximum_investment,
             presence: true, numericality: { greater_than: 0 }
@@ -136,15 +138,18 @@ class EquityCampaign < Campaign
     errors
   end
   
+  # Replace the method-based shares_available with database-backed version
   def shares_available
-    return 0 if equity_offered.nil? || valuation.nil? || total_shares.nil?
-
-    total_equity_shares = (equity_offered.to_f / 100) * total_shares.to_f
-    issued_shares = shares_issued
-    founder_shares = calculate_founder_shares
-    
-    available = total_equity_shares - issued_shares - founder_shares
-    available.positive? ? available.round(4) : 0
+    # Use database value for persisted records, calculate for new records
+    if persisted? && !will_save_change_to_shares_available?
+      self[:shares_available] || 0
+    else
+      calculate_shares_available_value
+    end
+  end
+  
+  def shares_available=(value)
+    self[:shares_available] = value
   end
 
   def shares_issued
@@ -161,6 +166,7 @@ class EquityCampaign < Campaign
     authenticated_investors + anonymous_investors
   end
 
+  # Update the create_investment method to use database-level locking
   def create_investment(user, amount)
     ActiveRecord::Base.transaction do
       # Lock the campaign to prevent race conditions
@@ -168,20 +174,27 @@ class EquityCampaign < Campaign
       
       price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
       shares = (amount / price_per_share).round(4)
-      percentage = ((amount / (campaign.valuation.to_f * campaign.equity_offered.to_f / 100)) * 100).round(6)
-
+      
+      # Use database value for shares_available check
       if shares > campaign.shares_available
         errors.add(:base, "Not enough shares available for this investment")
         return nil
       end
-
-      campaign.equity_investments.create(
+      
+      investment = campaign.equity_investments.create(
         user: user,
         amount: amount,
         shares: shares,
-        percentage: percentage,
+        percentage: calculate_percentage(amount),
         status: EquityInvestment::STATUS_PENDING,
       )
+      
+      # Update shares_available immediately
+      if investment.persisted?
+        campaign.update!(shares_available: campaign.shares_available - shares)
+      end
+      
+      investment
     end
   rescue ActiveRecord::RecordNotFound => e
     errors.add(:base, "Campaign not found: #{e.message}")
@@ -247,6 +260,34 @@ class EquityCampaign < Campaign
   end
 
   private
+
+  def calculate_shares_available
+    self.shares_available = calculate_shares_available_value
+  end
+  
+  def calculate_shares_available_value
+    return 0 if equity_offered.nil? || valuation.nil? || total_shares.nil?
+    
+    total_equity_shares = (equity_offered.to_f / 100) * total_shares.to_f
+    issued_shares = shares_issued
+    founder_shares = calculate_founder_shares
+    
+    available = total_equity_shares - issued_shares - founder_shares
+    available.positive? ? available.round(4) : 0
+  end
+  
+  def update_shares_available_from_investments
+    # This ensures the database value stays in sync with actual investments
+    actual_shares_available = calculate_shares_available_value
+    if self[:shares_available] != actual_shares_available
+      update_column(:shares_available, actual_shares_available)
+    end
+  end
+  
+  def calculate_percentage(amount)
+    total_equity_value = (valuation.to_f * equity_offered.to_f / 100)
+    ((amount / total_equity_value) * 100).round(4)
+  end
 
   def calculate_default_shares
     (valuation.to_f * 10).round(0) if valuation.present?

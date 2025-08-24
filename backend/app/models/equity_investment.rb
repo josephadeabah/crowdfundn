@@ -40,6 +40,7 @@ class EquityInvestment < ApplicationRecord
   before_create :generate_certificate_number
   before_create :set_investment_date
   after_commit :update_campaign_leaderboard, if: :saved_change_to_status?
+  after_commit :update_campaign_shares_available, if: -> { saved_change_to_status? && (successful? || refunded?) }
   after_update :generate_certificate_if_successful, if: :saved_change_to_status?
   after_save :update_campaign_shares, if: -> { saved_change_to_status? && successful? }
 
@@ -229,6 +230,22 @@ class EquityInvestment < ApplicationRecord
   end
 
   private
+
+  def update_campaign_shares_available
+    campaign.with_lock do
+      if successful? && previous_changes[:status]&.first != 'successful'
+        # Investment just became successful - deduct shares
+        campaign.decrement!(:shares_available, shares)
+      elsif refunded? && previous_changes[:status]&.first == 'successful'
+        # Investment was refunded - add shares back
+        campaign.increment!(:shares_available, shares)
+      end
+    end
+  rescue ActiveRecord::StaleObjectError => e
+    Rails.logger.error "Failed to update campaign shares available: #{e.message}"
+    # Retry or queue for background processing
+    UpdateCampaignSharesJob.perform_later(campaign_id, id)
+  end
 
   def generate_certificate_number
     self.certificate_number ||= "BHV-#{SecureRandom.alphanumeric(10).upcase}"
