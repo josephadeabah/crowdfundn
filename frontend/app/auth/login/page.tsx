@@ -104,7 +104,7 @@ const LoginPage = () => {
                   style={{ animationDelay: '0.4s' }}
                 >
                   <div className="w-2 h-2 bg-accent rounded-full" />
-                  <span>🎁 Reward-Based Campaigns</span>
+                  <span>🎁 Reward-Based Funding</span>
                 </div>
                 <div
                   className="flex items-center gap-3 animate-slide-right"
