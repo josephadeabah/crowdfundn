@@ -141,6 +141,27 @@ class Campaign < ApplicationRecord
     is_a?(EquityCampaign) ? equity_investments.successful.sum(:amount) : 0
   end
 
+  # Add default implementation for non-equity campaigns
+  def shares_available
+    0
+  end
+
+  def shares_issued
+    0
+  end
+
+  def total_equity_invested
+    0
+  end
+
+  def percentage_raised
+    0
+  end
+
+  def equity_issued
+    0
+  end
+
   # app/models/campaign.rb
   def as_json(options = {})
     json = super({
