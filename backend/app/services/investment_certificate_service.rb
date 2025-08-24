@@ -237,7 +237,7 @@ class InvestmentCertificateService
   end
 
   def self.add_signatures_section(pdf, investor_sig_url, issuer_sig_url, investor_name, issuer_name)
-    pdf.move_down 20 # Reduced from 30
+    pdf.move_down 15 # Reduced from 20
     
     # Store the current Y position for signature placement
     signature_base_y = pdf.cursor
@@ -265,23 +265,23 @@ class InvestmentCertificateService
       
       # Style the header row
       t.row(0).font_style = :bold
-      t.row(0).size = 9 # Reduced from 10
+      t.row(0).size = 8 # Reduced from 9
       
       # Style the name row - FIXED: Increased padding to prevent overlap
       t.row(2).font_style = :italic
-      t.row(2).size = 8 # Reduced from 9
-      t.row(2).padding = [15, 0, 5, 0] # Added top padding to separate from signatures
+      t.row(2).size = 7 # Reduced from 8
+      t.row(2).padding = [12, 0, 4, 0] # Reduced padding
       
       # Style the underline row
-      t.row(3).size = 7 # Reduced from 8
+      t.row(3).size = 6 # Reduced from 7
       
       # Set row heights for signature space
-      t.row(1).height = 50 # Reduced from 60
+      t.row(1).height = 40 # Reduced from 50
     end
 
     # Now add signature images at the correct positions - FIXED POSITIONING
     # Position signatures higher to avoid overlapping with names
-    signature_image_y = signature_base_y - 25 # Increased from 35 to position signatures higher
+    signature_image_y = signature_base_y - 20 # Reduced from 25
     
     # Add investor signature
     if investor_sig_url.present?
@@ -290,9 +290,9 @@ class InvestmentCertificateService
         signature_image = URI.open(investor_sig_url)
         # Position at left side (centered in left column) - FIXED POSITION
         pdf.image signature_image, 
-                  width: 90,  # Reduced from 100
-                  height: 35, # Reduced from 40
-                  at: [pdf.bounds.width / 4 - 45, signature_image_y] # Adjusted position
+                  width: 80,  # Reduced from 90
+                  height: 30, # Reduced from 35
+                  at: [pdf.bounds.width / 4 - 40, signature_image_y] # Adjusted position
         Rails.logger.info "Investor signature added successfully"
       rescue OpenURI::HTTPError => e
         Rails.logger.warn "HTTP Error loading investor signature: #{e.message}"
@@ -310,9 +310,9 @@ class InvestmentCertificateService
         signature_image = URI.open(issuer_sig_url)
         # Position at right side (centered in right column) - FIXED POSITION
         pdf.image signature_image, 
-                  width: 90,  # Reduced from 100
-                  height: 35, # Reduced from 40
-                  at: [pdf.bounds.width * 3 / 4 - 45, signature_image_y] # Adjusted position
+                  width: 80,  # Reduced from 90
+                  height: 30, # Reduced from 35
+                  at: [pdf.bounds.width * 3 / 4 - 40, signature_image_y] # Adjusted position
         Rails.logger.info "Issuer signature added successfully"
       rescue OpenURI::HTTPError => e
         Rails.logger.warn "HTTP Error loading issuer signature: #{e.message}"
@@ -323,7 +323,7 @@ class InvestmentCertificateService
       Rails.logger.warn "No issuer signature URL provided"
     end
 
-    pdf.move_down 40 # Reduced from 60
+    pdf.move_down 30 # Reduced from 40
   end
 
   def self.get_investor_signature_url(investment)
