@@ -136,7 +136,7 @@ class EquityCampaign < Campaign
     errors
   end
   
-  def shares_available
+  def shares_available(*args)
     return 0 if equity_offered.nil? || valuation.nil? || total_shares.nil?
 
     # Use a single query to avoid multiple database calls and race conditions
