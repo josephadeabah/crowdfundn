@@ -160,81 +160,6 @@ class InvestmentCertificateService
       end
 
       # Add signatures section with reduced spacing
-      add_signatures_section(pdf, investor_signature_url, issuer_signature_url, investor_name, fundraiser.full_name)
-
-      pdf.move_down 15 # Reduced from 20
-
-      # Official footer
-      pdf.stroke do
-        pdf.stroke_color BRAND_ORANGE
-        pdf.line_width 1
-        pdf.horizontal_line 0, pdf.bounds.width, at: pdf.cursor
-      end
-      pdf.move_down 10 # Reduced from 12
-
-      pdf.fill_color '000000'
-      pdf.text "This certificate represents a legal ownership stake in #{campaign.company_name}", 
-               size: 8, align: :center # Reduced from 9
-      pdf.text "as per the terms outlined in the investment agreement and governed by the laws of the jurisdiction.", 
-               size: 8, align: :center # Reduced from 9
-      pdf.move_down 8 # Reduced from 10
-
-      pdf.fill_color BRAND_GREEN
-      pdf.text "ISSUED BY BANTUHIVE LIMITED", size: 10, align: :center, style: :bold # Reduced from 11
-      pdf.move_down 2 # Reduced from 3
-      pdf.fill_color BRAND_ORANGE
-      pdf.text "on #{Time.current.strftime('%B %d, %Y')}", size: 8, align: :center, style: :italic # Reduced from 9
-
-      pdf.move_down 12 # Reduced from 15
-
-      # Final decorative border
-      pdf.stroke do
-        pdf.stroke_color BRAND_GREEN
-        pdf.line_width 2
-        pdf.horizontal_line 0, pdf.bounds.width, at: pdf.cursor
-      end
-
-      # Footer
-      pdf.move_down 10 # Reduced from 12
-      pdf.fill_color '666666'
-      pdf.text "Bantuhive Limited • Registered Investment Platform • www.bantuhive.com", 
-               size: 6, align: :center # Reduced from 7
-
-      # Create temp file and attach
-      temp_file = Tempfile.new(["certificate_#{investment.certificate_number}", ".pdf"], binmode: true)
-      pdf.render_file(temp_file.path)
-      
-      temp_file.close
-      temp_file.open if temp_file.closed?
-      
-      unless File.exist?(temp_file.path) && File.size(temp_file.path) > 0
-        raise "Failed to generate PDF file"
-      end
-
-      investment.certificate.attach(
-        io: File.open(temp_file.path),
-        filename: "investment_certificate_#{investment.certificate_number}.pdf",
-        content_type: 'application/pdf',
-        identify: false
-      )
-
-      unless investment.certificate.attached?
-        raise "Failed to attach certificate"
-      end
-
-      investment.save! if investment.changed?
-
-      Rails.logger.info "Successfully generated and attached certificate for investment #{investment.id}"
-      true
-    rescue => e
-      Rails.logger.error "Certificate generation failed: #{e.message}\n#{e.backtrace.join("\n")}"
-      false
-    ensure
-      temp_file.close! if temp_file && !temp_file.closed?
-      temp_file.unlink if temp_file
-    end
-  end
-
   def self.add_signatures_section(pdf, investor_sig_url, issuer_sig_url, investor_name, issuer_name)
     pdf.move_down 20 # Reduced from 30
     
@@ -266,9 +191,10 @@ class InvestmentCertificateService
       t.row(0).font_style = :bold
       t.row(0).size = 9 # Reduced from 10
       
-      # Style the name row
+      # Style the name row - FIXED: Increased padding to prevent overlap
       t.row(2).font_style = :italic
       t.row(2).size = 8 # Reduced from 9
+      t.row(2).padding = [15, 0, 5, 0] # Added top padding to separate from signatures
       
       # Style the underline row
       t.row(3).size = 7 # Reduced from 8
@@ -277,15 +203,16 @@ class InvestmentCertificateService
       t.row(1).height = 50 # Reduced from 60
     end
 
-    # Now add signature images at the correct positions
-    signature_image_y = signature_base_y - 35 # Reduced from 40
+    # Now add signature images at the correct positions - FIXED POSITIONING
+    # Position signatures higher to avoid overlapping with names
+    signature_image_y = signature_base_y - 25 # Increased from 35 to position signatures higher
     
     # Add investor signature
     if investor_sig_url.present?
       begin
         Rails.logger.info "Loading investor signature from: #{investor_sig_url}"
         signature_image = URI.open(investor_sig_url)
-        # Position at left side (centered in left column)
+        # Position at left side (centered in left column) - FIXED POSITION
         pdf.image signature_image, 
                   width: 90,  # Reduced from 100
                   height: 35, # Reduced from 40
@@ -305,7 +232,7 @@ class InvestmentCertificateService
       begin
         Rails.logger.info "Loading issuer signature from: #{issuer_sig_url}"
         signature_image = URI.open(issuer_sig_url)
-        # Position at right side (centered in right column)
+        # Position at right side (centered in right column) - FIXED POSITION
         pdf.image signature_image, 
                   width: 90,  # Reduced from 100
                   height: 35, # Reduced from 40
