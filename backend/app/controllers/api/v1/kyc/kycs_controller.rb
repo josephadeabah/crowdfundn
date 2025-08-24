@@ -47,23 +47,8 @@ module Api
             return render_kyc_error('You already have a KYC submission in progress or verified')
           end
 
-          # Use permitted parameters including signature data
-          @kyc = @current_user.kycs.build(kyc_params.except(:addresses_attributes))
-          
-          # Manually handle addresses
-          if params[:kyc][:addresses_attributes].present?
-            params[:kyc][:addresses_attributes].each do |address_params|
-              @kyc.kyc_addresses.build(
-                address_type: address_params[:address_type],
-                street: address_params[:street],
-                city: address_params[:city],
-                state: address_params[:state],
-                postal_code: address_params[:postal_code],
-                country: address_params[:country],
-                is_primary: address_params[:is_primary] || false
-              )
-            end
-          end
+          # Use ALL permitted parameters (including signature data)
+          @kyc = @current_user.kycs.build(kyc_params)
 
           if @kyc.save
             # Process signature immediately after save
@@ -86,23 +71,8 @@ module Api
             return render_kyc_error('KYC cannot be updated in its current state')
           end
           
-          # Handle addresses manually if provided
-          if params[:kyc][:addresses_attributes].present?
-            @kyc.kyc_addresses.destroy_all # Remove existing addresses
-            params[:kyc][:addresses_attributes].each do |address_params|
-              @kyc.kyc_addresses.build(
-                address_type: address_params[:address_type],
-                street: address_params[:street],
-                city: address_params[:city],
-                state: address_params[:state],
-                postal_code: address_params[:postal_code],
-                country: address_params[:country],
-                is_primary: address_params[:is_primary] || false
-              )
-            end
-          end
-          
-          if @kyc.update(kyc_params.except(:addresses_attributes))
+          # Use ALL permitted parameters (including signature data)
+          if @kyc.update(kyc_params)
             render json: { kyc: KycFrontendService.format_for_frontend(@kyc) }
           else
             render_kyc_errors(@kyc.errors)
