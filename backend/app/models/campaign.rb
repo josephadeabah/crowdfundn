@@ -30,7 +30,7 @@ class Campaign < ApplicationRecord
   # Permissions settings
   attribute :accept_donations, :boolean, default: true
   attribute :leave_words_of_support, :boolean, default: true
-  attribute :appear_in search_results, :boolean, default: true
+  attribute :appear_in_search_results, :boolean, default: true
   attribute :suggested_fundraiser_lists, :boolean, default: true
   attribute :receive_donation_email, :boolean, default: true
   attribute :receive_daily_summary, :boolean, default: false
