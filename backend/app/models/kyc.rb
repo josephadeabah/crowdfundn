@@ -1,4 +1,3 @@
-# app/models/kyc.rb
 class Kyc < ApplicationRecord
   belongs_to :user, class_name: '::User'
   belongs_to :verified_by, class_name: 'User', optional: true
@@ -89,6 +88,7 @@ class Kyc < ApplicationRecord
     (issuer_signature_data.present? && new_record?)
   }
   after_create :create_required_documents
+  after_update :bust_kyc_stats_cache_if_status_changed, if: :saved_change_to_status?
 
   # Scopes
   scope :for_investors, -> { where(kyc_type: [:investor, :both]) }
@@ -138,6 +138,7 @@ class Kyc < ApplicationRecord
     )
     
     attach_issuer_signature_if_needed
+    bust_kyc_stats_cache # Bust the cache after status change
       
     # Return true to indicate success
     true
@@ -152,6 +153,8 @@ class Kyc < ApplicationRecord
       review_notes: nil,
       updated_at: Time.current
     )
+    
+    bust_kyc_stats_cache # Bust the cache after status change
     
     # Return true to indicate success
     true
@@ -191,7 +194,7 @@ class Kyc < ApplicationRecord
     
     begin
       # Ensure signature_points is properly formatted
-      points = if signature_points.is_a?(String)
+      points = if signature_points.is(a?(String)
                  JSON.parse(signature_points)
                else
                  signature_points
@@ -328,5 +331,14 @@ class Kyc < ApplicationRecord
         content_type: 'image/png'
       )
     end
+  end
+
+  def bust_kyc_stats_cache
+    # Bust all possible KYC stats cache keys
+    Rails.cache.delete_matched("kyc_stats_*")
+  end
+
+  def bust_kyc_stats_cache_if_status_changed
+    bust_kyc_stats_cache if saved_change_to_status?
   end
 end

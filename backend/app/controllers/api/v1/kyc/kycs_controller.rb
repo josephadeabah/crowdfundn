@@ -1,4 +1,3 @@
-# app/controllers/api/v1/kyc/kycs_controller.rb
 module Api
   module V1
     module Kyc
@@ -86,6 +85,8 @@ module Api
           end
 
           @kyc.destroy
+          # Bust cache after deletion
+          bust_kyc_stats_cache
           head :no_content
         end
 
@@ -153,6 +154,9 @@ module Api
           end
 
           if @kyc.update(status: 'in_review')
+            # Bust the cache after status change
+            bust_kyc_stats_cache
+            
             # Send submission confirmation email
             send_submission_email(@kyc)
             
@@ -198,6 +202,9 @@ module Api
           end
 
           if @kyc.verify!(@current_user, params[:review_notes])
+            # Bust the cache after status change (already handled in model, but double-check)
+            bust_kyc_stats_cache
+            
             # Send approval email
             send_approval_email(@kyc, @current_user)
             
@@ -218,6 +225,9 @@ module Api
           end
 
           if @kyc.reject!(rejection_reason)
+            # Bust the cache after status change (already handled in model, but double-check)
+            bust_kyc_stats_cache
+            
             # Send rejection email
             send_rejection_email(@kyc, @current_user, rejection_reason)
             
@@ -233,7 +243,9 @@ module Api
         end
 
         def stats
-          cache_key = "kyc_stats_#{Date.today}"
+          # Get the latest KYC update timestamp for cache versioning
+          latest_update = ::Kyc.maximum(:updated_at) || Time.current
+          cache_key = "kyc_stats_v#{latest_update.to_i}"
 
           stats = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
             {
@@ -339,6 +351,7 @@ module Api
               verified_by_name: verified_by_name
             )
             Rails.logger.info "KYC approval email sent to #{recipient_email}"
+            bust_kyc_stats_cache # Bust cache after approval email
           rescue => e
             Rails.logger.error "Failed to send KYC approval email: #{e.message}"
             # Don't fail the request if email fails
@@ -359,10 +372,17 @@ module Api
               rejection_reason: rejection_reason
             )
             Rails.logger.info "KYC rejection email sent to #{recipient_email}"
+            bust_kyc_stats_cache # Bust cache after rejection email
           rescue => e
             Rails.logger.error "Failed to send KYC rejection email: #{e.message}"
             # Don't fail the request if email fails
           end
+        end
+
+        # Cache busting method
+        def bust_kyc_stats_cache
+          # Bust all possible KYC stats cache keys
+          Rails.cache.delete_matched("kyc_stats_*")
         end
 
         # Pagination helper methods
