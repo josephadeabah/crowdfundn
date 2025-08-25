@@ -52,6 +52,15 @@ const EquityInvestments = () => {
     return fallback;
   };
 
+  // Filter out pending investments for display purposes only
+  const filterOutPendingInvestments = (investments: EquityInvestment[]) => {
+    return investments.filter((investment) => investment.status !== 'pending');
+  };
+
+  const successfulInvestments = filterOutPendingInvestments(
+    portfolio?.investments || [],
+  );
+
   const handleDownloadCertificate = async (investmentId: string) => {
     setCertificateOperations((prev) => ({ ...prev, [investmentId]: true }));
 
@@ -168,10 +177,11 @@ const EquityInvestments = () => {
         </div>
       </div>
 
+      {/* Use the backend-calculated portfolio summary */}
       <PortfolioSummary portfolio={portfolio?.portfolio} />
 
-      {/* Performance Charts Section */}
-      <PerformanceCharts investments={portfolio?.investments || []} />
+      {/* Performance Charts Section - Use filtered investments for display only */}
+      <PerformanceCharts investments={successfulInvestments} />
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-8 mt-8">
         <div className="px-2 py-4">
