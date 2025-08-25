@@ -72,8 +72,8 @@ class EquityInvestment < ApplicationRecord
   end
 
   def current_value
-    current_value = (campaign.valuation * percentage / 100).round(2)
-    current_value
+    return amount unless campaign && campaign.valuation && percentage
+    (campaign.valuation * percentage / 100).round(2)
   end
 
   def total_returns
@@ -92,13 +92,19 @@ class EquityInvestment < ApplicationRecord
   def self.portfolio_for(user)
     investments = user.equity_investments.includes(:campaign)
     
+    # Filter out pending investments for portfolio calculations
     successful_investments = investments.successful
+    
+    # Calculate unique campaigns from successful investments only
+    successful_campaign_ids = successful_investments.pluck(:campaign_id).uniq
     
     {
       total_invested: successful_investments.sum(:amount),
       total_value: successful_investments.sum { |i| i.current_value || i.amount },
-      investments: investments,
-      successful_count: successful_investments.count
+      total_return: successful_investments.sum { |i| (i.current_value || i.amount) - i.amount },
+      investments: investments, # Return all investments for display purposes
+      successful_count: successful_investments.count,
+      campaigns_invested: successful_campaign_ids.count
     }
   end
 
@@ -167,16 +173,6 @@ class EquityInvestment < ApplicationRecord
     self.percentage = ((amount / total_equity_value) * 100).round(4)
   end
 
-  def self.portfolio_for(user)
-    investments = user.equity_investments.includes(:campaign)
-    
-    {
-      total_invested: investments.sum(:amount),
-      total_value: investments.sum { |i| i.current_value || i.amount },
-      investments: investments
-    }
-  end
-
   def investor_signature_url
     return nil unless user
     user.latest_kyc&.signature_image_url
@@ -204,7 +200,9 @@ class EquityInvestment < ApplicationRecord
       campaign: {
         id: campaign.id,
         title: campaign.title,
-        company_name: campaign.company_name
+        company_name: campaign.company_name,
+        valuation: campaign.valuation,
+        equity_offered: campaign.equity_offered
       },
       user: user ? {
         id: user.id,

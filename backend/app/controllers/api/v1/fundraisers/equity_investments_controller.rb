@@ -1,3 +1,4 @@
+# app/controllers/api/v1/fundraisers/equity_investments_controller.rb
 module Api
   module V1
     module Fundraisers
@@ -101,15 +102,20 @@ module Api
         def portfolio
           portfolio_data = EquityInvestment.portfolio_for(@current_user)
           
+          # Calculate return percentage safely
+          total_invested = portfolio_data[:total_invested].to_f
+          total_value = portfolio_data[:total_value].to_f
+          total_return = total_value - total_invested
+          return_percentage = total_invested > 0 ? (total_return / total_invested * 100).round(2) : 0
+          
           render json: {
             portfolio: {
-              total_invested: portfolio_data[:total_invested],
-              total_value: portfolio_data[:total_value],
-              total_return: portfolio_data[:total_value] - portfolio_data[:total_invested],
-              return_percentage: portfolio_data[:total_invested] > 0 ? 
-                ((portfolio_data[:total_value] - portfolio_data[:total_invested]) / portfolio_data[:total_invested] * 100).round(2) : 0,
+              total_invested: total_invested,
+              total_value: total_value,
+              total_return: total_return,
+              return_percentage: return_percentage,
               active_investments: portfolio_data[:successful_count],
-              campaigns_invested: portfolio_data[:investments].select(:campaign_id).distinct.count
+              campaigns_invested: portfolio_data[:campaigns_invested]
             },
             investments: portfolio_data[:investments].map { |investment| EquityInvestmentSerializer.new(investment).as_json }
           }
