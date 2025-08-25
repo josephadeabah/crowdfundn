@@ -194,7 +194,7 @@ class Kyc < ApplicationRecord
     
     begin
       # Ensure signature_points is properly formatted
-      points = if signature_points.is(a?(String)
+      points = if signature_points.is_a?(String)
                  JSON.parse(signature_points)
                else
                  signature_points
