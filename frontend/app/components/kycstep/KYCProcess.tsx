@@ -347,12 +347,13 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   // In KYCProcess.tsx, update the prepareKycData function
   const prepareKycData = (): KycFormData => {
     // Create properly formatted signature data
-    const formattedSignature = signature && Array.isArray(signature) && signature.length > 0
-      ? signature.map(point => ({ 
-          x: typeof point.x === 'string' ? parseFloat(point.x) : point.x,
-          y: typeof point.y === 'string' ? parseFloat(point.y) : point.y
-        }))
-      : undefined;
+    const formattedSignature =
+      signature && Array.isArray(signature) && signature.length > 0
+        ? signature.map((point) => ({
+            x: typeof point.x === 'string' ? parseFloat(point.x) : point.x,
+            y: typeof point.y === 'string' ? parseFloat(point.y) : point.y,
+          }))
+        : undefined;
 
     const baseData = {
       kyc_type: userType === 'creator' ? 'issuer' : 'investor',
@@ -387,11 +388,22 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         } as KycAddress,
       ],
       // Store signature data - ensure we're not sending empty arrays
-      signature_data: formattedSignature && formattedSignature.length > 0 ? formattedSignature : null,
+      signature_data:
+        formattedSignature && formattedSignature.length > 0
+          ? formattedSignature
+          : null,
       investor_signature_data:
-        userType === 'investor' && formattedSignature && formattedSignature.length > 0 ? formattedSignature : null,
+        userType === 'investor' &&
+        formattedSignature &&
+        formattedSignature.length > 0
+          ? formattedSignature
+          : null,
       issuer_signature_data:
-        (userType === 'creator' || userType === 'mentor') && formattedSignature && formattedSignature.length > 0 ? formattedSignature : null,
+        (userType === 'creator' || userType === 'mentor') &&
+        formattedSignature &&
+        formattedSignature.length > 0
+          ? formattedSignature
+          : null,
       issuer_accepted_terms: true,
     };
 
@@ -521,18 +533,18 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         const kycData = prepareKycData();
 
         // Debug logging
-          console.log('KYC Data being sent:', {
-            ...kycData,
-            signature_data: kycData.signature_data 
-              ? `Array with ${kycData.signature_data.length} points: ${JSON.stringify(kycData.signature_data.slice(0, 3))}...` 
-              : 'undefined',
-            investor_signature_data: kycData.investor_signature_data
-              ? `Array with ${kycData.investor_signature_data.length} points: ${JSON.stringify(kycData.investor_signature_data.slice(0, 3))}...`
-              : 'undefined',
-            issuer_signature_data: kycData.issuer_signature_data
-              ? `Array with ${kycData.issuer_signature_data.length} points: ${JSON.stringify(kycData.issuer_signature_data.slice(0, 3))}...`
-              : 'undefined',
-          });
+        console.log('KYC Data being sent:', {
+          ...kycData,
+          signature_data: kycData.signature_data
+            ? `Array with ${kycData.signature_data.length} points: ${JSON.stringify(kycData.signature_data.slice(0, 3))}...`
+            : 'undefined',
+          investor_signature_data: kycData.investor_signature_data
+            ? `Array with ${kycData.investor_signature_data.length} points: ${JSON.stringify(kycData.investor_signature_data.slice(0, 3))}...`
+            : 'undefined',
+          issuer_signature_data: kycData.issuer_signature_data
+            ? `Array with ${kycData.issuer_signature_data.length} points: ${JSON.stringify(kycData.issuer_signature_data.slice(0, 3))}...`
+            : 'undefined',
+        });
         const newKyc = await createKyc(kycData);
 
         if (Object.keys(uploadedDocuments).length > 0) {
