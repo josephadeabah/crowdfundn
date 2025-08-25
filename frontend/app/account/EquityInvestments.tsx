@@ -52,48 +52,6 @@ const EquityInvestments = () => {
     return fallback;
   };
 
-  // Filter out pending investments
-  const filterOutPendingInvestments = (investments: EquityInvestment[]) => {
-    return investments.filter((investment) => investment.status !== 'pending');
-  };
-
-  // Calculate portfolio summary from successful investments only
-  const calculatePortfolioSummary = (investments: EquityInvestment[]) => {
-    const total_invested = investments.reduce(
-      (sum, inv) => sum + parseNumber(inv.amount),
-      0,
-    );
-
-    const total_value = investments.reduce(
-      (sum, inv) =>
-        sum + parseNumber(inv.current_value, parseNumber(inv.amount)),
-      0,
-    );
-
-    const total_return = total_value - total_invested;
-    const return_percentage =
-      total_invested > 0 ? (total_return / total_invested) * 100 : 0;
-
-    // Get unique campaign IDs
-    const campaignIds = new Set(investments.map((inv) => inv.campaign_id));
-
-    return {
-      total_invested,
-      total_value,
-      total_return,
-      return_percentage,
-      active_investments: investments.length,
-      campaigns_invested: campaignIds.size,
-    };
-  };
-
-  const successfulInvestments = filterOutPendingInvestments(
-    portfolio?.investments || [],
-  );
-  const filteredPortfolioSummary = calculatePortfolioSummary(
-    successfulInvestments,
-  );
-
   const handleDownloadCertificate = async (investmentId: string) => {
     setCertificateOperations((prev) => ({ ...prev, [investmentId]: true }));
 
@@ -210,10 +168,10 @@ const EquityInvestments = () => {
         </div>
       </div>
 
-      <PortfolioSummary portfolio={filteredPortfolioSummary} />
+      <PortfolioSummary portfolio={portfolio?.portfolio} />
 
       {/* Performance Charts Section */}
-      <PerformanceCharts investments={successfulInvestments} />
+      <PerformanceCharts investments={portfolio?.investments || []} />
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-8 mt-8">
         <div className="px-2 py-4">
