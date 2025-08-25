@@ -65,7 +65,7 @@ const KYCDetail = () => {
         action: actionDialog.action,
         rejection_reason:
           actionDialog.action === 'reject' ? rejectionReason : undefined,
-        notes: actionDialog.action === 'verify' ? reviewNotes : undefined,
+        review_notes: actionDialog.action === 'verify' ? reviewNotes : undefined,
       });
 
       toast.success(`KYC ${actionDialog.action}ed successfully`);
