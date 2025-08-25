@@ -52,5 +52,5 @@ export interface KycReviewStats {
 export interface KycReviewAction {
   action: 'verify' | 'reject' | 'request_info';
   rejection_reason?: string;
-  notes?: string;
+  review_notes?: string;
 }

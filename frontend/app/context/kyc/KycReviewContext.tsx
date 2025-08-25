@@ -22,7 +22,13 @@ interface KycReviewState {
   error: string | null;
   stats: KycReviewStats;
   filters: KycReviewFilters;
-  fetchReviews: (filters?: KycReviewFilters) => Promise<void>;
+  pagination: {
+    current_page: number;
+    total_pages: number;
+    total_count: number;
+    per_page: number;
+  };
+  fetchReviews: (filters?: KycReviewFilters, page?: number) => Promise<void>;
   fetchReview: (id: number) => Promise<void>;
   updateReview: (id: number, action: KycReviewAction) => Promise<void>;
   updateFilters: (filters: KycReviewFilters) => void;
@@ -47,20 +53,32 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
     expired: 0,
   });
   const [filters, setFilters] = useState<KycReviewFilters>({});
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    total_pages: 1,
+    total_count: 0,
+    per_page: 25,
+  });
 
   // Fetch KYC reviews with filters
   const fetchReviews = useCallback(
-    async (newFilters?: KycReviewFilters) => {
+    async (newFilters?: KycReviewFilters, page: number = 1) => {
       setLoading(true);
       setError(null);
 
       try {
         const queryParams = new URLSearchParams();
+
+        // Add filters
         if (newFilters) {
           Object.entries(newFilters).forEach(([key, value]) => {
             if (value && value !== 'all') queryParams.append(key, value);
           });
         }
+
+        // Add pagination
+        queryParams.append('page', page.toString());
+        queryParams.append('per_page', '25');
 
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/all_needs_review?${queryParams}`,
@@ -79,6 +97,14 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
 
         const data = await response.json();
         setReviews(data.kycs);
+        setPagination(
+          data.pagination || {
+            current_page: 1,
+            total_pages: 1,
+            total_count: data.kycs.length,
+            per_page: 25,
+          },
+        );
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
@@ -107,7 +133,6 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
         );
 
         if (response.status === 403) {
-          // Forbidden - user doesn't have access to this specific KYC
           throw new Error(
             'You do not have permission to view this KYC application',
           );
@@ -166,12 +191,12 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         let url = '';
-        let body = {};
+        let body: any = {};
 
         switch (action.action) {
           case 'verify':
             url = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}/verify`;
-            body = { review_notes: action.notes };
+            body = { review_notes: action.review_notes };
             break;
           case 'reject':
             url = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}/reject`;
@@ -193,14 +218,20 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
           body: Object.keys(body).length > 0 ? JSON.stringify(body) : undefined,
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(
-            errorData.errors?.join(', ') || 'Failed to update KYC review',
-          );
+          // Handle different error response formats
+          const errorMessage =
+            data.errors?.[0]?.message ||
+            data.full_messages?.[0] ||
+            data.errors?.join(', ') ||
+            data.message ||
+            'Failed to update KYC review';
+
+          throw new Error(errorMessage);
         }
 
-        const data = await response.json();
         const updatedReview = data.kyc;
 
         // Update the reviews list
@@ -233,7 +264,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
   const updateFilters = useCallback(
     (newFilters: KycReviewFilters) => {
       setFilters(newFilters);
-      fetchReviews(newFilters);
+      fetchReviews(newFilters, 1); // Reset to page 1 when filters change
     },
     [fetchReviews],
   );
@@ -241,7 +272,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
   // Clear filters
   const clearFilters = useCallback(() => {
     setFilters({});
-    fetchReviews();
+    fetchReviews({}, 1);
   }, [fetchReviews]);
 
   const contextValue: KycReviewState = React.useMemo(
@@ -252,6 +283,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
       error,
       stats,
       filters,
+      pagination,
       fetchReviews,
       fetchReview,
       updateReview,
@@ -266,6 +298,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
       error,
       stats,
       filters,
+      pagination,
       fetchReviews,
       fetchReview,
       updateReview,
