@@ -252,10 +252,11 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             nationality: formData.nationality || '',
             address: formData.address || '',
             city: formData.city || '',
+            state: formData.state || '', // Added state field
             postalCode: formData.postalCode || '',
             country: formData.country || '',
-            occupation: formData.occupation || '', // Added
-            sourceOfFunds: formData.sourceOfFunds || '', // Added
+            occupation: formData.occupation || '',
+            sourceOfFunds: formData.sourceOfFunds || '',
           };
         case 'businessInfo':
           return {
@@ -267,10 +268,10 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
               (formData as CreatorKYCFormData).businessRegistration || '',
             taxId: (formData as CreatorKYCFormData).taxId || '',
             businessIndustry:
-              (formData as CreatorKYCFormData).businessIndustry || '', // Added
+              (formData as CreatorKYCFormData).businessIndustry || '',
             businessEstablishedDate:
               (formData as CreatorKYCFormData).businessEstablishedDate ||
-              undefined, // Added
+              undefined,
           };
         case 'documents':
           return {
@@ -344,7 +345,30 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     }
   };
 
-  // In KYCProcess.tsx, update the prepareKycData function
+  // Helper function to format dates safely
+  const formatDateSafe = (date: any): string | undefined => {
+    if (!date) return undefined;
+
+    try {
+      if (date instanceof Date) {
+        return date.toISOString().split('T')[0];
+      }
+
+      if (typeof date === 'string') {
+        // Try to parse and format string dates
+        const parsedDate = new Date(date);
+        if (!isNaN(parsedDate.getTime())) {
+          return parsedDate.toISOString().split('T')[0];
+        }
+      }
+
+      return undefined;
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return undefined;
+    }
+  };
+
   const prepareKycData = (): KycFormData => {
     // Create properly formatted signature data
     const formattedSignature =
@@ -357,22 +381,16 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
     const baseData = {
       kyc_type: userType === 'creator' ? 'issuer' : 'investor',
-      verification_type: formData.idType as
-        | 'national_id'
-        | 'passport'
-        | 'drivers_license'
-        | 'voter_id',
+      verification_type:
+        (formData.idType as
+          | 'national_id'
+          | 'passport'
+          | 'drivers_license'
+          | 'voter_id') || 'national_id',
       id_number: formData.idNumber || '',
-      id_expiry_date: new Date().toISOString().split('T')[0],
-      date_of_birth:
-        formData.dateOfBirth &&
-        typeof formData.dateOfBirth === 'object' &&
-        formData.dateOfBirth !== null &&
-        (formData.dateOfBirth as object) instanceof Date
-          ? (formData.dateOfBirth as Date).toISOString().split('T')[0]
-          : typeof formData.dateOfBirth === 'string'
-            ? formData.dateOfBirth
-            : '',
+      id_expiry_date:
+        formatDateSafe(new Date()) || new Date().toISOString().split('T')[0],
+      date_of_birth: formatDateSafe(formData.dateOfBirth),
       nationality: formData.nationality || '',
       occupation: formData.occupation || '',
       source_of_funds: formData.sourceOfFunds || 'Salary',
@@ -381,13 +399,12 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           address_type: 'residential',
           street: formData.address || '',
           city: formData.city || '',
-          state: formData.state || '',
+          state: formData.state || '', // Added state field
           postal_code: formData.postalCode || '',
           country: formData.country || '',
           is_primary: true,
         } as KycAddress,
       ],
-      // Store signature data - ensure we're not sending empty arrays
       signature_data:
         formattedSignature && formattedSignature.length > 0
           ? formattedSignature
@@ -416,23 +433,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           (formData as CreatorKYCFormData).businessRegistration || '',
         business_tax_id: (formData as CreatorKYCFormData).taxId || '',
         business_industry: (formData as CreatorKYCFormData).businessType || '',
-        business_established_date:
-          (formData as CreatorKYCFormData).businessEstablishedDate &&
-          typeof (formData as CreatorKYCFormData).businessEstablishedDate ===
-            'object' &&
-          (formData as CreatorKYCFormData).businessEstablishedDate !== null &&
-          ((formData as CreatorKYCFormData)
-            .businessEstablishedDate as unknown as Date) instanceof Date
-            ? (
-                (formData as CreatorKYCFormData)
-                  .businessEstablishedDate as unknown as Date
-              )
-                .toISOString()
-                .split('T')[0]
-            : typeof (formData as CreatorKYCFormData)
-                  .businessEstablishedDate === 'string'
-              ? (formData as CreatorKYCFormData).businessEstablishedDate
-              : '',
+        business_established_date: formatDateSafe(
+          (formData as CreatorKYCFormData).businessEstablishedDate,
+        ),
       } as KycFormData;
     }
 
@@ -442,7 +445,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     } as KycFormData;
   };
 
-  // In KYCProcess.tsx, update the uploadAllDocuments function
   const uploadAllDocuments = async (kycId: number) => {
     const uploadPromises = Object.entries(uploadedDocuments).map(
       async ([documentType, file]) => {
@@ -456,7 +458,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           showErrorMessage(
             `Failed to upload ${documentType.replace('_', ' ')}`,
           );
-          // Re-throw to stop the process if upload fails
           throw error;
         }
       },
@@ -532,19 +533,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       try {
         const kycData = prepareKycData();
 
-        // Debug logging
-        console.log('KYC Data being sent:', {
-          ...kycData,
-          signature_data: kycData.signature_data
-            ? `Array with ${kycData.signature_data.length} points: ${JSON.stringify(kycData.signature_data.slice(0, 3))}...`
-            : 'undefined',
-          investor_signature_data: kycData.investor_signature_data
-            ? `Array with ${kycData.investor_signature_data.length} points: ${JSON.stringify(kycData.investor_signature_data.slice(0, 3))}...`
-            : 'undefined',
-          issuer_signature_data: kycData.issuer_signature_data
-            ? `Array with ${kycData.issuer_signature_data.length} points: ${JSON.stringify(kycData.issuer_signature_data.slice(0, 3))}...`
-            : 'undefined',
-        });
         const newKyc = await createKyc(kycData);
 
         if (Object.keys(uploadedDocuments).length > 0) {
@@ -568,7 +556,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         setUploadedDocuments({});
       } catch (error) {
         console.error('Error submitting KYC:', error);
-        // Error handling is done through context errors
       } finally {
         setIsSubmitting(false);
       }
@@ -593,7 +580,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   };
 
   const handleSaveSignature = (newSignature: Point[]) => {
-    // More robust validation
     if (
       !newSignature ||
       !Array.isArray(newSignature) ||
@@ -603,7 +589,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       return;
     }
 
-    // Validate each point has x and y coordinates
     const isValidSignature = newSignature.every(
       (point) =>
         point && typeof point.x === 'number' && typeof point.y === 'number',
