@@ -153,6 +153,9 @@ module Api
           end
 
           if @kyc.update(status: 'in_review')
+            # Send submission confirmation email
+            send_submission_email(@kyc)
+            
             render json: { message: 'KYC submitted for review', kyc: KycFrontendService.format_for_frontend(@kyc) }
           else
             render json: { errors: @kyc.errors.full_messages }, status: :unprocessable_entity
@@ -195,6 +198,9 @@ module Api
           end
 
           if @kyc.verify!(@current_user, params[:review_notes])
+            # Send approval email
+            send_approval_email(@kyc, @current_user)
+            
             render json: { message: 'KYC verified successfully', kyc: KycFrontendService.format_for_frontend(@kyc) }
           else
             render json: { errors: @kyc.errors.full_messages }, status: :unprocessable_entity
@@ -206,7 +212,15 @@ module Api
             return render json: { errors: ['KYC cannot be rejected in its current state'] }, status: :unprocessable_entity
           end
 
-          if @kyc.reject!(params[:rejection_reason])
+          rejection_reason = params[:rejection_reason]
+          unless rejection_reason.present?
+            return render json: { errors: ['Rejection reason is required'] }, status: :unprocessable_entity
+          end
+
+          if @kyc.reject!(rejection_reason)
+            # Send rejection email
+            send_rejection_email(@kyc, @current_user, rejection_reason)
+            
             render json: { message: 'KYC rejected', kyc: KycFrontendService.format_for_frontend(@kyc) }
           else
             render json: { errors: @kyc.errors.full_messages }, status: :unprocessable_entity
@@ -292,6 +306,63 @@ module Api
             errors: [{ message: message, type: 'general' }],
             full_messages: [message]
           }, status: :unprocessable_entity
+        end
+
+        # Email sending methods
+        def send_submission_email(kyc)
+          recipient_email = kyc.user.email
+          recipient_name = kyc.user.full_name || kyc.user.email
+
+          begin
+            KycEmailService.send_submission_received_email(
+              kyc: kyc,
+              recipient_email: recipient_email,
+              recipient_name: recipient_name
+            )
+            Rails.logger.info "KYC submission email sent to #{recipient_email}"
+          rescue => e
+            Rails.logger.error "Failed to send KYC submission email: #{e.message}"
+            # Don't fail the request if email fails
+          end
+        end
+
+        def send_approval_email(kyc, verified_by_user)
+          recipient_email = kyc.user.email
+          recipient_name = kyc.user.full_name || kyc.user.email
+          verified_by_name = verified_by_user.full_name || verified_by_user.email
+
+          begin
+            KycEmailService.send_verification_approved_email(
+              kyc: kyc,
+              recipient_email: recipient_email,
+              recipient_name: recipient_name,
+              verified_by_name: verified_by_name
+            )
+            Rails.logger.info "KYC approval email sent to #{recipient_email}"
+          rescue => e
+            Rails.logger.error "Failed to send KYC approval email: #{e.message}"
+            # Don't fail the request if email fails
+          end
+        end
+
+        def send_rejection_email(kyc, rejected_by_user, rejection_reason)
+          recipient_email = kyc.user.email
+          recipient_name = kyc.user.full_name || kyc.user.email
+          rejected_by_name = rejected_by_user.full_name || rejected_by_user.email
+
+          begin
+            KycEmailService.send_verification_rejected_email(
+              kyc: kyc,
+              recipient_email: recipient_email,
+              recipient_name: recipient_name,
+              rejected_by_name: rejected_by_name,
+              rejection_reason: rejection_reason
+            )
+            Rails.logger.info "KYC rejection email sent to #{recipient_email}"
+          rescue => e
+            Rails.logger.error "Failed to send KYC rejection email: #{e.message}"
+            # Don't fail the request if email fails
+          end
         end
 
         # Pagination helper methods

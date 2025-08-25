@@ -135,10 +135,21 @@ class Kyc < ApplicationRecord
       next_review_date: 1.year.from_now
     )
     attach_issuer_signature_if_needed
+    
+    # Return true to indicate success
+    true
   end
 
   def reject!(reason)
-    update!(status: :rejected, verified_at: nil, rejection_reason: reason)
+    update!(
+      status: :rejected, 
+      verified_at: nil, 
+      rejection_reason: reason,
+      review_notes: nil
+    )
+    
+    # Return true to indicate success
+    true
   end
 
   def process_signature

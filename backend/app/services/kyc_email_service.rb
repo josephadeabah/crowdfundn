@@ -1,3 +1,4 @@
+# app/services/kyc_email_service.rb
 class KycEmailService
   def self.send_submission_received_email(kyc:, recipient_email:, recipient_name:)
     kyc_type = kyc.kyc_type.humanize
@@ -105,17 +106,17 @@ class KycEmailService
       <!DOCTYPE html>
       <html>
         <head>
-                    <meta charset="utf-8">
+          <meta charset="utf-8">
           <meta name="viewport" content="width=device-width">
-          <title>KYC Submission Received</title>
+          <title>KYC Approved</title>
           <style>
             body { font-family: 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f5f7fa; margin: 0; padding: 0; }
             .email-container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); }
-            .header { background-color: #2c3e50; padding: 30px 20px; text-align: center; color: white; }
+            .header { background-color: #27ae60; padding: 30px 20px; text-align: center; color: white; }
             .header h1 { margin: 0; font-size: 24px; font-weight: 600; }
             .content { padding: 30px; }
             .greeting { font-size: 18px; margin-bottom: 20px; }
-            .kyc-details { background-color: #f8f9fa; border-radius: 6px; padding: 20px; margin: 20px 0; border-left: 4px solid #3498db; }
+            .kyc-details { background-color: #e8f5e8; border-radius: 6px; padding: 20px; margin: 20px 0; border-left: 4px solid #27ae60; }
             .detail-row { display: flex; margin-bottom: 10px; }
             .detail-label { font-weight: 600; width: 180px; color: #555; }
             .detail-value { flex: 1; }
@@ -191,17 +192,17 @@ class KycEmailService
       <!DOCTYPE html>
       <html>
         <head>
-                    <meta charset="utf-8">
+          <meta charset="utf-8">
           <meta name="viewport" content="width=device-width">
-          <title>KYC Submission Received</title>
+          <title>KYC Update Required</title>
           <style>
             body { font-family: 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f5f7fa; margin: 0; padding: 0; }
             .email-container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); }
-            .header { background-color: #2c3e50; padding: 30px 20px; text-align: center; color: white; }
+            .header { background-color: #e74c3c; padding: 30px 20px; text-align: center; color: white; }
             .header h1 { margin: 0; font-size: 24px; font-weight: 600; }
             .content { padding: 30px; }
             .greeting { font-size: 18px; margin-bottom: 20px; }
-            .kyc-details { background-color: #f8f9fa; border-radius: 6px; padding: 20px; margin: 20px 0; border-left: 4px solid #3498db; }
+            .kyc-details { background-color: #fdecea; border-radius: 6px; padding: 20px; margin: 20px 0; border-left: 4px solid #e74c3c; }
             .detail-row { display: flex; margin-bottom: 10px; }
             .detail-label { font-weight: 600; width: 180px; color: #555; }
             .detail-value { flex: 1; }
