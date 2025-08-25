@@ -28,7 +28,6 @@ import {
   FileQuestion,
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { toast } from '@/app/components/ui/sonner';
 import {
   Dialog,
   DialogContent,
@@ -37,6 +36,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/app/components/ui/dialog';
+import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 
 const KYCDetail = () => {
   const params = useParams();
@@ -51,29 +51,64 @@ const KYCDetail = () => {
   const [rejectionReason, setRejectionReason] = useState('');
   const [reviewNotes, setReviewNotes] = useState('');
 
+  // Alert states
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertTitle, setAlertTitle] = useState('');
+  const [alertMessage, setAlertMessage] = useState<React.ReactNode>('');
+  const [alertError, setAlertError] = useState<string | null>(null);
+  const [alertLoading, setAlertLoading] = useState(false);
+  const [alertAction, setAlertAction] = useState<() => void>(() => {});
+
   useEffect(() => {
     if (kycId) {
       fetchReview(kycId);
     }
   }, [kycId, fetchReview]);
 
+  const showAlert = (
+    title: string,
+    message: React.ReactNode,
+    action: () => void,
+    error?: string,
+  ) => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertError(error || null);
+    setAlertAction(() => action);
+    setAlertOpen(true);
+  };
+
   const handleAction = async () => {
     if (!currentReview || !actionDialog.action) return;
 
     try {
+      setAlertLoading(true);
       await updateReview(currentReview.id, {
         action: actionDialog.action,
         rejection_reason:
           actionDialog.action === 'reject' ? rejectionReason : undefined,
-        review_notes: actionDialog.action === 'verify' ? reviewNotes : undefined,
+        review_notes: // Changed from 'notes' to 'review_notes'
+          actionDialog.action === 'verify' ? reviewNotes : undefined,
       });
 
-      toast.success(`KYC ${actionDialog.action}ed successfully`);
-      setActionDialog({ open: false, action: null });
-      setRejectionReason('');
-      setReviewNotes('');
-    } catch (error) {
-      toast.error('Failed to update KYC review');
+      showAlert(
+        'Success',
+        `KYC has been ${actionDialog.action}ed successfully`,
+        () => {
+          setActionDialog({ open: false, action: null });
+          setRejectionReason('');
+          setReviewNotes('');
+        },
+      );
+    } catch (error: any) {
+      showAlert(
+        'Error',
+        'Failed to update KYC review',
+        () => setActionDialog({ open: false, action: null }),
+        error.message,
+      );
+    } finally {
+      setAlertLoading(false);
     }
   };
 
@@ -85,7 +120,12 @@ const KYCDetail = () => {
     if (document?.file_url) {
       window.open(document.file_url, '_blank');
     } else {
-      toast.error('Document not available for download');
+      showAlert(
+        'Error',
+        'Document not available for download',
+        () => {},
+        'The document may not have been uploaded or processed yet.',
+      );
     }
   };
 
@@ -157,6 +197,19 @@ const KYCDetail = () => {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Alert Popup */}
+      <AlertPopup
+        title={alertTitle}
+        message={alertMessage}
+        isOpen={alertOpen}
+        setIsOpen={setAlertOpen}
+        onConfirm={alertAction}
+        error={alertError}
+        loading={alertLoading}
+        confirmText="OK"
+        confirmButtonClass="bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
