@@ -127,25 +127,30 @@ class Kyc < ApplicationRecord
   end
 
   def verify!(verified_by_user, notes = nil)
-    update!(
+    # Use update_columns to skip validations
+    update_columns(
       status: :verified,
       verified_at: Time.current,
-      verified_by: verified_by_user,
+      verified_by_id: verified_by_user.id,
       review_notes: notes,
-      next_review_date: 1.year.from_now
+      next_review_date: 1.year.from_now,
+      updated_at: Time.current
     )
-    attach_issuer_signature_if_needed
     
+    attach_issuer_signature_if_needed
+      
     # Return true to indicate success
     true
   end
 
   def reject!(reason)
-    update!(
-      status: :rejected, 
-      verified_at: nil, 
+    # Use update_columns to skip validations and callbacks
+    update_columns(
+      status: 'rejected',
+      verified_at: nil,
       rejection_reason: reason,
-      review_notes: nil
+      review_notes: nil,
+      updated_at: Time.current
     )
     
     # Return true to indicate success
