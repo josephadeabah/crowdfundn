@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { useAuth } from '../../auth/AuthContext';
+import { useAuthGuard } from '@/app/hooks/useAuthGuard';
 
 export interface Reward {
   message: string;
@@ -44,7 +44,7 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { token } = useAuth();
+  const { token, ensureAuthReady } = useAuthGuard();
 
   const handleApiError = (errorText: string) => {
     setError(`API Error: ${errorText}`);
@@ -55,14 +55,20 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       try {
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+        };
+
+        // Add authorization header if token is available
+        // if (token) {
+        //   headers.Authorization = `Bearer ${token}`;
+        // }
+
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/rewards`,
           {
             method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
+            headers,
           },
         );
 
@@ -88,14 +94,20 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       try {
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+        };
+
+        // Add authorization header if token is available
+        // if (token) {
+        //   headers.Authorization = `Bearer ${token}`;
+        // }
+
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/rewards/${rewardId}`,
           {
             method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
+            headers,
           },
         );
 
@@ -121,10 +133,7 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
 
   const addReward = useCallback(
     async (campaignId: string, rewardData: FormData) => {
-      if (!token) {
-        setError('Authentication token is missing');
-        return null;
-      }
+      if (!ensureAuthReady()) return null;
 
       setLoading(true);
       setError(null);
@@ -140,6 +149,11 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return null;
+        }
+
         if (!response.ok) {
           const errorText = await response.text();
           handleApiError(errorText);
@@ -151,11 +165,12 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
         return createdReward;
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error creating reward');
+        return null;
       } finally {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   const editReward = useCallback(
@@ -164,10 +179,7 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
       rewardId: string,
       updatedRewardData: FormData,
     ) => {
-      if (!token) {
-        setError('Authentication token is missing');
-        return null;
-      }
+      if (!ensureAuthReady()) return null;
 
       setLoading(true);
       setError(null);
@@ -182,6 +194,11 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
             body: updatedRewardData,
           },
         );
+
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return null;
+        }
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -198,19 +215,17 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
         return updatedReward;
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error editing reward');
+        return null;
       } finally {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   const deleteReward = useCallback(
     async (campaignId: string, rewardId: string) => {
-      if (!token) {
-        setError('Authentication token is missing');
-        return;
-      }
+      if (!ensureAuthReady()) return;
 
       setLoading(true);
       setError(null);
@@ -224,6 +239,11 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
             },
           },
         );
+
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -240,7 +260,7 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   const contextValue = useMemo(
