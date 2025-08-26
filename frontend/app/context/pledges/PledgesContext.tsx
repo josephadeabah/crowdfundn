@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { useAuth } from '../auth/AuthContext';
+import { useAuthGuard } from '@/app/hooks/useAuthGuard';
 
 interface RewardDataType {
   id: number;
@@ -55,7 +55,7 @@ export const PledgesProvider = ({ children }: { children: ReactNode }) => {
   const [pledges, setPledges] = useState<CampaignPledgeType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { token } = useAuth();
+  const { token, ensureAuthReady } = useAuthGuard();
 
   const handleApiError = (errorText: string) => {
     setError(`API Error: ${errorText}`);
@@ -63,6 +63,8 @@ export const PledgesProvider = ({ children }: { children: ReactNode }) => {
 
   // Fetch pledges for the current user
   const fetchPledges = useCallback(async (): Promise<void> => {
+    if (!ensureAuthReady()) return;
+
     setLoading(true);
     setError(null);
     try {
@@ -77,6 +79,11 @@ export const PledgesProvider = ({ children }: { children: ReactNode }) => {
         },
       );
 
+      if (response.status === 401) {
+        setError('Authentication failed. Please log in again.');
+        return;
+      }
+
       if (!response.ok) {
         const errorText = await response.text();
         handleApiError(errorText);
@@ -90,15 +97,12 @@ export const PledgesProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, ensureAuthReady]);
 
   // Delete a pledge
   const deletePledge = useCallback(
     async (pledgeId: number): Promise<void> => {
-      if (!token) {
-        setError('Authentication token is missing');
-        return;
-      }
+      if (!ensureAuthReady()) return;
 
       setLoading(true);
       setError(null);
@@ -113,6 +117,11 @@ export const PledgesProvider = ({ children }: { children: ReactNode }) => {
             },
           },
         );
+
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -135,7 +144,7 @@ export const PledgesProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   const contextValue = useMemo(

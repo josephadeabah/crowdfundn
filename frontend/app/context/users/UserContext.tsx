@@ -8,6 +8,7 @@ import React, {
   useCallback,
 } from 'react';
 import { useAuth } from '@/app/context/auth/AuthContext';
+import { useAuthGuard } from '@/app/hooks/useAuthGuard';
 import {
   Profile,
   UserProfile,
@@ -19,7 +20,9 @@ import Cookies from 'js-cookie'; // Import js-cookie for cookie handling
 const UserContext = createContext<UserProfileState | undefined>(undefined);
 
 export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
-  const { token, user } = useAuth();
+  const { user } = useAuth();
+  const { token, ensureAuthReady } = useAuthGuard();
+
   const [userAccountData, setUserAccountData] = useState<UserProfile | null>(
     null,
   );
@@ -36,6 +39,8 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
   // Function to fetch all users
   const fetchAllUsers = useCallback(
     async (page = 1, perPage = 10) => {
+      if (!ensureAuthReady()) return { users: [], meta: null };
+
       setLoading(true);
       setError(null);
 
@@ -50,6 +55,11 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
             },
           },
         );
+
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return { users: [], meta: null };
+        }
 
         if (!response.ok) {
           throw new Error('Failed to fetch users');
@@ -67,12 +77,14 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Function to delete a user
   const deleteUser = useCallback(
     async (userId: number) => {
+      if (!ensureAuthReady()) return;
+
       try {
         setLoading(true);
         const response = await fetch(
@@ -86,6 +98,11 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
+
         if (!response.ok) {
           throw new Error('Failed to delete user');
         }
@@ -96,11 +113,13 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Function to fetch user profile data
   const fetchUserProfile = useCallback(async () => {
+    if (!ensureAuthReady()) return;
+
     setLoading(true);
     setError(null);
 
@@ -116,6 +135,11 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         },
       );
 
+      if (response.status === 401) {
+        setError('Authentication failed. Please log in again.');
+        return;
+      }
+
       if (!response.ok) {
         throw new Error('Failed to fetch user data');
       }
@@ -130,11 +154,13 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [token, storeRolesInCookies]);
+  }, [token, storeRolesInCookies, ensureAuthReady]);
 
   // Function to update user profile
   const updateProfileData = useCallback(
     async (updatedProfile: Partial<Profile> | FormData) => {
+      if (!ensureAuthReady()) return;
+
       setLoading(true);
       setError(null);
 
@@ -156,6 +182,11 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
+
         if (!response.ok) {
           const errorResponse = await response.json();
           throw new Error(errorResponse.message || 'Failed to update profile');
@@ -172,12 +203,14 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token, user],
+    [token, user, ensureAuthReady],
   );
 
   // Function to update user profile
   const updateUserAccountData = useCallback(
     async (updatedProfile: Partial<UserProfile>) => {
+      if (!ensureAuthReady()) return;
+
       setLoading(true);
       setError(null);
 
@@ -196,6 +229,11 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
+
         if (!response.ok) {
           throw new Error('Failed to update profile');
         }
@@ -208,12 +246,14 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Function to assign a role to a user
   const assignRoleToUser = useCallback(
     async (userId: number, roleName: string) => {
+      if (!ensureAuthReady()) return;
+
       try {
         setLoading(true);
         const response = await fetch(
@@ -228,6 +268,11 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
+
         if (!response.ok) {
           throw new Error('Failed to assign role to user');
         }
@@ -237,12 +282,14 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Function to remove a role from a user
   const removeRoleFromUser = useCallback(
     async (userId: number, roleName: string) => {
+      if (!ensureAuthReady()) return;
+
       try {
         setLoading(true);
         const response = await fetch(
@@ -257,6 +304,11 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
+
         if (!response.ok) {
           throw new Error('Failed to remove role from user');
         }
@@ -266,12 +318,14 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Function to make a user Super Admin
   const makeUserAdmin = useCallback(
     async (userId: number, isAdmin: boolean) => {
+      if (!ensureAuthReady()) return;
+
       try {
         setLoading(true);
         const response = await fetch(
@@ -286,6 +340,11 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
+
         if (!response.ok) {
           throw new Error('Failed to update user admin status');
         }
@@ -295,12 +354,14 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Function to block a user
   const blockUser = useCallback(
     async (userId: number) => {
+      if (!ensureAuthReady()) return;
+
       try {
         setLoading(true);
         const response = await fetch(
@@ -314,6 +375,11 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
+
         if (!response.ok) {
           throw new Error('Failed to block user');
         }
@@ -323,12 +389,14 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Function to activate a user
   const activateUser = useCallback(
     async (userId: number) => {
+      if (!ensureAuthReady()) return;
+
       try {
         setLoading(true);
         const response = await fetch(
@@ -342,6 +410,11 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
+
         if (!response.ok) {
           throw new Error('Failed to activate user');
         }
@@ -351,7 +424,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Automatically fetch user data when token changes (e.g., after login)
