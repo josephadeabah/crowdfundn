@@ -65,12 +65,12 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
       setError('Authentication not initialized yet');
       return false;
     }
-    
+
     if (!token) {
       setError('Authentication token is missing');
       return false;
     }
-    
+
     return true;
   }, [token, isInitialized]);
 
@@ -156,7 +156,9 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
         );
 
         if (response.status === 403) {
-          throw new Error('You do not have permission to view this KYC application');
+          throw new Error(
+            'You do not have permission to view this KYC application',
+          );
         }
 
         if (response.status === 401) {
@@ -286,7 +288,8 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
 
         return updatedReview;
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        const errorMessage =
+          err instanceof Error ? err.message : 'Unknown error';
         setError(errorMessage);
         throw new Error(errorMessage);
       } finally {

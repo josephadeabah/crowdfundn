@@ -76,13 +76,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const handleUserActivity = () => resetLogoutTimer();
     const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
-    
-    events.forEach(event => {
+
+    events.forEach((event) => {
       window.addEventListener(event, handleUserActivity);
     });
 
     return () => {
-      events.forEach(event => {
+      events.forEach((event) => {
         window.removeEventListener(event, handleUserActivity);
       });
       if (logoutTimerRef.current) {
@@ -104,20 +104,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       alert('Your account is blocked. Please contact support.');
       return;
     }
-    
+
     setUser(response.user);
     setToken(response.token);
 
     // Store in cookies with secure flags
-    Cookies.set('user', JSON.stringify(response.user), { 
+    Cookies.set('user', JSON.stringify(response.user), {
       expires: 30,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
+      sameSite: 'strict',
     });
-    Cookies.set('token', response.token, { 
+    Cookies.set('token', response.token, {
       expires: 30,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
+      sameSite: 'strict',
     });
 
     resetLogoutTimer();
@@ -131,16 +131,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     setToken(null);
     setSignupEmailConfirmationToken(null);
-    
+
     // Remove all auth-related cookies
     Cookies.remove('user');
     Cookies.remove('token');
     Cookies.remove('roles');
-    
+
     if (logoutTimerRef.current) {
       clearTimeout(logoutTimerRef.current);
     }
-    
+
     router.push('/auth/login');
   };
 
