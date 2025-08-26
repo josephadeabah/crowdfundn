@@ -1,7 +1,10 @@
+# app/controllers/api/v1/members/auth_controller.rb
 module Api
   module V1
     module Members
       class AuthController < ApplicationController
+        skip_before_action :authenticate_request, only: [:signup, :login, :confirm_email, :resend_confirmation, :password_reset]
+
         def signup
           existing_user = User.find_by(email: user_params[:email])
 
@@ -21,12 +24,6 @@ module Api
               render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
             end
           end
-        end
-
-        def decode_confirmation_token(token)
-          JWT.decode(token, Rails.application.secret_key_base).first
-        rescue StandardError
-          nil
         end
 
         def confirm_email
@@ -64,7 +61,7 @@ module Api
           user = User.find_by(email: params[:email])
 
           if user&.authenticate(params[:password])
-            Rails.logger.debug { "User email confirmed: #{user.email_confirmed}" } # Debugging line
+            Rails.logger.debug { "User email confirmed: #{user.email_confirmed}" }
             if user.email_confirmed
               user.update(
                 last_sign_in_at: Time.current,
@@ -122,7 +119,6 @@ module Api
           # Implement actual reset password logic
         end
 
-
         private
 
         def user_params
@@ -148,6 +144,12 @@ module Api
 
         def encode_token(user_id)
           JWT.encode({ user_id: user_id, exp: 24.hours.from_now.to_i }, Rails.application.secret_key_base)
+        end
+
+        def decode_confirmation_token(token)
+          JWT.decode(token, Rails.application.secret_key_base).first
+        rescue StandardError
+          nil
         end
       end
     end
