@@ -1,5 +1,10 @@
-// app/context/campaigns/CampaignContext.tsx
-'use client';
+import {
+  CampaignResponseDataType,
+  CampaignState,
+  SingleCampaignResponseDataType,
+  CampaignStatisticsDataType,
+  CampaignShareType, // Add the type for statistics data
+} from '@/app/types/campaigns.types';
 import React, {
   createContext,
   useState,
@@ -8,31 +13,32 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { useAuthGuard } from '@/app/hooks/useAuthGuard';
-import {
-  CampaignResponseDataType,
-  CampaignState,
-  SingleCampaignResponseDataType,
-  CampaignStatisticsDataType,
-  CampaignShareType,
-} from '@/app/types/campaigns.types';
+import { useAuth } from '../../auth/AuthContext';
 
 const CampaignContext = createContext<CampaignState | undefined>(undefined);
 
+// Custom wrapper for Next.js fetch
+const nextFetch = async (
+  url: string,
+  options: RequestInit & { cache?: RequestCache } = {},
+) => {
+  return fetch(url, { ...options, next: { revalidate: 10 } });
+};
+
 export const CampaignProvider = ({ children }: { children: ReactNode }) => {
-  const { token, ensureAuthReady } = useAuthGuard();
   const [campaigns, setCampaigns] = useState<CampaignResponseDataType[]>([]);
   const [userCampaigns, setUserCampaigns] = useState<
     CampaignResponseDataType[] | null
   >(null);
   const [campaignShares, setCampaignShares] =
-    useState<CampaignShareType | null>(null);
+    useState<CampaignShareType | null>(null); // Or a more complex structure if needed
   const [currentCampaign, setCurrentCampaign] =
     useState<SingleCampaignResponseDataType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [statistics, setStatistics] =
-    useState<CampaignStatisticsDataType | null>(null);
+    useState<CampaignStatisticsDataType | null>(null); // Add state for statistics
+  const { token, user } = useAuth();
   const [pagination, setPagination] = useState<{
     currentPage: number;
     totalPages: number;
@@ -48,35 +54,29 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     setError(errorText);
   };
 
-  // All API call functions should use ensureAuthReady
   const cancelCampaign = useCallback(
     async (id: string) => {
-      if (!ensureAuthReady()) return;
-
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(
+        const response = await nextFetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}/cancel`,
           {
-            method: 'PATCH',
+            method: 'PATCH', // Assuming the cancel endpoint requires a POST request
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
+            cache: 'no-store', // No caching for cancel action
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
 
         if (!response.ok) {
           handleApiError('Failed to cancel the campaign. Please try again.');
           return;
         }
 
+        // Optional: Update the state to reflect the campaign cancellation
         setCampaigns((prevCampaigns) =>
           prevCampaigns.filter((campaign) => campaign.id !== Number(id)),
         );
@@ -93,17 +93,20 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const addCampaign = useCallback(
     async (campaign: FormData) => {
-      if (!ensureAuthReady()) return;
+      if (!token) {
+        setError('Authentication token is missing');
+        return;
+      }
 
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(
+        const response = await nextFetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns`,
           {
             method: 'POST',
@@ -113,11 +116,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
             body: campaign,
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
 
         if (!response.ok) {
           handleApiError("Couldn't create campaign. Please try again.");
@@ -133,12 +131,11 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
+  // Fetch campaigns for the logged-in user [new]
   const fetchUserCampaigns = useCallback(async (): Promise<void> => {
-    if (!ensureAuthReady()) return;
-
     setLoading(true);
     setError(null);
     try {
@@ -150,13 +147,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
+          cache: 'no-store',
         },
       );
-
-      if (response.status === 401) {
-        setError('Authentication failed. Please log in again.');
-        return;
-      }
 
       if (!response.ok) throw new Error("Couldn't fetch user campaigns");
 
@@ -169,21 +162,20 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [token, ensureAuthReady]);
+  }, [token]);
 
   const fetchCampaignStatistics = useCallback(
     async (month?: number, year?: number): Promise<void> => {
-      if (!ensureAuthReady()) return;
-
       setLoading(true);
       setError(null);
       try {
+        // Construct the URL with optional month and year query parameters
         let url = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/statistics`;
         if (month !== undefined && year !== undefined) {
           url += `?month=${month}&year=${year}`;
         }
 
-        const response = await fetch(url, {
+        const response = await nextFetch(url, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -191,18 +183,13 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           },
         });
 
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
-
         if (!response.ok) {
           handleApiError("Couldn't fetch statistics. Please try again.");
           return;
         }
 
         const stats = await response.json();
-        setStatistics(stats);
+        setStatistics(stats); // Store statistics in state
       } catch (err) {
         setError(
           err instanceof Error ? err.message : 'Error fetching statistics',
@@ -211,7 +198,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const fetchAllCampaigns = useCallback(
@@ -247,13 +234,14 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           Accept: 'application/json',
         };
 
-        // if (token) {
-        //   headers['Authorization'] = `Bearer ${token}`;
-        // }
+        if (user) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
 
         const response = await fetch(url, {
           method: 'GET',
           headers,
+          mode: 'cors',
         });
 
         if (!response.ok) {
@@ -267,15 +255,18 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           currentPage: allCampaigns?.current_page || 1,
           totalPages: allCampaigns?.total_pages || 1,
         });
+        setLoading(false);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : 'Error fetching campaigns',
+          err instanceof Error
+            ? err.message
+            : 'Error fetching campaigns. Please refresh the page.',
         );
       } finally {
         setLoading(false);
       }
     },
-    [token],
+    [token, user],
   );
 
   const fetchCampaignById = useCallback(
@@ -283,16 +274,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(
+        const response = await nextFetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${identifier}`,
-          {
-            method: 'GET',
-            headers: token
-              ? {
-                  Authorization: `Bearer ${token}`,
-                }
-              : {},
-          },
+          { method: 'GET' },
         );
 
         if (!response.ok) {
@@ -315,12 +299,15 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
   const deleteCampaign = useCallback(
     async (id: string) => {
-      if (!ensureAuthReady()) return;
+      if (!token) {
+        setError('Authentication token is missing');
+        return;
+      }
 
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(
+        const response = await nextFetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}/`,
           {
             method: 'DELETE',
@@ -328,13 +315,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
+            cache: 'no-store', // No caching for DELETE
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
 
         if (!response.ok) {
           handleApiError('Failed to delete campaign. Please try again.');
@@ -348,7 +331,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const editCampaign = useCallback(
@@ -356,12 +339,15 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       id: string | string[] | undefined,
       updatedCampaignData: FormData,
     ) => {
-      if (!ensureAuthReady()) return;
+      if (!token) {
+        setError('Authentication token is missing');
+        return;
+      }
 
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(
+        const response = await nextFetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}`,
           {
             method: 'PUT',
@@ -369,13 +355,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
               Authorization: `Bearer ${token}`,
             },
             body: updatedCampaignData,
+            cache: 'no-store', // No caching for PUT
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
 
         if (!response.ok) {
           handleApiError('Failed to update campaign. Please try again.');
@@ -383,6 +365,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const updatedCampaign = await response.json();
+
         setCampaigns((prevCampaigns) =>
           prevCampaigns.map((campaign) =>
             campaign.id === Number(id) ? updatedCampaign : campaign,
@@ -396,17 +379,16 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
+  // Add the updateCampaignSettings method
   const updateCampaignSettings = useCallback(
     async (campaignId: string, settings: Record<string, any>) => {
-      if (!ensureAuthReady()) return;
-
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(
+        const response = await nextFetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}`,
           {
             method: 'PATCH',
@@ -418,11 +400,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
-
         if (!response.ok) {
           handleApiError(
             'Failed to update campaign settings. Please try again.',
@@ -431,16 +408,21 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const updatedCampaign = await response.json();
+
+        // Update the current campaign in state
         setCurrentCampaign((current) =>
           current && current.id === Number(campaignId)
             ? updatedCampaign
             : current,
         );
+
+        // Update the campaigns list if needed
         setCampaigns((prevCampaigns) =>
           prevCampaigns.map((campaign) =>
             campaign.id === Number(campaignId) ? updatedCampaign : campaign,
           ),
         );
+
         return updatedCampaign;
       } catch (err) {
         setError(
@@ -452,12 +434,10 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
-
+  // Fetch favorited campaigns
   const fetchFavoritedCampaigns = useCallback(async (): Promise<void> => {
-    if (!ensureAuthReady()) return;
-
     setLoading(true);
     setError(null);
     try {
@@ -472,16 +452,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         },
       );
 
-      if (response.status === 401) {
-        setError('Authentication failed. Please log in again.');
-        return;
-      }
-
       if (!response.ok) {
         throw new Error('Failed to fetch favorited campaigns');
       }
 
       const data = await response.json();
+      // Mark all returned campaigns as favorited
       const campaignsWithFavoriteFlag =
         data?.campaigns?.map((campaign: CampaignResponseDataType) => ({
           ...campaign,
@@ -498,12 +474,11 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [token, ensureAuthReady]);
+  }, [token]);
 
+  // Update favorite/unfavorite functions to handle the favoritedCampaigns state
   const favoriteCampaign = useCallback(
     async (campaignId: string) => {
-      if (!ensureAuthReady()) return;
-
       setLoading(true);
       setError(null);
       try {
@@ -518,13 +493,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
-
         if (!response.ok) throw new Error('Failed to favorite campaign');
 
+        // Add to favorited campaigns if not already present
         setFavoritedCampaigns((prev) => {
           const existing = prev.find((c) => c.id === Number(campaignId));
           if (existing) return prev;
@@ -544,13 +515,11 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token, campaigns, ensureAuthReady],
+    [token, campaigns],
   );
 
   const unfavoriteCampaign = useCallback(
     async (campaignId: string) => {
-      if (!ensureAuthReady()) return;
-
       setLoading(true);
       setError(null);
       try {
@@ -565,13 +534,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
-
         if (!response.ok) throw new Error('Failed to unfavorite campaign');
 
+        // Remove from favorited campaigns
         setFavoritedCampaigns((prev) =>
           prev.filter((c) => c.id !== Number(campaignId)),
         );
@@ -583,8 +548,140 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
+
+  // const favoriteCampaign = useCallback(
+  //   async (campaignId: string) => {
+  //     setLoading(true);
+  //     setError(null);
+  //     try {
+  //       const response = await nextFetch(
+  //         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/favorite`,
+  //         {
+  //           method: 'POST',
+  //           headers: {
+  //             'Content-Type': 'application/json',
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         },
+  //       );
+
+  //       if (!response.ok) {
+  //         handleApiError('Failed to favorite the campaign. Please try again.');
+  //         return;
+  //       }
+
+  //       // Update the current campaign's favorited status
+  //       setCurrentCampaign((current) =>
+  //         current && current.id === Number(campaignId)
+  //           ? { ...current, favorited: true }
+  //           : current,
+  //       );
+
+  //       // Update the campaigns list if needed
+  //       setCampaigns((prevCampaigns) =>
+  //         prevCampaigns.map((campaign) =>
+  //           campaign.id === Number(campaignId)
+  //             ? { ...campaign, favorited: true }
+  //             : campaign,
+  //         ),
+  //       );
+  //     } catch (err) {
+  //       setError(
+  //         err instanceof Error ? err.message : 'Error favoriting the campaign',
+  //       );
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   },
+  //   [token],
+  // );
+
+  // const unfavoriteCampaign = useCallback(
+  //   async (campaignId: string) => {
+  //     setLoading(true);
+  //     setError(null);
+  //     try {
+  //       const response = await nextFetch(
+  //         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/unfavorite`,
+  //         {
+  //           method: 'DELETE',
+  //           headers: {
+  //             'Content-Type': 'application/json',
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         },
+  //       );
+
+  //       if (!response.ok) {
+  //         handleApiError(
+  //           'Failed to unfavorite the campaign. Please try again.',
+  //         );
+  //         return;
+  //       }
+
+  //       // Update the current campaign's favorited status
+  //       setCurrentCampaign((current) =>
+  //         current && current.id === Number(campaignId)
+  //           ? { ...current, favorited: false }
+  //           : current,
+  //       );
+
+  //       // Update the campaigns list if needed
+  //       setCampaigns((prevCampaigns) =>
+  //         prevCampaigns.map((campaign) =>
+  //           campaign.id === Number(campaignId)
+  //             ? { ...campaign, favorited: false }
+  //             : campaign,
+  //         ),
+  //       );
+  //     } catch (err) {
+  //       setError(
+  //         err instanceof Error
+  //           ? err.message
+  //           : 'Error unfavoriting the campaign',
+  //       );
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   },
+  //   [token],
+  // );
+
+  // // In your CampaignContext file
+  // const fetchFavoritedCampaigns = useCallback(async (): Promise<void> => {
+  //   setLoading(true);
+  //   setError(null);
+  //   try {
+  //     const response = await fetch(
+  //       `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/favorites`,
+  //       {
+  //         method: 'GET',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       },
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error('Failed to fetch favorited campaigns');
+  //     }
+
+  //     const data = await response.json();
+  //     setCampaigns(data?.campaigns);
+  //   } catch (err) {
+  //     setError(
+  //       err instanceof Error
+  //         ? err.message
+  //         : 'Error fetching favorited campaigns',
+  //     );
+  //     return;
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, [token]);
 
   const shareCampaign = useCallback(
     async (campaignId?: string) => {
@@ -594,7 +691,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         const headers: HeadersInit = {
           'Content-Type': 'application/json',
         };
-
+        // Include the token in the headers only if it is available
         if (token) {
           headers['Authorization'] = `Bearer ${token}`;
         }
@@ -613,7 +710,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           );
           return;
         }
-
+        // Update the campaign share count or state if needed
         const updatedShares = await response.json();
         setCampaignShares(updatedShares);
       } catch (err) {
@@ -646,9 +743,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       cancelCampaign,
       shareCampaign,
       updateCampaignSettings,
-      favoriteCampaign,
-      unfavoriteCampaign,
-      fetchFavoritedCampaigns,
+      favoriteCampaign, // Add favoriteCampaign to context
+      unfavoriteCampaign, // Add unfavoriteCampaign to context
+      fetchFavoritedCampaigns, // Add fetchFavoritedCampaigns to context
     }),
     [
       campaigns,
@@ -670,9 +767,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       cancelCampaign,
       shareCampaign,
       updateCampaignSettings,
-      favoriteCampaign,
-      unfavoriteCampaign,
-      fetchFavoritedCampaigns,
+      favoriteCampaign, // Include favoriteCampaign in memoization
+      unfavoriteCampaign, // Include unfavoriteCampaign in memoization
+      fetchFavoritedCampaigns, // Include fetchFavoritedCampaigns in memoization
     ],
   );
 
