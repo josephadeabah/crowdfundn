@@ -1,5 +1,4 @@
 // app/contexts/EquityCampaignContext.tsx
-'use client';
 import React, {
   createContext,
   useState,
@@ -8,7 +7,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { useAuthGuard } from '@/app/hooks/useAuthGuard';
+import { useAuth } from '../../auth/AuthContext';
 import { useCampaignContext } from './CampaignsContext';
 import {
   EquityCampaignResponseDataType,
@@ -42,7 +41,7 @@ export const EquityCampaignProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const { token, ensureAuthReady } = useAuthGuard();
+  const { token, user } = useAuth();
   const campaignContext = useCampaignContext();
   const [pendingCampaigns, setPendingCampaigns] = useState<
     EquityCampaignResponseDataType[]
@@ -77,8 +76,6 @@ export const EquityCampaignProvider = ({
   // Document Management
   const fetchDocuments = useCallback(
     async (campaignId: string): Promise<void> => {
-      if (!ensureAuthReady()) return;
-
       setLoading(true);
       setError(null);
       try {
@@ -92,11 +89,6 @@ export const EquityCampaignProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
@@ -114,13 +106,11 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const getDocument = useCallback(
     async (campaignId: string, documentId: number): Promise<void> => {
-      if (!ensureAuthReady()) return;
-
       setLoading(true);
       setError(null);
       try {
@@ -134,11 +124,6 @@ export const EquityCampaignProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
@@ -156,7 +141,7 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const createDocument = useCallback(
@@ -165,8 +150,6 @@ export const EquityCampaignProvider = ({
       documentType: string,
       files: File[],
     ): Promise<InvestorDocument | null> => {
-      if (!ensureAuthReady()) return null;
-
       setLoading(true);
       setError(null);
       try {
@@ -184,11 +167,6 @@ export const EquityCampaignProvider = ({
             body: formData,
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return null;
-        }
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
@@ -208,7 +186,7 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const updateDocument = useCallback(
@@ -218,8 +196,6 @@ export const EquityCampaignProvider = ({
       documentType: string,
       files: File[],
     ): Promise<InvestorDocument | null> => {
-      if (!ensureAuthReady()) return null;
-
       setLoading(true);
       setError(null);
       try {
@@ -237,11 +213,6 @@ export const EquityCampaignProvider = ({
             body: formData,
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return null;
-        }
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
@@ -263,13 +234,11 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const deleteDocument = useCallback(
     async (campaignId: string, documentId: number): Promise<void> => {
-      if (!ensureAuthReady()) return;
-
       setLoading(true);
       setError(null);
       try {
@@ -283,11 +252,6 @@ export const EquityCampaignProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
@@ -304,20 +268,13 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   // Equity Campaign Special Actions
 
   const submitForApproval = useCallback(
     async (campaignId: string): Promise<CampaignActionResult> => {
-      if (!ensureAuthReady()) {
-        return {
-          success: false,
-          error: 'Authentication required',
-        };
-      }
-
       setLoading(true);
       setError(null);
       try {
@@ -331,14 +288,6 @@ export const EquityCampaignProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return {
-            success: false,
-            error: 'Authentication failed. Please log in again.',
-          };
-        }
 
         const data = await response.json();
 
@@ -363,18 +312,11 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady, fetchUserCampaigns],
+    [token, fetchUserCampaigns],
   );
 
   const approveCampaign = useCallback(
     async (campaignId: string): Promise<CampaignActionResult> => {
-      if (!ensureAuthReady()) {
-        return {
-          success: false,
-          error: 'Authentication required',
-        };
-      }
-
       setLoading(true);
       setError(null);
       try {
@@ -388,14 +330,6 @@ export const EquityCampaignProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return {
-            success: false,
-            error: 'Authentication failed. Please log in again.',
-          };
-        }
 
         const data = await response.json();
 
@@ -419,7 +353,7 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady, fetchUserCampaigns],
+    [token, fetchUserCampaigns],
   );
 
   const rejectCampaign = useCallback(
@@ -427,13 +361,6 @@ export const EquityCampaignProvider = ({
       campaignId: string,
       rejectionReason: string,
     ): Promise<CampaignActionResult> => {
-      if (!ensureAuthReady()) {
-        return {
-          success: false,
-          error: 'Authentication required',
-        };
-      }
-
       setLoading(true);
       setError(null);
       try {
@@ -448,14 +375,6 @@ export const EquityCampaignProvider = ({
             body: JSON.stringify({ rejection_reason: rejectionReason }),
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return {
-            success: false,
-            error: 'Authentication failed. Please log in again.',
-          };
-        }
 
         const data = await response.json();
 
@@ -479,18 +398,11 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady, fetchUserCampaigns],
+    [token, fetchUserCampaigns],
   );
 
   const launchCampaign = useCallback(
     async (campaignId: string): Promise<CampaignActionResult> => {
-      if (!ensureAuthReady()) {
-        return {
-          success: false,
-          error: 'Authentication required',
-        };
-      }
-
       setLoading(true);
       setError(null);
       try {
@@ -504,14 +416,6 @@ export const EquityCampaignProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return {
-            success: false,
-            error: 'Authentication failed. Please log in again.',
-          };
-        }
 
         const data = await response.json();
 
@@ -535,18 +439,11 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady, fetchUserCampaigns],
+    [token, fetchUserCampaigns],
   );
 
   const closeCampaign = useCallback(
     async (campaignId: string): Promise<CampaignActionResult> => {
-      if (!ensureAuthReady()) {
-        return {
-          success: false,
-          error: 'Authentication required',
-        };
-      }
-
       setLoading(true);
       setError(null);
       try {
@@ -560,14 +457,6 @@ export const EquityCampaignProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return {
-            success: false,
-            error: 'Authentication failed. Please log in again.',
-          };
-        }
 
         const data = await response.json();
 
@@ -591,14 +480,12 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady, fetchUserCampaigns],
+    [token, fetchUserCampaigns],
   );
 
   // Team Member Management
   const fetchTeamMembers = useCallback(
     async (campaignId: string): Promise<void> => {
-      if (!ensureAuthReady()) return;
-
       setLoading(true);
       setError(null);
       try {
@@ -612,11 +499,6 @@ export const EquityCampaignProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
@@ -634,7 +516,7 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const addTeamMember = useCallback(
@@ -642,8 +524,6 @@ export const EquityCampaignProvider = ({
       campaignId: string,
       formData: FormData,
     ): Promise<CampaignTeamMember | null> => {
-      if (!ensureAuthReady()) return null;
-
       setLoading(true);
       setError(null);
       try {
@@ -657,11 +537,6 @@ export const EquityCampaignProvider = ({
             body: formData,
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return null;
-        }
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
@@ -681,7 +556,7 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const updateTeamMember = useCallback(
@@ -690,8 +565,6 @@ export const EquityCampaignProvider = ({
       memberId: number,
       updates: Partial<CampaignTeamMember>,
     ): Promise<CampaignTeamMember | null> => {
-      if (!ensureAuthReady()) return null;
-
       setLoading(true);
       setError(null);
       try {
@@ -706,11 +579,6 @@ export const EquityCampaignProvider = ({
             body: JSON.stringify({ campaign_team_member: updates }),
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return null;
-        }
 
         if (!response.ok) {
           handleApiError("Couldn't update team member. Please try again.");
@@ -733,13 +601,11 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const removeTeamMember = useCallback(
     async (campaignId: string, memberId: number): Promise<void> => {
-      if (!ensureAuthReady()) return;
-
       setLoading(true);
       setError(null);
       try {
@@ -753,11 +619,6 @@ export const EquityCampaignProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
 
         if (!response.ok) {
           handleApiError("Couldn't remove team member. Please try again.");
@@ -775,14 +636,12 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   // Equity Investment Management
   const fetchInvestments = useCallback(
     async (campaignId: string): Promise<void> => {
-      if (!ensureAuthReady()) return;
-
       setLoading(true);
       setError(null);
       try {
@@ -796,11 +655,6 @@ export const EquityCampaignProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
@@ -818,7 +672,7 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   // In EquityCampaignContext.tsx
@@ -909,13 +763,6 @@ export const EquityCampaignProvider = ({
       campaignId: string,
       investmentData: InvestmentCreatePayload,
     ): Promise<InvestmentCreateResponse> => {
-      if (!ensureAuthReady()) {
-        return {
-          success: false,
-          error: 'Authentication required',
-        };
-      }
-
       setLoading(true);
       setError(null);
       try {
@@ -930,14 +777,6 @@ export const EquityCampaignProvider = ({
             body: JSON.stringify({ equity_investment: investmentData }),
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return {
-            success: false,
-            error: 'Authentication failed. Please log in again.',
-          };
-        }
 
         const data = await response.json();
 
@@ -998,13 +837,11 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const fetchInvestmentDetails = useCallback(
     async (investmentId: string): Promise<any> => {
-      if (!ensureAuthReady()) return null;
-
       setLoading(true);
       setError(null);
       try {
@@ -1018,11 +855,6 @@ export const EquityCampaignProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return null;
-        }
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
@@ -1042,13 +874,11 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const fetchPortfolio = useCallback(
     async (page = 1, perPage = 10): Promise<void> => {
-      if (!ensureAuthReady()) return;
-
       setLoading(true);
       setError(null);
       try {
@@ -1062,11 +892,6 @@ export const EquityCampaignProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
@@ -1084,13 +909,10 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
-
   // My investments endpoint - FIXED URL
   const fetchMyInvestments = useCallback(async (): Promise<void> => {
-    if (!ensureAuthReady()) return;
-
     setLoading(true);
     setError(null);
     try {
@@ -1104,11 +926,6 @@ export const EquityCampaignProvider = ({
           },
         },
       );
-
-      if (response.status === 401) {
-        setError('Authentication failed. Please log in again.');
-        return;
-      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -1125,7 +942,7 @@ export const EquityCampaignProvider = ({
     } finally {
       setLoading(false);
     }
-  }, [token, ensureAuthReady]);
+  }, [token]);
 
   // In your EquityCampaignContext.tsx
   const updateInvestment = useCallback(
@@ -1137,13 +954,6 @@ export const EquityCampaignProvider = ({
       data?: EquityInvestment;
       error?: string;
     }> => {
-      if (!ensureAuthReady()) {
-        return {
-          success: false,
-          error: 'Authentication required',
-        };
-      }
-
       setLoading(true);
       setError(null);
       try {
@@ -1158,14 +968,6 @@ export const EquityCampaignProvider = ({
             body: JSON.stringify({ equity_investment: updates }),
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return {
-            success: false,
-            error: 'Authentication failed. Please log in again.',
-          };
-        }
 
         const data = await response.json();
 
@@ -1196,20 +998,13 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const deleteInvestment = useCallback(
     async (
       investmentId: string,
     ): Promise<{ success: boolean; error?: string }> => {
-      if (!ensureAuthReady()) {
-        return {
-          success: false,
-          error: 'Authentication required',
-        };
-      }
-
       setLoading(true);
       setError(null);
       try {
@@ -1223,14 +1018,6 @@ export const EquityCampaignProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return {
-            success: false,
-            error: 'Authentication failed. Please log in again.',
-          };
-        }
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
@@ -1255,15 +1042,13 @@ export const EquityCampaignProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   // Add the fetch function
   const fetchPendingReviewCampaigns = useCallback(async (): Promise<
     EquityCampaignResponseDataType[]
   > => {
-    if (!ensureAuthReady()) return [];
-
     setLoading(true);
     setError(null);
     try {
@@ -1277,11 +1062,6 @@ export const EquityCampaignProvider = ({
           },
         },
       );
-
-      if (response.status === 401) {
-        setError('Authentication failed. Please log in again.');
-        return [];
-      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -1301,21 +1081,15 @@ export const EquityCampaignProvider = ({
     } finally {
       setLoading(false);
     }
-  }, [token, ensureAuthReady]);
+  }, [token]);
 
+  // Certificate API methods
   // Certificate API methods - UPDATED to include campaign_id
   const generateCertificate = useCallback(
     async (
       investmentId: string,
       campaignId: string, // Add campaignId parameter
     ): Promise<{ success: boolean; url?: string; error?: string }> => {
-      if (!ensureAuthReady()) {
-        return {
-          success: false,
-          error: 'Authentication required',
-        };
-      }
-
       setCertificateLoading(true);
       setCertificateError(null);
       try {
@@ -1329,14 +1103,6 @@ export const EquityCampaignProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          setCertificateError('Authentication failed. Please log in again.');
-          return {
-            success: false,
-            error: 'Authentication failed. Please log in again.',
-          };
-        }
 
         const data = await response.json();
 
@@ -1364,13 +1130,11 @@ export const EquityCampaignProvider = ({
         setCertificateLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const downloadCertificate = useCallback(
     async (investmentId: string, campaignId: string): Promise<void> => {
-      if (!ensureAuthReady()) return;
-
       setCertificateLoading(true);
       setCertificateError(null);
       try {
@@ -1383,11 +1147,6 @@ export const EquityCampaignProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          setCertificateError('Authentication failed. Please log in again.');
-          throw new Error('Authentication failed. Please log in again.');
-        }
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
@@ -1413,7 +1172,7 @@ export const EquityCampaignProvider = ({
         setCertificateLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const checkCertificateStatus = useCallback(
@@ -1421,10 +1180,6 @@ export const EquityCampaignProvider = ({
       investmentId: string,
       campaignId: string,
     ): Promise<{ exists: boolean; url?: string }> => {
-      if (!ensureAuthReady()) {
-        return { exists: false };
-      }
-
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/documents/investment_certificates/${investmentId}/status`,
@@ -1436,10 +1191,6 @@ export const EquityCampaignProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          return { exists: false };
-        }
 
         const data = await response.json();
 
@@ -1455,7 +1206,7 @@ export const EquityCampaignProvider = ({
         return { exists: false };
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   // Combine with base campaign context

@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { useAuthGuard } from '@/app/hooks/useAuthGuard';
+import { useAuth } from '../../auth/AuthContext';
 
 interface UpdateDataType {
   id: number;
@@ -41,7 +41,7 @@ export const CampaignUpdatesProvider = ({
   const [updates, setUpdates] = useState<UpdateDataType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { token, ensureAuthReady } = useAuthGuard();
+  const { token } = useAuth();
 
   const handleApiError = (errorText: string) => {
     setError(`API Error: ${errorText}`);
@@ -52,20 +52,14 @@ export const CampaignUpdatesProvider = ({
       setLoading(true);
       setError(null);
       try {
-        const headers: Record<string, string> = {
-          'Content-Type': 'application/json',
-        };
-
-        // Add authorization header if token is available
-        if (token) {
-          headers.Authorization = `Bearer ${token}`;
-        }
-
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/updates`,
           {
             method: 'GET',
-            headers,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
           },
         );
 
@@ -88,7 +82,10 @@ export const CampaignUpdatesProvider = ({
 
   const createUpdate = useCallback(
     async (campaignId: string, content: string): Promise<void> => {
-      if (!ensureAuthReady()) return;
+      if (!token) {
+        setError('Authentication token is missing');
+        return;
+      }
 
       setLoading(true);
       setError(null);
@@ -105,11 +102,6 @@ export const CampaignUpdatesProvider = ({
           },
         );
 
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
-
         if (!response.ok) {
           const errorText = await response.text();
           handleApiError(errorText);
@@ -124,7 +116,7 @@ export const CampaignUpdatesProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const updateUpdate = useCallback(
@@ -133,7 +125,10 @@ export const CampaignUpdatesProvider = ({
       updateId: string,
       content: string,
     ): Promise<void> => {
-      if (!ensureAuthReady()) return;
+      if (!token) {
+        setError('Authentication token is missing');
+        return;
+      }
 
       setLoading(true);
       setError(null);
@@ -149,11 +144,6 @@ export const CampaignUpdatesProvider = ({
             body: JSON.stringify({ content }),
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -173,12 +163,15 @@ export const CampaignUpdatesProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const deleteUpdate = useCallback(
     async (campaignId: string, updateId: string): Promise<void> => {
-      if (!ensureAuthReady()) return;
+      if (!token) {
+        setError('Authentication token is missing');
+        return;
+      }
 
       setLoading(true);
       setError(null);
@@ -193,11 +186,6 @@ export const CampaignUpdatesProvider = ({
             },
           },
         );
-
-        if (response.status === 401) {
-          setError('Authentication failed. Please log in again.');
-          return;
-        }
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -214,7 +202,7 @@ export const CampaignUpdatesProvider = ({
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   const contextValue = useMemo(
