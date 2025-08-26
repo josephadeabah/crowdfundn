@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { useAuthGuard } from '@/app/hooks/useAuthGuard';
+import { useAuth } from '../auth/AuthContext';
 
 export interface LeaderboardEntry {
   id: number;
@@ -106,7 +106,7 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
   const [userPoints, setUserPoints] = useState<PointsData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { token, ensureAuthReady } = useAuthGuard(); // Get authentication token and guard
+  const { token } = useAuth(); // Get authentication token
 
   // Fetch all leaderboard entries (public)
   const fetchLeaderboard = useCallback(async (): Promise<void> => {
@@ -117,12 +117,8 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/leaderboard_entry/leaderboard_entry`,
       );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch leaderboard');
-      }
-
       const data = await response.json();
+
       setLeaderboard(data);
     } catch (err: any) {
       setError(err?.message || 'Error fetching leaderboard');
@@ -140,12 +136,8 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/leaderboard_entry/fundraisers`, // New endpoint for fundraiser leaderboard
       );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch fundraiser leaderboard');
-      }
-
       const data = await response.json();
+
       setFundraiserLeaderboard(data);
     } catch (err: any) {
       setError(err?.message || 'Error fetching fundraiser leaderboard');
@@ -156,7 +148,7 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
 
   // Add this function to the PointRewardContext
   const fetchFundraiserRank = useCallback(async (): Promise<void> => {
-    if (!ensureAuthReady()) return;
+    if (!token) return;
 
     setLoading(true);
     setError(null);
@@ -171,28 +163,20 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
           },
         },
       );
-
-      if (response.status === 401) {
-        setError('Authentication failed. Please log in again.');
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch fundraiser rank');
-      }
-
       const data = await response.json();
-      setFundraiserLeaderboardRank(data);
+
+      // You can set the fundraiser rank in your state or use the data as needed
+      setFundraiserLeaderboardRank(data); // Assuming it's similar structure to user rank
     } catch (err: any) {
       setError(err?.message || 'Error fetching fundraiser rank');
     } finally {
       setLoading(false);
     }
-  }, [token, ensureAuthReady]);
+  }, [token]);
 
   // Fetch user leaderboard rank (requires authentication)
   const fetchUserRank = useCallback(async (): Promise<void> => {
-    if (!ensureAuthReady()) return;
+    if (!token) return;
 
     setLoading(true);
     setError(null);
@@ -207,24 +191,15 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
           },
         },
       );
-
-      if (response.status === 401) {
-        setError('Authentication failed. Please log in again.');
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch user rank');
-      }
-
       const data = await response.json();
+
       setUserRank(data);
     } catch (err: any) {
       setError(err?.message || 'Error fetching user rank');
     } finally {
       setLoading(false);
     }
-  }, [token, ensureAuthReady]);
+  }, [token]);
 
   // Fetch available rewards (public)
   const fetchRewards = useCallback(async (): Promise<void> => {
@@ -235,12 +210,8 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/backer_rewards/backer_rewards`,
       );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch rewards');
-      }
-
       const data = await response.json();
+
       setRewards(data);
     } catch (err: any) {
       setError(err?.message || 'Error fetching rewards');
@@ -251,7 +222,7 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
 
   // Fetch user-specific reward (requires authentication)
   const fetchUserReward = useCallback(async (): Promise<void> => {
-    if (!ensureAuthReady()) return;
+    if (!token) return;
 
     setLoading(true);
     setError(null);
@@ -266,28 +237,19 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
           },
         },
       );
-
-      if (response.status === 401) {
-        setError('Authentication failed. Please log in again.');
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch user reward');
-      }
-
       const data = await response.json();
+
       setUserReward(data);
     } catch (err: any) {
       setError(err?.message || 'Error fetching user reward');
     } finally {
       setLoading(false);
     }
-  }, [token, ensureAuthReady]);
+  }, [token]);
 
   // Fetch user points (requires authentication)
   const fetchUserPoints = useCallback(async (): Promise<void> => {
-    if (!ensureAuthReady()) return;
+    if (!token) return;
 
     setLoading(true);
     setError(null);
@@ -302,24 +264,15 @@ export const PointRewardProvider = ({ children }: { children: ReactNode }) => {
           },
         },
       );
-
-      if (response.status === 401) {
-        setError('Authentication failed. Please log in again.');
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch user points');
-      }
-
       const data = await response.json();
+
       setUserPoints(data);
     } catch (err: any) {
       setError(err?.message || 'Error fetching user points');
     } finally {
       setLoading(false);
     }
-  }, [token, ensureAuthReady]);
+  }, [token]);
 
   const contextValue = useMemo(
     () => ({
