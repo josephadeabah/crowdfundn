@@ -114,13 +114,18 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  // Fetch a specific KYC review
-  const fetchReview = useCallback(
+  // Base fetch review function (without retry)
+  const fetchReviewBase = useCallback(
     async (id: number) => {
       setLoading(true);
       setError(null);
 
       try {
+        // Check if token exists
+        if (!token) {
+          throw new Error('Authentication token is missing');
+        }
+
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}`,
           {
@@ -146,11 +151,34 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
         setCurrentReview(data.kyc);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
+        throw err; // Re-throw for retry logic
       } finally {
         setLoading(false);
       }
     },
     [token],
+  );
+
+  // Fetch a specific KYC review with retry logic
+  const fetchReview = useCallback(
+    async (id: number, retryCount = 0): Promise<void> => {
+      try {
+        await fetchReviewBase(id);
+      } catch (error: any) {
+        // Check if it's a 401 error and we should retry
+        if (
+          (error.message.includes('401') || 
+           error.message.includes('Authentication token')) && 
+          retryCount < 3
+        ) {
+          // Wait a bit and retry (token might be loading)
+          await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+          return fetchReview(id, retryCount + 1);
+        }
+        throw error;
+      }
+    },
+    [fetchReviewBase],
   );
 
   // Fetch KYC review statistics
