@@ -10,7 +10,7 @@ import {
   ArticleResponseDataType,
   ArticleState,
 } from '../../../types/articles.types';
-import { useAuth } from '../../auth/AuthContext';
+import { useAuthGuard } from '@/app/hooks/useAuthGuard';
 
 const ArticlesContext = createContext<ArticleState | undefined>(undefined);
 
@@ -36,7 +36,7 @@ export const ArticlesProvider = ({ children }: { children: ReactNode }) => {
     totalPages: 1,
   });
 
-  const { token } = useAuth();
+  const { token, ensureAuthReady } = useAuthGuard();
 
   const handleApiError = (errorText: string) => {
     setError(errorText);
@@ -109,10 +109,7 @@ export const ArticlesProvider = ({ children }: { children: ReactNode }) => {
 
   const createArticle = useCallback(
     async (article: FormData): Promise<ArticleResponseDataType | null> => {
-      if (!token) {
-        setError('Authentication token is missing');
-        return null;
-      }
+      if (!ensureAuthReady()) return null;
 
       setLoading(true);
       setError(null);
@@ -127,6 +124,11 @@ export const ArticlesProvider = ({ children }: { children: ReactNode }) => {
             body: article,
           },
         );
+
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return null;
+        }
 
         if (!response.ok) {
           handleApiError("Couldn't create article. Please try again.");
@@ -143,7 +145,7 @@ export const ArticlesProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   const updateArticle = useCallback(
@@ -151,10 +153,7 @@ export const ArticlesProvider = ({ children }: { children: ReactNode }) => {
       id: string,
       article: FormData,
     ): Promise<ArticleResponseDataType | null> => {
-      if (!token) {
-        setError('Authentication token is missing');
-        return null;
-      }
+      if (!ensureAuthReady()) return null;
 
       setLoading(true);
       setError(null);
@@ -169,6 +168,11 @@ export const ArticlesProvider = ({ children }: { children: ReactNode }) => {
             body: article,
           },
         );
+
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return null;
+        }
 
         if (!response.ok) {
           handleApiError('Failed to update article. Please try again.');
@@ -190,15 +194,12 @@ export const ArticlesProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   const deleteArticle = useCallback(
     async (id: string): Promise<void> => {
-      if (!token) {
-        setError('Authentication token is missing');
-        return;
-      }
+      if (!ensureAuthReady()) return;
 
       setLoading(true);
       setError(null);
@@ -214,6 +215,11 @@ export const ArticlesProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
+
         if (!response.ok) {
           handleApiError('Failed to delete article. Please try again.');
           return;
@@ -228,7 +234,7 @@ export const ArticlesProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   const contextValue = useMemo(
