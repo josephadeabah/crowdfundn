@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
+import { useAuthGuard } from '@/app/hooks/useAuthGuard';
 import { useAuth } from '../../auth/AuthContext';
 
 interface TransferData {
@@ -66,19 +67,17 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalCount, setTotalCount] = useState<number>(0);
 
-  const { user, token } = useAuth();
+  const { token, ensureAuthReady } = useAuthGuard();
+  const { user } = useAuth();
 
   const fetchTransfers = useCallback(
     async (page: number = 1): Promise<void> => {
+      if (!ensureAuthReady()) return;
+
       setLoading(true);
       setError(null);
 
       try {
-        if (!user) {
-          setError('You are not authenticated');
-          return;
-        }
-
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/fetch_user_transfers?page=${page}&per_page=8`, // Adjust per_page as needed
           {
@@ -89,6 +88,11 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
             },
           },
         );
+
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
 
         if (!response.ok) {
           setError('Failed to fetch transfers');
@@ -111,10 +115,12 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [user, token],
+    [token, ensureAuthReady],
   );
 
   const fetchTransfersFromPaystack = useCallback(async (): Promise<void> => {
+    if (!ensureAuthReady()) return;
+
     setLoading(true);
     setError(null);
 
@@ -130,6 +136,11 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         },
       );
 
+      if (response.status === 401) {
+        setError('Authentication failed. Please log in again.');
+        return;
+      }
+
       if (!response.ok) {
         setError('Failed to fetch transfers');
         return;
@@ -143,15 +154,17 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [user, token]);
+  }, [token, ensureAuthReady]);
 
   const fetchSettlementStatus = useCallback(async (): Promise<void> => {
+    if (!ensureAuthReady()) return;
+
     setLoading(true);
     setError(null);
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/settlement_status/${user?.id}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/settlement_status/${user?.id}`, // Adjust per_page as needed
         {
           method: 'GET',
           headers: {
@@ -160,6 +173,11 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
           },
         },
       );
+
+      if (response.status === 401) {
+        setError('Authentication failed. Please log in again.');
+        return;
+      }
 
       if (!response.ok) {
         setError('Failed to fetch settlement status');
@@ -176,13 +194,15 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [user, token]);
+  }, [token, user, ensureAuthReady]);
 
   const initiateTransfer = useCallback(
     async (
       campaignId: string | number,
       recipientCode: string,
     ): Promise<string | null> => {
+      if (!ensureAuthReady()) return null;
+
       setLoadingCampaigns((prevState) => ({
         ...prevState,
         [campaignId]: true,
@@ -204,6 +224,11 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return null;
+        }
+
         const data = await response.json();
         return data;
       } catch (err: any) {
@@ -216,13 +241,20 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         }));
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   const createTransferRecipient = useCallback(
     async (
       campaignId: string | number,
     ): Promise<CreateTransferRecipientResponseType> => {
+      if (!ensureAuthReady()) {
+        return {
+          message: 'Authentication required',
+          recipient_code: '',
+        };
+      }
+
       setLoading(true);
       setLoadingCampaigns((prevState) => ({
         ...prevState,
@@ -236,6 +268,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
               fundraiser_id: user?.id,
@@ -244,13 +277,24 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return {
+            message: 'Authentication failed',
+            recipient_code: '',
+          };
+        }
+
         if (!response.ok) {
           const errorData = await response.json();
           setError(errorData.error);
+          return {
+            message: errorData.error || 'Failed to create transfer recipient',
+            recipient_code: '',
+          };
         }
 
         const data = await response.json();
-
         return data;
       } catch (err: any) {
         setError(err || 'Error creating transfer recipient');
@@ -266,7 +310,7 @@ export const TransferProvider = ({ children }: { children: ReactNode }) => {
         }));
       }
     },
-    [user, initiateTransfer],
+    [token, user, ensureAuthReady],
   );
 
   const contextValue = useMemo(
