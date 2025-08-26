@@ -39,7 +39,7 @@ interface KycReviewState {
 const KycReviewContext = createContext<KycReviewState | undefined>(undefined);
 
 export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
-  const { token } = useAuth();
+  const { token, isInitialized } = useAuth();
   const [reviews, setReviews] = useState<KycReview[]>([]);
   const [currentReview, setCurrentReview] = useState<KycReview | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -60,9 +60,25 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
     per_page: 25,
   });
 
+  const ensureAuthReady = useCallback(() => {
+    if (!isInitialized) {
+      setError('Authentication not initialized yet');
+      return false;
+    }
+    
+    if (!token) {
+      setError('Authentication token is missing');
+      return false;
+    }
+    
+    return true;
+  }, [token, isInitialized]);
+
   // Fetch KYC reviews with filters
   const fetchReviews = useCallback(
     async (newFilters?: KycReviewFilters, page: number = 1) => {
+      if (!ensureAuthReady()) return;
+
       setLoading(true);
       setError(null);
 
@@ -91,6 +107,11 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
+
         if (!response.ok) {
           throw new Error('Failed to fetch KYC reviews');
         }
@@ -111,21 +132,18 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
-  // Base fetch review function (without retry)
-  const fetchReviewBase = useCallback(
+  // Fetch a specific KYC review
+  const fetchReview = useCallback(
     async (id: number) => {
+      if (!ensureAuthReady()) return;
+
       setLoading(true);
       setError(null);
 
       try {
-        // Check if token exists
-        if (!token) {
-          throw new Error('Authentication token is missing');
-        }
-
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${id}`,
           {
@@ -138,9 +156,11 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
         );
 
         if (response.status === 403) {
-          throw new Error(
-            'You do not have permission to view this KYC application',
-          );
+          throw new Error('You do not have permission to view this KYC application');
+        }
+
+        if (response.status === 401) {
+          throw new Error('Authentication failed. Please log in again.');
         }
 
         if (!response.ok) {
@@ -151,38 +171,17 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
         setCurrentReview(data.kyc);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
-        throw err; // Re-throw for retry logic
       } finally {
         setLoading(false);
       }
     },
-    [token],
-  );
-
-  // Fetch a specific KYC review with retry logic
-  const fetchReview = useCallback(
-    async (id: number, retryCount = 0): Promise<void> => {
-      try {
-        await fetchReviewBase(id);
-      } catch (error: any) {
-        // Check if it's a 401 error and we should retry
-        if (
-          (error.message.includes('401') || 
-           error.message.includes('Authentication token')) && 
-          retryCount < 3
-        ) {
-          // Wait a bit and retry (token might be loading)
-          await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
-          return fetchReview(id, retryCount + 1);
-        }
-        throw error;
-      }
-    },
-    [fetchReviewBase],
+    [token, ensureAuthReady],
   );
 
   // Fetch KYC review statistics
   const fetchStats = useCallback(async () => {
+    if (!ensureAuthReady()) return;
+
     setLoading(true);
     setError(null);
 
@@ -198,6 +197,11 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
         },
       );
 
+      if (response.status === 401) {
+        setError('Authentication failed. Please log in again.');
+        return;
+      }
+
       if (!response.ok) {
         throw new Error('Failed to fetch KYC statistics');
       }
@@ -209,11 +213,13 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, ensureAuthReady]);
 
   // Update KYC review status
   const updateReview = useCallback(
     async (id: number, action: KycReviewAction) => {
+      if (!ensureAuthReady()) return;
+
       setLoading(true);
       setError(null);
 
@@ -246,10 +252,13 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
           body: Object.keys(body).length > 0 ? JSON.stringify(body) : undefined,
         });
 
+        if (response.status === 401) {
+          throw new Error('Authentication failed. Please log in again.');
+        }
+
         const data = await response.json();
 
         if (!response.ok) {
-          // Handle different error response formats
           const errorMessage =
             data.errors?.[0]?.message ||
             data.full_messages?.[0] ||
@@ -277,22 +286,21 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
 
         return updatedReview;
       } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Unknown error';
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
         setError(errorMessage);
         throw new Error(errorMessage);
       } finally {
         setLoading(false);
       }
     },
-    [token, currentReview, fetchStats],
+    [token, currentReview, fetchStats, ensureAuthReady],
   );
 
   // Update filters
   const updateFilters = useCallback(
     (newFilters: KycReviewFilters) => {
       setFilters(newFilters);
-      fetchReviews(newFilters, 1); // Reset to page 1 when filters change
+      fetchReviews(newFilters, 1);
     },
     [fetchReviews],
   );

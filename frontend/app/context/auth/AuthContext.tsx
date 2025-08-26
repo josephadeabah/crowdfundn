@@ -1,9 +1,12 @@
+// app/context/auth/AuthContext.tsx
+'use client';
 import React, {
   createContext,
   useContext,
   useState,
   ReactNode,
   useEffect,
+  useRef,
 } from 'react';
 import { LoginUserType } from '@/app/types/auth.login.types';
 import { LoginUserResponseSuccess } from '@/app/types/auth.login.types';
@@ -19,6 +22,7 @@ type AuthContextType = {
   login: (response: LoginUserResponseSuccess) => void;
   signup: (response: ApiResponse) => void;
   logout: () => void;
+  isInitialized: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,10 +32,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [signupEmailConfirmationToken, setSignupEmailConfirmationToken] =
     useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
   const router = useRouter();
+  const logoutTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
-  let logoutTimer: NodeJS.Timeout;
+  const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 
   useEffect(() => {
     if (user && user.status === 'blocked') {
@@ -40,56 +45,82 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [user]);
 
   useEffect(() => {
-    const storedUser = Cookies.get('user')
-      ? JSON.parse(Cookies.get('user')!)
-      : null;
-    const storedToken = Cookies.get('token') || null;
+    const initializeAuth = () => {
+      try {
+        const storedUser = Cookies.get('user');
+        const storedToken = Cookies.get('token') || null;
 
-    if (storedUser && storedToken) {
-      setUser(storedUser);
-      setToken(storedToken);
-    }
+        // Check token expiration BEFORE setting state
+        if (storedToken && isTokenExpired(storedToken)) {
+          console.log('Token expired on initialization, logging out');
+          logout();
+          setIsInitialized(true);
+          return;
+        }
 
-    resetLogoutTimer();
+        if (storedUser && storedToken) {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+          setToken(storedToken);
+        }
 
-    if (storedToken && isTokenExpired(storedToken)) {
-      logout(); // Log out if token is expired
-    }
+        setIsInitialized(true);
+        resetLogoutTimer();
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        setIsInitialized(true);
+      }
+    };
+
+    initializeAuth();
 
     const handleUserActivity = () => resetLogoutTimer();
-    window.addEventListener('mousemove', handleUserActivity);
-    window.addEventListener('keydown', handleUserActivity);
-    window.addEventListener('click', handleUserActivity);
-    window.addEventListener('scroll', handleUserActivity);
+    const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+    
+    events.forEach(event => {
+      window.addEventListener(event, handleUserActivity);
+    });
 
     return () => {
-      window.removeEventListener('mousemove', handleUserActivity);
-      window.removeEventListener('keydown', handleUserActivity);
-      window.removeEventListener('click', handleUserActivity);
-      window.removeEventListener('scroll', handleUserActivity);
-      clearTimeout(logoutTimer);
+      events.forEach(event => {
+        window.removeEventListener(event, handleUserActivity);
+      });
+      if (logoutTimerRef.current) {
+        clearTimeout(logoutTimerRef.current);
+      }
     };
   }, []);
 
   const resetLogoutTimer = () => {
-    clearTimeout(logoutTimer);
-    logoutTimer = setTimeout(logout, INACTIVITY_TIMEOUT);
+    if (logoutTimerRef.current) {
+      clearTimeout(logoutTimerRef.current);
+    }
+    logoutTimerRef.current = setTimeout(logout, INACTIVITY_TIMEOUT);
   };
 
   const login = (response: LoginUserResponseSuccess) => {
     if (response.user && response.user.status === 'blocked') {
-      logout(); // Automatically log out if the user is blocked
+      logout();
       alert('Your account is blocked. Please contact support.');
       return;
     }
+    
     setUser(response.user);
     setToken(response.token);
 
-    // Store in cookies
-    Cookies.set('user', JSON.stringify(response.user), { expires: 30 }); // Expires in 30 days
-    Cookies.set('token', response.token, { expires: 30 });
+    // Store in cookies with secure flags
+    Cookies.set('user', JSON.stringify(response.user), { 
+      expires: 30,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
+    Cookies.set('token', response.token, { 
+      expires: 30,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
 
-    resetLogoutTimer(); // Reset timer on login
+    resetLogoutTimer();
   };
 
   const signup = (response: ApiResponse) => {
@@ -99,17 +130,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
-    // Remove cookies
+    setSignupEmailConfirmationToken(null);
+    
+    // Remove all auth-related cookies
     Cookies.remove('user');
     Cookies.remove('token');
-    Cookies.remove('roles'); // Ensure all related cookies are cleared
-    router.push('/auth/login'); // Redirect to login page
+    Cookies.remove('roles');
+    
+    if (logoutTimerRef.current) {
+      clearTimeout(logoutTimerRef.current);
+    }
+    
+    router.push('/auth/login');
   };
 
-  const isTokenExpired = (token: string) => {
-    const decoded: { exp: number } = jwtDecode<{ exp: number }>(token);
-    const currentTime = Date.now() / 1000; // Convert to seconds
-    return decoded.exp < currentTime; // Check if token is expired
+  const isTokenExpired = (token: string): boolean => {
+    try {
+      const decoded: { exp: number } = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+      return decoded.exp < currentTime;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return true;
+    }
   };
 
   const value = React.useMemo(
@@ -120,8 +163,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       login,
       logout,
       signup,
+      isInitialized,
     }),
-    [user, token],
+    [user, token, signupEmailConfirmationToken, isInitialized],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
