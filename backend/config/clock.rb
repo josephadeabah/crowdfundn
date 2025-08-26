@@ -16,51 +16,45 @@ module Clockwork
     Rails.logger.info "[Clockwork] Starting job: #{job}"
   end
 
+  # Send webhooks every 8 hours
   every(8.hours, 'send_webhook', at: '**:00') do
     Rails.logger.info "Triggering 'send_webhook' job at #{Time.current}"
     
-    Campaign.active.find_each do |campaign|
-      begin
-        Rails.logger.info "Sending webhook for Campaign ID: #{campaign.id}"
-        campaign.send_status_update_webhook
-      rescue => e
-        Rails.logger.info "Failed to send webhook for Campaign #{campaign.id}: #{e.message}"
+    begin
+      Campaign.active.find_each do |campaign|
+        begin
+          Rails.logger.info "Sending webhook for Campaign ID: #{campaign.id}"
+          campaign.send_status_update_webhook
+        rescue => e
+          Rails.logger.error "Failed to send webhook for Campaign #{campaign.id}: #{e.message}"
+          Rails.logger.error e.backtrace.join("\n")
+        end
       end
+    rescue => e
+      Rails.logger.error "Failed to process send_webhook job: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
     end
   end
 
+  # Transfer platform fees daily at 12:00 UTC
   every(1.day, 'transfer_platform_fees', at: '12:00') do
     Rails.logger.info "Triggering 'transfer_platform_fees' job at #{Time.current}"
     begin
-      PlatformFeeService.transfer_platform_fees
+      # Make sure PlatformFeeService exists and has the transfer_platform_fees method
+      if defined?(PlatformFeeService) && PlatformFeeService.respond_to?(:transfer_platform_fees)
+        PlatformFeeService.transfer_platform_fees
+      else
+        Rails.logger.error "PlatformFeeService.transfer_platform_fees is not defined"
+      end
     rescue => e
-      Rails.logger.info "Failed to transfer platform fees: #{e.message}"
+      Rails.logger.error "Failed to transfer platform fees: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
     end
   end
 
-  # Update investment values daily at 4 AM UTC
-  # every(1.day, 'update_investment_values', at: '04:00') do
-  #   Rails.logger.info "Updating investment values at #{Time.current}"
-  #   EquityCampaign.live.find_each do |campaign|
-  #     UpdateCampaignInvestmentsService.update_for_campaign(campaign.id)
-  #   end
-  # end
-
-  # Retry failed certificate generations every 6 hours
-  # every(6.hours, 'retry_failed_certificates') do
-  #   Rails.logger.info "Retrying failed certificate generations at #{Time.current}"
-  #   EquityInvestment.successful
-  #     .where.not(certificate_number: nil)
-  #     .left_outer_joins(:certificate_attachment)
-  #     .where(active_storage_attachments: { id: nil })
-  #     .find_each(batch_size: 100) do |investment|
-  #       CertificateGenerationService.generate_for_investment(investment.id)
-  #     end
-  # end
-
   # Error handler
   error_handler do |error|
-    Rails.logger.info "[Clockwork Error] #{error.class.name}: #{error.message}"
+    Rails.logger.error "[Clockwork Error] #{error.class.name}: #{error.message}"
     Rails.logger.error error.backtrace.join("\n")
   end
 end
