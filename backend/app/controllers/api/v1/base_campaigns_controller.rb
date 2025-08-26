@@ -2,7 +2,7 @@ module Api
   module V1
     class BaseCampaignsController < ApplicationController
       before_action :authenticate_request,
-                    only: %i[index create update destroy my_campaigns statistics favorite unfavorite favorites]
+                    only: %i[create update destroy my_campaigns statistics favorite unfavorite favorites]
       before_action :set_campaign,
                     only: %i[show update destroy webhook_status_update favorite unfavorite cancel_campaign
                              contact_fundraiser]
