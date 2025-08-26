@@ -7,7 +7,7 @@ import React, {
   ReactNode,
   useCallback,
 } from 'react';
-import { useAuth } from '@/app/context/auth/AuthContext';
+import { useAuthGuard } from '@/app/hooks/useAuthGuard';
 import {
   KycReview,
   KycReviewFilters,
@@ -39,7 +39,7 @@ interface KycReviewState {
 const KycReviewContext = createContext<KycReviewState | undefined>(undefined);
 
 export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
-  const { token, isInitialized } = useAuth();
+  const { token, ensureAuthReady } = useAuthGuard();
   const [reviews, setReviews] = useState<KycReview[]>([]);
   const [currentReview, setCurrentReview] = useState<KycReview | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -59,20 +59,6 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
     total_count: 0,
     per_page: 25,
   });
-
-  const ensureAuthReady = useCallback(() => {
-    if (!isInitialized) {
-      setError('Authentication not initialized yet');
-      return false;
-    }
-
-    if (!token) {
-      setError('Authentication token is missing');
-      return false;
-    }
-
-    return true;
-  }, [token, isInitialized]);
 
   // Fetch KYC reviews with filters
   const fetchReviews = useCallback(
