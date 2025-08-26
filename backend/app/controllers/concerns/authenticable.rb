@@ -27,6 +27,12 @@ module Authenticable
     render json: { error: 'Forbidden' }, status: :forbidden unless @current_user&.admin?
   end
 
+  def authorize_admin_or_owner(resource)
+    return if @current_user&.admin? || resource.user_id == @current_user&.id
+    
+    render json: { error: 'Forbidden' }, status: :forbidden
+  end
+
   def authorize_admin_role
     authorize_role('Admin')
   end
