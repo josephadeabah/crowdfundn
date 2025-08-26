@@ -57,7 +57,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { format } from 'date-fns';
-import AlertPopup from '@/app/components/alertpopup/AlertPopup';
+import ToastComponent from '@/app/components/toast/Toast';
 import Pagination from '@/app/components/pagination/Pagination';
 
 const KYCReview = () => {
@@ -85,31 +85,31 @@ const KYCReview = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Alert popup states
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertTitle, setAlertTitle] = useState('');
-  const [alertMessage, setAlertMessage] = useState<React.ReactNode>('');
-  const [alertError, setAlertError] = useState<string | null>(null);
-  const [alertLoading, setAlertLoading] = useState(false);
-  const [alertAction, setAlertAction] = useState<() => void>(() => {});
+  // Toast states
+  const [toast, setToast] = useState({
+    isOpen: false,
+    title: '',
+    description: '',
+    type: 'success' as 'success' | 'error' | 'warning',
+  });
+
+  const showToast = (
+    title: string,
+    description: string,
+    type: 'success' | 'error' | 'warning',
+  ) => {
+    setToast({
+      isOpen: true,
+      title,
+      description,
+      type,
+    });
+  };
 
   useEffect(() => {
     fetchReviews({}, currentPage);
     fetchStats();
   }, [fetchReviews, fetchStats, currentPage]);
-
-  const showAlert = (
-    title: string,
-    message: React.ReactNode,
-    action: () => void,
-    error?: string,
-  ) => {
-    setAlertTitle(title);
-    setAlertMessage(message);
-    setAlertError(error || null);
-    setAlertAction(() => action);
-    setAlertOpen(true);
-  };
 
   const handleFilterChange = (key: string, value: string) => {
     if (value === 'all') {
@@ -146,7 +146,6 @@ const KYCReview = () => {
     if (!selectedReview || !actionDialog.action) return;
 
     try {
-      setAlertLoading(true);
       await updateReview(selectedReview.id, {
         action: actionDialog.action,
         rejection_reason:
@@ -155,33 +154,26 @@ const KYCReview = () => {
           actionDialog.action === 'verify' ? reviewNotes : undefined,
       });
 
-      showAlert(
+      showToast(
         'Success',
         `KYC has been ${actionDialog.action}ed successfully`,
-        () => {
-          setActionDialog({ open: false, action: null });
-          setRejectionReason('');
-          setReviewNotes('');
-          fetchReviews(filters, currentPage); // Refresh current page
-          fetchStats();
-        },
+        'success',
       );
+
+      setActionDialog({ open: false, action: null });
+      setRejectionReason('');
+      setReviewNotes('');
+      fetchReviews(filters, currentPage); // Refresh current page
+      fetchStats();
     } catch (error: any) {
-      showAlert(
-        'Error',
-        'Failed to update KYC review',
-        () => setActionDialog({ open: false, action: null }),
-        error.message,
-      );
-    } finally {
-      setAlertLoading(false);
+      showToast('Error', 'Failed to update KYC review', 'error');
     }
   };
 
   const handleRefresh = () => {
     fetchReviews(filters, currentPage);
     fetchStats();
-    showAlert('Refreshed', 'KYC list has been refreshed', () => {});
+    showToast('Refreshed', 'KYC list has been refreshed', 'success');
   };
 
   const getStatusBadge = (status: string) => {
@@ -247,17 +239,13 @@ const KYCReview = () => {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Alert Popup */}
-      <AlertPopup
-        title={alertTitle}
-        message={alertMessage}
-        isOpen={alertOpen}
-        setIsOpen={setAlertOpen}
-        onConfirm={alertAction}
-        error={alertError}
-        loading={alertLoading}
-        confirmText="OK"
-        confirmButtonClass="bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
+      {/* Toast Component */}
+      <ToastComponent
+        isOpen={toast.isOpen}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
+        title={toast.title}
+        description={toast.description}
+        type={toast.type}
       />
 
       {/* Header */}
