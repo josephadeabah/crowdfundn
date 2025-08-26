@@ -7,7 +7,7 @@ import React, {
   ReactNode,
   useCallback,
 } from 'react';
-import { useAuth } from '@/app/context/auth/AuthContext';
+import { useAuthGuard } from '@/app/hooks/useAuthGuard';
 import {
   Kyc,
   KycFormData,
@@ -24,7 +24,7 @@ interface KycContextType extends KycState {
 const KycContext = createContext<KycContextType | undefined>(undefined);
 
 export const KycProvider = ({ children }: { children: ReactNode }) => {
-  const { token } = useAuth();
+  const { token, ensureAuthReady } = useAuthGuard();
   const [kycs, setKycs] = useState<Kyc[]>([]);
   const [currentKyc, setCurrentKyc] = useState<Kyc | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -35,6 +35,8 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
 
   // Fetch all KYCs for the current user
   const fetchKycs = useCallback(async () => {
+    if (!ensureAuthReady()) return;
+
     setLoading(true);
     setError(null);
     clearErrors();
@@ -51,6 +53,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
         },
       );
 
+      if (response.status === 401) {
+        setError('Authentication failed. Please log in again.');
+        return;
+      }
+
       if (!response.ok) {
         throw new Error('Failed to fetch KYCs');
       }
@@ -62,11 +69,13 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, ensureAuthReady]);
 
   // Fetch a specific KYC by ID
   const fetchKyc = useCallback(
     async (id: number) => {
+      if (!ensureAuthReady()) return;
+
       setLoading(true);
       setError(null);
       clearErrors();
@@ -83,6 +92,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
+
         if (!response.ok) {
           throw new Error('Failed to fetch KYC');
         }
@@ -95,12 +109,16 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Create a new KYC
   const createKyc = useCallback(
     async (kycData: KycFormData): Promise<Kyc> => {
+      if (!ensureAuthReady()) {
+        throw new Error('Authentication required');
+      }
+
       setLoading(true);
       setError(null);
       clearErrors();
@@ -117,6 +135,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
             body: JSON.stringify({ kyc: kycData }),
           },
         );
+
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          throw new Error('Authentication failed. Please log in again.');
+        }
 
         const data = await response.json();
 
@@ -145,12 +168,16 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Update an existing KYC
   const updateKyc = useCallback(
     async (id: number, kycData: Partial<KycFormData>): Promise<Kyc> => {
+      if (!ensureAuthReady()) {
+        throw new Error('Authentication required');
+      }
+
       setLoading(true);
       setError(null);
       clearErrors();
@@ -167,6 +194,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
             body: JSON.stringify({ kyc: kycData }),
           },
         );
+
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          throw new Error('Authentication failed. Please log in again.');
+        }
 
         const data = await response.json();
 
@@ -195,12 +227,14 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Delete a KYC
   const deleteKyc = useCallback(
     async (id: number) => {
+      if (!ensureAuthReady()) return;
+
       setLoading(true);
       setError(null);
       clearErrors();
@@ -217,6 +251,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
+
         if (!response.ok) {
           throw new Error('Failed to delete KYC');
         }
@@ -227,16 +266,21 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
+        throw err;
       } finally {
         setLoading(false);
       }
     },
-    [token, currentKyc],
+    [token, currentKyc, ensureAuthReady],
   );
 
   // Submit KYC for review
   const submitKyc = useCallback(
     async (id: number) => {
+      if (!ensureAuthReady()) {
+        throw new Error('Authentication required');
+      }
+
       setLoading(true);
       setError(null);
       clearErrors();
@@ -252,6 +296,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
             },
           },
         );
+
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          throw new Error('Authentication failed. Please log in again.');
+        }
 
         const data = await response.json();
 
@@ -278,12 +327,16 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Verify KYC (admin only)
   const verifyKyc = useCallback(
     async (id: number, reviewNotes?: string) => {
+      if (!ensureAuthReady()) {
+        throw new Error('Authentication required');
+      }
+
       setLoading(true);
       setError(null);
       clearErrors();
@@ -300,6 +353,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
             body: JSON.stringify({ review_notes: reviewNotes }),
           },
         );
+
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          throw new Error('Authentication failed. Please log in again.');
+        }
 
         const data = await response.json();
 
@@ -326,12 +384,16 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Reject KYC (admin only)
   const rejectKyc = useCallback(
     async (id: number, rejectionReason: string) => {
+      if (!ensureAuthReady()) {
+        throw new Error('Authentication required');
+      }
+
       setLoading(true);
       setError(null);
       clearErrors();
@@ -348,6 +410,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
             body: JSON.stringify({ rejection_reason: rejectionReason }),
           },
         );
+
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          throw new Error('Authentication failed. Please log in again.');
+        }
 
         const data = await response.json();
 
@@ -374,12 +441,16 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Fetch KYC documents
   const fetchKycDocuments = useCallback(
     async (id: number): Promise<KycDocument[]> => {
+      if (!ensureAuthReady()) {
+        throw new Error('Authentication required');
+      }
+
       setLoading(true);
       setError(null);
       clearErrors();
@@ -396,6 +467,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          throw new Error('Authentication failed. Please log in again.');
+        }
+
         if (!response.ok) {
           throw new Error('Failed to fetch KYC documents');
         }
@@ -411,7 +487,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Upload document
@@ -421,6 +497,10 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
       documentType: string,
       file: File,
     ): Promise<KycDocument> => {
+      if (!ensureAuthReady()) {
+        throw new Error('Authentication required');
+      }
+
       setLoading(true);
       setError(null);
       clearErrors();
@@ -440,6 +520,11 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
             body: formData,
           },
         );
+
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          throw new Error('Authentication failed. Please log in again.');
+        }
 
         const data = await response.json();
 
@@ -464,7 +549,7 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   const contextValue: KycContextType = React.useMemo(
