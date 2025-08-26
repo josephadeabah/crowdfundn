@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { useAuthGuard } from '@/app/hooks/useAuthGuard';
+import { useAuth } from '../auth/AuthContext';
 
 interface TopbackersData {
   name: string;
@@ -80,7 +80,6 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
   >([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { token, ensureAuthReady } = useAuthGuard();
 
   const fetchLeaderboardData = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -94,31 +93,16 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
         'top_fundraisers_stories',
       ];
 
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-
-      // Add authorization header if token is available
-      // if (token) {
-      //   headers.Authorization = `Bearer ${token}`;
-      // }
-
       const dataPromises = endpoints.map((endpoint) =>
         fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/leaderboard/${endpoint}`,
           {
             method: 'GET',
-            headers,
+            headers: {
+              'Content-Type': 'application/json',
+            },
           },
-        ).then((response) => {
-          if (response.status === 401) {
-            throw new Error('Authentication failed. Please log in again.');
-          }
-          if (!response.ok) {
-            throw new Error(`Failed to fetch ${endpoint}`);
-          }
-          return response.json();
-        }),
+        ).then((response) => response.json()),
       );
 
       const [
@@ -133,13 +117,11 @@ export const LeaderboardProvider = ({ children }: { children: ReactNode }) => {
       setTopBackersWithRewards(topBackersWithRewardsData);
       setTopFundraisersStories(topFundraisersStoriesData);
     } catch (err: any) {
-      setError(
-        err instanceof Error ? err.message : 'Error fetching leaderboard data',
-      );
+      setError(err || 'Error fetching leaderboard data');
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, []);
 
   const contextValue = useMemo(
     () => ({
