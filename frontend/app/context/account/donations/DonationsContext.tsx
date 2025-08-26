@@ -12,7 +12,7 @@ import React, {
   useCallback,
   useRef,
 } from 'react';
-import { useAuth } from '../../auth/AuthContext';
+import { useAuthGuard } from '@/app/hooks/useAuthGuard';
 import { Reward } from '../rewards/RewardsContext';
 
 const DonationsContext = createContext<DonationsState | undefined>(undefined);
@@ -28,7 +28,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     per_page: 10,
     total_count: 0,
   });
-  const { token, user } = useAuth();
+  const { token, ensureAuthReady } = useAuthGuard();
 
   const handleApiError = (errorText: string) => {
     setError(`Oops!: ${errorText}`);
@@ -37,10 +37,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
   // Fetch all donations for the fundraiser (requires authentication)
   const fetchDonations = useCallback(
     async (currentPage: number = 1, perPage: number = 10) => {
-      if (!token) {
-        handleApiError('You need to log in to access donations.');
-        return;
-      }
+      if (!ensureAuthReady()) return;
 
       setLoading(true);
       try {
@@ -54,6 +51,11 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
             },
           },
         );
+
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -75,7 +77,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Fetch public donations for a campaign (no authentication required)
@@ -148,7 +150,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         'Content-Type': 'application/json',
       };
 
-      if (user) {
+      if (token) {
         headers.Authorization = `Bearer ${token}`;
       }
 
@@ -161,6 +163,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
               },
               body: JSON.stringify({
                 amount: amount,
@@ -169,6 +172,11 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
               }),
             },
           );
+
+          if (subscriptionResponse.status === 401) {
+            setError('Authentication failed. Please log in again.');
+            return;
+          }
 
           if (!subscriptionResponse.ok) {
             throw new Error('Failed to create subscription plan');
@@ -204,6 +212,11 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           }),
         },
       );
+
+      if (donationResponse.status === 401) {
+        setError('Authentication failed. Please log in again.');
+        return;
+      }
 
       const donationData = await donationResponse.json();
 

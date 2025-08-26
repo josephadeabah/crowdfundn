@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { useAuth } from '../../auth/AuthContext';
+import { useAuthGuard } from '@/app/hooks/useAuthGuard';
 
 interface CommentDataType {
   id: number;
@@ -44,7 +44,7 @@ export const CampaignCommentsProvider = ({
   const [comments, setComments] = useState<CommentDataType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { token, user } = useAuth();
+  const { token, ensureAuthReady } = useAuthGuard();
 
   const handleApiError = (errorText: string) => {
     setError(`API Error: ${errorText}`);
@@ -62,7 +62,7 @@ export const CampaignCommentsProvider = ({
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
             },
           },
         );
@@ -96,7 +96,7 @@ export const CampaignCommentsProvider = ({
         };
 
         // Check if user is authenticated
-        if (user) {
+        if (token) {
           headers.Authorization = `Bearer ${token}`;
         }
 
@@ -134,10 +134,7 @@ export const CampaignCommentsProvider = ({
       commentId: string,
       content: string,
     ): Promise<void> => {
-      if (!token) {
-        setError('Authentication token is missing');
-        return;
-      }
+      if (!ensureAuthReady()) return;
 
       setLoading(true);
       setError(null);
@@ -153,6 +150,11 @@ export const CampaignCommentsProvider = ({
             body: JSON.stringify({ content }),
           },
         );
+
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -172,16 +174,13 @@ export const CampaignCommentsProvider = ({
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Delete a comment
   const deleteComment = useCallback(
     async (campaignId: string, commentId: string): Promise<void> => {
-      if (!token) {
-        setError('Authentication token is missing');
-        return;
-      }
+      if (!ensureAuthReady()) return;
 
       setLoading(true);
       setError(null);
@@ -196,6 +195,11 @@ export const CampaignCommentsProvider = ({
             },
           },
         );
+
+        if (response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+          return;
+        }
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -212,7 +216,7 @@ export const CampaignCommentsProvider = ({
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   const contextValue = useMemo(
