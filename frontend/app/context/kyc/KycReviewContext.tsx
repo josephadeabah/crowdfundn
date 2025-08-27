@@ -40,7 +40,7 @@ interface KycReviewState {
 const KycReviewContext = createContext<KycReviewState | undefined>(undefined);
 
 export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
-  const { token:tokens, ensureAuthReady } = useAuthGuard();
+  const { ensureAuthReady } = useAuthGuard();
   const { token } = useAuth();
   const [reviews, setReviews] = useState<KycReview[]>([]);
   const [currentReview, setCurrentReview] = useState<KycReview | null>(null);
@@ -138,7 +138,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${tokens}`,
+              Authorization: `Bearer ${token}`,
             },
           },
         );
