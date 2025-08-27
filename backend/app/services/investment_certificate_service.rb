@@ -332,13 +332,7 @@ class InvestmentCertificateService
     kyc = investment.user.latest_kyc
     return unless kyc
     
-    # Allow any KYC type to provide investor signature since users might have
-    # submitted KYC as issuer first but are now investing
-    if kyc.signature_image.attached?
-      kyc.signature_image_url
-    else
-      nil
-    end
+    kyc.signature_url_for_context(:investor)
   end
 
   def self.get_issuer_signature_url(investment)
@@ -348,14 +342,7 @@ class InvestmentCertificateService
     kyc = issuer.latest_kyc
     return unless kyc
     
-    # For issuers, prefer issuer_signature if available, otherwise use general signature
-    if kyc.issuer_signature.attached?
-      kyc.issuer_signature_url
-    elsif kyc.signature_image.attached?
-      kyc.signature_image_url
-    else
-      nil
-    end
+    kyc.signature_url_for_context(:issuer)
   end
 
   def self.test_certificate_signatures(investment_id)

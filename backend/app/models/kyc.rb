@@ -246,6 +246,29 @@ class Kyc < ApplicationRecord
     nil
   end
 
+  def signature_url_for_context(context)
+  case context
+  when :investor
+    # For investment context, use appropriate signature
+    if investor? || both?
+      signature_image_url
+    elsif issuer?
+      # Issuer is investing - use their general signature
+      signature_image_url
+    end
+  when :issuer
+    # For issuer context (signing as campaign owner)
+    if issuer? || both?
+      issuer_signature.attached? ? issuer_signature_url : signature_image_url
+    else
+      # Investor acting as issuer (uncommon)
+      signature_image_url
+    end
+  else
+    signature_image_url
+  end
+end
+
   private
 
   def expiry_date_cannot_be_in_past
