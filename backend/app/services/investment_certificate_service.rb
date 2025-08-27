@@ -332,10 +332,9 @@ class InvestmentCertificateService
     kyc = investment.user.latest_kyc
     return unless kyc
     
-    # FIXED: Use the correct enum methods
-    # For investors, use signature_image (general signature)
-    # For issuers acting as investors, they might have both
-    if kyc.investor? || kyc.both?
+    # Allow any KYC type to provide investor signature since users might have
+    # submitted KYC as issuer first but are now investing
+    if kyc.signature_image.attached?
       kyc.signature_image_url
     else
       nil
