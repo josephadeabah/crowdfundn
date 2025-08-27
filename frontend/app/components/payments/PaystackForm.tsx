@@ -64,11 +64,11 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   const [totalAmount, setTotalAmount] = useState(0);
   const [investmentError, setInvestmentError] = useState<string>('');
 
-  // Calculate processing fee and total amount
+  // Calculate processing fee and total amount - CHANGED TO 7% CAPPED AT 300
   useEffect(() => {
     if (isEquityCampaign && paymentAmount) {
       const amount = parseFloat(paymentAmount) || 0;
-      const fee = Math.min(amount * 0.02, 120); // 2% fee capped at 120 GHS
+      const fee = Math.min(amount * 0.07, 300); // 7% fee capped at 300
       setProcessingFee(fee);
       setTotalAmount(amount + fee);
     } else {
@@ -279,7 +279,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
           {isEquityCampaign && (
             <div className="p-4 bg-gray-50 rounded-lg">
               <div className="flex justify-between mb-2">
-                <span className="text-gray-600">Processing Fee (2%):</span>
+                <span className="text-gray-600">Processing Fee (7%):</span>
                 <span className="font-medium">
                   {processingFee.toFixed(2)} GHS
                 </span>
@@ -289,7 +289,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
                 <span>{totalAmount.toFixed(2)} GHS</span>
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                *Processing fee is capped at 120 GHS for equity campaigns
+                *Processing fee is capped at 300 GHS for equity campaigns
               </p>
             </div>
           )}
