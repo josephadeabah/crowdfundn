@@ -280,7 +280,7 @@ export default function Dashboard() {
         />
       </div>
       {/* Charts Section for Funding over time */}
-      {!hasPremiumAccess ? (
+      {/* {!hasPremiumAccess ? (
         <FundingOverTimeChart
           statistics={statistics}
           user={user}
@@ -294,39 +294,26 @@ export default function Dashboard() {
             fetchCampaignStatistics={fetchCampaignStatistics}
           />
         </BlurredChartContainer>
-      )}
+      )} */}
+
+      <FundingOverTimeChart
+        statistics={statistics}
+        user={user}
+        fetchCampaignStatistics={fetchCampaignStatistics}
+      />
 
       {/* Campaign Performance Chart - also behind paywall */}
-      {!hasPremiumAccess ? (
-        <CampaignPerformanceChart
-          statistics={statistics}
-          user={user}
-          fetchCampaignStatistics={fetchCampaignStatistics}
-        />
-      ) : (
-        <BlurredChartContainer>
-          <CampaignPerformanceChart
-            statistics={statistics}
-            user={user}
-            fetchCampaignStatistics={fetchCampaignStatistics}
-          />
-        </BlurredChartContainer>
-      )}
+      <CampaignPerformanceChart
+        statistics={statistics}
+        user={user}
+        fetchCampaignStatistics={fetchCampaignStatistics}
+      />
 
       {/* Donations by Country Chart - also behind paywall */}
-      {!hasPremiumAccess ? (
-        <DonationByCountryCharts
-          statistics={statistics}
-          fetchCampaignStatistics={fetchCampaignStatistics}
-        />
-      ) : (
-        <BlurredChartContainer>
-          <DonationByCountryCharts
-            statistics={statistics}
-            fetchCampaignStatistics={fetchCampaignStatistics}
-          />
-        </BlurredChartContainer>
-      )}
+      <DonationByCountryCharts
+        statistics={statistics}
+        fetchCampaignStatistics={fetchCampaignStatistics}
+      />
     </div>
   );
 }
