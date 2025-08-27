@@ -1,4 +1,3 @@
-# app/controllers/api/v1/fundraisers/equity_investments_controller.rb
 module Api
   module V1
     module Fundraisers
@@ -8,6 +7,8 @@ module Api
         before_action :set_campaign, only: [:create, :public_investments]
         # Set investment for actions that work with specific investments
         before_action :set_investment, only: [:show, :update, :destroy]
+        # Add KYC verification check for create action
+        before_action :verify_kyc_requirements, only: [:create]
 
         def public_investments
           # This action needs @campaign, which is set by set_campaign
@@ -165,6 +166,31 @@ module Api
 
         private
 
+        def verify_kyc_requirements
+          # Check if user has verified KYC as investor
+          unless @current_user.verified_investor?
+            render json: { 
+              success: false, 
+              error: 'You must complete investor verification before making investments',
+              code: 'KYC_VERIFICATION_REQUIRED',
+              kyc_status: @current_user.kyc_status_info
+            }, status: :forbidden
+            return false
+          end
+
+          # Additional check: ensure KYC is not expired
+          if @current_user.latest_kyc&.expired?
+            render json: { 
+              success: false, 
+              error: 'Your KYC verification has expired. Please renew your verification.',
+              code: 'KYC_EXPIRED'
+            }, status: :forbidden
+            return false
+          end
+
+          true
+        end
+
         def validate_investment(amount, reward_id)
           result = { valid: true }
           
@@ -212,7 +238,7 @@ module Api
               available_amount = (@campaign.shares_available * price_per_share).floor
               result = {
                 valid: false,
-                message: "Not enough shares available. Maximum investment possible: #{@campaign.currency_symbol}#{available_amount}",
+                message: "Not enough shares available. Maximum investment possible: #{@campaign.currency}#{available_amount}",
                 errors: { amount: ["Not enough shares available"] }
               }
             elsif requested_percentage > @campaign.percentage_available

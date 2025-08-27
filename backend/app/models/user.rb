@@ -150,6 +150,37 @@ class User < ApplicationRecord
     has_role?('Admin')
   end
 
+  # New methods for KYC verification
+  def verified_investor?
+    investor_kyc_verified?
+  end
+
+  def verified_issuer?
+    issuer_kyc_verified?
+  end
+
+  def kyc_status_info
+    return { verified: false, has_kyc: false } unless latest_kyc
+
+    {
+      verified: latest_kyc.verified?,
+      has_kyc: true,
+      status: latest_kyc.status,
+      kyc_type: latest_kyc.kyc_type,
+      verified_at: latest_kyc.verified_at,
+      expires_at: latest_kyc.verified_at ? latest_kyc.verified_at + 1.year : nil,
+      is_expired: latest_kyc.expired?
+    }
+  end
+
+  def can_invest?
+    verified_investor? && !latest_kyc.expired?
+  end
+
+  def can_create_campaign?
+    verified_issuer? && !latest_kyc.expired?
+  end
+
   private
 
   def set_default_status
