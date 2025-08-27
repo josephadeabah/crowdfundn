@@ -14,6 +14,7 @@ import {
   KycReviewStats,
   KycReviewAction,
 } from '@/app/types/kyc-review.types';
+import { useAuth } from '../auth/AuthContext';
 
 interface KycReviewState {
   reviews: KycReview[];
@@ -39,7 +40,8 @@ interface KycReviewState {
 const KycReviewContext = createContext<KycReviewState | undefined>(undefined);
 
 export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
-  const { token, ensureAuthReady } = useAuthGuard();
+  const { token:tokens, ensureAuthReady } = useAuthGuard();
+  const { token } = useAuth();
   const [reviews, setReviews] = useState<KycReview[]>([]);
   const [currentReview, setCurrentReview] = useState<KycReview | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -63,7 +65,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
   // Fetch KYC reviews with filters
   const fetchReviews = useCallback(
     async (newFilters?: KycReviewFilters, page: number = 1) => {
-      if (!ensureAuthReady()) return;
+      // if (!ensureAuthReady()) return;
 
       setLoading(true);
       setError(null);
@@ -118,7 +120,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   // Fetch a specific KYC review
@@ -136,7 +138,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${tokens}`,
             },
           },
         );
@@ -168,7 +170,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
 
   // Fetch KYC review statistics
   const fetchStats = useCallback(async () => {
-    if (!ensureAuthReady()) return;
+    // if (!ensureAuthReady()) return;
 
     setLoading(true);
     setError(null);
@@ -201,7 +203,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [token, ensureAuthReady]);
+  }, [token]);
 
   // Update KYC review status
   const updateReview = useCallback(
