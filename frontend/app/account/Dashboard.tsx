@@ -280,7 +280,7 @@ export default function Dashboard() {
         />
       </div>
       {/* Charts Section for Funding over time */}
-      {hasPremiumAccess ? (
+      {!hasPremiumAccess ? (
         <FundingOverTimeChart
           statistics={statistics}
           user={user}
@@ -297,7 +297,7 @@ export default function Dashboard() {
       )}
 
       {/* Campaign Performance Chart - also behind paywall */}
-      {hasPremiumAccess ? (
+      {!hasPremiumAccess ? (
         <CampaignPerformanceChart
           statistics={statistics}
           user={user}
@@ -314,7 +314,7 @@ export default function Dashboard() {
       )}
 
       {/* Donations by Country Chart - also behind paywall */}
-      {hasPremiumAccess ? (
+      {!hasPremiumAccess ? (
         <DonationByCountryCharts
           statistics={statistics}
           fetchCampaignStatistics={fetchCampaignStatistics}
