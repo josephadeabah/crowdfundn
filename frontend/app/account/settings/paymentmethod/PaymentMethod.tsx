@@ -55,7 +55,7 @@ const PaymentMethod = () => {
     type: 'success' as 'success' | 'error' | 'warning',
   });
 
-  const { user } = useAuth();
+  const { user, token } = useAuth(); // Make sure token is available from useAuth
 
   // Utility for toast messages
   const showToast = (
@@ -103,6 +103,12 @@ const PaymentMethod = () => {
       setIsLoading(true);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user?.id}/subaccount`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add authorization header
+            'Content-Type': 'application/json',
+          },
+        },
       );
       const data = await response.json();
       setSubaccountData(data.error ? null : data);
@@ -114,14 +120,22 @@ const PaymentMethod = () => {
   };
 
   useEffect(() => {
-    fetchSubaccount();
-  }, [user]);
+    if (user && token) {
+      fetchSubaccount();
+    }
+  }, [user, token]);
 
   // Verify account number
   const verifyAccountNumber = async () => {
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/resolve_account_details?account_number=${accountNumber}&bank_code=${selectedBank?.value}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add authorization header
+            'Content-Type': 'application/json',
+          },
+        },
       );
       const data = await response.json();
       if (!data.status) throw new Error('Invalid account number');
@@ -202,6 +216,7 @@ const PaymentMethod = () => {
         method,
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Add authorization header
         },
         body: JSON.stringify(payload),
       });
@@ -222,10 +237,10 @@ const PaymentMethod = () => {
           'success',
         );
       }
-    } catch {
+    } catch (error: any) {
       showToast(
         'Error',
-        'An error occurred while saving the account.',
+        error.message || 'An error occurred while saving the account.',
         'error',
       );
     } finally {

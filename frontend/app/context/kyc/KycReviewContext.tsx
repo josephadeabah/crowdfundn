@@ -40,7 +40,7 @@ interface KycReviewState {
 const KycReviewContext = createContext<KycReviewState | undefined>(undefined);
 
 export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
-  const { token:tokens, ensureAuthReady } = useAuthGuard();
+  const { token: tokens, ensureAuthReady } = useAuthGuard();
   const { token } = useAuth();
   const [reviews, setReviews] = useState<KycReview[]>([]);
   const [currentReview, setCurrentReview] = useState<KycReview | null>(null);
