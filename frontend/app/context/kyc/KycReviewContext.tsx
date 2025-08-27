@@ -40,7 +40,7 @@ interface KycReviewState {
 const KycReviewContext = createContext<KycReviewState | undefined>(undefined);
 
 export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
-  const { ensureAuthReady } = useAuthGuard();
+  const { token:tokens, ensureAuthReady } = useAuthGuard();
   const { token } = useAuth();
   const [reviews, setReviews] = useState<KycReview[]>([]);
   const [currentReview, setCurrentReview] = useState<KycReview | null>(null);
@@ -126,7 +126,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
   // Fetch a specific KYC review
   const fetchReview = useCallback(
     async (id: number) => {
-      // if (!ensureAuthReady()) return;
+      if (!ensureAuthReady()) return;
 
       setLoading(true);
       setError(null);
@@ -138,7 +138,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${tokens}`,
             },
           },
         );
@@ -165,7 +165,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token],
+    [token, ensureAuthReady],
   );
 
   // Fetch KYC review statistics
