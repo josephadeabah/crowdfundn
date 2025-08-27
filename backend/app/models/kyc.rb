@@ -137,7 +137,6 @@ class Kyc < ApplicationRecord
       updated_at: Time.current
     )
     
-    attach_issuer_signature_if_needed
     bust_kyc_stats_cache # Bust the cache after status change
       
     # Return true to indicate success
