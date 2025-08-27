@@ -114,11 +114,11 @@ class InvestmentCertificateService
       pdf.move_down 10 # Reduced from 12
 
       # Fundraiser information
-      pdf.text 'FUNDRAISER INFORMATION', size: 13, align: :center, style: :bold # Reduced from 14
+      pdf.text 'ISSUER INFORMATION', size: 13, align: :center, style: :bold # Reduced from 14
       pdf.move_down 8 # Reduced from 10
 
       fundraiser_details = [
-        ['Fundraiser:', fundraiser.full_name],
+        ['Issuer:', fundraiser.full_name],
         ['Email:', fundraiser.email],
         ['Campaign:', campaign.title]
       ]
