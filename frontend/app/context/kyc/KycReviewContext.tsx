@@ -7,7 +7,6 @@ import React, {
   ReactNode,
   useCallback,
 } from 'react';
-import { useAuthGuard } from '@/app/hooks/useAuthGuard';
 import {
   KycReview,
   KycReviewFilters,
@@ -40,7 +39,6 @@ interface KycReviewState {
 const KycReviewContext = createContext<KycReviewState | undefined>(undefined);
 
 export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
-  const { token: tokens, ensureAuthReady } = useAuthGuard();
   const { token } = useAuth();
   const [reviews, setReviews] = useState<KycReview[]>([]);
   const [currentReview, setCurrentReview] = useState<KycReview | null>(null);
@@ -126,7 +124,6 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
   // Fetch a specific KYC review
   const fetchReview = useCallback(
     async (id: number) => {
-      if (!ensureAuthReady()) return;
 
       setLoading(true);
       setError(null);
@@ -138,7 +135,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${tokens}`,
+              Authorization: `Bearer ${token}`,
             },
           },
         );
@@ -165,7 +162,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token, ensureAuthReady],
+    [token],
   );
 
   // Fetch KYC review statistics
@@ -208,8 +205,6 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
   // Update KYC review status
   const updateReview = useCallback(
     async (id: number, action: KycReviewAction) => {
-      if (!ensureAuthReady()) return;
-
       setLoading(true);
       setError(null);
 
@@ -284,7 +279,7 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     },
-    [token, currentReview, fetchStats, ensureAuthReady],
+    [token, currentReview, fetchStats],
   );
 
   // Update filters
