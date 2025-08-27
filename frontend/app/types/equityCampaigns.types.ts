@@ -132,6 +132,7 @@ export interface InvestmentPortfolio {
     total_value?: number;
     active_investments: number;
     campaigns_invested: number;
+    total_invested_count?: number;
     total_return?: number;
     return_percentage?: number;
   };

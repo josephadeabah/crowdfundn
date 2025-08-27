@@ -124,7 +124,6 @@ export const KycReviewProvider = ({ children }: { children: ReactNode }) => {
   // Fetch a specific KYC review
   const fetchReview = useCallback(
     async (id: number) => {
-
       setLoading(true);
       setError(null);
 

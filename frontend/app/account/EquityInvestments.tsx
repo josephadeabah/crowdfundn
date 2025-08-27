@@ -111,11 +111,14 @@ const EquityInvestments = () => {
     }
   };
 
-  // Calculate pagination data
-  const totalItems = portfolio?.investments?.length || 0;
+  // Calculate pagination data - Use the backend-provided portfolio data
+  const totalItems =
+    portfolio?.portfolio?.total_invested_count ||
+    portfolio?.investments?.length ||
+    0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  // Get current items
+  // Get current items - Use the investments array from the portfolio response
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentInvestments =
