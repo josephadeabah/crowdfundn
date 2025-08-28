@@ -39,7 +39,7 @@ module PaystackWebhook::Handlers
       if investment && (investment.pending? || investment.initialized?)
         ActiveRecord::Base.transaction do
           update_investment(investment, response, metadata, gross_amount, net_amount, adjusted_platform_fee)
-          update_campaign(investment)
+          update_campaign(investment, net_amount)
           create_pledge_if_needed(investment)
           
           investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
@@ -146,13 +146,15 @@ module PaystackWebhook::Handlers
       }
     end
 
-    def update_campaign(investment)
+    def update_campaign(investment, net_amount)
       campaign = investment.campaign
       
       campaign.update!(
-        current_amount: campaign.current_amount + investment.net_amount,
-        total_successful_donations: campaign.total_successful_donations + investment.net_amount
+        current_amount: campaign.current_amount + net_amount,
+        total_successful_donations: campaign.current_amount + net_amount,
       )
+
+      campaign.update_transferred_amount(net_amount)
     end
 
     def create_pledge_if_needed(investment)
