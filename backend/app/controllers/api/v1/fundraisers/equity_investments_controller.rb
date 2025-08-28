@@ -168,10 +168,10 @@ module Api
 
         def verify_kyc_requirements
           # Check if user has verified KYC as investor
-          unless @current_user.verified_investor? || @current_user.verified_issuer?
+          unless @current_user.verified_investor?
             render json: { 
               success: false, 
-              error: 'You must complete kyc verification before making investments',
+              error: 'You must complete investor verification before making investments',
               code: 'KYC_VERIFICATION_REQUIRED',
               kyc_status: @current_user.kyc_status_info
             }, status: :forbidden
