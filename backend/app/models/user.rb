@@ -131,7 +131,8 @@ class User < ApplicationRecord
   end
 
   def investor_kyc_verified?
-    kyc_verified? && (latest_kyc.investor? || latest_kyc.both?)
+    # Allow both investors and issuers to invest since they're already verified
+    kyc_verified? && (latest_kyc.investor? || latest_kyc.issuer? || latest_kyc.both?)
   end
 
   def issuer_kyc_verified?
