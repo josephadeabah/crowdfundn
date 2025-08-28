@@ -108,6 +108,7 @@ export interface CampaignResponseDataType {
 
 export interface CampaignShareType {
   total_shares: number;
+  total_social_media_shares?:number
   user_points: number;
 }
 
@@ -223,7 +224,8 @@ export interface SingleCampaignResponseDataType {
   updated_at: string;
   media: string;
   media_filename: string;
-  total_shares: string; // social sharing total count
+  total_shares: string; 
+  total_social_media_shares:string // social sharing total count
   total_equity_shares: string;
   shares_issued: string;
   description: CampaignDescription;

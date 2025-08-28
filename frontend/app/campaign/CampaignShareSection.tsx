@@ -123,7 +123,7 @@ const CampaignShareSection: React.FC<CampaignShareSectionProps> = ({
             className="flex items-center justify-center bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition-all transform hover:scale-105 active:scale-95 shadow-none"
           >
             <FaShare className="mr-2" />
-            {campaign?.total_shares || 0} Shares
+            {campaign?.total_social_media_shares || 0} Shares
           </Button>
           <Button
             onClick={handleCopy}
