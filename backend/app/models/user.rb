@@ -158,22 +158,7 @@ class User < ApplicationRecord
   def verified_issuer?
     issuer_kyc_verified?
   end
-
-  def debug_kyc_status
-    return "No KYC found" unless latest_kyc
-    
-    {
-      has_kyc: true,
-      status: latest_kyc.status,
-      kyc_type: latest_kyc.kyc_type,
-      verified: latest_kyc.verified?,
-      verified_at: latest_kyc.verified_at,
-      investor_kyc_verified?: investor_kyc_verified?,
-      kyc_verified?: kyc_verified?,
-      is_investor_type: latest_kyc.investor? || latest_kyc.both?,
-      expired: latest_kyc.expired?
-    }
-  end
+  
 
   def kyc_status_info
     return { verified: false, has_kyc: false } unless latest_kyc
