@@ -158,6 +158,10 @@ class User < ApplicationRecord
   def verified_issuer?
     issuer_kyc_verified?
   end
+
+  def verified_both?
+    latest_kyc&.verified? && latest_kyc.both?
+  end
   
 
   def kyc_status_info

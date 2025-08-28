@@ -49,10 +49,16 @@ class InvestmentCertificateService
       end
       pdf.move_down 10 # Reduced from 12
 
-      # Header
+      # Header with Digital Stamp
       pdf.fill_color BRAND_GREEN
       pdf.text 'BANTUHIVE INVESTMENT CERTIFICATE', size: 20, align: :center, style: :bold
-      pdf.move_down 6 # Reduced from 8
+      pdf.move_down 3
+      
+      # BANTUHIVE DIGITAL STAMP - Strategic location below main title
+      pdf.fill_color '444444' # Dark gray for professional appearance
+      pdf.text 'BANTUHIVE LIMITED • ISSUED & ENDORSED • SEC APPROVED & SIGNED', 
+               size: 8, align: :center, style: :bold
+      pdf.move_down 3
       
       pdf.fill_color BRAND_ORANGE
       pdf.text 'OFFICIAL CERTIFICATE OF OWNERSHIP', size: 11, align: :center, style: :italic
