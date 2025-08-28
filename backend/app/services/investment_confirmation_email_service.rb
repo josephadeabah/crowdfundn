@@ -144,7 +144,7 @@ class InvestmentConfirmationEmailService
                 </div>
               </div>
 
-              <p>Your investment certificate will be available shortly. We'll notify you once it's ready for download.</p>
+              <p>Your investment certificate is ready for download.</p>
               <p> <a href="#{campaign_url}" class="cta-button">View Your Investment</a></p>
           
               <p>As a shareholder, you'll receive regular updates about the company's progress and any changes to your investment value.</p>
