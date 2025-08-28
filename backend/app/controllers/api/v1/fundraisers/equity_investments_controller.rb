@@ -167,18 +167,12 @@ module Api
         private
 
         def verify_kyc_requirements
-          # Check if user has verified KYC as investor
-          # if @current_user.id == 4
-          #   Rails.logger.info "Bypassing KYC check for admin user #{@current_user.id}"
-          #   Rails.logger.info "admin user KYC status #{@current_user.kyc_status_info}"
-          #   return true
-          # end
 
-          # Check if user has verified KYC as investor
-          unless @current_user.kyc_verified?
+          # Check if user has verified KYC as investor or issuer
+          unless @current_user.verified_investor? || @current_user.verified_issuer?
             render json: { 
               success: false, 
-              error: 'You must complete investor verification before making investments',
+              error: 'You must complete verification before making investments',
               code: 'KYC_VERIFICATION_REQUIRED',
               kyc_status: @current_user.kyc_status_info
             }, status: :forbidden
