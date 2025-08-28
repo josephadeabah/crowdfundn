@@ -174,7 +174,7 @@ module Api
           end
 
           # Check if user has verified KYC as investor
-          unless @current_user.verified_investor?
+          unless @current_user.kyc_verified?
             render json: { 
               success: false, 
               error: 'You must complete investor verification before making investments',
