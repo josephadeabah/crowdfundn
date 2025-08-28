@@ -111,7 +111,7 @@ class Kyc < ApplicationRecord
   end
 
   def expired?
-    id_expiry_date.past? || (verified_at && verified_at > 1.year.ago)
+    verified_at && verified_at > 1.year.ago
   end
 
   def residential_address
