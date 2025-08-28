@@ -168,11 +168,11 @@ module Api
 
         def verify_kyc_requirements
           # Check if user has verified KYC as investor
-          if @current_user.id == 4
-            Rails.logger.info "Bypassing KYC check for admin user #{@current_user.id}"
-            Rails.logger.info "admin user KYC status #{@current_user.kyc_status_info}"
-            return true
-          end
+          # if @current_user.id == 4
+          #   Rails.logger.info "Bypassing KYC check for admin user #{@current_user.id}"
+          #   Rails.logger.info "admin user KYC status #{@current_user.kyc_status_info}"
+          #   return true
+          # end
 
           # Check if user has verified KYC as investor
           unless @current_user.kyc_verified?

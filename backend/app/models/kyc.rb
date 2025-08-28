@@ -111,7 +111,16 @@ class Kyc < ApplicationRecord
   end
 
   def expired?
-    id_expiry_date.past? || (verified_at && verified_at < 1.year.ago)
+    # Check if ID document is expired
+    return true if id_expiry_date.present? && id_expiry_date.past?
+    
+    # Check if KYC verification is older than 1 year
+    if verified_at
+      expiration_date = verified_at + 1.year
+      return Time.current > expiration_date
+    end
+    
+    false
   end
 
   def residential_address
