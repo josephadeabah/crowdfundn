@@ -56,7 +56,7 @@ class InvestmentCertificateService
       
       # BANTUHIVE DIGITAL STAMP - Strategic location below main title
       pdf.fill_color '444444' # Dark gray for professional appearance
-      pdf.text '🟢🟢🟢🟢🟢 BANTUHIVE LIMITED • ISSUED & ENDORSED • SEC APPROVED & SIGNED 🟢🟢🟢🟢🟢', 
+      pdf.text '🟢🟢🟢🟢🟢 ISSUED & ENDORSED BY BANTUHIVE LIMITED & APPROVED BY THE SEC 🟢🟢🟢🟢🟢', 
                size: 8, align: :center, style: :bold
       pdf.move_down 3
       
