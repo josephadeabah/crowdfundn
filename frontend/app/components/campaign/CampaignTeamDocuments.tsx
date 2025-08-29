@@ -855,7 +855,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
             )}
             <p className="text-gray-500 text-sm mt-1">
               This member: {teamMember.equity_percentage || 0}% • New total:{' '}
-              {((totalTeamEquity || 0) + (teamMember.equity_percentage || 0)).toFixed(1)}% •
+              {((totalTeamEquity || 0) + (teamMember.equity_percentage || 0))}% •
               Target: {availableEquity}%
             </p>
           </div>
