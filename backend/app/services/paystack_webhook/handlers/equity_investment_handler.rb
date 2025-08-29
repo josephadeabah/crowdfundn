@@ -160,6 +160,7 @@ module PaystackWebhook::Handlers
       campaign.update_transferred_amount(net_amount)
     end
 
+    # Update the create_pledges_for_rewards method in EquityInvestmentHandler
     def create_pledges_for_rewards(investment, metadata)
       # Get selected rewards from metadata
       selected_rewards = metadata.dig(:metadata, :selectedRewards) || []
@@ -179,13 +180,13 @@ module PaystackWebhook::Handlers
             campaign_id: investment.campaign.id,
             user_id: investment.user_id || investment.campaign.fundraiser_id,
             campaign_type: 'EquityCampaign',
-            shipping_details: extract_shipping_details(metadata),
+            shipping_data: extract_shipping_data(metadata), # Use shipping_data instead of shipping_details
+            selected_rewards: [reward_data], # Use selected_rewards array
             delivery_option: metadata.dig(:metadata, :deliveryOption),
             metadata: {
               reward_title: reward_data[:title],
               reward_description: reward_data[:description],
               reward_image: reward_data[:image],
-              shipping_data: metadata.dig(:metadata, :shippingData),
               entity_type: metadata.dig(:metadata, :shippingData, :entityType)
             }
           )
