@@ -180,15 +180,9 @@ module PaystackWebhook::Handlers
             campaign_id: investment.campaign.id,
             user_id: investment.user_id || investment.campaign.fundraiser_id,
             campaign_type: 'EquityCampaign',
-            shipping_data: extract_shipping_data(metadata), # Use shipping_data instead of shipping_details
+            shipping_data: extract_shipping_details(metadata), # Use shipping_data instead of shipping_details
             selected_rewards: [reward_data], # Use selected_rewards array
-            delivery_option: metadata.dig(:metadata, :deliveryOption),
-            metadata: {
-              reward_title: reward_data[:title],
-              reward_description: reward_data[:description],
-              reward_image: reward_data[:image],
-              entity_type: metadata.dig(:metadata, :shippingData, :entityType)
-            }
+            delivery_option: metadata.dig(:metadata, :deliveryOption)
           )
         else
           Rails.logger.warn "Reward not found with ID: #{reward_data[:id]} for investment #{investment.id}"
