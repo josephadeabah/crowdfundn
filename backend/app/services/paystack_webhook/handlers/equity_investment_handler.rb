@@ -161,51 +161,69 @@ module PaystackWebhook::Handlers
     end
 
     # Update the create_pledges_for_rewards method in EquityInvestmentHandler
-    # In the EquityInvestmentHandler, update the method name to be consistent:
-
     def create_pledges_for_rewards(investment, metadata)
-      # Get selected rewards from metadata
-      selected_rewards = metadata.dig(:metadata, :selectedRewards) || []
+      # Get selected rewards from metadata - handle both string and symbol keys
+      selected_rewards = Array(metadata.dig(:metadata, :selectedRewards) || [])
       
       return if selected_rewards.empty?
 
       selected_rewards.each do |reward_data|
-        reward = Reward.find_by(id: reward_data[:id])
+        # Convert reward_data to a hash with symbol keys if it's a string-keyed hash
+        reward_data = reward_data.symbolize_keys if reward_data.is_a?(Hash)
+        
+        # Safely extract the reward ID
+        reward_id = reward_data[:id] || reward_data['id']
+        
+        if reward_id.blank?
+          Rails.logger.warn "Reward data missing ID: #{reward_data.inspect}"
+          next
+        end
+
+        reward = Reward.find_by(id: reward_id)
         
         if reward
+          # Safely extract amount with proper conversion
+          amount = reward_data[:amount].to_f rescue 0.0
+          
+          # Safely extract shipping data
+          shipping_data = extract_shipping_details(metadata)
+          
           Pledge.create!(
             equity_investment_id: investment.id,
             reward_id: reward.id,
-            amount: reward_data[:amount].to_f,
+            amount: amount,
             status: 'pending',
             shipping_status: 'not_shipped',
             campaign_id: investment.campaign.id,
             user_id: investment.user_id || investment.campaign.fundraiser_id,
             campaign_type: 'EquityCampaign',
-            shipping_data: extract_shipping_details(metadata), # Changed to extract_shipping_details
+            shipping_data: shipping_data,
             selected_rewards: [reward_data],
-            delivery_option: metadata.dig(:metadata, :deliveryOption),
+            delivery_option: metadata.dig(:metadata, :deliveryOption).to_s,
             metadata: {
-              reward_title: reward_data[:title],
-              reward_description: reward_data[:description],
-              reward_image: reward_data[:image],
+              reward_title: reward_data[:title] || reward_data['title'],
+              reward_description: reward_data[:description] || reward_data['description'],
+              reward_image: reward_data[:image] || reward_data['image'],
               entity_type: metadata.dig(:metadata, :shippingData, :entityType)
             }
           )
         else
-          Rails.logger.warn "Reward not found with ID: #{reward_data[:id]} for investment #{investment.id}"
+          Rails.logger.warn "Reward not found with ID: #{reward_id} for investment #{investment.id}"
         end
       end
     end
 
-    # Keep this method name as extract_shipping_details (it's already defined correctly)
     def extract_shipping_details(metadata)
       shipping_data = metadata.dig(:metadata, :shippingData) || {}
+      
+      # Handle both symbol and string keys
+      shipping_data = shipping_data.symbolize_keys if shipping_data.is_a?(Hash)
+      
       {
-        first_name: shipping_data[:firstName],
-        last_name: shipping_data[:lastName],
-        shipping_address: shipping_data[:shippingAddress],
-        entity_type: shipping_data[:entityType]
+        first_name: shipping_data[:firstName] || shipping_data['firstName'],
+        last_name: shipping_data[:lastName] || shipping_data['lastName'],
+        shipping_address: shipping_data[:shippingAddress] || shipping_data['shippingAddress'],
+        entity_type: shipping_data[:entityType] || shipping_data['entityType']
       }
     end
 
