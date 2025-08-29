@@ -40,8 +40,7 @@ module PaystackWebhook::Handlers
         ActiveRecord::Base.transaction do
           update_investment(investment, response, metadata, gross_amount, net_amount, adjusted_platform_fee)
           update_campaign(investment, net_amount)
-          create_pledges_for_rewards(investment, metadata) # Updated this line
-          
+           create_pledge_if_needed(investment)
           investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
           
           send_confirmation_email(investment, response, metadata)
@@ -121,9 +120,6 @@ module PaystackWebhook::Handlers
         processing_fee: metadata.dig(:metadata, :processingFee),
         original_amount: metadata.dig(:metadata, :originalAmount),
         referrer: metadata[:referrer],
-        shipping_data: metadata.dig(:metadata, :shippingData), # Add shipping data
-        selected_rewards: metadata.dig(:metadata, :selectedRewards), # Add selected rewards
-        delivery_option: metadata.dig(:metadata, :deliveryOption), # Add delivery option
         payment_details: {
           channel: response.dig(:data, :channel),
           card_type: response.dig(:data, :authorization, :card_type),
@@ -160,44 +156,19 @@ module PaystackWebhook::Handlers
       campaign.update_transferred_amount(net_amount)
     end
 
-    # Update the create_pledges_for_rewards method in EquityInvestmentHandler
-    def create_pledges_for_rewards(investment, metadata)
-      # Get selected rewards from metadata
-      selected_rewards = metadata.dig(:metadata, :selectedRewards) || []
-      
-      return if selected_rewards.empty?
-
-      selected_rewards.each do |reward_data|
-        reward = Reward.find_by(id: reward_data[:id])
-        
-        if reward
-          Pledge.create!(
-            equity_investment_id: investment.id,
-            reward_id: reward.id,
-            amount: reward_data[:amount].to_f,
-            status: 'pending',
-            shipping_status: 'not_shipped',
-            campaign_id: investment.campaign.id,
-            user_id: investment.user_id || investment.campaign.fundraiser_id,
-            campaign_type: 'EquityCampaign',
-            shipping_data: extract_shipping_details(metadata), # Use shipping_data instead of shipping_details
-            selected_rewards: [reward_data], # Use selected_rewards array
-            delivery_option: metadata.dig(:metadata, :deliveryOption)
-          )
-        else
-          Rails.logger.warn "Reward not found with ID: #{reward_data[:id]} for investment #{investment.id}"
-        end
+   def create_pledge_if_needed(investment)
+      if investment.reward_id.present?
+        Pledge.create!(
+          equity_investment_id: investment.id,
+          reward_id: investment.reward_id,
+          amount: investment.amount,
+          status: 'pending',
+          shipping_status: 'not_shipped',
+          campaign_id: investment.campaign.id,
+          user_id: investment.campaign.fundraiser_id,
+          campaign_type: 'EquityCampaign'
+        )
       end
-    end
-
-    def extract_shipping_details(metadata)
-      shipping_data = metadata.dig(:metadata, :shippingData) || {}
-      {
-        first_name: shipping_data[:firstName],
-        last_name: shipping_data[:lastName],
-        shipping_address: shipping_data[:shippingAddress],
-        entity_type: shipping_data[:entityType]
-      }
     end
 
     def send_confirmation_email(investment, response, metadata)
