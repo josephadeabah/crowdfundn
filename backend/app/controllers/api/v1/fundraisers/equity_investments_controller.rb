@@ -65,6 +65,7 @@ module Api
             end
 
             investment.update!(
+              reward_id: reward_id,
               email: investment_params[:email],
               phone: investment_params[:phone],
               full_name: investment_params[:full_name],
