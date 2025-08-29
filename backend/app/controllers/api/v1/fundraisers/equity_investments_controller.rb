@@ -40,7 +40,6 @@ module Api
         def create
           # First validate the investment parameters
           investment_params = equity_investment_params
-          amount = investment_params[:amount].to_f
 
           # First validate basic parameters
           validation_result = validate_investment(amount, reward_id)
@@ -65,6 +64,7 @@ module Api
             end
 
             investment.update!(
+              amount: investment_params[:amount],
               email: investment_params[:email],
               phone: investment_params[:phone],
               full_name: investment_params[:full_name],
