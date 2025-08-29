@@ -65,7 +65,6 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
   ) as CampaignResponseDataType | undefined;
   const campaignEquityOffered = currentCampaign?.equity_offered || 0;
 
-  // Calculate total team equity allocation
   // Calculate available equity for founders + team
   const availableEquity = 100 - campaignEquityOffered;
 
@@ -430,8 +429,8 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                 remainingEquity < 0
                   ? 'text-red-600'
                   : remainingEquity === 0
-                  ? 'text-green-600'
-                  : 'text-gray-600'
+                    ? 'text-green-600'
+                    : 'text-gray-600'
               }`}
             >
               {remainingEquity < 0
@@ -441,7 +440,6 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
           </div>
         </div>
       </div>
-
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Team Members Card */}
@@ -894,9 +892,9 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
           </Button>
           <Button
             onClick={handleAddTeamMember}
-            disabled={!teamMember.name || !teamMember.avatar || !!equityError}
+            disabled={!teamMember.name || !teamMember.avatar}
             className={`px-4 py-2 rounded-lg ${
-              !teamMember.name || !teamMember.avatar || equityError
+              !teamMember.name || !teamMember.avatar
                 ? 'bg-gray-300 cursor-not-allowed'
                 : 'bg-fundify-primary text-white hover:bg-fundify-primary'
             }`}
