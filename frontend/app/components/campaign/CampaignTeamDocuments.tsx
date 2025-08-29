@@ -63,20 +63,21 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
   const currentCampaign = campaigns.find(
     (camp) => camp.id === Number(campaignId),
   ) as CampaignResponseDataType | undefined;
+
   const campaignEquityOffered = currentCampaign?.equity_offered || 0;
 
-  // Calculate available equity for founders + team (100% - equity offered to investors)
-  const availableEquity = 100 - campaignEquityOffered;
+  // Founders + Team bucket = (100 - equity offered to investors)
+  const foundersAndTeamEquity = 100 - campaignEquityOffered;
 
-  // Calculate total equity already allocated to team members
+  // Total already allocated to team members
   const totalTeamEquity =
     teamMembers?.reduce(
       (sum, member) => sum + (member.equity_percentage || 0),
       0,
     ) || 0;
 
-  // Calculate remaining equity that can still be allocated to founders
-  const remainingEquity = availableEquity - totalTeamEquity;
+  // What’s left for founders after team allocations
+  const remainingForFounders = foundersAndTeamEquity - totalTeamEquity;
 
   useEffect(() => {
     if (campaignId) {
@@ -148,23 +149,17 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
     const numericValue = Number(value) || 0;
     setTeamMember({ ...teamMember, equity_percentage: numericValue });
 
-    // Calculate what the new total team allocation would be
-    const newMemberEquity = numericValue;
     const otherMembersEquity =
       teamMembers?.reduce(
         (sum, member) => sum + (member.equity_percentage || 0),
         0,
       ) || 0;
-    const newTotalTeamAllocation = otherMembersEquity + newMemberEquity;
 
-    // Validate against available equity for team
-    if (newTotalTeamAllocation > availableEquity) {
+    const newTotalTeamAllocation = otherMembersEquity + numericValue;
+
+    if (newTotalTeamAllocation > foundersAndTeamEquity) {
       setEquityError(
-        `Team allocation would be ${newTotalTeamAllocation}% (max ${availableEquity}% available for team)`,
-      );
-    } else if (newTotalTeamAllocation < availableEquity) {
-      setEquityError(
-        `Team allocation would be ${newTotalTeamAllocation}% (${availableEquity - newTotalTeamAllocation}% still available for founders)`,
+        `Allocation exceeds available pool: ${newTotalTeamAllocation}% / ${foundersAndTeamEquity}%`,
       );
     } else {
       setEquityError('');
@@ -413,6 +408,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
       <h2 className="text-2xl font-semibold mb-6">Team & Documents</h2>
 
       {/* Equity Allocation Summary */}
+      {/* Equity Allocation Summary */}
       <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mb-6">
         <div className="flex items-center justify-between">
           <div>
@@ -420,30 +416,28 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
               <FiPercent className="mr-2" /> Equity Allocation Summary
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-300">
-              {campaignEquityOffered}% is offered to investors.
+              {campaignEquityOffered}% allocated to investors.
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-300">
-              {availableEquity}% reserved for founders & team.
+              {foundersAndTeamEquity}% reserved for founders & team.
             </p>
           </div>
           <div className="text-right">
             <p className="font-medium">
-              Team Allocation: {totalTeamEquity}% / {availableEquity}%
+              Team Allocation: {totalTeamEquity}% / {foundersAndTeamEquity}%
             </p>
             <p
               className={`text-sm ${
-                remainingEquity < 0
+                remainingForFounders < 0
                   ? 'text-red-600'
-                  : remainingEquity === 0
-                    ? 'text-green-600'
-                    : 'text-gray-600'
+                  : remainingForFounders === foundersAndTeamEquity
+                    ? 'text-gray-600'
+                    : 'text-green-600'
               }`}
             >
-              {remainingEquity < 0
-                ? `Over-allocated by ${Math.abs(remainingEquity)}%`
-                : remainingEquity === 0
-                  ? '✓ All team equity allocated'
-                  : `${remainingEquity}% still reserved for founders`}
+              {remainingForFounders < 0
+                ? `Over-allocated by ${Math.abs(remainingForFounders)}%`
+                : `${remainingForFounders}% automatically reserved for founders`}
             </p>
           </div>
         </div>
@@ -732,14 +726,15 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
         <h3 className="text-xl font-bold mb-4">Add Team Member</h3>
         <div className="space-y-4">
           {/* Equity Allocation Info */}
+          {/* Equity Allocation Info */}
           <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded">
             <p className="text-sm font-medium">
-              Available for team: {availableEquity}% (100% -{' '}
-              {campaignEquityOffered}% campaign equity)
+              Founders + Team Pool: {foundersAndTeamEquity}% (100% -{' '}
+              {campaignEquityOffered}% investors)
             </p>
             <p className="text-sm">
-              Current team allocation: {totalTeamEquity}% • Remaining:{' '}
-              {remainingEquity}%
+              Current team allocation: {totalTeamEquity}% • Remaining for
+              founders: {remainingForFounders}%
             </p>
           </div>
 
@@ -864,7 +859,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
             <p className="text-gray-500 text-sm mt-1">
               This member: {teamMember.equity_percentage || 0}% • New total:{' '}
               {(totalTeamEquity || 0) + (teamMember.equity_percentage || 0)}% •
-              Target: {availableEquity}%
+              Target: {remainingForFounders}%
             </p>
           </div>
 
@@ -900,9 +895,11 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
           </Button>
           <Button
             onClick={handleAddTeamMember}
-            disabled={!teamMember.name || !teamMember.avatar}
+            disabled={
+              !teamMember.name || !teamMember.avatar || !!equityError // block if over-allocation
+            }
             className={`px-4 py-2 rounded-lg ${
-              !teamMember.name || !teamMember.avatar
+              !teamMember.name || !teamMember.avatar || !!equityError
                 ? 'bg-gray-300 cursor-not-allowed'
                 : 'bg-fundify-primary text-white hover:bg-fundify-primary'
             }`}
