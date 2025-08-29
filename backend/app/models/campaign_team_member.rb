@@ -80,6 +80,9 @@ class CampaignTeamMember < ApplicationRecord
     # Total must equal exactly 100% when combined with campaign equity
     required_total = 100 - campaign.equity_offered.to_f
     
+    # Only validate if we have team members with equity allocation
+    return if total_allocated == 0 && equity_percentage == 0
+    
     if total_allocated != required_total
       if total_allocated > required_total
         errors.add(:equity_percentage, "Total team allocation exceeds available equity. Maximum allowed is #{required_total}%, but would be #{total_allocated}%")
