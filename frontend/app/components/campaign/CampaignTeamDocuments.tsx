@@ -390,8 +390,8 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium">Equity Allocation</span>
               <span className="text-sm">
-                {totalAllocatedEquity.toFixed(1)}% of{' '}
-                {availableEquity.toFixed(1)}% allocated
+                {totalAllocatedEquity?.toFixed(1)}% of{' '}
+                {availableEquity?.toFixed(1)}% allocated
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
@@ -404,7 +404,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
               ></div>
             </div>
             <div className="text-xs text-gray-500 mt-1">
-              {Math.max(0, remainingEquity).toFixed(1)}% remaining for team
+              {Math.max(0, remainingEquity)?.toFixed(1)}% remaining for team
               members
             </div>
           </div>
@@ -791,7 +791,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
           {/* Equity Percentage - Left column */}
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-1">
-              Equity Percentage (Max: {Math.max(0, remainingEquity).toFixed(1)}
+              Equity Percentage (Max: {Math.max(0, remainingEquity)?.toFixed(1)}
               %)
             </label>
             <input
