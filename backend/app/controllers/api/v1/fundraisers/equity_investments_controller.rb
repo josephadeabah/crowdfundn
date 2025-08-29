@@ -276,9 +276,9 @@ module Api
           }
 
           # Add signature data if available
-          if @current_user.latest_kyc&.signature_data.present?
-            metadata[:investor_signature_data] = @current_user.latest_kyc.signature_data
-          end
+          # if @current_user.latest_kyc&.signature_data.present?
+          #   metadata[:investor_signature_data] = @current_user.latest_kyc.signature_data
+          # end
 
           if investment.reward_id
             metadata[:reward] = {
