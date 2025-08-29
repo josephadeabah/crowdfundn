@@ -21,7 +21,7 @@ class EquityCampaign < Campaign
   validate :shares_within_equity_limits
   validate :total_shares_must_be_set
   # New validation for exact 100% equity distribution
-  validate :total_equity_distribution_exactly_100_percent
+  # validate :total_equity_distribution_exactly_100_percent
 
   attribute :equity_status, :integer, default: 0
 
@@ -134,7 +134,7 @@ class EquityCampaign < Campaign
     errors << "Company name is required" if company_name.blank?
     errors << "Company description is required" if company_description.blank?
     errors << "At least one founder is required" unless campaign_team_members.exists?(role: 'founder')
-    errors << "Total equity distribution must equal exactly 100%" unless total_equity_distribution_exactly_100_percent?
+    # errors << "Total equity distribution must equal exactly 100%" unless total_equity_distribution_exactly_100_percent?
     
     errors
   end
@@ -339,18 +339,18 @@ class EquityCampaign < Campaign
     errors.add(:maximum_investment, 'must be greater than minimum investment')
   end
 
-  def total_equity_distribution_exactly_100_percent
-    team_equity = campaign_team_members.sum(:equity_percentage)
-    total_distributed = equity_offered.to_f + team_equity
+  # def total_equity_distribution_exactly_100_percent
+  #   team_equity = campaign_team_members.sum(:equity_percentage)
+  #   total_distributed = equity_offered.to_f + team_equity
     
-    if total_distributed != 100
-      errors.add(:base, "Total equity distribution must equal exactly 100%. Currently: #{equity_offered}% offered + #{team_equity}% team = #{total_distributed}%")
-    end
-  end
+  #   if total_distributed != 100
+  #     errors.add(:base, "Total equity distribution must equal exactly 100%. Currently: #{equity_offered}% offered + #{team_equity}% team = #{total_distributed}%")
+  #   end
+  # end
 
-  def total_equity_distribution_exactly_100_percent?
-    team_equity = campaign_team_members.sum(:equity_percentage)
-    total_distributed = equity_offered.to_f + team_equity
-    total_distributed == 100
-  end
+  # def total_equity_distribution_exactly_100_percent?
+  #   team_equity = campaign_team_members.sum(:equity_percentage)
+  #   total_distributed = equity_offered.to_f + team_equity
+  #   total_distributed == 100
+  # end
 end
