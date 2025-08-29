@@ -87,7 +87,10 @@ const CheckoutPageContent = () => {
 
           // Set isEquityCampaign state
           if (payloadData.isEquityCampaign !== undefined) {
-            console.log(" payloadData.isEquityCampaign:", payloadData.isEquityCampaign);
+            console.log(
+              ' payloadData.isEquityCampaign:',
+              payloadData.isEquityCampaign,
+            );
             setIsEquityCampaign(payloadData.isEquityCampaign);
           }
         } catch (error) {

@@ -24,6 +24,7 @@ interface RewardSelectionProps {
   billingFrequency: string;
   setBillingFrequency: (frequency: string) => void;
   fundraiserDetails: FundraiserDetails;
+  isEquityCampaign: boolean;
 }
 
 const RewardSelection: React.FC<RewardSelectionProps> = ({
@@ -35,6 +36,7 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
   billingFrequency,
   setBillingFrequency,
   fundraiserDetails,
+  isEquityCampaign,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
   const [selectedReward, setSelectedReward] = useState<Reward | null>(null); // State to store the selected reward
@@ -146,6 +148,7 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
           fundraiserDetails={fundraiserDetails}
           selectedTier={selectedTier}
           billingFrequency={billingFrequency}
+          isEquityCampaign={isEquityCampaign}
         />{' '}
         {/* Pass all rewards */}
       </Modal>

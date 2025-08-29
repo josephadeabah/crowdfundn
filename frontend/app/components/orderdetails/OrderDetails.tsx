@@ -19,6 +19,7 @@ interface OrderDetailsPageProps {
   fundraiserDetails: FundraiserDetails;
   billingFrequency: string;
   selectedTier: number | null;
+  isEquityCampaign: boolean;
 }
 
 const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
@@ -27,6 +28,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
   fundraiserDetails,
   billingFrequency,
   selectedTier,
+  isEquityCampaign,
 }) => {
   const [error, setError] = useState<string | null>(null);
   const [selectedRewards, setSelectedRewards] = useState<Reward[]>(
@@ -52,6 +54,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
       fundraiser: fundraiserDetails,
       billingFrequency,
       selectedTier,
+      isEquityCampaign,
     };
 
     // Generate a JWT token for the data

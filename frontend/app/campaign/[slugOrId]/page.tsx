@@ -112,7 +112,10 @@ const SingleCampaignPage: React.FC = () => {
                 />
               )}
               {selectedTab === 'donate' && (
-                <CampaignDonate campaign={currentCampaign} />
+                <CampaignDonate
+                  campaign={currentCampaign}
+                  isEquityCampaign={isEquityCampaign}
+                />
               )}
               {selectedTab === 'updates' && (
                 <CampaignUpdates campaign={currentCampaign} />

@@ -4,9 +4,13 @@ import { SingleCampaignResponseDataType } from '../types/campaigns.types';
 
 interface CampaignDonateProps {
   campaign: SingleCampaignResponseDataType | null;
+  isEquityCampaign: boolean;
 }
 
-const CampaignDonate: React.FC<CampaignDonateProps> = ({ campaign }) => {
+const CampaignDonate: React.FC<CampaignDonateProps> = ({
+  campaign,
+  isEquityCampaign,
+}) => {
   const [selectedTier, setSelectedTier] = React.useState<number | null>(null);
   const [pledgeAmount, setPledgeAmount] = React.useState<string>('0');
   const [billingFrequency, setBillingFrequency] =
@@ -40,6 +44,7 @@ const CampaignDonate: React.FC<CampaignDonateProps> = ({ campaign }) => {
           campaignTitle: campaign?.title,
           campaignCurrency: fundraiserCurrency,
         }}
+        isEquityCampaign={isEquityCampaign}
       />
     </div>
   );
