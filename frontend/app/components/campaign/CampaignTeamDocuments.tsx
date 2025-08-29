@@ -23,10 +23,12 @@ import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 
 interface TeamDocumentsProps {
   campaignId: string;
+  userCampaigns: CampaignResponseDataType[] | null
 }
 
 const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
   campaignId,
+  userCampaigns
 }) => {
   const {
     loading,
@@ -40,7 +42,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
     removeTeamMember,
     deleteDocument,
   } = useEquityCampaignContext();
-  const { campaigns, fetchUserCampaigns } = useCampaignContext();
+  const { fetchUserCampaigns } = useCampaignContext();
 
   const [activeModal, setActiveModal] = useState<
     'team' | 'pitch' | 'contract' | 'financial' | 'business_plan' | null
@@ -58,7 +60,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
   } | null>(null);
 
   // Get the current campaign to calculate available equity
-  const currentCampaign = campaigns.find(
+  const currentCampaign = userCampaigns?.find(
     (camp) => camp.id === Number(campaignId),
   ) as CampaignResponseDataType | undefined;
 
