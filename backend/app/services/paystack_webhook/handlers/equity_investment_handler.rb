@@ -1,3 +1,4 @@
+# app/services/paystack_webhook/handlers/equity_investment_handler.rb
 module PaystackWebhook::Handlers
   class EquityInvestmentHandler
     include PaystackWebhook::JsonHelper
@@ -51,7 +52,7 @@ module PaystackWebhook::Handlers
       end
     end
 
-    # ✅ Always return a Hash with symbolized keys
+    # ✅ Always normalize metadata
     def parse_metadata(response)
       raw_metadata = response.dig(:data, :metadata)
 
@@ -106,7 +107,7 @@ module PaystackWebhook::Handlers
     end
 
     def build_metadata(metadata, response)
-      metadata = metadata.is_a?(Hash) ? metadata.deep_symbolize_keys : {}
+      metadata = (metadata || {}).deep_symbolize_keys
       nested_metadata = metadata[:metadata].is_a?(Hash) ? metadata[:metadata].deep_symbolize_keys : {}
 
       {
@@ -169,41 +170,27 @@ module PaystackWebhook::Handlers
       campaign.update_transferred_amount(net_amount)
     end
 
-    # ✅ Ensure rewards always an Array of Hashes
+    # ✅ Safer pledge creation
     def create_pledges_for_rewards(investment, metadata)
       nested_metadata = metadata[:metadata].is_a?(Hash) ? metadata[:metadata].deep_symbolize_keys : {}
-      selected_rewards = nested_metadata[:selectedRewards]
-
-      # Parse JSON string if necessary
-      if selected_rewards.is_a?(String)
-        begin
-          selected_rewards = JSON.parse(selected_rewards)
-        rescue JSON::ParserError
-          Rails.logger.warn "Invalid selectedRewards JSON: #{selected_rewards}"
-          selected_rewards = []
-        end
-      end
-
-      selected_rewards = Array(selected_rewards)
+      selected_rewards = nested_metadata[:selectedRewards].is_a?(Array) ? nested_metadata[:selectedRewards] : []
 
       return if selected_rewards.empty?
 
       selected_rewards.each do |reward_data|
         reward_data = reward_data.deep_symbolize_keys if reward_data.is_a?(Hash)
-        next unless reward_data.is_a?(Hash)
-
         reward_id = reward_data[:id].to_i
+
         if reward_id.zero?
           Rails.logger.warn "Reward data missing ID: #{reward_data.inspect}"
           next
         end
 
         reward = Reward.find_by(id: reward_id)
-        
         if reward
           amount = reward_data[:amount].to_f rescue 0.0
           shipping_data = extract_shipping_details(nested_metadata)
-          
+
           Pledge.create!(
             equity_investment_id: investment.id,
             reward_id: reward.id,
@@ -223,17 +210,16 @@ module PaystackWebhook::Handlers
       end
     end
 
-    # ✅ Only return Hash
     def extract_shipping_details(nested_metadata)
       shipping_data = nested_metadata[:shippingData]
       return {} unless shipping_data.is_a?(Hash)
 
-      shipping_data = shipping_data.deep_symbolize_keys
+      sd = shipping_data.deep_symbolize_keys
       {
-        first_name: shipping_data[:firstName],
-        last_name: shipping_data[:lastName],
-        shipping_address: shipping_data[:shippingAddress],
-        entity_type: shipping_data[:entityType]
+        first_name: sd[:firstName],
+        last_name: sd[:lastName],
+        shipping_address: sd[:shippingAddress],
+        entity_type: sd[:entityType]
       }
     end
 
