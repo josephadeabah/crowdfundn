@@ -40,7 +40,7 @@ module PaystackWebhook::Handlers
         ActiveRecord::Base.transaction do
           update_investment(investment, response, metadata, gross_amount, net_amount, adjusted_platform_fee)
           update_campaign(investment, net_amount)
-           create_pledge_if_needed(investment)
+          create_pledges_from_rewards(investment, metadata)
           investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
           
           send_confirmation_email(investment, response, metadata)
@@ -156,12 +156,21 @@ module PaystackWebhook::Handlers
       campaign.update_transferred_amount(net_amount)
     end
 
-   def create_pledge_if_needed(investment)
-      if investment.reward_id.present?
+    def create_pledges_from_rewards(investment, metadata)
+      selected_rewards = (metadata[:metadata] && metadata[:metadata][:selectedRewards]) || []
+      shipping_data = (metadata[:metadata] && metadata[:metadata][:shippingData]) || {}
+      delivery_option = (metadata[:metadata] && metadata[:metadata][:deliveryOption]) || 'pickup'
+
+      selected_rewards.each do |reward|
+        next if Pledge.exists?(equity_investment_id: investment.id, reward_id: reward[:id])
+
         Pledge.create!(
           equity_investment_id: investment.id,
-          reward_id: investment.reward_id,
-          amount: investment.amount,
+          reward_id: reward[:id],
+          amount: reward[:amount],
+          shipping_data: shipping_data,
+          selected_rewards: [reward],
+          delivery_option: delivery_option,
           status: 'pending',
           shipping_status: 'not_shipped',
           campaign_id: investment.campaign.id,
@@ -170,6 +179,7 @@ module PaystackWebhook::Handlers
         )
       end
     end
+
 
     def send_confirmation_email(investment, response, metadata)
       recipient_email = response.dig(:data, :customer, :email) || investment.email
