@@ -66,12 +66,17 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
   const campaignEquityOffered = currentCampaign?.equity_offered || 0;
 
   // Calculate total team equity allocation
+  // Calculate available equity for founders + team
+  const availableEquity = 100 - campaignEquityOffered;
+
+  // Already allocated to team
   const totalTeamEquity =
     teamMembers?.reduce(
       (sum, member) => sum + (member.equity_percentage || 0),
       0,
     ) || 0;
-  const availableEquity = 100 - campaignEquityOffered;
+
+  // Remaining still with founders (after giving team allocations)
   const remainingEquity = availableEquity - totalTeamEquity;
 
   useEffect(() => {
@@ -410,7 +415,10 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
               <FiPercent className="mr-2" /> Equity Allocation Summary
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-300">
-              Campaign offers {campaignEquityOffered}% equity to investors
+              {campaignEquityOffered}% is offered to investors.
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              {availableEquity}% reserved for founders & team.
             </p>
           </div>
           <div className="text-right">
@@ -418,15 +426,22 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
               Team Allocation: {totalTeamEquity}% / {availableEquity}%
             </p>
             <p
-              className={`text-sm ${remainingEquity === 0 ? 'text-green-600' : 'text-gray-600'}`}
+              className={`text-sm ${
+                remainingEquity < 0
+                  ? 'text-red-600'
+                  : remainingEquity === 0
+                  ? 'text-green-600'
+                  : 'text-gray-600'
+              }`}
             >
-              {remainingEquity === 0
-                ? '✓ Perfect allocation!'
-                : `${remainingEquity}% remaining to allocate`}
+              {remainingEquity < 0
+                ? `Over-allocated by ${Math.abs(remainingEquity)}%`
+                : `${remainingEquity}% still reserved for founders`}
             </p>
           </div>
         </div>
       </div>
+
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Team Members Card */}
