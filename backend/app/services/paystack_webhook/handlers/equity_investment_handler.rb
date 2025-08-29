@@ -161,6 +161,8 @@ module PaystackWebhook::Handlers
     end
 
     # Update the create_pledges_for_rewards method in EquityInvestmentHandler
+    # In the EquityInvestmentHandler, update the method name to be consistent:
+
     def create_pledges_for_rewards(investment, metadata)
       # Get selected rewards from metadata
       selected_rewards = metadata.dig(:metadata, :selectedRewards) || []
@@ -180,8 +182,8 @@ module PaystackWebhook::Handlers
             campaign_id: investment.campaign.id,
             user_id: investment.user_id || investment.campaign.fundraiser_id,
             campaign_type: 'EquityCampaign',
-            shipping_data: extract_shipping_data(metadata), # Use shipping_data instead of shipping_details
-            selected_rewards: [reward_data], # Use selected_rewards array
+            shipping_data: extract_shipping_details(metadata), # Changed to extract_shipping_details
+            selected_rewards: [reward_data],
             delivery_option: metadata.dig(:metadata, :deliveryOption),
             metadata: {
               reward_title: reward_data[:title],
@@ -196,6 +198,7 @@ module PaystackWebhook::Handlers
       end
     end
 
+    # Keep this method name as extract_shipping_details (it's already defined correctly)
     def extract_shipping_details(metadata)
       shipping_data = metadata.dig(:metadata, :shippingData) || {}
       {
