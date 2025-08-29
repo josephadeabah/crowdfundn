@@ -100,6 +100,10 @@ module PaystackWebhook::Handlers
     end
 
     def build_metadata(metadata, response)
+      # Convert all metadata to symbolize keys for consistent access
+      metadata = metadata.symbolize_keys
+      nested_metadata = (metadata[:metadata] || {}).symbolize_keys
+      
       {
         user_id: metadata[:user_id],
         campaign_id: metadata[:campaign_id],
@@ -118,12 +122,12 @@ module PaystackWebhook::Handlers
         phone: metadata[:phone],
         investor_signature_data: metadata[:investor_signature_data],
         reward: metadata[:reward],
-        processing_fee: metadata.dig(:metadata, :processingFee),
-        original_amount: metadata.dig(:metadata, :originalAmount),
+        processing_fee: nested_metadata[:processingFee],
+        original_amount: nested_metadata[:originalAmount],
         referrer: metadata[:referrer],
-        shipping_data: metadata.dig(:metadata, :shippingData), # Add shipping data
-        selected_rewards: metadata.dig(:metadata, :selectedRewards), # Add selected rewards
-        delivery_option: metadata.dig(:metadata, :deliveryOption), # Add delivery option
+        shipping_data: nested_metadata[:shippingData],
+        selected_rewards: nested_metadata[:selectedRewards],
+        delivery_option: nested_metadata[:deliveryOption],
         payment_details: {
           channel: response.dig(:data, :channel),
           card_type: response.dig(:data, :authorization, :card_type),
@@ -162,8 +166,11 @@ module PaystackWebhook::Handlers
 
     # Update the create_pledges_for_rewards method in EquityInvestmentHandler
     def create_pledges_for_rewards(investment, metadata)
-      # Get selected rewards from metadata - handle both string and symbol keys
-      selected_rewards = Array(metadata.dig(:metadata, :selectedRewards) || [])
+      # Get the nested metadata that contains shippingData and selectedRewards
+      nested_metadata = metadata[:metadata] || {}
+      
+      # Get selected rewards from the nested metadata
+      selected_rewards = Array(nested_metadata[:selectedRewards] || nested_metadata['selectedRewards'] || [])
       
       return if selected_rewards.empty?
 
@@ -171,10 +178,10 @@ module PaystackWebhook::Handlers
         # Convert reward_data to a hash with symbol keys if it's a string-keyed hash
         reward_data = reward_data.symbolize_keys if reward_data.is_a?(Hash)
         
-        # Safely extract the reward ID
-        reward_id = reward_data[:id] || reward_data['id']
+        # Safely extract the reward ID - handle both string and integer IDs
+        reward_id = (reward_data[:id] || reward_data['id']).to_i
         
-        if reward_id.blank?
+        if reward_id.blank? || reward_id == 0
           Rails.logger.warn "Reward data missing ID: #{reward_data.inspect}"
           next
         end
@@ -185,8 +192,8 @@ module PaystackWebhook::Handlers
           # Safely extract amount with proper conversion
           amount = reward_data[:amount].to_f rescue 0.0
           
-          # Safely extract shipping data
-          shipping_data = extract_shipping_details(metadata)
+          # Safely extract shipping data from nested metadata
+          shipping_data = extract_shipping_details(nested_metadata)
           
           Pledge.create!(
             equity_investment_id: investment.id,
@@ -199,13 +206,7 @@ module PaystackWebhook::Handlers
             campaign_type: 'EquityCampaign',
             shipping_data: shipping_data,
             selected_rewards: [reward_data],
-            delivery_option: metadata.dig(:metadata, :deliveryOption).to_s,
-            metadata: {
-              reward_title: reward_data[:title] || reward_data['title'],
-              reward_description: reward_data[:description] || reward_data['description'],
-              reward_image: reward_data[:image] || reward_data['image'],
-              entity_type: metadata.dig(:metadata, :shippingData, :entityType)
-            }
+            delivery_option: nested_metadata[:deliveryOption] || nested_metadata['deliveryOption'] || 'pickup'
           )
         else
           Rails.logger.warn "Reward not found with ID: #{reward_id} for investment #{investment.id}"
@@ -213,10 +214,11 @@ module PaystackWebhook::Handlers
       end
     end
 
-    def extract_shipping_details(metadata)
-      shipping_data = metadata.dig(:metadata, :shippingData) || {}
+    def extract_shipping_details(nested_metadata)
+      # Get shippingData from the nested metadata
+      shipping_data = nested_metadata[:shippingData] || nested_metadata['shippingData'] || {}
       
-      # Handle both symbol and string keys
+      # Handle both symbol and string keys in the shipping data
       shipping_data = shipping_data.symbolize_keys if shipping_data.is_a?(Hash)
       
       {
