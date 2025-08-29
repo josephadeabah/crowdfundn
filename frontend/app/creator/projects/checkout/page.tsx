@@ -31,6 +31,7 @@ const CheckoutPageContent = () => {
     entityType: 'individual', // 'individual', 'organization', 'business'
     shippingAddress: '',
   });
+  const [isEquityCampaign, setIsEquityCampaign] = useState(false);
 
   // Payment form state
   const campaignId = data?.fundraiser.campaignId || '';
@@ -71,15 +72,23 @@ const CheckoutPageContent = () => {
 
           // Decode the JWT token
           const { payload } = await jwtVerify(token, secret);
-          setData(
-            payload as {
-              selectedRewards: Reward[];
-              allRewards: Reward[];
-              fundraiser: FundraiserDetails;
-              billingFrequency: string;
-              selectedTier: string;
-            },
-          );
+
+          // Extract isEquityCampaign from the payload
+          const payloadData = payload as {
+            selectedRewards: Reward[];
+            allRewards: Reward[];
+            fundraiser: FundraiserDetails;
+            billingFrequency: string;
+            selectedTier: string;
+            isEquityCampaign?: boolean; // Add this field
+          };
+
+          setData(payloadData);
+
+          // Set isEquityCampaign state
+          if (payloadData.isEquityCampaign !== undefined) {
+            setIsEquityCampaign(payloadData.isEquityCampaign);
+          }
         } catch (error) {
           console.error('Failed to decode token:', error);
         }
@@ -519,7 +528,8 @@ const CheckoutPageContent = () => {
               setPaymentEmail={setPaymentEmail}
               setPaymentPhone={setPaymentPhone}
               setPaymentAmount={setPaymentAmount}
-              combinedMetadata={combinedMetadata} // Pass the combined data
+              combinedMetadata={combinedMetadata}
+              isEquityCampaign={isEquityCampaign}
             />
           </div>
         </>
