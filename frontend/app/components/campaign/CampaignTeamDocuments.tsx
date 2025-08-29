@@ -63,22 +63,24 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
     (camp) => camp.id === Number(campaignId),
   ) as CampaignResponseDataType | undefined;
 
-// Replace the equity calculation lines with this:
-const campaignEquityOffered = Number(currentCampaign?.equity_offered) || 0;
+  // Replace the equity calculation lines with this:
+  const campaignEquityOffered = Number(currentCampaign?.equity_offered) || 0;
 
-// Calculate total allocated equity to team members
-const totalAllocatedEquity = teamMembers?.reduce((total, member) => 
-  total + (Number(member.equity_percentage) || 0), 0
-) || 0;
+  // Calculate total allocated equity to team members
+  const totalAllocatedEquity =
+    teamMembers?.reduce(
+      (total, member) => total + (Number(member.equity_percentage) || 0),
+      0,
+    ) || 0;
 
-// Calculate available equity for team members
-const availableEquity = Math.max(0, 100 - campaignEquityOffered);
-const remainingEquity = Math.max(0, availableEquity - totalAllocatedEquity);
+  // Calculate available equity for team members
+  const availableEquity = Math.max(0, 100 - campaignEquityOffered);
+  const remainingEquity = Math.max(0, availableEquity - totalAllocatedEquity);
 
-// Helper function to safely format numbers
-const formatPercentage = (value: number): string => {
-  return (typeof value === 'number' ? value : 0).toFixed(1);
-};
+  // Helper function to safely format numbers
+  const formatPercentage = (value: number): string => {
+    return (typeof value === 'number' ? value : 0).toFixed(1);
+  };
 
   useEffect(() => {
     if (campaignId) {
@@ -390,26 +392,27 @@ const formatPercentage = (value: number): string => {
             </button>
           </div>
           {/* Equity Allocation Status */}
-<div className="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-  <div className="flex justify-between items-center mb-2">
-    <span className="text-sm font-medium">Equity Allocation</span>
-    <span className="text-sm">
-      {formatPercentage(totalAllocatedEquity)}% of {formatPercentage(availableEquity)}% allocated
-    </span>
-  </div>
-  <div className="w-full bg-gray-200 rounded-full h-2">
-    <div
-      className="bg-fundify-primary h-2 rounded-full"
-      style={{ 
-        width: `${availableEquity > 0 ? (totalAllocatedEquity / availableEquity) * 100 : 0}%`,
-        maxWidth: '100%'
-      }}
-    ></div>
-  </div>
-  <div className="text-xs text-gray-500 mt-1">
-    {formatPercentage(remainingEquity)}% remaining for team members
-  </div>
-</div>
+          <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium">Equity Allocation</span>
+              <span className="text-sm">
+                {formatPercentage(totalAllocatedEquity)}% of{' '}
+                {formatPercentage(availableEquity)}% allocated
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-fundify-primary h-2 rounded-full"
+                style={{
+                  width: `${availableEquity > 0 ? (totalAllocatedEquity / availableEquity) * 100 : 0}%`,
+                  maxWidth: '100%',
+                }}
+              ></div>
+            </div>
+            <div className="text-xs text-gray-500 mt-1">
+              {formatPercentage(remainingEquity)}% remaining for team members
+            </div>
+          </div>
 
           <div className="space-y-2">
             {teamMembers?.length ? (
@@ -678,16 +681,19 @@ const formatPercentage = (value: number): string => {
       <Modal isOpen={activeModal === 'team'} onClose={closeModal} size="xlarge">
         <h3 className="text-xl font-bold mb-4">Add Team Member</h3>
         {/* Equity Allocation Info */}
-{/* Equity Allocation Info */}
-<div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-  <div className="flex justify-between items-center mb-2">
-    <span className="text-sm font-medium">Available Equity</span>
-    <span className="text-sm font-semibold">{formatPercentage(remainingEquity)}%</span>
-  </div>
-  <div className="text-xs text-blue-600 dark:text-blue-300">
-    Campaign equity offered: {formatPercentage(campaignEquityOffered)}% | Total allocated to team: {formatPercentage(totalAllocatedEquity)}%
-  </div>
-</div>
+        {/* Equity Allocation Info */}
+        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium">Available Equity</span>
+            <span className="text-sm font-semibold">
+              {formatPercentage(remainingEquity)}%
+            </span>
+          </div>
+          <div className="text-xs text-blue-600 dark:text-blue-300">
+            Campaign equity offered: {formatPercentage(campaignEquityOffered)}%
+            | Total allocated to team: {formatPercentage(totalAllocatedEquity)}%
+          </div>
+        </div>
         <div className="space-y-4">
           {/* Avatar Upload - Full width */}
           <div className="col-span-2">
@@ -790,9 +796,9 @@ const formatPercentage = (value: number): string => {
 
           {/* Equity Percentage - Left column */}
           <div className="col-span-2">
-        <label className="block text-sm font-medium mb-1">
-          Equity Percentage (Max: {formatPercentage(remainingEquity)}%)
-        </label>
+            <label className="block text-sm font-medium mb-1">
+              Equity Percentage (Max: {formatPercentage(remainingEquity)}%)
+            </label>
             <input
               type="number"
               value={teamMember.equity_percentage}
