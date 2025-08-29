@@ -20,6 +20,8 @@ class CampaignTeamMember < ApplicationRecord
 
   # Ensure founder equity doesn't exceed available equity
   validate :founder_equity_limit
+  # Ensure total equity allocation equals exactly 100%
+  validate :total_equity_allocation_exactly_100_percent
 
   def avatar_url
     return unless avatar.attached?
@@ -66,5 +68,24 @@ class CampaignTeamMember < ApplicationRecord
     return unless equity_percentage > available_equity
 
     errors.add(:equity_percentage, "cannot exceed #{available_equity}% for founders")
+  end
+
+  def total_equity_allocation_exactly_100_percent
+    return unless equity_percentage.present? && campaign.is_a?(EquityCampaign)
+    
+    # Calculate total equity already allocated to team members (excluding current member if updating)
+    existing_allocations = campaign.campaign_team_members.where.not(id: id).sum(:equity_percentage)
+    total_allocated = existing_allocations + equity_percentage
+    
+    # Total must equal exactly 100% when combined with campaign equity
+    required_total = 100 - campaign.equity_offered.to_f
+    
+    if total_allocated != required_total
+      if total_allocated > required_total
+        errors.add(:equity_percentage, "Total team allocation exceeds available equity. Maximum allowed is #{required_total}%, but would be #{total_allocated}%")
+      else
+        errors.add(:equity_percentage, "Total team allocation is insufficient. Required total is #{required_total}%, but would be #{total_allocated}%")
+      end
+    end
   end
 end
