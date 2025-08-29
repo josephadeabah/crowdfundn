@@ -740,7 +740,10 @@ const Campaigns: React.FC = () => {
           )}
 
           {selectedCampaign && selectedCampaign.type === 'EquityCampaign' && (
-            <CampaignTeamDocuments campaignId={String(selectedCampaign.id)} userCampaigns={userCampaigns} />
+            <CampaignTeamDocuments
+              campaignId={String(selectedCampaign.id)}
+              userCampaigns={userCampaigns}
+            />
           )}
         </div>
       </Modal>

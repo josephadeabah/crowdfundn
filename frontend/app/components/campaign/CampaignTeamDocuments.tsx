@@ -23,12 +23,12 @@ import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 
 interface TeamDocumentsProps {
   campaignId: string;
-  userCampaigns: CampaignResponseDataType[] | null
+  userCampaigns: CampaignResponseDataType[] | null;
 }
 
 const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
   campaignId,
-  userCampaigns
+  userCampaigns,
 }) => {
   const {
     loading,
@@ -66,8 +66,6 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
 
   // Replace the equity calculation lines with this:
   const campaignEquityOffered = Number(currentCampaign?.equity_offered) || 0;
-
-  console.log("Equity Offered", currentCampaign)
 
   // Calculate total allocated equity to team members
   const totalAllocatedEquity =
