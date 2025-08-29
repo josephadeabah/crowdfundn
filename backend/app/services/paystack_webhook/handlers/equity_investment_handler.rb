@@ -1,4 +1,3 @@
-# app/services/paystack_webhook/handlers/equity_investment_handler.rb
 module PaystackWebhook::Handlers
   class EquityInvestmentHandler
     include PaystackWebhook::JsonHelper
@@ -41,7 +40,7 @@ module PaystackWebhook::Handlers
         ActiveRecord::Base.transaction do
           update_investment(investment, response, metadata, gross_amount, net_amount, adjusted_platform_fee)
           update_campaign(investment, net_amount)
-          create_pledges_for_rewards(investment, metadata)
+          create_pledges_for_rewards(investment, metadata) # Updated this line
           
           investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
           
@@ -52,23 +51,17 @@ module PaystackWebhook::Handlers
       end
     end
 
-    # ✅ Always normalize metadata
     def parse_metadata(response)
-      raw_metadata = response.dig(:data, :metadata)
-
-      case raw_metadata
-      when String
+      if response.dig(:data, :metadata).is_a?(String)
         begin
-          fixed_metadata = fix_malformed_json(raw_metadata)
+          fixed_metadata = fix_malformed_json(response.dig(:data, :metadata))
           JSON.parse(fixed_metadata, symbolize_names: true)
         rescue JSON::ParserError => e
           Rails.logger.error "Failed to parse metadata: #{e.message}"
-          {}
+          raise "Invalid metadata: #{response.dig(:data, :metadata)}"
         end
-      when Hash
-        raw_metadata.deep_symbolize_keys
       else
-        {}
+        response.dig(:data, :metadata) || {}
       end
     end
 
@@ -107,9 +100,6 @@ module PaystackWebhook::Handlers
     end
 
     def build_metadata(metadata, response)
-      metadata = (metadata || {}).deep_symbolize_keys
-      nested_metadata = metadata[:metadata].is_a?(Hash) ? metadata[:metadata].deep_symbolize_keys : {}
-
       {
         user_id: metadata[:user_id],
         campaign_id: metadata[:campaign_id],
@@ -128,12 +118,12 @@ module PaystackWebhook::Handlers
         phone: metadata[:phone],
         investor_signature_data: metadata[:investor_signature_data],
         reward: metadata[:reward],
-        processing_fee: nested_metadata[:processingFee],
-        original_amount: nested_metadata[:originalAmount],
+        processing_fee: metadata.dig(:metadata, :processingFee),
+        original_amount: metadata.dig(:metadata, :originalAmount),
         referrer: metadata[:referrer],
-        shipping_data: nested_metadata[:shippingData],
-        selected_rewards: nested_metadata[:selectedRewards],
-        delivery_option: nested_metadata[:deliveryOption],
+        shipping_data: metadata.dig(:metadata, :shippingData), # Add shipping data
+        selected_rewards: metadata.dig(:metadata, :selectedRewards), # Add selected rewards
+        delivery_option: metadata.dig(:metadata, :deliveryOption), # Add delivery option
         payment_details: {
           channel: response.dig(:data, :channel),
           card_type: response.dig(:data, :authorization, :card_type),
@@ -170,56 +160,49 @@ module PaystackWebhook::Handlers
       campaign.update_transferred_amount(net_amount)
     end
 
-    # ✅ Safer pledge creation
+    # Update the create_pledges_for_rewards method in EquityInvestmentHandler
     def create_pledges_for_rewards(investment, metadata)
-      nested_metadata = metadata[:metadata].is_a?(Hash) ? metadata[:metadata].deep_symbolize_keys : {}
-      selected_rewards = nested_metadata[:selectedRewards].is_a?(Array) ? nested_metadata[:selectedRewards] : []
-
+      # Get selected rewards from metadata
+      selected_rewards = metadata.dig(:metadata, :selectedRewards) || []
+      
       return if selected_rewards.empty?
 
       selected_rewards.each do |reward_data|
-        reward_data = reward_data.deep_symbolize_keys if reward_data.is_a?(Hash)
-        reward_id = reward_data[:id].to_i
-
-        if reward_id.zero?
-          Rails.logger.warn "Reward data missing ID: #{reward_data.inspect}"
-          next
-        end
-
-        reward = Reward.find_by(id: reward_id)
+        reward = Reward.find_by(id: reward_data[:id])
+        
         if reward
-          amount = reward_data[:amount].to_f rescue 0.0
-          shipping_data = extract_shipping_details(nested_metadata)
-
           Pledge.create!(
             equity_investment_id: investment.id,
             reward_id: reward.id,
-            amount: amount,
+            amount: reward_data[:amount].to_f,
             status: 'pending',
             shipping_status: 'not_shipped',
             campaign_id: investment.campaign.id,
             user_id: investment.user_id || investment.campaign.fundraiser_id,
             campaign_type: 'EquityCampaign',
-            shipping_data: shipping_data,
-            selected_rewards: [reward_data],
-            delivery_option: nested_metadata[:deliveryOption] || 'pickup'
+            shipping_data: extract_shipping_data(metadata), # Use shipping_data instead of shipping_details
+            selected_rewards: [reward_data], # Use selected_rewards array
+            delivery_option: metadata.dig(:metadata, :deliveryOption),
+            metadata: {
+              reward_title: reward_data[:title],
+              reward_description: reward_data[:description],
+              reward_image: reward_data[:image],
+              entity_type: metadata.dig(:metadata, :shippingData, :entityType)
+            }
           )
         else
-          Rails.logger.warn "Reward not found with ID: #{reward_id} for investment #{investment.id}"
+          Rails.logger.warn "Reward not found with ID: #{reward_data[:id]} for investment #{investment.id}"
         end
       end
     end
 
-    def extract_shipping_details(nested_metadata)
-      shipping_data = nested_metadata[:shippingData]
-      return {} unless shipping_data.is_a?(Hash)
-
-      sd = shipping_data.deep_symbolize_keys
+    def extract_shipping_details(metadata)
+      shipping_data = metadata.dig(:metadata, :shippingData) || {}
       {
-        first_name: sd[:firstName],
-        last_name: sd[:lastName],
-        shipping_address: sd[:shippingAddress],
-        entity_type: sd[:entityType]
+        first_name: shipping_data[:firstName],
+        last_name: shipping_data[:lastName],
+        shipping_address: shipping_data[:shippingAddress],
+        entity_type: shipping_data[:entityType]
       }
     end
 
