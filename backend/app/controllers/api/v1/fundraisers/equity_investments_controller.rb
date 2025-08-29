@@ -41,6 +41,7 @@ module Api
           # First validate the investment parameters
           investment_params = equity_investment_params
           amount = investment_params[:amount].to_f
+          reward_id = investment_params[:reward_id]
 
           # First validate basic parameters
           validation_result = validate_investment(amount, reward_id)
