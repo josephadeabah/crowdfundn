@@ -839,9 +839,9 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
             </label>
             <input
               type="number"
-              value={teamMember.equity_percentage}
+              value={teamMember.equity_percentage || 0}
               onChange={(e) =>
-                handleEquityPercentageChange(Number(e.target.value))
+                handleEquityPercentageChange(Number(e.target.value) || 0)
               }
               className="w-full p-2 border rounded"
               min="0"
@@ -854,8 +854,8 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
               </p>
             )}
             <p className="text-gray-500 text-sm mt-1">
-              This member: {teamMember.equity_percentage}% • New total:{' '}
-              {(totalTeamEquity + teamMember.equity_percentage).toFixed(1)}% •
+              This member: {teamMember.equity_percentage || 0}% • New total:{' '}
+              {((totalTeamEquity || 0) + (teamMember.equity_percentage || 0)).toFixed(1)}% •
               Target: {availableEquity}%
             </p>
           </div>
