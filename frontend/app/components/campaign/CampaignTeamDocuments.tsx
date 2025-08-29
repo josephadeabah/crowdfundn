@@ -12,7 +12,6 @@ import {
   FiLoader,
   FiDollarSign,
   FiBriefcase,
-  FiPercent,
 } from 'react-icons/fi';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
@@ -66,18 +65,16 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
 
   const campaignEquityOffered = currentCampaign?.equity_offered || 0;
 
-  // Founders + Team bucket = (100 - equity offered to investors)
-  const foundersAndTeamEquity = 100 - campaignEquityOffered;
-
-  // Total already allocated to team members
-  const totalTeamEquity =
+  // Calculate total allocated equity to team members
+  const totalAllocatedEquity =
     teamMembers?.reduce(
-      (sum, member) => sum + (member.equity_percentage || 0),
+      (total, member) => total + (member.equity_percentage || 0),
       0,
     ) || 0;
 
-  // What’s left for founders after team allocations
-  const remainingForFounders = foundersAndTeamEquity - totalTeamEquity;
+  // Calculate available equity for team members
+  const availableEquity = 100 - campaignEquityOffered;
+  const remainingEquity = availableEquity - totalAllocatedEquity;
 
   useEffect(() => {
     if (campaignId) {
@@ -102,7 +99,6 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
   const [contractFiles, setContractFiles] = useState<File[]>([]);
   const [financialFiles, setFinancialFiles] = useState<File[]>([]);
   const [businessPlanFiles, setBusinessPlanFiles] = useState<File[]>([]);
-  const [equityError, setEquityError] = useState<string>('');
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,28 +140,6 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
     avatarInputRef.current?.click();
   };
 
-  // Update the handleEquityPercentageChange function
-  const handleEquityPercentageChange = (value: number) => {
-    const numericValue = Number(value) || 0;
-    setTeamMember({ ...teamMember, equity_percentage: numericValue });
-
-    const otherMembersEquity =
-      teamMembers?.reduce(
-        (sum, member) => sum + (member.equity_percentage || 0),
-        0,
-      ) || 0;
-
-    const newTotalTeamAllocation = otherMembersEquity + numericValue;
-
-    if (newTotalTeamAllocation > foundersAndTeamEquity) {
-      setEquityError(
-        `Allocation exceeds available pool: ${newTotalTeamAllocation}% / ${foundersAndTeamEquity}%`,
-      );
-    } else {
-      setEquityError('');
-    }
-  };
-
   const handleAddTeamMember = async () => {
     try {
       if (!teamMember.name || !teamMember.avatar) {
@@ -174,6 +148,18 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
           message: teamMember.avatar
             ? 'Name is required'
             : 'Avatar is required',
+          onConfirm: () => setIsAlertOpen(false),
+          onCancel: () => setIsAlertOpen(false),
+        });
+        setIsAlertOpen(true);
+        return;
+      }
+
+      // Check if the equity allocation exceeds available equity
+      if (teamMember.equity_percentage > remainingEquity) {
+        setAlertConfig({
+          title: 'Insufficient Equity',
+          message: `You cannot allocate more than ${remainingEquity}% equity. Only ${remainingEquity}% is available for team members.`,
           onConfirm: () => setIsAlertOpen(false),
           onCancel: () => setIsAlertOpen(false),
         });
@@ -212,31 +198,10 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
         description: '',
       });
       setAvatarPreview(null);
-      setEquityError('');
-    } catch (error: any) {
-      // Handle backend validation errors specifically
-      let errorMessage =
-        'There was an error adding the team member. Please try again.';
-
-      if (error.response?.data?.errors) {
-        // Extract specific equity validation errors
-        const equityErrors = error.response.data.errors.filter(
-          (err: string) =>
-            err.includes('equity') ||
-            err.includes('Equity') ||
-            err.includes('%'),
-        );
-
-        if (equityErrors.length > 0) {
-          errorMessage = equityErrors.join(', ');
-        } else {
-          errorMessage = error.response.data.errors.join(', ');
-        }
-      }
-
+    } catch (error) {
       setAlertConfig({
         title: 'Failed to add team member',
-        message: errorMessage,
+        message: 'There was an error adding the team member. Please try again.',
         onConfirm: () => setIsAlertOpen(false),
         onCancel: () => setIsAlertOpen(false),
       });
@@ -387,7 +352,6 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
       description: '',
     });
     setAvatarPreview(null);
-    setEquityError('');
     setPitchFiles([]);
     setContractFiles([]);
     setFinancialFiles([]);
@@ -407,42 +371,6 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
 
       <h2 className="text-2xl font-semibold mb-6">Team & Documents</h2>
 
-      {/* Equity Allocation Summary */}
-      {/* Equity Allocation Summary */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mb-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-medium flex items-center">
-              <FiPercent className="mr-2" /> Equity Allocation Summary
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              {campaignEquityOffered}% allocated to investors.
-            </p>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              {foundersAndTeamEquity}% reserved for founders & team.
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="font-medium">
-              Team Allocation: {totalTeamEquity}% / {foundersAndTeamEquity}%
-            </p>
-            <p
-              className={`text-sm ${
-                remainingForFounders < 0
-                  ? 'text-red-600'
-                  : remainingForFounders === foundersAndTeamEquity
-                    ? 'text-gray-600'
-                    : 'text-green-600'
-              }`}
-            >
-              {remainingForFounders < 0
-                ? `Over-allocated by ${Math.abs(remainingForFounders)}%`
-                : `${remainingForFounders}% automatically reserved for founders`}
-            </p>
-          </div>
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Team Members Card */}
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
@@ -457,6 +385,26 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
               <FiPlus className="mr-1" /> Add
             </button>
           </div>
+          {/* Equity Allocation Status */}
+          <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium">Equity Allocation</span>
+              <span className="text-sm">
+                {totalAllocatedEquity}% of {availableEquity}% allocated
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-fundify-primary h-2 rounded-full"
+                style={{
+                  width: `${(totalAllocatedEquity / availableEquity) * 100}%`,
+                }}
+              ></div>
+            </div>
+            <div className="text-xs text-gray-500 mt-1">
+              {remainingEquity}% remaining for team members
+            </div>
+          </div>
 
           <div className="space-y-2">
             {teamMembers?.length ? (
@@ -468,15 +416,15 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                   <div>
                     <p className="font-medium">{member.name}</p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {member.role} • {member.title}
+                      {member.role}
                     </p>
                   </div>
                   <div className="flex items-center">
-                    <span className="text-sm mr-3 bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">
+                    <span className="text-sm mr-2">
                       {member.equity_percentage}%
                     </span>
                     <FiTrash2
-                      className="cursor-pointer text-red-600 hover:text-red-800"
+                      className="cursor-pointer text-red-600"
                       onClick={() =>
                         openDeleteConfirmation('team', String(member.id))
                       }
@@ -534,7 +482,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                       </p>
                     </div>
                     <FiTrash2
-                      className="cursor-pointer text-red-600 hover:text-red-800"
+                      className="cursor-pointer text-red-600"
                       onClick={() =>
                         openDeleteConfirmation('pitch', String(doc.id))
                       }
@@ -591,7 +539,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                       </p>
                     </div>
                     <FiTrash2
-                      className="cursor-pointer text-red-600 hover:text-red-800"
+                      className="cursor-pointer text-red-600"
                       onClick={() =>
                         openDeleteConfirmation('contract', String(doc.id))
                       }
@@ -648,7 +596,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                       </p>
                     </div>
                     <FiTrash2
-                      className="cursor-pointer text-red-600 hover:text-red-800"
+                      className="cursor-pointer text-red-600"
                       onClick={() =>
                         openDeleteConfirmation('financial', String(doc.id))
                       }
@@ -705,7 +653,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                       </p>
                     </div>
                     <FiTrash2
-                      className="cursor-pointer text-red-600 hover:text-red-800"
+                      className="cursor-pointer text-red-600"
                       onClick={() =>
                         openDeleteConfirmation('business_plan', String(doc.id))
                       }
@@ -724,23 +672,21 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
       {/* Team Member Modal */}
       <Modal isOpen={activeModal === 'team'} onClose={closeModal} size="xlarge">
         <h3 className="text-xl font-bold mb-4">Add Team Member</h3>
-        <div className="space-y-4">
-          {/* Equity Allocation Info */}
-          {/* Equity Allocation Info */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded">
-            <p className="text-sm font-medium">
-              Founders + Team Pool: {foundersAndTeamEquity}% (100% -{' '}
-              {campaignEquityOffered}% investors)
-            </p>
-            <p className="text-sm">
-              Current team allocation: {totalTeamEquity}% • Remaining for
-              founders: {remainingForFounders}%
-            </p>
+        {/* Equity Allocation Info */}
+        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium">Available Equity</span>
+            <span className="text-sm font-semibold">{remainingEquity}%</span>
           </div>
-
-          {/* Avatar Upload */}
+          <div className="text-xs text-blue-600 dark:text-blue-300">
+            Campaign equity offered: {campaignEquityOffered}% | Total allocated
+            to team: {totalAllocatedEquity}%
+          </div>
+        </div>
+        <div className="space-y-4">
+          {/* Avatar Upload - Full width */}
           <div className="col-span-2">
-            <label className="block text-sm font-medium mb-1">Avatar*</label>
+            <label className="block text-sm font-medium mb-1">Avatar</label>
             <input
               type="file"
               ref={avatarInputRef}
@@ -751,7 +697,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
             <div className="flex items-center space-x-4">
               <div
                 onClick={triggerAvatarInput}
-                className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer overflow-hidden border-2 border-dashed border-gray-300"
+                className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer overflow-hidden"
               >
                 {avatarPreview ? (
                   <img
@@ -775,7 +721,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
 
           {/* Grid for form fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Name */}
+            {/* Name - Left column */}
             <div>
               <label className="block text-sm font-medium mb-1">Name*</label>
               <input
@@ -789,7 +735,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
               />
             </div>
 
-            {/* Email */}
+            {/* Email - Right column */}
             <div>
               <label className="block text-sm font-medium mb-1">Email</label>
               <input
@@ -802,7 +748,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
               />
             </div>
 
-            {/* Role */}
+            {/* Role - Left column */}
             <div>
               <label className="block text-sm font-medium mb-1">Role</label>
               <select
@@ -821,7 +767,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
               </select>
             </div>
 
-            {/* Title */}
+            {/* Title - Right column */}
             <div>
               <label className="block text-sm font-medium mb-1">Title</label>
               <input
@@ -833,37 +779,39 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                 className="w-full p-2 border rounded"
               />
             </div>
+            {/* Empty cell to maintain grid alignment */}
+            <div></div>
           </div>
 
-          {/* Equity Percentage */}
+          {/* Equity Percentage - Left column */}
+          {/* Equity Percentage - Left column */}
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-1">
-              Equity Percentage
+              Equity Percentage (Max: {remainingEquity}%)
             </label>
             <input
               type="number"
-              value={teamMember.equity_percentage || 0}
-              onChange={(e) =>
-                handleEquityPercentageChange(Number(e.target.value) || 0)
-              }
+              value={teamMember.equity_percentage}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                if (value <= remainingEquity) {
+                  setTeamMember({
+                    ...teamMember,
+                    equity_percentage: value,
+                  });
+                }
+              }}
               className="w-full p-2 border rounded"
               min="0"
-              max="100"
-              step="0.1"
+              max={remainingEquity}
             />
-            {equityError && (
-              <p className="text-red-600 text-sm mt-1 flex items-center">
-                <FiAlertCircle className="mr-1" /> {equityError}
+            {teamMember.equity_percentage > remainingEquity && (
+              <p className="text-red-500 text-sm mt-1">
+                Cannot exceed available equity of {remainingEquity}%
               </p>
             )}
-            <p className="text-gray-500 text-sm mt-1">
-              This member: {teamMember.equity_percentage || 0}% • New total:{' '}
-              {(totalTeamEquity || 0) + (teamMember.equity_percentage || 0)}% •
-              Target: {remainingForFounders}%
-            </p>
           </div>
-
-          {/* Description */}
+          {/* Description - Full width below the grid */}
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-1">
               Description
@@ -878,12 +826,11 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
               }
               className="w-full p-2 border rounded"
               rows={3}
-              placeholder="Brief description of this team member's role and responsibilities..."
             />
           </div>
         </div>
 
-        {/* Action buttons */}
+        {/* Action buttons - Full width */}
         <div className="flex justify-end space-x-3 mt-6">
           <Button
             onClick={closeModal}
@@ -896,10 +843,16 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
           <Button
             onClick={handleAddTeamMember}
             disabled={
-              !teamMember.name || !teamMember.avatar || !!equityError // block if over-allocation
+              !teamMember.name ||
+              !teamMember.avatar ||
+              teamMember.equity_percentage > remainingEquity ||
+              teamMember.equity_percentage <= 0
             }
             className={`px-4 py-2 rounded-lg ${
-              !teamMember.name || !teamMember.avatar || !!equityError
+              !teamMember.name ||
+              !teamMember.avatar ||
+              teamMember.equity_percentage > remainingEquity ||
+              teamMember.equity_percentage <= 0
                 ? 'bg-gray-300 cursor-not-allowed'
                 : 'bg-fundify-primary text-white hover:bg-fundify-primary'
             }`}
