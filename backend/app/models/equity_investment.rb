@@ -146,10 +146,6 @@ class EquityInvestment < ApplicationRecord
   end
 
   def calculate_shares_and_percentage
-    Rails.logger.info "Calculating shares and percentage for amount: #{amount}"
-    Rails.logger.info "Campaign valuation: #{campaign&.valuation}"
-    Rails.logger.info "Campaign total_shares: #{campaign&.total_shares}"
-    Rails.logger.info "Campaign equity_offered: #{campaign&.equity_offered}
     unless campaign && amount.present? && amount.positive?
       errors.add(:amount, "must be positive")
       return
