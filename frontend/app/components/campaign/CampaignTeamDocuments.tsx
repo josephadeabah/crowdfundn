@@ -65,7 +65,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
   // Replace the equity calculation lines with this:
   const campaignEquityOffered = Number(currentCampaign?.equity_offered) || 0;
 
-  console.log("Equity Offered", campaignEquityOffered)
+  console.log("Equity Offered", currentCampaign)
 
   // Calculate total allocated equity to team members
   const totalAllocatedEquity =
