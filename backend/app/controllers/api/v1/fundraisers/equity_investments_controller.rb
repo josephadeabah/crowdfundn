@@ -41,7 +41,6 @@ module Api
           # First validate the investment parameters
           investment_params = equity_investment_params
           amount = investment_params[:amount].to_f
-          reward_id = investment_params[:reward_id]
 
           # First validate basic parameters
           validation_result = validate_investment(amount, reward_id)
@@ -66,7 +65,6 @@ module Api
             end
 
             investment.update!(
-              reward_id: reward_id,
               email: investment_params[:email],
               phone: investment_params[:phone],
               full_name: investment_params[:full_name],
@@ -389,7 +387,6 @@ module Api
         def equity_investment_params
           params.require(:equity_investment).permit(
             :amount,
-            :reward_id,
             :transaction_reference,
             :shares,
             :percentage,
