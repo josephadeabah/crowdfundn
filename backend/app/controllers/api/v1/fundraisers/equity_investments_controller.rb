@@ -389,6 +389,7 @@ module Api
         def equity_investment_params
           params.require(:equity_investment).permit(
             :amount,
+            :reward_id,
             :transaction_reference,
             :shares,
             :percentage,
