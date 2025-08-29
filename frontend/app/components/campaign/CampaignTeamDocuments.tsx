@@ -61,21 +61,21 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
 
   // Get the current campaign to calculate available equity
   const currentCampaign = campaigns.find(
-    (camp) => String(camp.id) === String(campaignId),
+    (camp) => camp.id === Number(campaignId),
   ) as CampaignResponseDataType | undefined;
   const campaignEquityOffered = currentCampaign?.equity_offered || 0;
 
-  // Calculate available equity for founders + team
+  // Calculate available equity for founders + team (100% - equity offered to investors)
   const availableEquity = 100 - campaignEquityOffered;
 
-  // Already allocated to team
+  // Calculate total equity already allocated to team members
   const totalTeamEquity =
     teamMembers?.reduce(
       (sum, member) => sum + (member.equity_percentage || 0),
       0,
     ) || 0;
 
-  // Remaining still with founders (after giving team allocations)
+  // Calculate remaining equity that can still be allocated to founders
   const remainingEquity = availableEquity - totalTeamEquity;
 
   useEffect(() => {
@@ -143,23 +143,29 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
     avatarInputRef.current?.click();
   };
 
+  // Update the handleEquityPercentageChange function
   const handleEquityPercentageChange = (value: number) => {
-    setTeamMember({ ...teamMember, equity_percentage: value });
+    const numericValue = Number(value) || 0;
+    setTeamMember({ ...teamMember, equity_percentage: numericValue });
 
-    // Calculate what the new total would be
-    const newMemberEquity = value;
+    // Calculate what the new total team allocation would be
+    const newMemberEquity = numericValue;
     const otherMembersEquity =
       teamMembers?.reduce(
         (sum, member) => sum + (member.equity_percentage || 0),
         0,
       ) || 0;
-    const newTotal = otherMembersEquity + newMemberEquity;
+    const newTotalTeamAllocation = otherMembersEquity + newMemberEquity;
 
-    // Validate against available equity
-    if (newTotal > availableEquity) {
-      setEquityError(`Total would be ${newTotal}% (max ${availableEquity}%)`);
-    } else if (newTotal < availableEquity) {
-      setEquityError(`Total would be ${newTotal}% (need ${availableEquity}%)`);
+    // Validate against available equity for team
+    if (newTotalTeamAllocation > availableEquity) {
+      setEquityError(
+        `Team allocation would be ${newTotalTeamAllocation}% (max ${availableEquity}% available for team)`,
+      );
+    } else if (newTotalTeamAllocation < availableEquity) {
+      setEquityError(
+        `Team allocation would be ${newTotalTeamAllocation}% (${availableEquity - newTotalTeamAllocation}% still available for founders)`,
+      );
     } else {
       setEquityError('');
     }
@@ -435,7 +441,9 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
             >
               {remainingEquity < 0
                 ? `Over-allocated by ${Math.abs(remainingEquity)}%`
-                : `${remainingEquity}% still reserved for founders`}
+                : remainingEquity === 0
+                  ? '✓ All team equity allocated'
+                  : `${remainingEquity}% still reserved for founders`}
             </p>
           </div>
         </div>
@@ -855,7 +863,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
             )}
             <p className="text-gray-500 text-sm mt-1">
               This member: {teamMember.equity_percentage || 0}% • New total:{' '}
-              {((totalTeamEquity || 0) + (teamMember.equity_percentage || 0))}% •
+              {(totalTeamEquity || 0) + (teamMember.equity_percentage || 0)}% •
               Target: {availableEquity}%
             </p>
           </div>
