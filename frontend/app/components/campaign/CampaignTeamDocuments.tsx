@@ -28,7 +28,6 @@ interface TeamDocumentsProps {
 const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
   campaignId,
 }) => {
-  const { campaigns } = useCampaignContext();
   const {
     loading,
     error,
@@ -41,7 +40,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
     removeTeamMember,
     deleteDocument,
   } = useEquityCampaignContext();
-  const { fetchUserCampaigns } = useCampaignContext();
+  const { campaigns, fetchUserCampaigns } = useCampaignContext();
 
   const [activeModal, setActiveModal] = useState<
     'team' | 'pitch' | 'contract' | 'financial' | 'business_plan' | null
@@ -65,6 +64,8 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
 
   // Replace the equity calculation lines with this:
   const campaignEquityOffered = Number(currentCampaign?.equity_offered) || 0;
+
+  console.log("Equity Offered", campaignEquityOffered)
 
   // Calculate total allocated equity to team members
   const totalAllocatedEquity =
