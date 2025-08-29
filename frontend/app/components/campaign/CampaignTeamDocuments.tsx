@@ -413,6 +413,10 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
             <div className="text-xs text-gray-500 mt-1">
               {formatPercentage(remainingEquity)}% remaining for team members
             </div>
+            <span className="text-xs text-orange-800">
+              Before launching your campaign, ensure team equity totals exactly{' '}
+              {formatPercentage(availableEquity)}%
+            </span>
           </div>
 
           <div className="space-y-2">
@@ -681,7 +685,6 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
       {/* Team Member Modal */}
       <Modal isOpen={activeModal === 'team'} onClose={closeModal} size="xlarge">
         <h3 className="text-xl font-bold mb-4">Add Team Member</h3>
-        {/* Equity Allocation Info */}
         {/* Equity Allocation Info */}
         <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
           <div className="flex justify-between items-center mb-2">
