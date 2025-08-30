@@ -18,6 +18,17 @@ import { PerformanceCharts } from '../components/investchart/PerformanceCharts';
 import { PortfolioSummary } from '../components/investchart/PortfolioSummary';
 import { Badge } from '../components/ui/badge';
 import { formatCurrency } from '../utils/helpers/calculate.days';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/app/components/ui/accordion';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/app/components/ui/avatar';
 
 const EquityInvestments = () => {
   const {
@@ -39,6 +50,9 @@ const EquityInvestments = () => {
   const [certificateOperations, setCertificateOperations] = useState<{
     [key: string]: boolean;
   }>({});
+  const [expandedInvestments, setExpandedInvestments] = useState<Set<number>>(
+    new Set(),
+  );
 
   useEffect(() => {
     fetchPortfolio(currentPage, itemsPerPage);
@@ -53,7 +67,15 @@ const EquityInvestments = () => {
     return fallback;
   };
 
-
+  const toggleInvestmentDetails = (investmentId: number) => {
+    const newExpanded = new Set(expandedInvestments);
+    if (newExpanded.has(investmentId)) {
+      newExpanded.delete(investmentId);
+    } else {
+      newExpanded.add(investmentId);
+    }
+    setExpandedInvestments(newExpanded);
+  };
 
   // Filter out pending investments for display purposes only
   const filterOutPendingInvestments = (investments: EquityInvestment[]) => {
@@ -253,110 +275,237 @@ const EquityInvestments = () => {
                       const hasCertificate =
                         investment.certificate_exists ||
                         investment.certificate?.exists;
+                      const isExpanded = expandedInvestments.has(investment.id);
 
                       return (
-                        <tr
-                          key={investment.id}
-                          className="hover:bg-muted/50 transition-colors"
-                        >
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="font-medium text-gray-900 dark:text-white">
-                              {investment.campaign?.title ||
-                                `Campaign ${investment.campaign_id}`}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {formatCurrency(
-                              investmentAmount,
-                              user?.currency,
-                              user?.currency_symbol,
-                            )}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {parseNumber(investment.shares).toLocaleString()} (
-                            {parseNumber(investment.percentage).toFixed(2)}%)
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {formatCurrency(
-                              currentValue,
-                              user?.currency,
-                              user?.currency_symbol,
-                            )}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex flex-col">
-                              <span
-                                className={`font-medium ${
-                                  investmentReturn >= 0
-                                    ? 'text-green-600 dark:text-green-400'
-                                    : 'text-red-600 dark:text-red-400'
-                                }`}
-                              >
-                                {formatCurrency(
-                                  investmentReturn,
-                                  user?.currency,
+                        <>
+                          <tr
+                            key={investment.id}
+                            className="hover:bg-muted/50 transition-colors"
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    toggleInvestmentDetails(investment.id)
+                                  }
+                                  className="mr-2"
+                                >
+                                  {isExpanded ? '−' : '+'}
+                                </Button>
+                                <div className="font-medium text-gray-900 dark:text-white">
+                                  {investment.campaign?.title ||
+                                    `Campaign ${investment.campaign_id}`}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {formatCurrency(
+                                investmentAmount,
+                                investment.currency || user?.currency,
+                                investment.currency_symbol ||
                                   user?.currency_symbol,
-                                )}
-                              </span>
-                              <Badge
-                                variant="secondary"
-                                className={`w-fit mt-1 border ${
-                                  investmentReturn >= 0
-                                    ? 'bg-green-100 text-green-700 border-green-300 dark:bg-green-900/20 dark:text-green-400 dark:border-green-700'
-                                    : 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/20 dark:text-red-400 dark:border-red-700'
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {parseNumber(investment.shares).toLocaleString()}{' '}
+                              ({parseNumber(investment.percentage).toFixed(2)}%)
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {formatCurrency(
+                                currentValue,
+                                investment.currency || user?.currency,
+                                investment.currency_symbol ||
+                                  user?.currency_symbol,
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex flex-col">
+                                <span
+                                  className={`font-medium ${
+                                    investmentReturn >= 0
+                                      ? 'text-green-600 dark:text-green-400'
+                                      : 'text-red-600 dark:text-red-400'
+                                  }`}
+                                >
+                                  {formatCurrency(
+                                    investmentReturn,
+                                    investment.currency || user?.currency,
+                                    investment.currency_symbol ||
+                                      user?.currency_symbol,
+                                  )}
+                                </span>
+                                <Badge
+                                  variant="secondary"
+                                  className={`w-fit mt-1 border ${
+                                    investmentReturn >= 0
+                                      ? 'bg-green-100 text-green-700 border-green-300 dark:bg-green-900/20 dark:text-green-400 dark:border-green-700'
+                                      : 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/20 dark:text-red-400 dark:border-red-700'
+                                  }`}
+                                >
+                                  {investmentReturn >= 0 ? '+' : ''}
+                                  {returnPct.toFixed(2)}%
+                                </Badge>
+                              </div>
+                            </td>
+
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span
+                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                  investment.status === 'successful'
+                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                    : investment.status === 'pending'
+                                      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                                      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                                 }`}
                               >
-                                {investmentReturn >= 0 ? '+' : ''}
-                                {returnPct.toFixed(2)}%
-                              </Badge>
-                            </div>
-                          </td>
-
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span
-                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                investment.status === 'successful'
-                                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                  : investment.status === 'pending'
-                                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                              }`}
-                            >
-                              {investment.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <Button
-                              className="text-orange-600 hover:text-orange-900 dark:hover:text-orange-400 mr-4"
-                              variant="outline"
-                              size="sm"
-                              onClick={() =>
-                                handleViewCampaignDetails(investment)
-                              }
-                            >
-                              View
-                            </Button>
-                            {investment.status === 'successful' && (
+                                {investment.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <Button
+                                className="text-orange-600 hover:text-orange-900 dark:hover:text-orange-400 mr-4"
                                 variant="outline"
                                 size="sm"
                                 onClick={() =>
-                                  handleDownloadCertificate(
-                                    investment.id.toString(),
-                                  )
+                                  handleViewCampaignDetails(investment)
                                 }
-                                disabled={isCertificateLoading}
-                                className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
                               >
-                                {isCertificateLoading
-                                  ? 'Loading...'
-                                  : hasCertificate
-                                    ? 'Certificate'
-                                    : 'Generate Certificate'}
+                                View
                               </Button>
-                            )}
-                          </td>
-                        </tr>
+                              {investment.status === 'successful' && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleDownloadCertificate(
+                                      investment.id.toString(),
+                                    )
+                                  }
+                                  disabled={isCertificateLoading}
+                                  className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
+                                >
+                                  {isCertificateLoading
+                                    ? 'Loading...'
+                                    : hasCertificate
+                                      ? 'Certificate'
+                                      : 'Generate Certificate'}
+                                </Button>
+                              )}
+                            </td>
+                          </tr>
+                          {isExpanded && (
+                            <tr>
+                              <td
+                                colSpan={7}
+                                className="px-6 py-4 bg-gray-50 dark:bg-gray-700"
+                              >
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                  {/* Company Information */}
+                                  <div>
+                                    <h4 className="font-semibold text-lg mb-3">
+                                      Company Information
+                                    </h4>
+                                    {investment.company_info ? (
+                                      <div className="space-y-2">
+                                        <p>
+                                          <strong>Name:</strong>{' '}
+                                          {investment.company_info.name}
+                                        </p>
+                                        <p>
+                                          <strong>Description:</strong>{' '}
+                                          {investment.company_info.description}
+                                        </p>
+                                        <p>
+                                          <strong>Headquarters:</strong>{' '}
+                                          {investment.company_info.headquarters}
+                                        </p>
+                                        <p>
+                                          <strong>Website:</strong>
+                                          <a
+                                            href={
+                                              investment.company_info.website
+                                            }
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:underline ml-1"
+                                          >
+                                            {investment.company_info.website}
+                                          </a>
+                                        </p>
+                                        <p>
+                                          <strong>Contract Term:</strong>{' '}
+                                          {
+                                            investment.company_info
+                                              .contract_term
+                                          }
+                                        </p>
+                                      </div>
+                                    ) : (
+                                      <p className="text-gray-500">
+                                        No company information available
+                                      </p>
+                                    )}
+                                  </div>
+
+                                  {/* Team Members */}
+                                  <div>
+                                    <h4 className="font-semibold text-lg mb-3">
+                                      Team Members
+                                    </h4>
+                                    {investment.team_members &&
+                                    investment.team_members.length > 0 ? (
+                                      <div className="space-y-3">
+                                        {investment.team_members.map(
+                                          (member) => (
+                                            <div
+                                              key={member.id}
+                                              className="flex items-center space-x-3 p-2 bg-white dark:bg-gray-600 rounded-lg"
+                                            >
+                                              <Avatar>
+                                                <AvatarImage
+                                                  src={member.avatar_url}
+                                                />
+                                                <AvatarFallback>
+                                                  {member.name?.charAt(0) ||
+                                                    'T'}
+                                                </AvatarFallback>
+                                              </Avatar>
+                                              <div>
+                                                <p className="font-medium">
+                                                  {member.name}
+                                                </p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">
+                                                  {member.title}
+                                                </p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                  {member.role}
+                                                </p>
+                                                {member.equity_percentage >
+                                                  0 && (
+                                                  <p className="text-xs text-green-600 dark:text-green-400">
+                                                    Equity:{' '}
+                                                    {member.equity_percentage}%
+                                                  </p>
+                                                )}
+                                              </div>
+                                            </div>
+                                          ),
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <p className="text-gray-500">
+                                        No team information available
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
                       );
                     })}
                   </tbody>
@@ -386,8 +535,8 @@ const EquityInvestments = () => {
                   Invested{' '}
                   {formatCurrency(
                     parseNumber(investment.amount),
-                    user?.currency,
-                    user?.currency_symbol,
+                    investment.currency || user?.currency,
+                    investment.currency_symbol || user?.currency_symbol,
                   )}{' '}
                   in{' '}
                   {investment.campaign?.title ||

@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/components/ui/card';
+import { useAuth } from '@/app/context/auth/AuthContext';
 import { EquityInvestment } from '@/app/types/equityCampaigns.types';
 import { formatCurrency } from '@/app/utils/helpers/calculate.days';
 import { values } from 'lodash';
@@ -58,9 +59,8 @@ export const PerformanceCharts = ({
         acc.push({
           name: campaignName,
           value: currentValue,
-          // Store currency info for tooltip
-          currency: investment.currency,
-          currency_symbol: investment.currency_symbol,
+          currency: currency,
+          currency_symbol: currencySymbol,
         });
       }
       return acc;
@@ -89,8 +89,8 @@ export const PerformanceCharts = ({
       currentValue: currentValue,
       return: returnAmount,
       returnPercentage: returnPercentage,
-      currency: investment.currency,
-      currency_symbol: investment.currency_symbol,
+      currency: currency,
+      currency_symbol: currencySymbol,
     };
   });
 

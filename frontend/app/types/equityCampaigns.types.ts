@@ -34,6 +34,14 @@ export interface CampaignTeamMember {
   updated_at?: string;
 }
 
+export interface CompanyInfo {
+  name: string;
+  description: string;
+  headquarters: string;
+  website: string;
+  contract_term: string;
+}
+
 export interface EquityCampaignResponseDataType
   extends CampaignResponseDataType {
   valuation: number;
@@ -52,13 +60,7 @@ export interface EquityCampaignResponseDataType
   total_investors: number;
   team_members: CampaignTeamMember[];
   documents: InvestorDocument[];
-  company_info: {
-    name: string;
-    description: string;
-    headquarters: string;
-    website: string;
-    contract_term: string;
-  };
+  company_info: CompanyInfo;
   investment_range: {
     minimum: number;
     maximum: number;
@@ -119,13 +121,16 @@ export interface EquityInvestment extends Investment {
   };
   current_value?: number;
   campaign: {
-    id: number; // Added campaign id
+    id: number;
     title: string;
     slug: string;
     status: string;
     valuation: number;
     equity_offered: number;
   };
+  // Add company and team information
+  company_info?: CompanyInfo;
+  team_members?: CampaignTeamMember[];
 }
 
 export interface InvestmentPortfolio {
