@@ -120,6 +120,7 @@ const KYC = () => {
                   </div>
                   <Button 
                     className="w-full" 
+                    variant="outline"
                     onClick={() => handleTypeSelect(option.type)}
                   >
                     Select {option.type === 'creator' ? 'Fundraiser' : option.type === 'investor' ? 'Investor' : 'Mentor'}
