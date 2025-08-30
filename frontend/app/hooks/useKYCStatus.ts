@@ -33,12 +33,15 @@ export const useKYCStatus = () => {
         }
 
         // Otherwise, fetch from API
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/status`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/status`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
           },
-        });
+        );
 
         if (response.ok) {
           const data = await response.json();
