@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
-import { TrendingUp, DollarSign, PieChart, Target } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, PieChart, Target } from 'lucide-react';
 
 interface PortfolioSummaryProps {
   portfolio: {
@@ -94,7 +94,11 @@ export const PortfolioSummary = ({ portfolio }: PortfolioSummaryProps) => {
           <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
             Total Return
           </CardTitle>
-          <TrendingUp className={`h-4 w-4 ${returnColorClass}`} />
+          {isPositiveReturn ? (
+            <TrendingUp className={`h-4 w-4 ${returnColorClass}`} />
+          ) : (
+            <TrendingDown className={`h-4 w-4 ${returnColorClass}`} />
+          )}
         </CardHeader>
         <CardContent>
           <div className={`text-2xl font-bold ${returnColorClass}`}>
