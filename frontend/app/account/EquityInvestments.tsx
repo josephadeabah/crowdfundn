@@ -53,20 +53,26 @@ const EquityInvestments = () => {
   };
 
   // Format currency based on user's currency settings
-  const formatCurrency = (
-    amount: number,
-    currency = user?.currency || 'USD',
-    currencySymbol = user?.currency_symbol || '$',
-  ) => {
+const formatCurrency = (
+  amount: number,
+  currency = user?.currency || 'USD', // ISO code e.g. "USD", "EUR", "GHS"
+  currencySymbol = user?.currency_symbol || '$', // Symbol e.g. "$", "€", "₵"
+) => {
+  try {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currencySymbol || currency,
+      currency, // ✅ ISO code only
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })
       .format(amount)
-      .replace('$', currencySymbol);
-  };
+      .replace(/\p{Sc}/u, currencySymbol); // replace any currency symbol with our provided one
+  } catch (e) {
+    console.error('Currency formatting error:', e);
+    return `${currencySymbol}${amount.toFixed(2)}`;
+  }
+};
+
 
   // Filter out pending investments for display purposes only
   const filterOutPendingInvestments = (investments: EquityInvestment[]) => {

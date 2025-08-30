@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from '@/app/components/ui/card';
 import { EquityInvestment } from '@/app/types/equityCampaigns.types';
+import { values } from 'lodash';
 import {
   PieChart,
   Pie,
@@ -45,15 +46,20 @@ export const PerformanceCharts = ({
     customCurrency = currency,
     customSymbol = currencySymbol,
   ) => {
+  try {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: customSymbol || customCurrency,
+      currency: customCurrency, // ✅ ISO code only
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })
       .format(value)
-      .replace('$', customSymbol);
-  };
+      .replace(/\p{Sc}/u, currencySymbol); // replace any currency symbol with our provided one
+  } catch (e) {
+    console.error('Currency formatting error:', e);
+    return `${currencySymbol}${value.toFixed(2)}`;
+  }
+};
 
   // Prepare data for portfolio composition pie chart
   const portfolioData = investments.reduce(
