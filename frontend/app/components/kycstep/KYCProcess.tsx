@@ -79,13 +79,13 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const [currentError, setCurrentError] = useState<string>('');
   const [currentSuccess, setCurrentSuccess] = useState<string>('');
 
-  const isCreator = userType === 'creator';
+  const isCreator = userType === 'issuer';
   const isInvestor = userType === 'investor';
   const isMentor = userType === 'mentor';
 
   // Define step types and their order for each user type
   const stepDefinitions = {
-    creator: [
+    issuer: [
       'personalInfo',
       'businessInfo',
       'documents',
@@ -380,7 +380,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         : undefined;
 
     const baseData = {
-      kyc_type: userType === 'creator' ? 'issuer' : 'investor',
+      kyc_type: userType === 'issuer' ? 'issuer' : 'investor',
       verification_type:
         (formData.idType as
           | 'national_id'
@@ -416,7 +416,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           ? formattedSignature
           : null,
       issuer_signature_data:
-        (userType === 'creator' || userType === 'mentor') &&
+        (userType === 'issuer' || userType === 'mentor') &&
         formattedSignature &&
         formattedSignature.length > 0
           ? formattedSignature
@@ -424,7 +424,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       issuer_accepted_terms: true,
     };
 
-    if (userType === 'creator' || userType === 'mentor') {
+    if (userType === 'issuer' || userType === 'mentor') {
       return {
         ...baseData,
         kyc_type: 'issuer',
