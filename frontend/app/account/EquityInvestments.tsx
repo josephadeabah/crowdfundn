@@ -55,23 +55,33 @@ const EquityInvestments = () => {
   // Format currency based on user's currency settings
 const formatCurrency = (
   amount: number,
-  currency = user?.currency || 'USD', // ISO code e.g. "USD", "EUR", "GHS"
-  currencySymbol = user?.currency_symbol || '$', // Symbol e.g. "$", "€", "₵"
+  currency = user?.currency || 'USD', // ISO code
+  currencySymbol = user?.currency_symbol, // Symbol (optional)
 ) => {
   try {
-    return new Intl.NumberFormat('en-US', {
+    const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency, // ✅ ISO code only
+      currency, // always requires ISO code
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    })
-      .format(amount)
-      .replace(/\p{Sc}/u, currencySymbol); // replace any currency symbol with our provided one
+    });
+
+    const formatted = formatter.format(amount);
+
+    // If we have a symbol, replace whatever Intl used with it
+    if (currencySymbol) {
+      return formatted.replace(/\p{Sc}/u, currencySymbol);
+    }
+
+    // Else just return Intl output (uses ISO code)
+    return formatted;
   } catch (e) {
     console.error('Currency formatting error:', e);
-    return `${currencySymbol}${amount.toFixed(2)}`;
+    // fallback if Intl fails
+    return `${currencySymbol || currency}${amount.toFixed(2)}`;
   }
 };
+
 
 
   // Filter out pending investments for display purposes only
