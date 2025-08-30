@@ -8,6 +8,7 @@ import {
   TabsTrigger,
 } from '@/app/components/ui/tabs';
 import KYCProcess from '@/app/components/kycstep/KYCProcess';
+import KYCStatus from '@/app/components/kycstep/KYCStatus';
 
 const KYC = () => {
   const [userType, setUserType] = useState<'creator' | 'investor' | 'mentor'>(
@@ -21,6 +22,7 @@ const KYC = () => {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto">
+        <KYCStatus showActions={false} />
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">
             {userType === 'creator'

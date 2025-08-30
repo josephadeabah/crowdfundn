@@ -5,6 +5,16 @@ export interface LoginUserRequest {
   password: string;
 }
 
+export interface KYCStatusInfo {
+  verified: boolean;
+  has_kyc: boolean;
+  status: string;
+  kyc_type: string;
+  verified_at: string | null;
+  expires_at: string | null;
+  is_expired: boolean;
+}
+
 export interface LoginUserType {
   id: number;
   email: string;
@@ -29,6 +39,9 @@ export interface LoginUserType {
     isActive: boolean;
     // add other subscription properties if needed
   };
+  kyc_status_info?: KYCStatusInfo;
+  can_invest?: boolean; // Add can_invest property
+  can_create_campaign?: boolean; // Add can_create_campaign property
 }
 
 export interface LoginUserResponseSuccess {
