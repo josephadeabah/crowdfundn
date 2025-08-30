@@ -21,7 +21,7 @@ export const ProgressSteps: React.FC<ProgressStepsProps> = ({
 }) => {
   return (
     <Card className="mb-6 shadow-none border-0">
-      <CardContent className="p-4">
+      <CardContent className="p-1">
         {/* Desktop view (horizontal) */}
         <div className="hidden md:flex items-center justify-between">
           {steps.map((step, index) => (
