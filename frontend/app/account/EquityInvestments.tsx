@@ -231,7 +231,7 @@ const EquityInvestments = () => {
                   <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Campaign
+                        Company
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         Invested
@@ -292,7 +292,7 @@ const EquityInvestments = () => {
                                   {isExpanded ? '−' : '+'}
                                 </Button>
                                 <div className="font-medium text-gray-900 dark:text-white">
-                                  {investment.campaign?.title ||
+                                  {investment.campaign?.company_name ||
                                     `Campaign ${investment.campaign_id}`}
                                 </div>
                               </div>

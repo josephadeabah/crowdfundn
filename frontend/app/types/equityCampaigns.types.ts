@@ -122,6 +122,9 @@ export interface EquityInvestment extends Investment {
   current_value?: number;
   campaign: {
     id: number;
+    company_name?: string;
+    company_description?: string;
+    company_website?: string;
     title: string;
     slug: string;
     status: string;
