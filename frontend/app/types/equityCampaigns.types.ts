@@ -82,6 +82,9 @@ export interface Investment {
 export interface EquityInvestment extends Investment {
   id: number;
   amount: number;
+  currency: string;
+  currency_symbol: string;
+  date: string;
   shares: number;
   percentage: number;
   investor_id: number;
@@ -131,12 +134,16 @@ export interface InvestmentPortfolio {
     total_shares?: number;
     total_value?: number;
     active_investments: number;
-    campaigns_invested: number;
     total_invested_count?: number;
+    campaigns_invested: number;
     total_return?: number;
-    return_percentage?: number;
+    return_percentage?: number | string | null;
+    currency?: string;
+    currency_symbol?: string;
   };
-  investments: EquityInvestment[];
+  investments?: EquityInvestment[];
+  currency?: string;
+  currencySymbol?: string;
 }
 
 export interface ShareCertificate {

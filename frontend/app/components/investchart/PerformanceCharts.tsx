@@ -23,6 +23,8 @@ import {
 
 interface PerformanceChartsProps {
   investments: EquityInvestment[];
+  currency?: string;
+  currencySymbol?: string;
 }
 
 export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {

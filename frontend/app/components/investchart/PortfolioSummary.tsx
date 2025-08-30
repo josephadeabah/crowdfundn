@@ -1,4 +1,5 @@
 // app/components/equity/PortfolioSummary.tsx
+// app/components/equity/PortfolioSummary.tsx
 'use client';
 import {
   Card,
@@ -7,26 +8,29 @@ import {
   CardTitle,
 } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
-import { TrendingUp, TrendingDown, DollarSign, PieChart, Target } from 'lucide-react';
+import {
+  TrendingUp,
+  TrendingDown,
+  DollarSign,
+  PieChart,
+  Target,
+} from 'lucide-react';
+import { InvestmentPortfolio } from '@/app/types/equityCampaigns.types';
 
-interface PortfolioSummaryProps {
-  portfolio: {
-    total_invested: number;
-    total_shares?: number;
-    total_value?: number;
-    active_investments: number;
-    campaigns_invested: number;
-    total_return?: number;
-    return_percentage?: number | string | null;
-  };
-}
-
-export const PortfolioSummary = ({ portfolio }: PortfolioSummaryProps) => {
+export const PortfolioSummary = ({
+  portfolio,
+  currency = 'USD',
+  currencySymbol = '$',
+}: InvestmentPortfolio) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
-    }).format(amount);
+      currency: currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+      .format(amount)
+      .replace('$', currencySymbol);
   };
 
   const formatPercentage = (percentage: number | string | null | undefined) => {

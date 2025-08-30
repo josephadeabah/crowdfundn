@@ -52,6 +52,22 @@ const EquityInvestments = () => {
     return fallback;
   };
 
+  // Format currency based on user's currency settings
+  const formatCurrency = (
+    amount: number,
+    currency = user?.currency || 'USD',
+    currencySymbol = user?.currency_symbol || '$',
+  ) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+      .format(amount)
+      .replace('$', currencySymbol);
+  };
+
   // Filter out pending investments for display purposes only
   const filterOutPendingInvestments = (investments: EquityInvestment[]) => {
     return investments.filter((investment) => investment.status !== 'pending');
@@ -181,10 +197,18 @@ const EquityInvestments = () => {
       </div>
 
       {/* Use the backend-calculated portfolio summary */}
-      <PortfolioSummary portfolio={portfolio?.portfolio} />
+      <PortfolioSummary
+        portfolio={portfolio?.portfolio}
+        currency={user?.currency}
+        currencySymbol={user?.currency_symbol}
+      />
 
       {/* Performance Charts Section - Use filtered investments for display only */}
-      <PerformanceCharts investments={successfulInvestments} />
+      <PerformanceCharts
+        investments={successfulInvestments}
+        currency={user?.currency}
+        currencySymbol={user?.currency_symbol}
+      />
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-8 mt-8">
         <div className="px-2 py-4">
@@ -255,22 +279,22 @@ const EquityInvestments = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            $
-                            {investmentAmount.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}
+                            {formatCurrency(
+                              investmentAmount,
+                              investment.currency,
+                              investment.currency_symbol,
+                            )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             {parseNumber(investment.shares).toLocaleString()} (
                             {parseNumber(investment.percentage).toFixed(2)}%)
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            $
-                            {currentValue.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}
+                            {formatCurrency(
+                              currentValue,
+                              investment.currency,
+                              investment.currency_symbol,
+                            )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex flex-col">
@@ -281,11 +305,11 @@ const EquityInvestments = () => {
                                     : 'text-red-600 dark:text-red-400'
                                 }`}
                               >
-                                $
-                                {investmentReturn.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })}
+                                {formatCurrency(
+                                  investmentReturn,
+                                  investment.currency,
+                                  investment.currency_symbol,
+                                )}
                               </span>
                               <Badge
                                 variant="secondary"
@@ -372,7 +396,13 @@ const EquityInvestments = () => {
                 className="border-b border-gray-200 dark:border-gray-700 pb-4"
               >
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Invested ${parseNumber(investment.amount).toLocaleString()} in{' '}
+                  Invested{' '}
+                  {formatCurrency(
+                    parseNumber(investment.amount),
+                    investment.currency,
+                    investment.currency_symbol,
+                  )}{' '}
+                  in{' '}
                   {investment.campaign?.title ||
                     `Campaign ${investment.campaign_id}`}
                 </p>
