@@ -180,7 +180,7 @@ export type KYCFormDataUnion = Partial<
   BaseKYCFormData & CreatorKYCFormData & InvestorKYCFormData & MentorKYCFormData
 >;
 
-export type UserType = 'creator' | 'investor' | 'mentor';
+export type UserType = 'issuer' | 'investor' | 'mentor';
 
 export interface KYCProcessProps {
   userType: UserType;
