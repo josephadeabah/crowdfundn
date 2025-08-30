@@ -17,6 +17,7 @@ import { useAuth } from '../context/auth/AuthContext';
 import { PerformanceCharts } from '../components/investchart/PerformanceCharts';
 import { PortfolioSummary } from '../components/investchart/PortfolioSummary';
 import { Badge } from '../components/ui/badge';
+import { formatCurrency } from '../utils/helpers/calculate.days';
 
 const EquityInvestments = () => {
   const {
@@ -51,36 +52,6 @@ const EquityInvestments = () => {
     if (typeof value === 'string') return parseFloat(value) || fallback;
     return fallback;
   };
-
-  // Format currency based on user's currency settings
-const formatCurrency = (
-  amount: number,
-  currency = user?.currency || 'USD', // ISO code
-  currencySymbol = user?.currency_symbol, // Symbol (optional)
-) => {
-  try {
-    const formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency, // always requires ISO code
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-
-    const formatted = formatter.format(amount);
-
-    // If we have a symbol, replace whatever Intl used with it
-    if (currencySymbol) {
-      return formatted.replace(/\p{Sc}/u, currencySymbol);
-    }
-
-    // Else just return Intl output (uses ISO code)
-    return formatted;
-  } catch (e) {
-    console.error('Currency formatting error:', e);
-    // fallback if Intl fails
-    return `${currencySymbol || currency}${amount.toFixed(2)}`;
-  }
-};
 
 
 

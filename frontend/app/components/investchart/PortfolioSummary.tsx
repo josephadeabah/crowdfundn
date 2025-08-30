@@ -22,8 +22,6 @@ export const PortfolioSummary = ({
   currency = 'USD',
   currencySymbol = '$',
 }: InvestmentPortfolio) => {
-
-
   const formatCurrency = (amount: number) => {
     try {
       return new Intl.NumberFormat('en-US', {
@@ -38,7 +36,7 @@ export const PortfolioSummary = ({
       console.error('Currency formatting error:', e);
       return `${currencySymbol}${amount.toFixed(2)}`;
     }
- };
+  };
 
   const formatPercentage = (percentage: number | string | null | undefined) => {
     // Convert to number if it's a string, or use 0 if null/undefined

@@ -52,3 +52,32 @@ export function getRemainingDaysMessage(
   if (remainingDays === 0) return 'No days left';
   return `${remainingDays} days left`;
 }
+
+export const formatCurrency = (
+  amount: number,
+  currency?: string, // ISO code
+  currencySymbol?: string, // Symbol (optional)
+) => {
+  try {
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency, // always requires ISO code
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    const formatted = formatter.format(amount);
+
+    // If we have a symbol, replace whatever Intl used with it
+    if (currencySymbol) {
+      return formatted.replace(/\p{Sc}/u, currencySymbol);
+    }
+
+    // Else just return Intl output (uses ISO code)
+    return formatted;
+  } catch (e) {
+    console.error('Currency formatting error:', e);
+    // fallback if Intl fails
+    return `${currencySymbol || currency}${amount.toFixed(2)}`;
+  }
+};
