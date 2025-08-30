@@ -23,7 +23,7 @@ const KYC = () => {
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto">
         <KYCStatus showActions={false} />
-        <div className="text-center mb-8">
+        {/* <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">
             {userType === 'creator'
               ? 'Fundraiser'
@@ -41,7 +41,7 @@ const KYC = () => {
                 : 'become a qualified mentor to a startup'}
             .
           </p>
-        </div>
+        </div> */}
 
         <Tabs
           value={userType}
