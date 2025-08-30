@@ -97,8 +97,8 @@ const KYC = () => {
             return (
               <Card key={option.type} className="hover:shadow-lg transition-shadow">
                 <CardHeader className="text-center">
-                  <div className="mx-auto mb-4 p-3 bg-blue-100 rounded-full dark:bg-blue-900/20">
-                    <IconComponent className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                  <div className="mx-auto mb-4 p-3 bg-gray-100 rounded-full dark:bg-gray-900/20">
+                    <IconComponent className="h-8 w-8 text-gray-600 dark:text-gray-400" />
                   </div>
                   <CardTitle className="text-xl">{option.title}</CardTitle>
                   <CardDescription className="text-sm h-12">
