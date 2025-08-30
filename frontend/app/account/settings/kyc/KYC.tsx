@@ -63,7 +63,7 @@ const KYC = () => {
   if (showForm && selectedType) {
     return (
       <div className="min-h-screen">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <Button 
             variant="ghost" 
             onClick={handleBackToSelection}
@@ -79,7 +79,7 @@ const KYC = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-4">Identity Verification</h1>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
