@@ -245,7 +245,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({ compact = false, showActions = tr
             )}
 
             {isExpired && (
-              <Alert variant="warning" className="bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800">
+              <Alert variant="destructive" className="bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertTitle>Verification Expired</AlertTitle>
                 <AlertDescription>
