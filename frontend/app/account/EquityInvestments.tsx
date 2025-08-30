@@ -416,26 +416,26 @@ const EquityInvestments = () => {
                                         </p>
                                         <p>
                                           <strong>Headquarters:</strong>{' '}
-                                          {investment.company_info.headquarters}
+                                          {investment.company_info.headquarters || 'N/A'}
                                         </p>
                                         <p>
                                           <strong>Website:</strong>
                                           <a
                                             href={
-                                              investment.company_info.website
+                                              investment.company_info.website || '#'
                                             }
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-purple-500 hover:underline ml-1"
                                           >
-                                            {investment.company_info.website}
+                                            {investment.company_info.website || 'N/A'}
                                           </a>
                                         </p>
                                         <p>
                                           <strong>Contract Term:</strong>{' '}
                                           {
                                             investment.company_info
-                                              .contract_term
+                                              .contract_term || 'N/A'
                                           }
                                         </p>
                                       </div>
