@@ -5,7 +5,7 @@ import KYCProcess from '@/app/components/kycstep/KYCProcess';
 import KYCStatus from '@/app/components/kycstep/KYCStatus';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
-import { Building2, TrendingUp, Users, CheckCircle } from 'lucide-react';
+import { Building2, TrendingUp, Users, CheckCircle, Info } from 'lucide-react';
 
 const KYC = () => {
   const [selectedType, setSelectedType] = useState<'creator' | 'investor' | 'mentor' | null>(null);
@@ -31,13 +31,14 @@ const KYC = () => {
         'Create equity crowdfunding campaigns',
         'Receive investments from verified investors',
         'Manage your campaign team and documents',
-        'Access fundraising analytics and insights'
+        'Access fundraising analytics and insights',
+        'Automatic investor privileges included'
       ]
     },
     {
       type: 'investor' as const,
       title: 'Investor Verification',
-      description: 'Complete investor accreditation to participate in equity investments and support innovative startups.',
+      description: 'Complete investor accreditation to participate in equity investments. Ideal for individuals who only want to invest.',
       icon: TrendingUp,
       benefits: [
         'Invest in vetted startup opportunities',
@@ -84,7 +85,7 @@ const KYC = () => {
           <h1 className="text-3xl font-bold mb-4">Identity Verification</h1>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             Choose the type of verification you need to unlock platform features. 
-            Each verification type serves different purposes and grants specific access rights.
+            Fundraiser verification automatically includes investor privileges.
           </p>
         </div>
 
@@ -132,15 +133,34 @@ const KYC = () => {
         </div>
 
         <div className="mt-8 p-6 bg-blue-50 rounded-lg dark:bg-blue-900/20">
-          <h3 className="text-lg font-semibold mb-3 text-blue-900 dark:text-blue-100">
-            Important Information
-          </h3>
+          <div className="flex items-start mb-3">
+            <Info className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+            <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">
+              Important Information
+            </h3>
+          </div>
           <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
-            <li>• Each verification type requires different documentation and information</li>
-            <li>• You can complete multiple verifications if needed (e.g., both Fundraiser and Investor)</li>
+            <li>• <strong>Fundraiser verification includes investor privileges</strong> - You can invest without separate verification</li>
+            <li>• Choose Investor verification only if you don't plan to fundraise</li>
+            <li>• Mentor application is separate and doesn't include investment/fundraising rights</li>
             <li>• Verification typically takes 1-2 business days to complete</li>
             <li>• Your information is securely stored and protected</li>
           </ul>
+        </div>
+
+        <div className="mt-6 p-4 bg-amber-50 rounded-lg dark:bg-amber-900/20">
+          <div className="flex items-start">
+            <Info className="h-5 w-5 text-amber-600 mr-2 mt-0.5 flex-shrink-0" />
+            <div>
+              <h4 className="font-semibold text-amber-900 dark:text-amber-100 mb-1">
+                Recommended Choice
+              </h4>
+              <p className="text-sm text-amber-800 dark:text-amber-200">
+                If you're unsure, choose <strong>Fundraiser verification</strong>. It gives you both fundraising 
+                AND investment capabilities in a single verification process.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
