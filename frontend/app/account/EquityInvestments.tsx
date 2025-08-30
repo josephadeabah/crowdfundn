@@ -268,8 +268,8 @@ const EquityInvestments = () => {
                           <td className="px-6 py-4 whitespace-nowrap">
                             {formatCurrency(
                               investmentAmount,
-                              investment.currency,
-                              investment.currency_symbol,
+                              user?.currency,
+                              user?.currency_symbol,
                             )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -279,8 +279,8 @@ const EquityInvestments = () => {
                           <td className="px-6 py-4 whitespace-nowrap">
                             {formatCurrency(
                               currentValue,
-                              investment.currency,
-                              investment.currency_symbol,
+                              user?.currency,
+                              user?.currency_symbol,
                             )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -294,8 +294,8 @@ const EquityInvestments = () => {
                               >
                                 {formatCurrency(
                                   investmentReturn,
-                                  investment.currency,
-                                  investment.currency_symbol,
+                                  user?.currency,
+                                  user?.currency_symbol,
                                 )}
                               </span>
                               <Badge
@@ -386,8 +386,8 @@ const EquityInvestments = () => {
                   Invested{' '}
                   {formatCurrency(
                     parseNumber(investment.amount),
-                    investment.currency,
-                    investment.currency_symbol,
+                    user?.currency,
+                    user?.currency_symbol,
                   )}{' '}
                   in{' '}
                   {investment.campaign?.title ||
