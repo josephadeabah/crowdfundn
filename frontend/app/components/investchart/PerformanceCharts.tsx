@@ -134,7 +134,8 @@ export const PerformanceCharts = ({
 
       // Use the currency from the payload or fall back to props
       const itemCurrency = payload[0].payload.currency || currency;
-      const itemCurrencySymbol = payload[0].payload.currency_symbol || currencySymbol;
+      const itemCurrencySymbol =
+        payload[0].payload.currency_symbol || currencySymbol;
 
       return (
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
@@ -195,7 +196,7 @@ export const PerformanceCharts = ({
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
             Portfolio Composition
-            </CardTitle>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-80">
@@ -252,7 +253,9 @@ export const PerformanceCharts = ({
                 <YAxis
                   stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
-                  tickFormatter={(value) => formatCurrency(value, currency, currencySymbol)}
+                  tickFormatter={(value) =>
+                    formatCurrency(value, currency, currencySymbol)
+                  }
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
