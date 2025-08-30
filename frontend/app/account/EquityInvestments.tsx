@@ -24,11 +24,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/app/components/ui/accordion';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/app/components/ui/avatar';
+import Avatar from '../components/avatar/Avatar';
 
 const EquityInvestments = () => {
   const {
@@ -464,15 +460,11 @@ const EquityInvestments = () => {
                                               key={member.id}
                                               className="flex items-center space-x-3 p-2 bg-white dark:bg-gray-600 rounded-lg"
                                             >
-                                              <Avatar>
-                                                <AvatarImage
-                                                  src={member.avatar_url}
-                                                />
-                                                <AvatarFallback>
-                                                  {member.name?.charAt(0) ||
-                                                    'T'}
-                                                </AvatarFallback>
-                                              </Avatar>
+                                              <Avatar
+                                                name={member.name}
+                                                size="xl"
+                                                imageUrl={member.avatar_url}
+                                              />
                                               <div>
                                                 <p className="font-medium">
                                                   {member.name}
