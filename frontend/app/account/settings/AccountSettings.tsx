@@ -21,7 +21,7 @@ const AccountSettings = () => {
       case 'system':
         return <SystemSettingsPage />;
       default:
-        return null;
+        return <KYC />;
     }
   };
 
