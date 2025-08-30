@@ -6,10 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/components/ui/card';
-import { useAuth } from '@/app/context/auth/AuthContext';
 import { EquityInvestment } from '@/app/types/equityCampaigns.types';
 import { formatCurrency } from '@/app/utils/helpers/calculate.days';
-import { values } from 'lodash';
 import {
   PieChart,
   Pie,
@@ -59,8 +57,9 @@ export const PerformanceCharts = ({
         acc.push({
           name: campaignName,
           value: currentValue,
-          currency: currency,
-          currency_symbol: currencySymbol,
+          // Use investment-specific currency if available, otherwise fall back to props
+          currency: investment.currency || currency,
+          currency_symbol: investment.currency_symbol || currencySymbol,
         });
       }
       return acc;
@@ -89,8 +88,9 @@ export const PerformanceCharts = ({
       currentValue: currentValue,
       return: returnAmount,
       returnPercentage: returnPercentage,
-      currency: currency,
-      currency_symbol: currencySymbol,
+      // Use investment-specific currency if available, otherwise fall back to props
+      currency: investment.currency || currency,
+      currency_symbol: investment.currency_symbol || currencySymbol,
     };
   });
 
@@ -105,6 +105,7 @@ export const PerformanceCharts = ({
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const dataItem = returnsData.find((item) => item.name === label);
+      // Use the currency from the data item or fall back to props
       const itemCurrency = dataItem?.currency || currency;
       const itemCurrencySymbol = dataItem?.currency_symbol || currencySymbol;
 
@@ -131,9 +132,9 @@ export const PerformanceCharts = ({
       const percentage =
         totalValue > 0 ? (payload[0].value / totalValue) * 100 : 0;
 
+      // Use the currency from the payload or fall back to props
       const itemCurrency = payload[0].payload.currency || currency;
-      const itemCurrencySymbol =
-        payload[0].payload.currency_symbol || currencySymbol;
+      const itemCurrencySymbol = payload[0].payload.currency_symbol || currencySymbol;
 
       return (
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
@@ -194,7 +195,7 @@ export const PerformanceCharts = ({
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
             Portfolio Composition
-          </CardTitle>
+            </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-80">
@@ -251,7 +252,7 @@ export const PerformanceCharts = ({
                 <YAxis
                   stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
-                  tickFormatter={(value) => formatCurrency(value)}
+                  tickFormatter={(value) => formatCurrency(value, currency, currencySymbol)}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
