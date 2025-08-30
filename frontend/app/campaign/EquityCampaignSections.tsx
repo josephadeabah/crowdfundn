@@ -286,13 +286,13 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                       {member.description}
                     </p>
-                    {member.equity_percentage && (
+                    {/* {member.equity_percentage && (
                       <div className="mt-3">
                         <span className="inline-block bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs px-2 py-1 rounded-full">
                           {member.equity_percentage}% Equity
                         </span>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </div>
               </div>
