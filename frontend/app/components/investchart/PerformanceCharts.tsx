@@ -27,12 +27,32 @@ interface PerformanceChartsProps {
   currencySymbol?: string;
 }
 
-export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
+export const PerformanceCharts = ({
+  investments,
+  currency = 'USD',
+  currencySymbol = '$',
+}: PerformanceChartsProps) => {
   // Safe number parsing function
   const parseNumber = (value: any, fallback = 0): number => {
     if (typeof value === 'number') return value;
     if (typeof value === 'string') return parseFloat(value) || fallback;
     return fallback;
+  };
+
+  // Format currency function using user's currency
+  const formatCurrency = (
+    value: number,
+    customCurrency = currency,
+    customSymbol = currencySymbol,
+  ) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: customCurrency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+      .format(value)
+      .replace('$', customSymbol);
   };
 
   // Prepare data for portfolio composition pie chart
@@ -52,11 +72,19 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
         acc.push({
           name: campaignName,
           value: currentValue,
+          // Store currency info for tooltip
+          currency: investment.currency,
+          currency_symbol: investment.currency_symbol,
         });
       }
       return acc;
     },
-    [] as { name: string; value: number }[],
+    [] as {
+      name: string;
+      value: number;
+      currency?: string;
+      currency_symbol?: string;
+    }[],
   );
 
   // Prepare data for returns bar chart
@@ -75,6 +103,8 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
       currentValue: currentValue,
       return: returnAmount,
       returnPercentage: returnPercentage,
+      currency: investment.currency,
+      currency_symbol: investment.currency_symbol,
     };
   });
 
@@ -86,21 +116,18 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
     'hsl(var(--chart-5))',
   ];
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(value);
-  };
-
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
+      const dataItem = returnsData.find((item) => item.name === label);
+      const itemCurrency = dataItem?.currency || currency;
+      const itemCurrencySymbol = dataItem?.currency_symbol || currencySymbol;
+
       return (
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
           <p className="text-gray-900 dark:text-white font-medium">{`${label}`}</p>
           {payload.map((entry: any, index: number) => (
             <p key={index} className="text-sm text-gray-600 dark:text-gray-300">
-              {`${entry.name || entry.dataKey}: ${formatCurrency(entry.value)}`}
+              {`${entry.name || entry.dataKey}: ${formatCurrency(entry.value, itemCurrency, itemCurrencySymbol)}`}
             </p>
           ))}
         </div>
@@ -118,13 +145,17 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
       const percentage =
         totalValue > 0 ? (payload[0].value / totalValue) * 100 : 0;
 
+      const itemCurrency = payload[0].payload.currency || currency;
+      const itemCurrencySymbol =
+        payload[0].payload.currency_symbol || currencySymbol;
+
       return (
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
           <p className="text-gray-900 dark:text-white font-medium">
             {payload[0].payload.name}
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-300">
-            {formatCurrency(payload[0].value)}
+            {formatCurrency(payload[0].value, itemCurrency, itemCurrencySymbol)}
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-300">
             {percentage.toFixed(1)}% of portfolio
@@ -234,7 +265,7 @@ export const PerformanceCharts = ({ investments }: PerformanceChartsProps) => {
                 <YAxis
                   stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
-                  tickFormatter={formatCurrency}
+                  tickFormatter={(value) => formatCurrency(value)}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
