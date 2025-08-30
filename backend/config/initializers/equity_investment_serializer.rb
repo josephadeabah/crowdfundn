@@ -13,6 +13,9 @@ class EquityInvestmentSerializer
       status: @investment.status,
       created_at: @investment.created_at,
       current_value: @investment.current_value,
+      # Add currency information to the investment
+      currency: @investment.campaign.currency,
+      currency_symbol: @investment.campaign.currency_symbol,
       campaign: {
         id: @investment.campaign.id,
         title: @investment.campaign.title,
@@ -25,6 +28,9 @@ class EquityInvestmentSerializer
         company_headquarters: @investment.campaign.company_headquarters,
         company_website: @investment.campaign.company_website,
         contract_term: @investment.campaign.contract_term,
+        # Add currency to campaign as well
+        currency: @investment.campaign.currency,
+        currency_symbol: @investment.campaign.currency_symbol,
         fundraiser: {
           id: @investment.campaign.fundraiser.id,
           name: @investment.campaign.fundraiser.full_name,
