@@ -430,7 +430,7 @@ const EquityInvestments = () => {
                                             }
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-blue-600 hover:underline ml-1"
+                                            className="text-purple-500 hover:underline ml-1"
                                           >
                                             {investment.company_info.website}
                                           </a>
