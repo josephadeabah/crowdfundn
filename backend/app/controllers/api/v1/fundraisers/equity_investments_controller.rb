@@ -116,7 +116,9 @@ module Api
               total_return: total_return,
               return_percentage: return_percentage,
               active_investments: portfolio_data[:successful_count],
-              campaigns_invested: portfolio_data[:campaigns_invested]
+              campaigns_invested: portfolio_data[:campaigns_invested],
+              currency: @current_user.currency.upcase,
+              currency_symbol: @current_user.currency_symbol
             },
             investments: portfolio_data[:investments].map { |investment| EquityInvestmentSerializer.new(investment).as_json }
           }

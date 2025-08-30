@@ -197,12 +197,16 @@ class EquityInvestment < ApplicationRecord
       current_value: current_value,
       total_returns: total_returns,
       roi: roi,
+      currency: campaign.currency,
+      currency_symbol: campaign.currency_symbol,
       campaign: {
         id: campaign.id,
         title: campaign.title,
         company_name: campaign.company_name,
         valuation: campaign.valuation,
-        equity_offered: campaign.equity_offered
+        equity_offered: campaign.equity_offered,
+        currency: campaign.currency.upcase,
+        currency_symbol: campaign.currency_symbol
       },
       user: user ? {
         id: user.id,
