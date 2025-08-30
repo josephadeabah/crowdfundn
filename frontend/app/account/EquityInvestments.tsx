@@ -60,7 +60,7 @@ const EquityInvestments = () => {
   ) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currency,
+      currency: currencySymbol || currency,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })
