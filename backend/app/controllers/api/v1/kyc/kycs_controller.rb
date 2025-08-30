@@ -234,6 +234,12 @@ module Api
           render json: { message: 'Information requested from user' }
         end
 
+        def status
+          # Return the current user's KYC status
+          kyc_info = @current_user.kyc_status_info
+          render json: kyc_info
+        end
+
         def stats
           # Get the latest KYC update timestamp for cache versioning
           latest_update = ::Kyc.maximum(:updated_at) || Time.current

@@ -48,6 +48,7 @@ Rails.application.routes.draw do
           collection do
             get :all_needs_review
             get :stats 
+            get :status
           end
         end
       end

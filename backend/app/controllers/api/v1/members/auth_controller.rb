@@ -70,7 +70,15 @@ module Api
                 last_sign_in_at: Time.current,
                 sign_in_count: user.sign_in_count + 1
               )
-              render json: { token: encode_token(user.id), user: user.as_json(include: :roles) }, status: :ok
+              
+              # Prepare user data with KYC status info
+              user_data = user.as_json(include: :roles).merge(
+                kyc_status_info: user.kyc_status_info,
+                can_invest: user.can_invest?,
+                can_create_campaign: user.can_create_campaign?
+              )
+              
+              render json: { token: encode_token(user.id), user: user_data }, status: :ok
             else
               user.send_confirmation_email
               render json: { error: 'Email not confirmed. Please confirm with the link sent to your email to log in.' },
