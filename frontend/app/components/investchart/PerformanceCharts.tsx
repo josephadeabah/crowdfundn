@@ -47,7 +47,7 @@ export const PerformanceCharts = ({
   ) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: customCurrency,
+      currency: customSymbol || customCurrency,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })
