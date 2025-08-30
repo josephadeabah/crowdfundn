@@ -31,7 +31,6 @@ const KYC = () => {
         'Create equity crowdfunding campaigns',
         'Receive investments from verified investors',
         'Manage your campaign team and documents',
-        'Access fundraising analytics and insights',
         'Automatic investor privileges included'
       ]
     },
