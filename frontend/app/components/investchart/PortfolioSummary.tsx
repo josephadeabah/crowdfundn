@@ -54,6 +54,7 @@ export const PortfolioSummary = ({ portfolio }: PortfolioSummaryProps) => {
   // Determine if return is positive or negative for styling
   const isPositiveReturn = totalReturn >= 0;
   const returnColorClass = isPositiveReturn ? 'text-green-600' : 'text-red-600';
+  const badgeVariant = isPositiveReturn ? 'default' : 'destructive';
   const badgeText = isPositiveReturn
     ? `+${formatPercentage(returnPercentageValue)}`
     : `${formatPercentage(returnPercentageValue)}`;
@@ -101,11 +102,8 @@ export const PortfolioSummary = ({ portfolio }: PortfolioSummaryProps) => {
           </div>
           <div className="flex items-center mt-2">
             <Badge
-              className={
-                isPositiveReturn
-                  ? 'bg-green-100 text-green-800 border-0 dark:bg-green-900/20 dark:text-green-300'
-                  : 'bg-red-100 text-red-800 border-0 dark:bg-red-900/20 dark:text-red-300'
-              }
+              variant={badgeVariant}
+              className={`${isPositiveReturn ? 'bg-green-100 text-green-800 border-0' : 'bg-red-100 text-red-800 border-0'} dark:${isPositiveReturn ? 'bg-green-900/20 text-green-300 border-0' : 'bg-red-900/20 text-red-300 border-0'}`}
             >
               {badgeText}
             </Badge>
