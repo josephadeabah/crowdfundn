@@ -21,7 +21,6 @@ module Api
               amount: investment.amount,
               email: investment.email,
               date: investment.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-              # Add signature URL if available
               signature_url: investment.user&.latest_kyc&.signature_image_url
             }
           end
@@ -109,6 +108,48 @@ module Api
           total_return = total_value - total_invested
           return_percentage = total_invested > 0 ? (total_return / total_invested * 100).round(2) : 0
           
+          # Enhance investments with company and team information
+          enhanced_investments = portfolio_data[:investments].map do |investment|
+            investment_data = EquityInvestmentSerializer.new(investment).as_json
+            
+            # Add company information from the campaign
+            if investment.campaign
+              investment_data[:company_info] = {
+                name: investment.campaign.company_name,
+                description: investment.campaign.company_description,
+                headquarters: investment.campaign.company_headquarters,
+                website: investment.campaign.company_website,
+                contract_term: investment.campaign.contract_term
+              }
+              
+              # Add team members information
+              investment_data[:team_members] = investment.campaign.campaign_team_members.includes(:user).map do |member|
+                {
+                  id: member.id,
+                  name: member.name,
+                  email: member.email,
+                  role: member.role,
+                  title: member.title,
+                  equity_percentage: member.equity_percentage,
+                  description: member.description,
+                  avatar_url: member.avatar_url,
+                  user: if member.user
+                          {
+                            id: member.user.id,
+                            email: member.user.email,
+                            profile: {
+                              first_name: member.user.profile&.first_name,
+                              last_name: member.user.profile&.last_name
+                            }
+                          }
+                        end
+                }
+              end
+            end
+            
+            investment_data
+          end
+          
           render json: {
             portfolio: {
               total_invested: total_invested,
@@ -120,7 +161,7 @@ module Api
               currency: @current_user.currency.upcase,
               currency_symbol: @current_user.currency_symbol
             },
-            investments: portfolio_data[:investments].map { |investment| EquityInvestmentSerializer.new(investment).as_json }
+            investments: enhanced_investments
           }
         end
 

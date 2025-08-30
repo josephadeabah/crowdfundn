@@ -90,7 +90,7 @@ class EquityInvestment < ApplicationRecord
   end
 
   def self.portfolio_for(user)
-    investments = user.equity_investments.includes(:campaign)
+    investments = user.equity_investments.includes(campaign: [:campaign_team_members])
     
     # Filter out pending investments for portfolio calculations
     successful_investments = investments.successful
@@ -203,6 +203,10 @@ class EquityInvestment < ApplicationRecord
         id: campaign.id,
         title: campaign.title,
         company_name: campaign.company_name,
+        company_description: campaign.company_description,
+        company_headquarters: campaign.company_headquarters,
+        company_website: campaign.company_website,
+        contract_term: campaign.contract_term,
         valuation: campaign.valuation,
         equity_offered: campaign.equity_offered,
         currency: campaign.currency.upcase,

@@ -21,6 +21,12 @@ class EquityCampaign < Campaign
   validate :shares_within_equity_limits
   validate :total_shares_must_be_set
 
+  # Add these attributes to make sure they're accessible
+  attribute :company_name, :string
+  attribute :company_description, :text
+  attribute :company_headquarters, :string
+  attribute :company_website, :string
+  attribute :contract_term, :string
   attribute :equity_status, :integer, default: 0
 
   enum :equity_status, {

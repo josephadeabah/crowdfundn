@@ -20,6 +20,11 @@ class EquityInvestmentSerializer
         status: @investment.campaign.status,
         valuation: @investment.campaign.valuation,
         equity_offered: @investment.campaign.equity_offered,
+        company_name: @investment.campaign.company_name,
+        company_description: @investment.campaign.company_description,
+        company_headquarters: @investment.campaign.company_headquarters,
+        company_website: @investment.campaign.company_website,
+        contract_term: @investment.campaign.contract_term,
         fundraiser: {
           id: @investment.campaign.fundraiser.id,
           name: @investment.campaign.fundraiser.full_name,
