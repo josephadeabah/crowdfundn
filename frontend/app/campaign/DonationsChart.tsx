@@ -24,19 +24,37 @@ const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
   if (!currentCampaign?.donations_over_time) {
     return (
       <p className="text-gray-500 text-sm text-center">
-        No {currentCampaign?.type === 'EquityCampaign' ? 'funding' : 'donation'}{' '}
+        No{' '}
+        {currentCampaign?.type === 'EquityCampaign' ? 'funding' : 'donation'}{' '}
         data available
       </p>
     );
   }
 
-  // Transform donations_over_time directly - this now contains combined funding data for equity campaigns
-  const fundingData = Object.entries(currentCampaign.donations_over_time).map(
-    ([date, amount]) => ({
+  // Transform donations_over_time directly - filter out future dates and format properly
+  const fundingData = Object.entries(currentCampaign.donations_over_time)
+    .filter(([date]) => {
+      const entryDate = moment(date);
+      const today = moment();
+      return entryDate.isSameOrBefore(today, 'day');
+    })
+    .map(([date, amount]) => ({
       date: moment(date).format('MMM D'), // Format date for better readability
       amount: parseFloat(amount as string), // Ensure amount is a number
-    }),
-  );
+    }));
+
+  // Check if there's any non-zero data
+  const hasData = fundingData.some(item => item.amount > 0);
+
+  if (!hasData) {
+    return (
+      <p className="text-gray-500 text-sm text-center">
+        No{' '}
+        {currentCampaign?.type === 'EquityCampaign' ? 'funding' : 'donation'}{' '}
+        activity in {moment().format('MMMM')}
+      </p>
+    );
+  }
 
   return (
     <div className="bg-white rounded-lg mt-6">
