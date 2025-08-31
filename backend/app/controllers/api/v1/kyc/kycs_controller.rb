@@ -46,12 +46,20 @@ module Api
               return render_kyc_error(upgrade_validation[:message])
             end
             
-            # Handle the upgrade scenario
-            handle_kyc_upgrade(existing_active_kyc, requested_type)
+            # Handle the upgrade scenario - mark existing as superseded
+            if existing_active_kyc.pending? || existing_active_kyc.in_review?
+              existing_active_kyc.mark_as_superseded!(requested_type)
+            end
           end
 
           # Use ALL permitted parameters (including signature data)
           @kyc = @current_user.kycs.build(kyc_params)
+
+          # Set upgrade fields if this is an upgrade
+          if existing_active_kyc && requested_type == 'both'
+            @kyc.upgraded_from_type = existing_active_kyc.kyc_type
+            @kyc.is_upgrade = true
+          end
 
           if @kyc.save
             # Process signature immediately after save
@@ -340,17 +348,6 @@ module Api
           end
           
           { allowed: true, message: 'Upgrade allowed' }
-        end
-
-        def handle_kyc_upgrade(existing_kyc, requested_type)
-          # For pending/in_review KYCs, mark as superseded
-          if existing_kyc.pending? || existing_kyc.in_review?
-            existing_kyc.mark_as_superseded!(requested_type)
-          end
-          
-          # Set upgrade fields on the new KYC
-          @kyc.upgraded_from_type = existing_kyc.kyc_type
-          @kyc.is_upgrade = true
         end
 
         def render_kyc_errors(errors)
