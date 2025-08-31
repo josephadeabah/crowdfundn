@@ -24,8 +24,7 @@ const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
   if (!currentCampaign?.donations_over_time) {
     return (
       <p className="text-gray-500 text-sm text-center">
-        No{' '}
-        {currentCampaign?.type === 'EquityCampaign' ? 'funding' : 'donation'}{' '}
+        No {currentCampaign?.type === 'EquityCampaign' ? 'funding' : 'donation'}{' '}
         data available
       </p>
     );
