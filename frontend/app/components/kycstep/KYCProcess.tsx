@@ -319,7 +319,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         case 'declaration':
           return {
             accreditedInvestor:
-              (formData as InvestorKYCFormData).accreditedInvestor || false,
+              (formData as InvestorKYCFormData).accreditedInvestor || false, // Default to false
             riskAcknowledgment:
               (formData as InvestorKYCFormData).riskAcknowledgment || false,
             termsAcceptance:

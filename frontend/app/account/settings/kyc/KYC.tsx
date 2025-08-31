@@ -219,9 +219,10 @@ const KYC = () => {
                 Important Notice
               </h4>
               <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                If your KYC is verified immediately after submission while you are still
-                logged in, please <strong>log out and log back in</strong> to ensure the
-                updated verification status is accurately reflected in your account.
+                If your KYC is verified immediately after submission while you
+                are still logged in, please{' '}
+                <strong>log out and log back in</strong> to ensure the updated
+                verification status is accurately reflected in your account.
               </p>
             </div>
           </div>

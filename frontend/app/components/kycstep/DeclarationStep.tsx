@@ -26,6 +26,7 @@ export const DeclarationStep: React.FC = () => {
         </p>
       </div>
 
+      {/* Optional field - no validation */}
       <FormField
         control={form.control}
         name="accreditedInvestor"
@@ -33,8 +34,10 @@ export const DeclarationStep: React.FC = () => {
           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
             <FormControl>
               <Checkbox
-                checked={field.value}
-                onCheckedChange={field.onChange}
+                checked={field.value || false} // Ensure it's always a boolean
+                onCheckedChange={(checked) => {
+                  field.onChange(checked === true); // Convert to boolean
+                }}
               />
             </FormControl>
             <div className="space-y-1 leading-none">
@@ -48,6 +51,7 @@ export const DeclarationStep: React.FC = () => {
         )}
       />
 
+      {/* Required fields with validation */}
       <FormField
         control={form.control}
         name="riskAcknowledgment"
@@ -56,7 +60,9 @@ export const DeclarationStep: React.FC = () => {
             <FormControl>
               <Checkbox
                 checked={field.value}
-                onCheckedChange={field.onChange}
+                onCheckedChange={(checked) => {
+                  field.onChange(checked === true);
+                }}
               />
             </FormControl>
             <div className="space-y-1 leading-none">
@@ -80,7 +86,9 @@ export const DeclarationStep: React.FC = () => {
             <FormControl>
               <Checkbox
                 checked={field.value}
-                onCheckedChange={field.onChange}
+                onCheckedChange={(checked) => {
+                  field.onChange(checked === true);
+                }}
               />
             </FormControl>
             <div className="space-y-1 leading-none">
@@ -103,7 +111,9 @@ export const DeclarationStep: React.FC = () => {
             <FormControl>
               <Checkbox
                 checked={field.value}
-                onCheckedChange={field.onChange}
+                onCheckedChange={(checked) => {
+                  field.onChange(checked === true);
+                }}
               />
             </FormControl>
             <div className="space-y-1 leading-none">
