@@ -219,14 +219,13 @@ const KYC = () => {
                 Important Note
               </h4>
               <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                If your KYC status changes immediately after submission while you are
+                If your KYC is verified immediately after submission while you are still
                 logged in, please <strong>log out and log back in</strong> to ensure the
-                updated status is properly reflected in your account.
+                updated verification status is accurately reflected in your account.
               </p>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
