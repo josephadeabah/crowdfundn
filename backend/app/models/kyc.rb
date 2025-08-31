@@ -321,6 +321,8 @@ class Kyc < ApplicationRecord
       self.kyc_type = :both
     elsif user.investor?
       self.kyc_type = :investor
+    # elsif user.campaigns.any?
+    #   self.kyc_type = :issuer
     end
   end
 
