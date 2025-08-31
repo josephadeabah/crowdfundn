@@ -27,6 +27,7 @@ import {
   Pencil,
   Users,
   Building,
+  Briefcase,
 } from 'lucide-react';
 
 export const dropdownLinks: DropdownLinks = {
@@ -200,6 +201,16 @@ export const creatorKycSteps = [
 
 export const investorKycSteps = [
   { id: 'personalInfo', title: 'Personal Information', icon: UserCheck },
+  { id: 'document', title: 'Document Verification', icon: FileText },
+  { id: 'quiz', title: 'Investor Quiz', icon: BookOpen },
+  { id: 'declaration', title: 'Declaration', icon: FileCheck },
+  { id: 'certificate', title: 'Certificate Signing', icon: Pencil },
+  { id: 'review', title: 'Review & Submit', icon: Shield },
+];
+
+export const bothKycSteps = [
+  { id: 'personalInfo', title: 'Personal Information', icon: UserCheck },
+  { id: 'businessInfo', title: 'Business Information', icon: Building },
   { id: 'document', title: 'Document Verification', icon: FileText },
   { id: 'quiz', title: 'Investor Quiz', icon: BookOpen },
   { id: 'declaration', title: 'Declaration', icon: FileCheck },

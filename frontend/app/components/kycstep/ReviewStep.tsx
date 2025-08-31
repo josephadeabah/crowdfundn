@@ -19,9 +19,10 @@ interface ReviewStepProps {
   };
   isCreator: boolean;
   isInvestor: boolean;
+  isBoth: boolean; // Added isBoth prop
   isMentor: boolean;
   uploadedDocuments: { [key: string]: File };
-  signatureType: string; // This is passed from KYCProcess
+  signatureType: string;
 }
 
 export const ReviewStep: React.FC<ReviewStepProps> = ({
@@ -31,9 +32,10 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
   incorrectAnswers,
   isCreator,
   isInvestor,
+  isBoth, // Added isBoth
   isMentor,
   uploadedDocuments,
-  signatureType, // Use the prop instead of calculating internally
+  signatureType,
 }) => {
   // Determine signature label based on signature type
   const signatureLabel =
@@ -76,7 +78,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
         </CardContent>
       </Card>
 
-      {(isCreator || isMentor) && (
+      {(isCreator || isBoth || isMentor) && (
         <Card>
           <CardHeader>
             <CardTitle>Business Information</CardTitle>
@@ -133,7 +135,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
         </CardContent>
       </Card>
 
-      {isInvestor && (
+      {(isInvestor || isBoth) && (
         <Card>
           <CardHeader>
             <CardTitle>Investor Quiz Results</CardTitle>
@@ -195,10 +197,20 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
         </div>
       )}
 
-      {isInvestor && !isQuizPassed && (
+      {(isInvestor || isBoth) && !isQuizPassed && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-800">
             Please complete the investor quiz correctly before submitting.
+          </p>
+        </div>
+      )}
+
+      {isBoth && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-blue-800">
+            <strong>Full Platform Access:</strong> You are applying for both
+            fundraising AND investment capabilities. Once verified, you'll be
+            able to create campaigns and invest in other startups.
           </p>
         </div>
       )}

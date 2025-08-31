@@ -37,7 +37,7 @@ export interface KycDocument {
 export interface Kyc {
   id?: number;
   reference: string;
-  kyc_type: 'investor' | 'issuer' | 'both';
+  kyc_type: 'investor' | 'issuer' | 'both' | 'mentor';
   status: 'pending' | 'in_review' | 'verified' | 'rejected' | 'expired';
   verification_type:
     | 'national_id'
@@ -71,7 +71,7 @@ export interface Kyc {
 }
 
 export interface KycFormData {
-  kyc_type: 'investor' | 'issuer' | 'both';
+  kyc_type: 'investor' | 'issuer' | 'both' | 'mentor';
   verification_type:
     | 'national_id'
     | 'passport'
@@ -180,7 +180,7 @@ export type KYCFormDataUnion = Partial<
   BaseKYCFormData & CreatorKYCFormData & InvestorKYCFormData & MentorKYCFormData
 >;
 
-export type UserType = 'issuer' | 'investor' | 'mentor';
+export type UserType = 'issuer' | 'investor' | 'both' | 'mentor';
 
 export interface KYCProcessProps {
   userType: UserType;

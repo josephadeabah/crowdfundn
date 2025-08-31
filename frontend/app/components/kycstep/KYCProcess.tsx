@@ -1,4 +1,3 @@
-// KYCProcess.tsx
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -27,6 +26,7 @@ import {
   creatorKycSteps,
   investorKycSteps,
   mentorKycSteps,
+  bothKycSteps,
   quizQuestions,
 } from '@/app/types/constant';
 import { CertificateSigningStep } from './CertificateSigningStep';
@@ -40,7 +40,7 @@ import { SignatureDialog } from './SignatureDialog';
 import { ProgressSteps } from './ProgressSteps';
 import { Point } from '@/app/account/settings/kyc/signature/signatureUtils';
 import { z } from 'zod';
-import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Loader2, CheckCircle, AlertCircle, UserCheck } from 'lucide-react';
 import { useKyc } from '@/app/context/kyc/KycContext';
 import { KycFormData, KycAddress } from '@/app/types/kyc.type';
 import { BusinessInfoStep } from './BusinessInfoStep';
@@ -81,6 +81,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
   const isCreator = userType === 'issuer';
   const isInvestor = userType === 'investor';
+  const isBoth = userType === 'both';
   const isMentor = userType === 'mentor';
 
   // Define step types and their order for each user type
@@ -100,6 +101,15 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       'certificate',
       'review',
     ],
+    both: [
+      'personalInfo',
+      'businessInfo',
+      'documents',
+      'quiz',
+      'declaration',
+      'certificate',
+      'review',
+    ],
     mentor: [
       'personalInfo',
       'documents',
@@ -113,7 +123,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     ? creatorKycSteps
     : isInvestor
       ? investorKycSteps
-      : mentorKycSteps;
+      : isBoth
+        ? bothKycSteps
+        : mentorKycSteps;
 
   useEffect(() => {
     // Show alert when there are KYC errors
@@ -229,7 +241,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       case 'certificate':
         return z.object({});
       case 'review':
-        return isCreator ? creatorBusinessSchema : z.object({});
+        return isCreator || isBoth ? creatorBusinessSchema : z.object({});
       default:
         return z.object({});
     }
@@ -252,7 +264,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             nationality: formData.nationality || '',
             address: formData.address || '',
             city: formData.city || '',
-            state: formData.state || '', // Added state field
+            state: formData.state || '',
             postalCode: formData.postalCode || '',
             country: formData.country || '',
             occupation: formData.occupation || '',
@@ -315,7 +327,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             dataConsent: (formData as InvestorKYCFormData).dataConsent || false,
           };
         case 'review':
-          if (isCreator) {
+          if (isCreator || isBoth) {
             return {
               businessName: (formData as CreatorKYCFormData).businessName || '',
               businessType: (formData as CreatorKYCFormData).businessType || '',
@@ -379,8 +391,16 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           }))
         : undefined;
 
+    // Determine KYC type based on user selection
+    const kycType =
+      userType === 'both'
+        ? 'both'
+        : userType === 'issuer'
+          ? 'issuer'
+          : 'investor';
+
     const baseData = {
-      kyc_type: userType === 'issuer' ? 'issuer' : 'investor',
+      kyc_type: kycType,
       verification_type:
         (formData.idType as
           | 'national_id'
@@ -399,7 +419,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           address_type: 'residential',
           street: formData.address || '',
           city: formData.city || '',
-          state: formData.state || '', // Added state field
+          state: formData.state || '',
           postal_code: formData.postalCode || '',
           country: formData.country || '',
           is_primary: true,
@@ -410,13 +430,13 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           ? formattedSignature
           : null,
       investor_signature_data:
-        userType === 'investor' &&
+        (kycType === 'investor' || kycType === 'both') &&
         formattedSignature &&
         formattedSignature.length > 0
           ? formattedSignature
           : null,
       issuer_signature_data:
-        (userType === 'issuer' || userType === 'mentor') &&
+        (kycType === 'issuer' || kycType === 'both') &&
         formattedSignature &&
         formattedSignature.length > 0
           ? formattedSignature
@@ -424,10 +444,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       issuer_accepted_terms: true,
     };
 
-    if (userType === 'issuer' || userType === 'mentor') {
+    if (kycType === 'issuer' || kycType === 'both') {
       return {
         ...baseData,
-        kyc_type: 'issuer',
         business_name: (formData as CreatorKYCFormData).businessName || '',
         business_registration_number:
           (formData as CreatorKYCFormData).businessRegistration || '',
@@ -441,7 +460,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
     return {
       ...baseData,
-      kyc_type: 'investor',
     } as KycFormData;
   };
 
@@ -522,7 +540,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         return;
       }
 
-      if (isInvestor && !isQuizPassed()) {
+      if ((isInvestor || isBoth) && !isQuizPassed()) {
         showErrorMessage(
           'Please complete the investor quiz correctly before submitting.',
         );
@@ -543,7 +561,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           ? 'Campaign creator'
           : isInvestor
             ? 'Investor'
-            : 'Mentor';
+            : isBoth
+              ? 'Full platform access'
+              : 'Mentor';
 
         showSuccessMessage(
           `${userTypeLabel} verification submitted successfully`,
@@ -659,9 +679,10 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             incorrectAnswers={incorrectAnswers}
             isCreator={isCreator}
             isInvestor={isInvestor}
+            isBoth={isBoth}
             isMentor={isMentor}
             uploadedDocuments={uploadedDocuments}
-            signatureType={isInvestor ? 'Investor' : 'Issuer'}
+            signatureType={isInvestor || isBoth ? 'Investor' : 'Issuer'}
           />
         );
       default:

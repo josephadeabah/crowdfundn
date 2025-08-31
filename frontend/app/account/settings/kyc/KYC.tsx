@@ -11,15 +11,15 @@ import {
   CardTitle,
 } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
-import { Building2, TrendingUp, Users, CheckCircle, Info } from 'lucide-react';
+import { Building2, TrendingUp, Users, CheckCircle, Info, UserCheck } from 'lucide-react';
 
 const KYC = () => {
   const [selectedType, setSelectedType] = useState<
-    'issuer' | 'investor' | 'mentor' | null
+    'issuer' | 'investor' | 'both' | 'mentor' | null
   >(null);
   const [showForm, setShowForm] = useState(false);
 
-  const handleTypeSelect = (type: 'issuer' | 'investor' | 'mentor') => {
+  const handleTypeSelect = (type: 'issuer' | 'investor' | 'both' | 'mentor') => {
     setSelectedType(type);
     setShowForm(true);
   };
@@ -32,28 +32,41 @@ const KYC = () => {
   const verificationOptions = [
     {
       type: 'issuer' as const,
-      title: 'Fundraiser Verification',
+      title: 'Fundraiser Only',
       description:
-        'Verify your identity to create and manage fundraising campaigns. Required for entrepreneurs and business owners.',
+        'Verify to create fundraising campaigns only. Ideal for entrepreneurs focused solely on raising funds.',
       icon: Building2,
       benefits: [
         'Create equity crowdfunding campaigns',
         'Receive investments from verified investors',
         'Manage your campaign team and documents',
-        'Automatic investor privileges included',
+        'Build and grow your business',
       ],
     },
     {
       type: 'investor' as const,
-      title: 'Investor Verification',
+      title: 'Investor Only',
       description:
-        'Complete investor accreditation to participate in equity investments. Ideal for individuals who only want to invest.',
+        'Verify to invest in startups only. Perfect for individuals who want to support innovation.',
       icon: TrendingUp,
       benefits: [
         'Invest in vetted startup opportunities',
         'Access exclusive investment deals',
         'Build a diversified investment portfolio',
         'Receive investment updates and reports',
+      ],
+    },
+    {
+      type: 'both' as const,
+      title: 'Full Platform Access',
+      description:
+        'Verify as both fundraiser AND investor for complete platform access and maximum flexibility.',
+      icon: UserCheck,
+      benefits: [
+        'Create equity crowdfunding campaigns',
+        'Invest in other startup opportunities',
+        'Manage both fundraising and investing',
+        'Full ecosystem participation',
       ],
     },
     {
@@ -97,33 +110,32 @@ const KYC = () => {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-4">Identity Verification</h1>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Choose the type of verification you need to unlock platform
-            features. Fundraiser verification automatically includes investor
-            privileges.
+            Choose the type of verification you need to unlock platform features. 
+            Select the option that best matches your goals on our platform.
           </p>
         </div>
 
         <KYCStatus showActions={false} />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
           {verificationOptions.map((option) => {
             const IconComponent = option.icon;
             return (
               <Card
                 key={option.type}
-                className="hover:shadow-lg transition-shadow"
+                className="hover:shadow-lg transition-shadow h-full flex flex-col"
               >
-                <CardHeader className="text-center">
+                <CardHeader className="text-center flex-shrink-0">
                   <div className="mx-auto mb-4 p-3 bg-gray-100 rounded-full dark:bg-gray-900/20">
                     <IconComponent className="h-8 w-8 text-gray-600 dark:text-gray-400" />
                   </div>
                   <CardTitle className="text-xl">{option.title}</CardTitle>
-                  <CardDescription className="text-sm h-12">
+                  <CardDescription className="text-sm min-h-[3rem]">
                     {option.description}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-3 mb-6">
+                <CardContent className="flex flex-col flex-grow">
+                  <div className="space-y-3 mb-6 flex-grow">
                     <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-300">
                       Benefits:
                     </h4>
@@ -139,7 +151,7 @@ const KYC = () => {
                     </ul>
                   </div>
                   <Button
-                    className="w-full"
+                    className="w-full mt-auto"
                     variant="outline"
                     onClick={() => handleTypeSelect(option.type)}
                   >
@@ -148,7 +160,9 @@ const KYC = () => {
                       ? 'Fundraiser'
                       : option.type === 'investor'
                         ? 'Investor'
-                        : 'Mentor'}
+                        : option.type === 'both'
+                          ? 'Full Access'
+                          : 'Mentor'}
                   </Button>
                 </CardContent>
               </Card>
@@ -165,18 +179,16 @@ const KYC = () => {
           </div>
           <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
             <li>
-              •{' '}
-              <strong>
-                Fundraiser verification includes investor privileges
-              </strong>{' '}
-              - You can invest without separate verification
+              • <strong>Fundraiser verification</strong> - Create campaigns and raise funds
             </li>
             <li>
-              • Choose Investor verification only if you don't plan to fundraise
+              • <strong>Investor verification</strong> - Invest in other startups only
             </li>
             <li>
-              • Mentor application is separate and doesn't include
-              investment/fundraising rights
+              • <strong>Full Platform Access</strong> - Both fundraising AND investing capabilities
+            </li>
+            <li>
+              • <strong>Mentor application</strong> - Guide startups (no investment/fundraising rights)
             </li>
             <li>
               • Verification typically takes 1-2 business days to complete
@@ -185,18 +197,33 @@ const KYC = () => {
           </ul>
         </div>
 
-        <div className="mt-6 p-4 bg-amber-50 rounded-lg dark:bg-amber-900/20">
+        <div className="mt-6 p-4 bg-green-50 rounded-lg dark:bg-green-900/20">
+          <div className="flex items-start">
+            <Info className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
+            <div>
+              <h4 className="font-semibold text-green-900 dark:text-green-100 mb-1">
+                Recommended Choice
+              </h4>
+              <p className="text-sm text-green-800 dark:text-green-200">
+                For most users, we recommend <strong>Full Platform Access</strong>. 
+                It gives you complete flexibility to both raise funds for your own venture 
+                AND invest in other promising startups.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 p-4 bg-amber-50 rounded-lg dark:bg-amber-900/20">
           <div className="flex items-start">
             <Info className="h-5 w-5 text-amber-600 mr-2 mt-0.5 flex-shrink-0" />
             <div>
               <h4 className="font-semibold text-amber-900 dark:text-amber-100 mb-1">
-                Recommended Choice
+                Already Verified?
               </h4>
               <p className="text-sm text-amber-800 dark:text-amber-200">
-                If you're unsure, choose{' '}
-                <strong>Fundraiser verification</strong>. It gives you both
-                fundraising AND investment capabilities in a single verification
-                process.
+                If you're already verified as one type (e.g., Investor) and want to add 
+                additional capabilities (e.g., Fundraiser), you'll need to complete a 
+                new verification for the additional role.
               </p>
             </div>
           </div>
