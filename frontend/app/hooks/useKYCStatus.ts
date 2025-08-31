@@ -49,7 +49,7 @@ export const useKYCStatus = () => {
             expires_at: null,
             is_expired: false,
             can_upgrade: data.can_upgrade,
-            current_type: data.current_type
+            current_type: data.current_type,
           });
         } else {
           // Fallback to basic status
@@ -62,7 +62,7 @@ export const useKYCStatus = () => {
               },
             },
           );
-          
+
           if (statusResponse.ok) {
             const statusData = await statusResponse.json();
             setKycStatus(statusData);
@@ -75,7 +75,7 @@ export const useKYCStatus = () => {
               verified_at: null,
               expires_at: null,
               is_expired: false,
-              can_upgrade: false
+              can_upgrade: false,
             });
           }
         }
@@ -89,7 +89,7 @@ export const useKYCStatus = () => {
           verified_at: null,
           expires_at: null,
           is_expired: false,
-          can_upgrade: false
+          can_upgrade: false,
         });
       } finally {
         setLoading(false);

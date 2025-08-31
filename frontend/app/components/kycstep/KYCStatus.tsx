@@ -46,16 +46,19 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
   useEffect(() => {
     const checkUpgradeEligibility = async () => {
       if (!user?.kyc_status_info?.verified) return;
-      
+
       setLoadingUpgrade(true);
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/upgrade_status`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/upgrade_status`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
           },
-        });
-        
+        );
+
         if (response.ok) {
           const data = await response.json();
           setUpgradeEligibility(data);
@@ -332,8 +335,9 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
                   Upgrade Available!
                 </AlertTitle>
                 <AlertDescription className="text-blue-700 dark:text-blue-300">
-                  You can upgrade from {upgradeEligibility.current_type} to Full Platform Access 
-                  to get both investing and fundraising capabilities.
+                  You can upgrade from {upgradeEligibility.current_type} to Full
+                  Platform Access to get both investing and fundraising
+                  capabilities.
                 </AlertDescription>
               </Alert>
             )}
@@ -462,7 +466,8 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
               <CardContent className="p-4">
                 <h4 className="font-medium mb-2">Upgrade Access</h4>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  Upgrade to Full Platform Access for both investing and fundraising capabilities.
+                  Upgrade to Full Platform Access for both investing and
+                  fundraising capabilities.
                 </p>
                 <Link href="/kyc">
                   <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">

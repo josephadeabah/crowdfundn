@@ -11,7 +11,14 @@ import {
   CardTitle,
 } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
-import { Building2, TrendingUp, Users, CheckCircle, Info, UserCheck } from 'lucide-react';
+import {
+  Building2,
+  TrendingUp,
+  Users,
+  CheckCircle,
+  Info,
+  UserCheck,
+} from 'lucide-react';
 
 const KYC = () => {
   const [selectedType, setSelectedType] = useState<
@@ -19,7 +26,9 @@ const KYC = () => {
   >(null);
   const [showForm, setShowForm] = useState(false);
 
-  const handleTypeSelect = (type: 'issuer' | 'investor' | 'both' | 'mentor') => {
+  const handleTypeSelect = (
+    type: 'issuer' | 'investor' | 'both' | 'mentor',
+  ) => {
     setSelectedType(type);
     setShowForm(true);
   };
@@ -110,8 +119,9 @@ const KYC = () => {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-4">Identity Verification</h1>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Choose the type of verification you need to unlock platform features. 
-            Select the option that best matches your goals on our platform.
+            Choose the type of verification you need to unlock platform
+            features. Select the option that best matches your goals on our
+            platform.
           </p>
         </div>
 
@@ -179,16 +189,20 @@ const KYC = () => {
           </div>
           <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
             <li>
-              • <strong>Fundraiser verification</strong> - Create campaigns and raise funds
+              • <strong>Fundraiser verification</strong> - Create campaigns and
+              raise funds
             </li>
             <li>
-              • <strong>Investor verification</strong> - Invest in other startups only
+              • <strong>Investor verification</strong> - Invest in other
+              startups only
             </li>
             <li>
-              • <strong>Full Platform Access</strong> - Both fundraising AND investing capabilities
+              • <strong>Full Platform Access</strong> - Both fundraising AND
+              investing capabilities
             </li>
             <li>
-              • <strong>Mentor application</strong> - Guide startups (no investment/fundraising rights)
+              • <strong>Mentor application</strong> - Guide startups (no
+              investment/fundraising rights)
             </li>
             <li>
               • Verification typically takes 1-2 business days to complete
@@ -205,9 +219,10 @@ const KYC = () => {
                 Recommended Choice
               </h4>
               <p className="text-sm text-green-800 dark:text-green-200">
-                For most users, we recommend <strong>Full Platform Access</strong>. 
-                It gives you complete flexibility to both raise funds for your own venture 
-                AND invest in other promising startups.
+                For most users, we recommend{' '}
+                <strong>Full Platform Access</strong>. It gives you complete
+                flexibility to both raise funds for your own venture AND invest
+                in other promising startups.
               </p>
             </div>
           </div>
@@ -221,9 +236,9 @@ const KYC = () => {
                 Already Verified?
               </h4>
               <p className="text-sm text-amber-800 dark:text-amber-200">
-                If you're already verified as one type (e.g., Investor) and want to add 
-                additional capabilities (e.g., Fundraiser), you'll need to complete a 
-                new verification for the additional role.
+                If you're already verified as one type (e.g., Investor) and want
+                to add additional capabilities (e.g., Fundraiser), you'll need
+                to complete a new verification for the additional role.
               </p>
             </div>
           </div>
