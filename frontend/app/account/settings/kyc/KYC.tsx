@@ -216,7 +216,7 @@ const KYC = () => {
             <Info className="h-5 w-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0" />
             <div>
               <h4 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-1">
-                Important Note
+                Important Notice
               </h4>
               <p className="text-sm text-yellow-800 dark:text-yellow-200">
                 If your KYC is verified immediately after submission while you are still
