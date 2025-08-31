@@ -60,11 +60,11 @@ class CampaignStatisticsService
   end
 
   def self.calculate_total_investments(user)
-    # Only join with equity campaigns that have equity_investments
-    user.campaigns.where(type: 'EquityCampaign')
-        .joins(:equity_investments)
-        .where(equity_investments: { status: EquityInvestment::STATUS_SUCCESSFUL })
-        .sum('equity_investments.amount')
+    # Use EquityCampaign class directly instead of scoping Campaign
+    EquityCampaign.where(fundraiser_id: user.id)
+                  .joins(:equity_investments)
+                  .where(equity_investments: { status: EquityInvestment::STATUS_SUCCESSFUL })
+                  .sum('equity_investments.amount')
   end
 
   def self.unique_backers_count(user)
@@ -79,12 +79,12 @@ class CampaignStatisticsService
   end
 
   def self.unique_investors_count(user)
-    # Investors - only from equity campaigns
-    investor_count = user.campaigns.where(type: 'EquityCampaign')
+    # Investors - use EquityCampaign class directly
+    investor_count = EquityCampaign.where(fundraiser_id: user.id)
                          .joins(:equity_investments)
                          .where(equity_investments: { status: EquityInvestment::STATUS_SUCCESSFUL })
                          .distinct.count('equity_investments.user_id') + 
-                    user.campaigns.where(type: 'EquityCampaign')
+                    EquityCampaign.where(fundraiser_id: user.id)
                          .joins(:equity_investments)
                          .where(equity_investments: { status: EquityInvestment::STATUS_SUCCESSFUL, user_id: nil })
                          .count
@@ -100,8 +100,8 @@ class CampaignStatisticsService
                           .group(:campaign_id)
                           .count
     
-    # Investments this week - only from equity campaigns
-    investments_count = user.campaigns.where(type: 'EquityCampaign')
+    # Investments this week - use EquityCampaign class directly
+    investments_count = EquityCampaign.where(fundraiser_id: user.id)
                             .joins(:equity_investments)
                             .where('equity_investments.created_at >= ? AND equity_investments.status = ?', 
                                    start_of_week, EquityInvestment::STATUS_SUCCESSFUL)
@@ -131,8 +131,8 @@ class CampaignStatisticsService
                     .group_by_day('donations.created_at', format: '%Y-%m-%d')
                     .sum('donations.amount')
 
-    # Investments over time - only from equity campaigns
-    investments = user.campaigns.where(type: 'EquityCampaign')
+    # Investments over time - use EquityCampaign class directly
+    investments = EquityCampaign.where(fundraiser_id: user.id)
                       .joins(:equity_investments)
                       .where(equity_investments: { status: EquityInvestment::STATUS_SUCCESSFUL, created_at: start_date..end_date })
                       .group_by_day('equity_investments.created_at', format: '%Y-%m-%d')
@@ -160,8 +160,8 @@ class CampaignStatisticsService
                                .group('COALESCE(donations.country, \'Unknown\')')
                                .count
 
-    # Investments by country - only from equity campaigns
-    investments_by_country = user.campaigns.where(type: 'EquityCampaign')
+    # Investments by country - use EquityCampaign class directly
+    investments_by_country = EquityCampaign.where(fundraiser_id: user.id)
                                  .joins(:equity_investments)
                                  .where(equity_investments: { status: EquityInvestment::STATUS_SUCCESSFUL, created_at: start_date..end_date })
                                  .group('COALESCE(equity_investments.country, \'Unknown\')')
@@ -177,8 +177,8 @@ class CampaignStatisticsService
   end
 
   def self.successful_investments_count(user)
-    # Only count investments from equity campaigns
-    user.campaigns.where(type: 'EquityCampaign')
+    # Only count investments from equity campaigns - use EquityCampaign class directly
+    EquityCampaign.where(fundraiser_id: user.id)
         .joins(:equity_investments)
         .where(equity_investments: { status: EquityInvestment::STATUS_SUCCESSFUL })
         .count
@@ -192,8 +192,8 @@ class CampaignStatisticsService
   end
 
   def self.average_investment_amount(user)
-    # Only average investments from equity campaigns
-    investments = user.campaigns.where(type: 'EquityCampaign')
+    # Only average investments from equity campaigns - use EquityCampaign class directly
+    investments = EquityCampaign.where(fundraiser_id: user.id)
                       .joins(:equity_investments)
                       .where(equity_investments: { status: EquityInvestment::STATUS_SUCCESSFUL })
                       .average('equity_investments.amount')
