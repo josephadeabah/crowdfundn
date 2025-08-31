@@ -49,7 +49,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
       
       setLoadingUpgrade(true);
       try {
-        const response = await fetch('/api/v1/kyc/kycs/upgrade_status', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/upgrade_status`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
