@@ -15,23 +15,25 @@ type DonationsChartProps = {
 };
 
 const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
-  if (!currentCampaign?.donations_over_time) {
-    return (
-      <p className="text-gray-500 text-sm text-center">
-        No{' '}
-        {currentCampaign?.type === 'EquityCampaign' ? 'investment' : 'donation'}{' '}
-        data available
-      </p>
-    );
-  }
-
   const isEquityCampaign = currentCampaign?.type === 'EquityCampaign';
   const currency =
     currentCampaign?.fundraiser?.currency_symbol ||
     currentCampaign?.currency?.toUpperCase();
 
-  // Transform donations_over_time directly
-  const donationData = Object.entries(currentCampaign.donations_over_time).map(
+  // For equity campaigns, we need to combine donations and investments data
+  // Since we're using the existing donations_over_time field, we'll use that directly
+  // The backend should already be aggregating both donations and investments into this field for equity campaigns
+  if (!currentCampaign?.donations_over_time) {
+    return (
+      <p className="text-gray-500 text-sm text-center">
+        No {currentCampaign?.type === 'EquityCampaign' ? 'funding' : 'donation'}{' '}
+        data available
+      </p>
+    );
+  }
+
+  // Transform donations_over_time directly - this now contains combined funding data for equity campaigns
+  const fundingData = Object.entries(currentCampaign.donations_over_time).map(
     ([date, amount]) => ({
       date: moment(date).format('MMM D'), // Format date for better readability
       amount: parseFloat(amount as string), // Ensure amount is a number
@@ -41,12 +43,12 @@ const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
   return (
     <div className="bg-white rounded-lg mt-6">
       <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
-        {isEquityCampaign ? 'Investments' : 'Donations'} in{' '}
+        {isEquityCampaign ? 'Funding' : 'Donations'} in{' '}
         {moment().format('MMMM')}
       </h3>
       <ResponsiveContainer width="100%" height={320}>
         <LineChart
-          data={donationData}
+          data={fundingData}
           margin={{
             top: 20,
             right: 2,
@@ -69,7 +71,7 @@ const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
           <Tooltip
             formatter={(value) => [
               `${currency} ${value}`,
-              isEquityCampaign ? 'Investment' : 'Donation',
+              isEquityCampaign ? 'Funding' : 'Donation',
             ]}
             labelFormatter={(label) => `Date: ${label}`}
           />
@@ -78,7 +80,7 @@ const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
             dataKey="amount"
             stroke={isEquityCampaign ? '#f97316' : '#22c55e'} // Orange for equity, green for donations
             strokeWidth={2}
-            name={isEquityCampaign ? 'Investment' : 'Donation'}
+            name={isEquityCampaign ? 'Funding' : 'Donation'}
           />
         </LineChart>
       </ResponsiveContainer>
