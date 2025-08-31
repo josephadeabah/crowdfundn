@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 import { Card, CardHeader, CardTitle, CardDescription } from '../card/Card';
 import { CampaignStatisticsDataType } from '@/app/types/campaigns.types';
-import { getMonthOptions, getYearOptions } from './DashboardCharts';
+import { getMonthOptions, getYearOptions } from './chartUtils';
 
 interface DonationByCountryChartsProps {
   statistics: CampaignStatisticsDataType | null;
@@ -36,9 +36,9 @@ const DonationByCountryCharts = ({
   // Use funding_by_country instead of donations_by_country
   const fundingByCountryData = Object.entries(
     statistics?.funding_by_country || {},
-  ).map(([country, count]) => ({
+  ).map(([country, amount]) => ({
     country: country || 'Unknown',
-    funding: count, // Changed from donations to funding
+    funding: Number(amount) || 0, // Ensure it's always a number
   }));
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -54,6 +54,11 @@ const DonationByCountryCharts = ({
     sessionStorage.setItem('selectedYearDonationsByCountry', year.toString());
     fetchCampaignStatistics(selectedMonth, year);
   };
+
+  // Check if there's any data to display
+  const hasData =
+    fundingByCountryData.length > 0 &&
+    fundingByCountryData.some((item) => item.funding > 0);
 
   return (
     <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none my-4">
@@ -86,39 +91,50 @@ const DonationByCountryCharts = ({
           </select>
         </div>
       </CardHeader>
-      <CardDescription>
-        <ResponsiveContainer width="100%" height={320}>
-          <BarChart
-            data={fundingByCountryData}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 20,
-              bottom: 10,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="country"
-              tick={{ fontSize: 12 }}
-              angle={-45}
-              textAnchor="end"
-              height={50}
-            />
-            <YAxis
-              tick={{ fontSize: 12 }}
-              tickFormatter={(value) => `${value}`}
-            />
-            <Tooltip formatter={(value) => `${value} Contributions`} />
-            <Legend />
-            <Bar
-              dataKey="funding"
-              fill="#E9762B"
-              name="Funding Contributions"
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </CardDescription>
+
+      {!hasData ? (
+        <div className="flex items-center justify-center h-64 text-gray-500 dark:text-gray-400">
+          No funding data by country available for the selected period
+        </div>
+      ) : (
+        <CardDescription>
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart
+              data={fundingByCountryData}
+              margin={{
+                top: 20,
+                right: 30,
+                left: 20,
+                bottom: 10,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="country"
+                tick={{ fontSize: 12 }}
+                angle={-45}
+                textAnchor="end"
+                height={50}
+              />
+              <YAxis
+                tick={{ fontSize: 12 }}
+                tickFormatter={(value) => `${value}`}
+              />
+              <Tooltip
+                formatter={(value) => [`${value}`, 'Contributions']}
+                labelFormatter={(label) => `Country: ${label}`}
+              />
+              <Legend />
+              <Bar
+                dataKey="funding"
+                fill="#E9762B"
+                name="Funding Contributions"
+                radius={[4, 4, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardDescription>
+      )}
     </Card>
   );
 };

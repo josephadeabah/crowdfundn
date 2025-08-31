@@ -95,7 +95,7 @@ export default function DashboardCharts({
     statistics?.donations_over_time || {},
   ).map(([date, amount]) => ({
     date: moment(date).format('MMM D'), // Format date using moment
-    amount: parseFloat(amount as string),
+    amount: typeof amount === 'number' ? amount : parseFloat(amount),
   }));
 
   // Format campaigns by category for Recharts

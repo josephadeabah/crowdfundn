@@ -29,7 +29,7 @@ export const FundingOverTimeChart = ({
     statistics?.funding_over_time || {},
   ).map(([date, amount]) => ({
     date: moment(date).format('MMM D'),
-    amount: typeof amount === 'string' ? parseFloat(amount) : Number(amount),
+    amount: Number(amount) || 0, // Ensure it's always a number
   }));
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -43,6 +43,11 @@ export const FundingOverTimeChart = ({
     setSelectedYear(year);
     fetchCampaignStatistics(selectedMonth, year);
   };
+
+  // Check if there's any data to display
+  const hasData =
+    fundingOverTimeData.length > 0 &&
+    fundingOverTimeData.some((item) => item.amount > 0);
 
   return (
     <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none my-4">
@@ -75,38 +80,51 @@ export const FundingOverTimeChart = ({
           </select>
         </div>
       </CardHeader>
-      <ResponsiveContainer width="100%" height={320}>
-        <LineChart
-          data={fundingOverTimeData}
-          margin={{ top: 30, right: 10, left: 10, bottom: 10 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="date"
-            tick={{ fontSize: 12 }}
-            angle={-45}
-            textAnchor="end"
-            height={50}
-          />
-          <YAxis
-            tick={{ fontSize: 12 }}
-            tickFormatter={(value) =>
-              `${user?.currency?.toUpperCase()} ${value}`
-            }
-          />
-          <Tooltip
-            formatter={(value) => `${user?.currency?.toUpperCase()} ${value}`}
-          />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="amount"
-            stroke="#22c55e"
-            strokeWidth={2}
-            name="Total Funding"
-          />
-        </LineChart>
-      </ResponsiveContainer>
+
+      {!hasData ? (
+        <div className="flex items-center justify-center h-64 text-gray-500 dark:text-gray-400">
+          No funding data available for the selected period
+        </div>
+      ) : (
+        <ResponsiveContainer width="100%" height={320}>
+          <LineChart
+            data={fundingOverTimeData}
+            margin={{ top: 30, right: 10, left: 10, bottom: 10 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="date"
+              tick={{ fontSize: 12 }}
+              angle={-45}
+              textAnchor="end"
+              height={50}
+            />
+            <YAxis
+              tick={{ fontSize: 12 }}
+              tickFormatter={(value) =>
+                `${user?.currency?.toUpperCase()} ${value}`
+              }
+            />
+            <Tooltip
+              formatter={(value) => [
+                `${user?.currency?.toUpperCase()} ${value}`,
+                'Amount',
+              ]}
+              labelFormatter={(label) => `Date: ${label}`}
+            />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="amount"
+              stroke="#22c55e"
+              strokeWidth={2}
+              name="Total Funding"
+              dot={{ fill: '#22c55e', strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6, fill: '#16a34a' }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      )}
     </Card>
   );
 };
