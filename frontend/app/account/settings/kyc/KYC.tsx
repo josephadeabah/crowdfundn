@@ -103,7 +103,7 @@ const KYC = () => {
           </p>
         </div>
 
-        <KYCStatus compact={true} showActions={false} />
+        <KYCStatus showActions={false} />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
           {verificationOptions.map((option) => {
