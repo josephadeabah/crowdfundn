@@ -6,39 +6,26 @@ import {
   CardTitle,
   CardDescription,
 } from '../components/card/Card';
-import { HiOutlinePlus } from 'react-icons/hi';
-import Link from 'next/link';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
 import { useAuth } from '../context/auth/AuthContext';
 import MainDashboardLoader from '../loaders/MainDashboardLoader';
 import ErrorPage from '../components/errorpage/ErrorPage';
-import { InfoCircledIcon } from '@radix-ui/react-icons';
-import { deslugify } from '../utils/helpers/categories';
-import moment from 'moment';
-import DashboardCharts from '../components/charts/DashboardCharts';
-import { FiPlusCircle } from 'react-icons/fi';
 import DonationByCountryCharts from '../components/charts/DonationByCountryChart';
 import {
-  PlusCircle,
   Users,
   Target,
   Activity,
-  DollarSign,
-  Clock,
   BarChart2,
-  AlertCircle,
   TrendingUp,
   PieChart as PieChartIcon,
   Heart,
   TrendingUp as TrendingUpIcon,
-  Landmark,
   Coins,
-  PiggyBank,
 } from 'lucide-react';
-import BlurredChartContainer from '@/app/components/premiumplaceholder/BlurredChartContainer ';
 import { CampaignsByCategoryChart } from '../components/charts/CampaignsByCategoryChart';
 import { FundingOverTimeChart } from '../components/charts/FundingOverTimeChart';
 import { CampaignPerformanceChart } from '../components/charts/CampaignPerformanceChart';
+// import BlurredChartContainer from '@/app/components/premiumplaceholder/BlurredChartContainer ';
 
 export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
@@ -72,20 +59,6 @@ export default function Dashboard() {
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Add Campaign Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 flex flex-col items-center justify-center relative">
-          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
-            <PlusCircle className="h-5 w-5 text-fundify-primary" />
-          </div>
-          <CardHeader className="text-center"></CardHeader>
-          <Link
-            href="/account/dashboard/create"
-            className="text-lg font-semibold text-gray-600 dark:text-gray-400 cursor-pointer"
-          >
-            <div className="mt-4 flex flex-col items-center">Add Campaign</div>
-          </Link>
-        </Card>
-
         {/* Total Donations Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
           <div className="absolute top-2 right-2 bg-blue-50 p-2 rounded-full">
@@ -233,30 +206,6 @@ export default function Dashboard() {
             <CardDescription className="text-gray-500 dark:text-gray-400">
               {user?.currency?.toUpperCase()}{' '}
               {statistics?.average_funding_amount?.toLocaleString() || '0'}
-            </CardDescription>
-          </CardHeader>
-        </Card>
-
-        {/* Boost Campaign Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
-          <div className="absolute top-2 right-2 bg-red-50 p-2 rounded-full">
-            <AlertCircle className="h-5 w-5 text-red-500" />
-          </div>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg font-semibold text-red-600 dark:text-gray-400">
-              <AlertCircle className="text-xl" />
-              <span>Attention</span>
-            </CardTitle>
-            <CardDescription className="text-gray-500 dark:text-neutral-400">
-              You must withdraw your funds in chunks as you fundraise. Learn
-              more{' '}
-              <a
-                href="/articles/how-to-withdraw-funds"
-                target="_blank"
-                className="no-underline text-blue-400"
-              >
-                about withdrawals
-              </a>
             </CardDescription>
           </CardHeader>
         </Card>
