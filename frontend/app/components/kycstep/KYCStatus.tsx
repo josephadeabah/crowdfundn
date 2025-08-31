@@ -1,6 +1,6 @@
 // app/components/kyc/KYCStatus.tsx
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import {
   Card,
@@ -21,6 +21,7 @@ import {
   Building2,
   TrendingUp,
   RefreshCw,
+  ArrowUpCircle,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -33,7 +34,41 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
   compact = false,
   showActions = true,
 }) => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
+  const [upgradeEligibility, setUpgradeEligibility] = useState<{
+    can_upgrade: boolean;
+    current_type?: string;
+    upgrade_type?: string;
+    message?: string;
+  } | null>(null);
+  const [loadingUpgrade, setLoadingUpgrade] = useState(false);
+
+  useEffect(() => {
+    const checkUpgradeEligibility = async () => {
+      if (!user?.kyc_status_info?.verified) return;
+      
+      setLoadingUpgrade(true);
+      try {
+        const response = await fetch('/api/v1/kyc/kycs/upgrade_status', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setUpgradeEligibility(data);
+        }
+      } catch (error) {
+        console.error('Failed to check upgrade eligibility:', error);
+      } finally {
+        setLoadingUpgrade(false);
+      }
+    };
+
+    checkUpgradeEligibility();
+  }, [user]);
 
   if (!user) {
     return (
@@ -128,7 +163,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
       case 'issuer':
         return 'Fundraiser';
       case 'both':
-        return 'Investor & Fundraiser';
+        return 'Full Platform Access';
       default:
         return 'Not Specified';
     }
@@ -289,6 +324,20 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
               </div>
             )}
 
+            {/* Upgrade Eligibility Banner */}
+            {upgradeEligibility?.can_upgrade && (
+              <Alert className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 dark:from-blue-900/20 dark:to-purple-900/20 dark:border-blue-800">
+                <ArrowUpCircle className="h-4 w-4 text-blue-600" />
+                <AlertTitle className="text-blue-800 dark:text-blue-200">
+                  Upgrade Available!
+                </AlertTitle>
+                <AlertDescription className="text-blue-700 dark:text-blue-300">
+                  You can upgrade from {upgradeEligibility.current_type} to Full Platform Access 
+                  to get both investing and fundraising capabilities.
+                </AlertDescription>
+              </Alert>
+            )}
+
             {/* Status Alerts */}
             {!hasKYC && (
               <Alert
@@ -408,7 +457,23 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
             </Card>
           )}
 
-          {isVerified && !isExpired && (
+          {upgradeEligibility?.can_upgrade && (
+            <Card className="bg-white dark:bg-gray-800 border-0">
+              <CardContent className="p-4">
+                <h4 className="font-medium mb-2">Upgrade Access</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                  Upgrade to Full Platform Access for both investing and fundraising capabilities.
+                </p>
+                <Link href="/kyc">
+                  <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                    Upgrade Now
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
+
+          {isVerified && !isExpired && !upgradeEligibility?.can_upgrade && (
             <Card className="bg-white dark:bg-gray-800 border-0">
               <CardContent className="p-4">
                 <h4 className="font-medium mb-2">Verification Details</h4>
