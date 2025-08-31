@@ -1,3 +1,4 @@
+// types/campaigns.types.ts
 import { CampaignTeamMember, InvestorDocument } from './equityCampaigns.types';
 
 export interface Reward {
@@ -272,25 +273,92 @@ export interface CampaignPerformance {
   performance_percentage: string;
   total_days: number;
   remaining_days: number;
+  total_raised?: number; // Added for new structure
 }
 
 export interface CampaignStatisticsDataType {
-  total_donations_received: string;
-  total_fundraising_goal: string;
+  // Combined metrics (donations + investments)
+  total_funds_raised: number;
+  total_fundraising_goal: number;
   total_backers: number;
-  donations_over_time: {};
-  donations_by_country: Record<string, number>;
-  total_performance_percentage: number;
   total_active_campaigns: number;
-  total_donated_amount: string;
+  total_donated_amount: number;
   campaign_performance: CampaignPerformance[];
-  new_donations_this_week: Record<string, unknown>; // Adjust the type as necessary, based on your backend response
-  campaigns_by_category: Record<string, number>; // Adjust based on the structure of your categories
+  new_funding_this_week: Record<string, number>;
+  campaigns_by_category: Record<string, number>;
   top_campaigns: CampaignPerformance[];
-  average_donation_amount: number;
+  average_funding_amount: number;
+  total_rewards_claimed: number;
+  total_campaign_shares: number;
   total_comments: number;
   total_updates: number;
-  total_campaign_shares: number;
-  total_rewards_claimed: number;
   total_favorites: number;
+  funding_over_time: Record<string, number>;
+  funding_by_country: Record<string, number>;
+  total_performance_percentage: number;
+
+  // Separate breakdowns
+  donations: {
+    total_amount: number;
+    count: number;
+    average_amount: number;
+  };
+  investments: {
+    total_amount: number;
+    count: number;
+    average_amount: number;
+  };
+
+  // New equity and investment metrics
+  equity_campaigns?: {
+    total: number;
+    active: number;
+    total_valuation: number;
+    total_equity_offered: number;
+    total_funds_raised: number;
+    average_valuation: number;
+    average_equity_offered: number;
+    status_distribution: Record<string, number>;
+    top_performing: Array<{
+      id: number;
+      name: string;
+      company_name: string;
+      valuation: number;
+      equity_offered: number;
+      total_raised: number;
+      percentage_raised: number;
+      status: string;
+    }>;
+  };
+
+  investments_detail?: {
+    total_investments: number;
+    successful_investments: number;
+    total_investment_amount: number;
+    average_investment: number;
+    investments_over_time: Record<string, number>;
+    status_distribution: Record<string, number>;
+    top_investors: Array<{
+      id: number;
+      name: string;
+      investment_count: number;
+      total_invested: number;
+    }>;
+    investment_size_distribution: {
+      small: number;
+      medium: number;
+      large: number;
+    };
+    monthly_performance: {
+      total_amount: number;
+      investment_count: number;
+      average_investment: number;
+    };
+  };
+
+  // Legacy fields for backward compatibility (optional)
+  total_donations_received?: number;
+  new_donations_this_week?: Record<string, unknown>;
+  donations_over_time?: Record<string, number>;
+  donations_by_country?: Record<string, number>;
 }

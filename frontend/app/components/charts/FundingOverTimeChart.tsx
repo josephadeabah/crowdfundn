@@ -24,11 +24,12 @@ export const FundingOverTimeChart = ({
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
-  const donationsOverTimeData = Object.entries(
-    statistics?.donations_over_time || {},
+  // Use funding_over_time instead of donations_over_time
+  const fundingOverTimeData = Object.entries(
+    statistics?.funding_over_time || {},
   ).map(([date, amount]) => ({
     date: moment(date).format('MMM D'),
-    amount: parseFloat(amount as string),
+    amount: typeof amount === 'string' ? parseFloat(amount) : Number(amount),
   }));
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -76,7 +77,7 @@ export const FundingOverTimeChart = ({
       </CardHeader>
       <ResponsiveContainer width="100%" height={320}>
         <LineChart
-          data={donationsOverTimeData}
+          data={fundingOverTimeData}
           margin={{ top: 30, right: 10, left: 10, bottom: 10 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
@@ -102,6 +103,7 @@ export const FundingOverTimeChart = ({
             dataKey="amount"
             stroke="#22c55e"
             strokeWidth={2}
+            name="Total Funding"
           />
         </LineChart>
       </ResponsiveContainer>

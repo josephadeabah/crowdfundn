@@ -1,3 +1,4 @@
+// app/account/dashboard/page.tsx
 import React, { useContext, useEffect, useState } from 'react';
 import {
   Card,
@@ -13,7 +14,7 @@ import MainDashboardLoader from '../loaders/MainDashboardLoader';
 import ErrorPage from '../components/errorpage/ErrorPage';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { deslugify } from '../utils/helpers/categories';
-import moment from 'moment'; // Import moment
+import moment from 'moment';
 import DashboardCharts from '../components/charts/DashboardCharts';
 import { FiPlusCircle } from 'react-icons/fi';
 import DonationByCountryCharts from '../components/charts/DonationByCountryChart';
@@ -27,6 +28,7 @@ import {
   BarChart2,
   AlertCircle,
   TrendingUp,
+  PieChart as PieChartIcon,
 } from 'lucide-react';
 import BlurredChartContainer from '@/app/components/premiumplaceholder/BlurredChartContainer ';
 import { CampaignsByCategoryChart } from '../components/charts/CampaignsByCategoryChart';
@@ -40,20 +42,17 @@ export default function Dashboard() {
   const [hasPremiumAccess, setHasPremiumAccess] = useState(false);
 
   useEffect(() => {
-    // Check if user has premium access (you'll need to implement this logic)
     setHasPremiumAccess(user?.subscription?.isActive || false);
   }, [user]);
-  // Fetch statistics data when the component mounts or month/year changes
+
   useEffect(() => {
     fetchCampaignStatistics();
   }, [fetchCampaignStatistics]);
 
-  // Display a loading state if data is still being fetched
   if (loading) {
     return <MainDashboardLoader />;
   }
 
-  // Display an error message if there was an error fetching data
   if (error) {
     return <ErrorPage />;
   }
@@ -66,6 +65,55 @@ export default function Dashboard() {
       <p className="text-gray-500 dark:text-neutral-400 mb-4">
         View insights and track performance all in one place.
       </p>
+
+      {/* Funding Breakdown Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <Card className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-none">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+              Total Donations
+            </CardTitle>
+            <CardDescription className="text-blue-500 dark:text-blue-300">
+              {user?.currency?.toUpperCase()}{' '}
+              {statistics?.donations?.total_amount?.toLocaleString() || '0'}
+            </CardDescription>
+            <p className="text-sm text-blue-400 dark:text-blue-200">
+              {statistics?.donations?.count || '0'} donations
+            </p>
+          </CardHeader>
+        </Card>
+
+        <Card className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border-none">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-green-600 dark:text-green-400">
+              Total Investments
+            </CardTitle>
+            <CardDescription className="text-green-500 dark:text-green-300">
+              {user?.currency?.toUpperCase()}{' '}
+              {statistics?.investments?.total_amount?.toLocaleString() || '0'}
+            </CardDescription>
+            <p className="text-sm text-green-400 dark:text-green-200">
+              {statistics?.investments?.count || '0'} investments
+            </p>
+          </CardHeader>
+        </Card>
+
+        <Card className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border-none">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-purple-600 dark:text-purple-400">
+              Total Funding
+            </CardTitle>
+            <CardDescription className="text-purple-500 dark:text-purple-300">
+              {user?.currency?.toUpperCase()}{' '}
+              {statistics?.total_funds_raised?.toLocaleString() || '0'}
+            </CardDescription>
+            <p className="text-sm text-purple-400 dark:text-purple-200">
+              Combined donations & investments
+            </p>
+          </CardHeader>
+        </Card>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Add Campaign Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 flex flex-col items-center justify-center relative">
@@ -91,7 +139,7 @@ export default function Dashboard() {
               Total Backers
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-gray-400">
-              {statistics?.total_backers} Backers
+              {statistics?.total_backers} Supporters
             </CardDescription>
           </CardHeader>
         </Card>
@@ -107,8 +155,7 @@ export default function Dashboard() {
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-gray-400">
               {user?.currency?.toUpperCase()}{' '}
-              {statistics &&
-                parseFloat(statistics.total_fundraising_goal).toLocaleString()}
+              {statistics?.total_fundraising_goal?.toLocaleString() || '0'}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -128,7 +175,7 @@ export default function Dashboard() {
           </CardHeader>
         </Card>
 
-        {/* Total Donations Card */}
+        {/* Total Funding Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
           <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
             <DollarSign className="h-5 w-5 text-fundify-primary" />
@@ -139,27 +186,7 @@ export default function Dashboard() {
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-gray-400">
               {user?.currency?.toUpperCase()}{' '}
-              {statistics &&
-                parseFloat(
-                  statistics.total_donations_received,
-                ).toLocaleString()}
-            </CardDescription>
-          </CardHeader>
-        </Card>
-
-        {/* Pending Withdrawals Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
-          <div className="absolute top-2 right-2 bg-lime-50 p-2 rounded-full">
-            <Clock className="h-5 w-5 text-lime-500" />
-          </div>
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Pending Withdrawals
-            </CardTitle>
-            <CardDescription className="text-gray-500 dark:text-gray-500">
-              {user?.currency?.toUpperCase()}{' '}
-              {statistics &&
-                parseFloat(statistics?.total_donated_amount).toLocaleString()}
+              {statistics?.total_funds_raised?.toLocaleString() || '0'}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -174,8 +201,8 @@ export default function Dashboard() {
               Recent Activity
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-gray-400">
-              {statistics?.new_donations_this_week &&
-                Object.keys(statistics?.new_donations_this_week).length}{' '}
+              {statistics?.new_funding_this_week &&
+                Object.keys(statistics.new_funding_this_week).length}{' '}
               new funding this week
             </CardDescription>
           </CardHeader>
@@ -192,6 +219,22 @@ export default function Dashboard() {
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-gray-500">
               {statistics?.total_performance_percentage}% of goal achieved
+            </CardDescription>
+          </CardHeader>
+        </Card>
+
+        {/* Average Funding Card */}
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-lime-50 p-2 rounded-full">
+            <PieChartIcon className="h-5 w-5 text-lime-500" />
+          </div>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+              Average Funding
+            </CardTitle>
+            <CardDescription className="text-gray-500 dark:text-gray-400">
+              {user?.currency?.toUpperCase()}{' '}
+              {statistics?.average_funding_amount?.toLocaleString() || '0'}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -220,6 +263,7 @@ export default function Dashboard() {
           </CardHeader>
         </Card>
       </div>
+
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
         {/* Metrics Grid */}
@@ -279,41 +323,65 @@ export default function Dashboard() {
           fetchCampaignStatistics={fetchCampaignStatistics}
         />
       </div>
-      {/* Charts Section for Funding over time */}
-      {/* {!hasPremiumAccess ? (
-        <FundingOverTimeChart
-          statistics={statistics}
-          user={user}
-          fetchCampaignStatistics={fetchCampaignStatistics}
-        />
-      ) : (
-        <BlurredChartContainer>
-          <FundingOverTimeChart
-            statistics={statistics}
-            user={user}
-            fetchCampaignStatistics={fetchCampaignStatistics}
-          />
-        </BlurredChartContainer>
-      )} */}
 
+      {/* Funding over time chart */}
       <FundingOverTimeChart
         statistics={statistics}
         user={user}
         fetchCampaignStatistics={fetchCampaignStatistics}
       />
 
-      {/* Campaign Performance Chart - also behind paywall */}
+      {/* Campaign Performance Chart */}
       <CampaignPerformanceChart
         statistics={statistics}
         user={user}
         fetchCampaignStatistics={fetchCampaignStatistics}
       />
 
-      {/* Donations by Country Chart - also behind paywall */}
+      {/* Funding by Country Chart */}
       <DonationByCountryCharts
         statistics={statistics}
         fetchCampaignStatistics={fetchCampaignStatistics}
       />
+
+      {/* Equity Campaigns Section (if available) */}
+      {statistics?.equity_campaigns &&
+        statistics.equity_campaigns.total > 0 && (
+          <Card className="p-6 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none my-4">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold text-gray-700 dark:text-gray-300">
+                Equity Campaigns Overview
+              </CardTitle>
+            </CardHeader>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <h3 className="font-semibold text-blue-600 dark:text-blue-400">
+                  Total Equity Campaigns
+                </h3>
+                <p className="text-2xl font-bold text-blue-500">
+                  {statistics.equity_campaigns.total}
+                </p>
+              </div>
+              <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <h3 className="font-semibold text-green-600 dark:text-green-400">
+                  Active Equity Campaigns
+                </h3>
+                <p className="text-2xl font-bold text-green-500">
+                  {statistics.equity_campaigns.active}
+                </p>
+              </div>
+              <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                <h3 className="font-semibold text-purple-600 dark:text-purple-400">
+                  Total Equity Raised
+                </h3>
+                <p className="text-2xl font-bold text-purple-500">
+                  {user?.currency?.toUpperCase()}{' '}
+                  {statistics.equity_campaigns.total_funds_raised?.toLocaleString()}
+                </p>
+              </div>
+            </div>
+          </Card>
+        )}
     </div>
   );
 }

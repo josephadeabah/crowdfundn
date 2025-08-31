@@ -1,3 +1,4 @@
+// components/charts/DonationByCountryChart.tsx
 'use client';
 import React, { useState } from 'react';
 import {
@@ -23,7 +24,6 @@ const DonationByCountryCharts = ({
   statistics,
   fetchCampaignStatistics,
 }: DonationByCountryChartsProps) => {
-  // Initialize selected month and year from sessionStorage, or default to current month/year
   const storedMonth = sessionStorage.getItem('selectedMonthDonationsByCountry');
   const storedYear = sessionStorage.getItem('selectedYearDonationsByCountry');
   const [selectedMonth, setSelectedMonth] = useState(
@@ -33,37 +33,34 @@ const DonationByCountryCharts = ({
     storedYear ? parseInt(storedYear) : new Date().getFullYear(),
   );
 
-  // Handle month change
+  // Use funding_by_country instead of donations_by_country
+  const fundingByCountryData = Object.entries(
+    statistics?.funding_by_country || {},
+  ).map(([country, count]) => ({
+    country: country || 'Unknown',
+    funding: count, // Changed from donations to funding
+  }));
+
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const month = parseInt(e.target.value);
     setSelectedMonth(month);
-    sessionStorage.setItem('selectedMonthDonationsByCountry', month.toString()); // Store selected month in sessionStorage
-    fetchCampaignStatistics(month, selectedYear); // Use the updated month value directly
+    sessionStorage.setItem('selectedMonthDonationsByCountry', month.toString());
+    fetchCampaignStatistics(month, selectedYear);
   };
 
-  // Handle year change
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const year = parseInt(e.target.value);
     setSelectedYear(year);
-    sessionStorage.setItem('selectedYearDonationsByCountry', year.toString()); // Store selected year in sessionStorage
-    fetchCampaignStatistics(selectedMonth, year); // Use the updated year value directly
+    sessionStorage.setItem('selectedYearDonationsByCountry', year.toString());
+    fetchCampaignStatistics(selectedMonth, year);
   };
-
-  // Prepare data for the bar chart
-  const donationsByCountryData = Object.entries(
-    statistics?.donations_by_country || {},
-  ).map(([country, count]) => ({
-    country: country || 'Unknown',
-    donations: count,
-  }));
 
   return (
     <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none my-4">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-          See Where You're Getting Funding From
+          Funding by Country
         </CardTitle>
-        {/* Dropdown for Month and Year */}
         <div className="mt-2 flex gap-2">
           <select
             value={selectedMonth}
@@ -92,7 +89,7 @@ const DonationByCountryCharts = ({
       <CardDescription>
         <ResponsiveContainer width="100%" height={320}>
           <BarChart
-            data={donationsByCountryData}
+            data={fundingByCountryData}
             margin={{
               top: 20,
               right: 30,
@@ -112,9 +109,13 @@ const DonationByCountryCharts = ({
               tick={{ fontSize: 12 }}
               tickFormatter={(value) => `${value}`}
             />
-            <Tooltip formatter={(value) => `${value} Funding`} />
+            <Tooltip formatter={(value) => `${value} Contributions`} />
             <Legend />
-            <Bar dataKey="funding" fill="#E9762B" />
+            <Bar
+              dataKey="funding"
+              fill="#E9762B"
+              name="Funding Contributions"
+            />
           </BarChart>
         </ResponsiveContainer>
       </CardDescription>
