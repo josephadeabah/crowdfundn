@@ -227,22 +227,6 @@ const KYC = () => {
             </div>
           </div>
         </div>
-
-        <div className="mt-4 p-4 bg-amber-50 rounded-lg dark:bg-amber-900/20">
-          <div className="flex items-start">
-            <Info className="h-5 w-5 text-amber-600 mr-2 mt-0.5 flex-shrink-0" />
-            <div>
-              <h4 className="font-semibold text-amber-900 dark:text-amber-100 mb-1">
-                Already Verified?
-              </h4>
-              <p className="text-sm text-amber-800 dark:text-amber-200">
-                If you're already verified as one type (e.g., Investor) and want
-                to add additional capabilities (e.g., Fundraiser), you'll need
-                to complete a new verification for the additional role.
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
