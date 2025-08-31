@@ -62,13 +62,79 @@ module Api
             subaccounts: {
               total: Subaccount.count,
               success_rate: calculate_subaccount_success_rate
-            }
+            },
+            equity_campaigns: equity_campaign_metrics,
+            investments: investment_metrics
           }
 
           render json: metrics, status: :ok
         end
 
         private
+
+        def equity_campaign_metrics
+          equity_campaigns = EquityCampaign.all
+          {
+            total: equity_campaigns.count,
+            active: equity_campaigns.where(equity_status: :live).count,
+            total_valuation: equity_campaigns.sum(:valuation).to_f.round(2),
+            total_equity_offered: equity_campaigns.sum(:equity_offered).to_f.round(2),
+            total_funds_raised: equity_campaigns.sum(:total_equity_invested).to_f.round(2),
+            average_valuation: equity_campaigns.average(:valuation).to_f.round(2),
+            average_equity_offered: equity_campaigns.average(:equity_offered).to_f.round(2),
+            status_distribution: equity_campaigns.group(:equity_status).count,
+            top_performing: equity_campaigns.order(total_equity_invested: :desc).limit(5).map do |ec|
+              {
+                id: ec.id,
+                name: ec.title,
+                company_name: ec.company_name,
+                valuation: ec.valuation,
+                equity_offered: ec.equity_offered,
+                total_raised: ec.total_equity_invested,
+                percentage_raised: ec.percentage_raised,
+                status: ec.equity_status
+              }
+            end
+          }
+        end
+
+        def investment_metrics
+          investments = EquityInvestment.all
+          successful_investments = investments.successful
+          
+          {
+            total_investments: investments.count,
+            successful_investments: successful_investments.count,
+            total_investment_amount: successful_investments.sum(:amount).to_f.round(2),
+            average_investment: successful_investments.average(:amount).to_f.round(2),
+            investments_over_time: successful_investments.group_by_week(:created_at, 
+                                                                       format: '%Y-%m-%d').sum(:amount).sort.reverse.to_h,
+            status_distribution: investments.group(:status).count,
+            top_investors: calculate_top_investors,
+            investment_size_distribution: {
+              small: successful_investments.where('amount < ?', 1000).count,
+              medium: successful_investments.where('amount >= ? AND amount < ?', 1000, 10000).count,
+              large: successful_investments.where('amount >= ?', 10000).count
+            }
+          }
+        end
+
+        def calculate_top_investors
+          User.joins(:equity_investments)
+              .where(equity_investments: { status: EquityInvestment::STATUS_SUCCESSFUL })
+              .group('users.id')
+              .select('users.id, users.full_name, COUNT(equity_investments.id) as investment_count, SUM(equity_investments.amount) as total_invested')
+              .order('total_invested DESC')
+              .limit(10)
+              .map do |user|
+                {
+                  id: user.id,
+                  name: user.full_name,
+                  investment_count: user.investment_count,
+                  total_invested: user.total_invested.to_f.round(2)
+                }
+              end
+        end
 
         def calculate_email_confirmation_rate
           confirmed = User.where(email_confirmed: true).count

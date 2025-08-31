@@ -250,7 +250,8 @@ class EquityInvestment < ApplicationRecord
     campaign.with_lock do
       campaign.update!(
         current_amount: campaign.current_amount + amount,
-        total_successful_donations: campaign.total_successful_donations + amount
+        total_successful_donations: campaign.total_successful_donations + amount,
+        total_equity_invested: campaign.total_equity_invested + amount
       )
     end
   rescue ActiveRecord::StaleObjectError => e

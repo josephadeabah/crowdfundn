@@ -150,7 +150,8 @@ module PaystackWebhook::Handlers
       
       campaign.update!(
         current_amount: campaign.current_amount + net_amount,
-        total_successful_donations: campaign.current_amount + net_amount,
+        total_successful_donations: campaign.total_successful_donations + net_amount,
+        total_equity_invested: campaign.total_equity_invested + net_amount
       )
 
       campaign.update_transferred_amount(net_amount)
@@ -179,7 +180,6 @@ module PaystackWebhook::Handlers
         )
       end
     end
-
 
     def send_confirmation_email(investment, response, metadata)
       recipient_email = response.dig(:data, :customer, :email) || investment.email

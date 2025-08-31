@@ -140,7 +140,8 @@ class Campaign < ApplicationRecord
 
   # Add method to handle equity-specific calculations
   def total_equity_invested
-    is_a?(EquityCampaign) ? equity_investments.successful.sum(:amount) : 0
+    # Use the stored value if available, otherwise calculate it
+    self[:total_equity_invested] || (is_a?(EquityCampaign) ? equity_investments.successful.sum(:amount) : 0)
   end
 
   # app/models/campaign.rb
