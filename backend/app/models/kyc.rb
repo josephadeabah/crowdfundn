@@ -321,6 +321,7 @@ class Kyc < ApplicationRecord
       self.kyc_type = :both
     elsif user.investor?
       self.kyc_type = :investor
+    end
   end
 
   def create_required_documents
