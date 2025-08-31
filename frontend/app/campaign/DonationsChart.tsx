@@ -20,13 +20,12 @@ const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
     currentCampaign?.fundraiser?.currency_symbol ||
     currentCampaign?.currency?.toUpperCase();
 
-  // For equity campaigns, we need to combine donations and investments data
-  // Since we're using the existing donations_over_time field, we'll use that directly
-  // The backend should already be aggregating both donations and investments into this field for equity campaigns
+  // Use donations_over_time which now contains combined funding data for equity campaigns
   if (!currentCampaign?.donations_over_time) {
     return (
       <p className="text-gray-500 text-sm text-center">
-        No {currentCampaign?.type === 'EquityCampaign' ? 'funding' : 'donation'}{' '}
+        No{' '}
+        {currentCampaign?.type === 'EquityCampaign' ? 'funding' : 'donation'}{' '}
         data available
       </p>
     );
