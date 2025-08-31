@@ -211,22 +211,22 @@ const KYC = () => {
           </ul>
         </div>
 
-        <div className="mt-6 p-4 bg-green-50 rounded-lg dark:bg-green-900/20">
+        <div className="mt-6 p-4 bg-yellow-50 rounded-lg dark:bg-yellow-900/20">
           <div className="flex items-start">
-            <Info className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
+            <Info className="h-5 w-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0" />
             <div>
-              <h4 className="font-semibold text-green-900 dark:text-green-100 mb-1">
-                Recommended Choice
+              <h4 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-1">
+                Important Note
               </h4>
-              <p className="text-sm text-green-800 dark:text-green-200">
-                For most users, we recommend{' '}
-                <strong>Full Platform Access</strong>. It gives you complete
-                flexibility to both raise funds for your own venture AND invest
-                in other promising startups.
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                If your KYC status changes immediately after submission while you are
+                logged in, please <strong>log out and log back in</strong> to ensure the
+                updated status is properly reflected in your account.
               </p>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );
