@@ -1,3 +1,4 @@
+# app/services/campaign_statistics_service.rb
 class CampaignStatisticsService
   def self.calculate_for_user(user, month = Time.zone.now.month, year = Time.zone.now.year)
     # Combined stats (donations + equity investments)
@@ -5,7 +6,7 @@ class CampaignStatisticsService
     total_invested = calculate_total_investments(user)
     total_funds_raised = total_donated + total_invested
     
-    total_goal = user.campaigns.sum(:goal_amount)
+    total_goal = user.campaigns.sum(:goal_amount) || 0
     total_performance = total_goal.zero? ? 0 : (total_funds_raised / total_goal.to_f * 100).round(2)
 
     # Equity campaign stats
@@ -21,7 +22,7 @@ class CampaignStatisticsService
       total_fundraising_goal: total_goal,
       total_backers: unique_backers_count(user) + unique_investors_count(user),
       total_active_campaigns: user.campaigns.active.count,
-      total_donated_amount: user.campaigns.sum(:current_amount),
+      total_donated_amount: user.campaigns.sum(:current_amount) || 0,
       campaign_performance: calculate_campaign_performance_for_user(user),
       new_funding_this_week: new_funding_count_for_user(user),
       campaigns_by_category: campaigns_by_category_for_user(user),
@@ -56,7 +57,9 @@ class CampaignStatisticsService
 
   # Combined calculations (donations + investments)
   def self.calculate_total_donations(user)
-    user.campaigns.joins(:donations).where(donations: { status: 'successful' }).sum('donations.amount')
+    user.campaigns.joins(:donations)
+        .where(donations: { status: 'successful' })
+        .sum('donations.amount') || 0
   end
 
   def self.calculate_total_investments(user)
@@ -64,7 +67,7 @@ class CampaignStatisticsService
     EquityCampaign.where(fundraiser_id: user.id)
                   .joins(:equity_investments)
                   .where(equity_investments: { status: EquityInvestment::STATUS_SUCCESSFUL })
-                  .sum('equity_investments.amount')
+                  .sum('equity_investments.amount') || 0
   end
 
   def self.unique_backers_count(user)
@@ -128,26 +131,27 @@ class CampaignStatisticsService
     # Donations over time
     donations = user.campaigns.joins(:donations)
                     .where(donations: { status: 'successful', created_at: start_date..end_date })
-                    .group_by_day('donations.created_at', format: '%Y-%m-%d')
+                    .group_by_day('donations.created_at')
                     .sum('donations.amount')
 
     # Investments over time - use EquityCampaign class directly
     investments = EquityCampaign.where(fundraiser_id: user.id)
                       .joins(:equity_investments)
                       .where(equity_investments: { status: EquityInvestment::STATUS_SUCCESSFUL, created_at: start_date..end_date })
-                      .group_by_day('equity_investments.created_at', format: '%Y-%m-%d')
+                      .group_by_day('equity_investments.created_at')
                       .sum('equity_investments.amount')
 
     # Combine donations and investments
     combined_funding = donations.merge(investments) { |_key, donation_amount, investment_amount| donation_amount + investment_amount }
 
-    # Ensure all days in the range are included
+    # Ensure all days in the range are included with proper date format
+    result = {}
     (start_date.to_date..end_date.to_date).each do |date|
       formatted_date = date.strftime('%Y-%m-%d')
-      combined_funding[formatted_date] ||= 0
+      result[formatted_date] = combined_funding[date] || 0
     end
 
-    combined_funding.sort.to_h
+    result
   end
 
   def self.funding_by_country_for_user(user, month, year)
@@ -157,18 +161,32 @@ class CampaignStatisticsService
     # Donations by country
     donations_by_country = user.campaigns.joins(:donations)
                                .where(donations: { status: 'successful', created_at: start_date..end_date })
-                               .group('COALESCE(donations.country, \'Unknown\')')
-                               .count
+                               .group('donations.country')
+                               .sum('donations.amount')
 
     # Investments by country - use EquityCampaign class directly
     investments_by_country = EquityCampaign.where(fundraiser_id: user.id)
                                  .joins(:equity_investments)
                                  .where(equity_investments: { status: EquityInvestment::STATUS_SUCCESSFUL, created_at: start_date..end_date })
-                                 .group('COALESCE(equity_investments.country, \'Unknown\')')
-                                 .count
+                                 .group('equity_investments.country')
+                                 .sum('equity_investments.amount')
 
     # Combine donations and investments
-    donations_by_country.merge(investments_by_country) { |_key, donations, investments| donations + investments }
+    combined = {}
+    
+    # Process donations
+    donations_by_country.each do |country, amount|
+      country_name = country.presence || 'Unknown'
+      combined[country_name] = (combined[country_name] || 0) + amount
+    end
+
+    # Process investments
+    investments_by_country.each do |country, amount|
+      country_name = country.presence || 'Unknown'
+      combined[country_name] = (combined[country_name] || 0) + amount
+    end
+
+    combined
   end
 
   # Individual calculations for breakdown
