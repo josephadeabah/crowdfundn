@@ -29,6 +29,11 @@ import {
   AlertCircle,
   TrendingUp,
   PieChart as PieChartIcon,
+  Heart,
+  TrendingUp as TrendingUpIcon,
+  Landmark,
+  Coins,
+  PiggyBank,
 } from 'lucide-react';
 import BlurredChartContainer from '@/app/components/premiumplaceholder/BlurredChartContainer ';
 import { CampaignsByCategoryChart } from '../components/charts/CampaignsByCategoryChart';
@@ -66,54 +71,6 @@ export default function Dashboard() {
         View insights and track performance all in one place.
       </p>
 
-      {/* Funding Breakdown Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <Card className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-none">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-              Total Donations
-            </CardTitle>
-            <CardDescription className="text-blue-500 dark:text-blue-300">
-              {user?.currency?.toUpperCase()}{' '}
-              {statistics?.donations?.total_amount?.toLocaleString() || '0'}
-            </CardDescription>
-            <p className="text-sm text-blue-400 dark:text-blue-200">
-              {statistics?.donations?.count || '0'} donations
-            </p>
-          </CardHeader>
-        </Card>
-
-        <Card className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border-none">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-green-600 dark:text-green-400">
-              Total Investments
-            </CardTitle>
-            <CardDescription className="text-green-500 dark:text-green-300">
-              {user?.currency?.toUpperCase()}{' '}
-              {statistics?.investments?.total_amount?.toLocaleString() || '0'}
-            </CardDescription>
-            <p className="text-sm text-green-400 dark:text-green-200">
-              {statistics?.investments?.count || '0'} investments
-            </p>
-          </CardHeader>
-        </Card>
-
-        <Card className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border-none">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-purple-600 dark:text-purple-400">
-              Total Funding
-            </CardTitle>
-            <CardDescription className="text-purple-500 dark:text-purple-300">
-              {user?.currency?.toUpperCase()}{' '}
-              {statistics?.total_funds_raised?.toLocaleString() || '0'}
-            </CardDescription>
-            <p className="text-sm text-purple-400 dark:text-purple-200">
-              Combined donations & investments
-            </p>
-          </CardHeader>
-        </Card>
-      </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Add Campaign Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 flex flex-col items-center justify-center relative">
@@ -127,6 +84,63 @@ export default function Dashboard() {
           >
             <div className="mt-4 flex flex-col items-center">Add Campaign</div>
           </Link>
+        </Card>
+
+        {/* Total Donations Card */}
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-blue-50 p-2 rounded-full">
+            <Heart className="h-5 w-5 text-blue-500" />
+          </div>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+              Total Donations
+            </CardTitle>
+            <CardDescription className="text-gray-500 dark:text-gray-400">
+              {user?.currency?.toUpperCase()}{' '}
+              {statistics?.donations?.total_amount?.toLocaleString() || '0'}
+            </CardDescription>
+            <p className="text-sm text-gray-400 dark:text-gray-500">
+              {statistics?.donations?.count || '0'} donations
+            </p>
+          </CardHeader>
+        </Card>
+
+        {/* Total Investments Card */}
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-green-50 p-2 rounded-full">
+            <TrendingUpIcon className="h-5 w-5 text-green-500" />
+          </div>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+              Total Investments
+            </CardTitle>
+            <CardDescription className="text-gray-500 dark:text-gray-400">
+              {user?.currency?.toUpperCase()}{' '}
+              {statistics?.investments?.total_amount?.toLocaleString() || '0'}
+            </CardDescription>
+            <p className="text-sm text-gray-400 dark:text-gray-500">
+              {statistics?.investments?.count || '0'} investments
+            </p>
+          </CardHeader>
+        </Card>
+
+        {/* Total Funding Card */}
+        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
+          <div className="absolute top-2 right-2 bg-purple-50 p-2 rounded-full">
+            <Coins className="h-5 w-5 text-purple-500" />
+          </div>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+              Total Funding
+            </CardTitle>
+            <CardDescription className="text-gray-500 dark:text-gray-400">
+              {user?.currency?.toUpperCase()}{' '}
+              {statistics?.total_funds_raised?.toLocaleString() || '0'}
+            </CardDescription>
+            <p className="text-sm text-gray-400 dark:text-gray-500">
+              Combined donations & investments
+            </p>
+          </CardHeader>
         </Card>
 
         {/* Total Backers Card */}
@@ -171,22 +185,6 @@ export default function Dashboard() {
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-neutral-400">
               {statistics?.total_active_campaigns} Campaigns
-            </CardDescription>
-          </CardHeader>
-        </Card>
-
-        {/* Total Funding Card */}
-        <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
-          <div className="absolute top-2 right-2 bg-fundify-muted p-2 rounded-full">
-            <DollarSign className="h-5 w-5 text-fundify-primary" />
-          </div>
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Total Funding
-            </CardTitle>
-            <CardDescription className="text-gray-500 dark:text-gray-400">
-              {user?.currency?.toUpperCase()}{' '}
-              {statistics?.total_funds_raised?.toLocaleString() || '0'}
             </CardDescription>
           </CardHeader>
         </Card>
