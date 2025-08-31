@@ -8,7 +8,7 @@ import SystemSettingsPage from './systemsettings/SystemSettings';
 import KYC from './kyc/KYC';
 
 const AccountSettings = () => {
-  const [activeTab, setActiveTab] = useState('payment');
+  const [activeTab, setActiveTab] = useState('kyc');
 
   const renderTabContent = () => {
     switch (activeTab) {
