@@ -250,6 +250,7 @@ module Api
 
         def request_info
           # Implement info request logic
+          # some logic to notify user for more info   
           render json: { message: 'Information requested from user' }
         end
 
