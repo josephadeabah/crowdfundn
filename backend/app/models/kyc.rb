@@ -74,7 +74,6 @@ class Kyc < ApplicationRecord
             if: -> { issuer? || both? }
 
   validate :expiry_date_cannot_be_in_past
-  validate :validate_kyc_type_based_on_user
   validate :validate_minimum_age
   validate :validate_business_uniqueness, if: -> { issuer? || both? }
 
@@ -322,15 +321,6 @@ class Kyc < ApplicationRecord
       self.kyc_type = :both
     elsif user.investor?
       self.kyc_type = :investor
-    elsif user.campaigns.any?
-      self.kyc_type = :issuer
-    end
-  end
-
-  def validate_kyc_type_based_on_user
-    if issuer? && !user.campaigns.any?
-      errors.add(:kyc_type, "cannot be issuer for users without campaigns")
-    end
   end
 
   def create_required_documents
