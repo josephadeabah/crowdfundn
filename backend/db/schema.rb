@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_29_231448) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_31_111841) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -334,6 +334,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_29_231448) do
     t.date "next_review_date"
     t.text "review_notes"
     t.json "issuer_signature_data"
+    t.datetime "superseded_at"
+    t.string "superseded_by_type"
+    t.string "upgraded_from_type"
+    t.boolean "is_upgrade", default: false
     t.index ["business_registration_number"], name: "index_kycs_on_business_registration_number", unique: true
     t.index ["business_tax_id"], name: "index_kycs_on_business_tax_id", unique: true
     t.index ["created_at"], name: "index_kycs_on_created_at"

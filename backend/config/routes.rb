@@ -49,6 +49,7 @@ Rails.application.routes.draw do
             get :all_needs_review
             get :stats 
             get :status
+            get :upgrade_status
           end
         end
       end

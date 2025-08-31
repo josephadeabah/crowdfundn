@@ -20,7 +20,7 @@ class User < ApplicationRecord
   has_many :premium_subscriptions, dependent: :destroy
   # Update KYC associations to use full namespace
   has_many :kycs, class_name: '::Kyc', dependent: :destroy
-  has_one :latest_kyc, -> { order(created_at: :desc) }, class_name: '::Kyc'
+  has_one :latest_kyc, -> { where.not(status: 'superseded').order(created_at: :desc) }, class_name: '::Kyc'
 
   validates :status, inclusion: { in: STATUSES }
   validates :user_type, inclusion: { in: USER_TYPES }
@@ -162,7 +162,6 @@ class User < ApplicationRecord
   def verified_both?
     latest_kyc&.verified? && latest_kyc.both?
   end
-  
 
   def kyc_status_info
     return { verified: false, has_kyc: false } unless latest_kyc
@@ -184,6 +183,32 @@ class User < ApplicationRecord
 
   def can_create_campaign?
     verified_issuer? && !latest_kyc.expired?
+  end
+
+  # Upgrade methods
+  def can_upgrade_to_both?
+    return false unless latest_kyc&.verified?
+    latest_kyc.investor? || latest_kyc.issuer?
+  end
+
+  def upgrade_kyc_to_both!
+    return false unless can_upgrade_to_both?
+    
+    # Create a new KYC with both type
+    new_kyc = kycs.build(
+      kyc_type: 'both',
+      verification_type: latest_kyc.verification_type,
+      id_number: latest_kyc.id_number,
+      id_expiry_date: latest_kyc.id_expiry_date,
+      date_of_birth: latest_kyc.date_of_birth,
+      nationality: latest_kyc.nationality,
+      occupation: latest_kyc.occupation,
+      source_of_funds: latest_kyc.source_of_funds,
+      upgraded_from_type: latest_kyc.kyc_type,
+      is_upgrade: true
+    )
+    
+    new_kyc.save
   end
 
   private

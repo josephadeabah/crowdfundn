@@ -3,7 +3,7 @@ class KycFrontendService
   def self.format_for_frontend(kyc)
     return nil unless kyc
     
-    {
+    base_data = {
       id: kyc.id,
       reference: kyc.reference,
       kyc_type: kyc.kyc_type,
@@ -38,6 +38,18 @@ class KycFrontendService
       updated_at: kyc.updated_at,
       user: format_user(kyc.user)
     }
+    
+    # Add upgrade information if this is an upgrade
+    if kyc.is_upgrade && kyc.upgraded_from_type.present?
+      base_data[:upgrade_info] = {
+        is_upgrade: true,
+        upgraded_from: kyc.upgraded_from_type,
+        superseded_at: kyc.superseded_at,
+        superseded_by_type: kyc.superseded_by_type
+      }
+    end
+    
+    base_data
   end
 
   def self.format_address(address)
@@ -111,7 +123,10 @@ class KycFrontendService
       signature_data: frontend_data[:signature_data],
       investor_signature_data: frontend_data[:investor_signature_data],
       issuer_signature_data: frontend_data[:issuer_signature_data],
-      issuer_accepted_terms: frontend_data[:issuer_accepted_terms]
+      issuer_accepted_terms: frontend_data[:issuer_accepted_terms],
+      # Add upgrade fields if present
+      upgraded_from_type: frontend_data[:upgraded_from_type],
+      is_upgrade: frontend_data[:is_upgrade]
     )
 
     # Create addresses
@@ -130,5 +145,22 @@ class KycFrontendService
     end
 
     kyc
+  end
+
+  # New method to format upgrade eligibility
+  def self.format_upgrade_eligibility(user)
+    return nil unless user
+    
+    latest_kyc = user.latest_kyc
+    can_upgrade = user.can_upgrade_to_both?
+    
+    {
+      can_upgrade: can_upgrade,
+      current_type: latest_kyc&.kyc_type,
+      upgrade_type: 'both',
+      message: can_upgrade ? 
+        "You can upgrade from #{latest_kyc.kyc_type} to full platform access" :
+        latest_kyc ? "You already have #{latest_kyc.kyc_type == 'both' ? 'full platform access' : latest_kyc.kyc_type} access" : "No KYC verification found"
+    }
   end
 end

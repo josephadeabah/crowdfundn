@@ -33,9 +33,21 @@ module Api
         end
 
         def create
-          # Check if user can create KYC (no pending or verified ones)
-          if @current_user.kycs.where(status: ['pending', 'in_review', 'verified']).exists?
-            return render_kyc_error('You already have a KYC submission in progress or verified')
+          # Allow upgrades from single type to both type while maintaining security
+          existing_active_kyc = @current_user.kycs.where(status: ['pending', 'in_review', 'verified']).first
+          
+          if existing_active_kyc
+            requested_type = params.dig(:kyc, :kyc_type)
+            
+            # Check if upgrade is allowed and valid
+            upgrade_validation = validate_kyc_upgrade(existing_active_kyc, requested_type)
+            
+            unless upgrade_validation[:allowed]
+              return render_kyc_error(upgrade_validation[:message])
+            end
+            
+            # Handle the upgrade scenario
+            handle_kyc_upgrade(existing_active_kyc, requested_type)
           end
 
           # Use ALL permitted parameters (including signature data)
@@ -47,7 +59,6 @@ module Api
               @kyc.process_signature
             rescue => e
               Rails.logger.error "Signature processing failed: #{e.message}"
-              # Continue even if signature processing fails
             end
             
             render json: { kyc: KycFrontendService.format_for_frontend(@kyc) }, status: :created
@@ -240,6 +251,21 @@ module Api
           render json: kyc_info
         end
 
+        def upgrade_status
+          # Check if user can upgrade to both
+          can_upgrade = @current_user.can_upgrade_to_both?
+          current_type = @current_user.latest_kyc&.kyc_type
+          
+          render json: {
+            can_upgrade: can_upgrade,
+            current_type: current_type,
+            upgrade_type: 'both',
+            message: can_upgrade ? 
+              "You can upgrade from #{current_type} to full platform access" :
+              "You already have full platform access or cannot upgrade"
+          }
+        end
+
         def stats
           # Get the latest KYC update timestamp for cache versioning
           latest_update = ::Kyc.maximum(:updated_at) || Time.current
@@ -252,7 +278,8 @@ module Api
               in_review: ::Kyc.where(status: 'in_review').count,
               verified: ::Kyc.where(status: 'verified').count,
               rejected: ::Kyc.where(status: 'rejected').count,
-              expired: ::Kyc.where(status: 'expired').count
+              expired: ::Kyc.where(status: 'expired').count,
+              superseded: ::Kyc.where(status: 'superseded').count
             }
           end
 
@@ -279,11 +306,51 @@ module Api
             :business_name, :business_registration_number, :business_tax_id,
             :business_industry, :business_established_date,
             :issuer_accepted_terms,
-            signature_data: [:x, :y], # Allow array of objects with x and y
+            :upgraded_from_type, :is_upgrade,
+            signature_data: [:x, :y],
             investor_signature_data: [:x, :y],
             issuer_signature_data: [:x, :y],
             kyc_addresses_attributes: [:id, :address_type, :street, :city, :state, :postal_code, :country, :is_primary, :_destroy]
           )
+        end
+
+        def validate_kyc_upgrade(existing_kyc, requested_type)
+          # Cannot upgrade if already has both access
+          if existing_kyc.kyc_type == 'both'
+            return { 
+              allowed: false, 
+              message: 'You already have full platform access. No upgrade needed.' 
+            }
+          end
+          
+          # Mentor verifications are separate and cannot be upgraded
+          if existing_kyc.kyc_type == 'mentor' || requested_type == 'mentor'
+            return { 
+              allowed: false, 
+              message: 'Mentor verification is separate and cannot be combined with other types.' 
+            }
+          end
+          
+          # Only allow upgrade to 'both' type
+          if requested_type != 'both'
+            return { 
+              allowed: false, 
+              message: 'You can only upgrade to Full Platform Access (both capabilities).' 
+            }
+          end
+          
+          { allowed: true, message: 'Upgrade allowed' }
+        end
+
+        def handle_kyc_upgrade(existing_kyc, requested_type)
+          # For pending/in_review KYCs, mark as superseded
+          if existing_kyc.pending? || existing_kyc.in_review?
+            existing_kyc.mark_as_superseded!(requested_type)
+          end
+          
+          # Set upgrade fields on the new KYC
+          @kyc.upgraded_from_type = existing_kyc.kyc_type
+          @kyc.is_upgrade = true
         end
 
         def render_kyc_errors(errors)
@@ -332,7 +399,6 @@ module Api
             Rails.logger.info "KYC submission email sent to #{recipient_email}"
           rescue => e
             Rails.logger.error "Failed to send KYC submission email: #{e.message}"
-            # Don't fail the request if email fails
           end
         end
 
@@ -349,10 +415,9 @@ module Api
               verified_by_name: verified_by_name
             )
             Rails.logger.info "KYC approval email sent to #{recipient_email}"
-            bust_kyc_stats_cache # Bust cache after approval email
+            bust_kyc_stats_cache
           rescue => e
             Rails.logger.error "Failed to send KYC approval email: #{e.message}"
-            # Don't fail the request if email fails
           end
         end
 
@@ -370,10 +435,9 @@ module Api
               rejection_reason: rejection_reason
             )
             Rails.logger.info "KYC rejection email sent to #{recipient_email}"
-            bust_kyc_stats_cache # Bust cache after rejection email
+            bust_kyc_stats_cache
           rescue => e
             Rails.logger.error "Failed to send KYC rejection email: #{e.message}"
-            # Don't fail the request if email fails
           end
         end
 

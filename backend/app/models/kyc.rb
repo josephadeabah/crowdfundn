@@ -13,7 +13,8 @@ class Kyc < ApplicationRecord
   enum :kyc_type, {
     investor: 'investor',
     issuer: 'issuer',
-    both: 'both'
+    both: 'both',
+    mentor: 'mentor'
   }, default: 'investor', _prefix: :kyc_type
 
   # Statuses
@@ -22,7 +23,8 @@ class Kyc < ApplicationRecord
     in_review: 'in_review',
     verified: 'verified',
     rejected: 'rejected',
-    expired: 'expired'
+    expired: 'expired',
+    superseded: 'superseded'
   }, default: 'pending', _prefix: true
 
   # Verification document types
@@ -41,7 +43,7 @@ class Kyc < ApplicationRecord
 
   # Validations
   validates :verification_type, presence: true
-  validates :id_number, presence: true, uniqueness: true
+  validates :id_number, presence: true, uniqueness: { scope: :user_id }
   validates :id_expiry_date, presence: true
   validates :date_of_birth, presence: true, if: -> { investor? || both? }
   validates :nationality, presence: true, if: -> { investor? || both? }
@@ -96,6 +98,7 @@ class Kyc < ApplicationRecord
   scope :verified, -> { where(status: :verified) }
   scope :pending_review, -> { where(status: [:pending, :in_review]) }
   scope :needs_review, -> { where(status: [:pending, :in_review]) }
+  scope :active, -> { where.not(status: [:rejected, :expired, :superseded]) }
 
   # Instance methods
   def pending?
@@ -112,6 +115,10 @@ class Kyc < ApplicationRecord
 
   def expired?
     verified_at && verified_at < 1.year.ago
+  end
+
+  def superseded?
+    status == 'superseded'
   end
 
   def residential_address
@@ -157,6 +164,15 @@ class Kyc < ApplicationRecord
     
     # Return true to indicate success
     true
+  end
+
+  def mark_as_superseded!(superseded_by_type)
+    update_columns(
+      status: 'superseded',
+      superseded_at: Time.current,
+      superseded_by_type: superseded_by_type,
+      updated_at: Time.current
+    )
   end
 
   def process_signature
@@ -247,27 +263,27 @@ class Kyc < ApplicationRecord
   end
 
   def signature_url_for_context(context)
-  case context
-  when :investor
-    # For investment context, use appropriate signature
-    if investor? || both?
-      signature_image_url
-    elsif issuer?
-      # Issuer is investing - use their general signature
-      signature_image_url
-    end
-  when :issuer
-    # For issuer context (signing as campaign owner)
-    if issuer? || both?
-      issuer_signature.attached? ? issuer_signature_url : signature_image_url
+    case context
+    when :investor
+      # For investment context, use appropriate signature
+      if investor? || both?
+        signature_image_url
+      elsif issuer?
+        # Issuer is investing - use their general signature
+        signature_image_url
+      end
+    when :issuer
+      # For issuer context (signing as campaign owner)
+      if issuer? || both?
+        issuer_signature.attached? ? issuer_signature_url : signature_image_url
+      else
+        # Investor acting as issuer (uncommon)
+        signature_image_url
+      end
     else
-      # Investor acting as issuer (uncommon)
       signature_image_url
     end
-  else
-    signature_image_url
   end
-end
 
   private
 
@@ -285,6 +301,7 @@ end
 
   def validate_business_uniqueness
     existing_kyc = Kyc.where.not(id: id)
+                     .where.not(status: 'superseded')
                      .where('business_name ILIKE ? OR business_registration_number = ? OR business_tax_id = ?', 
                             business_name, business_registration_number, business_tax_id)
                      .first
