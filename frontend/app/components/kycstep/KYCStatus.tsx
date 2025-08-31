@@ -332,7 +332,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
               <Alert className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 dark:from-blue-900/20 dark:to-purple-900/20 dark:border-blue-800">
                 <ArrowUpCircle className="h-4 w-4 text-blue-600" />
                 <AlertTitle className="text-blue-800 dark:text-blue-200">
-                  Upgrade Available!
+                  Free Upgrade Available!
                 </AlertTitle>
                 <AlertDescription className="text-blue-700 dark:text-blue-300">
                   You can upgrade from {upgradeEligibility.current_type} to Full
