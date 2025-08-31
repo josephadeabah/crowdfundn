@@ -265,7 +265,7 @@ export const investorQuizSchema = z.object({
 });
 
 export const declarationSchema = z.object({
-  accreditedInvestor: z.boolean(),
+  accreditedInvestor: z.boolean().optional().default(false),
   riskAcknowledgment: z
     .boolean()
     .refine((val) => val === true, 'You must acknowledge the risks'),
