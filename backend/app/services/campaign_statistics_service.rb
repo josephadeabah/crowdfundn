@@ -269,7 +269,7 @@ class CampaignStatisticsService
     user.campaigns.joins(:favorites).count
   end
 
-    # This method should be called when fetching a single campaign
+ # This method should be called when fetching a single campaign
   def self.calculate_for_campaign(campaign, month = Time.zone.now.month, year = Time.zone.now.year)
     start_date = Date.new(year, month, 1).beginning_of_month
     end_date = Date.new(year, month, 1).end_of_month
@@ -282,13 +282,29 @@ class CampaignStatisticsService
       # Combine donations and investments
       combined_funding = donations.merge(investments) { |_key, donation_amount, investment_amount| donation_amount + investment_amount }
       
+      # Ensure all days in the month are included
+      result = {}
+      (start_date.to_date..end_date.to_date).each do |date|
+        formatted_date = date.strftime('%Y-%m-%d')
+        result[formatted_date] = combined_funding[date] || combined_funding[formatted_date] || 0
+      end
+      
       {
-        donations_over_time: combined_funding
+        donations_over_time: result
       }
     else
       # For regular campaigns, only get donations
+      donations = get_donations_over_time(campaign, start_date, end_date)
+      
+      # Ensure all days in the month are included
+      result = {}
+      (start_date.to_date..end_date.to_date).each do |date|
+        formatted_date = date.strftime('%Y-%m-%d')
+        result[formatted_date] = donations[date] || donations[formatted_date] || 0
+      end
+      
       {
-        donations_over_time: get_donations_over_time(campaign, start_date, end_date)
+        donations_over_time: result
       }
     end
   end
@@ -300,7 +316,6 @@ class CampaignStatisticsService
             .where(status: 'successful', created_at: start_date..end_date)
             .group_by_day('donations.created_at')
             .sum('donations.amount')
-            .transform_keys { |date| date.strftime('%Y-%m-%d') }
   end
 
   def self.get_investments_over_time(campaign, start_date, end_date)
@@ -310,7 +325,6 @@ class CampaignStatisticsService
             .where(status: EquityInvestment::STATUS_SUCCESSFUL, created_at: start_date..end_date)
             .group_by_day('equity_investments.created_at')
             .sum('equity_investments.amount')
-            .transform_keys { |date| date.strftime('%Y-%m-%d') }
   end
 
   def self.calculate_equity_stats_for_user(user, equity_campaigns)
