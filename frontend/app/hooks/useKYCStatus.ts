@@ -10,6 +10,8 @@ interface KYCStatus {
   verified_at: string | null;
   expires_at: string | null;
   is_expired: boolean;
+  can_upgrade?: boolean;
+  current_type?: string;
 }
 
 export const useKYCStatus = () => {
@@ -25,16 +27,9 @@ export const useKYCStatus = () => {
       }
 
       try {
-        // If user already has KYC info, use it
-        if (user.kyc_status_info) {
-          setKycStatus(user.kyc_status_info);
-          setLoading(false);
-          return;
-        }
-
-        // Otherwise, fetch from API
+        // First try to get upgrade status which includes basic status
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/status`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/upgrade_status`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -45,18 +40,44 @@ export const useKYCStatus = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setKycStatus(data);
-        } else {
-          // Fallback to empty status
           setKycStatus({
-            verified: false,
-            has_kyc: false,
-            status: 'not_started',
-            kyc_type: '',
+            verified: data.current_type !== undefined,
+            has_kyc: data.current_type !== undefined,
+            status: data.current_type ? 'verified' : 'not_started',
+            kyc_type: data.current_type || '',
             verified_at: null,
             expires_at: null,
             is_expired: false,
+            can_upgrade: data.can_upgrade,
+            current_type: data.current_type
           });
+        } else {
+          // Fallback to basic status
+          const statusResponse = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/status`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            },
+          );
+          
+          if (statusResponse.ok) {
+            const statusData = await statusResponse.json();
+            setKycStatus(statusData);
+          } else {
+            setKycStatus({
+              verified: false,
+              has_kyc: false,
+              status: 'not_started',
+              kyc_type: '',
+              verified_at: null,
+              expires_at: null,
+              is_expired: false,
+              can_upgrade: false
+            });
+          }
         }
       } catch (error) {
         console.error('Failed to fetch KYC status:', error);
@@ -68,6 +89,7 @@ export const useKYCStatus = () => {
           verified_at: null,
           expires_at: null,
           is_expired: false,
+          can_upgrade: false
         });
       } finally {
         setLoading(false);
@@ -75,7 +97,7 @@ export const useKYCStatus = () => {
     };
 
     fetchKYCStatus();
-  }, [user]);
+  }, [user, token]);
 
   return { kycStatus, loading };
 };
