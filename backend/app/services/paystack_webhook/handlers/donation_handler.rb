@@ -1,6 +1,8 @@
+# app/lib/paystack_webhook/handlers/donation_handler.rb
 module PaystackWebhook::Handlers
   class DonationHandler
     include PaystackWebhook::JsonHelper
+    
     def initialize(data)
       @data = data
     end
@@ -16,7 +18,16 @@ module PaystackWebhook::Handlers
       end
 
       transaction_status = response.dig(:data, :status)
-      if transaction_status == 'success'
+      
+      # Map Paystack status to our donation status
+      donation_status = case transaction_status
+                       when 'success' then Donation::STATUS_SUCCESSFUL
+                       when 'failed' then Donation::STATUS_FAILED
+                       when 'abandoned' then Donation::STATUS_ABANDONED
+                       else Donation::STATUS_PENDING
+                       end
+
+      if donation_status == Donation::STATUS_SUCCESSFUL
         gross_amount = response.dig(:data, :amount).to_f / 100.0
         net_amount = gross_amount * 0.93
         platform_fee = gross_amount * 0.07
@@ -67,7 +78,7 @@ module PaystackWebhook::Handlers
 
         donation = Donation.create!(
           transaction_reference: transaction_reference,
-          status: 'successful',
+          status: donation_status, # Use the mapped status
           gross_amount: gross_amount,
           net_amount: net_amount,
           platform_fee: adjusted_platform_fee,
@@ -101,43 +112,54 @@ module PaystackWebhook::Handlers
           processed: false
         )
 
-        campaign = donation.campaign
-        campaign.update!(
-          total_successful_donations: campaign.current_amount + net_amount,
-          current_amount: campaign.current_amount + net_amount
-        )
-
-        campaign.update_transferred_amount(net_amount)
-
-        selected_rewards.each do |reward|
-          next if Pledge.exists?(donation_id: donation.id, reward_id: reward[:id])
-
-          Pledge.create!(
-            donation_id: donation.id,
-            reward_id: reward[:id],
-            amount: reward[:amount],
-            shipping_data: shipping_data,
-            selected_rewards: [reward],
-            delivery_option: delivery_option,
-            status: 'pending',
-            shipping_status: 'not_shipped',
-            campaign_id: campaign_id,
-            user_id: metadata[:fundraiser_id]
+        if donation.successful?
+          campaign = donation.campaign
+          campaign.update!(
+            total_successful_donations: campaign.current_amount + net_amount,
+            current_amount: campaign.current_amount + net_amount
           )
-        end
 
-        DonationConfirmationEmailService.send_confirmation_email(donation)
-        FundraiserDonationNotificationService.send_notification_email(donation)
+          campaign.update_transferred_amount(net_amount)
 
-        if donation.user.present?
-          Point.add_points(donation.user, donation)
-          LeaderboardEntry.update_leaderboard(donation.user, donation.user.total_points)
-        else
-          Rails.logger.info "Skipping points & leaderboard update for anonymous donation: #{donation.id}"
+          selected_rewards.each do |reward|
+            next if Pledge.exists?(donation_id: donation.id, reward_id: reward[:id])
+
+            Pledge.create!(
+              donation_id: donation.id,
+              reward_id: reward[:id],
+              amount: reward[:amount],
+              shipping_data: shipping_data,
+              selected_rewards: [reward],
+              delivery_option: delivery_option,
+              status: 'pending',
+              shipping_status: 'not_shipped',
+              campaign_id: campaign_id,
+              user_id: metadata[:fundraiser_id]
+            )
+          end
+
+          DonationConfirmationEmailService.send_confirmation_email(donation)
+          FundraiserDonationNotificationService.send_notification_email(donation)
+
+          if donation.user.present?
+            Point.add_points(donation.user, donation)
+            LeaderboardEntry.update_leaderboard(donation.user, donation.user.total_points)
+          else
+            Rails.logger.info "Skipping points & leaderboard update for anonymous donation: #{donation.id}"
+          end
         end
       else
-        Rails.logger.error "Transaction failed with status #{transaction_status}"
-        raise "Transaction status is #{transaction_status}"
+        # Handle non-successful statuses
+        Donation.create!(
+          transaction_reference: transaction_reference,
+          status: donation_status,
+          gross_amount: response.dig(:data, :amount).to_f / 100.0,
+          email: response.dig(:data, :customer, :email),
+          metadata: {
+            paystack_response: response[:data]
+          }
+        )
+        Rails.logger.warn "Donation #{transaction_reference} ended with status: #{donation_status}"
       end
     end
   end

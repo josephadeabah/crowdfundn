@@ -1,3 +1,4 @@
+# app/controllers/api/v1/fundraisers/donations_controller.rb
 module Api
   module V1
     module Fundraisers
@@ -13,10 +14,11 @@ module Api
           # Format donation data with user info or 'Anonymous' for anonymous donations
           donors = donations.map do |donation|
             {
-              full_name: donation.full_name || 'Anonymous', # If user exists, show their name; otherwise show 'Anonymous'
+              full_name: donation.full_name || 'Anonymous',
               amount: donation.gross_amount,
               email: donation.email,
-              date: donation.created_at.strftime('%Y-%m-%d %H:%M:%S')
+              date: donation.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+              status: donation.status # Include status in response
             }
           end
 
@@ -47,7 +49,7 @@ module Api
           campaigns = Campaign.where(fundraiser_id: @current_user.id)
 
           # Fetch donations for those campaigns with successful status
-          donations = Donation.where(status: 'successful')
+          donations = Donation.successful
                               .where(campaign_id: campaigns.pluck(:id))
                               .order(created_at: :desc)
                               .page(params[:page] || 1)
@@ -84,20 +86,17 @@ module Api
           # Create a new donation
           donation = Donation.new(donation_params)
           donation.campaign_id = campaign.id
-          donation.status = 'pending'
-          donation.full_name = params[:donation][:full_name].presence || 'Anonymous' # Default to "Anonymous" if full_name is blank
+          donation.status = Donation::STATUS_PENDING # Use constant
+          donation.full_name = params[:donation][:full_name].presence || 'Anonymous'
 
           if @current_user
             donation.user_id = @current_user.id
           else
-            # Generate a new anonymous_token if not provided
             anonymous_token = SecureRandom.uuid
-            donation.metadata[:anonymous_token] = anonymous_token # Add token to metadata
+            donation.metadata[:anonymous_token] = anonymous_token
           end
 
-          # Generate a secure random UUID and append it to the redirect_url as a query parameter
           secure_random_uuid = SecureRandom.uuid
-          # Use campaign.slug if available, otherwise fall back to id
           campaign_identifier = campaign.slug || campaign.id
           redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign_identifier,
                                                                            host: 'bantuhive.com') + "?#{secure_random_uuid}"
@@ -109,7 +108,7 @@ module Api
           metadata = {
             user_id: donation.user_id,
             campaign_id: donation.campaign_id,
-            anonymous_token: donation.metadata[:anonymous_token], # Anonymous identifier
+            anonymous_token: donation.metadata[:anonymous_token],
             donor_name: donation.full_name,
             redirect_url: redirect_url,
             title: campaign.title,
@@ -139,6 +138,7 @@ module Api
           if response[:status] == true
             donation.transaction_reference = response[:data][:reference]
             donation.subscription_code = donation.plan if donation.plan.present?
+            donation.status = Donation::STATUS_INITIALIZED # Update status to initialized
 
             if donation.save
               render json: {
@@ -152,6 +152,8 @@ module Api
                      status: :unprocessable_entity
             end
           else
+            donation.status = Donation::STATUS_FAILED
+            donation.save
             render json: { error: 'Payment initialization failed: ' + response[:message] },
                    status: :unprocessable_entity
           end
@@ -178,7 +180,7 @@ module Api
               campaign.fundraiser.profile.avatar_url,
               campaign.title,
               campaign.currency.upcase,
-              donation.gross_amount.to_f.round(2) # Convert to float
+              donation.gross_amount.to_f.round(2)
             )
           end
 
@@ -192,16 +194,12 @@ module Api
                                            metadata: {})
         end
 
-        # Set the campaign based on the campaign_id parameter
         def set_campaign
-          # For public_donations action, the campaign_id comes from the URL path
           campaign_identifier = params[:campaign_id] || params[:id]
           
-          # First try to find by slug if the identifier contains letters/dashes
           if campaign_identifier && campaign_identifier.match?(/[a-zA-Z\-]/)
             @campaign = Campaign.find_by(slug: campaign_identifier)
           else
-            # Fall back to finding by ID
             @campaign = Campaign.find_by(id: campaign_identifier)
           end
           
