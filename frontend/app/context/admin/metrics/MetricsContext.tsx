@@ -14,6 +14,7 @@ interface MetricsState {
   fetchMetrics: () => Promise<void>;
 }
 
+// Add these interfaces to your MetricsContext.tsx file
 export interface Metrics {
   users: {
     total: number;
@@ -56,6 +57,32 @@ export interface Metrics {
     total: number;
     success_rate: number;
   };
+  // Add equity campaigns and investments
+  equity_campaigns: {
+    total: number;
+    active: number;
+    total_valuation: number;
+    total_equity_offered: number;
+    total_funds_raised: number;
+    average_valuation: number;
+    average_equity_offered: number;
+    status_distribution: Record<string, number>;
+    top_performing: EquityCampaign[];
+  };
+  investments: {
+    total_investments: number;
+    successful_investments: number;
+    total_investment_amount: number;
+    average_investment: number;
+    investments_over_time: Record<string, string | number>;
+    status_distribution: Record<string, number>;
+    top_investors: TopInvestor[];
+    investment_size_distribution: {
+      small: number;
+      medium: number;
+      large: number;
+    };
+  };
 }
 
 interface Campaign {
@@ -64,6 +91,24 @@ interface Campaign {
   transferred_amount: string;
   goal_amount: string;
   performance_percentage: string;
+}
+
+interface EquityCampaign {
+  id: number;
+  name: string;
+  company_name: string;
+  valuation: number;
+  equity_offered: number;
+  total_raised: number;
+  percentage_raised: number;
+  status: string;
+}
+
+interface TopInvestor {
+  id: number;
+  name: string;
+  investment_count: number;
+  total_invested: number;
 }
 
 const MetricsContext = createContext<MetricsState | undefined>(undefined);

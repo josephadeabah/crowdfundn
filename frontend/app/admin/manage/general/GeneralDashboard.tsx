@@ -92,6 +92,63 @@ const GeneralDashboard = () => {
       `Subaccounts,Success Rate,${metrics.subaccounts.success_rate}`,
     );
 
+    // Equity Campaigns
+    csvRows.push(`Equity Campaigns,Total,${metrics.equity_campaigns.total}`);
+    csvRows.push(`Equity Campaigns,Active,${metrics.equity_campaigns.active}`);
+    csvRows.push(
+      `Equity Campaigns,Total Valuation,${metrics.equity_campaigns.total_valuation}`,
+    );
+    csvRows.push(
+      `Equity Campaigns,Total Equity Offered,${metrics.equity_campaigns.total_equity_offered}`,
+    );
+    csvRows.push(
+      `Equity Campaigns,Total Funds Raised,${metrics.equity_campaigns.total_funds_raised}`,
+    );
+    csvRows.push(
+      `Equity Campaigns,Average Valuation,${metrics.equity_campaigns.average_valuation}`,
+    );
+    csvRows.push(
+      `Equity Campaigns,Average Equity Offered,${metrics.equity_campaigns.average_equity_offered}`,
+    );
+
+    Object.entries(metrics.equity_campaigns.status_distribution).forEach(
+      ([status, count]) => {
+        csvRows.push(
+          `Equity Campaigns,Status Distribution - ${status},${count}`,
+        );
+      },
+    );
+
+    // Investments
+    csvRows.push(
+      `Investments,Total Investments,${metrics.investments.total_investments}`,
+    );
+    csvRows.push(
+      `Investments,Successful Investments,${metrics.investments.successful_investments}`,
+    );
+    csvRows.push(
+      `Investments,Total Investment Amount,${metrics.investments.total_investment_amount}`,
+    );
+    csvRows.push(
+      `Investments,Average Investment,${metrics.investments.average_investment}`,
+    );
+
+    Object.entries(metrics.investments.status_distribution).forEach(
+      ([status, count]) => {
+        csvRows.push(`Investments,Status Distribution - ${status},${count}`);
+      },
+    );
+
+    csvRows.push(
+      `Investments,Small Investments,${metrics.investments.investment_size_distribution.small}`,
+    );
+    csvRows.push(
+      `Investments,Medium Investments,${metrics.investments.investment_size_distribution.medium}`,
+    );
+    csvRows.push(
+      `Investments,Large Investments,${metrics.investments.investment_size_distribution.large}`,
+    );
+
     return csvRows.join('\n');
   };
 
@@ -256,6 +313,166 @@ const GeneralDashboard = () => {
                 ),
               )}
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Equity Campaigns Section */}
+      <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 className="text-xl font-semibold mb-4 text-left">
+          Equity Campaigns
+        </h2>
+        <div className="bg-gray-200 p-6 rounded-lg text-left">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <div className="font-semibold">
+                Total Equity Campaigns: {metrics?.equity_campaigns.total}
+              </div>
+              <div className="font-semibold">
+                Active Campaigns: {metrics?.equity_campaigns.active}
+              </div>
+              <div className="font-semibold">
+                Total Valuation: GHS
+                {metrics?.equity_campaigns.total_valuation?.toLocaleString()}
+              </div>
+              <div className="font-semibold">
+                Total Equity Offered:{' '}
+                {metrics?.equity_campaigns.total_equity_offered}%
+              </div>
+            </div>
+            <div>
+              <div className="font-semibold">
+                Total Funds Raised: GHS
+                {metrics?.equity_campaigns.total_funds_raised?.toLocaleString()}
+              </div>
+              <div className="font-semibold">
+                Average Valuation: GHS
+                {metrics?.equity_campaigns.average_valuation?.toLocaleString()}
+              </div>
+              <div className="font-semibold">
+                Average Equity Offered:{' '}
+                {metrics?.equity_campaigns.average_equity_offered}%
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Status Distribution</h3>
+            <ul>
+              {metrics?.equity_campaigns.status_distribution &&
+                Object.entries(
+                  metrics.equity_campaigns.status_distribution,
+                ).map(([status, count]) => (
+                  <li key={status}>
+                    {status}: {count}
+                  </li>
+                ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold">
+              Top Performing Equity Campaigns
+            </h3>
+            {metrics?.equity_campaigns.top_performing.map((campaign) => (
+              <div key={campaign.id} className="mb-2 p-2 bg-white rounded">
+                <p className="font-semibold">
+                  {campaign.name} ({campaign.company_name})
+                </p>
+                <p>Valuation: GHS{campaign.valuation?.toLocaleString()}</p>
+                <p>Equity Offered: {campaign.equity_offered}%</p>
+                <p>
+                  Total Raised: GHS{campaign.total_raised?.toLocaleString()}
+                </p>
+                <p>Percentage Raised: {campaign.percentage_raised}%</p>
+                <p>Status: {campaign.status}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Investments Section */}
+      <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 className="text-xl font-semibold mb-4 text-left">Investments</h2>
+        <div className="bg-gray-200 p-6 rounded-lg text-left">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <div className="font-semibold">
+                Total Investments: {metrics?.investments.total_investments}
+              </div>
+              <div className="font-semibold">
+                Successful Investments:{' '}
+                {metrics?.investments.successful_investments}
+              </div>
+              <div className="font-semibold">
+                Total Investment Amount: GHS
+                {metrics?.investments.total_investment_amount?.toLocaleString()}
+              </div>
+              <div className="font-semibold">
+                Average Investment: GHS
+                {metrics?.investments.average_investment?.toLocaleString()}
+              </div>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold">
+                Investment Size Distribution
+              </h3>
+              <div>
+                Small (&lt; GHS1,000):{' '}
+                {metrics?.investments.investment_size_distribution.small}
+              </div>
+              <div>
+                Medium (GHS1,000 - GHS10,000):{' '}
+                {metrics?.investments.investment_size_distribution.medium}
+              </div>
+              <div>
+                Large (&ge; GHS10,000):{' '}
+                {metrics?.investments.investment_size_distribution.large}
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Status Distribution</h3>
+            <ul>
+              {metrics?.investments.status_distribution &&
+                Object.entries(metrics.investments.status_distribution).map(
+                  ([status, count]) => (
+                    <li key={status}>
+                      {status}: {count}
+                    </li>
+                  ),
+                )}
+            </ul>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Investments Over Time</h3>
+            <div className="max-h-40 overflow-y-auto">
+              {metrics?.investments.investments_over_time &&
+                Object.entries(metrics.investments.investments_over_time).map(
+                  ([date, amount]) => (
+                    <div key={date} className="mb-1">
+                      {moment(date).format('MMM DD, YYYY')}: GHS
+                      {Number(amount).toLocaleString()}
+                    </div>
+                  ),
+                )}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold">Top Investors</h3>
+            {metrics?.investments.top_investors.map((investor) => (
+              <div key={investor.id} className="mb-2 p-2 bg-white rounded">
+                <p className="font-semibold">{investor.name}</p>
+                <p>Total Investments: {investor.investment_count}</p>
+                <p>
+                  Total Invested: GHS{investor.total_invested?.toLocaleString()}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
