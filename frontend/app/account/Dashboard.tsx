@@ -102,7 +102,10 @@ export default function Dashboard() {
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-gray-400">
               {user?.currency?.toUpperCase()}{' '}
-              {statistics?.investments?.total_amount?.toLocaleString() || '0'}
+              {statistics &&
+                parseFloat(
+                  statistics?.investments?.total_amount?.toString(),
+                ).toLocaleString()}
             </CardDescription>
             <p className="text-sm text-gray-400 dark:text-gray-500">
               {statistics?.investments?.count || '0'} investments
@@ -121,7 +124,10 @@ export default function Dashboard() {
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-gray-400">
               {user?.currency?.toUpperCase()}{' '}
-              {statistics?.total_funds_raised?.toLocaleString() || '0'}
+              {statistics &&
+                parseFloat(
+                  statistics?.total_funds_raised.toString(),
+                ).toLocaleString()}
             </CardDescription>
             <p className="text-sm text-gray-400 dark:text-gray-500">
               Combined donations & investments
@@ -155,7 +161,10 @@ export default function Dashboard() {
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-gray-400">
               {user?.currency?.toUpperCase()}{' '}
-              {statistics?.total_fundraising_goal?.toLocaleString() || '0'}
+              {statistics &&
+                parseFloat(
+                  statistics?.total_fundraising_goal.toString(),
+                ).toLocaleString()}
             </CardDescription>
           </CardHeader>
         </Card>
