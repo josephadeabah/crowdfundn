@@ -1,3 +1,4 @@
+// Update the Donations component
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
@@ -17,6 +18,7 @@ import { useAuth } from '../context/auth/AuthContext';
 import { FaCheckCircle } from 'react-icons/fa';
 import ToastComponent from '../components/toast/Toast';
 import { EquityInvestment } from '../types/equityCampaigns.types';
+import { Badge } from '../components/ui/badge';
 
 interface InvestmentResponse {
   investments: EquityInvestment[];
@@ -28,6 +30,28 @@ interface InvestmentResponse {
   };
 }
 
+// Status color mapping based on EquityInvestments pattern
+const STATUS_COLORS = {
+  successful:
+    'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+  pending:
+    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+  failed: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+  refunded: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+  cancelled: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+  processing:
+    'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+  default: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+};
+
+const getStatusColor = (status: string) => {
+  const normalizedStatus = status.toLowerCase();
+  return (
+    STATUS_COLORS[normalizedStatus as keyof typeof STATUS_COLORS] ||
+    STATUS_COLORS.default
+  );
+};
+
 export default function Donations() {
   const { donations, loading, error, fetchDonations, pagination } =
     useDonationsContext();
@@ -35,9 +59,10 @@ export default function Donations() {
   const [selectedBackers, setSelectedBackers] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
-  const [backerType, setBackerType] = useState<'donation' | 'equity_investment'>(
-    'donation',
-  );
+  const [backerType, setBackerType] = useState<
+    'donation' | 'equity_investment'
+  >('donation');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
   const [investments, setInvestments] = useState<EquityInvestment[]>([]);
   const [investmentsPagination, setInvestmentsPagination] = useState({
     current_page: 1,
@@ -69,7 +94,7 @@ export default function Donations() {
   const isThankYouButtonEnabled =
     filter === 'all' || selectedBackers.length > 0;
 
-  // Fetch data whenever the page or type changes
+  // Fetch data whenever the page, type, or status filter changes
   useEffect(() => {
     if (backerType === 'donation') {
       fetchDonations(currentPage, perPage);
@@ -163,7 +188,6 @@ export default function Donations() {
         fullName = investment.full_name || 'Anonymous';
         amount = parseFloat(investment.amount.toString());
         campaignTitle = investment.campaign?.title || 'Unknown Campaign';
-        // Get currency from multiple possible sources
         currency =
           investment.campaign?.currency ||
           investment.campaign?.currency_symbol ||
@@ -172,7 +196,7 @@ export default function Donations() {
           'GHS';
       }
 
-      // Send individual thank you email
+      // Only send thank you for successful transactions
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/send_thank_you_email`,
         {
@@ -222,44 +246,49 @@ export default function Donations() {
       }> = [];
 
       if (filter === 'all') {
-        // Add all donations
+        // Add all successful donations
         donations.forEach((donation) => {
-          backersToEmail.push({
-            email: donation.email,
-            full_name: donation.full_name || 'Anonymous',
-            amount: parseFloat(donation.gross_amount),
-            campaign_title:
-              donation.metadata?.campaign_metadata?.title || 'Unknown Campaign',
-            currency: donation.metadata?.campaign_metadata?.currency || 'GHS',
-            type: 'donation',
-          });
+          if (donation.status === 'successful') {
+            backersToEmail.push({
+              email: donation.email,
+              full_name: donation.full_name || 'Anonymous',
+              amount: parseFloat(donation.gross_amount),
+              campaign_title:
+                donation.metadata?.campaign_metadata?.title ||
+                'Unknown Campaign',
+              currency: donation.metadata?.campaign_metadata?.currency || 'GHS',
+              type: 'donation',
+            });
+          }
         });
 
-        // Add all investments
+        // Add all successful investments
         investments.forEach((investment) => {
-          backersToEmail.push({
-            email: investment.email,
-            full_name: investment.full_name || 'Anonymous',
-            amount: parseFloat(investment.amount.toString()),
-            campaign_title: investment.campaign?.title || 'Unknown Campaign',
-            currency:
-              investment.campaign?.currency ||
-              investment.campaign?.currency_symbol ||
-              investment.currency ||
-              investment.currency_symbol ||
-              'GHS',
-            type: 'investment',
-          });
+          if (investment.status === 'successful') {
+            backersToEmail.push({
+              email: investment.email,
+              full_name: investment.full_name || 'Anonymous',
+              amount: parseFloat(investment.amount.toString()),
+              campaign_title: investment.campaign?.title || 'Unknown Campaign',
+              currency:
+                investment.campaign?.currency ||
+                investment.campaign?.currency_symbol ||
+                investment.currency ||
+                investment.currency_symbol ||
+                'GHS',
+              type: 'investment',
+            });
+          }
         });
       } else {
-        // Add selected backers
+        // Add selected backers (only successful ones)
         selectedBackers.forEach((backerId) => {
           const [type, id] = backerId.split('_');
           const numericId = parseInt(id);
 
           if (type === 'donation') {
             const donation = donations.find((d) => d.id === numericId);
-            if (donation) {
+            if (donation && donation.status === 'successful') {
               backersToEmail.push({
                 email: donation.email,
                 full_name: donation.full_name || 'Anonymous',
@@ -274,7 +303,7 @@ export default function Donations() {
             }
           } else {
             const investment = investments.find((i) => i.id === numericId);
-            if (investment) {
+            if (investment && investment.status === 'successful') {
               backersToEmail.push({
                 email: investment.email,
                 full_name: investment.full_name || 'Anonymous',
@@ -292,6 +321,16 @@ export default function Donations() {
             }
           }
         });
+      }
+
+      if (backersToEmail.length === 0) {
+        setToastTitle('Warning');
+        setToastDescription(
+          'No successful transactions to send thank you emails to.',
+        );
+        setToastType('warning');
+        setToastOpen(true);
+        return;
       }
 
       // Send bulk thank you emails
@@ -364,9 +403,30 @@ export default function Donations() {
             }}
             className="p-2 border border-gray-300 rounded-md dark:bg-neutral-700 dark:text-white"
           >
-            <option value="donations">Donations</option>
-            <option value="investments">Investments</option>
+            <option value="donation">Donations</option>
+            <option value="equity_investment">Investments</option>
           </select>
+
+          {backerType === 'donation' && (
+            <select
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setCurrentPage(1);
+                setSelectedBackers([]);
+              }}
+              className="p-2 border border-gray-300 rounded-md dark:bg-neutral-700 dark:text-white"
+            >
+              <option value="all">All Statuses</option>
+              <option value="successful">Successful</option>
+              <option value="pending">Pending</option>
+              <option value="failed">Failed</option>
+              <option value="refunded">Refunded</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="processing">Processing</option>
+            </select>
+          )}
+
           <Popover>
             <PopoverTrigger>
               <Button size="icon" variant="outline" className="rounded-full">
@@ -428,6 +488,7 @@ export default function Donations() {
                       const campaign =
                         donation.metadata?.campaign_metadata || {};
                       const backerId = `donation_${donation.id}`;
+                      const canSendThankYou = donation.status === 'successful';
 
                       return (
                         <BackerRow
@@ -450,12 +511,15 @@ export default function Donations() {
                           isSelected={selectedBackers.includes(backerId)}
                           onToggle={() => toggleBackerSelection(backerId)}
                           onSendThankYou={handleSendThankYou}
+                          canSendThankYou={canSendThankYou}
                         />
                       );
                     })
                   : investments.map((investment) => {
                       const campaign = investment.campaign || {};
                       const backerId = `investment_${investment.id}`;
+                      const canSendThankYou =
+                        investment.status === 'successful';
 
                       return (
                         <BackerRow
@@ -480,6 +544,7 @@ export default function Donations() {
                           isSelected={selectedBackers.includes(backerId)}
                           onToggle={() => toggleBackerSelection(backerId)}
                           onSendThankYou={handleSendThankYou}
+                          canSendThankYou={canSendThankYou}
                         />
                       );
                     })}
@@ -494,8 +559,8 @@ export default function Donations() {
               variant="outline"
             >
               {filter === 'all'
-                ? `Send Thank You to All ${backerType}`
-                : 'Send Thank You'}
+                ? `Send Thank You to All Successful ${backerType === 'donation' ? 'Donations' : 'Investments'}`
+                : 'Send Thank You to Selected'}
             </Button>
           </div>
           {currentPagination.total_pages > 1 && (
@@ -532,6 +597,7 @@ interface BackerRowProps {
   isSelected: boolean;
   onToggle: () => void;
   onSendThankYou: (backerId: string) => Promise<void>;
+  canSendThankYou: boolean;
 }
 
 const BackerRow: React.FC<BackerRowProps> = ({
@@ -547,6 +613,7 @@ const BackerRow: React.FC<BackerRowProps> = ({
   isSelected,
   onToggle,
   onSendThankYou,
+  canSendThankYou,
 }) => {
   const [isSending, setIsSending] = useState(false);
   const [isSent, setIsSent] = useState(false);
@@ -555,6 +622,8 @@ const BackerRow: React.FC<BackerRowProps> = ({
   const formattedAmount = amount.toFixed(2);
 
   const handleSendThankYou = async () => {
+    if (!canSendThankYou) return;
+
     setIsSending(true);
     try {
       await onSendThankYou(backerId);
@@ -575,6 +644,7 @@ const BackerRow: React.FC<BackerRowProps> = ({
             checked={isSelected}
             onCheckedChange={onToggle}
             className="h-5 w-5"
+            disabled={!canSendThankYou}
           />
         </td>
       )}
@@ -593,15 +663,17 @@ const BackerRow: React.FC<BackerRowProps> = ({
       <td className="py-3 px-4 text-blue-500 dark:text-blue-400 whitespace-nowrap">
         {type === 'donation' ? 'Donation' : 'Investment'}
       </td>
-      <td className="py-3 px-4 text-green-500 dark:text-green-400 whitespace-nowrap">
-        {status}
+      <td className="py-3 px-4 whitespace-nowrap">
+        <Badge className={getStatusColor(status)}>
+          {status.charAt(0).toUpperCase() + status.slice(1)}
+        </Badge>
       </td>
       <td className="py-3 px-4">
         <Button
           variant="outline"
           className="px-3 py-1 text-sm rounded-full hover:bg-gray-100 dark:hover:bg-gray-100 transition duration-200 flex items-center gap-2"
           onClick={handleSendThankYou}
-          disabled={isSending || isSent}
+          disabled={isSending || isSent || !canSendThankYou}
         >
           {isSending ? (
             'Sending...'
@@ -609,8 +681,10 @@ const BackerRow: React.FC<BackerRowProps> = ({
             <>
               <FaCheckCircle className="text-green-500" /> Thank You
             </>
-          ) : (
+          ) : canSendThankYou ? (
             'Say Thank You'
+          ) : (
+            'Not Available'
           )}
         </Button>
       </td>
