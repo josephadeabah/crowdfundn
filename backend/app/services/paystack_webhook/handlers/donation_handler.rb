@@ -1,6 +1,7 @@
 module PaystackWebhook::Handlers
   class DonationHandler
     include PaystackWebhook::JsonHelper
+
     def initialize(data)
       @data = data
     end
@@ -23,17 +24,9 @@ module PaystackWebhook::Handlers
         paystack_fee = platform_fee * 0.0195
         adjusted_platform_fee = platform_fee - paystack_fee
 
-        metadata = if response.dig(:data, :metadata).is_a?(String)
-                     begin
-                       fixed_metadata = fix_malformed_json(response.dig(:data, :metadata))
-                       JSON.parse(fixed_metadata, symbolize_names: true)
-                     rescue JSON::ParserError => e
-                       Rails.logger.error "Failed to parse metadata even after fixing: #{e.message}"
-                       raise "Invalid metadata: #{response.dig(:data, :metadata)}"
-                     end
-                   else
-                     response.dig(:data, :metadata) || {}
-                   end
+        # Metadata is now always structured
+        metadata = response.dig(:data, :metadata) || {}
+        metadata = metadata.deep_symbolize_keys
 
         Rails.logger.debug { "Parsed metadata: #{metadata}" }
 
@@ -48,7 +41,7 @@ module PaystackWebhook::Handlers
         final_country = 'Unknown' if final_country.blank?
 
         campaign_metadata = {
-          title: metadata[:title],
+          title: metadata[:title].presence || "Untitled Campaign",
           goal_amount: metadata[:goal_amount],
           current_amount: metadata[:current_amount],
           currency: metadata[:currency],
@@ -61,9 +54,9 @@ module PaystackWebhook::Handlers
         subaccount_contact = response.dig(:data, :subaccount, :primary_contact_email) || 'No contact email'
         subaccount_phone = response.dig(:data, :subaccount, :primary_contact_phone) || 'No contact phone'
 
-        shipping_data = (metadata[:metadata] && metadata[:metadata][:shippingData]) || {}
-        selected_rewards = (metadata[:metadata] && metadata[:metadata][:selectedRewards]) || []
-        delivery_option = (metadata[:metadata] && metadata[:metadata][:deliveryOption]) || 'pickup'
+        shipping_data = metadata.dig(:metadata, :shippingData) || {}
+        selected_rewards = metadata.dig(:metadata, :selectedRewards) || []
+        delivery_option = metadata.dig(:metadata, :deliveryOption) || 'pickup'
 
         donation = Donation.create!(
           transaction_reference: transaction_reference,
@@ -74,7 +67,7 @@ module PaystackWebhook::Handlers
           amount: net_amount,
           user_id: user_id.presence,
           campaign_id: campaign_id.presence,
-          full_name: metadata[:donor_name],
+          full_name: metadata[:donor_name].presence || "Anonymous Donor",
           email: response.dig(:data, :customer, :email),
           phone: metadata[:phone],
           country: final_country,

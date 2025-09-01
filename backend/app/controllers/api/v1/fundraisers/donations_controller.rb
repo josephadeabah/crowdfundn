@@ -8,26 +8,22 @@ module Api
 
         # Public donations list for a campaign
         def public_donations
-          # Fetch donations related to the specified campaign and filter by successful status
           donations = @campaign.donations.successful
 
-          # Format donation data with user info or 'Anonymous' for anonymous donations
           donors = donations.map do |donation|
             {
               full_name: donation.full_name || 'Anonymous',
               amount: donation.gross_amount,
               email: donation.email,
               date: donation.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-              status: donation.status # Include status in response
+              status: donation.status
             }
           end
 
-          # Paginate the donations
           page = params[:page] || 1
           per_page = params[:per_page] || 10
           paginated_donors = Kaminari.paginate_array(donors).page(page).per(per_page)
 
-          # Prepare pagination info
           pagination = {
             current_page: paginated_donors.current_page,
             total_pages: paginated_donors.total_pages,
@@ -35,7 +31,6 @@ module Api
             total_count: paginated_donors.total_count
           }
 
-          # Render donations along with pagination data
           render json: { donations: paginated_donors, pagination: pagination }, status: :ok
         end
 
@@ -45,16 +40,12 @@ module Api
             return render json: { error: 'You need to log in to access donations.' }, status: :unauthorized
           end
 
-          # Fetch campaigns owned by the fundraiser
           campaigns = Campaign.where(fundraiser_id: @current_user.id)
-
-          # Fetch donations for those campaigns with successful status
           donations = Donation.where(campaign_id: campaigns.pluck(:id))
                               .order(created_at: :desc)
                               .page(params[:page] || 1)
                               .per(params[:per_page] || 10)
 
-          # Prepare pagination details
           pagination = {
             current_page: donations.current_page,
             total_pages: donations.total_pages,
@@ -62,7 +53,6 @@ module Api
             total_count: donations.total_count
           }
 
-          # Render the response
           render json: { donations: donations, pagination: pagination }, status: :ok
         end
 
@@ -82,10 +72,9 @@ module Api
 
           subaccount_code = subaccount.subaccount_code
 
-          # Create a new donation
           donation = Donation.new(donation_params)
           donation.campaign_id = campaign.id
-          donation.status = Donation::STATUS_PENDING # Use constant
+          donation.status = Donation::STATUS_PENDING
           donation.full_name = params[:donation][:full_name].presence || 'Anonymous'
 
           if @current_user
@@ -97,13 +86,16 @@ module Api
 
           secure_random_uuid = SecureRandom.uuid
           campaign_identifier = campaign.slug || campaign.id
-          redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign_identifier,
-                                                                           host: 'bantuhive.com') + "?#{secure_random_uuid}"
+          redirect_url = Rails.application.routes.url_helpers.campaign_url(
+            campaign_identifier,
+            host: 'bantuhive.com'
+          ) + "?#{secure_random_uuid}"
+
           donation.email = params[:donation][:email]
           donation.amount = params[:donation][:amount]
           donation.phone = params[:donation][:phone]
-          donation.metadata = params[:donation][:metadata]
 
+          # Build structured metadata
           metadata = {
             user_id: donation.user_id,
             campaign_id: donation.campaign_id,
@@ -118,13 +110,14 @@ module Api
             fundraiser_id: campaign.fundraiser_id,
             fundraiser_name: campaign.fundraiser.full_name,
             phone: donation.phone,
-            metadata: donation.metadata
+            extra_metadata: params[:donation][:metadata]
           }
 
+          # Store structured metadata into donation
+          donation.metadata = metadata
           donation.plan = params[:donation][:plan]
 
           paystack_service = PaystackService.new
-
           response = paystack_service.initialize_transaction(
             email: donation.email,
             amount: donation.amount,
@@ -137,7 +130,7 @@ module Api
           if response[:status] == true
             donation.transaction_reference = response[:data][:reference]
             donation.subscription_code = donation.plan if donation.plan.present?
-            donation.status = Donation::STATUS_INITIALIZED # Update status to initialized
+            donation.status = Donation::STATUS_INITIALIZED
 
             if donation.save
               render json: {
@@ -158,19 +151,16 @@ module Api
           end
         end
 
-        # POST /api/v1/fundraisers/donations/send_thank_you_emails
         def send_thank_you_emails
           campaign = Campaign.find_by(id: params[:campaign_id])
           return render json: { error: 'Campaign not found' }, status: :not_found unless campaign
 
-          # Fetch donations based on the filter
           donations = if params[:filter] == 'all'
                         campaign.donations.successful
                       else
                         campaign.donations.successful.where(id: params[:donor_ids])
                       end
 
-          # Send thank you emails to donors
           donations.each do |donation|
             ThankYouEmailService.send_thank_you_email(
               donation.email,
@@ -189,22 +179,23 @@ module Api
         private
 
         def donation_params
-          params.require(:donation).permit(:amount, :transaction_reference, :email, :full_name, :phone, :plan,
-                                           metadata: {})
+          params.require(:donation).permit(
+            :amount, :transaction_reference, :email, :full_name, :phone, :plan,
+            metadata: {}
+          )
         end
 
         def set_campaign
           campaign_identifier = params[:campaign_id] || params[:id]
-          
+
           if campaign_identifier && campaign_identifier.match?(/[a-zA-Z\-]/)
             @campaign = Campaign.find_by(slug: campaign_identifier)
           else
             @campaign = Campaign.find_by(id: campaign_identifier)
           end
-          
+
           unless @campaign
-            render json: { error: 'Campaign not found' }, status: :not_found 
-            return
+            render json: { error: 'Campaign not found' }, status: :not_found
           end
         end
       end
