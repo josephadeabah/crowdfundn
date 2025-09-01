@@ -98,6 +98,12 @@ export const CampaignCommentsProvider = ({
         // Check if user is authenticated
         if (user) {
           headers.Authorization = `Bearer ${token}`;
+        } else {
+          // For anonymous users, check if we have an anonymous token
+          const anonymousToken = localStorage.getItem('anonymousToken');
+          if (anonymousToken) {
+            headers['X-Anonymous-Token'] = anonymousToken;
+          }
         }
 
         const response = await fetch(
@@ -105,26 +111,29 @@ export const CampaignCommentsProvider = ({
           {
             method: 'POST',
             headers,
-            body: JSON.stringify({ content }),
+            body: JSON.stringify({ comment: { content } }), // Note: wrapped in comment object
           },
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
+          const errorData = await response.json();
+          const errorText = errorData.error || (await response.text());
           handleApiError(errorText);
-          throw new Error(errorText); // Throw an error to signal failure
+          throw new Error(errorText);
         }
 
         const newComment = await response.json();
         setComments((prevComments) => [...prevComments, newComment]);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error creating comment');
+        const errorMessage =
+          err instanceof Error ? err.message : 'Error creating comment';
+        setError(errorMessage);
         throw err;
       } finally {
         setLoading(false);
       }
     },
-    [token],
+    [token, user],
   );
 
   // Update an existing comment

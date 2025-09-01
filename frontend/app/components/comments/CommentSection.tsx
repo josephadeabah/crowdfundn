@@ -4,15 +4,21 @@ import Avatar from '../avatar/Avatar';
 import ToastComponent from '../toast/Toast';
 import moment from 'moment';
 import CommentLoader from '@/app/loaders/CommentLoader';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface CommentsSectionProps {
   campaignId: string;
+  campaignType?: 'Campaign' | 'EquityCampaign'; // Add campaign type prop
 }
 
-const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
-  const [fetchLoading, setFetchLoading] = useState(false); // for fetch comments loading
-  const [submitLoading, setSubmitLoading] = useState(false); // for submit comment loading
-  const [comment, setComment] = useState<string>(''); // Comment text
+const CommentsSection: React.FC<CommentsSectionProps> = ({
+  campaignId,
+  campaignType = 'Campaign',
+}) => {
+  const [fetchLoading, setFetchLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [comment, setComment] = useState<string>('');
+  const { user } = useAuth(); // Get user from auth context
 
   const {
     comments,
@@ -67,16 +73,27 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
 
     setSubmitLoading(true);
     try {
-      await createComment(campaignId, comment); // Just send comment for the logged-in user
+      await createComment(campaignId, comment);
       setComment('');
       await fetchComments(campaignId);
       showToast('Success', 'Comment added successfully!', 'success');
     } catch (err) {
-      showToast(
-        'Error',
-        'You must be a registered backer to comment.',
-        'error',
-      );
+      // Updated error message to be more generic
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to add comment';
+
+      if (
+        errorMessage.includes('successful donation') ||
+        errorMessage.includes('successful investment')
+      ) {
+        showToast(
+          'Comment Restricted',
+          `You must have made a successful ${campaignType === 'EquityCampaign' ? 'investment' : 'donation'} to comment.`,
+          'error',
+        );
+      } else {
+        showToast('Error', errorMessage, 'error');
+      }
     } finally {
       setSubmitLoading(false);
     }
@@ -131,26 +148,36 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ campaignId }) => {
             </div>
           ))
         ) : (
-          <div>No comments yet.</div>
+          <div className="text-gray-500 dark:text-gray-400 text-center py-8">
+            No comments yet. Be the first to comment!
+          </div>
         )}
       </div>
 
-      <form onSubmit={handleCommentSubmit} className="mt-4">
-        {/* Removed email input, as it's no longer required */}
+      <form onSubmit={handleCommentSubmit} className="mt-6">
         <textarea
-          className="w-full border rounded-md p-2"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
           placeholder="Leave a comment..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
+          rows={3}
           required
+          disabled={submitLoading}
         />
         <button
           type="submit"
-          className="mt-2 bg-green-500 hover:bg-green-700 dark:bg-green-600 text-white text-sm rounded-full p-2"
-          disabled={submitLoading || fetchLoading}
+          className="mt-3 bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white text-sm font-medium rounded-md px-4 py-2 transition-colors"
+          disabled={submitLoading || fetchLoading || !comment.trim()}
         >
-          {submitLoading ? 'Loading...' : 'Add Comment'}
+          {submitLoading ? 'Posting...' : 'Post Comment'}
         </button>
+
+        {!user && (
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+            Note: Anonymous comments require a donation and will be associated
+            with your donation token.
+          </p>
+        )}
       </form>
     </div>
   );
