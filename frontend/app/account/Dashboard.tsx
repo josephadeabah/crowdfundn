@@ -83,7 +83,10 @@ export default function Dashboard() {
             </CardTitle>
             <CardDescription className="text-gray-500 dark:text-gray-400">
               {user?.currency?.toUpperCase()}{' '}
-              {statistics?.donations?.total_amount?.toLocaleString() || '0'}
+              {statistics &&
+                parseFloat(
+                  statistics?.donations?.total_amount?.toString(),
+                ).toLocaleString()}
             </CardDescription>
             <p className="text-sm text-gray-400 dark:text-gray-500">
               {statistics?.donations?.count || '0'} donations
