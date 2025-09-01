@@ -15,56 +15,38 @@ type DonationsChartProps = {
 };
 
 const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
-  const isEquityCampaign = currentCampaign?.type === 'EquityCampaign';
-  const currency =
-    currentCampaign?.fundraiser?.currency_symbol ||
-    currentCampaign?.currency?.toUpperCase();
-
-  // Use donations_over_time which now contains combined funding data for equity campaigns
   if (!currentCampaign?.donations_over_time) {
     return (
       <p className="text-gray-500 text-sm text-center">
         No{' '}
-        {currentCampaign?.type === 'EquityCampaign' ? 'funding' : 'donation'}{' '}
+        {currentCampaign?.type === 'EquityCampaign' ? 'investment' : 'donation'}{' '}
         data available
       </p>
     );
   }
 
-  // Transform donations_over_time directly - filter out future dates and format properly
-  const fundingData = Object.entries(currentCampaign.donations_over_time)
-    .filter(([date]) => {
-      const entryDate = moment(date);
-      const today = moment();
-      return entryDate.isSameOrBefore(today, 'day');
-    })
-    .map(([date, amount]) => ({
+  const isEquityCampaign = currentCampaign?.type === 'EquityCampaign';
+  const currency =
+    currentCampaign?.fundraiser?.currency_symbol ||
+    currentCampaign?.currency?.toUpperCase();
+
+  // Transform donations_over_time directly
+  const donationData = Object.entries(currentCampaign.donations_over_time).map(
+    ([date, amount]) => ({
       date: moment(date).format('MMM D'), // Format date for better readability
       amount: parseFloat(amount as string), // Ensure amount is a number
-    }));
-
-  // Check if there's any non-zero data
-  const hasData = fundingData.some(item => item.amount > 0);
-
-  if (!hasData) {
-    return (
-      <p className="text-gray-500 text-sm text-center">
-        No{' '}
-        {currentCampaign?.type === 'EquityCampaign' ? 'funding' : 'donation'}{' '}
-        activity in {moment().format('MMMM')}
-      </p>
-    );
-  }
+    }),
+  );
 
   return (
     <div className="bg-white rounded-lg mt-6">
       <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
-        {isEquityCampaign ? 'Funding' : 'Donations'} in{' '}
+        {isEquityCampaign ? 'Investments' : 'Donations'} in{' '}
         {moment().format('MMMM')}
       </h3>
       <ResponsiveContainer width="100%" height={320}>
         <LineChart
-          data={fundingData}
+          data={donationData}
           margin={{
             top: 20,
             right: 2,
@@ -87,7 +69,7 @@ const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
           <Tooltip
             formatter={(value) => [
               `${currency} ${value}`,
-              isEquityCampaign ? 'Funding' : 'Donation',
+              isEquityCampaign ? 'Investment' : 'Donation',
             ]}
             labelFormatter={(label) => `Date: ${label}`}
           />
@@ -96,7 +78,7 @@ const DonationsChart = ({ currentCampaign }: DonationsChartProps) => {
             dataKey="amount"
             stroke={isEquityCampaign ? '#f97316' : '#22c55e'} // Orange for equity, green for donations
             strokeWidth={2}
-            name={isEquityCampaign ? 'Funding' : 'Donation'}
+            name={isEquityCampaign ? 'Investment' : 'Donation'}
           />
         </LineChart>
       </ResponsiveContainer>
