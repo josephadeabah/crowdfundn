@@ -72,33 +72,33 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
             </p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
-            <div className="flex items-center mb-2">
-              <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full mr-3">
-                <FaHandHoldingUsd className="text-purple-600 dark:text-purple-300" />
-              </div>
-              <h3 className="font-medium text-gray-500 dark:text-gray-400">
-                Minimum Investment
-              </h3>
-            </div>
-            <p className="text-lg font-bold text-gray-900 dark:text-white">
-              {fundraiserCurrency}
-              {parseFloat(
-                String(campaign?.minimum_investment || '0'),
-              ).toLocaleString()}
-            </p>
-              <h3 className="font-medium text-gray-500 dark:text-gray-400">
-                Maximum Investment
-              </h3>
-            </div>
-            <p className="text-lg font-bold text-gray-900 dark:text-white">
-              {fundraiserCurrency}
-              {parseFloat(
-                String(campaign?.maximum_investment || '0'),
-              ).toLocaleString()}
-            </p>
+<div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
+  <div className="flex items-center mb-2">
+    <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full mr-3">
+      <FaHandHoldingUsd className="text-purple-600 dark:text-purple-300" />
+    </div>
+    <h3 className="font-medium text-gray-500 dark:text-gray-400">
+      Investment Range
+    </h3>
+  </div>
 
-          </div>
+  {/* Minimum Investment */}
+  <p className="text-xl font-semibold text-gray-900 dark:text-white">
+    Min: {fundraiserCurrency}
+    {parseFloat(
+      String(campaign?.minimum_investment || '0'),
+    ).toLocaleString()}
+  </p>
+
+  {/* Maximum Investment */}
+  <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mt-1">
+    Max: {fundraiserCurrency}
+    {parseFloat(
+      String(campaign?.maximum_investment || '0'),
+    ).toLocaleString()}
+  </p>
+</div>
+
 
           {/* New: Shares Issued Card */}
           <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
