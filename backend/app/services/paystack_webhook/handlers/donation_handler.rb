@@ -16,31 +16,26 @@ module PaystackWebhook::Handlers
       end
 
       transaction_status = response.dig(:data, :status)
-      
-      # Parse metadata first (same structure as before)
-      metadata = if response.dig(:data, :metadata).is_a?(String)
-                   begin
-                     fixed_metadata = fix_malformed_json(response.dig(:data, :metadata))
-                     JSON.parse(fixed_metadata, symbolize_names: true)
-                   rescue JSON::ParserError => e
-                     Rails.logger.error "Failed to parse metadata even after fixing: #{e.message}"
-                     raise "Invalid metadata: #{response.dig(:data, :metadata)}"
-                   end
-                 else
-                   response.dig(:data, :metadata) || {}
-                 end
-
-      Rails.logger.debug { "Parsed metadata: #{metadata}" }
-
-      # Handle all statuses but only process successful ones with the original logic
-      case transaction_status
-      when 'success'
-        # Original successful transaction logic (unchanged)
+      if transaction_status == 'success'
         gross_amount = response.dig(:data, :amount).to_f / 100.0
         net_amount = gross_amount * 0.93
         platform_fee = gross_amount * 0.07
         paystack_fee = platform_fee * 0.0195
         adjusted_platform_fee = platform_fee - paystack_fee
+
+        metadata = if response.dig(:data, :metadata).is_a?(String)
+                     begin
+                       fixed_metadata = fix_malformed_json(response.dig(:data, :metadata))
+                       JSON.parse(fixed_metadata, symbolize_names: true)
+                     rescue JSON::ParserError => e
+                       Rails.logger.error "Failed to parse metadata even after fixing: #{e.message}"
+                       raise "Invalid metadata: #{response.dig(:data, :metadata)}"
+                     end
+                   else
+                     response.dig(:data, :metadata) || {}
+                   end
+
+        Rails.logger.debug { "Parsed metadata: #{metadata}" }
 
         user_id = metadata[:user_id]
         campaign_id = metadata[:campaign_id]
@@ -72,7 +67,7 @@ module PaystackWebhook::Handlers
 
         donation = Donation.create!(
           transaction_reference: transaction_reference,
-          status: Donation::STATUS_SUCCESSFUL,
+          status: 'successful',
           gross_amount: gross_amount,
           net_amount: net_amount,
           platform_fee: adjusted_platform_fee,
@@ -140,34 +135,9 @@ module PaystackWebhook::Handlers
         else
           Rails.logger.info "Skipping points & leaderboard update for anonymous donation: #{donation.id}"
         end
-
-      when 'failed', 'abandoned', 'pending', 'canceled', 'refunded'
-        # For non-successful statuses, just create a basic donation record without processing
-        donation_status = case transaction_status
-                         when 'failed' then Donation::STATUS_FAILED
-                         when 'abandoned' then Donation::STATUS_ABANDONED
-                         when 'pending' then Donation::STATUS_PENDING
-                         when 'canceled' then Donation::STATUS_CANCELED
-                         when 'refunded' then Donation::STATUS_REFUNDED
-                         end
-
-        Donation.create!(
-          transaction_reference: transaction_reference,
-          status: donation_status,
-          email: response.dig(:data, :customer, :email),
-          full_name: metadata[:donor_name],
-          metadata: {
-            paystack_status: transaction_status,
-            failure_reason: response.dig(:data, :gateway_response),
-            processed_at: Time.current
-          }
-        )
-
-        Rails.logger.info "Created donation record with status: #{donation_status} for reference: #{transaction_reference}"
-
       else
-        Rails.logger.error "Unhandled transaction status: #{transaction_status} for reference: #{transaction_reference}"
-        raise "Unhandled transaction status: #{transaction_status}"
+        Rails.logger.error "Transaction failed with status #{transaction_status}"
+        raise "Transaction status is #{transaction_status}"
       end
     end
   end
