@@ -72,7 +72,7 @@ module PaystackWebhook::Handlers
 
         donation = Donation.create!(
           transaction_reference: transaction_reference,
-          status: 'successful',
+          status: Donation::STATUS_SUCCESSFUL,
           gross_amount: gross_amount,
           net_amount: net_amount,
           platform_fee: adjusted_platform_fee,
