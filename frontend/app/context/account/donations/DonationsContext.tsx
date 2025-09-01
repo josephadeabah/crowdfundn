@@ -195,7 +195,8 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           method: 'POST',
           headers,
           body: JSON.stringify({
-            donation: { // 👈 Wrap in "donation"
+            donation: {
+              // 👈 Wrap in "donation"
               amount: amount,
               email: email,
               full_name: fullName,
@@ -209,7 +210,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
 
       const donationData = await donationResponse.json();
 
-      if (!donationResponse.ok) {
+      if (!donationResponse.ok || !donationData.success) {
         if (
           donationData.error ===
           'Fundraiser does not meet requirements for raising funds.'
@@ -223,10 +224,11 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      const { authorization_url } = donationData;
+      // ✅ authorization_url is inside donationData.data
+      const authorizationUrl = donationData.data?.authorization_url;
 
-      if (authorization_url) {
-        window.location.href = authorization_url;
+      if (authorizationUrl) {
+        window.location.href = authorizationUrl;
       } else {
         handleApiError(
           'We could not initiate your payment at this time. Please try again later.',
@@ -238,7 +240,6 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   };
-
 
   const contextValue = useMemo(
     () => ({
