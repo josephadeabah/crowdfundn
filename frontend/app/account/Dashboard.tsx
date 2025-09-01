@@ -210,15 +210,18 @@ export default function Dashboard() {
         {/* Average Funding Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
           <div className="absolute top-2 right-2 bg-lime-50 p-2 rounded-full">
-            <PieChartIcon className="h-5 w-5 text-lime-500" />
+            <Clock className="h-5 w-5 text-lime-500" />
           </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Average Funding
+              Pending Withdrawals
             </CardTitle>
-            <CardDescription className="text-gray-500 dark:text-gray-400">
+            <CardDescription className="text-gray-500 dark:text-gray-500">
               {user?.currency?.toUpperCase()}{' '}
-              {statistics?.average_funding_amount?.toLocaleString() || '0'}
+              {statistics &&
+                parseFloat(
+                  statistics?.total_donated_amount.toString(),
+                ).toLocaleString()}
             </CardDescription>
           </CardHeader>
         </Card>
