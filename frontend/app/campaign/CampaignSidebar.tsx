@@ -2,7 +2,6 @@ import React from 'react';
 import DonationButton from '@/app/components/donate/DonationButton';
 import ProgressRing from '@/app/components/ring/ProgressRing';
 import { SingleCampaignResponseDataType } from '../types/campaigns.types';
-import DonationsChart from './DonationsChart';
 import Link from 'next/link';
 
 interface CampaignSidebarProps {
@@ -134,7 +133,6 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
             </div>
           </div>
         </div>
-        {/* <DonationsChart currentCampaign={campaign} /> */}
       </div>
     </div>
   );
