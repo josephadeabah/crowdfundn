@@ -234,7 +234,7 @@ export default function Transfers() {
 
                 {/* Transfer restriction message */}
                 {isTransferDisabled(campaign) && (
-                  <div className="mt-2 text-xs text-blue-100/30">
+                  <div className="mt-2 text-xs text-purple-600">
                     {campaign.type === 'EquityCampaign' ? (
                       <>
                         Minimum transfer amount is{' '}
