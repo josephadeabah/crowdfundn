@@ -369,26 +369,6 @@ const GeneralDashboard = () => {
                 ))}
             </ul>
           </div>
-
-          <div>
-            <h3 className="text-lg font-semibold">
-              Top Performing Equity Campaigns
-            </h3>
-            {metrics?.equity_campaigns.top_performing.map((campaign) => (
-              <div key={campaign.id} className="mb-2 p-2 bg-white rounded">
-                <p className="font-semibold">
-                  {campaign.name} ({campaign.company_name})
-                </p>
-                <p>Valuation: GHS{campaign.valuation?.toLocaleString()}</p>
-                <p>Equity Offered: {campaign.equity_offered}%</p>
-                <p>
-                  Total Raised: GHS{campaign.total_raised?.toLocaleString()}
-                </p>
-                <p>Percentage Raised: {campaign.percentage_raised}%</p>
-                <p>Status: {campaign.status}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
@@ -460,19 +440,6 @@ const GeneralDashboard = () => {
                   ),
                 )}
             </div>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-semibold">Top Investors</h3>
-            {metrics?.investments.top_investors.map((investor) => (
-              <div key={investor.id} className="mb-2 p-2 bg-white rounded">
-                <p className="font-semibold">{investor.name}</p>
-                <p>Total Investments: {investor.investment_count}</p>
-                <p>
-                  Total Invested: GHS{investor.total_invested?.toLocaleString()}
-                </p>
-              </div>
-            ))}
           </div>
         </div>
       </div>
