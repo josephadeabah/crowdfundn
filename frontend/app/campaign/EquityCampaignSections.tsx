@@ -81,12 +81,23 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
                 Minimum Investment
               </h3>
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+            <p className="text-lg font-bold text-gray-900 dark:text-white">
               {fundraiserCurrency}
               {parseFloat(
                 String(campaign?.minimum_investment || '0'),
               ).toLocaleString()}
             </p>
+              <h3 className="font-medium text-gray-500 dark:text-gray-400">
+                Maximum Investment
+              </h3>
+            </div>
+            <p className="text-lg font-bold text-gray-900 dark:text-white">
+              {fundraiserCurrency}
+              {parseFloat(
+                String(campaign?.maximum_investment || '0'),
+              ).toLocaleString()}
+            </p>
+
           </div>
 
           {/* New: Shares Issued Card */}
