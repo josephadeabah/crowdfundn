@@ -21,8 +21,15 @@ export const FundingOverTimeChart = ({
   user,
   fetchCampaignStatistics,
 }: DashboardChartsProps) => {
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  // Get stored values from sessionStorage or use current date as default
+  const storedMonth = sessionStorage.getItem('selectedMonthFundingOverTime');
+  const storedYear = sessionStorage.getItem('selectedYearFundingOverTime');
+  const [selectedMonth, setSelectedMonth] = useState(
+    storedMonth ? parseInt(storedMonth) : new Date().getMonth() + 1,
+  );
+  const [selectedYear, setSelectedYear] = useState(
+    storedYear ? parseInt(storedYear) : new Date().getFullYear(),
+  );
 
   // Use funding_over_time instead of donations_over_time
   const fundingOverTimeData = Object.entries(
@@ -35,12 +42,14 @@ export const FundingOverTimeChart = ({
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const month = parseInt(e.target.value);
     setSelectedMonth(month);
+    sessionStorage.setItem('selectedMonthFundingOverTime', month.toString());
     fetchCampaignStatistics(month, selectedYear);
   };
 
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const year = parseInt(e.target.value);
     setSelectedYear(year);
+    sessionStorage.setItem('selectedYearFundingOverTime', year.toString());
     fetchCampaignStatistics(selectedMonth, year);
   };
 
