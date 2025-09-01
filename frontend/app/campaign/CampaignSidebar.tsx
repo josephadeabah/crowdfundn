@@ -134,7 +134,7 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
             </div>
           </div>
         </div>
-        <DonationsChart currentCampaign={campaign} />
+        {/* <DonationsChart currentCampaign={campaign} /> */}
       </div>
     </div>
   );
