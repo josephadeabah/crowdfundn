@@ -156,12 +156,6 @@ class Campaign < ApplicationRecord
       methods: %i[media_url media_filename total_days remaining_days]
     }.merge(options))
 
-    # Calculate funding data for the chart using current month/year
-    current_month = Time.zone.now.month
-    current_year = Time.zone.now.year
-    funding_data = CampaignStatisticsService.calculate_for_campaign(self, current_month, current_year)
-    json.merge!(funding_data)
-
     # Only include equity fields for EquityCampaign instances
     if is_a?(EquityCampaign)
       json.merge!(
