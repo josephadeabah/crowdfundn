@@ -183,7 +183,7 @@ module Api
           paystack_service = PaystackService.new
           response = paystack_service.initialize_transaction(
             email: donation.email,
-            amount: donation.amount
+            amount: donation.amount,
             plan: donation.plan,
             callback_url: redirect_url,
             metadata: metadata,
