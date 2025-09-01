@@ -621,6 +621,11 @@ const BackerRow: React.FC<BackerRowProps> = ({
   const formattedCurrency = currency ? currency.toLocaleUpperCase() : '';
   const formattedAmount = amount.toFixed(2);
 
+  // Truncate campaign title to prevent horizontal scrolling
+  const truncatedTitle = campaignTitle.length > 30 
+    ? `${campaignTitle.substring(0, 30)}...` 
+    : campaignTitle;
+
   const handleSendThankYou = async () => {
     if (!canSendThankYou) return;
 
@@ -658,7 +663,12 @@ const BackerRow: React.FC<BackerRowProps> = ({
         {date}
       </td>
       <td className="py-3 px-4 text-gray-500 dark:text-neutral-400 whitespace-nowrap">
-        {campaignTitle}
+        <span 
+          className="cursor-help" 
+          title={campaignTitle.length > 30 ? campaignTitle : undefined}
+        >
+          {truncatedTitle}
+        </span>
       </td>
       <td className="py-3 px-4 text-blue-500 dark:text-blue-400 whitespace-nowrap">
         {type === 'donation' ? 'Donation' : 'Investment'}
