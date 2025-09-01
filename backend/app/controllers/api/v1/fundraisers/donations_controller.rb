@@ -49,8 +49,7 @@ module Api
           campaigns = Campaign.where(fundraiser_id: @current_user.id)
 
           # Fetch donations for those campaigns with successful status
-          donations = Donation.successful
-                              .where(campaign_id: campaigns.pluck(:id))
+          donations = Donation.where(campaign_id: campaigns.pluck(:id))
                               .order(created_at: :desc)
                               .page(params[:page] || 1)
                               .per(params[:per_page] || 10)
