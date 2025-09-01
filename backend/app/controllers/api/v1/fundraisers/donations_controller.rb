@@ -60,6 +60,7 @@ module Api
 
             if donation.user_id.nil?
               anonymous_token = SecureRandom.uuid
+              donation.metadata ||= {}
               donation.metadata[:anonymous_token] = anonymous_token
             end
 
@@ -69,9 +70,35 @@ module Api
               campaign_identifier, host: 'bantuhive.com'
             ) + "?#{secure_random_uuid}"
 
-            metadata = build_metadata(donation, redirect_url)
+            # frontend metadata (safe fallback to {})
+            frontend_metadata = (donation.metadata || {}).with_indifferent_access
 
-            initialize_payment(donation, metadata, redirect_url)
+            # backend metadata
+            backend_metadata = build_metadata(donation, redirect_url)
+
+            # ✅ merge them in Paystack's custom_fields format
+            combined_metadata = {
+              custom_fields: [
+                *backend_metadata[:custom_fields],
+                (frontend_metadata["shippingData"].present? ? {
+                  display_name: "Shipping Data",
+                  variable_name: "shipping_data",
+                  value: frontend_metadata["shippingData"]
+                } : nil),
+                (frontend_metadata["selectedRewards"].present? ? {
+                  display_name: "Selected Rewards",
+                  variable_name: "selected_rewards",
+                  value: frontend_metadata["selectedRewards"]
+                } : nil),
+                (frontend_metadata["deliveryOption"].present? ? {
+                  display_name: "Delivery Option",
+                  variable_name: "delivery_option",
+                  value: frontend_metadata["deliveryOption"]
+                } : nil)
+              ].compact
+            }
+
+            initialize_payment(donation, combined_metadata, redirect_url)
           end
         rescue StandardError => e
           render json: { success: false, error: e.message }, status: :unprocessable_entity
@@ -131,81 +158,21 @@ module Api
         def build_metadata(donation, redirect_url)
           {
             custom_fields: [
-              {
-                display_name: "User ID",
-                variable_name: "user_id",
-                value: donation.user_id
-              },
-              {
-                display_name: "Campaign ID",
-                variable_name: "campaign_id",
-                value: donation.campaign_id
-              },
-              {
-                display_name: "Anonymous Token",
-                variable_name: "anonymous_token",
-                value: donation.metadata[:anonymous_token]
-              },
-              {
-                display_name: "Donor Name",
-                variable_name: "donor_name",
-                value: donation.full_name
-              },
-              {
-                display_name: "Redirect URL",
-                variable_name: "redirect_url",
-                value: redirect_url
-              },
-              {
-                display_name: "Campaign Title",
-                variable_name: "title",
-                value: @campaign.title
-              },
-              {
-                display_name: "Goal Amount",
-                variable_name: "goal_amount",
-                value: @campaign.goal_amount
-              },
-              {
-                display_name: "Current Amount",
-                variable_name: "current_amount",
-                value: @campaign.current_amount
-              },
-              {
-                display_name: "Currency",
-                variable_name: "currency",
-                value: @campaign.currency
-              },
-              {
-                display_name: "Currency Symbol",
-                variable_name: "currency_symbol",
-                value: @campaign.currency_symbol
-              },
-              {
-                display_name: "Fundraiser ID",
-                variable_name: "fundraiser_id",
-                value: @campaign.fundraiser_id
-              },
-              {
-                display_name: "Fundraiser Name",
-                variable_name: "fundraiser_name",
-                value: @campaign.fundraiser.full_name
-              },
-              {
-                display_name: "Phone",
-                variable_name: "phone",
-                value: donation.phone
-              },
-              {
-                display_name: "Email",
-                variable_name: "email",
-                value: donation.email
-              },
-              {
-                display_name: "Plan",
-                variable_name: "plan",
-                value: donation.plan
-              }
+              { display_name: "User ID", variable_name: "user_id", value: donation.user_id },
+              { display_name: "Campaign ID", variable_name: "campaign_id", value: donation.campaign_id },
+              { display_name: "Anonymous Token", variable_name: "anonymous_token", value: donation.metadata[:anonymous_token] },
+              { display_name: "Donor Name", variable_name: "donor_name", value: donation.full_name },
+              { display_name: "Redirect URL", variable_name: "redirect_url", value: redirect_url },
+              { display_name: "Campaign Title", variable_name: "title", value: @campaign.title },
+              { display_name: "Goal Amount", variable_name: "goal_amount", value: @campaign.goal_amount },
+              { display_name: "Current Amount", variable_name: "current_amount", value: @campaign.current_amount },
+              { display_name: "Currency", variable_name: "currency", value: @campaign.currency },
+              { display_name: "Currency Symbol", variable_name: "currency_symbol", value: @campaign.currency_symbol },
+              { display_name: "Fundraiser ID", variable_name: "fundraiser_id", value: @campaign.fundraiser_id },
+              { display_name: "Fundraiser Name", variable_name: "fundraiser_name", value: @campaign.fundraiser.full_name },
+              { display_name: "Phone", variable_name: "phone", value: donation.phone },
+              { display_name: "Email", variable_name: "email", value: donation.email },
+              { display_name: "Plan", variable_name: "plan", value: donation.plan }
             ]
           }
         end
