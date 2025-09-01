@@ -166,13 +166,46 @@ module Api
         end
 
         def my_investments
-          # This is a collection action that doesn't need @campaign
-          investments = @current_user.equity_investments
-                                    .includes(:campaign)
-                                    .order(created_at: :desc)
+          # Check if we should return investments made BY the user or IN the user's campaigns
+          if params[:as_fundraiser].present?
+            # Return investments in the user's campaigns (fundraiser perspective)
+            equity_campaigns = EquityCampaign.where(fundraiser_id: @current_user.id)
+            investments = EquityInvestment.successful
+                                          .where(campaign_id: equity_campaigns.pluck(:id))
+                                          .includes(:campaign)
+                                          .order(created_at: desc)
+          else
+            # Return investments made BY the user (investor perspective) - existing behavior
+            investments = @current_user.equity_investments
+                                      .includes(:campaign)
+                                      .order(created_at: :desc)
+          end
+
+          # Simple format for thank you emails
+          formatted_investments = investments.map do |investment|
+            {
+              id: investment.id,
+              email: investment.email,
+              full_name: investment.full_name || 'Anonymous',
+              amount: investment.amount.to_f,
+              created_at: investment.created_at,
+              status: investment.status,
+              campaign: {
+                title: investment.campaign.title,
+                currency: investment.campaign.currency,
+                currency_symbol: investment.campaign.currency_symbol
+              }
+            }
+          end
 
           render json: {
-            investments: investments.map { |investment| EquityInvestmentSerializer.new(investment).as_json }
+            investments: formatted_investments,
+            pagination: {
+              current_page: investments.current_page,
+              total_pages: investments.total_pages,
+              per_page: investments.limit_value,
+              total_count: investments.total_count
+            }
           }
         end
 
