@@ -84,6 +84,8 @@ export interface Investment {
 export interface EquityInvestment extends Investment {
   id: number;
   amount: number;
+  email: string; // Add this
+  full_name: string; // Add this
   currency: string;
   currency_symbol: string;
   date: string;
@@ -118,6 +120,8 @@ export interface EquityInvestment extends Investment {
     title: string;
     equity_offered: number;
     valuation: number;
+    currency?: string; // Add this
+    currency_symbol?: string; // Add this
   };
   current_value?: number;
   campaign: {
@@ -130,6 +134,8 @@ export interface EquityInvestment extends Investment {
     status: string;
     valuation: number;
     equity_offered: number;
+    currency?: string; // Add this
+    currency_symbol?: string; // Add this
   };
   // Add company and team information
   company_info?: CompanyInfo;

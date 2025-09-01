@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
 import DonationsLoader from '../loaders/DonationsLoader';
 import {
@@ -16,14 +16,36 @@ import Pagination from '../components/pagination/Pagination';
 import { useAuth } from '../context/auth/AuthContext';
 import { FaCheckCircle } from 'react-icons/fa';
 import ToastComponent from '../components/toast/Toast';
+import { EquityInvestment } from '../types/equityCampaigns.types';
+
+interface InvestmentResponse {
+  investments: EquityInvestment[];
+  pagination: {
+    current_page: number;
+    total_pages: number;
+    per_page: number;
+    total_count: number;
+  };
+}
 
 export default function Donations() {
   const { donations, loading, error, fetchDonations, pagination } =
     useDonationsContext();
   const [filter, setFilter] = useState<'all' | 'specific'>('all');
-  const [selectedDonors, setSelectedDonors] = useState<number[]>([]);
+  const [selectedBackers, setSelectedBackers] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
+  const [backerType, setBackerType] = useState<'donation' | 'equity_investment'>(
+    'donation',
+  );
+  const [investments, setInvestments] = useState<EquityInvestment[]>([]);
+  const [investmentsPagination, setInvestmentsPagination] = useState({
+    current_page: 1,
+    total_pages: 1,
+    per_page: 10,
+    total_count: 0,
+  });
+  const [investmentsLoading, setInvestmentsLoading] = useState(false);
   const { token } = useAuth();
 
   // Toast State
@@ -34,42 +56,125 @@ export default function Donations() {
     'success',
   );
 
-  const toggleDonorSelection = (id: number) => {
+  const toggleBackerSelection = (backerId: string) => {
     if (filter === 'specific') {
-      if (selectedDonors.includes(id)) {
-        setSelectedDonors(selectedDonors.filter((donorId) => donorId !== id));
+      if (selectedBackers.includes(backerId)) {
+        setSelectedBackers(selectedBackers.filter((id) => id !== backerId));
       } else {
-        setSelectedDonors([...selectedDonors, id]);
+        setSelectedBackers([...selectedBackers, backerId]);
       }
     }
   };
 
-  const isThankYouButtonEnabled = filter === 'all' || selectedDonors.length > 0;
+  const isThankYouButtonEnabled =
+    filter === 'all' || selectedBackers.length > 0;
 
-  // Fetch donations whenever the page changes
+  // Fetch data whenever the page or type changes
   useEffect(() => {
-    fetchDonations(currentPage, perPage);
-  }, [currentPage, perPage, fetchDonations]);
+    if (backerType === 'donation') {
+      fetchDonations(currentPage, perPage);
+    } else {
+      fetchInvestments(currentPage, perPage);
+    }
+  }, [currentPage, perPage, backerType, fetchDonations]);
+
+  const fetchInvestments = async (page: number = 1, perPage: number = 10) => {
+    if (!token) {
+      handleApiError('You need to log in to access investments.');
+      return;
+    }
+
+    setInvestmentsLoading(true);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_investments/my_investments?page=${page}&per_page=${perPage}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        handleApiError(errorText);
+        return;
+      }
+
+      const data: InvestmentResponse = await response.json();
+      setInvestments(data.investments || []);
+      setInvestmentsPagination(
+        data.pagination || {
+          current_page: 1,
+          total_pages: 1,
+          per_page: 10,
+          total_count: 0,
+        },
+      );
+    } catch (err) {
+      handleApiError('Error fetching investments. Please try again later.');
+    } finally {
+      setInvestmentsLoading(false);
+    }
+  };
+
+  const handleApiError = (errorText: string) => {
+    setToastTitle('Error');
+    setToastDescription(errorText);
+    setToastType('error');
+    setToastOpen(true);
+  };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    setSelectedBackers([]);
   };
 
-  const handleSendThankYou = async (donationId: number) => {
+  const handleSendThankYou = async (backerId: string) => {
     try {
-      const donation = donations.find((d) => d.id === donationId);
-      if (!donation) {
-        throw new Error('Donation not found');
+      const [type, id] = backerId.split('_');
+      const numericId = parseInt(id);
+
+      let email: string;
+      let fullName: string;
+      let amount: number;
+      let campaignTitle: string;
+      let currency: string;
+
+      if (type === 'donation') {
+        const donation = donations.find((d) => d.id === numericId);
+        if (!donation) {
+          throw new Error('Donation not found');
+        }
+        email = donation.email;
+        fullName = donation.full_name || 'Anonymous';
+        amount = parseFloat(donation.gross_amount);
+        campaignTitle =
+          donation.metadata?.campaign_metadata?.title || 'Unknown Campaign';
+        currency = donation.metadata?.campaign_metadata?.currency || 'GHS';
+      } else {
+        const investment = investments.find((i) => i.id === numericId);
+        if (!investment) {
+          throw new Error('Investment not found');
+        }
+        email = investment.email;
+        fullName = investment.full_name || 'Anonymous';
+        amount = parseFloat(investment.amount.toString());
+        campaignTitle = investment.campaign?.title || 'Unknown Campaign';
+        // Get currency from multiple possible sources
+        currency =
+          investment.campaign?.currency ||
+          investment.campaign?.currency_symbol ||
+          investment.currency ||
+          investment.currency_symbol ||
+          'GHS';
       }
 
-      const campaignId =
-        donation.campaign_id || donation.metadata?.campaign_metadata?.id;
-      if (!campaignId) {
-        throw new Error('Campaign ID not found');
-      }
-
+      // Send individual thank you email
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/donations/send_thank_you_emails`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/send_thank_you_email`,
         {
           method: 'POST',
           headers: {
@@ -77,9 +182,12 @@ export default function Donations() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            campaign_id: campaignId,
-            filter: 'specific',
-            donor_ids: [donationId],
+            email,
+            full_name: fullName,
+            amount,
+            campaign_title: campaignTitle,
+            currency,
+            type,
           }),
         },
       );
@@ -89,15 +197,12 @@ export default function Donations() {
         throw new Error(errorData.error || 'Failed to send thank-you email');
       }
 
-      // Show success toast
       setToastTitle('Success');
       setToastDescription('Thank-you email sent successfully!');
       setToastType('success');
       setToastOpen(true);
     } catch (error) {
       console.error('Error sending thank-you email:', error);
-
-      // Show error toast
       setToastTitle('Error');
       setToastDescription('Failed to send thank-you email.');
       setToastType('error');
@@ -107,53 +212,98 @@ export default function Donations() {
 
   const handleSendThankYouEmails = async () => {
     try {
-      // Get the selected donations
-      const selectedDonations =
-        filter === 'all'
-          ? donations
-          : donations.filter((donation) =>
-              selectedDonors.includes(donation.id),
-            );
+      const backersToEmail: Array<{
+        email: string;
+        full_name: string;
+        amount: number;
+        campaign_title: string;
+        currency: string;
+        type: 'donation' | 'investment';
+      }> = [];
 
-      // Extract campaign IDs from the selected donations
-      const campaignIds = selectedDonations.map(
-        (donation) =>
-          donation.campaign_id || donation.metadata?.campaign_metadata?.id,
-      );
+      if (filter === 'all') {
+        // Add all donations
+        donations.forEach((donation) => {
+          backersToEmail.push({
+            email: donation.email,
+            full_name: donation.full_name || 'Anonymous',
+            amount: parseFloat(donation.gross_amount),
+            campaign_title:
+              donation.metadata?.campaign_metadata?.title || 'Unknown Campaign',
+            currency: donation.metadata?.campaign_metadata?.currency || 'GHS',
+            type: 'donation',
+          });
+        });
 
-      // Check if all selected donations belong to the same campaign
-      const uniqueCampaignIds = [...new Set(campaignIds)];
-      if (uniqueCampaignIds.length > 1) {
-        setToastTitle('Error');
-        setToastDescription('Selected donations belong to multiple campaigns.');
-        setToastType('error');
-        setToastOpen(true);
-        return;
+        // Add all investments
+        investments.forEach((investment) => {
+          backersToEmail.push({
+            email: investment.email,
+            full_name: investment.full_name || 'Anonymous',
+            amount: parseFloat(investment.amount.toString()),
+            campaign_title: investment.campaign?.title || 'Unknown Campaign',
+            currency:
+              investment.campaign?.currency ||
+              investment.campaign?.currency_symbol ||
+              investment.currency ||
+              investment.currency_symbol ||
+              'GHS',
+            type: 'investment',
+          });
+        });
+      } else {
+        // Add selected backers
+        selectedBackers.forEach((backerId) => {
+          const [type, id] = backerId.split('_');
+          const numericId = parseInt(id);
+
+          if (type === 'donation') {
+            const donation = donations.find((d) => d.id === numericId);
+            if (donation) {
+              backersToEmail.push({
+                email: donation.email,
+                full_name: donation.full_name || 'Anonymous',
+                amount: parseFloat(donation.gross_amount),
+                campaign_title:
+                  donation.metadata?.campaign_metadata?.title ||
+                  'Unknown Campaign',
+                currency:
+                  donation.metadata?.campaign_metadata?.currency || 'GHS',
+                type: 'donation',
+              });
+            }
+          } else {
+            const investment = investments.find((i) => i.id === numericId);
+            if (investment) {
+              backersToEmail.push({
+                email: investment.email,
+                full_name: investment.full_name || 'Anonymous',
+                amount: parseFloat(investment.amount.toString()),
+                campaign_title:
+                  investment.campaign?.title || 'Unknown Campaign',
+                currency:
+                  investment.campaign?.currency ||
+                  investment.campaign?.currency_symbol ||
+                  investment.currency ||
+                  investment.currency_symbol ||
+                  'GHS',
+                type: 'investment',
+              });
+            }
+          }
+        });
       }
 
-      const resolvedCampaignId = uniqueCampaignIds[0];
-      if (!resolvedCampaignId) {
-        setToastTitle('Error');
-        setToastDescription('Campaign ID not found for selected donations.');
-        setToastType('error');
-        setToastOpen(true);
-        return;
-      }
-
-      // Send thank-you emails
+      // Send bulk thank you emails
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/donations/send_thank_you_emails`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/send_bulk_thank_you_emails`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            campaign_id: resolvedCampaignId,
-            filter: filter,
-            donor_ids: filter === 'specific' ? selectedDonors : undefined,
-          }),
+          body: JSON.stringify({ backers: backersToEmail }),
         },
       );
 
@@ -162,10 +312,13 @@ export default function Donations() {
         setToastDescription('Thank you emails sent successfully!');
         setToastType('success');
         setToastOpen(true);
+        setSelectedBackers([]);
       } else {
         const errorData = await response.json();
         setToastTitle('Error');
-        setToastDescription('Failed to send thank you emails.');
+        setToastDescription(
+          errorData.error || 'Failed to send thank you emails.',
+        );
         setToastType('error');
         setToastOpen(true);
       }
@@ -178,7 +331,13 @@ export default function Donations() {
     }
   };
 
-  if (loading) {
+  const currentPagination =
+    backerType === 'donation' ? pagination : investmentsPagination;
+  const totalItems =
+    backerType === 'donation' ? donations.length : investments.length;
+  const isLoading = loading || investmentsLoading;
+
+  if (isLoading) {
     return <DonationsLoader />;
   }
 
@@ -192,48 +351,61 @@ export default function Donations() {
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
           Backer List
           <p className="text-gray-500 dark:text-neutral-400 text-xs font-medium">
-            {' '}
-            Send Thank You to your Backers{' '}
+            Send Thank You to your Backers
           </p>
         </h2>
-        <Popover>
-          <PopoverTrigger>
-            <Button size="icon" variant="outline" className="rounded-full">
-              <DotsVerticalIcon />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-fit">
-            <div className="p-4">
-              <p className="mb-2 font-semibold">Filter Backers:</p>
-              <RadioGroup
-                className="flex flex-col gap-2"
-                value={filter}
-                onValueChange={(value) =>
-                  setFilter(value as 'all' | 'specific')
-                }
-              >
-                <label className="flex items-center space-x-2">
-                  <RadioGroupItem value="all" />
-                  <span>All</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <RadioGroupItem value="specific" />
-                  <span>Specific People</span>
-                </label>
-              </RadioGroup>
-            </div>
-          </PopoverContent>
-        </Popover>
+        <div className="flex gap-2">
+          <select
+            value={backerType}
+            onChange={(e) => {
+              setBackerType(e.target.value as 'donation' | 'equity_investment');
+              setCurrentPage(1);
+              setSelectedBackers([]);
+            }}
+            className="p-2 border border-gray-300 rounded-md dark:bg-neutral-700 dark:text-white"
+          >
+            <option value="donations">Donations</option>
+            <option value="investments">Investments</option>
+          </select>
+          <Popover>
+            <PopoverTrigger>
+              <Button size="icon" variant="outline" className="rounded-full">
+                <DotsVerticalIcon />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-fit">
+              <div className="p-4">
+                <p className="mb-2 font-semibold">Filter Backers:</p>
+                <RadioGroup
+                  className="flex flex-col gap-2"
+                  value={filter}
+                  onValueChange={(value) => {
+                    setFilter(value as 'all' | 'specific');
+                    setSelectedBackers([]);
+                  }}
+                >
+                  <label className="flex items-center space-x-2">
+                    <RadioGroupItem value="all" />
+                    <span>All</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <RadioGroupItem value="specific" />
+                    <span>Specific People</span>
+                  </label>
+                </RadioGroup>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
-      {/* Check if donations is empty */}
-      {donations.length === 0 ? (
+      {totalItems === 0 ? (
         <div className="text-center text-lg text-gray-600 dark:text-neutral-400">
-          You have not received any funding yet.
+          You have not received any{' '}
+          {backerType === 'donation' ? 'donations' : 'investments'} yet.
         </div>
       ) : (
         <>
-          {/* Donation Table */}
           <div className="overflow-x-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
             <table className="min-w-full bg-white dark:bg-neutral-800 rounded-lg shadow-md">
               <thead>
@@ -245,34 +417,75 @@ export default function Donations() {
                   <th className="py-3 px-4">Amount</th>
                   <th className="py-3 px-4">Date</th>
                   <th className="py-3 px-4">Campaign Title</th>
+                  <th className="py-3 px-4">Type</th>
                   <th className="py-3 px-4">Status</th>
                   <th className="py-3 px-4">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {donations.map((donation) => {
-                  const campaign = donation.metadata?.campaign_metadata || {};
-                  return (
-                    <DonationRow
-                      key={donation.id}
-                      id={donation.id}
-                      donorName={donation.full_name || 'Anonymous'}
-                      amount={parseFloat(donation.gross_amount)}
-                      currency={campaign.currency || campaign.currency_symbol}
-                      date={new Date(donation.created_at).toLocaleDateString()}
-                      campaignTitle={campaign.title || 'No Title'}
-                      status={donation.status}
-                      filter={filter}
-                      isSelected={selectedDonors.includes(donation.id)}
-                      onToggle={() => toggleDonorSelection(donation.id)}
-                      onSendThankYou={handleSendThankYou} // Pass the function
-                    />
-                  );
-                })}
+                {backerType === 'donation'
+                  ? donations.map((donation) => {
+                      const campaign =
+                        donation.metadata?.campaign_metadata || {};
+                      const backerId = `donation_${donation.id}`;
+
+                      return (
+                        <BackerRow
+                          key={backerId}
+                          backerId={backerId}
+                          type="donation"
+                          backerName={donation.full_name || 'Anonymous'}
+                          amount={parseFloat(donation.gross_amount)}
+                          currency={
+                            campaign.currency ||
+                            campaign.currency_symbol ||
+                            'GHS'
+                          }
+                          date={new Date(
+                            donation.created_at,
+                          ).toLocaleDateString()}
+                          campaignTitle={campaign.title || 'No Title'}
+                          status={donation.status}
+                          filter={filter}
+                          isSelected={selectedBackers.includes(backerId)}
+                          onToggle={() => toggleBackerSelection(backerId)}
+                          onSendThankYou={handleSendThankYou}
+                        />
+                      );
+                    })
+                  : investments.map((investment) => {
+                      const campaign = investment.campaign || {};
+                      const backerId = `investment_${investment.id}`;
+
+                      return (
+                        <BackerRow
+                          key={backerId}
+                          backerId={backerId}
+                          type="investment"
+                          backerName={investment.full_name || 'Anonymous'}
+                          amount={parseFloat(investment.amount.toString())}
+                          currency={
+                            campaign.currency ||
+                            campaign.currency_symbol ||
+                            investment.currency ||
+                            investment.currency_symbol ||
+                            'GHS'
+                          }
+                          date={new Date(
+                            investment.created_at,
+                          ).toLocaleDateString()}
+                          campaignTitle={campaign.title || 'No Title'}
+                          status={investment.status}
+                          filter={filter}
+                          isSelected={selectedBackers.includes(backerId)}
+                          onToggle={() => toggleBackerSelection(backerId)}
+                          onSendThankYou={handleSendThankYou}
+                        />
+                      );
+                    })}
               </tbody>
             </table>
           </div>
-          {/* Thank You Button */}
           <div className="mt-6">
             <Button
               onClick={handleSendThankYouEmails}
@@ -280,21 +493,21 @@ export default function Donations() {
               className="w-full"
               variant="outline"
             >
-              {filter === 'all' ? 'Send Thank You to All' : 'Send Thank You'}
+              {filter === 'all'
+                ? `Send Thank You to All ${backerType}`
+                : 'Send Thank You'}
             </Button>
           </div>
-          {/* Pagination Controls */}
-          {pagination.total_pages > 1 && (
+          {currentPagination.total_pages > 1 && (
             <Pagination
               currentPage={currentPage}
-              totalPages={pagination.total_pages}
+              totalPages={currentPagination.total_pages}
               onPageChange={handlePageChange}
             />
           )}
         </>
       )}
 
-      {/* Toast Component */}
       <ToastComponent
         isOpen={toastOpen}
         onClose={() => setToastOpen(false)}
@@ -306,23 +519,25 @@ export default function Donations() {
   );
 }
 
-interface DonationRowProps {
-  id: number;
-  donorName: string;
+interface BackerRowProps {
+  backerId: string;
+  type: 'donation' | 'investment';
+  backerName: string;
   amount: number;
-  currency: string | null;
+  currency: string;
   date: string;
   campaignTitle: string;
   status: string;
   filter: 'all' | 'specific';
   isSelected: boolean;
   onToggle: () => void;
-  onSendThankYou: (donationId: number) => Promise<void>; // Add this prop
+  onSendThankYou: (backerId: string) => Promise<void>;
 }
 
-const DonationRow: React.FC<DonationRowProps> = ({
-  id,
-  donorName,
+const BackerRow: React.FC<BackerRowProps> = ({
+  backerId,
+  type,
+  backerName,
   amount,
   currency,
   date,
@@ -331,24 +546,24 @@ const DonationRow: React.FC<DonationRowProps> = ({
   filter,
   isSelected,
   onToggle,
-  onSendThankYou, // Pass the function to send thank-you emails
+  onSendThankYou,
 }) => {
-  const [isSending, setIsSending] = useState(false); // Track loading state
-  const [isSent, setIsSent] = useState(false); // Track success state
+  const [isSending, setIsSending] = useState(false);
+  const [isSent, setIsSent] = useState(false);
 
   const formattedCurrency = currency ? currency.toLocaleUpperCase() : '';
   const formattedAmount = amount.toFixed(2);
 
   const handleSendThankYou = async () => {
-    setIsSending(true); // Set loading state
+    setIsSending(true);
     try {
-      await onSendThankYou(id); // Call the function to send the email
-      setIsSent(true); // Set success state
-      setTimeout(() => setIsSent(false), 2000); // Reset success state after 2 seconds
+      await onSendThankYou(backerId);
+      setIsSent(true);
+      setTimeout(() => setIsSent(false), 2000);
     } catch (error) {
       console.error('Error sending thank-you email:', error);
     } finally {
-      setIsSending(false); // Reset loading state
+      setIsSending(false);
     }
   };
 
@@ -364,7 +579,7 @@ const DonationRow: React.FC<DonationRowProps> = ({
         </td>
       )}
       <td className="py-3 px-4 text-gray-800 dark:text-white whitespace-nowrap">
-        {donorName}
+        {backerName}
       </td>
       <td className="py-3 px-4 text-gray-600 dark:text-neutral-300 whitespace-nowrap">
         {formattedCurrency} {formattedAmount}
@@ -373,7 +588,10 @@ const DonationRow: React.FC<DonationRowProps> = ({
         {date}
       </td>
       <td className="py-3 px-4 text-gray-500 dark:text-neutral-400 whitespace-nowrap">
-        {campaignTitle || 'No Title'}
+        {campaignTitle}
+      </td>
+      <td className="py-3 px-4 text-blue-500 dark:text-blue-400 whitespace-nowrap">
+        {type === 'donation' ? 'Donation' : 'Investment'}
       </td>
       <td className="py-3 px-4 text-green-500 dark:text-green-400 whitespace-nowrap">
         {status}
@@ -382,8 +600,8 @@ const DonationRow: React.FC<DonationRowProps> = ({
         <Button
           variant="outline"
           className="px-3 py-1 text-sm rounded-full hover:bg-gray-100 dark:hover:bg-gray-100 transition duration-200 flex items-center gap-2"
-          onClick={handleSendThankYou} // Add onClick handler
-          disabled={isSending || isSent} // Disable button while sending or after success
+          onClick={handleSendThankYou}
+          disabled={isSending || isSent}
         >
           {isSending ? (
             'Sending...'
