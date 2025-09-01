@@ -593,7 +593,7 @@ const BackerRow: React.FC<BackerRowProps> = ({
       <td className="py-3 px-4 text-blue-500 dark:text-blue-400 whitespace-nowrap">
         {type === 'donation' ? 'Donation' : 'Investment'}
       </td>
-      <td className="py-3 px-4 bg-green-100 text-green-800 dark:bg-green-900 whitespace-nowrap">
+      <td className="py-3 px-4 text-green-500 dark:text-green-400 whitespace-nowrap">
         {status}
       </td>
       <td className="py-3 px-4">
