@@ -127,24 +127,86 @@ module Api
           { valid: true }
         end
 
+        # ✅ Builds metadata in Paystack's expected structure
         def build_metadata(donation, redirect_url)
           {
-            user_id: donation.user_id,
-            campaign_id: donation.campaign_id,
-            anonymous_token: donation.metadata[:anonymous_token],
-            donor_name: donation.full_name,
-            redirect_url: redirect_url,
-            title: @campaign.title,
-            goal_amount: @campaign.goal_amount,
-            current_amount: @campaign.current_amount,
-            currency: @campaign.currency,
-            currency_symbol: @campaign.currency_symbol,
-            fundraiser_id: @campaign.fundraiser_id,
-            fundraiser_name: @campaign.fundraiser.full_name,
-            phone: donation.phone,
-            email: donation.email,
-            plan: donation.plan,
-            extra_metadata: params[:donation][:metadata]
+            custom_fields: [
+              {
+                display_name: "User ID",
+                variable_name: "user_id",
+                value: donation.user_id
+              },
+              {
+                display_name: "Campaign ID",
+                variable_name: "campaign_id",
+                value: donation.campaign_id
+              },
+              {
+                display_name: "Anonymous Token",
+                variable_name: "anonymous_token",
+                value: donation.metadata[:anonymous_token]
+              },
+              {
+                display_name: "Donor Name",
+                variable_name: "donor_name",
+                value: donation.full_name
+              },
+              {
+                display_name: "Redirect URL",
+                variable_name: "redirect_url",
+                value: redirect_url
+              },
+              {
+                display_name: "Campaign Title",
+                variable_name: "title",
+                value: @campaign.title
+              },
+              {
+                display_name: "Goal Amount",
+                variable_name: "goal_amount",
+                value: @campaign.goal_amount
+              },
+              {
+                display_name: "Current Amount",
+                variable_name: "current_amount",
+                value: @campaign.current_amount
+              },
+              {
+                display_name: "Currency",
+                variable_name: "currency",
+                value: @campaign.currency
+              },
+              {
+                display_name: "Currency Symbol",
+                variable_name: "currency_symbol",
+                value: @campaign.currency_symbol
+              },
+              {
+                display_name: "Fundraiser ID",
+                variable_name: "fundraiser_id",
+                value: @campaign.fundraiser_id
+              },
+              {
+                display_name: "Fundraiser Name",
+                variable_name: "fundraiser_name",
+                value: @campaign.fundraiser.full_name
+              },
+              {
+                display_name: "Phone",
+                variable_name: "phone",
+                value: donation.phone
+              },
+              {
+                display_name: "Email",
+                variable_name: "email",
+                value: donation.email
+              },
+              {
+                display_name: "Plan",
+                variable_name: "plan",
+                value: donation.plan
+              }
+            ]
           }
         end
 
