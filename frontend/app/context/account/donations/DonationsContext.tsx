@@ -188,7 +188,38 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         planCodeRef.current = null;
       }
 
-      // Step 2: Create donation transaction
+      // Step 2: Build Paystack-style metadata
+      const customFields: any[] = [];
+
+      if (combinedMetadata?.shippingData) {
+        customFields.push({
+          display_name: 'Shipping Data',
+          variable_name: 'shipping_data',
+          value: JSON.stringify(combinedMetadata.shippingData),
+        });
+      }
+
+      if (combinedMetadata?.selectedRewards?.length) {
+        customFields.push({
+          display_name: 'Selected Rewards',
+          variable_name: 'selected_rewards',
+          value: combinedMetadata.selectedRewards
+            .map((r) => r.title)
+            .join(', '),
+        });
+      }
+
+      if (combinedMetadata?.deliveryOption) {
+        customFields.push({
+          display_name: 'Delivery Option',
+          variable_name: 'delivery_option',
+          value: combinedMetadata.deliveryOption,
+        });
+      }
+
+      const metadata = { custom_fields: customFields };
+
+      // Step 3: Create donation transaction
       const donationResponse = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
         {
@@ -196,13 +227,12 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           headers,
           body: JSON.stringify({
             donation: {
-              // 👈 Wrap in "donation"
               amount: amount,
               email: email,
               full_name: fullName,
               phone: phoneNumber,
-              metadata: combinedMetadata || {},
-              plan: planCodeRef.current, // Will be null for one-time donations
+              metadata: metadata,
+              plan: planCodeRef.current,
             },
           }),
         },
