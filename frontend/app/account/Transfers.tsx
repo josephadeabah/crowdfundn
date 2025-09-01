@@ -192,7 +192,7 @@ export default function Transfers() {
                         <span
                           className={
                             parseFloat(
-                              campaign.current_amount?.toString() || '0',
+                              campaign.transferred_amount?.toString() || '0',
                             ) >=
                             parseFloat(campaign.goal_amount?.toString() || '0')
                               ? 'text-green-600'
@@ -201,7 +201,7 @@ export default function Transfers() {
                         >
                           {campaign.currency.toUpperCase()}
                           {parseFloat(
-                            campaign.current_amount?.toString() || '0',
+                            campaign.transferred_amount?.toString() || '0',
                           ).toLocaleString()}
                         </span>
                         <span> raised of </span>
