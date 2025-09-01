@@ -220,8 +220,7 @@ module Api
             plan: donation.plan,
             callback_url: redirect_url,
             metadata: metadata,
-            subaccount: subaccount.subaccount_code,
-            currency: @campaign.currency.upcase
+            subaccount: subaccount.subaccount_code
           )
 
           if response[:status]
