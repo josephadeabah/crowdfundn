@@ -195,12 +195,14 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
           method: 'POST',
           headers,
           body: JSON.stringify({
-            amount: amount,
-            email: email,
-            full_name: fullName,
-            phone: phoneNumber,
-            metadata: combinedMetadata || {},
-            plan: planCodeRef.current, // Will be null for one-time donations
+            donation: { // 👈 Wrap in "donation"
+              amount: amount,
+              email: email,
+              full_name: fullName,
+              phone: phoneNumber,
+              metadata: combinedMetadata || {},
+              plan: planCodeRef.current, // Will be null for one-time donations
+            },
           }),
         },
       );
@@ -236,6 +238,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   };
+
 
   const contextValue = useMemo(
     () => ({
