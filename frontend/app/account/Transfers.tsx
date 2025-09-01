@@ -94,6 +94,23 @@ export default function Transfers() {
     }
   };
 
+  // Function to check if transfer should be disabled for a campaign
+  const isTransferDisabled = (campaign: CampaignResponseDataType) => {
+    const currentAmount = parseFloat(
+      campaign.current_amount?.toString() || '0',
+    );
+    const goalAmount = parseFloat(campaign.goal_amount?.toString() || '0');
+    const minimumAmount = 60.0;
+
+    // For equity campaigns, only check minimum amount
+    if (campaign.type === 'EquityCampaign') {
+      return currentAmount < minimumAmount;
+    }
+
+    // For regular campaigns, check if current amount equals goal amount AND meets minimum
+    return currentAmount !== goalAmount || currentAmount < minimumAmount;
+  };
+
   return (
     <div className="px-2 py-4">
       <ToastComponent
@@ -193,6 +210,11 @@ export default function Transfers() {
                           {parseFloat(campaign.goal_amount).toLocaleString()}
                         </span>
                       </p>
+                      {campaign.type === 'EquityCampaign' && (
+                        <p className="text-xs text-blue-600 dark:text-blue-400">
+                          Equity Campaign
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -201,7 +223,7 @@ export default function Transfers() {
                     className="w-full sm:w-auto px-4 py-2 bg-green-400 text-white rounded-full hover:bg-green-600 dark:hover:bg-green-700 whitespace-nowrap"
                     disabled={
                       loadingCampaigns[campaign.id] ||
-                      parseFloat(campaign.current_amount) < 60.0
+                      isTransferDisabled(campaign)
                     }
                   >
                     {loadingCampaigns[campaign.id]
@@ -209,6 +231,23 @@ export default function Transfers() {
                       : 'Request Transfer'}
                   </Button>
                 </div>
+
+                {/* Transfer restriction message */}
+                {isTransferDisabled(campaign) && (
+                  <div className="mt-2 text-xs text-red-500">
+                    {campaign.type === 'EquityCampaign' ? (
+                      <>
+                        Minimum transfer amount is{' '}
+                        {campaign.currency.toUpperCase()}60
+                      </>
+                    ) : (
+                      <>
+                        Transfer available only when campaign reaches 100% of
+                        goal
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             ))
           )}
