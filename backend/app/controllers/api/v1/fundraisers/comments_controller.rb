@@ -5,7 +5,6 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
 
   # GET /api/v1/fundraisers/campaigns/:campaign_id/comments
   def index
-    # Fetch all comments for the campaign
     @comments = @campaign.comments.order(created_at: :desc)
     render json: @comments, status: :ok
   end
@@ -18,8 +17,8 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
   # POST /api/v1/fundraisers/campaigns/:campaign_id/comments
   def create
     if @current_user
-      unless user_has_successfully_donated?(@campaign, @current_user)
-        return render json: { error: 'You must have made a successful donation to comment.' }, status: :unauthorized
+      unless user_can_comment?(@campaign, @current_user)
+        return render json: { error: 'You must have made a successful donation or investment to comment.' }, status: :unauthorized
       end
 
       @comment = @campaign.comments.build(comment_params.merge({
@@ -29,11 +28,10 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
                                                                }))
     else
       # Anonymous user flow
-      # Check if the anonymous token is valid
       token = request.headers['X-Anonymous-Token']
       anonymous_token = Donation.find_by(metadata: { anonymous_token: token })&.metadata&.dig('anonymous_token')
 
-      unless anonymous_user_has_successfully_donated?(@campaign, anonymous_token)
+      unless anonymous_user_can_comment?(@campaign, anonymous_token)
         return render json: { error: 'You must make a successful donation to comment.' }, status: :unauthorized
       end
 
@@ -85,13 +83,21 @@ class Api::V1::Fundraisers::CommentsController < ApplicationController
     params.require(:comment).permit(:content)
   end
 
-  # Helper method to check if the authenticated user has made a successful donation
-  def user_has_successfully_donated?(campaign, user)
-    Donation.exists?(campaign_id: campaign.id, user_id: user.id, status: 'successful')
+  # Updated helper method to check if user can comment (donation OR investment)
+  def user_can_comment?(campaign, user)
+    # Check for regular donations
+    return true if Donation.exists?(campaign_id: campaign.id, user_id: user.id, status: 'successful')
+    
+    # Check for equity investments if it's an equity campaign
+    if campaign.is_a?(EquityCampaign)
+      EquityInvestment.exists?(campaign_id: campaign.id, user_id: user.id, status: 'successful')
+    else
+      false
+    end
   end
 
-  # Helper method to check if the anonymous user has made a successful donation
-  def anonymous_user_has_successfully_donated?(campaign, anonymous_token)
+  # Helper method for anonymous users (only donations supported)
+  def anonymous_user_can_comment?(campaign, anonymous_token)
     Donation.exists?(campaign_id: campaign.id, metadata: { anonymous_token: anonymous_token }, status: 'successful')
   end
 end
