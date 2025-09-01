@@ -23,6 +23,7 @@ class CampaignStatisticsService
       total_backers: unique_backers_count(user) + unique_investors_count(user),
       total_active_campaigns: user.campaigns.active.count,
       total_donated_amount: user.campaigns.sum(:current_amount) || 0,
+      total_transferred_amount: user.campaigns.sum(:transferred_amount) || 0,
       campaign_performance: calculate_campaign_performance_for_user(user),
       new_funding_this_week: new_funding_count_for_user(user),
       campaigns_by_category: campaigns_by_category_for_user(user),
