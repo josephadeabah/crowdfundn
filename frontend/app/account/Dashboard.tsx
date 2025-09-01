@@ -220,7 +220,7 @@ export default function Dashboard() {
               {user?.currency?.toUpperCase()}{' '}
               {statistics &&
                 parseFloat(
-                  statistics?.total_donated_amount.toString(),
+                  statistics?.total_transferred_amount.toString(),
                 ).toLocaleString()}
             </CardDescription>
           </CardHeader>

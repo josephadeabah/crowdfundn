@@ -283,6 +283,7 @@ export interface CampaignStatisticsDataType {
   total_backers: number;
   total_active_campaigns: number;
   total_donated_amount: number;
+  total_transferred_amount: number;
   campaign_performance: CampaignPerformance[];
   new_funding_this_week: Record<string, number>;
   campaigns_by_category: Record<string, number>;
