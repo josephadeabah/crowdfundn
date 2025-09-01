@@ -160,17 +160,21 @@ export default function Dashboard() {
           </CardHeader>
         </Card>
 
-        {/* Active Campaigns Card */}
+        {/* Pending Widthdrwals Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
-          <div className="absolute top-2 right-2 bg-gray-50 p-2 rounded-full">
-            <Activity className="h-5 w-5 text-gray-500" />
+          <div className="absolute top-2 right-2 bg-lime-50 p-2 rounded-full">
+            <Clock className="h-5 w-5 text-lime-500" />
           </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Active Campaigns
+              Pending Withdrawals
             </CardTitle>
-            <CardDescription className="text-gray-500 dark:text-neutral-400">
-              {statistics?.total_active_campaigns} Campaigns
+            <CardDescription className="text-gray-500 dark:text-gray-500">
+              {user?.currency?.toUpperCase()}{' '}
+              {statistics &&
+                parseFloat(
+                  statistics?.total_transferred_amount.toString(),
+                ).toLocaleString()}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -207,21 +211,17 @@ export default function Dashboard() {
           </CardHeader>
         </Card>
 
-        {/* Average Funding Card */}
+        {/* Active Campaigns Card */}
         <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow hover:bg-gray-100 transition-shadow duration-200 relative">
-          <div className="absolute top-2 right-2 bg-lime-50 p-2 rounded-full">
-            <Clock className="h-5 w-5 text-lime-500" />
+          <div className="absolute top-2 right-2 bg-gray-50 p-2 rounded-full">
+            <Activity className="h-5 w-5 text-gray-500" />
           </div>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-              Pending Withdrawals
+              Active Campaigns
             </CardTitle>
-            <CardDescription className="text-gray-500 dark:text-gray-500">
-              {user?.currency?.toUpperCase()}{' '}
-              {statistics &&
-                parseFloat(
-                  statistics?.total_transferred_amount.toString(),
-                ).toLocaleString()}
+            <CardDescription className="text-gray-500 dark:text-neutral-400">
+              {statistics?.total_active_campaigns} Campaigns
             </CardDescription>
           </CardHeader>
         </Card>
