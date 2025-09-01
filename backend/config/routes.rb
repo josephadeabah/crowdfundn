@@ -90,9 +90,13 @@ Rails.application.routes.draw do
 
         resources :donations, only: [:index] do
           collection do
-            post :send_thank_you_emails # Add this line for the thank you emails route
+            post :send_thank_you_emails 
           end
         end
+
+        # New thank you routes for both donations and investments
+        post 'send_thank_you_email', to: 'thank_you#send_thank_you_email'
+        post 'send_bulk_thank_you_emails', to: 'thank_you#send_bulk_thank_you_emails'
 
         resources :campaigns, constraints: { id: /[0-9]+|[a-zA-Z0-9\-]+/ } do
           resources :campaign_shares, only: [:create]
