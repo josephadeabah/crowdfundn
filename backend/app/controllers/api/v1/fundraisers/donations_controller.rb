@@ -120,7 +120,7 @@ module Api
             plan: donation.plan,
             callback_url: generate_redirect_url(donation.campaign),
             metadata: build_metadata(donation),
-            subaccount: @subaccount_code,
+            subaccount: @subaccount.subaccount_code, # Use the subaccount code from the validated subaccount
             currency: donation.campaign.currency.upcase
           )
         end
