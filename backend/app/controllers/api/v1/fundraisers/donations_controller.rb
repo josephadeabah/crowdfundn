@@ -144,7 +144,7 @@ module Api
             metadata: [
               :shippingData,
               :deliveryOption,
-              { selectedRewards: [:id, :title, :description, :minimum_donation, :estimated_delivery, :quantity_available] }
+              { selectedRewards: [:id, :title, :description, :amount, :minimum_donation, :estimated_delivery, :quantity_available] }
             ]
           )
        end
