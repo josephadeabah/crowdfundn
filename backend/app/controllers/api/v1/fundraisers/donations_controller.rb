@@ -85,29 +85,30 @@ module Api
           # Create a new donation
           donation = Donation.new(donation_params)
           donation.campaign_id = campaign.id
-          donation.status = Donation::STATUS_PENDING # Use constant
+          donation.status = Donation::STATUS_PENDING
           donation.full_name = params[:donation][:full_name].presence || 'Anonymous'
 
           if @current_user
             donation.user_id = @current_user.id
           else
+            # Generate anonymous token and store it in a simple metadata field
             anonymous_token = SecureRandom.uuid
-            donation.metadata[:anonymous_token] = anonymous_token
+            donation.metadata = { anonymous_token: anonymous_token }
           end
 
           secure_random_uuid = SecureRandom.uuid
           campaign_identifier = campaign.slug || campaign.id
           redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign_identifier,
                                                                            host: 'bantuhive.com') + "?#{secure_random_uuid}"
+          
           donation.email = params[:donation][:email]
           donation.amount = params[:donation][:amount]
           donation.phone = params[:donation][:phone]
-          donation.metadata = params[:donation][:metadata]
-
+          
+          # Build clean metadata without excessive nesting
           metadata = {
             user_id: donation.user_id,
             campaign_id: donation.campaign_id,
-            anonymous_token: donation.metadata[:anonymous_token],
             donor_name: donation.full_name,
             redirect_url: redirect_url,
             title: campaign.title,
@@ -117,9 +118,13 @@ module Api
             currency_symbol: campaign.currency_symbol,
             fundraiser_id: campaign.fundraiser_id,
             fundraiser_name: campaign.fundraiser.full_name,
-            phone: donation.phone,
-            donation.metadata
+            phone: donation.phone
           }
+          
+          # Merge with existing metadata if any, but avoid deep nesting
+          if donation.metadata.is_a?(Hash)
+            metadata = metadata.merge(donation.metadata)
+          end
 
           donation.plan = params[:donation][:plan]
 
@@ -137,7 +142,7 @@ module Api
           if response[:status] == true
             donation.transaction_reference = response[:data][:reference]
             donation.subscription_code = donation.plan if donation.plan.present?
-            donation.status = Donation::STATUS_INITIALIZED # Update status to initialized
+            donation.status = Donation::STATUS_INITIALIZED
 
             if donation.save
               render json: {
