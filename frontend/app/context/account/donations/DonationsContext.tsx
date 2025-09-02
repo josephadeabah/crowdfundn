@@ -215,6 +215,8 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         },
       };
 
+      console.log("Donation Payload", donationPayload);
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
         {
@@ -237,7 +239,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         responseData.authorization_url || responseData.data?.authorization_url;
 
       if (authorizationUrl) {
-        window.location.href = authorizationUrl;
+        // window.location.href = authorizationUrl;
       } else {
         throw new Error('No authorization URL received from server');
       }
