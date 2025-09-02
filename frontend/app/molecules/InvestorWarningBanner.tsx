@@ -29,7 +29,7 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
   return (
     <div
       className={cn(
-        'bg-gray-200 border-b border-gray-300 text-black',
+        'bg-gray-300 border-b border-gray-300 text-black',
         'px-4 py-3 md:px-6 md:py-4',
         className
       )}
