@@ -54,6 +54,10 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
                 <strong>Capital at risk:</strong> Investments in unlisted companies are speculative and carry high risks. 
                 You may lose 100% of your investment and should only invest money you can afford to lose.
               </p>
+              <p className="hidden sm:block text-xs">
+                <strong>Diversify your portfolio:</strong> To mitigate risk, consider spreading your investments across multiple 
+                opportunities rather than concentrating your capital in a single venture.
+              </p>
             </div>
           </div>
 
