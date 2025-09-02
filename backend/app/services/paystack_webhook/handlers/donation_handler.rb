@@ -54,9 +54,11 @@ module PaystackWebhook::Handlers
         subaccount_contact = response.dig(:data, :subaccount, :primary_contact_email) || 'No contact email'
         subaccount_phone = response.dig(:data, :subaccount, :primary_contact_phone) || 'No contact phone'
 
-        shipping_data = metadata.dig(:metadata, :shippingData) || {}
-        selected_rewards = metadata.dig(:metadata, :selectedRewards) || []
-        delivery_option = metadata.dig(:metadata, :deliveryOption) || 'pickup'
+        # FIXED: pull directly from metadata and normalize types
+        shipping_data    = metadata[:shippingData] || {}
+        selected_rewards = Array(metadata[:selectedRewards]).map { |r| r.is_a?(Hash) ? r.deep_symbolize_keys : r }
+        delivery_option  = metadata[:deliveryOption].presence || 'pickup'
+
 
         donation = Donation.create!(
           transaction_reference: transaction_reference,
@@ -103,12 +105,13 @@ module PaystackWebhook::Handlers
         campaign.update_transferred_amount(net_amount)
 
         selected_rewards.each do |reward|
-          next if Pledge.exists?(donation_id: donation.id, reward_id: reward[:id])
+          rid = reward[:id].to_i
+          next if Pledge.exists?(donation_id: donation.id, reward_id: rid)
 
           Pledge.create!(
             donation_id: donation.id,
-            reward_id: reward[:id],
-            amount: reward[:amount],
+            reward_id: rid,
+            amount: reward[:amount].to_f,
             shipping_data: shipping_data,
             selected_rewards: [reward],
             delivery_option: delivery_option,
