@@ -242,7 +242,7 @@ export default function Donations() {
         amount: number;
         campaign_title: string;
         currency: string;
-        type: 'donation' | 'investment';
+        type: 'donation' | 'equity_investment';
       }> = [];
 
       if (filter === 'all') {
@@ -276,7 +276,7 @@ export default function Donations() {
                 investment.currency ||
                 investment.currency_symbol ||
                 'GHS',
-              type: 'investment',
+              type: 'equity_investment',
             });
           }
         });
@@ -316,7 +316,7 @@ export default function Donations() {
                   investment.currency ||
                   investment.currency_symbol ||
                   'GHS',
-                type: 'investment',
+                type: 'equity_investment',
               });
             }
           }
@@ -525,7 +525,7 @@ export default function Donations() {
                         <BackerRow
                           key={backerId}
                           backerId={backerId}
-                          type="investment"
+                          type="equity_investment"
                           backerName={investment.full_name || 'Anonymous'}
                           amount={parseFloat(investment.amount.toString())}
                           currency={
@@ -586,7 +586,7 @@ export default function Donations() {
 
 interface BackerRowProps {
   backerId: string;
-  type: 'donation' | 'investment';
+  type: 'donation' | 'equity_investment';
   backerName: string;
   amount: number;
   currency: string;
