@@ -224,10 +224,10 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       }
 
       // ✅ authorization_url is inside donationData.data
-      const authorizationUrl = donationData.data?.authorization_url;
+      const { authorization_url } = donationData;
 
-      if (authorizationUrl) {
-        window.location.href = authorizationUrl;
+      if (authorization_url) {
+        window.location.href = authorization_url;
       } else {
         handleApiError(
           'We could not initiate your payment at this time. Please try again later.',
