@@ -15,7 +15,7 @@ module Api
           formatted_donations = donations.map do |donation|
             {
               id: donation.id,
-              full_name: donation.anonymous? ? 'Anonymous' : donation.full_name,
+              full_name: donation.full_name || 'Anonymous',
               amount: donation.gross_amount,
               email: donation.email,
               date: donation.created_at.iso8601,
