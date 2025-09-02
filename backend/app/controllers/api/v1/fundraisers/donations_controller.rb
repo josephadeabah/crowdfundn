@@ -70,16 +70,20 @@ module Api
               campaign_identifier, host: 'bantuhive.com'
             ) + "?#{secure_random_uuid}"
 
-            # frontend metadata (safe fallback to {})
-            frontend_metadata = (donation.metadata || {}).with_indifferent_access
+            # extract frontend metadata safely
+            frontend_metadata = params.dig(:donation, :metadata) || {}
+
+            donation.amount = params[:donation][:amount]
+            donation.plan   = params[:donation][:plan]   if params[:donation][:plan].present?
+            donation.phone  = params[:donation][:phone]  if params[:donation][:phone].present?
+            donation.email  = params[:donation][:email]  if params[:donation][:email].present?
 
             # backend metadata
             backend_metadata = build_metadata(donation, redirect_url)
 
-            # ✅ merge them in Paystack's custom_fields format
+            # ✅ merge backend + frontend metadata into Paystack format
             combined_metadata = {
-              custom_fields: [
-                *backend_metadata[:custom_fields],
+              custom_fields: backend_metadata[:custom_fields] + [
                 (frontend_metadata["shippingData"].present? ? {
                   display_name: "Shipping Data",
                   variable_name: "shipping_data",
@@ -97,6 +101,9 @@ module Api
                 } : nil)
               ].compact
             }
+
+            # save merged metadata on donation too
+            donation.metadata = combined_metadata
 
             initialize_payment(donation, combined_metadata, redirect_url)
           end
@@ -131,12 +138,17 @@ module Api
 
         private
 
-        def donation_params
+       def donation_params
           params.require(:donation).permit(
             :amount, :transaction_reference, :email, :full_name, :phone, :plan,
-            metadata: {}
+            metadata: [
+              :shippingData,
+              :deliveryOption,
+              { selectedRewards: [:id, :title, :description, :minimum_donation, :estimated_delivery, :quantity_available] }
+            ]
           )
-        end
+       end
+
 
         def validate_donation
           return { valid: false, message: 'Invalid campaign', errors: { base: ['Invalid campaign'] } } unless @campaign
