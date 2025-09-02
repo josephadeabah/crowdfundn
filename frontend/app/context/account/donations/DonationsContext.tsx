@@ -209,19 +209,20 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
 
       const donationData = await donationResponse.json();
 
-      if (!donationResponse.ok || !donationData.success) {
-        if (
-          donationData.error ===
-          'Fundraiser does not meet requirements for raising funds.'
-        ) {
-          handleApiError(donationData.error);
-          return;
-        }
+     // Step 3: Redirect to Paystack Checkout
+      const authorizationUrl =
+        donationData.authorization_url ||
+        donationData.data?.authorization_url ||
+        donationData.donation?.authorization_url;
+
+      if (authorizationUrl) {
+        window.location.href = authorizationUrl;
+      } else {
         handleApiError(
-          'Failed to create donation. Fundraiser might not meet requirements for fundraising at this time!',
+          'We could not initiate your payment at this time. Please try again later.',
         );
-        return;
       }
+
 
       // ✅ authorization_url is inside donationData.data
       const { authorization_url } = donationData;
