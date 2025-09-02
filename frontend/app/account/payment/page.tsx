@@ -33,7 +33,8 @@ const PaymentPageContent = () => {
   const [fundraiserId, setFundraiserId] = useState('');
   const [campaignId, setCampaignId] = useState('');
   const [campaignTitle, setCampaignTitle] = useState('');
-  const [billingFrequency, setBillingFrequency] = useState<BillingFrequency | null>(null);
+  const [billingFrequency, setBillingFrequency] =
+    useState<BillingFrequency | null>(null);
   const [tokenState, setTokenState] = useState('');
   const [isEquityCampaign, setIsEquityCampaign] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});

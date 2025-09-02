@@ -16,6 +16,7 @@ import { NavbarMobileMenu } from './navbar/NavbarMobileMenu';
 import { Button } from './ui/button';
 import { Search } from 'lucide-react';
 import SearchBar from './searchbar/SearchBar';
+import InvestorWarningBanner from '../molecules/InvestorWarningBanner';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -28,6 +29,7 @@ const Navbar = () => {
   const { userAccountData } = useUserContext();
   const [loading, setLoading] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [warningDismissed, setWarningDismissed] = useState(false);
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const handleSearchOpen = () => {
@@ -47,6 +49,17 @@ const Navbar = () => {
   const [messages, setMessages] = useState([
     // { id: 1, text: 'Message from supporter', read: false },
   ]);
+
+  useEffect(() => {
+    // Check if user has previously dismissed the warning
+    const dismissed = localStorage.getItem('investorWarningDismissed');
+    setWarningDismissed(dismissed === 'true');
+  }, []);
+
+  const handleWarningDismiss = () => {
+    setWarningDismissed(true);
+    localStorage.setItem('investorWarningDismissed', 'true');
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -89,103 +102,116 @@ const Navbar = () => {
   }
 
   return (
-    <header
-      className={cn(
-        'sticky top-0 z-50 transition-transform duration-300 ease-in-out',
-        isVisible || isScrolled
-          ? 'bg-white/90 backdrop-blur-md shadow-sm translate-y-0'
-          : 'bg-transparent -translate-y-full',
+    <>
+      {/* Warning Banner - placed above the navbar */}
+      {!warningDismissed && (
+        <InvestorWarningBanner onDismiss={handleWarningDismiss} />
       )}
-    >
-      <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 dark:bg-gray-950 dark:text-gray-50">
-        <div className="text-2xl font-bold text-orange-500">
-          <a href="/">
-            <BantuHiveLogoIcon className="w-24 h-auto" />
-          </a>
-        </div>
 
-        <div className="hidden lg:flex items-center gap-x-2 mx-6">
-          {Object.entries(dropdownLinks).map(([key, links]) => (
-            <NavbarDropdown
-              key={key}
-              keyName={key}
-              links={links}
-              activeMenu={activeMenu}
-              setActiveMenu={setActiveMenu}
-              closeTimeout={closeTimeout}
-            />
-          ))}
-        </div>
+      <header
+        className={cn(
+          'sticky top-0 z-50 transition-transform duration-300 ease-in-out',
+          isVisible || isScrolled
+            ? 'bg-white/90 backdrop-blur-md shadow-sm translate-y-0'
+            : 'bg-transparent -translate-y-full',
+          warningDismissed ? 'top-0' : 'top-[--warning-banner-height]',
+        )}
+        style={
+          !warningDismissed
+            ? ({ '--warning-banner-height': '68px' } as React.CSSProperties)
+            : {}
+        }
+      >
+        <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 dark:bg-gray-950 dark:text-gray-50">
+          <div className="text-2xl font-bold text-orange-500">
+            <a href="/">
+              <BantuHiveLogoIcon className="w-24 h-auto" />
+            </a>
+          </div>
 
-        <div className="flex items-center gap-2 lg:hidden mr-2">
-          {/* Mobile search button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleSearchOpen}
-            aria-label="Search"
-            className="lg:hidden"
-          >
-            <Search className="h-5 w-5" />
-          </Button>
+          <div className="hidden lg:flex items-center gap-x-2 mx-6">
+            {Object.entries(dropdownLinks).map(([key, links]) => (
+              <NavbarDropdown
+                key={key}
+                keyName={key}
+                links={links}
+                activeMenu={activeMenu}
+                setActiveMenu={setActiveMenu}
+                closeTimeout={closeTimeout}
+              />
+            ))}
+          </div>
 
-          <button
-            onClick={handleMenuToggle}
-            className="text-gray-800 shadow-none rounded-none dark:text-gray-300"
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? (
-              <XMarkIcon className="h-8 w-8" />
+          <div className="flex items-center gap-2 lg:hidden mr-2">
+            {/* Mobile search button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleSearchOpen}
+              aria-label="Search"
+              className="lg:hidden"
+            >
+              <Search className="h-5 w-5" />
+            </Button>
+
+            <button
+              onClick={handleMenuToggle}
+              className="text-gray-800 shadow-none rounded-none dark:text-gray-300"
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? (
+                <XMarkIcon className="h-8 w-8" />
+              ) : (
+                <HamburgerMenuIcon className="h-8 w-8" />
+              )}
+            </button>
+          </div>
+
+          <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
+            {!user ? (
+              <NavbarAuthButtons />
             ) : (
-              <HamburgerMenuIcon className="h-8 w-8" />
+              <div className="flex items-center gap-2">
+                {/* Search button for desktop */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleSearchOpen}
+                  aria-label="Search"
+                  className="hidden lg:flex"
+                >
+                  <Search className="h-5 w-5" />
+                </Button>
+
+                <NavbarNotificationIcons
+                  notifications={notifications}
+                  messages={messages}
+                />
+                <NavbarUserMenu
+                  user={user}
+                  userAccountData={userAccountData}
+                  logout={logout}
+                />
+              </div>
             )}
-          </button>
+          </div>
         </div>
 
-        <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
-          {!user ? (
-            <NavbarAuthButtons />
-          ) : (
-            <div className="flex items-center gap-2">
-              {/* Search button for desktop */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleSearchOpen}
-                aria-label="Search"
-                className="hidden lg:flex"
-              >
-                <Search className="h-5 w-5" />
-              </Button>
-
-              <NavbarNotificationIcons
-                notifications={notifications}
-                messages={messages}
-              />
-              <NavbarUserMenu
-                user={user}
-                userAccountData={userAccountData}
-                logout={logout}
-              />
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      <NavbarMobileMenu
-        isMenuOpen={isMenuOpen}
-        user={user}
-        dropdownLinks={dropdownLinks}
-        openDropdown={openDropdown}
-        handleDropdownToggle={handleDropdownToggle}
-        userAccountData={userAccountData}
-        logout={logout}
-        notifications={notifications}
-        messages={messages}
-      />
-      <SearchBar isOpen={searchOpen} onClose={handleSearchClose} />
-    </header>
+        {/* Mobile Menu */}
+        <NavbarMobileMenu
+          isMenuOpen={isMenuOpen}
+          user={user}
+          dropdownLinks={dropdownLinks}
+          openDropdown={openDropdown}
+          handleDropdownToggle={handleDropdownToggle}
+          userAccountData={userAccountData}
+          logout={logout}
+          notifications={notifications}
+          messages={messages}
+        />
+        <SearchBar isOpen={searchOpen} onClose={handleSearchClose} />
+      </header>
+    </>
   );
 };
 

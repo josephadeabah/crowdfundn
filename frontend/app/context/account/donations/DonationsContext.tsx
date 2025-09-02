@@ -215,7 +215,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         },
       };
 
-      console.log("Donation Payload", donationPayload);
+      console.log('Donation Payload', donationPayload);
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
