@@ -29,8 +29,8 @@ const Navbar = () => {
   const { userAccountData } = useUserContext();
   const [loading, setLoading] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [warningDismissed, setWarningDismissed] = useState(false);
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
+  const [warningDismissed, setWarningDismissed] = useState(false);
 
   const handleSearchOpen = () => {
     setSearchOpen(true);
@@ -103,24 +103,16 @@ const Navbar = () => {
 
   return (
     <>
-      {/* Warning Banner - placed above the navbar */}
       {!warningDismissed && (
         <InvestorWarningBanner onDismiss={handleWarningDismiss} />
       )}
-
       <header
         className={cn(
           'sticky top-0 z-50 transition-transform duration-300 ease-in-out',
           isVisible || isScrolled
             ? 'bg-white/90 backdrop-blur-md shadow-sm translate-y-0'
             : 'bg-transparent -translate-y-full',
-          warningDismissed ? 'top-0' : 'top-[--warning-banner-height]',
         )}
-        style={
-          !warningDismissed
-            ? ({ '--warning-banner-height': '68px' } as React.CSSProperties)
-            : {}
-        }
       >
         <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 dark:bg-gray-950 dark:text-gray-50">
           <div className="text-2xl font-bold text-orange-500">
