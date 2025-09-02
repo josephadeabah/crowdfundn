@@ -136,7 +136,6 @@ module Api
             fundraiser_id: fundraiser.id,
             fundraiser_name: fundraiser.full_name,
             phone: donation.phone,
-            anonymous: donation.anonymous?,
             redirect_url: generate_redirect_url(campaign)
           }.merge(donation.metadata || {})
         end
