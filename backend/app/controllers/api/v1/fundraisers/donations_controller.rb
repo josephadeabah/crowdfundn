@@ -74,12 +74,12 @@ module Api
           donations.each do |donation|
             ThankYouEmailService.send_thank_you_email(
               donation.email,
-              donation.full_name,
+              donation.full_name || 'Anonymous',
               campaign.fundraiser.full_name,
               campaign.fundraiser.profile&.avatar_url,
               campaign.title,
               campaign.currency.upcase,
-              donation.gross_amount
+              donation.gross_amount.to_f.round(2)
             )
           end
 
@@ -97,10 +97,15 @@ module Api
           if @current_user
             donation.user = @current_user
           else
-            donation.metadata = (donation.metadata || {}).merge(
-              anonymous_token: SecureRandom.uuid
-            )
+            # Generate anonymous token and store it in a simple metadata field
+            anonymous_token = SecureRandom.uuid
+            donation.metadata = { anonymous_token: anonymous_token }
           end
+          
+          donation.email = params[:donation][:email]
+          donation.amount = params[:donation][:amount]
+          donation.phone = params[:donation][:phone]
+          donation.plan = params[:donation][:plan]
           
           donation
         end
@@ -108,7 +113,7 @@ module Api
         def initialize_payment(donation)
           paystack_service = PaystackService.new
           
-          paystack_service.initialize_transaction(
+          response = paystack_service.initialize_transaction(
             email: donation.email,
             amount: donation.amount,
             plan: donation.plan,
@@ -123,27 +128,37 @@ module Api
           campaign = donation.campaign
           fundraiser = campaign.fundraiser
           
-          {
-            donation_id: donation.id || 'pending', # Use 'pending' if donation not saved yet
+          # Build comprehensive metadata like the original version
+          metadata = {
             user_id: donation.user_id,
-            campaign_id: campaign.id,
+            campaign_id: donation.campaign_id,
             donor_name: donation.full_name,
+            redirect_url: generate_redirect_url(campaign),
             title: campaign.title,
             goal_amount: campaign.goal_amount,
             current_amount: campaign.current_amount,
             currency: campaign.currency,
             currency_symbol: campaign.currency_symbol,
-            fundraiser_id: fundraiser.id,
-            fundraiser_name: fundraiser.full_name,
-            phone: donation.phone,
-            redirect_url: generate_redirect_url(campaign)
-          }.merge(donation.metadata || {})
+            fundraiser_id: campaign.fundraiser_id,
+            fundraiser_name: campaign.fundraiser.full_name,
+            phone: donation.phone
+          }
+          
+          # Merge with existing metadata if any, but avoid deep nesting
+          if donation.metadata.is_a?(Hash)
+            metadata = metadata.merge(donation.metadata)
+          end
+
+          metadata
         end
 
         def generate_redirect_url(campaign)
           secure_random_uuid = SecureRandom.uuid
           campaign_identifier = campaign.slug || campaign.id
-          redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign_identifier, host: 'bantuhive.com') + "?#{secure_random_uuid}"
+          Rails.application.routes.url_helpers.campaign_url(
+            campaign_identifier, 
+            host: 'bantuhive.com'
+          ) + "?#{secure_random_uuid}"
         end
 
         def update_donation_for_success(donation, response)
@@ -173,11 +188,12 @@ module Api
         end
 
         def set_campaign
-          identifier = params[:campaign_id] || params[:id]
-          @campaign = if identifier&.match?(/[a-zA-Z\-]/)
-            Campaign.find_by(slug: identifier)
+          campaign_identifier = params[:campaign_id] || params[:id]
+          
+          if campaign_identifier && campaign_identifier.match?(/[a-zA-Z\-]/)
+            @campaign = Campaign.find_by(slug: campaign_identifier)
           else
-            Campaign.find_by(id: identifier)
+            @campaign = Campaign.find_by(id: campaign_identifier)
           end
           
           not_found_error('Campaign') unless @campaign
@@ -207,7 +223,7 @@ module Api
           page = params[:page] || 1
           per_page = params[:per_page] || 10
           
-          paginated = donations.page(page).per(per_page)
+          paginated = Kaminari.paginate_array(donations).page(page).per(per_page)
           
           render json: {
             donations: paginated,
