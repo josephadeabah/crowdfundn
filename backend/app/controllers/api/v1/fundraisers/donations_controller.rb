@@ -142,12 +142,9 @@ module Api
         end
 
         def generate_redirect_url(campaign)
-          identifier = campaign.slug || campaign.id
-          base_url = Rails.application.routes.url_helpers.campaign_url(
-            identifier, 
-            host: Rails.application.config.app_domain
-          )
-          "#{base_url}?#{SecureRandom.uuid}"
+          secure_random_uuid = SecureRandom.uuid
+          campaign_identifier = campaign.slug || campaign.id
+          redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign_identifier, host: 'bantuhive.com') + "?#{secure_random_uuid}"
         end
 
         def update_donation_for_success(donation, response)
