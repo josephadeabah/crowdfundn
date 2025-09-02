@@ -11,6 +11,7 @@ import StripeForm from '@/app/components/payments/StripeForm';
 import FlutterwaveForm from '@/app/components/payments/FlutterwaveForm';
 import PayPalForm from '@/app/components/payments/PayPalForm';
 import { jwtVerify } from 'jose';
+import { BillingFrequency } from '@/app/types/donations.types';
 
 const PaystackForm = dynamic(
   () => import('@/app/components/payments/PaystackForm'),
@@ -32,7 +33,7 @@ const PaymentPageContent = () => {
   const [fundraiserId, setFundraiserId] = useState('');
   const [campaignId, setCampaignId] = useState('');
   const [campaignTitle, setCampaignTitle] = useState('');
-  const [billingFrequency, setBillingFrequency] = useState('');
+  const [billingFrequency, setBillingFrequency] = useState<BillingFrequency | null>(null);
   const [tokenState, setTokenState] = useState('');
   const [isEquityCampaign, setIsEquityCampaign] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
