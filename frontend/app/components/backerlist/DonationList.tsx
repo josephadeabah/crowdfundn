@@ -61,7 +61,9 @@ const DonationList: React.FC<DonationListProps> = ({
               <div className="text-right">
                 <p className="text-sm font-bold text-green-600">
                   {fundraiserCurrency}
-                  {parseFloat(donation.amount || '0.0').toLocaleString()}
+                  {parseFloat(
+                    String(donation.amount || '0.0'),
+                  ).toLocaleString()}
                 </p>
                 <p className="text-xs text-gray-500">Thank you!</p>
               </div>

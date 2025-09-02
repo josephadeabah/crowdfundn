@@ -7,6 +7,11 @@ import {
   EquityInvestment,
   InvestmentCreateResponse,
 } from '@/app/types/equityCampaigns.types';
+import {
+  BillingFrequency,
+  DonationTransactionData,
+  ShippingData,
+} from '@/app/types/donations.types';
 
 interface PaystackFormProps {
   cardholderName: string;
@@ -15,18 +20,16 @@ interface PaystackFormProps {
   paymentAmount: string;
   campaignId: string;
   campaignTitle: string;
-  billingFrequency: string;
+  billingFrequency: BillingFrequency | null;
   errors: { [key: string]: string };
-  combinedMetadata?: {
-    shippingData: {
-      firstName: string;
-      lastName: string;
-      shippingAddress: string;
-      entityType: string;
-    };
-    selectedRewards: Reward[];
-    deliveryOption: 'home' | 'pickup' | null;
+  shippingData?: {
+    firstName: string;
+    lastName: string;
+    shippingAddress: string;
+    entityType: string;
   };
+  selectedRewards?: Reward[];
+  deliveryOption?: 'home' | 'pickup' | null;
   isPaymentFormValidated: () => boolean;
   setCardholderName: React.Dispatch<React.SetStateAction<string>>;
   setPaymentEmail: React.Dispatch<React.SetStateAction<string>>;
@@ -44,8 +47,10 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   campaignTitle,
   billingFrequency,
   errors,
-  combinedMetadata,
-  isPaymentFormValidated: validatePaystackForm,
+  shippingData,
+  selectedRewards,
+  deliveryOption,
+  isPaymentFormValidated,
   setCardholderName,
   setPaymentEmail,
   setPaymentPhone,
@@ -56,122 +61,179 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
     createDonationTransaction,
     loading: donationLoading,
     error: donationError,
+    clearError: clearDonationError,
   } = useDonationsContext();
+
   const { createInvestment, loading: investmentLoading } =
     useEquityCampaignContext();
+
   const [showToast, setShowToast] = useState(false);
   const [processingFee, setProcessingFee] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
-  const [investmentError, setInvestmentError] = useState<string>('');
+  const [toastMessage, setToastMessage] = useState<string>('');
+  const [toastType, setToastType] = useState<'error' | 'success'>('error');
 
-  // Calculate processing fee and total amount - CHANGED TO 7% CAPPED AT 300
+  // Calculate processing fee and total amount - 7% capped at 300
   useEffect(() => {
-    if (isEquityCampaign && paymentAmount) {
-      const amount = parseFloat(paymentAmount) || 0;
-      const fee = Math.min(amount * 0.07, 300); // 7% fee capped at 300
+    const amount = parseFloat(paymentAmount) || 0;
+    if (isEquityCampaign && amount > 0) {
+      const fee = Math.min(amount * 0.07, 300);
       setProcessingFee(fee);
       setTotalAmount(amount + fee);
     } else {
       setProcessingFee(0);
-      setTotalAmount(parseFloat(paymentAmount) || 0);
+      setTotalAmount(amount);
     }
   }, [paymentAmount, isEquityCampaign]);
 
-  // Trigger toast visibility when error changes
+  // Handle errors and show toast
   useEffect(() => {
-    const error = isEquityCampaign ? investmentError : donationError;
-    if (error) {
+    if (donationError) {
+      setToastMessage(donationError);
+      setToastType('error');
       setShowToast(true);
-    } else {
-      setShowToast(false);
     }
-  }, [donationError, investmentError, isEquityCampaign]);
+  }, [donationError]);
+
+  const handleToastClose = () => {
+    setShowToast(false);
+    if (!isEquityCampaign) {
+      clearDonationError();
+    }
+  };
+
+  const validateForm = (): boolean => {
+    if (!isPaymentFormValidated()) {
+      return false;
+    }
+
+    const amount = parseFloat(paymentAmount);
+    if (isNaN(amount) || amount <= 0) {
+      setToastMessage('Please enter a valid amount greater than 0');
+      setToastType('error');
+      setShowToast(true);
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleDonationPayment = async () => {
+    if (!validateForm()) return;
+
+    const amount = parseFloat(paymentAmount);
+    const transactionData: DonationTransactionData = {
+      email: paymentEmail,
+      fullName: cardholderName,
+      phoneNumber: paymentPhone,
+      amount: amount,
+      campaignId: campaignId,
+      campaignTitle: campaignTitle,
+      billingFrequency: billingFrequency,
+      metadata: {
+        shippingData: shippingData,
+        selectedRewards: selectedRewards?.map((reward) => ({
+          ...reward,
+          image: reward.image ?? '',
+        })),
+        deliveryOption: deliveryOption,
+      },
+    };
+
+    try {
+      await createDonationTransaction(transactionData);
+      // The redirection will happen within the context
+    } catch (error) {
+      // Error is already handled in the context
+    }
+  };
+
+  const handleEquityInvestment = async () => {
+    if (!validateForm()) return;
+
+    const amount = parseFloat(paymentAmount);
+    try {
+      const investmentData = {
+        amount: totalAmount,
+        email: paymentEmail,
+        phone: paymentPhone,
+        full_name: cardholderName,
+        metadata: {
+          processingFee,
+          originalAmount: amount,
+          shippingData,
+          selectedRewards,
+          deliveryOption,
+        },
+      };
+
+      const result = await createInvestment(campaignId, investmentData);
+
+      if (!result.success) {
+        let errorMessage = result.error || 'Investment failed';
+
+        // Special handling for share availability errors
+        if (result.data?.shares_available !== undefined) {
+          const pricePerShare =
+            result.data.shares_available > 0
+              ? (totalAmount / result.data.shares_available).toFixed(2)
+              : 0;
+          errorMessage += `. Current share price: ${pricePerShare}`;
+        }
+
+        if (result.validationErrors) {
+          errorMessage = Object.entries(result.validationErrors)
+            .map(([field, messages]) => {
+              const message = Array.isArray(messages)
+                ? messages.join(', ')
+                : messages;
+              return `${field.charAt(0).toUpperCase() + field.slice(1)}: ${message}`;
+            })
+            .join('\n');
+        }
+
+        if (result.code) {
+          errorMessage += ` (Code: ${result.code})`;
+        }
+
+        setToastMessage(errorMessage);
+        setToastType('error');
+        setShowToast(true);
+      } else {
+        // Handle successful investment
+        setToastMessage('Investment created successfully!');
+        setToastType('success');
+        setShowToast(true);
+      }
+    } catch (error) {
+      setToastMessage('An unexpected error occurred. Please try again.');
+      setToastType('error');
+      setShowToast(true);
+    }
+  };
 
   const handlePayment = async () => {
     setShowToast(false);
-    setInvestmentError('');
-    if (!validatePaystackForm()) return;
-
-    const amount = parseFloat(paymentAmount);
-    if (isNaN(amount) || amount <= 0) return;
 
     if (isEquityCampaign) {
-      try {
-        const investmentData = {
-          amount: totalAmount,
-          email: paymentEmail,
-          phone: paymentPhone,
-          full_name: cardholderName,
-          metadata: {
-            ...(combinedMetadata || {}),
-            processingFee,
-            originalAmount: amount,
-          },
-        };
-
-        const result = await createInvestment(campaignId, investmentData);
-
-        if (!result.success) {
-          let errorMessage = result.error || 'Investment failed';
-
-          // Special handling for share availability errors
-          if (result.data?.shares_available !== undefined) {
-            const pricePerShare =
-              result.data.shares_available > 0
-                ? (totalAmount / result.data.shares_available).toFixed(2)
-                : 0;
-            errorMessage += `. Current share price: ${pricePerShare}`;
-          }
-
-          if (result.validationErrors) {
-            errorMessage = Object.entries(result.validationErrors)
-              .map(([field, messages]) => {
-                const message = Array.isArray(messages)
-                  ? messages.join(', ')
-                  : messages;
-                return `${field.charAt(0).toUpperCase() + field.slice(1)}: ${message}`;
-              })
-              .join('\n');
-          }
-
-          if (result.code) {
-            errorMessage += ` (Code: ${result.code})`;
-          }
-
-          setInvestmentError(errorMessage);
-          setShowToast(true);
-        }
-      } catch (error) {
-        setInvestmentError('An unexpected error occurred. Please try again.');
-        setShowToast(true);
-      }
+      await handleEquityInvestment();
     } else {
-      createDonationTransaction(
-        paymentEmail,
-        cardholderName,
-        paymentPhone,
-        Number(paymentAmount),
-        campaignId,
-        campaignTitle,
-        billingFrequency,
-        combinedMetadata,
-      );
+      await handleDonationPayment();
     }
   };
 
   const loading = isEquityCampaign ? investmentLoading : donationLoading;
-  const error = isEquityCampaign ? investmentError : donationError;
 
   return (
     <div className="flex flex-col h-full">
       {/* Scrollable form content */}
       <div className="flex-grow overflow-y-auto p-4">
-        {showToast && (error || investmentError) && (
+        {showToast && (
           <ToastComponent
-            type="error"
+            type={toastType}
             isOpen={showToast}
-            onClose={() => setShowToast(false)}
-            description={(isEquityCampaign ? investmentError : error) || ''}
+            onClose={handleToastClose}
+            description={toastMessage}
           />
         )}
 
@@ -181,12 +243,16 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
               htmlFor="cardholderName"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              Name
+              Full Name
             </label>
             <input
               type="text"
               id="cardholderName"
-              className={`w-full px-4 py-3 border rounded-lg ${errors.cardholderName ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                errors.cardholderName
+                  ? 'border-red-500 ring-2 ring-red-500'
+                  : 'border-gray-300'
+              }`}
               placeholder="John Doe"
               value={cardholderName}
               onChange={(e) => setCardholderName(e.target.value)}
@@ -210,12 +276,16 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
               htmlFor="paymentEmail"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              Email
+              Email Address
             </label>
             <input
               type="email"
               id="paymentEmail"
-              className={`w-full px-4 py-3 border ${errors.paymentEmail ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                errors.paymentEmail
+                  ? 'border-red-500 ring-2 ring-red-500'
+                  : 'border-gray-300'
+              }`}
               placeholder="you@example.com"
               value={paymentEmail}
               onChange={(e) => setPaymentEmail(e.target.value)}
@@ -237,13 +307,13 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
               htmlFor="paymentPhone"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              Phone
+              Phone Number
             </label>
             <input
-              type="text"
+              type="tel"
               id="paymentPhone"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-              placeholder="Enter your phone number"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="+233 XX XXX XXXX"
               value={paymentPhone}
               onChange={(e) => setPaymentPhone(e.target.value)}
             />
@@ -254,15 +324,21 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
               htmlFor="paymentAmount"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              Amount
+              Investment Amount (GHS)
             </label>
             <input
-              type="text"
+              type="number"
               id="paymentAmount"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-              placeholder="Enter your amount"
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                errors.paymentAmount
+                  ? 'border-red-500 ring-2 ring-red-500'
+                  : 'border-gray-300'
+              }`}
+              placeholder="0.00"
               value={paymentAmount}
               onChange={(e) => setPaymentAmount(e.target.value)}
+              min="1"
+              step="0.01"
               aria-invalid={!!errors.paymentAmount}
               aria-describedby={
                 errors.paymentAmount ? 'paymentAmount-error' : undefined
@@ -277,19 +353,36 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
           </div>
 
           {isEquityCampaign && (
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="flex justify-between mb-2">
-                <span className="text-gray-600">Processing Fee (7%):</span>
-                <span className="font-medium">
-                  {processingFee.toFixed(2)} GHS
-                </span>
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h3 className="font-semibold text-blue-800 mb-3">
+                Fee Breakdown
+              </h3>
+
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Investment Amount:</span>
+                  <span className="font-medium">
+                    {parseFloat(paymentAmount || '0').toFixed(2)} GHS
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Processing Fee (7%):</span>
+                  <span className="font-medium">
+                    {processingFee.toFixed(2)} GHS
+                  </span>
+                </div>
+
+                <div className="border-t border-blue-200 pt-2 mt-2">
+                  <div className="flex justify-between font-semibold text-blue-800">
+                    <span>Total Amount:</span>
+                    <span>{totalAmount.toFixed(2)} GHS</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between font-semibold">
-                <span>Total Amount:</span>
-                <span>{totalAmount.toFixed(2)} GHS</span>
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                *Processing fee is capped at 300 GHS for equity campaigns
+
+              <p className="text-xs text-blue-600 mt-3">
+                *Processing fee is capped at 300 GHS for equity investments
               </p>
             </div>
           )}
@@ -301,11 +394,43 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         <button
           type="button"
           onClick={handlePayment}
-          className="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 disabled:bg-gray-400 text-lg font-medium"
-          disabled={loading}
+          disabled={loading || !paymentAmount || parseFloat(paymentAmount) <= 0}
+          className="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200 text-lg font-medium focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
         >
-          {loading ? 'Processing...' : 'Proceed to Pay'}
+          {loading ? (
+            <span className="flex items-center justify-center">
+              <svg
+                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Processing...
+            </span>
+          ) : (
+            `Proceed to ${isEquityCampaign ? 'Invest' : 'Pay'}`
+          )}
         </button>
+
+        {isEquityCampaign && (
+          <p className="text-xs text-gray-500 mt-2 text-center">
+            You will complete your investment on the next page
+          </p>
+        )}
       </div>
     </div>
   );

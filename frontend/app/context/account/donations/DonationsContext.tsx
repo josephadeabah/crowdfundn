@@ -2,6 +2,10 @@ import {
   Donation,
   DonationsState,
   Pagination,
+  DonationTransactionData,
+  DonationMetadata,
+  ShippingData,
+  BillingFrequency,
 } from '@/app/types/donations.types';
 import React, {
   createContext,
@@ -32,7 +36,10 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
 
   const handleApiError = (errorText: string) => {
     setError(`Oops!: ${errorText}`);
+    console.error('Donation Error:', errorText);
   };
+
+  const clearError = () => setError(null);
 
   // Fetch all donations for the fundraiser (requires authentication)
   const fetchDonations = useCallback(
@@ -43,6 +50,8 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       }
 
       setLoading(true);
+      clearError();
+
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/donations?page=${currentPage}&per_page=${perPage}`,
@@ -56,21 +65,20 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
-          handleApiError(errorText);
+          const errorData = await response
+            .json()
+            .catch(() => ({ error: 'Unknown error' }));
+          handleApiError(errorData.error || 'Failed to fetch donations');
           return;
         }
 
         const data = await response.json();
         setDonations(data.donations);
-        setPagination({
-          current_page: data.pagination.current_page,
-          total_pages: data.pagination.total_pages,
-          per_page: data.pagination.per_page,
-          total_count: data.pagination.total_count,
-        });
+        setPagination(data.pagination);
       } catch (err) {
-        handleApiError('Error fetching donations. Please try again later.');
+        handleApiError(
+          'Network error fetching donations. Please try again later.',
+        );
       } finally {
         setLoading(false);
       }
@@ -86,6 +94,8 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       perPage: number = 10,
     ) => {
       setLoading(true);
+      clearError();
+
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/public_donations?page=${currentPage}&per_page=${perPage}`,
@@ -98,22 +108,19 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
-          handleApiError(errorText);
+          const errorData = await response
+            .json()
+            .catch(() => ({ error: 'Unknown error' }));
+          handleApiError(errorData.error || 'Failed to fetch public donations');
           return;
         }
 
         const data = await response.json();
         setDonations(data.donations);
-        setPagination({
-          current_page: data.pagination.current_page,
-          total_pages: data.pagination.total_pages,
-          per_page: data.pagination.per_page,
-          total_count: data.pagination.total_count,
-        });
+        setPagination(data.pagination);
       } catch (err) {
         handleApiError(
-          'Error fetching public donations. Please try again later.',
+          'Network error fetching public donations. Please try again later.',
         );
       } finally {
         setLoading(false);
@@ -122,120 +129,124 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
     [],
   );
 
-  // Create Donation Transaction
-  const createDonationTransaction = async (
-    email: string,
-    fullName: string,
-    phoneNumber: string,
+  // Create subscription plan for recurring donations
+  const createSubscriptionPlan = async (
     amount: number,
-    campaignId: string,
+    interval: BillingFrequency,
     campaignTitle: string,
-    billingFrequency: string | null, // Make billingFrequency nullable
-    combinedMetadata?: {
-      shippingData: {
-        firstName: string;
-        lastName: string;
-        shippingAddress: string;
-        entityType: string;
-      };
-      selectedRewards: Reward[];
-      deliveryOption: 'home' | 'pickup' | null;
-    },
-  ) => {
+  ): Promise<string | null> => {
     try {
-      setLoading(true);
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-
-      if (user) {
-        headers.Authorization = `Bearer ${token}`;
-      }
-
-      // Step 1: Create subscription plan ONLY if billingFrequency exists
-      if (billingFrequency && billingFrequency !== 'once') {
-        try {
-          const subscriptionResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/subscriptions/create_plan`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                amount: amount,
-                interval: billingFrequency,
-                name: campaignTitle,
-              }),
-            },
-          );
-
-          if (!subscriptionResponse.ok) {
-            throw new Error('Failed to create subscription plan');
-          }
-
-          const subscriptionData = await subscriptionResponse.json();
-          planCodeRef.current = subscriptionData.plan?.plan_code;
-        } catch (error) {
-          handleApiError(
-            'Creating your subscription failed! Proceeding with one-time donation.',
-          );
-          // Clear any potentially invalid plan code
-          planCodeRef.current = null;
-        }
-      } else {
-        // Clear plan code for one-time donations
-        planCodeRef.current = null;
-      }
-
-      // Step 2: Create donation transaction
-      const donationResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/subscriptions/create_plan`,
         {
           method: 'POST',
-          headers,
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify({
-            donation: {
-              amount: amount,
-              email: email,
-              full_name: fullName,
-              phone: phoneNumber,
-              metadata: combinedMetadata || {},
-              plan: planCodeRef.current, // Will be null for one-time donations
-            },
+            amount,
+            interval,
+            name: campaignTitle,
           }),
         },
       );
 
-      const donationData = await donationResponse.json();
+      if (!response.ok) {
+        throw new Error('Failed to create subscription plan');
+      }
 
-     // Step 3: Redirect to Paystack Checkout
+      const data = await response.json();
+      return data.plan?.plan_code || null;
+    } catch (error) {
+      console.warn('Subscription plan creation failed:', error);
+      return null;
+    }
+  };
+
+  // Create Donation Transaction
+  const createDonationTransaction = async (
+    transactionData: DonationTransactionData,
+  ) => {
+    const {
+      email,
+      fullName,
+      phoneNumber,
+      amount,
+      campaignId,
+      campaignTitle,
+      billingFrequency,
+      metadata,
+    } = transactionData;
+
+    setLoading(true);
+    clearError();
+
+    try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (user && token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      // Step 1: Create subscription plan for recurring donations
+      let planCode: string | null = null;
+      if (billingFrequency && billingFrequency !== 'once') {
+        planCode = await createSubscriptionPlan(
+          amount,
+          billingFrequency,
+          campaignTitle,
+        );
+        if (!planCode) {
+          throw new Error('Failed to create subscription plan');
+        }
+      }
+
+      // Step 2: Create donation transaction
+      const donationPayload = {
+        donation: {
+          amount,
+          email,
+          full_name: fullName,
+          phone: phoneNumber,
+          plan: planCode,
+          metadata: metadata || {},
+        },
+      };
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/donations`,
+        {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(donationPayload),
+        },
+      );
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          responseData.error || 'Failed to create donation transaction',
+        );
+      }
+
+      // Step 3: Redirect to Paystack Checkout
       const authorizationUrl =
-        donationData.authorization_url ||
-        donationData.data?.authorization_url ||
-        donationData.donation?.authorization_url;
+        responseData.authorization_url || responseData.data?.authorization_url;
 
       if (authorizationUrl) {
         window.location.href = authorizationUrl;
       } else {
-        handleApiError(
-          'We could not initiate your payment at this time. Please try again later.',
-        );
-      }
-
-
-      // ✅ authorization_url is inside donationData.data
-      const { authorization_url } = donationData;
-
-      if (authorization_url) {
-        window.location.href = authorization_url;
-      } else {
-        handleApiError(
-          'We could not initiate your payment at this time. Please try again later.',
-        );
+        throw new Error('No authorization URL received from server');
       }
     } catch (error) {
-      handleApiError('Error initiating donation. Please try again later.');
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Error initiating donation. Please try again later.';
+      handleApiError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -248,8 +259,9 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       error,
       pagination,
       fetchDonations,
-      fetchPublicDonations, // Add the public donations fetch here
+      fetchPublicDonations,
       createDonationTransaction,
+      clearError,
     }),
     [
       donations,
@@ -257,7 +269,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       error,
       pagination,
       fetchDonations,
-      fetchPublicDonations, // Add the public donations fetch here
+      fetchPublicDonations,
       createDonationTransaction,
     ],
   );

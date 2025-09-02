@@ -1,5 +1,24 @@
-import { Reward } from '../context/account/rewards/RewardsContext';
-import { SingleCampaignResponseDataType } from './campaigns.types';
+import { Reward } from './campaigns.types';
+
+// app/types/donations.types.ts
+export interface Donation {
+  id: string;
+  amount: number;
+  gross_amount: number;
+  currency: string;
+  currency_symbol: string;
+  date: string;
+  email: string;
+  full_name: string;
+  phone?: string;
+  status: 'pending' | 'successful' | 'failed' | 'initialized';
+  created_at: string;
+  transaction_reference?: string;
+  subscription_code?: string;
+  user_id?: string;
+  campaign_id: string;
+  metadata?: Record<string, any>;
+}
 
 export interface Pagination {
   current_page: number;
@@ -7,76 +26,53 @@ export interface Pagination {
   per_page: number;
   total_count: number;
 }
-// Refactored Donation interface
-export interface Donation {
-  id: number; // Donation ID
-  amount: string;
-  campaign_id: number;
-  user_id: number | null;
-  full_name: string;
-  email: string;
-  phone: string;
-  date: string;
-  transaction_reference: string;
-  status: 'successful';
-  transaction_status: string;
-  gross_amount: string;
-  net_amount: number;
-  created_at: string;
-  updated_at: string;
-  metadata: {
-    session_token: string;
-    custom_data: string;
-    campaign: SingleCampaignResponseDataType;
-    campaign_metadata: SingleCampaignResponseDataType;
-  };
-  donation: {
-    message: string;
-    status: 'successful'; // Donation status as a fixed string
-    amount: string; // Amount as string (if received as a string, otherwise change to number)
-    campaign_id: number; // Campaign ID that the donation is for
-    id: number; // Donation ID (duplicate, may be removed if redundant)
-    user_id: number | null; // User ID who made the donation, nullable
-    transaction_reference: string; // Unique reference for the transaction
-    total_donations: number; // Total donations received
-    metadata: {
-      custom_data: string; // Additional custom data for the donation
-    };
-    created_at: string; // Donation creation timestamp
-    updated_at: string; // Donation last updated timestamp
-  };
-  campaign: SingleCampaignResponseDataType; // Campaign details associated with the donation
-  reference: string; // Reference string (either `reference` or `trxref`)
-}
 
 export interface DonationsState {
   donations: Donation[];
   loading: boolean;
   error: string | null;
   pagination: Pagination;
-  createDonationTransaction: (
-    email: string,
-    fullName: string,
-    phoneNumber: string,
-    amount: number,
-    campaignId: string,
-    campaignTitle: string,
-    billingFrequency: string,
-    combinedMetadata?: {
-      shippingData: {
-        firstName: string;
-        lastName: string;
-        shippingAddress: string;
-        entityType: string;
-      };
-      selectedRewards: Reward[];
-      deliveryOption: 'home' | 'pickup' | null;
-    },
-  ) => Promise<void>;
-  fetchDonations: (currentPage: number, perPage: number) => Promise<void>;
+  fetchDonations: (page?: number, perPage?: number) => Promise<void>;
   fetchPublicDonations: (
     campaignId: string,
-    currentPage: number,
-    perPage: number,
+    page?: number,
+    perPage?: number,
   ) => Promise<void>;
+  createDonationTransaction: (
+    transactionData: DonationTransactionData,
+  ) => Promise<void>;
+  clearError: () => void;
+}
+
+export type BillingFrequency =
+  | 'once'
+  | 'daily'
+  | 'weekly'
+  | 'monthly'
+  | 'quarterly'
+  | 'yearly';
+
+export interface ShippingData {
+  firstName: string;
+  lastName: string;
+  shippingAddress: string;
+  entityType: string;
+}
+
+export interface DonationMetadata {
+  shippingData?: ShippingData;
+  selectedRewards?: Reward[];
+  deliveryOption?: 'home' | 'pickup' | null;
+  anonymousToken?: string;
+}
+
+export interface DonationTransactionData {
+  email: string;
+  fullName: string;
+  phoneNumber: string;
+  amount: number;
+  campaignId: string;
+  campaignTitle: string;
+  billingFrequency: BillingFrequency | null;
+  metadata?: DonationMetadata;
 }

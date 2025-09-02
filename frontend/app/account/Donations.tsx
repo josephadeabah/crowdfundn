@@ -169,13 +169,13 @@ export default function Donations() {
       let currency: string;
 
       if (type === 'donation') {
-        const donation = donations.find((d) => d.id === numericId);
+        const donation = donations.find((d) => Number(d.id) === numericId);
         if (!donation) {
           throw new Error('Donation not found');
         }
         email = donation.email;
         fullName = donation.full_name || 'Anonymous';
-        amount = parseFloat(donation.gross_amount);
+        amount = parseFloat(donation.gross_amount.toString());
         campaignTitle =
           donation.metadata?.campaign_metadata?.title || 'Unknown Campaign';
         currency = donation.metadata?.campaign_metadata?.currency || 'GHS';
@@ -252,7 +252,7 @@ export default function Donations() {
             backersToEmail.push({
               email: donation.email,
               full_name: donation.full_name || 'Anonymous',
-              amount: parseFloat(donation.gross_amount),
+              amount: parseFloat(donation.gross_amount.toString()),
               campaign_title:
                 donation.metadata?.campaign_metadata?.title ||
                 'Unknown Campaign',
@@ -287,12 +287,12 @@ export default function Donations() {
           const numericId = parseInt(id);
 
           if (type === 'donation') {
-            const donation = donations.find((d) => d.id === numericId);
+            const donation = donations.find((d) => Number(d.id) === numericId);
             if (donation && donation.status === 'successful') {
               backersToEmail.push({
                 email: donation.email,
                 full_name: donation.full_name || 'Anonymous',
-                amount: parseFloat(donation.gross_amount),
+                amount: parseFloat(donation.gross_amount.toString()),
                 campaign_title:
                   donation.metadata?.campaign_metadata?.title ||
                   'Unknown Campaign',
@@ -496,7 +496,7 @@ export default function Donations() {
                           backerId={backerId}
                           type="donation"
                           backerName={donation.full_name || 'Anonymous'}
-                          amount={parseFloat(donation.gross_amount)}
+                          amount={parseFloat(donation.gross_amount.toString())}
                           currency={
                             campaign.currency ||
                             campaign.currency_symbol ||
