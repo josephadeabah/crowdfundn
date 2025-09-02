@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import { AlertTriangle, AlertTriangleIcon, X, XIcon } from 'lucide-react';
+import { AlertTriangle, X } from 'lucide-react';
 import { cn } from '@/app/lib/utils';
 import { Button } from '@/app/components/ui/button';
 
@@ -27,9 +27,9 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
   if (!isVisible) return null;
 
   return (
-   <div
+    <div
       className={cn(
-        'bg-warning-banner border-warning-banner-border border-b text-warning-banner-foreground',
+        'bg-gray-200 border-b border-gray-300 text-black',
         'px-4 py-3 md:px-6 md:py-4',
         className
       )}
@@ -40,7 +40,7 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0 mt-0.5">
             <AlertTriangle 
-              className="h-5 w-5 text-warning-banner-accent" 
+              className="h-5 w-5 text-amber-600" 
               aria-hidden="true"
             />
           </div>
@@ -67,7 +67,7 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
                 variant="ghost"
                 size="icon"
                 onClick={handleDismiss}
-                className="h-8 w-8 text-warning-banner-foreground hover:bg-warning-banner-foreground/10"
+                className="h-8 w-8 text-gray-600 hover:bg-gray-300 hover:text-gray-800"
                 aria-label="Dismiss warning"
               >
                 <X className="h-4 w-4" />
