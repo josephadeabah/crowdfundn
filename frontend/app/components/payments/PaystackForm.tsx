@@ -360,7 +360,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
 
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Investment Amount:</span>
+                  <span className="text-gray-600">{isEquityCampaign ? 'Investment Amount:' : 'Donation Amount'}</span>
                   <span className="font-medium">
                     {parseFloat(paymentAmount || '0').toFixed(2)} GHS
                   </span>
