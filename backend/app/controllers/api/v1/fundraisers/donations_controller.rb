@@ -38,15 +38,30 @@ module Api
         end
 
         def create
+          # Build donation but don't save it yet (transaction_reference is required)
           donation = build_donation
           
-          if donation.save
-            initialize_payment(donation)
+          # Initialize payment first to get transaction reference
+          payment_response = initialize_payment(donation)
+          
+          if payment_response[:status]
+            # Now we have transaction_reference, update donation and save
+            update_donation_for_success(donation, payment_response)
+            
+            if donation.save
+              render_success_response(donation, payment_response)
+            else
+              render json: { 
+                error: 'Donation creation failed after payment initialization', 
+                details: donation.errors.full_messages 
+              }, status: :unprocessable_entity
+            end
           else
-            render json: { 
-              error: 'Donation creation failed', 
-              details: donation.errors.full_messages 
-            }, status: :unprocessable_entity
+            # Payment initialization failed, create a failed donation record
+            donation.status = Donation::STATUS_FAILED
+            donation.save(validate: false) # Skip validation for failed donations
+            
+            render_payment_error(payment_response)
           end
         end
 
@@ -93,7 +108,7 @@ module Api
         def initialize_payment(donation)
           paystack_service = PaystackService.new
           
-          response = paystack_service.initialize_transaction(
+          paystack_service.initialize_transaction(
             email: donation.email,
             amount: donation.amount,
             plan: donation.plan,
@@ -102,14 +117,6 @@ module Api
             subaccount: @subaccount_code,
             currency: donation.campaign.currency.upcase
           )
-
-          if response[:status]
-            update_donation_for_success(donation, response)
-            render_success_response(donation, response)
-          else
-            update_donation_for_failure(donation)
-            render_payment_error(response)
-          end
         end
 
         def build_metadata(donation)
@@ -117,7 +124,7 @@ module Api
           fundraiser = campaign.fundraiser
           
           {
-            donation_id: donation.id,
+            donation_id: donation.id || 'pending', # Use 'pending' if donation not saved yet
             user_id: donation.user_id,
             campaign_id: campaign.id,
             donor_name: donation.full_name,
@@ -147,12 +154,10 @@ module Api
           donation.transaction_reference = response[:data][:reference]
           donation.subscription_code = donation.plan if donation.plan.present?
           donation.status = Donation::STATUS_INITIALIZED
-          donation.save
         end
 
         def update_donation_for_failure(donation)
           donation.status = Donation::STATUS_FAILED
-          donation.save
         end
 
         def render_success_response(donation, response)
