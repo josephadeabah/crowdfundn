@@ -106,6 +106,7 @@ module Api
           donation.amount = params[:donation][:amount]
           donation.phone = params[:donation][:phone]
           donation.plan = params[:donation][:plan]
+          donation.metadata = donation.metadata.merge(params[:donation][:metadata] || {}) if donation.metadata.is_a?(Hash)
           
           donation
         end
