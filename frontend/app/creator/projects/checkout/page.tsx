@@ -10,6 +10,7 @@ import { jwtVerify } from 'jose'; // Import jwtVerify
 import { FundraiserDetails } from '@/app/components/selectreward/RewardSelection';
 import { Reward } from '@/app/context/account/rewards/RewardsContext';
 import { useAuth } from '@/app/context/auth/AuthContext'; // Import useAuth
+import { BillingFrequency } from '@/app/types/donations.types';
 
 const CheckoutPageContent = () => {
   const searchParams = useSearchParams();
@@ -17,7 +18,7 @@ const CheckoutPageContent = () => {
     selectedRewards: Reward[];
     allRewards: Reward[];
     fundraiser: FundraiserDetails;
-    billingFrequency: string;
+    billingFrequency: BillingFrequency | null;
     selectedTier: string;
   } | null>(null);
 
@@ -36,7 +37,7 @@ const CheckoutPageContent = () => {
   // Payment form state
   const campaignId = data?.fundraiser.campaignId || '';
   const campaignTitle = data?.fundraiser.campaignTitle || '';
-  const billingFrequency = data?.billingFrequency || '';
+  const billingFrequency = data?.billingFrequency || null;
   const selectedTier = data?.selectedTier || '';
   const campaignCurrency = data?.fundraiser.campaignCurrency || '';
 
@@ -78,7 +79,7 @@ const CheckoutPageContent = () => {
             selectedRewards: Reward[];
             allRewards: Reward[];
             fundraiser: FundraiserDetails;
-            billingFrequency: string;
+            billingFrequency: BillingFrequency | null;
             selectedTier: string;
             isEquityCampaign?: boolean; // Add this field
           };
@@ -528,7 +529,14 @@ const CheckoutPageContent = () => {
               setPaymentEmail={setPaymentEmail}
               setPaymentPhone={setPaymentPhone}
               setPaymentAmount={setPaymentAmount}
-              combinedMetadata={combinedMetadata}
+              shippingData={{
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                shippingAddress: formData.shippingAddress,
+                entityType: formData.entityType,
+              }}
+              selectedRewards={data?.selectedRewards || []}
+              deliveryOption={deliveryOption}
               isEquityCampaign={isEquityCampaign}
             />
           </div>
