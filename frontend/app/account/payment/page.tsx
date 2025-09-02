@@ -80,7 +80,7 @@ const PaymentPageContent = () => {
             'frequency' in payload.billing
           ) {
             setPaymentAmount(String(payload.billing.amount) || '');
-            setBillingFrequency(String(payload.billing.frequency) || '');
+            setBillingFrequency(payload.billing.frequency as BillingFrequency);
           }
           if (payload.fundraiserDetails) {
             const { id, campaignId, campaignTitle } =
