@@ -519,30 +519,62 @@ const EquityInvestments = () => {
         <div className="space-y-4">
           {portfolio.investments
             ?.slice(0, 3)
-            .map((investment: EquityInvestment) => (
-              <div
-                key={investment.id}
-                className="border-b border-gray-200 dark:border-gray-700 pb-4"
-              >
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Invested{' '}
-                  {formatCurrency(
-                    parseNumber(investment.amount),
-                    investment.currency || user?.currency,
-                    investment.currency_symbol || user?.currency_symbol,
-                  )}{' '}
-                  in{' '}
-                  {investment.campaign?.title ||
-                    `Campaign ${investment.campaign_id}`}
-                  for{' '}
-                  {parseNumber(investment.shares)?.toLocaleString()} shares (
-                  {parseNumber(investment.percentage)?.toFixed(4)}%)
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-500">
-                  {format(new Date(investment.created_at), 'MMM dd, yyyy')}
-                </p>
-              </div>
-            ))}
+            .map((investment: EquityInvestment) => {
+              const amount = formatCurrency(
+                parseNumber(investment.amount),
+                investment.currency || user?.currency,
+                investment.currency_symbol || user?.currency_symbol,
+              );
+
+              const campaignName =
+                investment.campaign?.title ||
+                `Campaign #${investment.campaign_id}`;
+              const shares = parseNumber(investment.shares)?.toLocaleString();
+              const percentage = parseNumber(investment.percentage)?.toFixed(4);
+              const certificate = investment.certificate_number;
+              const date = format(
+                new Date(investment.created_at),
+                'MMM dd, yyyy',
+              );
+
+              return (
+                <div
+                  key={investment.id}
+                  className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-b-0"
+                >
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    Invested{' '}
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">
+                      {amount}
+                    </span>{' '}
+                    in{' '}
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">
+                      {campaignName}
+                    </span>
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    <div>
+                      <span className="font-medium">Shares:</span> {shares}
+                    </div>
+                    <div>
+                      <span className="font-medium">Equity:</span> {percentage}%
+                    </div>
+                  </div>
+
+                  {certificate && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                      <span className="font-medium">Certificate:</span>{' '}
+                      {certificate}
+                    </p>
+                  )}
+
+                  <p className="text-xs text-gray-500 dark:text-gray-500">
+                    Invested on {date}
+                  </p>
+                </div>
+              );
+            })}
         </div>
       </div>
     </div>
