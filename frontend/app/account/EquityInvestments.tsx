@@ -534,6 +534,9 @@ const EquityInvestments = () => {
                   in{' '}
                   {investment.campaign?.title ||
                     `Campaign ${investment.campaign_id}`}
+                  for{' '}
+                  {parseNumber(investment.shares)?.toLocaleString()} shares (
+                  {parseNumber(investment.percentage)?.toFixed(4)}%)
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-500">
                   {format(new Date(investment.created_at), 'MMM dd, yyyy')}
