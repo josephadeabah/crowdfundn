@@ -176,7 +176,6 @@ class EquityCampaign < Campaign
     authenticated_investors + anonymous_investors
   end
 
-  # In your EquityCampaign model
   def create_investment(user, amount)
     Rails.logger.info "Creating investment: user_id=#{user&.id}, amount=#{amount}, campaign_id=#{id}"
     
@@ -186,7 +185,9 @@ class EquityCampaign < Campaign
       
       price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
       shares = (amount / price_per_share).round(4)
-      percentage = ((amount / (campaign.valuation.to_f * campaign.equity_offered.to_f / 100)) * 100).round(4)
+      
+      # FIXED: Correct percentage calculation
+      percentage = ((amount / campaign.valuation.to_f) * 100).round(4)
       
       Rails.logger.info "Calculated: price_per_share=#{price_per_share}, shares=#{shares}, percentage=#{percentage}"
       Rails.logger.info "Campaign limits: shares_available=#{campaign.shares_available}, percentage_available=#{campaign.percentage_available}"
@@ -199,6 +200,7 @@ class EquityCampaign < Campaign
         return nil
       end
       
+      # FIXED: Compare against percentage_available, not equity_offered
       if percentage > campaign.percentage_available
         error_msg = "Not enough equity percentage available for this investment (requested: #{percentage}%, available: #{campaign.percentage_available}%)"
         Rails.logger.error error_msg

@@ -170,8 +170,8 @@ class EquityInvestment < ApplicationRecord
     price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
     self.shares = (amount / price_per_share).round(4)
 
-    total_equity_value = (campaign.valuation.to_f * campaign.equity_offered.to_f / 100)
-    self.percentage = ((amount / total_equity_value) * 100).round(4)
+    # FIXED: Correct percentage calculation
+    self.percentage = ((amount / campaign.valuation.to_f) * 100).round(4)
   end
 
   def investor_signature_url
