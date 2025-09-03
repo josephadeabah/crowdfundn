@@ -543,7 +543,7 @@ const EquityInvestments = () => {
                   className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-b-0"
                 >
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    Invested{' '}
+                    You invested{' '}
                     <span className="font-semibold text-gray-900 dark:text-gray-100">
                       {amount}
                     </span>{' '}
