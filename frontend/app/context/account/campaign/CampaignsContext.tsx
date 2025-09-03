@@ -50,6 +50,11 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     CampaignResponseDataType[]
   >([]);
 
+  const resetCurrentCampaign = useCallback(() => {
+    setCurrentCampaign(null);
+    setLoading(true);
+  }, []);
+
   const handleApiError = (errorText: string) => {
     setError(errorText);
   };
@@ -746,6 +751,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       favoriteCampaign, // Add favoriteCampaign to context
       unfavoriteCampaign, // Add unfavoriteCampaign to context
       fetchFavoritedCampaigns, // Add fetchFavoritedCampaigns to context
+      resetCurrentCampaign,
     }),
     [
       campaigns,
@@ -770,6 +776,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       favoriteCampaign, // Include favoriteCampaign in memoization
       unfavoriteCampaign, // Include unfavoriteCampaign in memoization
       fetchFavoritedCampaigns, // Include fetchFavoritedCampaigns in memoization
+      resetCurrentCampaign,
     ],
   );
 

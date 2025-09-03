@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
@@ -29,28 +29,33 @@ const SingleCampaignPage: React.FC = () => {
     description: '',
     type: 'success' as 'success' | 'error' | 'warning',
   });
+  const [localLoading, setLocalLoading] = useState(true);
 
   const tabsRef = useRef<HTMLDivElement>(null);
   const { slugOrId } = useParams() as { slugOrId: string };
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
 
-  const { currentCampaign, fetchCampaignById, loading } = useCampaignContext();
+  const { currentCampaign, fetchCampaignById, loading, resetCurrentCampaign } =
+    useCampaignContext();
   const { user } = useAuth();
   const { fetchPublicDonations } = useDonationsContext();
 
-  const showToast = (
-    title: string,
-    description: string,
-    type: 'success' | 'error' | 'warning',
-  ) => {
-    setToast({
-      isOpen: true,
-      title,
-      description,
-      type,
-    });
-  };
+  const showToast = useCallback(
+    (
+      title: string,
+      description: string,
+      type: 'success' | 'error' | 'warning',
+    ) => {
+      setToast({
+        isOpen: true,
+        title,
+        description,
+        type,
+      });
+    },
+    [],
+  );
 
   useEffect(() => {
     if (tabParam === 'donate') {
@@ -59,18 +64,50 @@ const SingleCampaignPage: React.FC = () => {
   }, [tabParam]);
 
   useEffect(() => {
-    if (slugOrId) {
-      fetchCampaignById(slugOrId);
-      fetchPublicDonations(slugOrId, 1, 10);
-    }
-  }, [slugOrId, fetchCampaignById, fetchPublicDonations]);
+    let isMounted = true;
 
-  if (loading) return <SingleCampaignLoader />;
+    const loadData = async () => {
+      if (!slugOrId) return;
+
+      setLocalLoading(true);
+      try {
+        await Promise.all([
+          fetchCampaignById(slugOrId),
+          fetchPublicDonations(slugOrId, 1, 10),
+        ]);
+
+        if (isMounted) {
+          setLocalLoading(false);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setLocalLoading(false);
+          showToast('Error', 'Failed to load campaign data', 'error');
+        }
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+      // Reset campaign when component unmounts
+      resetCurrentCampaign?.();
+    };
+  }, [
+    slugOrId,
+    fetchCampaignById,
+    fetchPublicDonations,
+    resetCurrentCampaign,
+    showToast,
+  ]);
+
+  if (loading || localLoading) return <SingleCampaignLoader />;
 
   const isEquityCampaign = currentCampaign?.type === 'EquityCampaign';
 
   return (
-    <div className="min-h-screen w-full bg-white">
+    <div key={slugOrId} className="min-h-screen w-full bg-white">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
@@ -101,8 +138,8 @@ const SingleCampaignPage: React.FC = () => {
                 isEquityCampaign={isEquityCampaign}
               />
 
-              {/* Tab Content */}
-              {selectedTab === 'details' && (
+              {/* Tab Content - Only render when not loading */}
+              {!loading && selectedTab === 'details' && (
                 <CampaignDetails
                   campaign={currentCampaign}
                   isEquityCampaign={isEquityCampaign}
@@ -111,19 +148,19 @@ const SingleCampaignPage: React.FC = () => {
                   user={user}
                 />
               )}
-              {selectedTab === 'donate' && (
+              {!loading && selectedTab === 'donate' && (
                 <CampaignDonate
                   campaign={currentCampaign}
                   isEquityCampaign={isEquityCampaign}
                 />
               )}
-              {selectedTab === 'updates' && (
+              {!loading && selectedTab === 'updates' && (
                 <CampaignUpdates campaign={currentCampaign} />
               )}
-              {selectedTab === 'comments' && (
+              {!loading && selectedTab === 'comments' && (
                 <CampaignComments campaign={currentCampaign} />
               )}
-              {selectedTab === 'backers' && (
+              {!loading && selectedTab === 'backers' && (
                 <CampaignBackers
                   campaign={currentCampaign}
                   isEquityCampaign={isEquityCampaign}
@@ -134,12 +171,14 @@ const SingleCampaignPage: React.FC = () => {
 
           {/* Sidebar Column */}
           <div className="lg:w-1/3 border border-gray-700">
-            <CampaignSidebar campaign={currentCampaign} />
+            {!loading && <CampaignSidebar campaign={currentCampaign} />}
           </div>
         </div>
-        <SuggestedCampaignsComponent
-          currentCategory={currentCampaign?.category}
-        />
+        {!loading && (
+          <SuggestedCampaignsComponent
+            currentCategory={currentCampaign?.category}
+          />
+        )}
       </div>
     </div>
   );

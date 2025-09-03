@@ -154,6 +154,7 @@ export interface CampaignState {
   unfavoriteCampaign: (campaignId: string) => Promise<void>;
   fetchFavoritedCampaigns: () => Promise<void>;
   shareCampaign: (campaignId?: string) => Promise<void>;
+  resetCurrentCampaign: () => void;
 }
 
 export interface CampaignDescription {

@@ -106,103 +106,103 @@ const Navbar = () => {
       {!warningDismissed && (
         <InvestorWarningBanner onDismiss={handleWarningDismiss} />
       )}
-    <header
-      className={cn(
-        'sticky top-0 z-50 transition-transform duration-300 ease-in-out',
-        isVisible || isScrolled
-          ? 'bg-white/90 backdrop-blur-md shadow-sm translate-y-0'
-          : 'bg-transparent -translate-y-full',
-      )}
-    >
-      <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 dark:bg-gray-950 dark:text-gray-50">
-        <div className="text-2xl font-bold text-orange-500">
-          <a href="/">
-            <BantuHiveLogoIcon className="w-24 h-auto" />
-          </a>
-        </div>
+      <header
+        className={cn(
+          'sticky top-0 z-50 transition-transform duration-300 ease-in-out',
+          isVisible || isScrolled
+            ? 'bg-white/90 backdrop-blur-md shadow-sm translate-y-0'
+            : 'bg-transparent -translate-y-full',
+        )}
+      >
+        <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 dark:bg-gray-950 dark:text-gray-50">
+          <div className="text-2xl font-bold text-orange-500">
+            <a href="/">
+              <BantuHiveLogoIcon className="w-24 h-auto" />
+            </a>
+          </div>
 
-        <div className="hidden lg:flex items-center gap-x-2 mx-6">
-          {Object.entries(dropdownLinks).map(([key, links]) => (
-            <NavbarDropdown
-              key={key}
-              keyName={key}
-              links={links}
-              activeMenu={activeMenu}
-              setActiveMenu={setActiveMenu}
-              closeTimeout={closeTimeout}
-            />
-          ))}
-        </div>
+          <div className="hidden lg:flex items-center gap-x-2 mx-6">
+            {Object.entries(dropdownLinks).map(([key, links]) => (
+              <NavbarDropdown
+                key={key}
+                keyName={key}
+                links={links}
+                activeMenu={activeMenu}
+                setActiveMenu={setActiveMenu}
+                closeTimeout={closeTimeout}
+              />
+            ))}
+          </div>
 
-        <div className="flex items-center gap-2 lg:hidden mr-2">
-          {/* Mobile search button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleSearchOpen}
-            aria-label="Search"
-            className="lg:hidden"
-          >
-            <Search className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-2 lg:hidden mr-2">
+            {/* Mobile search button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleSearchOpen}
+              aria-label="Search"
+              className="lg:hidden"
+            >
+              <Search className="h-5 w-5" />
+            </Button>
 
-          <button
-            onClick={handleMenuToggle}
-            className="text-gray-800 shadow-none rounded-none dark:text-gray-300"
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? (
-              <XMarkIcon className="h-8 w-8" />
+            <button
+              onClick={handleMenuToggle}
+              className="text-gray-800 shadow-none rounded-none dark:text-gray-300"
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? (
+                <XMarkIcon className="h-8 w-8" />
+              ) : (
+                <HamburgerMenuIcon className="h-8 w-8" />
+              )}
+            </button>
+          </div>
+
+          <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
+            {!user ? (
+              <NavbarAuthButtons />
             ) : (
-              <HamburgerMenuIcon className="h-8 w-8" />
+              <div className="flex items-center gap-2">
+                {/* Search button for desktop */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleSearchOpen}
+                  aria-label="Search"
+                  className="hidden lg:flex"
+                >
+                  <Search className="h-5 w-5" />
+                </Button>
+
+                <NavbarNotificationIcons
+                  notifications={notifications}
+                  messages={messages}
+                />
+                <NavbarUserMenu
+                  user={user}
+                  userAccountData={userAccountData}
+                  logout={logout}
+                />
+              </div>
             )}
-          </button>
+          </div>
         </div>
 
-        <div className="hidden lg:flex grow basis-0 items-center justify-end gap-x-2">
-          {!user ? (
-            <NavbarAuthButtons />
-          ) : (
-            <div className="flex items-center gap-2">
-              {/* Search button for desktop */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleSearchOpen}
-                aria-label="Search"
-                className="hidden lg:flex"
-              >
-                <Search className="h-5 w-5" />
-              </Button>
-
-              <NavbarNotificationIcons
-                notifications={notifications}
-                messages={messages}
-              />
-              <NavbarUserMenu
-                user={user}
-                userAccountData={userAccountData}
-                logout={logout}
-              />
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      <NavbarMobileMenu
-        isMenuOpen={isMenuOpen}
-        user={user}
-        dropdownLinks={dropdownLinks}
-        openDropdown={openDropdown}
-        handleDropdownToggle={handleDropdownToggle}
-        userAccountData={userAccountData}
-        logout={logout}
-        notifications={notifications}
-        messages={messages}
-      />
-      <SearchBar isOpen={searchOpen} onClose={handleSearchClose} />
-    </header>
+        {/* Mobile Menu */}
+        <NavbarMobileMenu
+          isMenuOpen={isMenuOpen}
+          user={user}
+          dropdownLinks={dropdownLinks}
+          openDropdown={openDropdown}
+          handleDropdownToggle={handleDropdownToggle}
+          userAccountData={userAccountData}
+          logout={logout}
+          notifications={notifications}
+          messages={messages}
+        />
+        <SearchBar isOpen={searchOpen} onClose={handleSearchClose} />
+      </header>
     </>
   );
 };

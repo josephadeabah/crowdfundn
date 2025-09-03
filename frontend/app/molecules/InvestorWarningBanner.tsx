@@ -31,7 +31,7 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
       className={cn(
         'bg-gray-300 border-b border-gray-300 text-black z-50',
         'px-4 py-2 md:px-6 md:py-2',
-        className
+        className,
       )}
       role="alert"
       aria-live="polite"
@@ -39,24 +39,28 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
       <div className="max-w-7xl mx-auto">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0 mt-0.5">
-            <AlertTriangle 
-              className="h-5 w-5 text-amber-600" 
+            <AlertTriangle
+              className="h-5 w-5 text-amber-600"
               aria-hidden="true"
             />
           </div>
-          
+
           <div className="flex-1 min-w-0">
             <div className="text-sm md:text-base font-medium mb-1">
               Investment Risk Warning
             </div>
             <div className="text-xs md:text-sm leading-relaxed space-y-1">
               <p>
-                <strong>Capital at risk:</strong> Investments in unlisted companies are speculative and carry high risks. 
-                You may lose 100% of your investment and should only invest money you can afford to lose.
+                <strong>Capital at risk:</strong> Investments in unlisted
+                companies are speculative and carry high risks. You may lose
+                100% of your investment and should only invest money you can
+                afford to lose.
               </p>
               <p className="hidden sm:block text-xs">
-                <strong>Diversify your portfolio:</strong> To mitigate risk, consider spreading your investments across multiple 
-                opportunities rather than concentrating your capital in a single venture.
+                <strong>Diversify your portfolio:</strong> To mitigate risk,
+                consider spreading your investments across multiple
+                opportunities rather than concentrating your capital in a single
+                venture.
               </p>
             </div>
           </div>
