@@ -460,7 +460,9 @@ module Api
           render json: { error: 'Investment not found' }, status: :not_found
         end
 
-        def equity_investment_params
+      def equity_investment_params
+        # Allow both nested and flat structures for backward compatibility
+        if params[:equity_investment].present?
           params.require(:equity_investment).permit(
             :amount,
             :reward_id,
@@ -474,7 +476,23 @@ module Api
             :country,
             metadata: {}
           )
+        else
+          # Fallback to flat structure if equity_investment key is missing
+          params.permit(
+            :amount,
+            :reward_id,
+            :transaction_reference,
+            :shares,
+            :percentage,
+            :email,
+            :phone,
+            :full_name,
+            :ip_address,
+            :country,
+            metadata: {}
+          )
         end
+      end
 
         def equity_investment_update_params
           params.require(:equity_investment).permit(
