@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_03_025508) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_03_231956) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -222,6 +222,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_03_025508) do
     t.integer "reward_id"
     t.string "subaccount_code"
     t.decimal "current_value", default: "0.0"
+    t.index ["campaign_id", "id"], name: "index_equity_investments_on_campaign_id_and_id", where: "((status)::text = 'successful'::text)"
+    t.index ["campaign_id", "status"], name: "index_equity_investments_on_campaign_and_successful", where: "((status)::text = 'successful'::text)"
     t.index ["campaign_id"], name: "index_equity_investments_on_campaign_id"
     t.index ["status"], name: "index_equity_investments_on_status"
     t.index ["subaccount_code"], name: "index_equity_investments_on_subaccount_code"
