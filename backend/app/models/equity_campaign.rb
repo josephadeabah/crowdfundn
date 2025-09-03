@@ -178,21 +178,31 @@ class EquityCampaign < Campaign
 
   # In your EquityCampaign model
   def create_investment(user, amount)
+    Rails.logger.info "Creating investment: user_id=#{user&.id}, amount=#{amount}, campaign_id=#{id}"
+    
     ActiveRecord::Base.transaction do
       campaign = EquityCampaign.lock.find(id)
+      Rails.logger.info "Campaign locked: #{campaign.attributes}"
       
       price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
       shares = (amount / price_per_share).round(4)
       percentage = ((amount / (campaign.valuation.to_f * campaign.equity_offered.to_f / 100)) * 100).round(4)
       
+      Rails.logger.info "Calculated: price_per_share=#{price_per_share}, shares=#{shares}, percentage=#{percentage}"
+      Rails.logger.info "Campaign limits: shares_available=#{campaign.shares_available}, percentage_available=#{campaign.percentage_available}"
+      
       # Double-check equity limits
       if shares > campaign.shares_available
-        campaign.errors.add(:base, "Not enough shares available for this investment")
+        error_msg = "Not enough shares available for this investment (requested: #{shares}, available: #{campaign.shares_available})"
+        Rails.logger.error error_msg
+        campaign.errors.add(:base, error_msg)
         return nil
       end
       
       if percentage > campaign.percentage_available
-        campaign.errors.add(:base, "Not enough equity percentage available for this investment")
+        error_msg = "Not enough equity percentage available for this investment (requested: #{percentage}%, available: #{campaign.percentage_available}%)"
+        Rails.logger.error error_msg
+        campaign.errors.add(:base, error_msg)
         return nil
       end
       
@@ -204,25 +214,35 @@ class EquityCampaign < Campaign
         status: EquityInvestment::STATUS_PENDING,
       )
       
+      Rails.logger.info "Investment created: #{investment.persisted?}, errors: #{investment.errors.full_messages}"
+      
       if investment.persisted?
         campaign.update!(shares_available: campaign.shares_available - shares)
+        Rails.logger.info "Campaign shares updated: #{campaign.shares_available}"
       else
         # Add investment errors to campaign errors
         investment.errors.full_messages.each do |message|
           campaign.errors.add(:base, message)
         end
+        Rails.logger.error "Investment validation failed: #{investment.errors.full_messages}"
       end
       
       investment
     end
   rescue ActiveRecord::RecordNotFound => e
-    errors.add(:base, "Campaign not found: #{e.message}")
+    error_msg = "Campaign not found: #{e.message}"
+    Rails.logger.error error_msg
+    errors.add(:base, error_msg)
     nil
   rescue ActiveRecord::StaleObjectError => e
-    errors.add(:base, "Campaign was modified by another process. Please try again.")
+    error_msg = "Campaign was modified by another process. Please try again."
+    Rails.logger.error error_msg
+    errors.add(:base, error_msg)
     nil
   rescue StandardError => e
-    errors.add(:base, "Unexpected error: #{e.message}")
+    error_msg = "Unexpected error: #{e.message}"
+    Rails.logger.error "#{error_msg}\n#{e.backtrace.join("\n")}"
+    errors.add(:base, error_msg)
     nil
   end
 

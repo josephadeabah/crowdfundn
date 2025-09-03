@@ -38,14 +38,19 @@ module Api
 
         # In your EquityInvestmentsController
         def create
+          Rails.logger.info "EquityInvestment create params: #{params.inspect}"
+          
           # First validate the investment parameters
           investment_params = equity_investment_params
           amount = investment_params[:amount].to_f
           reward_id = investment_params[:reward_id]
 
+          Rails.logger.info "Parsed investment: amount=#{amount}, reward_id=#{reward_id}"
+
           # First validate basic parameters
           validation_result = validate_investment(amount, reward_id)
           unless validation_result[:valid]
+            Rails.logger.error "Investment validation failed: #{validation_result.inspect}"
             return render json: { 
               success: false, 
               error: validation_result[:message],
@@ -55,6 +60,7 @@ module Api
 
           ActiveRecord::Base.transaction do
             # Use the campaign's create_investment method which handles locking
+            Rails.logger.info "Calling @campaign.create_investment with user=#{@current_user.id}, amount=#{amount}"
             investment = @campaign.create_investment(@current_user, amount)
             
             unless investment
@@ -75,6 +81,8 @@ module Api
                 end
               end
               
+              Rails.logger.error "Investment creation failed: campaign_errors=#{@campaign.errors.full_messages}, all_errors=#{all_errors}"
+              
               return render json: { 
                 success: false, 
                 error: "Failed to create investment: #{@campaign.errors.full_messages.join(', ')}",
@@ -82,6 +90,8 @@ module Api
               }, status: :unprocessable_entity
             end
 
+            Rails.logger.info "Investment created successfully: #{investment.id}"
+            
             investment.update!(
               reward_id: reward_id,
               email: investment_params[:email],
@@ -104,18 +114,22 @@ module Api
             initialize_payment(investment, metadata, redirect_url)
           end
         rescue ActiveRecord::StaleObjectError => e
+          error_msg = 'Campaign was modified by another process. Please try again.'
+          Rails.logger.error "#{error_msg}: #{e.message}"
           render json: { 
             success: false, 
-            error: 'Campaign was modified by another process. Please try again.',
+            error: error_msg,
             code: 'STALE_OBJECT_ERROR',
-            validationErrors: { base: ['Campaign was modified by another process. Please try again.'] }
+            validationErrors: { base: [error_msg] }
           }, status: :conflict
         rescue StandardError => e
+          error_msg = "Unexpected error: #{e.message}"
+          Rails.logger.error "#{error_msg}\n#{e.backtrace.join("\n")}"
           render json: { 
             success: false, 
-            error: e.message,
+            error: error_msg,
             code: e.try(:code),
-            validationErrors: { base: [e.message] }
+            validationErrors: { base: [error_msg] }
           }, status: :unprocessable_entity
         end
 
@@ -284,6 +298,8 @@ module Api
         end
 
         def validate_investment(amount, reward_id)
+          Rails.logger.info "Validating investment: amount=#{amount}, reward_id=#{reward_id}"
+          
           result = { valid: true, errors: {} }
           
           # Basic validations
@@ -291,18 +307,21 @@ module Api
             result[:valid] = false
             result[:message] = "Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}"
             result[:errors][:amount] = ["Minimum investment is #{@campaign.currency_symbol}#{@campaign.minimum_investment}"]
+            Rails.logger.error "Amount below minimum: #{amount} < #{@campaign.minimum_investment}"
           end
           
           if @campaign.maximum_investment > 0 && amount > @campaign.maximum_investment
             result[:valid] = false
             result[:message] = "Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}"
             result[:errors][:amount] = ["Maximum investment is #{@campaign.currency_symbol}#{@campaign.maximum_investment}"]
+            Rails.logger.error "Amount above maximum: #{amount} > #{@campaign.maximum_investment}"
           end
           
           if reward_id && !@campaign.rewards.available.exists?(id: reward_id)
             result[:valid] = false
             result[:message] = "Selected reward is no longer available"
             result[:errors][:reward_id] = ["Selected reward is no longer available"]
+            Rails.logger.error "Reward not available: #{reward_id}"
           end
 
           # Subaccount validation
@@ -313,6 +332,7 @@ module Api
               result[:message] = 'Fundraiser does not meet requirements for raising funds'
               result[:errors][:base] = ['Fundraiser does not meet requirements for raising funds']
               result[:code] = 'MISSING_ACCOUNT_NUMBER'
+              Rails.logger.error "Missing subaccount for fundraiser: #{@campaign.fundraiser_id}"
             end
           end
 
@@ -321,6 +341,7 @@ module Api
             result[:valid] = false
             result[:message] = "Campaign is not currently accepting investments"
             result[:errors][:base] = ["Campaign is not currently accepting investments (status: #{@campaign.equity_status})"]
+            Rails.logger.error "Campaign not live: status=#{@campaign.equity_status}"
           end
 
           # Check if investment would exceed available shares
@@ -328,6 +349,7 @@ module Api
             result[:valid] = false
             result[:message] = "No shares available for investment"
             result[:errors][:base] = ["No shares available for investment"]
+            Rails.logger.error "No shares available: #{@campaign.shares_available}"
           end
 
           if result[:valid]
@@ -339,9 +361,11 @@ module Api
               result[:valid] = false
               result[:message] = "Not enough shares available. Maximum investment possible: #{@campaign.currency_symbol}#{available_amount}"
               result[:errors][:amount] = ["Not enough shares available. Maximum: #{@campaign.currency_symbol}#{available_amount}"]
+              Rails.logger.error "Shares exceeded: requested=#{requested_shares}, available=#{@campaign.shares_available}"
             end
           end
 
+          Rails.logger.info "Validation result: #{result.inspect}"
           result
         end
 
