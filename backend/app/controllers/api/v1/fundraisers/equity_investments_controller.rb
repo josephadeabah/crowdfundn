@@ -266,7 +266,7 @@ module Api
         def validate_investment(amount, reward_id)
           result = { valid: true }
           
-          # Maintain all equity-specific validations
+          # Basic validations only - remove complex consistency checks
           if amount < @campaign.minimum_investment
             result = {
               valid: false,
@@ -287,7 +287,7 @@ module Api
             }
           end
 
-          # Subaccount validation
+          # Subaccount validation only
           if result[:valid]
             subaccount = Subaccount.find_by(user_id: @campaign.fundraiser_id)
             unless subaccount&.subaccount_code.present?
@@ -300,41 +300,13 @@ module Api
             end
           end
 
-          # Campaign investment readiness check
-          if result[:valid] && !@campaign.investment_ready?
+          # SIMPLIFIED: Only check if campaign is live and has available shares
+          if result[:valid] && (!@campaign.live? || @campaign.shares_available <= 0)
             result = {
               valid: false,
-              message: "Campaign is not currently ready for investments",
-              errors: { base: ["Campaign is not investment ready"] }
+              message: "Campaign is not currently accepting investments",
+              errors: { base: ["Campaign is not accepting investments"] }
             }
-          end
-
-          # Enhanced equity validation
-          if result[:valid]
-            price_per_share = @campaign.valuation.to_f / @campaign.total_shares.to_f
-            requested_shares = (amount / price_per_share).round(4)
-            requested_percentage = ((amount / (@campaign.valuation.to_f * @campaign.equity_offered.to_f / 100)) * 100).round(4)
-
-            # Calculate maximum allowed by BOTH constraints
-            max_by_shares = (@campaign.shares_available * price_per_share).floor
-            max_by_percentage = ((@campaign.percentage_available / 100) * 
-                                (@campaign.valuation.to_f * @campaign.equity_offered.to_f / 100)).floor
-            
-            absolute_maximum = [max_by_shares, max_by_percentage].min
-
-            if amount > absolute_maximum
-              result = {
-                valid: false,
-                message: "Maximum investment possible: #{@campaign.currency_symbol}#{absolute_maximum}",
-                errors: { amount: ["Maximum investment is #{@campaign.currency_symbol}#{absolute_maximum}"] }
-              }
-            elsif requested_shares > @campaign.shares_available || requested_percentage > @campaign.percentage_available
-              result = {
-                valid: false,
-                message: "Investment constraints exceeded",
-                errors: { amount: ["Cannot process investment due to constraint limits"] }
-              }
-            end
           end
 
           result

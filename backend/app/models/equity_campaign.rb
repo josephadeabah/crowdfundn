@@ -20,7 +20,6 @@ class EquityCampaign < Campaign
   validate :type_cannot_change, on: :update
   validate :shares_within_equity_limits
   validate :total_shares_must_be_set
-  validate :shares_and_percentage_consistency
   validate :reasonable_share_structure
   validate :founder_equity_within_bounds
 
@@ -247,8 +246,7 @@ class EquityCampaign < Campaign
     valid? && 
     live? && 
     shares_available > 0 && 
-    percentage_available > 0 &&
-    (shares_available - (percentage_available / 100) * total_shares).abs < 0.01
+    percentage_available > 0
   end
 
   def as_json(options = {})
@@ -362,16 +360,6 @@ class EquityCampaign < Campaign
   def maximum_greater_than_minimum
     return unless maximum_investment.present? && minimum_investment.present? && maximum_investment <= minimum_investment
     errors.add(:maximum_investment, 'must be greater than minimum investment')
-  end
-
-  def shares_and_percentage_consistency
-    return if shares_available.zero? || percentage_available.zero?
-    
-    expected_shares_from_percentage = (percentage_available / 100) * total_shares.to_f
-    
-    if (shares_available - expected_shares_from_percentage).abs > 0.01
-      errors.add(:base, "Shares and percentage availability are inconsistent")
-    end
   end
   
   def equity_debug_info
