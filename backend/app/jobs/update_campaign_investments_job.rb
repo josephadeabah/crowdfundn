@@ -9,7 +9,9 @@ class UpdateCampaignInvestmentsJob < ApplicationJob
     
     # Update all successful investments for this campaign
     campaign.equity_investments.successful.find_each do |investment|
-      investment.calculate_current_value
+      # This will trigger the before_save callback to update current_value
+      investment.update_current_value
+      investment.save! if investment.changed?
     end
     
     # Also update the campaign's shares available to ensure consistency

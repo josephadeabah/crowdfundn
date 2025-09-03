@@ -1,4 +1,3 @@
-# app/models/equity_investment.rb
 class EquityInvestment < ApplicationRecord
   belongs_to :user
   belongs_to :campaign, class_name: 'EquityCampaign'
@@ -41,6 +40,7 @@ class EquityInvestment < ApplicationRecord
   before_create :set_investment_date
   after_commit :update_campaign_leaderboard, if: :saved_change_to_status?
   after_save :update_campaign_shares, if: -> { saved_change_to_status? && successful? }
+  before_save :update_current_value, if: -> { campaign_id_changed? || percentage_changed? || will_save_change_to_percentage? }
 
   # Status query methods
   def pending?
@@ -71,22 +71,9 @@ class EquityInvestment < ApplicationRecord
     status == STATUS_REFUNDED
   end
 
-  # FIXED: Use different approach to avoid recursion
-  def calculate_current_value
-    return amount unless campaign && campaign.valuation && percentage
-    
-    new_value = (campaign.valuation * percentage / 100).round(2)
-    
-    # Update the database column if value changed
-    if self[:current_value] != new_value
-      update_column(:current_value, new_value)
-    end
-    
-    new_value
-  end
-
-  # Keep this as a simple reader method
+  # FIXED: Simple reader method without recursion
   def current_value
+    # Return stored value if present, otherwise calculate it
     self[:current_value] || calculate_current_value
   end
 
@@ -115,23 +102,23 @@ class EquityInvestment < ApplicationRecord
     {
       total_invested: successful_investments.sum(:amount),
       total_value: successful_investments.sum { |i| i.current_value },
-      total_return: successful_investments.sum { |i| i.current_value - i.amount },
+      total_return: successful_investments.sum { |i| i.total_returns },
       investments: investments,
       successful_count: successful_investments.count,
       campaigns_invested: successful_campaign_ids.count
     }
   end
 
-  def self.total_portfolio_value(user_id = nil)
-    scope = successful.includes(:campaign)
-    scope = scope.where(user_id: user_id) if user_id
-    scope.sum { |investment| investment.current_value }
-  end
-
   def self.total_investment_value(user_id = nil)
     scope = successful
     scope = scope.where(user_id: user_id) if user_id
     scope.sum(:amount)
+  end
+
+  def self.total_portfolio_value(user_id = nil)
+    scope = successful.includes(:campaign)
+    scope = scope.where(user_id: user_id) if user_id
+    scope.sum { |investment| investment.current_value }
   end
 
   def certificate_url
@@ -241,6 +228,19 @@ class EquityInvestment < ApplicationRecord
   end
 
   private
+
+  # NEW: Calculate and update current value
+  def calculate_current_value
+    return amount unless campaign && campaign.valuation && percentage
+    
+    new_value = (campaign.valuation * percentage / 100).round(2)
+    new_value
+  end
+
+  # NEW: Update current_value before saving
+  def update_current_value
+    self.current_value = calculate_current_value
+  end
 
   def generate_certificate_number
     self.certificate_number ||= "BHV-#{SecureRandom.alphanumeric(10).upcase}"
