@@ -9,8 +9,7 @@ class UpdateCampaignInvestmentsJob < ApplicationJob
     
     # Update all successful investments for this campaign
     campaign.equity_investments.successful.find_each do |investment|
-      investment.current_value
-      investment.save! if investment.changed?
+      investment.calculate_current_value
     end
     
     # Also update the campaign's shares available to ensure consistency
@@ -20,7 +19,6 @@ class UpdateCampaignInvestmentsJob < ApplicationJob
     Rails.logger.error "UpdateCampaignInvestmentsJob: Campaign #{campaign_id} not found - #{e.message}"
   rescue StandardError => e
     Rails.logger.error "UpdateCampaignInvestmentsJob: Error updating investments for campaign #{campaign_id} - #{e.message}"
-    # Retry the job with exponential backoff
     retry_job(wait: 1.minute) if executions < 5
   end
 end

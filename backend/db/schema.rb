@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_03_012736) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_03_025508) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -221,6 +221,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_03_012736) do
     t.boolean "processed", default: false, null: false
     t.integer "reward_id"
     t.string "subaccount_code"
+    t.decimal "current_value", default: "0.0"
     t.index ["campaign_id"], name: "index_equity_investments_on_campaign_id"
     t.index ["status"], name: "index_equity_investments_on_status"
     t.index ["subaccount_code"], name: "index_equity_investments_on_subaccount_code"
