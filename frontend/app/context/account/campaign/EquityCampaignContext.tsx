@@ -758,6 +758,7 @@ export const EquityCampaignProvider = ({
     [],
   );
 
+  // In your EquityCampaignContext.tsx
   const createInvestment = useCallback(
     async (
       campaignId: string,
@@ -774,31 +775,29 @@ export const EquityCampaignProvider = ({
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ equity_investment: investmentData }),
+            body: JSON.stringify(investmentData), // Already properly structured
           },
         );
 
         const data = await response.json();
 
         if (!response.ok) {
-          // Error handling remains the same
           return {
             success: false,
             error: data.error || 'Investment creation failed',
-            data: data.details,
+            validationErrors: data.validationErrors,
             code: data.code,
+            data: data.data,
           };
         }
 
-        // Successful response handling
+        // Handle successful response with redirect
         if (data.data?.authorization_url) {
-          // Add a small delay to ensure React state updates complete
           await new Promise((resolve) => setTimeout(resolve, 100));
 
-          // Verify URL is valid
           try {
             new URL(data.data.authorization_url);
-            window.location.assign(data.data.authorization_url); // Use assign() instead of href
+            window.location.href = data.data.authorization_url;
           } catch (e) {
             console.error('Invalid URL:', data.data.authorization_url);
             return {
@@ -807,7 +806,6 @@ export const EquityCampaignProvider = ({
             };
           }
 
-          // Return immediately after redirect
           return {
             success: true,
             data: {

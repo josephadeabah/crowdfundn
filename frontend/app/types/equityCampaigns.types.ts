@@ -172,13 +172,16 @@ export interface ShareCertificate {
 }
 
 export interface InvestmentCreatePayload {
-  amount: number;
-  shares?: number;
-  email?: string;
-  phone?: string;
-  full_name?: string;
-  metadata?: any;
-  payment_method?: string;
+  equity_investment: {
+    amount: number;
+    email?: string;
+    phone?: string;
+    full_name?: string;
+    metadata?: any;
+    reward_id?: number;
+    shares?: number;
+    percentage?: number;
+  };
 }
 
 export interface InvestmentResponseData {

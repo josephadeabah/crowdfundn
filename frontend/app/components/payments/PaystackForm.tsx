@@ -4,7 +4,7 @@ import ToastComponent from '@/app/components/toast/Toast';
 import { Reward } from '@/app/context/account/rewards/RewardsContext';
 import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
 import {
-  EquityInvestment,
+  InvestmentCreatePayload,
   InvestmentCreateResponse,
 } from '@/app/types/equityCampaigns.types';
 import {
@@ -142,7 +142,6 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
 
     try {
       await createDonationTransaction(transactionData);
-      // The redirection will happen within the context
     } catch (error) {
       // Error is already handled in the context
     }
@@ -153,21 +152,24 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
 
     const amount = parseFloat(paymentAmount);
     try {
-      const investmentData = {
-        amount: totalAmount,
-        email: paymentEmail,
-        phone: paymentPhone,
-        full_name: cardholderName,
-        metadata: {
-          processingFee,
-          originalAmount: amount,
-          shippingData,
-          selectedRewards,
-          deliveryOption,
+      // Create properly structured payload for backend
+      const investmentPayload: InvestmentCreatePayload = {
+        equity_investment: {
+          amount: totalAmount, // Use total amount including fee
+          email: paymentEmail,
+          phone: paymentPhone,
+          full_name: cardholderName,
+          metadata: {
+            processingFee,
+            originalAmount: amount,
+            shippingData,
+            selectedRewards,
+            deliveryOption,
+          },
         },
       };
 
-      const result = await createInvestment(campaignId, investmentData);
+      const result = await createInvestment(campaignId, investmentPayload);
 
       if (!result.success) {
         let errorMessage = result.error || 'Investment failed';
