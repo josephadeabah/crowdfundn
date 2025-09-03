@@ -263,10 +263,11 @@ module Api
           true
         end
 
+        # In the controller's validate_investment method
         def validate_investment(amount, reward_id)
           result = { valid: true }
           
-          # Basic validations only - remove complex consistency checks
+          # Basic validations only
           if amount < @campaign.minimum_investment
             result = {
               valid: false,
@@ -287,7 +288,7 @@ module Api
             }
           end
 
-          # Subaccount validation only
+          # Subaccount validation
           if result[:valid]
             subaccount = Subaccount.find_by(user_id: @campaign.fundraiser_id)
             unless subaccount&.subaccount_code.present?
@@ -300,13 +301,28 @@ module Api
             end
           end
 
-          # SIMPLIFIED: Only check if campaign is live and has available shares
+          # SIMPLIFIED: Only check shares available (percentage is mathematically linked)
           if result[:valid] && (!@campaign.live? || @campaign.shares_available <= 0)
             result = {
               valid: false,
               message: "Campaign is not currently accepting investments",
-              errors: { base: ["Campaign is not accepting investments"] }
+              errors: { base: ["No shares available for investment"] }
             }
+          end
+
+          # Check if investment would exceed available shares
+          if result[:valid]
+            price_per_share = @campaign.valuation.to_f / @campaign.total_shares.to_f
+            requested_shares = (amount / price_per_share).round(4)
+            
+            if requested_shares > @campaign.shares_available
+              available_amount = (@campaign.shares_available * price_per_share).floor
+              result = {
+                valid: false,
+                message: "Not enough shares available. Maximum investment possible: #{@campaign.currency_symbol}#{available_amount}",
+                errors: { amount: ["Not enough shares available"] }
+              }
+            end
           end
 
           result

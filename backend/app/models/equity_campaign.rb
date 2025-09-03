@@ -130,6 +130,7 @@ class EquityCampaign < Campaign
   def validation_errors_for_approval
     errors = []
     
+    # Basic validations
     errors << "Title is required" if title.blank?
     errors << "Description is required" if description.blank?
     errors << "Valuation is required" if valuation.blank?
@@ -140,7 +141,13 @@ class EquityCampaign < Campaign
     errors << "Company description is required" if company_description.blank?
     errors << "At least one founder is required" unless campaign_team_members.exists?(role: 'founder')
     
-    errors
+    # Ensure founder equity + public equity = 100%
+    total_equity = founder_equity_percentage + equity_offered.to_f
+    if (total_equity - 100.0).abs > 0.01
+      errors << "Founder equity (#{founder_equity_percentage}%) + public offering (#{equity_offered}%) must equal 100%"
+    end
+    
+    errors.empty?
   end
   
   def shares_available
@@ -243,10 +250,8 @@ class EquityCampaign < Campaign
   end
   
   def investment_ready?
-    valid? && 
-    live? && 
-    shares_available > 0 && 
-    percentage_available > 0
+    # Only check basics - no consistency validation needed
+    valid? && live? && shares_available > 0
   end
 
   def as_json(options = {})
@@ -300,7 +305,10 @@ class EquityCampaign < Campaign
   def calculate_shares_available_value
     return 0 if equity_offered.nil? || valuation.nil? || total_shares.nil?
     
+    # Total shares available for public offering ONLY
     total_equity_shares = (equity_offered.to_f / 100) * total_shares.to_f
+    
+    # Subtract already issued shares from public offering
     available = total_equity_shares - shares_issued
     
     available.positive? ? available.round(4) : 0
@@ -327,9 +335,10 @@ class EquityCampaign < Campaign
     self.total_shares = calculate_default_shares
   end
 
+  # REMOVE founder-related calculations from availability
   def calculate_founder_shares
-    return 0 unless founder_equity_percentage > 0
-    (founder_equity_percentage.to_f / 100) * total_shares.to_f
+    # Founder shares are pre-allocated and don't affect public offering
+    0
   end
 
   def equity_issued_within_limits
