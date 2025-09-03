@@ -79,7 +79,7 @@ const BlogPosts: React.FC = () => {
         ))}
       </div>
       <div className="text-center">
-        <a href="/articles">
+        <a href="https://www.pnpmmedia.com/journal" target="_blank" rel="noopener noreferrer">
           <Button
             variant="outline"
             className="border-fundify-primary text-emerald-600"
